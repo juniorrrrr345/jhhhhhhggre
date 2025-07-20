@@ -26,21 +26,38 @@ export default function DebugPage() {
 
   const testApi = async () => {
     const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://jhhhhhhggre.onrender.com'
+    const timestamp = new Date().getTime()
+    
     const tests = [
       {
-        name: 'Test simple',
+        name: 'Test direct simple',
         url: `${apiBaseUrl}/test`,
-        description: 'Endpoint de test basique'
+        description: 'Direct vers Render - Test basique'
       },
       {
-        name: 'Health check',
+        name: 'Test proxy simple',
+        url: `/api/proxy?endpoint=/test`,
+        description: 'Via proxy Vercel - Test basique'
+      },
+      {
+        name: 'Health check direct',
         url: `${apiBaseUrl}/health`,
-        description: 'Vérification santé API'
+        description: 'Direct vers Render - Santé API'
       },
       {
-        name: 'Plugs publics',
-        url: `${apiBaseUrl}/api/public/plugs?filter=active&limit=100&t=${new Date().getTime()}`,
-        description: 'Données boutiques'
+        name: 'Health check proxy',
+        url: `/api/proxy?endpoint=/health`,
+        description: 'Via proxy Vercel - Santé API'
+      },
+      {
+        name: 'Plugs direct',
+        url: `${apiBaseUrl}/api/public/plugs?filter=active&limit=100&t=${timestamp}`,
+        description: 'Direct vers Render - Données boutiques'
+      },
+      {
+        name: 'Plugs proxy',
+        url: `/api/proxy?endpoint=/api/public/plugs&filter=active&limit=100&t=${timestamp}`,
+        description: 'Via proxy Vercel - Données boutiques'
       }
     ]
     

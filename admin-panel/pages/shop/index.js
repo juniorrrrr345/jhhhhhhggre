@@ -30,50 +30,64 @@ export default function ShopHome() {
   const fetchPlugs = async () => {
     try {
       setLoading(true)
-      // Utiliser l'endpoint public pour la boutique
-      const timestamp = new Date().getTime()
-      const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://jhhhhhhggre.onrender.com'
-      const url = `${apiBaseUrl}/api/public/plugs?filter=active&limit=100&t=${timestamp}`
       
-      console.log('🔍 Fetching from:', url)
-      console.log('🌍 API Base URL:', apiBaseUrl)
-      
-      const response = await fetch(url, {
-        cache: 'no-cache',
-        headers: {
-          'Cache-Control': 'no-cache'
-        }
-      })
-      
-      console.log('📡 Response status:', response.status)
-      
-      if (response.ok) {
-        const data = await response.json()
-        console.log('📊 Raw data received:', data)
+      // Essayer d'abord l'API directe
+      let data
+      try {
+        const timestamp = new Date().getTime()
+        const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://jhhhhhhggre.onrender.com'
+        const url = `${apiBaseUrl}/api/public/plugs?filter=active&limit=100&t=${timestamp}`
         
-        // Vérifier que data.plugs existe et est un array
-        if (data && Array.isArray(data.plugs)) {
-          // Trier par VIP en premier
-          const sortedPlugs = data.plugs.sort((a, b) => {
-            if (a.isVip && !b.isVip) return -1
-            if (!a.isVip && b.isVip) return 1
-            return 0
-          })
-          
-          console.log('✅ Plugs loaded:', sortedPlugs.length, 'boutiques')
-          console.log('🏪 Boutiques:', sortedPlugs.map(p => ({ name: p.name, isVip: p.isVip })))
-          setPlugs(sortedPlugs)
-          setLastUpdate(new Date())
+        console.log('🔍 Tentative directe:', url)
+        const response = await fetch(url, {
+          cache: 'no-cache',
+          headers: { 'Cache-Control': 'no-cache' }
+        })
+        
+        if (response.ok) {
+          data = await response.json()
+          console.log('✅ API directe réussie:', data)
         } else {
-          console.error('❌ Invalid data structure:', data)
-          setPlugs([])
+          throw new Error(`HTTP ${response.status}`)
         }
+      } catch (directError) {
+        console.log('❌ API directe échouée:', directError.message)
+        console.log('🔄 Tentative via proxy...')
+        
+        // Fallback vers le proxy
+        const proxyUrl = `/api/proxy?endpoint=/api/public/plugs&filter=active&limit=100&t=${new Date().getTime()}`
+        const proxyResponse = await fetch(proxyUrl, {
+          cache: 'no-cache',
+          headers: { 'Cache-Control': 'no-cache' }
+        })
+        
+        if (proxyResponse.ok) {
+          data = await proxyResponse.json()
+          console.log('✅ Proxy réussi:', data)
+        } else {
+          throw new Error(`Proxy failed: HTTP ${proxyResponse.status}`)
+        }
+      }
+      
+      if (data && Array.isArray(data.plugs)) {
+        // Trier par VIP en premier
+        const sortedPlugs = data.plugs.sort((a, b) => {
+          if (a.isVip && !b.isVip) return -1
+          if (!a.isVip && b.isVip) return 1
+          return 0
+        })
+        
+        console.log('✅ Plugs loaded:', sortedPlugs.length, 'boutiques')
+        console.log('🏪 Boutiques:', sortedPlugs.map(p => ({ name: p.name, isVip: p.isVip })))
+        setPlugs(sortedPlugs)
+        setLastUpdate(new Date())
       } else {
-        console.error('❌ Response error:', response.status, response.statusText)
+        console.error('❌ Invalid data structure:', data)
         setPlugs([])
       }
+      
     } catch (error) {
-      console.error('💥 Fetch error:', error)
+      console.error('💥 Fetch error final:', error)
       setPlugs([])
     } finally {
       setLoading(false)
