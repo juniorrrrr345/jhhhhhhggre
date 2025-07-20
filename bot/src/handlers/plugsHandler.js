@@ -61,11 +61,12 @@ const handleVipPlugs = async (ctx, page = 0) => {
     const endIndex = startIndex + plugsPerPage;
     const currentPagePlugs = vipPlugs.slice(startIndex, endIndex);
 
-    // Créer les boutons pour chaque plug VIP
+    // Créer les boutons pour chaque plug VIP avec le bon contexte
     const buttons = [];
     
     for (const plug of currentPagePlugs) {
       const likesText = plug.likes > 0 ? ` ❤️${plug.likes}` : '';
+      // Utiliser le contexte 'plugs_vip' pour que le retour fonctionne correctement
       buttons.push([Markup.button.callback(`👑 ${plug.name}${likesText}`, `plug_${plug._id}_from_plugs_vip`)]);
     }
 
@@ -73,16 +74,16 @@ const handleVipPlugs = async (ctx, page = 0) => {
     if (totalPages > 1) {
       const navButtons = [];
       if (page > 0) {
-        navButtons.push(Markup.button.callback('⬅️ Précédent', `page_vip_${page - 1}`));
+        navButtons.push(Markup.button.callback('⬅️ Précédent', `page_plugs_vip_${page - 1}`));
       }
       navButtons.push(Markup.button.callback(`${page + 1}/${totalPages}`, 'current_page'));
       if (page < totalPages - 1) {
-        navButtons.push(Markup.button.callback('➡️ Suivant', `page_vip_${page + 1}`));
+        navButtons.push(Markup.button.callback('➡️ Suivant', `page_plugs_vip_${page + 1}`));
       }
       buttons.push(navButtons);
     }
 
-    // Bouton retour
+    // Bouton retour vers le menu principal
     const backButtonText = config?.botTexts?.backButtonText || '🔙 Retour';
     buttons.push([Markup.button.callback(backButtonText, 'back_main')]);
 
@@ -113,15 +114,19 @@ const handleAllPlugs = async (ctx, page = 0) => {
       .sort({ likes: -1, isVip: -1, vipOrder: 1, createdAt: -1 });
 
     if (plugs.length === 0) {
-      return ctx.editMessageText(
-        config.messages.noPlugsFound,
-        { reply_markup: createPlugsFilterKeyboard(config).reply_markup }
-      );
+      const messageText = config?.messages?.noPlugsFound || '❌ Aucun plug trouvé';
+      const keyboard = createPlugsFilterKeyboard(config);
+      
+      await editMessageWithImage(ctx, messageText, keyboard, config, { parse_mode: 'Markdown' });
+      await ctx.answerCbQuery();
+      return;
     }
 
     const itemsPerPage = 5;
     const totalPages = Math.ceil(plugs.length / itemsPerPage);
-    const keyboard = createPlugListKeyboard(plugs, page, totalPages, 'all');
+    
+    // Utiliser le contexte 'plugs_all' pour que le retour fonctionne correctement
+    const keyboard = createPlugListKeyboard(plugs, page, totalPages, 'plugs_all');
 
     let message = `${config.botTexts?.allPlugsTitle || 'Tous Nos Plugs Certifié 🔌'}\n`;
     
@@ -217,18 +222,18 @@ const handleServiceFilter = async (ctx, serviceType, page = 0) => {
         console.log(`- ${plug.name}:`, plug.services);
       });
       
-      await ctx.editMessageText(
-        `😅 Aucun plug trouvé pour ce service.\n\n🔧 Vérifiez que les boutiques ont ce service activé dans le panel admin.`,
-        { reply_markup: createServicesKeyboard().reply_markup }
-      );
+      const messageText = `😅 Aucun plug trouvé pour ce service.\n\n🔧 Vérifiez que les boutiques ont ce service activé dans le panel admin.`;
+      const keyboard = createServicesKeyboard(config);
       
-      // Confirmer la callback
+      await editMessageWithImage(ctx, messageText, keyboard, config, { parse_mode: 'Markdown' });
       await ctx.answerCbQuery();
       return;
     }
 
     const itemsPerPage = 5;
     const totalPages = Math.ceil(plugs.length / itemsPerPage);
+    
+    // Utiliser le contexte 'service_TYPE' pour que le retour fonctionne correctement
     const keyboard = createPlugListKeyboard(plugs, page, totalPages, `service_${serviceType}`);
 
     const serviceNames = {
@@ -241,10 +246,7 @@ const handleServiceFilter = async (ctx, serviceType, page = 0) => {
     message += `📊 Total : ${plugs.length} plugs\n`;
     message += `📄 Page ${page + 1}/${totalPages}`;
 
-    await ctx.editMessageText(message, {
-      reply_markup: keyboard.reply_markup,
-      parse_mode: 'Markdown'
-    });
+    await editMessageWithImage(ctx, message, keyboard, config, { parse_mode: 'Markdown' });
     
     // Confirmer la callback
     await ctx.answerCbQuery();
@@ -325,6 +327,9 @@ const handlePlugDetails = async (ctx, plugId, returnContext = 'top_plugs') => {
       return ctx.answerCbQuery('❌ Plug non trouvé ou inactif');
     }
 
+    // Récupérer la config pour les textes personnalisés
+    const config = await Config.findById('main');
+
     let message = `${plug.isVip ? '⭐ ' : ''}**${plug.name}**\n\n`;
     message += `📝 ${plug.description}\n\n`;
 
@@ -349,11 +354,18 @@ const handlePlugDetails = async (ctx, plugId, returnContext = 'top_plugs') => {
       message += `🌍 **Pays desservis :** ${plug.countries.join(', ')}\n\n`;
     }
 
+    // Afficher les likes si disponibles
+    if (plug.likes > 0) {
+      message += `❤️ **${plug.likes} like${plug.likes > 1 ? 's' : ''}**\n\n`;
+    }
+
     const keyboard = createPlugKeyboard(plug, returnContext);
-    const config = await Config.findById('main');
 
     // Utiliser la fonction helper pour afficher avec image
     await editMessageWithImage(ctx, message, keyboard, config, { parse_mode: 'Markdown' });
+    
+    // Confirmer la callback pour éviter le loading
+    await ctx.answerCbQuery();
   } catch (error) {
     console.error('Erreur dans handlePlugDetails:', error);
     await ctx.answerCbQuery('❌ Erreur lors du chargement');
@@ -377,6 +389,9 @@ const handlePlugServiceDetails = async (ctx, plugId, serviceType) => {
       return ctx.answerCbQuery('❌ Service non disponible');
     }
 
+    // Récupérer la config pour les textes et images
+    const config = await Config.findById('main');
+
     const serviceNames = {
       delivery: '🚚 Livraison',
       postal: '✈️ Envoi postal',
@@ -396,10 +411,44 @@ const handlePlugServiceDetails = async (ctx, plugId, serviceType) => {
 
     message += '📱 **Contactez directement :**';
 
-    const keyboard = createPlugKeyboard(plug);
-    const config = await Config.findById('main');
+    // Créer un clavier spécifique pour les services avec retour intelligent
+    const buttons = [];
+    
+    // Réseaux sociaux du plug
+    const socialButtons = [];
+    if (plug.socialMedia.telegram) {
+      socialButtons.push(Markup.button.url('📱 Telegram', plug.socialMedia.telegram));
+    }
+    if (plug.socialMedia.instagram) {
+      socialButtons.push(Markup.button.url('📸 Instagram', plug.socialMedia.instagram));
+    }
+    if (socialButtons.length > 0) {
+      buttons.push(socialButtons);
+    }
+    
+    const socialButtons2 = [];
+    if (plug.socialMedia.whatsapp) {
+      socialButtons2.push(Markup.button.url('💬 WhatsApp', plug.socialMedia.whatsapp));
+    }
+    if (plug.socialMedia.website) {
+      socialButtons2.push(Markup.button.url('🌐 Site', plug.socialMedia.website));
+    }
+    if (socialButtons2.length > 0) {
+      buttons.push(socialButtons2);
+    }
+    
+    // Bouton like
+    buttons.push([Markup.button.callback('👤 Liker cette boutique', `like_${plug._id}`)]);
+    
+    // Bouton retour vers les détails du plug
+    buttons.push([Markup.button.callback('🔙 Retour aux détails', `plug_${plug._id}_from_top_plugs`)]);
+    
+    const keyboard = Markup.inlineKeyboard(buttons);
 
     await editMessageWithImage(ctx, message, keyboard, config, { parse_mode: 'Markdown' });
+    
+    // Confirmer la callback pour éviter le loading
+    await ctx.answerCbQuery();
 
   } catch (error) {
     console.error('Erreur dans handlePlugServiceDetails:', error);

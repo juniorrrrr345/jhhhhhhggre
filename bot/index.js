@@ -119,9 +119,9 @@ bot.action(/^page_(.+)_(\d+)$/, (ctx) => {
   
   console.log(`🔄 Pagination: context=${context}, page=${page}`);
   
-  if (context === 'all') {
+  if (context === 'all' || context === 'plugs_all') {
     return handleAllPlugs(ctx, page);
-  } else if (context === 'vip') {
+  } else if (context === 'vip' || context === 'plugs_vip') {
     return handleVipPlugs(ctx, page);
   } else if (context.startsWith('service_')) {
     const serviceType = context.split('_')[1];
