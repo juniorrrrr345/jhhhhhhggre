@@ -2,12 +2,6 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 import { toast } from 'react-hot-toast';
-import dynamic from 'next/dynamic';
-
-// Import dynamique pour éviter les problèmes SSR sur Vercel
-const ClientOnly = dynamic(() => import('../../components/ClientOnly'), {
-  ssr: false
-});
 
 export default function MessagesPage() {
   const router = useRouter();
@@ -17,10 +11,24 @@ export default function MessagesPage() {
   const [mounted, setMounted] = useState(false);
 
   // Structure par défaut pour éviter les erreurs
-  const defaultConfig = {
+  const getDefaultConfig = () => ({
     welcome: { text: '', image: '' },
     boutique: { name: '', subtitle: '', logo: '', vipTitle: '', vipSubtitle: '' },
-    botTexts: {},
+    botTexts: {
+      topPlugsTitle: '',
+      topPlugsDescription: '',
+      filterServiceTitle: '',
+      filterServiceDescription: '',
+      filterCountryTitle: '',
+      filterCountryDescription: '',
+      allPlugsTitle: '',
+      vipTitle: '',
+      vipDescription: '',
+      allPlugsText: '',
+      paginationFormat: '',
+      backButtonText: '',
+      totalCountFormat: ''
+    },
     buttons: { 
       topPlugs: { text: '' }, 
       vipPlugs: { text: '' }, 
@@ -28,7 +36,7 @@ export default function MessagesPage() {
       info: { text: '', content: '' } 
     },
     filters: { all: '', byService: '', byCountry: '' }
-  };
+  });
 
   useEffect(() => {
     setMounted(true);
@@ -92,6 +100,7 @@ export default function MessagesPage() {
 
       // Fusionner les données reçues avec la structure par défaut
       if (data && typeof data === 'object') {
+        const defaultConfig = getDefaultConfig();
         const mergedConfig = {
           ...defaultConfig,
           ...data,
@@ -111,12 +120,12 @@ export default function MessagesPage() {
         setConfig(mergedConfig);
       } else {
         console.error('Données de configuration invalides:', data);
-        setConfig(defaultConfig);
+        setConfig(getDefaultConfig());
         toast.error('Utilisation de la configuration par défaut');
       }
     } catch (error) {
       console.error('Erreur lors du chargement de la config:', error);
-      setConfig(defaultConfig);
+      setConfig(getDefaultConfig());
       toast.error('Erreur lors du chargement, configuration par défaut utilisée');
     } finally {
       setLoading(false);
@@ -199,7 +208,7 @@ export default function MessagesPage() {
       setConfig(prev => {
         if (!prev || typeof prev !== 'object') {
           console.error('Config invalide:', prev);
-          return defaultConfig;
+          return getDefaultConfig();
         }
         
         return {
@@ -221,7 +230,7 @@ export default function MessagesPage() {
       setConfig(prev => {
         if (!prev || typeof prev !== 'object') {
           console.error('Config invalide:', prev);
-          return defaultConfig;
+          return getDefaultConfig();
         }
         
         return {
@@ -312,7 +321,7 @@ export default function MessagesPage() {
     );
   }
 
-  if (loading) {
+  if (loading || !config) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
@@ -359,14 +368,7 @@ export default function MessagesPage() {
 
         {/* Contenu */}
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <ClientOnly fallback={
-            <div className="text-center py-12">
-              <div className="text-4xl mb-4">⏳</div>
-              <p className="text-gray-600">Chargement de l'interface...</p>
-            </div>
-          }>
-            {config && (
-              <div className="space-y-8">
+          <div className="space-y-8">
               {/* Message d'accueil */}
               <div className="bg-white rounded-lg shadow p-6">
                 <h2 className="text-lg font-medium text-gray-900 mb-4">🌟 Message d'accueil</h2>
@@ -826,8 +828,6 @@ export default function MessagesPage() {
                 </div>
               </div>
             </div>
-            )}
-          </ClientOnly>
         </div>
       </div>
     </>
