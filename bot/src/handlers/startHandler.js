@@ -1,6 +1,7 @@
 const Config = require('../models/Config');
 const Plug = require('../models/Plug');
 const { createMainKeyboard, createVIPKeyboard } = require('../utils/keyboards');
+const { editMessageRobust, answerCallbackSafe, logHandler } = require('../utils/messageUtils');
 
 const handleStart = async (ctx) => {
   try {
@@ -64,35 +65,45 @@ const handleStart = async (ctx) => {
 // Gestionnaire pour retour au menu principal
 const handleBackMain = async (ctx) => {
   try {
-    console.log('🔙 Retour au menu principal demandé');
+    logHandler('BackMain', 'Début');
     
     // Toujours récupérer la config fraîche
     const config = await Config.findById('main');
     if (!config) {
-      console.log('❌ Configuration non trouvée');
-      return ctx.answerCbQuery('❌ Configuration non trouvée');
+      logHandler('BackMain', 'Configuration non trouvée');
+      return await answerCallbackSafe(ctx, '❌ Configuration non trouvée');
     }
 
-    console.log('📋 Configuration récupérée pour le retour');
+    logHandler('BackMain', 'Configuration récupérée');
 
-    // Utiliser le même message d'accueil que dans handleStart (sans section VIP)
+    // Utiliser le même message d'accueil que dans handleStart
     const welcomeMessage = config.welcome?.text || '🌟 Bienvenue sur notre bot !';
+    const welcomeImage = config.welcome?.image || null;
     const keyboard = createMainKeyboard(config);
     
-    console.log('📝 Message d\'accueil préparé pour le retour');
-    
-    // Utiliser editMessageText pour une navigation fluide
-    await ctx.editMessageText(welcomeMessage, {
-      reply_markup: keyboard.reply_markup,
-      parse_mode: 'HTML'
+    logHandler('BackMain', 'Message préparé', { 
+      hasImage: !!welcomeImage,
+      textLength: welcomeMessage.length 
     });
     
-    console.log('✅ Retour au menu principal terminé');
-    await ctx.answerCbQuery();
+    // Utiliser l'utilitaire robuste pour éditer le message
+    const success = await editMessageRobust(ctx, welcomeMessage, {
+      reply_markup: keyboard.reply_markup,
+      parse_mode: 'HTML'
+    }, welcomeImage);
+    
+    if (success) {
+      logHandler('BackMain', 'Succès');
+    } else {
+      logHandler('BackMain', 'Échec édition message');
+    }
+    
+    await answerCallbackSafe(ctx);
+    
   } catch (error) {
-    console.error('❌ Erreur dans handleBackMain:', error);
+    logHandler('BackMain', 'Erreur', { error: error.message });
     // Fallback : répondre avec le message de démarrage
-    await ctx.answerCbQuery('❌ Erreur lors du retour au menu');
+    await answerCallbackSafe(ctx, '❌ Erreur lors du retour au menu');
   }
 };
 
