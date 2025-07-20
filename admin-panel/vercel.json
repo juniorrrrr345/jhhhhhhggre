@@ -1,4 +1,21 @@
 {
-  "framework": "nextjs",
-  "regions": ["fra1"]
+  "functions": {
+    "pages/admin/messages.js": {
+      "memory": 1024
+    }
+  },
+  "headers": [
+    {
+      "source": "/admin/messages",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        }
+      ]
+    }
+  ],
+  "env": {
+    "NODE_ENV": "production"
+  }
 }

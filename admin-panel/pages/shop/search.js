@@ -118,11 +118,12 @@ export default function ShopSearch() {
       )
     }
 
-    // Trier par VIP en premier
+    // Trier par VIP en premier, puis par likes
     filteredPlugs.sort((a, b) => {
       if (a.isVip && !b.isVip) return -1
       if (!a.isVip && b.isVip) return 1
-      return 0
+      // Si même statut VIP, trier par likes
+      return (b.likes || 0) - (a.likes || 0)
     })
 
     setPlugs(filteredPlugs)
@@ -313,99 +314,84 @@ export default function ShopSearch() {
               </button>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {plugs.map((plug) => (
-                <div
-                  key={plug._id}
-                  className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
-                >
-                  {/* Image */}
-                  <div className="relative h-48">
-                    <img
-                      src={plug.image || '/placeholder.jpg'}
-                      alt={plug.name}
-                      className="w-full h-full object-cover"
-                    />
-                    {plug.isVip && (
-                      <div className="absolute top-3 left-3">
-                        <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-900 text-white">
-                          <StarIcon className="w-4 h-4 mr-1" />
-                          VIP
-                        </span>
+            <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-2 gap-4">
+              {plugs.map((plug, index) => (
+                <Link key={plug._id} href={`/shop/${plug._id}`}>
+                  <div className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:border-gray-400 transition-colors duration-300 cursor-pointer">
+                    {/* Image */}
+                    <div className="relative h-32 sm:h-40">
+                      <img
+                        src={plug.image || '/placeholder.jpg'}
+                        alt={plug.name}
+                        className="w-full h-full object-cover grayscale"
+                      />
+                      {/* Badges en haut à droite pour ne pas cacher le nom */}
+                      <div className="absolute top-2 right-2 space-y-1">
+                        {plug.isVip && (
+                          <div>
+                            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-900 text-white">
+                              <StarIcon className="w-3 h-3 mr-1" />
+                              VIP
+                            </span>
+                          </div>
+                        )}
+                        {/* Badge Top 3 */}
+                        {index < 3 && plug.likes > 0 && (
+                          <div>
+                            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-500 text-white">
+                              {index === 0 ? '🥇' : index === 1 ? '🥈' : '🥉'}
+                            </span>
+                          </div>
+                        )}
                       </div>
-                    )}
-                  </div>
-
-                  {/* Contenu */}
-                  <div className="p-6">
-                    <h3 className="text-xl font-bold text-gray-900 mb-2">{plug.name}</h3>
-                    <p className="text-gray-600 mb-4 line-clamp-2">{plug.description}</p>
-
-                    {/* Localisation */}
-                    {plug.countries && plug.countries.length > 0 && (
-                      <div className="flex items-center text-sm text-gray-500 mb-3">
-                        <MapPinIcon className="w-4 h-4 mr-1" />
-                        {plug.countries.join(', ')}
-                      </div>
-                    )}
-
-                    {/* Services */}
-                    <div className="flex flex-wrap gap-2 mb-4">
-                      {plug.services?.delivery?.enabled && (
-                        <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                          <TruckIcon className="w-3 h-3 mr-1" />
-                          Livraison
-                        </span>
-                      )}
-                      {plug.services?.postal?.enabled && (
-                        <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                          <GlobeAltIcon className="w-3 h-3 mr-1" />
-                          Postal
-                        </span>
-                      )}
-                      {plug.services?.meetup?.enabled && (
-                        <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-                          <HomeIcon className="w-3 h-3 mr-1" />
-                          Meetup
-                        </span>
-                      )}
                     </div>
 
-                    {/* Boutons de contact */}
-                    <div className="space-y-2">
-                      {plug.socialMedia?.telegram && (
-                        <a
-                          href={plug.socialMedia.telegram}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="block w-full bg-blue-500 hover:bg-blue-600 text-white text-center py-2 px-4 rounded-lg font-medium transition-colors"
-                        >
-                          📱 Contacter sur Telegram
-                        </a>
+                    {/* Contenu */}
+                    <div className="p-3 sm:p-4">
+                      <h3 className="text-sm sm:text-base font-bold text-gray-900 mb-2 truncate">{plug.name}</h3>
+                      <p className="text-gray-600 mb-3 text-xs sm:text-sm line-clamp-2 h-8">{plug.description}</p>
+
+                      {/* Localisation */}
+                      {plug.countries && plug.countries.length > 0 && (
+                        <div className="flex items-center text-xs sm:text-sm text-gray-500 mb-2">
+                          <MapPinIcon className="w-3 h-3 mr-1" />
+                          <span className="truncate">{plug.countries.join(', ')}</span>
+                        </div>
                       )}
-                      {plug.socialMedia?.whatsapp && (
-                        <a
-                          href={plug.socialMedia.whatsapp}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="block w-full bg-green-500 hover:bg-green-600 text-white text-center py-2 px-4 rounded-lg font-medium transition-colors"
-                        >
-                          💬 Contacter sur WhatsApp
-                        </a>
-                      )}
-                      {plug.socialMedia?.website && (
-                        <a
-                          href={plug.socialMedia.website}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="block w-full bg-gray-500 hover:bg-gray-600 text-white text-center py-2 px-4 rounded-lg font-medium transition-colors"
-                        >
-                          🌐 Visiter le site
-                        </a>
-                      )}
+
+                      {/* Services */}
+                      <div className="flex flex-wrap gap-1 mb-3">
+                        {plug.services?.delivery?.enabled && (
+                          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">
+                            <TruckIcon className="w-2.5 h-2.5 mr-1" />
+                            Livraison
+                          </span>
+                        )}
+                        {plug.services?.postal?.enabled && (
+                          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">
+                            <GlobeAltIcon className="w-2.5 h-2.5 mr-1" />
+                            Postal
+                          </span>
+                        )}
+                        {plug.services?.meetup?.enabled && (
+                          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">
+                            <HomeIcon className="w-2.5 h-2.5 mr-1" />
+                            Meetup
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Likes */}
+                      <div className="flex items-center justify-between pt-2 border-t border-gray-100">
+                        <span className="text-gray-600 text-xs sm:text-sm">Voir détails</span>
+                        <div className="flex items-center text-red-500 text-xs sm:text-sm font-medium">
+                          <span className="mr-1">❤️</span>
+                          <span>{plug.likes || 0} like{(plug.likes || 0) !== 1 ? 's' : ''}</span>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
           )}

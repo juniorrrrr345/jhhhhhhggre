@@ -8,8 +8,43 @@ export default function MessagesPage() {
   const [config, setConfig] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  // Structure par défaut pour éviter les erreurs
+  const getDefaultConfig = () => ({
+    welcome: { text: '', image: '' },
+    boutique: { name: '', subtitle: '', logo: '', vipTitle: '', vipSubtitle: '' },
+    botTexts: {
+      topPlugsTitle: '',
+      topPlugsDescription: '',
+      filterServiceTitle: '',
+      filterServiceDescription: '',
+      filterCountryTitle: '',
+      filterCountryDescription: '',
+      allPlugsTitle: '',
+      vipTitle: '',
+      vipDescription: '',
+      allPlugsText: '',
+      paginationFormat: '',
+      backButtonText: '',
+      totalCountFormat: ''
+    },
+    buttons: { 
+      topPlugs: { text: '' }, 
+      vipPlugs: { text: '' }, 
+      contact: { text: '', content: '' }, 
+      info: { text: '', content: '' } 
+    },
+    filters: { all: '', byService: '', byCountry: '' }
+  });
 
   useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!mounted) return;
+    
     const token = localStorage.getItem('adminToken');
     if (!token) {
       router.push('/admin');
@@ -17,7 +52,7 @@ export default function MessagesPage() {
     }
     
     fetchConfig();
-  }, [router]);
+  }, [router, mounted]);
 
   const fetchConfig = async () => {
     try {
@@ -63,10 +98,35 @@ export default function MessagesPage() {
         }
       }
 
-      setConfig(data);
+      // Fusionner les données reçues avec la structure par défaut
+      if (data && typeof data === 'object') {
+        const defaultConfig = getDefaultConfig();
+        const mergedConfig = {
+          ...defaultConfig,
+          ...data,
+          welcome: { ...defaultConfig.welcome, ...(data.welcome || {}) },
+          boutique: { ...defaultConfig.boutique, ...(data.boutique || {}) },
+          botTexts: { ...defaultConfig.botTexts, ...(data.botTexts || {}) },
+          buttons: {
+            ...defaultConfig.buttons,
+            ...(data.buttons || {}),
+            topPlugs: { ...defaultConfig.buttons.topPlugs, ...(data.buttons?.topPlugs || {}) },
+            vipPlugs: { ...defaultConfig.buttons.vipPlugs, ...(data.buttons?.vipPlugs || {}) },
+            contact: { ...defaultConfig.buttons.contact, ...(data.buttons?.contact || {}) },
+            info: { ...defaultConfig.buttons.info, ...(data.buttons?.info || {}) }
+          },
+          filters: { ...defaultConfig.filters, ...(data.filters || {}) }
+        };
+        setConfig(mergedConfig);
+      } else {
+        console.error('Données de configuration invalides:', data);
+        setConfig(getDefaultConfig());
+        toast.error('Utilisation de la configuration par défaut');
+      }
     } catch (error) {
       console.error('Erreur lors du chargement de la config:', error);
-      toast.error('Erreur lors du chargement de la configuration');
+      setConfig(getDefaultConfig());
+      toast.error('Erreur lors du chargement, configuration par défaut utilisée');
     } finally {
       setLoading(false);
     }
@@ -144,13 +204,50 @@ export default function MessagesPage() {
   };
 
   const updateConfig = (section, field, value) => {
-    setConfig(prev => ({
-      ...prev,
-      [section]: {
-        ...prev[section],
-        [field]: value
-      }
-    }));
+    try {
+      setConfig(prev => {
+        if (!prev || typeof prev !== 'object') {
+          console.error('Config invalide:', prev);
+          return getDefaultConfig();
+        }
+        
+        return {
+          ...prev,
+          [section]: {
+            ...(prev[section] || {}),
+            [field]: value
+          }
+        };
+      });
+    } catch (error) {
+      console.error('Erreur updateConfig:', error);
+      toast.error('Erreur lors de la mise à jour');
+    }
+  };
+
+  const updateNestedConfig = (section, subsection, field, value) => {
+    try {
+      setConfig(prev => {
+        if (!prev || typeof prev !== 'object') {
+          console.error('Config invalide:', prev);
+          return getDefaultConfig();
+        }
+        
+        return {
+          ...prev,
+          [section]: {
+            ...(prev[section] || {}),
+            [subsection]: {
+              ...(prev[section]?.[subsection] || {}),
+              [field]: value
+            }
+          }
+        };
+      });
+    } catch (error) {
+      console.error('Erreur updateNestedConfig:', error);
+      toast.error('Erreur lors de la mise à jour');
+    }
   };
 
   // Fonction pour recharger le bot
@@ -212,7 +309,19 @@ export default function MessagesPage() {
     }
   };
 
-  if (loading) {
+  // Protection contre l'hydratation côté client
+  if (!mounted) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-4xl mb-4">⏳</div>
+          <p className="text-gray-600">Initialisation...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (loading || !config) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
@@ -259,8 +368,7 @@ export default function MessagesPage() {
 
         {/* Contenu */}
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          {config && (
-            <div className="space-y-8">
+          <div className="space-y-8">
               {/* Message d'accueil */}
               <div className="bg-white rounded-lg shadow p-6">
                 <h2 className="text-lg font-medium text-gray-900 mb-4">🌟 Message d'accueil</h2>
@@ -506,9 +614,9 @@ export default function MessagesPage() {
                 </div>
               </div>
 
-              {/* Textes des boutons */}
+              {/* Textes des boutons et filtres */}
               <div className="bg-white rounded-lg shadow p-6">
-                <h2 className="text-lg font-medium text-gray-900 mb-4">🔘 Textes des Boutons</h2>
+                <h2 className="text-lg font-medium text-gray-900 mb-4">🔘 Textes des Boutons et Filtres</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -517,10 +625,7 @@ export default function MessagesPage() {
                     <input
                       type="text"
                       value={config.buttons?.topPlugs?.text || ''}
-                      onChange={(e) => updateConfig('buttons', 'topPlugs', { 
-                        ...config.buttons?.topPlugs, 
-                        text: e.target.value 
-                      })}
+                      onChange={(e) => updateNestedConfig('buttons', 'topPlugs', 'text', e.target.value)}
                       className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                       placeholder="🔌 Top Des Plugs"
                     />
@@ -533,10 +638,7 @@ export default function MessagesPage() {
                     <input
                       type="text"
                       value={config.buttons?.vipPlugs?.text || ''}
-                      onChange={(e) => updateConfig('buttons', 'vipPlugs', { 
-                        ...config.buttons?.vipPlugs, 
-                        text: e.target.value 
-                      })}
+                      onChange={(e) => updateNestedConfig('buttons', 'vipPlugs', 'text', e.target.value)}
                       className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                       placeholder="🛍️ Boutiques VIP"
                     />
@@ -549,10 +651,7 @@ export default function MessagesPage() {
                     <input
                       type="text"
                       value={config.buttons?.contact?.text || ''}
-                      onChange={(e) => updateConfig('buttons', 'contact', { 
-                        ...config.buttons?.contact, 
-                        text: e.target.value 
-                      })}
+                      onChange={(e) => updateNestedConfig('buttons', 'contact', 'text', e.target.value)}
                       className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                       placeholder="📞 Contact"
                     />
@@ -565,10 +664,7 @@ export default function MessagesPage() {
                     <input
                       type="text"
                       value={config.buttons?.info?.text || ''}
-                      onChange={(e) => updateConfig('buttons', 'info', { 
-                        ...config.buttons?.info, 
-                        text: e.target.value 
-                      })}
+                      onChange={(e) => updateNestedConfig('buttons', 'info', 'text', e.target.value)}
                       className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                       placeholder="ℹ️ Info"
                     />
@@ -638,6 +734,45 @@ export default function MessagesPage() {
                       placeholder="Choisissez un pays :"
                     />
                   </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Bouton "Tous les plugs"
+                    </label>
+                    <input
+                      type="text"
+                      value={config.filters?.all || ''}
+                      onChange={(e) => updateConfig('filters', 'all', e.target.value)}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      placeholder="📋 Tous les plugs"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Bouton "Par service"
+                    </label>
+                    <input
+                      type="text"
+                      value={config.filters?.byService || ''}
+                      onChange={(e) => updateConfig('filters', 'byService', e.target.value)}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      placeholder="🔍 Filtrer par service"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Bouton "Par pays"
+                    </label>
+                    <input
+                      type="text"
+                      value={config.filters?.byCountry || ''}
+                      onChange={(e) => updateConfig('filters', 'byCountry', e.target.value)}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      placeholder="🌍 Filtrer par pays"
+                    />
+                  </div>
                 </div>
               </div>
 
@@ -651,10 +786,7 @@ export default function MessagesPage() {
                     </label>
                     <textarea
                       value={config.buttons?.contact?.content || ''}
-                      onChange={(e) => updateConfig('buttons', 'contact', { 
-                        ...config.buttons?.contact, 
-                        content: e.target.value 
-                      })}
+                      onChange={(e) => updateNestedConfig('buttons', 'contact', 'content', e.target.value)}
                       rows={4}
                       className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                       placeholder="Contactez-nous pour plus d'informations..."
@@ -667,10 +799,7 @@ export default function MessagesPage() {
                     </label>
                     <textarea
                       value={config.buttons?.info?.content || ''}
-                      onChange={(e) => updateConfig('buttons', 'info', { 
-                        ...config.buttons?.info, 
-                        content: e.target.value 
-                      })}
+                      onChange={(e) => updateNestedConfig('buttons', 'info', 'content', e.target.value)}
                       rows={4}
                       className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                       placeholder="Informations sur notre service..."
@@ -699,7 +828,6 @@ export default function MessagesPage() {
                 </div>
               </div>
             </div>
-          )}
         </div>
       </div>
     </>

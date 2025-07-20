@@ -1,9 +1,10 @@
 import '../styles/globals.css'
 import { Toaster } from 'react-hot-toast'
+import ErrorBoundary from '../components/ErrorBoundary'
 
 export default function App({ Component, pageProps }) {
   return (
-    <>
+    <ErrorBoundary>
       <Component {...pageProps} />
       <Toaster 
         position="top-right"
@@ -27,6 +28,6 @@ export default function App({ Component, pageProps }) {
           },
         }}
       />
-    </>
+    </ErrorBoundary>
   )
 }
