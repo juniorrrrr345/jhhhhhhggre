@@ -84,8 +84,10 @@ export default function ShopVIP() {
       }
       
       if (data && Array.isArray(data.plugs)) {
-        console.log('👑 VIP data received:', data.plugs.length, 'VIP plugs')
-        setVipPlugs(data.plugs)
+        // Trier par nombre de likes pour le classement Top 3
+        const sortedPlugs = data.plugs.sort((a, b) => (b.likes || 0) - (a.likes || 0))
+        console.log('👑 VIP data received:', sortedPlugs.length, 'VIP plugs')
+        setVipPlugs(sortedPlugs)
       } else {
         console.error('❌ Invalid VIP data structure:', data)
         setVipPlugs([])
@@ -196,22 +198,33 @@ export default function ShopVIP() {
               </Link>
             </div>
           ) : (
-                          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {vipPlugs.map((plug) => (
+            <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-2 gap-4">
+              {vipPlugs.map((plug, index) => (
                 <Link key={plug._id} href={`/shop/${plug._id}`}>
-                                      <div className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:border-gray-400 transition-colors duration-300 cursor-pointer">
-                                      {/* Image avec badge VIP */}
+                  <div className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:border-gray-400 transition-colors duration-300 cursor-pointer">
+                    {/* Image avec badge VIP */}
                     <div className="relative h-32 sm:h-40">
                       <img
                         src={plug.image || '/placeholder.jpg'}
                         alt={plug.name}
                         className="w-full h-full object-cover grayscale"
                       />
-                      <div className="absolute top-2 left-2">
-                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-900 text-white">
-                          <StarIcon className="w-3 h-3 mr-1" />
-                          VIP
-                        </span>
+                      {/* Badges en haut à droite pour ne pas cacher le nom */}
+                      <div className="absolute top-2 right-2 space-y-1">
+                        <div>
+                          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-900 text-white">
+                            <StarIcon className="w-3 h-3 mr-1" />
+                            VIP
+                          </span>
+                        </div>
+                        {/* Badge Top 3 */}
+                        {index < 3 && plug.likes > 0 && (
+                          <div>
+                            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-500 text-white">
+                              {index === 0 ? '🥇' : index === 1 ? '🥈' : '🥉'}
+                            </span>
+                          </div>
+                        )}
                       </div>
                     </div>
 
