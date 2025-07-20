@@ -6,7 +6,7 @@ const handleStart = async (ctx) => {
   try {
     console.log('🚀 Commande /start reçue de:', ctx.from.id);
     
-    // Récupérer la configuration avec fallback
+    // Récupérer la configuration avec fallback (toujours fresh)
     let config;
     try {
       config = await Config.findById('main');
@@ -66,6 +66,7 @@ const handleBackMain = async (ctx) => {
   try {
     console.log('🔙 Retour au menu principal demandé');
     
+    // Toujours récupérer la config fraîche
     const config = await Config.findById('main');
     if (!config) {
       console.log('❌ Configuration non trouvée');

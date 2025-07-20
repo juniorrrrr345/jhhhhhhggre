@@ -12,6 +12,7 @@ const {
 // Afficher le menu des plugs
 const handleTopPlugs = async (ctx) => {
   try {
+    // Toujours récupérer la config fraîche
     const config = await Config.findById('main');
     const keyboard = createPlugsFilterKeyboard(config);
     
@@ -33,6 +34,7 @@ const handleTopPlugs = async (ctx) => {
 // Afficher les boutiques VIP
 const handleVipPlugs = async (ctx, page = 0) => {
   try {
+    // Toujours récupérer la config fraîche
     const config = await Config.findById('main');
     const vipPlugs = await Plug.find({ isActive: true, isVip: true })
       .sort({ likes: -1, vipOrder: 1, createdAt: -1 });

@@ -96,6 +96,11 @@ export default function MessagesPage() {
           console.log('✅ Messages config direct réussi');
           success = true;
           toast.success('Messages sauvegardés !');
+          
+          // Recharger automatiquement le bot après sauvegarde
+          setTimeout(() => {
+            reloadBot();
+          }, 1000);
         } else {
           throw new Error(`HTTP ${response.status}`);
         }
@@ -117,6 +122,11 @@ export default function MessagesPage() {
           console.log('✅ Messages config proxy réussi');
           success = true;
           toast.success('Messages sauvegardés via proxy !');
+          
+          // Recharger automatiquement le bot après sauvegarde
+          setTimeout(() => {
+            reloadBot();
+          }, 1500);
         } else {
           throw new Error(`Proxy failed: HTTP ${proxyResponse.status}`);
         }
@@ -141,6 +151,65 @@ export default function MessagesPage() {
         [field]: value
       }
     }));
+  };
+
+  // Fonction pour recharger le bot
+  const reloadBot = async () => {
+    const token = localStorage.getItem('adminToken');
+    setSaving(true);
+
+    try {
+      console.log('🔄 Rechargement du bot...');
+      
+      // Essayer l'API directe d'abord
+      let success = false;
+      try {
+        const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://jhhhhhhggre.onrender.com';
+        const response = await fetch(`${apiBaseUrl}/api/bot/reload`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (response.ok) {
+          console.log('✅ Bot rechargé avec succès');
+          success = true;
+          toast.success('Bot rechargé avec succès !');
+        } else {
+          throw new Error(`HTTP ${response.status}`);
+        }
+      } catch (directError) {
+        console.log('❌ Rechargement direct échoué:', directError.message);
+        
+        // Fallback vers le proxy
+        const proxyResponse = await fetch('/api/reload-bot', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (proxyResponse.ok) {
+          console.log('✅ Bot rechargé via proxy');
+          success = true;
+          toast.success('Bot rechargé via proxy !');
+        } else {
+          throw new Error(`Proxy failed: HTTP ${proxyResponse.status}`);
+        }
+      }
+
+      if (!success) {
+        toast.error('Erreur lors du rechargement du bot');
+      }
+    } catch (error) {
+      console.error('💥 Erreur rechargement bot:', error);
+      toast.error('Erreur de connexion');
+    } finally {
+      setSaving(false);
+    }
   };
 
   if (loading) {
@@ -324,6 +393,76 @@ export default function MessagesPage() {
                       placeholder="Choisissez une option pour découvrir nos plugs :"
                     />
                   </div>
+                </div>
+              </div>
+
+              {/* Textes des boutons */}
+              <div className="bg-white rounded-lg shadow p-6">
+                <h2 className="text-lg font-medium text-gray-900 mb-4">🔘 Textes des Boutons</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Bouton Top Plugs
+                    </label>
+                    <input
+                      type="text"
+                      value={config.buttons?.topPlugs?.text || ''}
+                      onChange={(e) => updateConfig('buttons', 'topPlugs', { 
+                        ...config.buttons?.topPlugs, 
+                        text: e.target.value 
+                      })}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      placeholder="🔌 Top Des Plugs"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Bouton Boutiques VIP
+                    </label>
+                    <input
+                      type="text"
+                      value={config.buttons?.vipPlugs?.text || ''}
+                      onChange={(e) => updateConfig('buttons', 'vipPlugs', { 
+                        ...config.buttons?.vipPlugs, 
+                        text: e.target.value 
+                      })}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      placeholder="🛍️ Boutiques VIP"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Bouton Contact
+                    </label>
+                    <input
+                      type="text"
+                      value={config.buttons?.contact?.text || ''}
+                      onChange={(e) => updateConfig('buttons', 'contact', { 
+                        ...config.buttons?.contact, 
+                        text: e.target.value 
+                      })}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      placeholder="📞 Contact"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Bouton Info
+                    </label>
+                    <input
+                      type="text"
+                      value={config.buttons?.info?.text || ''}
+                      onChange={(e) => updateConfig('buttons', 'info', { 
+                        ...config.buttons?.info, 
+                        text: e.target.value 
+                      })}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      placeholder="ℹ️ Info"
+                    />
+                  </div>
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -427,6 +566,26 @@ export default function MessagesPage() {
                       placeholder="Informations sur notre service..."
                     />
                   </div>
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div className="bg-white rounded-lg shadow p-6">
+                <div className="flex justify-end space-x-4">
+                  <button
+                    onClick={reloadBot}
+                    disabled={saving}
+                    className="bg-green-600 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed text-white px-6 py-2 rounded-lg font-medium transition-colors flex items-center"
+                  >
+                    🔄 Recharger Bot
+                  </button>
+                  <button
+                    onClick={saveConfig}
+                    disabled={saving}
+                    className="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white px-6 py-2 rounded-lg font-medium transition-colors"
+                  >
+                    {saving ? 'Sauvegarde...' : '💾 Sauvegarder'}
+                  </button>
                 </div>
               </div>
             </div>

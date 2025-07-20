@@ -10,7 +10,8 @@ const createMainKeyboard = (config) => {
   }
   
   // Bouton Boutique VIP
-  buttons.push([Markup.button.callback('🛍️ Boutiques VIP', 'plugs_vip')]);
+  const vipButtonText = config.buttons?.vipPlugs?.text || '🛍️ Boutiques VIP';
+  buttons.push([Markup.button.callback(vipButtonText, 'plugs_vip')]);
   
   // Boutons Contact et Info sur la même ligne
   const secondRow = [];
