@@ -187,10 +187,7 @@ const defaultConfig = {
 
 const connectDB = async () => {
   try {
-    await mongoose.connect(process.env.MONGODB_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
+    await mongoose.connect(process.env.MONGODB_URI);
     console.log('✅ MongoDB connecté');
   } catch (error) {
     console.error('❌ Erreur connexion MongoDB:', error);
