@@ -264,17 +264,7 @@ export default function ShopVIP() {
                 )}
                 VIP
               </Link>
-              <button 
-                onClick={() => {
-                  console.log('🔄 Test de rechargement manuel...')
-                  fetchConfig()
-                  fetchVipPlugs()
-                }}
-                className="text-blue-500 hover:text-blue-700 pb-3 text-sm"
-                title="Recharger la configuration"
-              >
-                🔄 Refresh
-              </button>
+
             </div>
           </div>
         </nav>
