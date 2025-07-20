@@ -6,11 +6,17 @@ import {
   ChatBubbleLeftRightIcon,
   GlobeAltIcon,
   DevicePhoneMobileIcon,
-  CheckIcon
+  CheckIcon,
+  EyeIcon,
+  CogIcon
 } from '@heroicons/react/24/outline'
 
 export default function Config() {
   const [config, setConfig] = useState({
+    welcome: { 
+      text: '🎉 Bienvenue sur notre bot premium !', 
+      image: 'https://via.placeholder.com/400x200/4F46E5/FFFFFF?text=Bot+Image' 
+    },
     messages: {
       welcome: '',
       noPlugsFound: '',
@@ -23,8 +29,9 @@ export default function Config() {
     },
     buttons: {
       topPlugs: { text: '🔌 Top Des Plugs' },
-      contact: { text: '📞 Contact' },
-      info: { text: 'ℹ️ Info' }
+      vipPlugs: { text: '⭐ Boutiques VIP' },
+      contact: { text: '📞 Contact', content: '' },
+      info: { text: 'ℹ️ Info', content: '' }
     },
     filters: {
       all: 'Tous les plugs',
@@ -34,6 +41,7 @@ export default function Config() {
   })
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
+  const [viewMode, setViewMode] = useState('visual') // 'visual' ou 'advanced'
   const router = useRouter()
 
   useEffect(() => {
@@ -161,6 +169,52 @@ export default function Config() {
     }))
   }
 
+  // Fonctions pour l'édition visuelle
+  const editText = (section, field, currentValue, title) => {
+    const newText = prompt(`${title}:`, currentValue);
+    if (newText !== null && newText !== currentValue) {
+      setConfig(prev => ({
+        ...prev,
+        [section]: {
+          ...prev[section],
+          [field]: newText
+        }
+      }));
+      toast.success('Texte mis à jour ! N\'oubliez pas de sauvegarder.');
+    }
+  };
+
+  const editNestedText = (section, subsection, field, currentValue, title) => {
+    const newText = prompt(`${title}:`, currentValue);
+    if (newText !== null && newText !== currentValue) {
+      setConfig(prev => ({
+        ...prev,
+        [section]: {
+          ...prev[section],
+          [subsection]: {
+            ...prev[section][subsection],
+            [field]: newText
+          }
+        }
+      }));
+      toast.success('Texte mis à jour ! N\'oubliez pas de sauvegarder.');
+    }
+  };
+
+  const editImage = () => {
+    const newUrl = prompt("URL de l'image d'accueil:", config.welcome?.image || '');
+    if (newUrl !== null && newUrl !== (config.welcome?.image || '')) {
+      setConfig(prev => ({
+        ...prev,
+        welcome: {
+          ...prev.welcome,
+          image: newUrl
+        }
+      }));
+      toast.success('Image mise à jour ! N\'oubliez pas de sauvegarder.');
+    }
+  };
+
   // Fonction pour recharger le bot
   const reloadBot = async () => {
     const token = localStorage.getItem('adminToken');
@@ -212,11 +266,134 @@ export default function Config() {
   return (
     <Layout title="Configuration Bot">
       <div className="space-y-8">
-        {/* Header */}
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Configuration du Bot</h1>
-          <p className="text-gray-600">Personnalisez les messages et paramètres de votre bot Telegram</p>
+        {/* Header avec sélecteur de mode */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Configuration du Bot</h1>
+            <p className="text-gray-600">Personnalisez votre bot Telegram</p>
+          </div>
+          <div className="mt-4 sm:mt-0">
+            <div className="flex rounded-lg bg-gray-100 p-1">
+              <button
+                onClick={() => setViewMode('visual')}
+                className={`flex items-center px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+                  viewMode === 'visual'
+                    ? 'bg-white text-gray-900 shadow-sm'
+                    : 'text-gray-500 hover:text-gray-700'
+                }`}
+              >
+                <EyeIcon className="w-4 h-4 mr-2" />
+                🎨 Mode Visuel
+              </button>
+              <button
+                onClick={() => setViewMode('advanced')}
+                className={`flex items-center px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+                  viewMode === 'advanced'
+                    ? 'bg-white text-gray-900 shadow-sm'
+                    : 'text-gray-500 hover:text-gray-700'
+                }`}
+              >
+                <CogIcon className="w-4 h-4 mr-2" />
+                ⚙️ Mode Avancé
+              </button>
+            </div>
+          </div>
         </div>
+
+        {/* Contenu selon le mode */}
+        {viewMode === 'visual' ? (
+          /* Mode Visuel */
+          <div className="flex flex-col lg:flex-row gap-8">
+            {/* Instructions */}
+            <div className="lg:w-1/3">
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <h3 className="text-lg font-medium text-blue-900 mb-3">💡 Comment ça marche ?</h3>
+                <ul className="space-y-2 text-sm text-blue-800">
+                  <li>• 🖼️ Cliquez sur l'image pour la changer</li>
+                  <li>• 📝 Cliquez sur le message pour l'éditer</li>
+                  <li>• 🔘 Cliquez sur les boutons pour modifier leur texte</li>
+                  <li>• 💾 N'oubliez pas de sauvegarder !</li>
+                </ul>
+              </div>
+            </div>
+
+            {/* Simulation du bot Telegram */}
+            <div className="lg:w-2/3">
+              <div className="bg-white rounded-lg shadow-lg overflow-hidden max-w-md mx-auto">
+                {/* Header du bot */}
+                <div className="bg-blue-500 text-white p-4 text-center">
+                  <h3 className="text-lg font-semibold">🤖 Aperçu Bot Telegram</h3>
+                  <p className="text-blue-100 text-sm">Cliquez pour modifier</p>
+                </div>
+                
+                {/* Image d'accueil */}
+                <div className="relative group">
+                  <img 
+                    src={config.welcome?.image || 'https://via.placeholder.com/400x200/4F46E5/FFFFFF?text=Bot+Image'} 
+                    alt="Accueil"
+                    className="w-full h-48 object-cover cursor-pointer transition-all group-hover:brightness-75"
+                    onClick={editImage}
+                  />
+                  <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all flex items-center justify-center">
+                    <button 
+                      onClick={editImage}
+                      className="opacity-0 group-hover:opacity-100 bg-black bg-opacity-75 text-white px-3 py-1 rounded text-sm transition-all"
+                    >
+                      ✏️ Changer l'image
+                    </button>
+                  </div>
+                </div>
+
+                {/* Message d'accueil */}
+                <div className="p-4">
+                  <div 
+                    onClick={() => editText('welcome', 'text', config.welcome?.text || '', 'Message d\'accueil')}
+                    className="bg-gray-100 p-4 rounded-lg cursor-pointer hover:bg-gray-200 transition-colors group relative"
+                  >
+                    <p className="text-gray-800">{config.welcome?.text || 'Cliquez pour ajouter un message d\'accueil'}</p>
+                    <span className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 text-blue-500 transition-opacity">
+                      ✏️
+                    </span>
+                  </div>
+                </div>
+
+                {/* Boutons éditables */}
+                <div className="p-4 space-y-3">
+                  {Object.entries(config.buttons || {}).map(([key, button]) => {
+                    const buttonLabels = {
+                      topPlugs: 'Bouton "Top Des Plugs"',
+                      vipPlugs: 'Bouton "Boutiques VIP"',
+                      contact: 'Bouton "Contact"',
+                      info: 'Bouton "Informations"'
+                    };
+
+                    return (
+                      <button
+                        key={key}
+                        onClick={() => editNestedText('buttons', key, 'text', button?.text || '', buttonLabels[key] || `Bouton ${key}`)}
+                        className="w-full bg-blue-500 text-white p-3 rounded-lg hover:bg-blue-600 transition-colors relative group"
+                      >
+                        {button?.text || `Bouton ${key}`}
+                        <span className="opacity-0 group-hover:opacity-100 absolute right-3 top-1/2 transform -translate-y-1/2 transition-opacity">
+                          ✏️
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Footer informatif */}
+                <div className="bg-gray-50 p-3 text-center">
+                  <p className="text-xs text-gray-500">
+                    👆 Cliquez sur n'importe quel élément pour le modifier
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : (
+          /* Mode Avancé */
+          <div className="space-y-8">
 
         {/* Messages du bot */}
         <div className="bg-white shadow rounded-lg">
@@ -440,25 +617,43 @@ export default function Config() {
           </div>
         </div>
 
-        {/* Bouton de sauvegarde */}
-        <div className="flex justify-end">
-          <button
-            onClick={saveConfig}
-            disabled={saving}
-            className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
-          >
-            {saving ? (
-              <>
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                Sauvegarde...
-              </>
-            ) : (
-              <>
-                <CheckIcon className="w-5 h-5 mr-2" />
-                Sauvegarder la configuration
-              </>
-            )}
-          </button>
+          </div>
+        )}
+
+        {/* Section de sauvegarde commune */}
+        <div className="bg-white rounded-lg shadow p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-lg font-medium text-gray-900">💾 Sauvegarde</h3>
+              <p className="text-sm text-gray-600">Appliquez vos modifications au bot Telegram</p>
+            </div>
+            <div className="flex space-x-3">
+              <button
+                onClick={reloadBot}
+                disabled={saving}
+                className="bg-green-600 hover:bg-green-700 disabled:opacity-50 text-white px-6 py-2 rounded-lg font-medium transition-colors"
+              >
+                🔄 Recharger Bot
+              </button>
+              <button
+                onClick={saveConfig}
+                disabled={saving}
+                className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+              >
+                {saving ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                    Sauvegarde...
+                  </>
+                ) : (
+                  <>
+                    <CheckIcon className="w-5 h-5 mr-2" />
+                    Sauvegarder & Appliquer
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </Layout>

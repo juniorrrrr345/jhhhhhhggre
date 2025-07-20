@@ -118,18 +118,11 @@ export default function Dashboard() {
       color: 'bg-blue-500'
     },
     {
-      name: '🎨 Éditeur Visuel',
-      description: 'Modifier le bot en mode visuel WYSIWYG',
-      href: '/admin/visual-config',
+      name: '🎨 Configuration Bot',
+      description: 'Mode visuel et avancé pour configurer le bot',
+      href: '/admin/config',
       icon: EyeIcon,
       color: 'bg-indigo-500'
-    },
-    {
-      name: 'Messages du Bot',
-      description: 'Configuration avancée des messages',
-      href: '/admin/messages',
-      icon: ChatBubbleLeftRightIcon,
-      color: 'bg-green-500'
     },
     {
       name: 'Configuration générale',
