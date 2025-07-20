@@ -17,28 +17,10 @@ const handleTopPlugs = async (ctx) => {
     
     const messageText = `${config.botTexts?.topPlugsTitle || '🔌 Top Des Plugs'}\n\n${config.botTexts?.topPlugsDescription || 'Choisissez une option pour découvrir nos plugs :'}`;
     
-    if (config.welcome?.image) {
-      try {
-        await ctx.editMessageMedia({
-          type: 'photo',
-          media: config.welcome.image,
-          caption: messageText,
-          parse_mode: 'Markdown'
-        }, {
-          reply_markup: keyboard.reply_markup
-        });
-      } catch (error) {
-        await ctx.editMessageText(messageText, {
-          reply_markup: keyboard.reply_markup,
-          parse_mode: 'Markdown'
-        });
-      }
-    } else {
-      await ctx.editMessageText(messageText, {
-        reply_markup: keyboard.reply_markup,
-        parse_mode: 'Markdown'
-      });
-    }
+    await ctx.editMessageText(messageText, {
+      reply_markup: keyboard.reply_markup,
+      parse_mode: 'Markdown'
+    });
     
     // Confirmer la callback pour éviter le loading
     await ctx.answerCbQuery();
