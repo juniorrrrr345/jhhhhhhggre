@@ -85,8 +85,8 @@ const createCountriesKeyboard = (countries) => {
   return Markup.inlineKeyboard(buttons);
 };
 
-// Clavier pour un plug individuel
-const createPlugKeyboard = (plug) => {
+// Clavier pour un plug individuel avec contexte de retour
+const createPlugKeyboard = (plug, returnContext = 'top_plugs') => {
   const buttons = [];
   
   // Services disponibles
@@ -134,10 +134,27 @@ const createPlugKeyboard = (plug) => {
     buttons.push(socialButtons2);
   }
   
-  // Bouton retour
-  buttons.push([Markup.button.callback('🔙 Retour aux plugs', 'top_plugs')]);
+  // Bouton retour intelligent selon le contexte
+  const returnText = getReturnButtonText(returnContext);
+  buttons.push([Markup.button.callback(returnText, returnContext)]);
   
   return Markup.inlineKeyboard(buttons);
+};
+
+// Fonction pour obtenir le texte du bouton retour selon le contexte
+const getReturnButtonText = (context) => {
+  switch(context) {
+    case 'top_plugs':
+      return '🔙 Retour aux filtres';
+    case 'plugs_all':
+      return '🔙 Retour à la liste';
+    case 'service_delivery':
+    case 'service_postal':
+    case 'service_meetup':
+      return '🔙 Retour aux services';
+    default:
+      return '🔙 Retour';
+  }
 };
 
 // Clavier pour la liste des plugs
@@ -151,7 +168,7 @@ const createPlugListKeyboard = (plugs, page = 0, totalPages = 1, context = 'all'
   for (let i = startIndex; i < endIndex; i++) {
     const plug = plugs[i];
     const vipIcon = plug.isVip ? '⭐ ' : '';
-    buttons.push([Markup.button.callback(`${vipIcon}${plug.name}`, `plug_${plug._id}`)]);
+    buttons.push([Markup.button.callback(`${vipIcon}${plug.name}`, `plug_${plug._id}_from_${context}`)]);
   }
   
   // Navigation
