@@ -31,15 +31,28 @@ export default function ShopSearch() {
   const fetchAllPlugs = async () => {
     try {
       setLoading(true)
-      const response = await fetch(`${process.env.API_BASE_URL}/api/plugs?filter=active&limit=100`)
+      // Ajouter un timestamp pour éviter le cache
+      const timestamp = new Date().getTime()
+      const url = `${process.env.API_BASE_URL}/api/plugs?filter=active&limit=100&t=${timestamp}`
+      
+      console.log('🔍 Fetching from:', url)
+      const response = await fetch(url, {
+        cache: 'no-cache',
+        headers: {
+          'Cache-Control': 'no-cache'
+        }
+      })
       
       if (response.ok) {
         const data = await response.json()
+        console.log('📊 Search data received:', data.plugs.length, 'plugs')
         setAllPlugs(data.plugs)
         setPlugs(data.plugs)
+      } else {
+        console.error('❌ Search response error:', response.status)
       }
     } catch (error) {
-      console.error('Erreur lors du chargement:', error)
+      console.error('💥 Search fetch error:', error)
     } finally {
       setLoading(false)
     }

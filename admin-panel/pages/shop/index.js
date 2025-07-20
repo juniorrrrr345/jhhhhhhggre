@@ -21,20 +21,38 @@ export default function ShopHome() {
   const fetchPlugs = async () => {
     try {
       setLoading(true)
-      const response = await fetch(`${process.env.API_BASE_URL}/api/plugs?filter=active&limit=12`)
+      // Ajouter un timestamp pour éviter le cache
+      const timestamp = new Date().getTime()
+      const url = `${process.env.API_BASE_URL}/api/plugs?filter=active&limit=100&t=${timestamp}`
+      
+      console.log('🔍 Fetching from:', url)
+      const response = await fetch(url, {
+        cache: 'no-cache',
+        headers: {
+          'Cache-Control': 'no-cache'
+        }
+      })
+      
+      console.log('📡 Response status:', response.status)
       
       if (response.ok) {
         const data = await response.json()
+        console.log('📊 Data received:', data)
+        
         // Trier par VIP en premier
         const sortedPlugs = data.plugs.sort((a, b) => {
           if (a.isVip && !b.isVip) return -1
           if (!a.isVip && b.isVip) return 1
           return 0
         })
+        
+        console.log('✅ Plugs loaded:', sortedPlugs.length)
         setPlugs(sortedPlugs)
+      } else {
+        console.error('❌ Response error:', response.status, response.statusText)
       }
     } catch (error) {
-      console.error('Erreur lors du chargement:', error)
+      console.error('💥 Fetch error:', error)
     } finally {
       setLoading(false)
     }
@@ -127,6 +145,12 @@ export default function ShopHome() {
               >
                 ⭐ Voir les VIP
               </Link>
+              <button
+                onClick={fetchPlugs}
+                className="bg-green-500 text-white px-6 py-3 rounded-lg font-medium hover:bg-green-600 transition-colors"
+              >
+                🔄 Actualiser
+              </button>
             </div>
           </div>
         </div>
