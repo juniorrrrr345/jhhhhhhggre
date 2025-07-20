@@ -9,6 +9,9 @@ const createMainKeyboard = (config) => {
     buttons.push([Markup.button.callback(config.buttons.topPlugs.text, 'top_plugs')]);
   }
   
+  // Bouton Boutique VIP
+  buttons.push([Markup.button.url('🛍️ Boutique VIP', 'https://jhhhhhhggre.vercel.app/shop')]);
+  
   // Boutons Contact et Info sur la même ligne
   const secondRow = [];
   if (config.buttons.contact.enabled) {
