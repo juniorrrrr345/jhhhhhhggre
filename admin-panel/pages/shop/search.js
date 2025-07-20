@@ -2,36 +2,41 @@ import { useState, useEffect } from 'react'
 import Head from 'next/head'
 import Link from 'next/link'
 import {
+  MagnifyingGlassIcon,
   StarIcon,
   MapPinIcon,
   TruckIcon,
   GlobeAltIcon,
-  HomeIcon,
-  MagnifyingGlassIcon
+  HomeIcon
 } from '@heroicons/react/24/outline'
 
-export default function ShopHome() {
+export default function ShopSearch() {
   const [plugs, setPlugs] = useState([])
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
+  const [search, setSearch] = useState('')
+  const [selectedCountry, setSelectedCountry] = useState('')
+  const [selectedService, setSelectedService] = useState('')
+  const [allPlugs, setAllPlugs] = useState([])
 
   useEffect(() => {
-    fetchPlugs()
+    fetchAllPlugs()
   }, [])
 
-  const fetchPlugs = async () => {
+  useEffect(() => {
+    if (allPlugs.length > 0) {
+      filterPlugs()
+    }
+  }, [search, selectedCountry, selectedService, allPlugs])
+
+  const fetchAllPlugs = async () => {
     try {
       setLoading(true)
-      const response = await fetch(`${process.env.API_BASE_URL}/api/plugs?filter=active&limit=12`)
+      const response = await fetch(`${process.env.API_BASE_URL}/api/plugs?filter=active&limit=100`)
       
       if (response.ok) {
         const data = await response.json()
-        // Trier par VIP en premier
-        const sortedPlugs = data.plugs.sort((a, b) => {
-          if (a.isVip && !b.isVip) return -1
-          if (!a.isVip && b.isVip) return 1
-          return 0
-        })
-        setPlugs(sortedPlugs)
+        setAllPlugs(data.plugs)
+        setPlugs(data.plugs)
       }
     } catch (error) {
       console.error('Erreur lors du chargement:', error)
@@ -40,11 +45,60 @@ export default function ShopHome() {
     }
   }
 
+  const filterPlugs = () => {
+    let filteredPlugs = [...allPlugs]
+
+    // Filtrer par recherche
+    if (search) {
+      filteredPlugs = filteredPlugs.filter(plug => 
+        plug.name.toLowerCase().includes(search.toLowerCase()) ||
+        plug.description.toLowerCase().includes(search.toLowerCase())
+      )
+    }
+
+    // Filtrer par pays
+    if (selectedCountry) {
+      filteredPlugs = filteredPlugs.filter(plug => 
+        plug.countries?.includes(selectedCountry)
+      )
+    }
+
+    // Filtrer par service
+    if (selectedService) {
+      filteredPlugs = filteredPlugs.filter(plug => 
+        plug.services?.[selectedService]?.enabled
+      )
+    }
+
+    // Trier par VIP en premier
+    filteredPlugs.sort((a, b) => {
+      if (a.isVip && !b.isVip) return -1
+      if (!a.isVip && b.isVip) return 1
+      return 0
+    })
+
+    setPlugs(filteredPlugs)
+  }
+
+  const getUniqueCountries = () => {
+    const countries = new Set()
+    allPlugs.forEach(plug => {
+      plug.countries?.forEach(country => countries.add(country))
+    })
+    return Array.from(countries).sort()
+  }
+
+  const resetFilters = () => {
+    setSearch('')
+    setSelectedCountry('')
+    setSelectedService('')
+  }
+
   return (
     <>
       <Head>
-        <title>Boutique VIP - Découvrez nos plugs premium</title>
-        <meta name="description" content="Découvrez notre sélection de boutiques VIP avec livraison, envoi postal et meetup disponibles." />
+        <title>Recherche - Boutique VIP</title>
+        <meta name="description" content="Recherchez vos boutiques préférées par nom, pays ou service." />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
 
@@ -84,13 +138,13 @@ export default function ShopHome() {
             <div className="flex space-x-8 h-12 items-center">
               <Link 
                 href="/shop" 
-                className="text-blue-600 font-medium border-b-2 border-blue-600 pb-3"
+                className="text-gray-500 hover:text-gray-700 pb-3"
               >
                 🏠 Accueil
               </Link>
               <Link 
                 href="/shop/search" 
-                className="text-gray-500 hover:text-gray-700 pb-3"
+                className="text-blue-600 font-medium border-b-2 border-blue-600 pb-3"
               >
                 🔍 Recherche
               </Link>
@@ -104,55 +158,111 @@ export default function ShopHome() {
           </div>
         </nav>
 
-        {/* Hero Section */}
-        <div className="bg-gradient-to-r from-blue-600 to-purple-700 py-16">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 className="text-4xl font-bold text-white mb-4">
-              🌟 Boutiques Premium
-            </h2>
-            <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
-              Découvrez notre sélection exclusive de boutiques vérifiées avec livraison rapide, 
-              envoi postal sécurisé et options de meetup.
-            </p>
-            <div className="flex justify-center space-x-4">
-              <Link
-                href="/shop/search"
-                className="bg-white text-blue-600 px-6 py-3 rounded-lg font-medium hover:bg-blue-50 transition-colors"
-              >
-                🔍 Rechercher une boutique
-              </Link>
-              <Link
-                href="/shop/vip"
-                className="bg-yellow-500 text-white px-6 py-3 rounded-lg font-medium hover:bg-yellow-600 transition-colors"
-              >
-                ⭐ Voir les VIP
-              </Link>
+        {/* Section de recherche */}
+        <div className="bg-gradient-to-r from-blue-600 to-purple-700 py-12">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-8">
+              <h2 className="text-3xl font-bold text-white mb-4">🔍 Recherche avancée</h2>
+              <p className="text-blue-100">Trouvez la boutique parfaite selon vos critères</p>
+            </div>
+            
+            {/* Filtres de recherche */}
+            <div className="bg-white rounded-xl shadow-lg p-6">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                {/* Recherche textuelle */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Nom ou description
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <MagnifyingGlassIcon className="h-5 w-5 text-gray-400" />
+                    </div>
+                    <input
+                      type="text"
+                      value={search}
+                      onChange={(e) => setSearch(e.target.value)}
+                      className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="Rechercher une boutique..."
+                    />
+                  </div>
+                </div>
+
+                {/* Pays */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Pays
+                  </label>
+                  <select
+                    value={selectedCountry}
+                    onChange={(e) => setSelectedCountry(e.target.value)}
+                    className="block w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  >
+                    <option value="">Tous les pays</option>
+                    {getUniqueCountries().map(country => (
+                      <option key={country} value={country}>🌍 {country}</option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Service */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Type de service
+                  </label>
+                  <select
+                    value={selectedService}
+                    onChange={(e) => setSelectedService(e.target.value)}
+                    className="block w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  >
+                    <option value="">Tous les services</option>
+                    <option value="delivery">🚚 Livraison rapide</option>
+                    <option value="postal">✈️ Envoi postal</option>
+                    <option value="meetup">🏠 Meetup local</option>
+                  </select>
+                </div>
+
+                {/* Bouton reset */}
+                <div className="flex items-end">
+                  <button
+                    onClick={resetFilters}
+                    className="w-full px-4 py-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors font-medium"
+                  >
+                    🔄 Réinitialiser
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Toutes les boutiques */}
+        {/* Résultats */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <div className="text-center mb-12">
-            <h3 className="text-3xl font-bold text-gray-900 mb-4">
-              📋 Toutes nos boutiques
+          <div className="mb-8">
+            <h3 className="text-2xl font-bold text-gray-900 mb-2">
+              📋 Résultats de recherche
             </h3>
-            <p className="text-gray-600 max-w-2xl mx-auto">
-              Parcourez notre catalogue complet de boutiques vérifiées. 
-              Les boutiques VIP sont mises en avant.
+            <p className="text-gray-600">
+              {loading ? 'Recherche en cours...' : `${plugs.length} boutique(s) trouvée(s)`}
             </p>
           </div>
 
           {loading ? (
             <div className="text-center py-12">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
-              <p className="mt-4 text-gray-500">Chargement des boutiques...</p>
+              <p className="mt-4 text-gray-500">Recherche en cours...</p>
             </div>
           ) : plugs.length === 0 ? (
             <div className="text-center py-12">
-              <div className="text-6xl mb-4">🏪</div>
-              <h3 className="text-xl font-medium text-gray-900 mb-2">Aucune boutique disponible</h3>
-              <p className="text-gray-500">Revenez plus tard pour découvrir nos boutiques.</p>
+              <div className="text-6xl mb-4">🔍</div>
+              <h3 className="text-xl font-medium text-gray-900 mb-2">Aucune boutique trouvée</h3>
+              <p className="text-gray-500 mb-6">Essayez de modifier vos critères de recherche.</p>
+              <button
+                onClick={resetFilters}
+                className="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition-colors"
+              >
+                🔄 Réinitialiser les filtres
+              </button>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
