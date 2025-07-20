@@ -4,58 +4,56 @@ const { createMainKeyboard, createVIPKeyboard } = require('../utils/keyboards');
 
 const handleStart = async (ctx) => {
   try {
-    // Récupérer la configuration
-    const config = await Config.findById('main');
+    console.log('🚀 Commande /start reçue de:', ctx.from.id);
+    
+    // Récupérer la configuration avec fallback
+    let config;
+    try {
+      config = await Config.findById('main');
+      console.log('📋 Config trouvée:', !!config);
+    } catch (error) {
+      console.error('❌ Erreur récupération config:', error);
+    }
+    
     if (!config) {
-      return ctx.reply('❌ Configuration non trouvée');
+      console.log('⚠️ Pas de config, utilisation des valeurs par défaut');
+      return ctx.reply('🌟 Bienvenue sur notre bot !\n\nConfiguration en cours...');
     }
 
-    // Récupérer les plugs VIP si activés
-    let vipPlugs = [];
-    if (config.vip.enabled) {
-      vipPlugs = await Plug.find({ 
-        isVip: true, 
-        isActive: true 
-      }).sort({ vipOrder: 1, createdAt: -1 }).limit(5);
-    }
+    // Vérifications de sécurité
+    const welcomeText = config.welcome?.text || '🌟 Bienvenue sur notre bot !';
+    const welcomeImage = config.welcome?.image || null;
+    
+    console.log('📝 Message d\'accueil préparé:', welcomeText.substring(0, 50) + '...');
 
     // Construire le message d'accueil (sans section VIP)
-    let welcomeMessage = config.welcome.text;
+    let welcomeMessage = welcomeText;
 
     // Créer le clavier principal
     const keyboard = createMainKeyboard(config);
 
     // Envoyer le message avec image si disponible
-    if (config.welcome.image) {
+    if (welcomeImage) {
       try {
-        await ctx.replyWithPhoto(config.welcome.image, {
+        console.log('📸 Envoi avec image:', welcomeImage);
+        await ctx.replyWithPhoto(welcomeImage, {
           caption: welcomeMessage,
           reply_markup: keyboard.reply_markup,
           parse_mode: 'HTML'
         });
+        console.log('✅ Message avec image envoyé');
       } catch (error) {
-        console.error('Erreur envoi photo:', error);
+        console.error('❌ Erreur envoi photo:', error);
         // Fallback sans image
+        console.log('🔄 Fallback vers message texte');
         await ctx.reply(welcomeMessage, keyboard);
       }
     } else {
+      console.log('📝 Envoi message texte simple');
       await ctx.reply(welcomeMessage, keyboard);
     }
-
-    // Si la section VIP est en position 'bottom', l'envoyer séparément
-    if (config.vip.enabled && config.vip.position === 'bottom' && vipPlugs.length > 0) {
-      let vipMessage = `✨ ${config.vip.title} ✨\n${config.vip.description}\n`;
-      
-      vipPlugs.forEach((plug, index) => {
-        vipMessage += `\n⭐ ${plug.name}`;
-        if (plug.description && plug.description.length < 50) {
-          vipMessage += ` - ${plug.description}`;
-        }
-      });
-
-      const vipKeyboard = createVIPKeyboard(vipPlugs);
-      await ctx.reply(vipMessage, vipKeyboard);
-    }
+    
+    console.log('✅ Commande /start terminée avec succès');
 
   } catch (error) {
     console.error('Erreur dans handleStart:', error);
