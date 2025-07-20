@@ -29,7 +29,8 @@ export default function ShopVIP() {
       setLoading(true)
       // Utiliser l'endpoint public pour la boutique
       const timestamp = new Date().getTime()
-      const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/public/plugs?filter=vip&limit=50&t=${timestamp}`
+      const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://jhhhhhhggre.onrender.com'
+      const url = `${apiBaseUrl}/api/public/plugs?filter=vip&limit=50&t=${timestamp}`
       
       console.log('🔍 Fetching VIP from:', url)
       const response = await fetch(url, {
@@ -41,8 +42,14 @@ export default function ShopVIP() {
       
       if (response.ok) {
         const data = await response.json()
-        console.log('👑 VIP data received:', data.plugs.length, 'VIP plugs')
-        setVipPlugs(data.plugs)
+        console.log('👑 VIP data received:', data.plugs?.length || 0, 'VIP plugs')
+        
+        if (data && Array.isArray(data.plugs)) {
+          setVipPlugs(data.plugs)
+        } else {
+          console.error('❌ Invalid VIP data structure:', data)
+          setVipPlugs([])
+        }
       } else {
         console.error('❌ VIP response error:', response.status)
       }

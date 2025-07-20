@@ -32,9 +32,12 @@ export default function ShopHome() {
       setLoading(true)
       // Utiliser l'endpoint public pour la boutique
       const timestamp = new Date().getTime()
-      const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/public/plugs?filter=active&limit=100&t=${timestamp}`
+      const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://jhhhhhhggre.onrender.com'
+      const url = `${apiBaseUrl}/api/public/plugs?filter=active&limit=100&t=${timestamp}`
       
       console.log('🔍 Fetching from:', url)
+      console.log('🌍 API Base URL:', apiBaseUrl)
+      
       const response = await fetch(url, {
         cache: 'no-cache',
         headers: {
@@ -46,23 +49,32 @@ export default function ShopHome() {
       
       if (response.ok) {
         const data = await response.json()
-        console.log('📊 Data received:', data)
+        console.log('📊 Raw data received:', data)
         
-        // Trier par VIP en premier
-        const sortedPlugs = data.plugs.sort((a, b) => {
-          if (a.isVip && !b.isVip) return -1
-          if (!a.isVip && b.isVip) return 1
-          return 0
-        })
-        
-        console.log('✅ Plugs loaded:', sortedPlugs.length)
-        setPlugs(sortedPlugs)
-        setLastUpdate(new Date())
+        // Vérifier que data.plugs existe et est un array
+        if (data && Array.isArray(data.plugs)) {
+          // Trier par VIP en premier
+          const sortedPlugs = data.plugs.sort((a, b) => {
+            if (a.isVip && !b.isVip) return -1
+            if (!a.isVip && b.isVip) return 1
+            return 0
+          })
+          
+          console.log('✅ Plugs loaded:', sortedPlugs.length, 'boutiques')
+          console.log('🏪 Boutiques:', sortedPlugs.map(p => ({ name: p.name, isVip: p.isVip })))
+          setPlugs(sortedPlugs)
+          setLastUpdate(new Date())
+        } else {
+          console.error('❌ Invalid data structure:', data)
+          setPlugs([])
+        }
       } else {
         console.error('❌ Response error:', response.status, response.statusText)
+        setPlugs([])
       }
     } catch (error) {
       console.error('💥 Fetch error:', error)
+      setPlugs([])
     } finally {
       setLoading(false)
     }

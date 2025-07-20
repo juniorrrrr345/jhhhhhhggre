@@ -77,7 +77,10 @@ export default function Config() {
     setSaving(true)
 
     try {
-      const response = await fetch(`${process.env.API_BASE_URL}/api/config`, {
+      const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || process.env.API_BASE_URL || 'https://jhhhhhhggre.onrender.com'
+      console.log('💾 Saving config to:', apiBaseUrl)
+      
+      const response = await fetch(`${apiBaseUrl}/api/config`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -86,12 +89,16 @@ export default function Config() {
         body: JSON.stringify(config)
       })
 
+      console.log('💾 Save response status:', response.status)
+
       if (response.ok) {
         toast.success('Configuration sauvegardée !')
       } else {
+        console.error('❌ Save error:', response.status, response.statusText)
         toast.error('Erreur lors de la sauvegarde')
       }
     } catch (error) {
+      console.error('💥 Save error:', error)
       toast.error('Erreur de connexion')
     } finally {
       setSaving(false)

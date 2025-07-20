@@ -40,9 +40,10 @@ export default function ShopSearch() {
       setLoading(true)
       // Utiliser l'endpoint public pour la boutique
       const timestamp = new Date().getTime()
-      const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/public/plugs?filter=active&limit=100&t=${timestamp}`
+      const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://jhhhhhhggre.onrender.com'
+      const url = `${apiBaseUrl}/api/public/plugs?filter=active&limit=100&t=${timestamp}`
       
-      console.log('🔍 Fetching from:', url)
+      console.log('🔍 Search fetching from:', url)
       const response = await fetch(url, {
         cache: 'no-cache',
         headers: {
@@ -52,9 +53,16 @@ export default function ShopSearch() {
       
       if (response.ok) {
         const data = await response.json()
-        console.log('📊 Search data received:', data.plugs.length, 'plugs')
-        setAllPlugs(data.plugs)
-        setPlugs(data.plugs)
+        console.log('📊 Search data received:', data.plugs?.length || 0, 'plugs')
+        
+        if (data && Array.isArray(data.plugs)) {
+          setAllPlugs(data.plugs)
+          setPlugs(data.plugs)
+        } else {
+          console.error('❌ Invalid search data structure:', data)
+          setAllPlugs([])
+          setPlugs([])
+        }
       } else {
         console.error('❌ Search response error:', response.status)
       }

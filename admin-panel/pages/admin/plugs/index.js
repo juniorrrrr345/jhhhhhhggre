@@ -39,18 +39,26 @@ export default function PlugsManagement() {
         filter
       })
 
-      const response = await fetch(`${process.env.API_BASE_URL}/api/plugs?${params}`, {
+      const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || process.env.API_BASE_URL || 'https://jhhhhhhggre.onrender.com'
+      console.log('📋 Fetching admin plugs from:', apiBaseUrl)
+
+      const response = await fetch(`${apiBaseUrl}/api/plugs?${params}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       })
 
+      console.log('📋 Admin plugs response:', response.status)
+
       if (response.ok) {
         const data = await response.json()
-        setPlugs(data.plugs)
-        setTotalPages(Math.ceil(data.total / 10))
+        console.log('✅ Admin plugs loaded:', data.plugs?.length || 0)
+        setPlugs(data.plugs || [])
+        setTotalPages(Math.ceil((data.pagination?.total || data.total || 0) / 10))
       } else {
+        console.error('❌ Admin plugs error:', response.status)
         toast.error('Erreur lors du chargement')
       }
     } catch (error) {
+      console.error('💥 Admin plugs error:', error)
       toast.error('Erreur de connexion')
     } finally {
       setLoading(false)
