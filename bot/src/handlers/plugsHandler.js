@@ -188,19 +188,21 @@ const handleAllPlugs = async (ctx, page = 0) => {
     const totalPages = Math.ceil(plugs.length / itemsPerPage);
     const keyboard = createPlugListKeyboard(plugs, page, totalPages, 'all');
 
-    let message = `${config.botTexts?.allPlugsText || '📋 Tous nos plugs :'}\n\n`;
+    let message = `${config.botTexts?.allPlugsTitle || 'Tous Nos Plugs Certifié 🔌'}\n`;
     
     // Format du compteur total configurable
-    const totalCountFormat = config.botTexts?.totalCountFormat || '📊 Total : {count} plugs';
+    const totalCountFormat = config.botTexts?.totalCountFormat || '( Trier par le nombres de Likes 🖤 )';
     const totalCountText = totalCountFormat.replace('{count}', plugs.length);
-    message += `${totalCountText}\n`;
+    message += `${totalCountText}\n\n`;
     
-    // Format de pagination configurable
-    const paginationFormat = config.botTexts?.paginationFormat || '📄 Page {page}/{total}';
-    const paginationText = paginationFormat
-      .replace('{page}', page + 1)
-      .replace('{total}', totalPages);
-    message += paginationText;
+    // Format de pagination configurable (vide par défaut)
+    const paginationFormat = config.botTexts?.paginationFormat || '';
+    if (paginationFormat) {
+      const paginationText = paginationFormat
+        .replace('{page}', page + 1)
+        .replace('{total}', totalPages);
+      message += `${paginationText}\n\n`;
+    }
 
     if (config.welcome?.image) {
       try {
@@ -441,9 +443,12 @@ const handleCountryFilter = async (ctx, country, page = 0) => {
 // Afficher un plug spécifique avec contexte de retour
 const handlePlugDetails = async (ctx, plugId, returnContext = 'top_plugs') => {
   try {
+    console.log(`🔍 handlePlugDetails: plugId=${plugId}, returnContext=${returnContext}`);
     const plug = await Plug.findById(plugId);
+    console.log(`📦 Plug found:`, plug ? `${plug.name} (active: ${plug.isActive})` : 'null');
     
     if (!plug || !plug.isActive) {
+      console.log('❌ Plug non trouvé ou inactif');
       return ctx.answerCbQuery('❌ Plug non trouvé ou inactif');
     }
 
@@ -505,9 +510,12 @@ const handlePlugDetails = async (ctx, plugId, returnContext = 'top_plugs') => {
 // Afficher les détails d'un service d'un plug
 const handlePlugServiceDetails = async (ctx, plugId, serviceType) => {
   try {
+    console.log(`🔧 handlePlugServiceDetails: plugId=${plugId}, serviceType=${serviceType}`);
     const plug = await Plug.findById(plugId);
+    console.log(`📦 Plug found for service:`, plug ? `${plug.name} (active: ${plug.isActive})` : 'null');
     
     if (!plug || !plug.isActive) {
+      console.log('❌ Plug non trouvé pour service');
       return ctx.answerCbQuery('❌ Plug non trouvé');
     }
 

@@ -60,6 +60,12 @@ const upload = multer({
 // GESTIONNAIRES DU BOT TELEGRAM
 // ============================================
 
+// Handler générique pour debug des callbacks
+bot.on('callback_query', (ctx, next) => {
+  console.log(`🔄 Callback reçu: ${ctx.callbackQuery.data}`);
+  return next();
+});
+
 // Commande /start
 bot.command('start', handleStart);
 
@@ -136,7 +142,8 @@ bot.action(/^country_(.+)$/, (ctx) => {
 bot.action(/^plug_([a-f\d]{24})_from_(.+)$/, (ctx) => {
   const plugId = ctx.match[1];
   const context = ctx.match[2];
-  console.log(`🔍 Plug details: plugId=${plugId}, context=${context}`);
+  console.log(`🔍 Plug details callback: plugId=${plugId}, context=${context}`);
+  console.log(`📱 Callback data received:`, ctx.callbackQuery.data);
   return handlePlugDetails(ctx, plugId, context);
 });
 
@@ -151,6 +158,8 @@ bot.action(/^plug_([a-f\d]{24})$/, (ctx) => {
 bot.action(/^plug_service_([a-f\d]{24})_(.+)$/, (ctx) => {
   const plugId = ctx.match[1];
   const serviceType = ctx.match[2];
+  console.log(`🔧 Service callback: plugId=${plugId}, serviceType=${serviceType}`);
+  console.log(`📱 Service callback data:`, ctx.callbackQuery.data);
   return handlePlugServiceDetails(ctx, plugId, serviceType);
 });
 

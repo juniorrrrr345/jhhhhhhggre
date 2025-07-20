@@ -249,7 +249,7 @@ export default function ShopSearch() {
   return (
     <>
       <Head>
-        <title>Recherche - Boutique VIP</title>
+        <title>Recherche - {config?.boutique?.name || 'Ma Boutique'}</title>
         <meta name="description" content="Recherchez vos boutiques préférées par nom, pays ou service." />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
@@ -275,10 +275,10 @@ export default function ShopSearch() {
                 </div>
                 <div className="ml-3">
                   <h1 className="text-xl font-bold text-white">
-                    {config?.boutique?.searchTitle || 'Recherche Boutiques'}
+                    {config?.boutique?.searchTitle || config?.boutique?.name || 'Recherche'}
                   </h1>
                   <p className="text-gray-300 text-sm">
-                    {config?.boutique?.searchSubtitle || 'Trouvez la boutique parfaite'}
+                    {config?.boutique?.searchSubtitle || 'Trouvez ce que vous cherchez'}
                   </p>
                 </div>
               </div>
@@ -344,7 +344,7 @@ export default function ShopSearch() {
                   </div>
                 )}
                 <h2 className="text-3xl font-bold text-white">
-                  {config?.boutique?.searchTitle || config?.boutique?.name || 'Recherche Boutiques'}
+                  {config?.boutique?.searchTitle || config?.boutique?.name || 'Recherche'}
                 </h2>
               </div>
               <p className="text-gray-300">
