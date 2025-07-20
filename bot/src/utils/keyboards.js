@@ -174,7 +174,8 @@ const createPlugListKeyboard = (plugs, page = 0, totalPages = 1, context = 'all'
   for (let i = startIndex; i < endIndex; i++) {
     const plug = plugs[i];
     const vipIcon = plug.isVip ? '⭐ ' : '';
-    buttons.push([Markup.button.callback(`${vipIcon}${plug.name}`, `plug_${plug._id}_from_${context}`)]);
+    const likesText = plug.likes > 0 ? ` ❤️${plug.likes}` : '';
+    buttons.push([Markup.button.callback(`${vipIcon}${plug.name}${likesText}`, `plug_${plug._id}_from_${context}`)]);
   }
   
   // Navigation

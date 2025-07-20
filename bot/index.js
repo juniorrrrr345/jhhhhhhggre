@@ -327,7 +327,7 @@ app.get('/api/public/plugs', async (req, res) => {
     }
     
     const plugs = await Plug.find(query)
-      .sort({ isVip: -1, vipOrder: 1, createdAt: -1 })
+      .sort({ likes: -1, isVip: -1, vipOrder: 1, createdAt: -1 })
       .skip(skip)
       .limit(parseInt(limit));
       

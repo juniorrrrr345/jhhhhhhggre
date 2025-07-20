@@ -63,7 +63,8 @@ const handleVipPlugs = async (ctx, page = 0) => {
     const buttons = [];
     
     for (const plug of currentPagePlugs) {
-      buttons.push([Markup.button.callback(`👑 ${plug.name}`, `plug_${plug._id}_plugs_vip`)]);
+      const likesText = plug.likes > 0 ? ` ❤️${plug.likes}` : '';
+      buttons.push([Markup.button.callback(`👑 ${plug.name}${likesText}`, `plug_${plug._id}_plugs_vip`)]);
     }
 
     // Boutons de navigation

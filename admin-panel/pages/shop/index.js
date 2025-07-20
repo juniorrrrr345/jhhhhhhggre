@@ -154,10 +154,10 @@ export default function ShopHome() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="text-center mb-12">
             <h3 className="text-3xl font-bold text-gray-900 mb-4">
-              📋 Toutes nos boutiques
+              🏆 Classement des Boutiques
             </h3>
             <p className="text-gray-600 max-w-2xl mx-auto">
-              Parcourez notre catalogue complet de boutiques vérifiées. 
+              Boutiques classées par nombre de likes des utilisateurs. Les plus appréciées en premier ! 
               Les boutiques VIP sont mises en avant.
             </p>
           </div>
@@ -175,7 +175,7 @@ export default function ShopHome() {
             </div>
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {plugs.map((plug) => (
+              {plugs.map((plug, index) => (
                                 <Link key={plug._id} href={`/shop/${plug._id}`}>
                   <div className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:border-gray-400 transition-colors duration-300 cursor-pointer">
                                         {/* Image */}
@@ -185,14 +185,25 @@ export default function ShopHome() {
                          alt={plug.name}
                          className="w-full h-full object-cover grayscale"
                        />
-                       {plug.isVip && (
-                         <div className="absolute top-2 left-2">
-                           <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-900 text-white">
-                             <StarIcon className="w-3 h-3 mr-1" />
-                             VIP
-                           </span>
-                         </div>
-                       )}
+                                               {/* Badges en haut à gauche */}
+                        <div className="absolute top-2 left-2 space-y-1">
+                          {plug.isVip && (
+                            <div>
+                              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-900 text-white">
+                                <StarIcon className="w-3 h-3 mr-1" />
+                                VIP
+                              </span>
+                            </div>
+                          )}
+                          {/* Badge Top 3 */}
+                          {index < 3 && plug.likes > 0 && (
+                            <div>
+                              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-500 text-white">
+                                {index === 0 ? '🥇' : index === 1 ? '🥈' : '🥉'} Top {index + 1}
+                              </span>
+                            </div>
+                          )}
+                        </div>
                      </div>
 
                   {/* Contenu */}
@@ -230,14 +241,14 @@ export default function ShopHome() {
                       )}
                     </div>
 
-                    {/* Likes */}
-                    <div className="flex items-center justify-between pt-2 border-t border-gray-100">
-                      <span className="text-gray-600 text-xs sm:text-sm">Voir détails</span>
-                      <div className="flex items-center text-gray-500 text-xs sm:text-sm">
-                        <span className="mr-1">❤️</span>
-                        <span>{plug.likes || 0}</span>
-                      </div>
-                    </div>
+                                        {/* Likes */}
+                     <div className="flex items-center justify-between pt-2 border-t border-gray-100">
+                       <span className="text-gray-600 text-xs sm:text-sm">Voir détails</span>
+                       <div className="flex items-center text-red-500 text-xs sm:text-sm font-medium">
+                         <span className="mr-1">❤️</span>
+                         <span>{plug.likes || 0} like{(plug.likes || 0) !== 1 ? 's' : ''}</span>
+                       </div>
+                     </div>
 
 
                   </div>
