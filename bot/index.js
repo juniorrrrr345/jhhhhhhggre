@@ -9,6 +9,7 @@ const { connectDB } = require('./src/utils/database');
 const { handleStart, handleBackMain } = require('./src/handlers/startHandler');
 const { 
   handleTopPlugs, 
+  handleVipPlugs,
   handleAllPlugs, 
   handleFilterService, 
   handleServiceFilter,

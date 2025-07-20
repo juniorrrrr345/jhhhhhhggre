@@ -102,7 +102,7 @@ const handleAllPlugs = async (ctx, page = 0) => {
   try {
     const config = await Config.findById('main');
     const plugs = await Plug.find({ isActive: true })
-      .sort({ isVip: -1, vipOrder: 1, createdAt: -1 });
+      .sort({ likes: -1, isVip: -1, vipOrder: 1, createdAt: -1 });
 
     if (plugs.length === 0) {
       return ctx.editMessageText(
@@ -371,6 +371,7 @@ const handlePlugServiceDetails = async (ctx, plugId, serviceType) => {
 
 module.exports = {
   handleTopPlugs,
+  handleVipPlugs,
   handleAllPlugs,
   handleFilterService,
   handleServiceFilter,
