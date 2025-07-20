@@ -75,7 +75,7 @@ const handleBackMain = async (ctx) => {
 
     console.log('📋 Configuration récupérée pour le retour');
 
-    // Utiliser le même message d'accueil que dans handleStart (sans section VIP)
+    // Utiliser le même message d'accueil que dans handleStart
     const welcomeMessage = config.welcome?.text || '🌟 Bienvenue sur notre bot !';
     const keyboard = createMainKeyboard(config);
     

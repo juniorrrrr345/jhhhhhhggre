@@ -62,6 +62,22 @@ export default function Config() {
     fetchConfig(token)
   }, [])
 
+  // Fonction pour appliquer la configuration boutique fournie par l'utilisateur
+  const applyUserBoutiqueConfig = () => {
+    setConfig(prev => ({
+      ...prev,
+      boutique: {
+        ...prev.boutique,
+        name: 'cacaca',
+        subtitle: 'fac caca',
+        logo: 'https://imgur.com/a/4VbSOHD',
+        searchTitle: 'TESTE',
+        vipTitle: 'TESTE'
+      }
+    }));
+    toast.success('Configuration boutique appliquée ! N\'oubliez pas de sauvegarder.');
+  };
+
   const fetchConfig = async (token) => {
     try {
       setLoading(true)
@@ -118,6 +134,10 @@ export default function Config() {
               setTimeout(() => {
                 reloadBot();
               }, 1000);
+
+              // Forcer la synchronisation avec la boutique
+              await forceBoutiqueSync();
+              
             } else {
               throw new Error(`HTTP ${response.status}`)
             }
@@ -139,6 +159,9 @@ export default function Config() {
               console.log('✅ Admin config proxy réussi')
               success = true
               toast.success('Configuration sauvegardée via proxy !')
+              
+              // Forcer la synchronisation avec la boutique même en mode proxy
+              await forceBoutiqueSync();
             } else {
               throw new Error(`Proxy failed: HTTP ${proxyResponse.status}`)
             }
@@ -154,6 +177,34 @@ export default function Config() {
           setSaving(false)
         }
       }
+
+  // Fonction pour forcer la synchronisation avec la boutique
+  const forceBoutiqueSync = async () => {
+    try {
+      console.log('🔄 Forcer la synchronisation boutique...');
+      
+      // Envoyer un signal aux pages boutique via localStorage
+      const syncSignal = {
+        timestamp: Date.now(),
+        action: 'config_updated',
+        config: config
+      };
+      
+      localStorage.setItem('boutique_sync_signal', JSON.stringify(syncSignal));
+      
+      // Déclencher l'événement storage pour notifier les autres onglets
+      window.dispatchEvent(new StorageEvent('storage', {
+        key: 'boutique_sync_signal',
+        newValue: JSON.stringify(syncSignal)
+      }));
+      
+      console.log('✅ Signal de synchronisation envoyé');
+      toast.success('Synchronisation boutique déclenchée !');
+      
+    } catch (error) {
+      console.error('❌ Erreur synchronisation boutique:', error);
+    }
+  };
 
   const updateConfig = (section, field, value) => {
     setConfig(prev => ({
@@ -328,6 +379,18 @@ export default function Config() {
               {/* Configuration rapide boutique */}
               <div className="bg-green-50 border border-green-200 rounded-lg p-4">
                 <h3 className="text-lg font-medium text-green-900 mb-3">🏪 Boutique Vercel</h3>
+                
+                {/* Bouton pour appliquer la config utilisateur */}
+                <div className="mb-3">
+                  <button
+                    onClick={applyUserBoutiqueConfig}
+                    className="w-full bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors text-sm font-medium"
+                  >
+                    ⚡ Appliquer la configuration fournie
+                  </button>
+                  <p className="text-xs text-green-600 mt-1">Applique : cacaca, fac caca, Logo, TESTE</p>
+                </div>
+                
                 <div className="space-y-3">
                   <button
                     onClick={() => editText('boutique', 'name', config.boutique?.name || '', 'Nom de la boutique')}
@@ -849,6 +912,13 @@ export default function Config() {
               <p className="text-sm text-gray-500">Appliquez vos modifications</p>
             </div>
             <div className="flex flex-col sm:flex-row gap-2">
+              <button
+                onClick={forceBoutiqueSync}
+                disabled={saving}
+                className="bg-purple-500 hover:bg-purple-600 disabled:opacity-50 text-white px-4 py-2 rounded text-sm font-medium transition-colors"
+              >
+                🔄 Test Sync
+              </button>
               <button
                 onClick={reloadBot}
                 disabled={saving}

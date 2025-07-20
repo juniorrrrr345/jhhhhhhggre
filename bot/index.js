@@ -106,10 +106,12 @@ bot.action('service_delivery', (ctx) => handleServiceFilter(ctx, 'delivery', 0))
 bot.action('service_postal', (ctx) => handleServiceFilter(ctx, 'postal', 0));
 bot.action('service_meetup', (ctx) => handleServiceFilter(ctx, 'meetup', 0));
 
-// Pagination
+// Pagination améliorée
 bot.action(/^page_(.+)_(\d+)$/, (ctx) => {
   const context = ctx.match[1];
   const page = parseInt(ctx.match[2]);
+  
+  console.log(`🔄 Pagination: context=${context}, page=${page}`);
   
   if (context === 'all') {
     return handleAllPlugs(ctx, page);
@@ -130,23 +132,19 @@ bot.action(/^country_(.+)$/, (ctx) => {
   return handleCountryFilter(ctx, country, 0);
 });
 
-// Détails d'un plug (ancien format pour compatibilité)
-bot.action(/^plug_([a-f\d]{24})$/, (ctx) => {
-  const plugId = ctx.match[1];
-  return handlePlugDetails(ctx, plugId, 'top_plugs');
-});
-
-// Détails d'un plug avec contexte (couvre aussi plugs_vip)
+// Détails d'un plug avec contexte (format unifié)
 bot.action(/^plug_([a-f\d]{24})_from_(.+)$/, (ctx) => {
   const plugId = ctx.match[1];
   const context = ctx.match[2];
+  console.log(`🔍 Plug details: plugId=${plugId}, context=${context}`);
   return handlePlugDetails(ctx, plugId, context);
 });
 
-// Détails d'un plug VIP spécifique (format direct)
-bot.action(/^plug_([a-f\d]{24})_plugs_vip$/, (ctx) => {
+// Détails d'un plug (format legacy pour compatibilité)
+bot.action(/^plug_([a-f\d]{24})$/, (ctx) => {
   const plugId = ctx.match[1];
-  return handlePlugDetails(ctx, plugId, 'plugs_vip');
+  console.log(`🔍 Plug details (legacy): plugId=${plugId}`);
+  return handlePlugDetails(ctx, plugId, 'top_plugs');
 });
 
 // Détails d'un service d'un plug
@@ -248,6 +246,39 @@ const reloadBotConfig = async () => {
     throw error;
   }
 };
+
+// Endpoint PUBLIC pour la configuration de la boutique (sans auth)
+app.get('/api/public/config', async (req, res) => {
+  try {
+    console.log('🔍 Récupération config publique pour la boutique');
+    const config = await Config.findById('main');
+    
+    // Ne retourner que les données publiques nécessaires pour la boutique
+    const publicConfig = {
+      boutique: config?.boutique || {},
+      welcome: config?.welcome || {},
+      socialMedia: config?.socialMedia || {},
+      messages: config?.messages || {},
+      buttons: config?.buttons || {}
+    };
+    
+    // Headers pour CORS et cache
+    res.set({
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type',
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      'Pragma': 'no-cache',
+      'Expires': '0',
+      'Last-Modified': new Date().toUTCString()
+    });
+    
+    res.json(publicConfig);
+  } catch (error) {
+    console.error('❌ Erreur récupération config publique:', error);
+    res.status(500).json({ error: 'Erreur serveur' });
+  }
+});
 
 // Endpoint pour recharger la configuration du bot
 app.post('/api/bot/reload', authenticateAdmin, async (req, res) => {

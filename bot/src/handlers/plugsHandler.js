@@ -16,7 +16,7 @@ const handleTopPlugs = async (ctx) => {
     const config = await Config.findById('main');
     const keyboard = createPlugsFilterKeyboard(config);
     
-    const messageText = `${config.botTexts?.topPlugsTitle || '🔌 Top Des Plugs'}\n\n${config.botTexts?.topPlugsDescription || 'Choisissez une option pour découvrir nos plugs :'}`;
+    const messageText = `${config?.botTexts?.topPlugsTitle || '🔌 Top Des Plugs'}\n\n${config?.botTexts?.topPlugsDescription || 'Choisissez une option pour découvrir nos plugs :'}`;
     
     await ctx.editMessageText(messageText, {
       reply_markup: keyboard.reply_markup,
@@ -40,7 +40,7 @@ const handleVipPlugs = async (ctx, page = 0) => {
       .sort({ likes: -1, vipOrder: 1, createdAt: -1 });
 
     if (vipPlugs.length === 0) {
-      const backButtonText = config.botTexts?.backButtonText || '🔙 Retour';
+      const backButtonText = config?.botTexts?.backButtonText || '🔙 Retour';
       const backKeyboard = Markup.inlineKeyboard([
         [Markup.button.callback(backButtonText, 'back_main')]
       ]);
@@ -67,35 +67,36 @@ const handleVipPlugs = async (ctx, page = 0) => {
     
     for (const plug of currentPagePlugs) {
       const likesText = plug.likes > 0 ? ` ❤️${plug.likes}` : '';
-      buttons.push([Markup.button.callback(`👑 ${plug.name}${likesText}`, `plug_${plug._id}_plugs_vip`)]);
+      buttons.push([Markup.button.callback(`👑 ${plug.name}${likesText}`, `plug_${plug._id}_from_plugs_vip`)]);
     }
 
     // Boutons de navigation
-    const navButtons = [];
-    if (page > 0) {
-      navButtons.push(Markup.button.callback('⬅️ Précédent', `page_vip_${page - 1}`));
-    }
-    if (page < totalPages - 1) {
-      navButtons.push(Markup.button.callback('➡️ Suivant', `page_vip_${page + 1}`));
-    }
-    if (navButtons.length > 0) {
+    if (totalPages > 1) {
+      const navButtons = [];
+      if (page > 0) {
+        navButtons.push(Markup.button.callback('⬅️ Précédent', `page_vip_${page - 1}`));
+      }
+      navButtons.push(Markup.button.callback(`${page + 1}/${totalPages}`, 'current_page'));
+      if (page < totalPages - 1) {
+        navButtons.push(Markup.button.callback('➡️ Suivant', `page_vip_${page + 1}`));
+      }
       buttons.push(navButtons);
     }
 
     // Bouton retour
     const backButtonText = config?.botTexts?.backButtonText || '🔙 Retour';
-    buttons.push([Markup.button.callback(backButtonText, 'top_plugs')]);
+    buttons.push([Markup.button.callback(backButtonText, 'back_main')]);
 
     const keyboard = Markup.inlineKeyboard(buttons);
     
-    const paginationFormat = config.botTexts?.paginationFormat || '📄 Page {page}/{total}';
+    const paginationFormat = config?.botTexts?.paginationFormat || '📄 Page {page}/{total}';
     const paginationText = paginationFormat
       .replace('{page}', page + 1)
       .replace('{total}', totalPages);
     
-    const messageText = `${config.botTexts?.vipTitle || '👑 Boutiques VIP Premium'}\n\n${config.botTexts?.vipDescription || '✨ Découvrez nos boutiques sélectionnées'}\n\n${paginationText} • ${vipPlugs.length} boutique${vipPlugs.length > 1 ? 's' : ''}`;
+    const messageText = `${config?.botTexts?.vipTitle || '👑 Boutiques VIP Premium'}\n\n${config?.botTexts?.vipDescription || '✨ Découvrez nos boutiques sélectionnées'}\n\n${paginationText} • ${vipPlugs.length} boutique${vipPlugs.length > 1 ? 's' : ''}`;
 
-    if (config.welcome?.image) {
+    if (config?.welcome?.image) {
       try {
         await ctx.editMessageMedia({
           type: 'photo',

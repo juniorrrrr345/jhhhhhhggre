@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import Head from 'next/head'
 import Link from 'next/link'
 import { api } from '../../lib/api'
+import toast from 'react-hot-toast'
 import {
   StarIcon,
   MapPinIcon,
@@ -27,20 +28,101 @@ export default function ShopHome() {
       fetchPlugs()
     }, 30000)
     
-    return () => clearInterval(interval)
+    // Écouter les signaux de synchronisation du panel admin
+    const handleSyncSignal = (event) => {
+      if (event.key === 'boutique_sync_signal') {
+        console.log('🔄 Signal de synchronisation reçu, rechargement...');
+        fetchConfig();
+        fetchPlugs();
+        toast.success('Configuration mise à jour !');
+      }
+    };
+    
+    const handleStorageChange = (event) => {
+      if (event.key === 'boutique_sync_signal') {
+        console.log('🔄 Signal de synchronisation cross-tab reçu, rechargement...');
+        fetchConfig();
+        fetchPlugs();
+      }
+    };
+    
+    // Écouter les événements de synchronisation
+    window.addEventListener('storage', handleSyncSignal);
+    window.addEventListener('storage', handleStorageChange);
+    
+    // Vérifier s'il y a un signal en attente au chargement
+    const checkPendingSync = () => {
+      const pendingSync = localStorage.getItem('boutique_sync_signal');
+      if (pendingSync) {
+        try {
+          const signal = JSON.parse(pendingSync);
+          // Si le signal est récent (moins de 5 minutes), on synchronise
+          if (Date.now() - signal.timestamp < 300000) {
+            console.log('🔄 Signal de synchronisation en attente détecté');
+            fetchConfig();
+            fetchPlugs();
+          }
+        } catch (error) {
+          console.error('Erreur parsing signal sync:', error);
+        }
+      }
+    };
+    
+    checkPendingSync();
+    
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('storage', handleSyncSignal);
+      window.removeEventListener('storage', handleStorageChange);
+    };
   }, [])
 
   const fetchConfig = async () => {
     try {
+      // Utiliser l'endpoint public de configuration
+      const timestamp = new Date().getTime()
       const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://jhhhhhhggre.onrender.com'
-      const response = await fetch(`${apiBaseUrl}/api/config`)
       
-      if (response.ok) {
-        const data = await response.json()
-        setConfig(data)
+      console.log('🔍 Récupération config boutique depuis:', apiBaseUrl)
+      
+      // Essayer d'abord l'API directe
+      try {
+        const response = await fetch(`${apiBaseUrl}/api/public/config?t=${timestamp}`, {
+          cache: 'no-cache',
+          headers: { 
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache'
+          }
+        })
+        
+        if (response.ok) {
+          const data = await response.json()
+          console.log('✅ Config boutique chargée:', data)
+          setConfig(data)
+          return
+        }
+      } catch (directError) {
+        console.log('❌ Config directe échouée:', directError.message)
       }
+      
+      // Fallback vers le proxy si disponible
+      try {
+        const response = await fetch(`/api/proxy?endpoint=/api/public/config&t=${timestamp}`, {
+          cache: 'no-cache',
+          headers: { 'Cache-Control': 'no-cache' }
+        })
+        
+        if (response.ok) {
+          const data = await response.json()
+          console.log('✅ Config via proxy chargée:', data)
+          setConfig(data)
+        }
+      } catch (proxyError) {
+        console.log('❌ Config proxy échouée:', proxyError.message)
+      }
+      
     } catch (error) {
-      console.log('Config load failed, using defaults')
+      console.log('❌ Erreur chargement config boutique:', error)
     }
   }
 
@@ -197,12 +279,24 @@ export default function ShopHome() {
         {/* Toutes les boutiques */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="text-center mb-12">
-            <h3 className="text-3xl font-bold text-gray-900 mb-4">
-              🏆 Classement des Boutiques
-            </h3>
+            <div className="flex items-center justify-center mb-4">
+              {config?.boutique?.logo ? (
+                <img 
+                  src={config.boutique.logo} 
+                  alt="Logo" 
+                  className="h-12 w-12 rounded-lg object-cover mr-4"
+                />
+              ) : (
+                <div className="h-12 w-12 bg-gray-100 rounded-lg flex items-center justify-center mr-4">
+                  <StarIcon className="h-8 w-8 text-gray-600" />
+                </div>
+              )}
+              <h3 className="text-3xl font-bold text-gray-900">
+                {config?.boutique?.name || 'Boutique Premium'}
+              </h3>
+            </div>
             <p className="text-gray-600 max-w-2xl mx-auto">
-              Boutiques classées par nombre de likes des utilisateurs. Les plus appréciées en premier ! 
-              Les boutiques VIP sont mises en avant.
+              {config?.boutique?.subtitle || 'Découvrez notre sélection de boutiques premium classées par popularité.'}
             </p>
           </div>
 

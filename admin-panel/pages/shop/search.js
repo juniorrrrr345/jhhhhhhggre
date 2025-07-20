@@ -23,13 +23,64 @@ export default function ShopSearch() {
     fetchConfig()
     fetchAllPlugs()
     
-    // Auto-refresh toutes les 30 secondes pour la synchronisation
+    // Auto-refresh pour la synchronisation (réduit à 15 secondes pour la recherche)
     const interval = setInterval(() => {
       fetchConfig()
-      fetchAllPlugs()
-    }, 30000)
+      if (allPlugs.length === 0) {
+        fetchAllPlugs()
+      }
+    }, 15000)
     
-    return () => clearInterval(interval)
+    // Écouter les signaux de synchronisation du panel admin
+    const handleSyncSignal = (event) => {
+      if (event.key === 'boutique_sync_signal') {
+        console.log('🔄 [SEARCH] Signal de synchronisation reçu, rechargement...');
+        fetchConfig();
+        // Relancer la recherche actuelle si il y en a une
+        if (searchTerm || selectedService || selectedCountry) {
+          searchPlugs();
+        }
+      }
+    };
+    
+    const handleStorageChange = (event) => {
+      if (event.key === 'boutique_sync_signal') {
+        console.log('🔄 [SEARCH] Signal de synchronisation cross-tab reçu, rechargement...');
+        fetchConfig();
+        if (searchTerm || selectedService || selectedCountry) {
+          searchPlugs();
+        }
+      }
+    };
+    
+    // Écouter les événements de synchronisation
+    window.addEventListener('storage', handleSyncSignal);
+    window.addEventListener('storage', handleStorageChange);
+    
+    // Vérifier s'il y a un signal en attente au chargement
+    const checkPendingSync = () => {
+      const pendingSync = localStorage.getItem('boutique_sync_signal');
+      if (pendingSync) {
+        try {
+          const signal = JSON.parse(pendingSync);
+          // Si le signal est récent (moins de 5 minutes), on synchronise
+          if (Date.now() - signal.timestamp < 300000) {
+            console.log('🔄 [SEARCH] Signal de synchronisation en attente détecté');
+            fetchConfig();
+          }
+        } catch (error) {
+          console.error('[SEARCH] Erreur parsing signal sync:', error);
+        }
+      }
+    };
+    
+    checkPendingSync();
+    
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('storage', handleSyncSignal);
+      window.removeEventListener('storage', handleStorageChange);
+    };
   }, [])
 
   useEffect(() => {
@@ -40,15 +91,50 @@ export default function ShopSearch() {
 
   const fetchConfig = async () => {
     try {
+      // Utiliser l'endpoint public de configuration
+      const timestamp = new Date().getTime()
       const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://jhhhhhhggre.onrender.com'
-      const response = await fetch(`${apiBaseUrl}/api/config`)
       
-      if (response.ok) {
-        const data = await response.json()
-        setConfig(data)
+      console.log('🔍 Récupération config recherche depuis:', apiBaseUrl)
+      
+      // Essayer d'abord l'API directe
+      try {
+        const response = await fetch(`${apiBaseUrl}/api/public/config?t=${timestamp}`, {
+          cache: 'no-cache',
+          headers: { 
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache'
+          }
+        })
+        
+        if (response.ok) {
+          const data = await response.json()
+          console.log('✅ Config recherche chargée:', data)
+          setConfig(data)
+          return
+        }
+      } catch (directError) {
+        console.log('❌ Config recherche directe échouée:', directError.message)
       }
+      
+      // Fallback vers le proxy si disponible
+      try {
+        const response = await fetch(`/api/proxy?endpoint=/api/public/config&t=${timestamp}`, {
+          cache: 'no-cache',
+          headers: { 'Cache-Control': 'no-cache' }
+        })
+        
+        if (response.ok) {
+          const data = await response.json()
+          console.log('✅ Config recherche via proxy chargée:', data)
+          setConfig(data)
+        }
+      } catch (proxyError) {
+        console.log('❌ Config recherche proxy échouée:', proxyError.message)
+      }
+      
     } catch (error) {
-      console.log('Config load failed, using defaults')
+      console.log('❌ Erreur chargement config recherche:', error)
     }
   }
 
@@ -245,8 +331,25 @@ export default function ShopSearch() {
         <div className="bg-gray-800 py-12">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-8">
-              <h2 className="text-3xl font-bold text-white mb-4">🔍 Recherche avancée</h2>
-              <p className="text-gray-300">Trouvez la boutique parfaite selon vos critères</p>
+              <div className="flex items-center justify-center mb-4">
+                {config?.boutique?.logo ? (
+                  <img 
+                    src={config.boutique.logo} 
+                    alt="Logo" 
+                    className="h-12 w-12 rounded-lg object-cover mr-4"
+                  />
+                ) : (
+                  <div className="h-12 w-12 bg-gray-700 rounded-lg flex items-center justify-center mr-4">
+                    <MagnifyingGlassIcon className="h-8 w-8 text-white" />
+                  </div>
+                )}
+                <h2 className="text-3xl font-bold text-white">
+                  {config?.boutique?.searchTitle || config?.boutique?.name || 'Recherche Boutiques'}
+                </h2>
+              </div>
+              <p className="text-gray-300">
+                {config?.boutique?.searchSubtitle || 'Découvrez notre catalogue complet de boutiques.'}
+              </p>
             </div>
             
             {/* Filtres de recherche */}
@@ -435,22 +538,21 @@ export default function ShopSearch() {
         <footer className="bg-gray-800 text-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div className="text-center">
-              <h3 className="text-lg font-medium mb-2">Boutique VIP</h3>
-              <p className="text-gray-400 mb-4">Votre sélection de boutiques premium</p>
-              <div className="flex justify-center space-x-4">
-                <a
-                  href="https://t.me/votre_bot"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-400 hover:text-blue-300"
-                >
-                  📱 Telegram Bot
-                </a>
-                <span className="text-gray-600">•</span>
-                <Link href="/admin" className="text-purple-400 hover:text-purple-300">
-                  🔧 Admin
-                </Link>
+              <div className="flex items-center justify-center mb-2">
+                {config?.boutique?.logo ? (
+                  <img 
+                    src={config.boutique.logo} 
+                    alt="Logo" 
+                    className="h-6 w-6 rounded object-cover mr-2"
+                  />
+                ) : null}
+                <h3 className="text-lg font-medium">
+                  {config?.boutique?.name || 'Boutique Premium'}
+                </h3>
               </div>
+              <p className="text-gray-400 mb-4">
+                {config?.boutique?.subtitle || 'Votre destination shopping premium'}
+              </p>
             </div>
           </div>
         </footer>
