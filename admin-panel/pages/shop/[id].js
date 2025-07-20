@@ -27,13 +27,16 @@ export default function ShopDetail() {
   const fetchConfig = async () => {
     try {
       const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://jhhhhhhggre.onrender.com'
-      const response = await fetch(`${apiBaseUrl}/api/config`)
+      const response = await fetch(`${apiBaseUrl}/api/public/config?t=${Date.now()}`, {
+        cache: 'no-cache'
+      })
+      
       if (response.ok) {
         const data = await response.json()
         setConfig(data)
       }
     } catch (error) {
-      console.error('Erreur chargement config:', error)
+      console.error('Error loading config:', error)
     }
   }
 
@@ -122,32 +125,18 @@ export default function ShopDetail() {
   return (
     <>
       <Head>
-        <title>{plug.name} - Boutique VIP</title>
+        <title>{plug.name} - {config?.boutique?.name || 'Boutique'}</title>
         <meta name="description" content={plug.description} />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
 
-      <div 
-        className="min-h-screen bg-white"
-        style={config?.boutique?.backgroundImage ? {
-          backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9)), url(${config.boutique.backgroundImage})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat'
-        } : {}}
-      >
+      <div className="min-h-screen bg-white">
         {/* Header */}
         <header className="bg-gray-900 shadow-lg">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between h-16">
               <div className="flex items-center">
-                                  <Link 
-                    href="/shop"
-                    className="flex items-center text-white hover:text-gray-300 mr-4"
-                  >
-                  <ArrowLeftIcon className="h-5 w-5 mr-2" />
-                  Retour
-                </Link>
-                                                  <div className="flex-shrink-0">
+                <div className="flex-shrink-0">
                   {config?.boutique?.logo ? (
                     <img 
                       src={config.boutique.logo} 
@@ -163,13 +152,57 @@ export default function ShopDetail() {
                   )}
                 </div>
                 <div className="ml-3">
-                  <h1 className="text-xl font-bold text-white">{plug.name}</h1>
-                                      {plug.isVip && <p className="text-gray-300 text-sm">Boutique VIP</p>}
+                  <h1 className="text-xl font-bold text-white">
+                    {config?.boutique?.name || ''}
+                  </h1>
+                  <p className="text-gray-300 text-sm">
+                    {plug.name}
+                  </p>
                 </div>
               </div>
             </div>
           </div>
         </header>
+
+        {/* Navigation */}
+        <nav className="bg-white shadow-sm border-b">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex space-x-8 h-12 items-center">
+              <Link 
+                href="/shop" 
+                className="text-gray-900 font-medium border-b-2 border-gray-900 pb-3 flex items-center"
+              >
+                <ArrowLeftIcon className="w-4 h-4 mr-2" />
+                {config?.boutique?.logo ? (
+                  <img src={config.boutique.logo} alt="Logo" className="h-4 w-4 mr-2 rounded object-cover" />
+                ) : (
+                  <span className="mr-1">🏠</span>
+                )}
+                Retour à la liste
+              </Link>
+              <Link 
+                href="/shop/search" 
+                className="text-gray-500 hover:text-gray-700 pb-3 flex items-center"
+              >
+                {config?.boutique?.logo ? (
+                  <img src={config.boutique.logo} alt="Logo" className="h-4 w-4 mr-2 rounded object-cover" />
+                ) : (
+                  <span className="mr-1">🔍</span>
+                )}
+                Recherche
+              </Link>
+              <Link 
+                href="/shop/vip" 
+                className="text-gray-500 hover:text-gray-700 pb-3 flex items-center"
+              >
+                {config?.boutique?.logo && (
+                  <img src={config.boutique.logo} alt="Logo" className="h-4 w-4 mr-2 rounded object-cover" />
+                )}
+                VIP
+              </Link>
+            </div>
+          </div>
+        </nav>
 
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="bg-white rounded-lg shadow-lg overflow-hidden">
@@ -189,6 +222,7 @@ export default function ShopDetail() {
                 <div className="flex items-center space-x-3">
                   {plug.isVip && (
                     <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-900 text-white">
+                      <StarIcon className="w-4 h-4 mr-1" />
                       VIP
                     </span>
                   )}
@@ -205,21 +239,30 @@ export default function ShopDetail() {
               <div className="mb-6">
                 <h3 className="text-lg font-semibold text-gray-900 mb-3">🔧 Services disponibles</h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  {plug.services.delivery.enabled && (
+                  {plug.services?.delivery?.enabled && (
                     <div className="bg-blue-50 p-4 rounded-lg">
-                      <h4 className="font-medium text-blue-900 mb-2">🚚 Livraison</h4>
+                      <h4 className="font-medium text-blue-900 mb-2 flex items-center">
+                        <TruckIcon className="w-5 h-5 mr-2" />
+                        Livraison
+                      </h4>
                       <p className="text-sm text-blue-700">{plug.services.delivery.description}</p>
                     </div>
                   )}
-                  {plug.services.postal.enabled && (
+                  {plug.services?.postal?.enabled && (
                     <div className="bg-green-50 p-4 rounded-lg">
-                      <h4 className="font-medium text-green-900 mb-2">✈️ Envoi postal</h4>
+                      <h4 className="font-medium text-green-900 mb-2 flex items-center">
+                        <GlobeAltIcon className="w-5 h-5 mr-2" />
+                        Envoi postal
+                      </h4>
                       <p className="text-sm text-green-700">{plug.services.postal.description}</p>
                     </div>
                   )}
-                  {plug.services.meetup.enabled && (
+                  {plug.services?.meetup?.enabled && (
                     <div className="bg-purple-50 p-4 rounded-lg">
-                      <h4 className="font-medium text-purple-900 mb-2">🏠 Meetup</h4>
+                      <h4 className="font-medium text-purple-900 mb-2 flex items-center">
+                        <MapPinIcon className="w-5 h-5 mr-2" />
+                        Meetup
+                      </h4>
                       <p className="text-sm text-purple-700">{plug.services.meetup.description}</p>
                     </div>
                   )}
