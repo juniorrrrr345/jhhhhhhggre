@@ -1,0 +1,18 @@
+{
+  "name": "telegram-bot-vip-system",
+  "version": "1.0.0",
+  "description": "Bot Telegram professionnel avec système VIP et panel admin",
+  "main": "index.js",
+  "scripts": {
+    "dev:bot": "cd bot && npm run dev",
+    "dev:admin": "cd admin && npm run dev",
+    "start:bot": "cd bot && npm start",
+    "build:admin": "cd admin && npm run build",
+    "install:bot": "cd bot && npm install",
+    "install:admin": "cd admin && npm install",
+    "install:all": "npm run install:bot && npm run install:admin"
+  },
+  "keywords": ["telegram", "bot", "admin", "vip", "plugs"],
+  "author": "Your Name",
+  "license": "MIT"
+}

@@ -1,0 +1,387 @@
+require('dotenv').config();
+const express = require('express');
+const { Telegraf } = require('telegraf');
+const cors = require('cors');
+const multer = require('multer');
+const { connectDB } = require('./src/utils/database');
+
+// Gestionnaires
+const { handleStart, handleBackMain } = require('./src/handlers/startHandler');
+const { 
+  handleTopPlugs, 
+  handleAllPlugs, 
+  handleFilterService, 
+  handleServiceFilter,
+  handleFilterCountry, 
+  handleCountryFilter, 
+  handlePlugDetails, 
+  handlePlugServiceDetails 
+} = require('./src/handlers/plugsHandler');
+const { handleContact, handleInfo, handleIgnoredCallback } = require('./src/handlers/menuHandler');
+
+// Modèles
+const Plug = require('./src/models/Plug');
+const Config = require('./src/models/Config');
+
+// Initialisation
+const app = express();
+const bot = new Telegraf(process.env.TELEGRAM_BOT_TOKEN);
+const PORT = process.env.PORT || 3000;
+
+// Middleware
+app.use(cors());
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true }));
+
+// Configuration multer pour upload
+const upload = multer({ 
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype.startsWith('image/')) {
+      cb(null, true);
+    } else {
+      cb(new Error('Format de fichier non supporté'));
+    }
+  }
+});
+
+// ============================================
+// GESTIONNAIRES DU BOT TELEGRAM
+// ============================================
+
+// Commande /start
+bot.command('start', handleStart);
+
+// Gestionnaires des callbacks
+bot.action('back_main', handleBackMain);
+bot.action('top_plugs', handleTopPlugs);
+bot.action('plugs_all', (ctx) => handleAllPlugs(ctx, 0));
+bot.action('filter_service', handleFilterService);
+bot.action('filter_country', handleFilterCountry);
+bot.action('contact', handleContact);
+bot.action('info', handleInfo);
+
+// Filtres par service
+bot.action('service_delivery', (ctx) => handleServiceFilter(ctx, 'delivery', 0));
+bot.action('service_postal', (ctx) => handleServiceFilter(ctx, 'postal', 0));
+bot.action('service_meetup', (ctx) => handleServiceFilter(ctx, 'meetup', 0));
+
+// Pagination
+bot.action(/^page_(.+)_(\d+)$/, (ctx) => {
+  const context = ctx.match[1];
+  const page = parseInt(ctx.match[2]);
+  
+  if (context === 'all') {
+    return handleAllPlugs(ctx, page);
+  } else if (context.startsWith('service_')) {
+    const serviceType = context.split('_')[1];
+    return handleServiceFilter(ctx, serviceType, page);
+  } else if (context.startsWith('country_')) {
+    const country = context.split('_')[1];
+    return handleCountryFilter(ctx, country, page);
+  }
+});
+
+// Filtres par pays
+bot.action(/^country_(.+)$/, (ctx) => {
+  const country = ctx.match[1];
+  return handleCountryFilter(ctx, country, 0);
+});
+
+// Détails d'un plug
+bot.action(/^plug_([a-f\d]{24})$/, (ctx) => {
+  const plugId = ctx.match[1];
+  return handlePlugDetails(ctx, plugId);
+});
+
+// Détails d'un service d'un plug
+bot.action(/^plug_service_([a-f\d]{24})_(.+)$/, (ctx) => {
+  const plugId = ctx.match[1];
+  const serviceType = ctx.match[2];
+  return handlePlugServiceDetails(ctx, plugId, serviceType);
+});
+
+// Callback ignoré (page actuelle)
+bot.action('current_page', handleIgnoredCallback);
+
+// Gestion des erreurs du bot
+bot.catch((err, ctx) => {
+  console.error('Erreur bot:', err);
+  ctx.reply('❌ Une erreur est survenue, veuillez réessayer.').catch(() => {});
+});
+
+// ============================================
+// API REST POUR LE PANEL ADMIN
+// ============================================
+
+// Middleware d'authentification
+const authenticateAdmin = (req, res, next) => {
+  const password = req.headers.authorization?.replace('Bearer ', '');
+  
+  if (password !== process.env.ADMIN_PASSWORD) {
+    return res.status(401).json({ error: 'Non autorisé' });
+  }
+  
+  next();
+};
+
+// ===== ROUTES CONFIGURATION =====
+
+// Récupérer la configuration
+app.get('/api/config', authenticateAdmin, async (req, res) => {
+  try {
+    const config = await Config.findById('main');
+    res.json(config || {});
+  } catch (error) {
+    console.error('Erreur récupération config:', error);
+    res.status(500).json({ error: 'Erreur serveur' });
+  }
+});
+
+// Mettre à jour la configuration
+app.put('/api/config', authenticateAdmin, async (req, res) => {
+  try {
+    const config = await Config.findByIdAndUpdate('main', req.body, { 
+      new: true, 
+      upsert: true 
+    });
+    res.json(config);
+  } catch (error) {
+    console.error('Erreur mise à jour config:', error);
+    res.status(500).json({ error: 'Erreur serveur' });
+  }
+});
+
+// ===== ROUTES PLUGS =====
+
+// Récupérer tous les plugs
+app.get('/api/plugs', authenticateAdmin, async (req, res) => {
+  try {
+    const { page = 1, limit = 10, search = '', filter = 'all' } = req.query;
+    const skip = (page - 1) * limit;
+    
+    let query = {};
+    
+    // Filtre de recherche
+    if (search) {
+      query.$or = [
+        { name: { $regex: search, $options: 'i' } },
+        { description: { $regex: search, $options: 'i' } }
+      ];
+    }
+    
+    // Filtre par type
+    if (filter === 'vip') {
+      query.isVip = true;
+    } else if (filter === 'active') {
+      query.isActive = true;
+    } else if (filter === 'inactive') {
+      query.isActive = false;
+    }
+    
+    const plugs = await Plug.find(query)
+      .sort({ isVip: -1, vipOrder: 1, createdAt: -1 })
+      .skip(skip)
+      .limit(parseInt(limit));
+      
+    const total = await Plug.countDocuments(query);
+    
+    res.json({
+      plugs,
+      pagination: {
+        page: parseInt(page),
+        pages: Math.ceil(total / limit),
+        total
+      }
+    });
+  } catch (error) {
+    console.error('Erreur récupération plugs:', error);
+    res.status(500).json({ error: 'Erreur serveur' });
+  }
+});
+
+// Récupérer un plug par ID
+app.get('/api/plugs/:id', authenticateAdmin, async (req, res) => {
+  try {
+    const plug = await Plug.findById(req.params.id);
+    if (!plug) {
+      return res.status(404).json({ error: 'Plug non trouvé' });
+    }
+    res.json(plug);
+  } catch (error) {
+    console.error('Erreur récupération plug:', error);
+    res.status(500).json({ error: 'Erreur serveur' });
+  }
+});
+
+// Créer un nouveau plug
+app.post('/api/plugs', authenticateAdmin, async (req, res) => {
+  try {
+    const plug = new Plug(req.body);
+    await plug.save();
+    res.status(201).json(plug);
+  } catch (error) {
+    console.error('Erreur création plug:', error);
+    res.status(500).json({ error: 'Erreur serveur' });
+  }
+});
+
+// Mettre à jour un plug
+app.put('/api/plugs/:id', authenticateAdmin, async (req, res) => {
+  try {
+    const plug = await Plug.findByIdAndUpdate(req.params.id, req.body, { 
+      new: true 
+    });
+    if (!plug) {
+      return res.status(404).json({ error: 'Plug non trouvé' });
+    }
+    res.json(plug);
+  } catch (error) {
+    console.error('Erreur mise à jour plug:', error);
+    res.status(500).json({ error: 'Erreur serveur' });
+  }
+});
+
+// Supprimer un plug
+app.delete('/api/plugs/:id', authenticateAdmin, async (req, res) => {
+  try {
+    const plug = await Plug.findByIdAndDelete(req.params.id);
+    if (!plug) {
+      return res.status(404).json({ error: 'Plug non trouvé' });
+    }
+    res.json({ message: 'Plug supprimé' });
+  } catch (error) {
+    console.error('Erreur suppression plug:', error);
+    res.status(500).json({ error: 'Erreur serveur' });
+  }
+});
+
+// ===== ROUTES UPLOADS =====
+
+// Upload d'image
+app.post('/api/upload', authenticateAdmin, upload.single('image'), (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: 'Aucun fichier fourni' });
+    }
+    
+    // Pour le moment, retourner l'URL temporaire
+    // En production, utiliser Cloudinary ou un service de stockage
+    res.json({ 
+      url: `data:${req.file.mimetype};base64,${req.file.buffer.toString('base64')}` 
+    });
+  } catch (error) {
+    console.error('Erreur upload:', error);
+    res.status(500).json({ error: 'Erreur lors de l\'upload' });
+  }
+});
+
+// ===== ROUTES STATISTIQUES =====
+
+// Statistiques du dashboard
+app.get('/api/stats', authenticateAdmin, async (req, res) => {
+  try {
+    const totalPlugs = await Plug.countDocuments({ isActive: true });
+    const vipPlugs = await Plug.countDocuments({ isActive: true, isVip: true });
+    const inactivePlugs = await Plug.countDocuments({ isActive: false });
+    const countries = await Plug.distinct('countries', { isActive: true });
+    
+    const services = {
+      delivery: await Plug.countDocuments({ 
+        isActive: true, 
+        'services.delivery.enabled': true 
+      }),
+      postal: await Plug.countDocuments({ 
+        isActive: true, 
+        'services.postal.enabled': true 
+      }),
+      meetup: await Plug.countDocuments({ 
+        isActive: true, 
+        'services.meetup.enabled': true 
+      })
+    };
+    
+    res.json({
+      totalPlugs,
+      vipPlugs,
+      inactivePlugs,
+      countries: countries.length,
+      services
+    });
+  } catch (error) {
+    console.error('Erreur récupération stats:', error);
+    res.status(500).json({ error: 'Erreur serveur' });
+  }
+});
+
+// ===== ROUTES SYSTÈME =====
+
+// Santé de l'API
+app.get('/health', (req, res) => {
+  res.json({ 
+    status: 'OK', 
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime()
+  });
+});
+
+// Route par défaut
+app.get('/', (req, res) => {
+  res.json({ 
+    message: 'Bot Telegram VIP System API',
+    version: '1.0.0',
+    endpoints: [
+      'GET /health',
+      'GET /api/config',
+      'PUT /api/config',
+      'GET /api/plugs',
+      'POST /api/plugs',
+      'GET /api/stats'
+    ]
+  });
+});
+
+// ============================================
+// DÉMARRAGE DU SERVEUR
+// ============================================
+
+const start = async () => {
+  try {
+    // Connexion à la base de données
+    await connectDB();
+    
+    // Configuration du webhook pour la production
+    if (process.env.NODE_ENV === 'production') {
+      const webhookUrl = `${process.env.WEBHOOK_URL}/webhook/${process.env.TELEGRAM_BOT_TOKEN}`;
+      
+      // Route pour le webhook
+      app.use(bot.webhookCallback(`/webhook/${process.env.TELEGRAM_BOT_TOKEN}`));
+      
+      // Définir le webhook
+      await bot.telegram.setWebhook(webhookUrl);
+      console.log(`✅ Webhook configuré: ${webhookUrl}`);
+    } else {
+      // Mode polling pour le développement
+      bot.launch();
+      console.log('✅ Bot en mode polling (développement)');
+    }
+    
+    // Démarrer le serveur Express
+    app.listen(PORT, () => {
+      console.log(`✅ Serveur démarré sur le port ${PORT}`);
+      console.log(`📱 Bot Telegram connecté`);
+      console.log(`🌐 API disponible sur http://localhost:${PORT}`);
+    });
+    
+  } catch (error) {
+    console.error('❌ Erreur au démarrage:', error);
+    process.exit(1);
+  }
+};
+
+// Gestion des signaux d'arrêt
+process.once('SIGINT', () => bot.stop('SIGINT'));
+process.once('SIGTERM', () => bot.stop('SIGTERM'));
+
+// Démarrage
+start();
