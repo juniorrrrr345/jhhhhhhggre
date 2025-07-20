@@ -280,8 +280,11 @@ app.get('/api/public/plugs', async (req, res) => {
       
     const total = await Plug.countDocuments(query);
     
-    // Headers pour éviter le cache
+    // Headers pour éviter le cache et CORS
     res.set({
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type',
       'Cache-Control': 'no-cache, no-store, must-revalidate',
       'Pragma': 'no-cache',
       'Expires': '0',
@@ -421,10 +424,34 @@ app.get('/api/stats', authenticateAdmin, async (req, res) => {
 
 // Santé de l'API
 app.get('/health', (req, res) => {
+  res.set({
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'GET, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type',
+    'Cache-Control': 'no-cache'
+  });
+  
   res.json({ 
     status: 'OK', 
     timestamp: new Date().toISOString(),
-    uptime: process.uptime()
+    uptime: process.uptime(),
+    environment: process.env.NODE_ENV || 'development'
+  });
+});
+
+// Test simple pour Vercel
+app.get('/test', (req, res) => {
+  res.set({
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'GET, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type',
+    'Cache-Control': 'no-cache'
+  });
+  
+  res.json({ 
+    message: 'Test endpoint OK',
+    timestamp: new Date().toISOString(),
+    source: 'render-api'
   });
 });
 

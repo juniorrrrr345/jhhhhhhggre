@@ -25,45 +25,74 @@ export default function DebugPage() {
   }, [])
 
   const testApi = async () => {
-    try {
-      const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://jhhhhhhggre.onrender.com'
-      const url = `${apiBaseUrl}/api/public/plugs?filter=active&limit=100&t=${new Date().getTime()}`
-      
-      console.log('🧪 Testing API:', url)
-      
-      const response = await fetch(url, {
-        cache: 'no-cache',
-        headers: {
-          'Cache-Control': 'no-cache'
+    const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://jhhhhhhggre.onrender.com'
+    const tests = [
+      {
+        name: 'Test simple',
+        url: `${apiBaseUrl}/test`,
+        description: 'Endpoint de test basique'
+      },
+      {
+        name: 'Health check',
+        url: `${apiBaseUrl}/health`,
+        description: 'Vérification santé API'
+      },
+      {
+        name: 'Plugs publics',
+        url: `${apiBaseUrl}/api/public/plugs?filter=active&limit=100&t=${new Date().getTime()}`,
+        description: 'Données boutiques'
+      }
+    ]
+    
+    const results = []
+    
+    for (const test of tests) {
+      try {
+        console.log(`🧪 Testing ${test.name}:`, test.url)
+        
+        const response = await fetch(test.url, {
+          cache: 'no-cache',
+          headers: {
+            'Cache-Control': 'no-cache'
+          }
+        })
+        
+        const result = {
+          name: test.name,
+          description: test.description,
+          url: test.url,
+          status: response.status,
+          statusText: response.statusText,
+          ok: response.ok,
+          headers: Object.fromEntries(response.headers.entries())
         }
-      })
-      
-      const result = {
-        url,
-        status: response.status,
-        statusText: response.statusText,
-        ok: response.ok,
-        headers: Object.fromEntries(response.headers.entries())
+        
+        if (response.ok) {
+          const data = await response.json()
+          result.data = data
+          if (data.plugs) {
+            result.plugsCount = data.plugs.length
+          }
+        } else {
+          result.error = `HTTP ${response.status} ${response.statusText}`
+        }
+        
+        results.push(result)
+        console.log(`✅ ${test.name} result:`, result)
+        
+      } catch (error) {
+        results.push({
+          name: test.name,
+          description: test.description,
+          url: test.url,
+          error: error.message,
+          stack: error.stack
+        })
+        console.error(`❌ ${test.name} error:`, error)
       }
-      
-      if (response.ok) {
-        const data = await response.json()
-        result.data = data
-        result.plugsCount = data.plugs?.length || 0
-      } else {
-        result.error = `HTTP ${response.status} ${response.statusText}`
-      }
-      
-      setApiTest(result)
-      console.log('🧪 API Test Result:', result)
-      
-    } catch (error) {
-      setApiTest({
-        error: error.message,
-        stack: error.stack
-      })
-      console.error('🧪 API Test Error:', error)
     }
+    
+    setApiTest(results)
   }
 
   return (
@@ -94,51 +123,69 @@ export default function DebugPage() {
             <h2 className="text-xl font-semibold mb-4">📡 Test API</h2>
             
             {apiTest === null ? (
-              <div className="text-gray-500">⏳ Test en cours...</div>
-            ) : (
-              <div className="space-y-4">
-                <div>
-                  <span className="font-medium">URL testée:</span>
-                  <div className="bg-gray-100 p-2 rounded text-sm break-all">{apiTest.url}</div>
-                </div>
-                
-                <div>
-                  <span className="font-medium">Status:</span>
-                  <span className={`ml-2 px-2 py-1 rounded text-sm ${
-                    apiTest.ok ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                  }`}>
-                    {apiTest.status} {apiTest.statusText}
-                  </span>
-                </div>
+              <div className="text-gray-500">⏳ Tests en cours...</div>
+            ) : Array.isArray(apiTest) ? (
+              <div className="space-y-6">
+                {apiTest.map((test, index) => (
+                  <div key={index} className="border rounded-lg p-4">
+                    <h3 className="font-medium text-lg mb-2">
+                      {test.name} - {test.description}
+                    </h3>
+                    
+                    <div className="space-y-2">
+                      <div>
+                        <span className="font-medium">URL:</span>
+                        <div className="bg-gray-100 p-2 rounded text-sm break-all">{test.url}</div>
+                      </div>
+                      
+                      <div>
+                        <span className="font-medium">Status:</span>
+                        <span className={`ml-2 px-2 py-1 rounded text-sm ${
+                          test.ok ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                        }`}>
+                          {test.status || 'Erreur'} {test.statusText || ''}
+                        </span>
+                      </div>
 
-                {apiTest.error && (
-                  <div>
-                    <span className="font-medium text-red-600">Erreur:</span>
-                    <div className="bg-red-50 p-2 rounded text-sm text-red-700">{apiTest.error}</div>
-                  </div>
-                )}
-
-                {apiTest.data && (
-                  <div>
-                    <span className="font-medium text-green-600">Données reçues:</span>
-                    <div className="bg-green-50 p-2 rounded text-sm">
-                      <div>✅ {apiTest.plugsCount} boutiques trouvées</div>
-                      {apiTest.data.plugs?.map((plug, index) => (
-                        <div key={index} className="ml-4">
-                          • {plug.name} {plug.isVip ? '⭐' : ''} ({plug.isActive ? 'Actif' : 'Inactif'})
+                      {test.error && (
+                        <div>
+                          <span className="font-medium text-red-600">Erreur:</span>
+                          <div className="bg-red-50 p-2 rounded text-sm text-red-700">{test.error}</div>
                         </div>
-                      ))}
+                      )}
+
+                      {test.data && (
+                        <div>
+                          <span className="font-medium text-green-600">Données reçues:</span>
+                          <div className="bg-green-50 p-2 rounded text-sm">
+                            {test.plugsCount !== undefined ? (
+                              <>
+                                <div>✅ {test.plugsCount} boutiques trouvées</div>
+                                {test.data.plugs?.map((plug, plugIndex) => (
+                                  <div key={plugIndex} className="ml-4">
+                                    • {plug.name} {plug.isVip ? '⭐' : ''} ({plug.isActive ? 'Actif' : 'Inactif'})
+                                  </div>
+                                ))}
+                              </>
+                            ) : (
+                              <div>✅ Réponse: {JSON.stringify(test.data)}</div>
+                            )}
+                          </div>
+                        </div>
+                      )}
+
+                      <details className="mt-2">
+                        <summary className="cursor-pointer font-medium text-sm">📊 Détails complets</summary>
+                        <pre className="bg-gray-100 p-2 rounded text-xs overflow-auto mt-1">
+                          {JSON.stringify(test, null, 2)}
+                        </pre>
+                      </details>
                     </div>
                   </div>
-                )}
-
-                <details className="mt-4">
-                  <summary className="cursor-pointer font-medium">📊 Données complètes (JSON)</summary>
-                  <pre className="bg-gray-100 p-4 rounded text-xs overflow-auto mt-2">
-                    {JSON.stringify(apiTest, null, 2)}
-                  </pre>
-                </details>
+                ))}
               </div>
+            ) : (
+              <div className="text-red-500">Format de données inattendu</div>
             )}
           </div>
 
