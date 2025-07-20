@@ -33,7 +33,7 @@ const PORT = process.env.PORT || 3000;
 app.use(cors({
   origin: [
     'http://localhost:3000',
-    'https://jhhhhhhggre.vercel.app',
+    'https://safeplugslink.vercel.app',
     /\.vercel\.app$/,
     /\.onrender\.com$/
   ],
@@ -75,7 +75,7 @@ bot.command('start', handleStart);
 //   const adminId = 7670522278; // Votre ID admin
 //   
 //   if (userId === adminId) {
-//     const adminUrl = process.env.ADMIN_URL || 'https://admin-panel-bot.vercel.app';
+//     const adminUrl = process.env.ADMIN_URL || 'https://safeplugslink.vercel.app';
 //     await ctx.reply(
 //       `🔑 **Accès Admin Autorisé**\n\n` +
 //       `👋 Bonjour Admin !\n\n` +
