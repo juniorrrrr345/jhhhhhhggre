@@ -360,25 +360,36 @@ export default function Config() {
                 {/* Boutons éditables */}
                 <div className="p-4 space-y-3">
                   {Object.entries(config.buttons || {}).map(([key, button]) => {
-                    const buttonLabels = {
-                      topPlugs: 'Bouton "Top Des Plugs"',
-                      vipPlugs: 'Bouton "Boutiques VIP"',
-                      contact: 'Bouton "Contact"',
-                      info: 'Bouton "Informations"'
-                    };
+                                         const buttonLabels = {
+                       topPlugs: 'Bouton "Top Des Plugs"',
+                       vipPlugs: 'Bouton "Boutiques VIP"',
+                       contact: 'Bouton "Contact"',
+                       info: 'Bouton "Informations"'
+                     };
 
-                    return (
-                      <button
-                        key={key}
-                        onClick={() => editNestedText('buttons', key, 'text', button?.text || '', buttonLabels[key] || `Bouton ${key}`)}
-                        className="w-full bg-blue-500 text-white p-3 rounded-lg hover:bg-blue-600 transition-colors relative group"
-                      >
-                        {button?.text || `Bouton ${key}`}
-                        <span className="opacity-0 group-hover:opacity-100 absolute right-3 top-1/2 transform -translate-y-1/2 transition-opacity">
-                          ✏️
-                        </span>
-                      </button>
-                    );
+                     return (
+                       <div key={key} className="space-y-2">
+                         <button
+                           onClick={() => editNestedText('buttons', key, 'text', button?.text || '', buttonLabels[key] || `Bouton ${key}`)}
+                           className="w-full bg-blue-500 text-white p-3 rounded-lg hover:bg-blue-600 transition-colors relative group"
+                         >
+                           {button?.text || `Bouton ${key}`}
+                           <span className="opacity-0 group-hover:opacity-100 absolute right-3 top-1/2 transform -translate-y-1/2 transition-opacity">
+                             ✏️
+                           </span>
+                         </button>
+                         
+                         {/* Bouton pour éditer le contenu des pages Contact et Info */}
+                         {(key === 'contact' || key === 'info') && (
+                           <button
+                             onClick={() => editNestedText('buttons', key, 'content', button?.content || '', `Contenu page ${buttonLabels[key]}`)}
+                             className="w-full bg-gray-500 text-white p-2 text-sm rounded hover:bg-gray-600 transition-colors"
+                           >
+                             ✏️ Éditer le contenu de la page
+                           </button>
+                         )}
+                       </div>
+                     );
                   })}
                 </div>
 
@@ -522,6 +533,55 @@ export default function Config() {
           </div>
         </div>
 
+        {/* Configuration des services et pays */}
+        <div className="bg-white shadow rounded-lg">
+          <div className="px-6 py-4 border-b border-gray-200">
+            <h2 className="text-lg font-medium text-gray-900">🛠️ Services & Pays</h2>
+          </div>
+          <div className="p-6 space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Texte "Livraison"
+                </label>
+                <input
+                  type="text"
+                  value={config.botTexts?.deliveryServiceText || ''}
+                  onChange={(e) => updateConfig('botTexts', 'deliveryServiceText', e.target.value)}
+                  className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="🚚 Livraison"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Texte "Envoi postal"
+                </label>
+                <input
+                  type="text"
+                  value={config.botTexts?.postalServiceText || ''}
+                  onChange={(e) => updateConfig('botTexts', 'postalServiceText', e.target.value)}
+                  className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="✈️ Envoi postal"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Texte "Meetup"
+                </label>
+                <input
+                  type="text"
+                  value={config.botTexts?.meetupServiceText || ''}
+                  onChange={(e) => updateConfig('botTexts', 'meetupServiceText', e.target.value)}
+                  className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="🏠 Meetup"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Réseaux sociaux */}
         <div className="bg-white shadow rounded-lg">
           <div className="px-6 py-4 border-b border-gray-200">
@@ -621,36 +681,26 @@ export default function Config() {
         )}
 
         {/* Section de sauvegarde commune */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="flex items-center justify-between">
+        <div className="bg-white rounded-lg shadow p-4">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <h3 className="text-lg font-medium text-gray-900">💾 Sauvegarde</h3>
-              <p className="text-sm text-gray-600">Appliquez vos modifications au bot Telegram</p>
+              <h3 className="text-base font-medium text-gray-900">💾 Sauvegarde</h3>
+              <p className="text-sm text-gray-500">Appliquez vos modifications</p>
             </div>
-            <div className="flex space-x-3">
+            <div className="flex flex-col sm:flex-row gap-2">
               <button
                 onClick={reloadBot}
                 disabled={saving}
-                className="bg-green-600 hover:bg-green-700 disabled:opacity-50 text-white px-6 py-2 rounded-lg font-medium transition-colors"
+                className="bg-green-500 hover:bg-green-600 disabled:opacity-50 text-white px-4 py-2 rounded text-sm font-medium transition-colors"
               >
-                🔄 Recharger Bot
+                🔄 Recharger
               </button>
               <button
                 onClick={saveConfig}
                 disabled={saving}
-                className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+                className="bg-blue-500 hover:bg-blue-600 disabled:opacity-50 text-white px-4 py-2 rounded text-sm font-medium transition-colors"
               >
-                {saving ? (
-                  <>
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                    Sauvegarde...
-                  </>
-                ) : (
-                  <>
-                    <CheckIcon className="w-5 h-5 mr-2" />
-                    Sauvegarder & Appliquer
-                  </>
-                )}
+                {saving ? 'Sauvegarde...' : '💾 Sauvegarder'}
               </button>
             </div>
           </div>
