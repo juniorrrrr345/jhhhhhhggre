@@ -15,7 +15,7 @@ const configSchema = new mongoose.Schema({
     },
     text: {
       type: String,
-      default: '🌟 Bienvenue sur notre plateforme !\n\nDécouvrez nos meilleurs plugs et services.'
+      default: 'Message d\'accueil personnalisé à configurer dans le panel admin.'
     }
   },
   
