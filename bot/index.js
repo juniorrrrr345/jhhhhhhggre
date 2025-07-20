@@ -63,33 +63,33 @@ const upload = multer({
 // Commande /start
 bot.command('start', handleStart);
 
-// Commande /admin
-bot.command('admin', async (ctx) => {
-  const userId = ctx.from.id;
-  const adminId = 7670522278; // Votre ID admin
-  
-  if (userId === adminId) {
-    const adminUrl = process.env.ADMIN_URL || 'https://admin-panel-bot.vercel.app';
-    await ctx.reply(
-      `🔑 **Accès Admin Autorisé**\n\n` +
-      `👋 Bonjour Admin !\n\n` +
-      `🌐 **Panel Admin :** [Cliquer ici](${adminUrl})\n\n` +
-      `🔒 **Mot de passe :** \`${process.env.ADMIN_PASSWORD || 'JuniorAdmon123'}\`\n\n` +
-      `💡 *Cliquez sur le lien pour accéder au panel d'administration moderne*\n\n` +
-      `✨ **Fonctionnalités :**\n` +
-      `• 📊 Dashboard avec statistiques\n` +
-      `• 🏪 Gestion des boutiques\n` +
-      `• ⚙️ Configuration du bot\n` +
-      `• 📱 Interface responsive`,
-      { 
-        parse_mode: 'Markdown',
-        disable_web_page_preview: false
-      }
-    );
-  } else {
-    await ctx.reply('❌ Accès refusé. Vous n\'êtes pas autorisé à accéder au panel admin.');
-  }
-});
+// Commande /admin - DÉSACTIVÉE pour sécurité
+// bot.command('admin', async (ctx) => {
+//   const userId = ctx.from.id;
+//   const adminId = 7670522278; // Votre ID admin
+//   
+//   if (userId === adminId) {
+//     const adminUrl = process.env.ADMIN_URL || 'https://admin-panel-bot.vercel.app';
+//     await ctx.reply(
+//       `🔑 **Accès Admin Autorisé**\n\n` +
+//       `👋 Bonjour Admin !\n\n` +
+//       `🌐 **Panel Admin :** [Cliquer ici](${adminUrl})\n\n` +
+//       `🔒 **Mot de passe :** \`${process.env.ADMIN_PASSWORD || 'JuniorAdmon123'}\`\n\n` +
+//       `💡 *Cliquez sur le lien pour accéder au panel d'administration moderne*\n\n` +
+//       `✨ **Fonctionnalités :**\n` +
+//       `• 📊 Dashboard avec statistiques\n` +
+//       `• 🏪 Gestion des boutiques\n` +
+//       `• ⚙️ Configuration du bot\n` +
+//       `• 📱 Interface responsive`,
+//       { 
+//         parse_mode: 'Markdown',
+//         disable_web_page_preview: false
+//       }
+//     );
+//   } else {
+//     await ctx.reply('❌ Accès refusé. Vous n\'êtes pas autorisé à accéder au panel admin.');
+//   }
+// });
 
 // Gestionnaires des callbacks
 bot.action('back_main', handleBackMain);

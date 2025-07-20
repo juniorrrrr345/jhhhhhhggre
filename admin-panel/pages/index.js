@@ -99,12 +99,7 @@ export default function Login() {
             </button>
           </form>
 
-          {/* Info */}
-          <div className="mt-6 p-4 bg-blue-50 rounded-lg">
-            <p className="text-sm text-blue-800">
-              💡 <strong>Astuce :</strong> Utilisez la commande <code>/admin</code> dans votre bot Telegram pour obtenir le mot de passe.
-            </p>
-          </div>
+
         </div>
       </div>
     </div>
