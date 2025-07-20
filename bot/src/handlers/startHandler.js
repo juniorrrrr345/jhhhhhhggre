@@ -81,18 +81,57 @@ const handleBackMain = async (ctx) => {
     
     console.log('📝 Message d\'accueil préparé pour le retour');
     
-    // Utiliser editMessageText pour une navigation fluide
-    await ctx.editMessageText(welcomeMessage, {
-      reply_markup: keyboard.reply_markup,
-      parse_mode: 'HTML'
-    });
+    // Vérifier le type de message et agir en conséquence
+    try {
+      // Essayer d'abord d'éditer le message texte
+      await ctx.editMessageText(welcomeMessage, {
+        reply_markup: keyboard.reply_markup,
+        parse_mode: 'HTML'
+      });
+      console.log('✅ Message texte édité avec succès');
+    } catch (editError) {
+      console.log('⚠️ Impossible d\'éditer le message (probablement une photo), suppression et envoi d\'un nouveau message');
+      
+      try {
+        // Supprimer le message actuel
+        await ctx.deleteMessage();
+        console.log('🗑️ Message précédent supprimé');
+      } catch (deleteError) {
+        console.log('⚠️ Impossible de supprimer le message précédent:', deleteError.message);
+      }
+      
+      // Envoyer un nouveau message
+      const welcomeImage = config.welcome?.image || null;
+      
+      if (welcomeImage) {
+        try {
+          console.log('📸 Envoi nouveau message avec image');
+          await ctx.replyWithPhoto(welcomeImage, {
+            caption: welcomeMessage,
+            reply_markup: keyboard.reply_markup,
+            parse_mode: 'HTML'
+          });
+          console.log('✅ Nouveau message avec image envoyé');
+        } catch (photoError) {
+          console.error('❌ Erreur envoi photo, fallback vers texte:', photoError);
+          await ctx.reply(welcomeMessage, keyboard);
+        }
+      } else {
+        console.log('📝 Envoi nouveau message texte');
+        await ctx.reply(welcomeMessage, keyboard);
+      }
+    }
     
     console.log('✅ Retour au menu principal terminé');
     await ctx.answerCbQuery();
   } catch (error) {
     console.error('❌ Erreur dans handleBackMain:', error);
     // Fallback : répondre avec le message de démarrage
-    await ctx.answerCbQuery('❌ Erreur lors du retour au menu');
+    try {
+      await ctx.answerCbQuery('❌ Erreur lors du retour au menu');
+    } catch (cbError) {
+      console.error('❌ Erreur lors de answerCbQuery:', cbError);
+    }
   }
 };
 
