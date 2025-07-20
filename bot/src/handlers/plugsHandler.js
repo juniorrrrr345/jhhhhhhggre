@@ -8,6 +8,7 @@ const {
   createPlugListKeyboard,
   createPlugKeyboard 
 } = require('../utils/keyboards');
+const { sendMessageWithImage, editMessageWithImage } = require('../utils/messageHelper');
 
 // Afficher le menu des plugs
 const handleTopPlugs = async (ctx) => {
@@ -18,25 +19,8 @@ const handleTopPlugs = async (ctx) => {
     
     const messageText = `${config?.botTexts?.topPlugsTitle || '🔌 Top Des Plugs'}\n\n${config?.botTexts?.topPlugsDescription || 'Choisissez une option pour découvrir nos plugs :'}`;
     
-    // Toujours envoyer en texte pour éviter les erreurs d'images
-    try {
-      await ctx.editMessageText(messageText, {
-        reply_markup: keyboard.reply_markup,
-        parse_mode: 'Markdown'
-      });
-    } catch (editError) {
-      // Si impossible d'éditer (ex: message avec photo), supprimer et envoyer nouveau
-      try {
-        await ctx.deleteMessage();
-        await ctx.reply(messageText, {
-          reply_markup: keyboard.reply_markup,
-          parse_mode: 'Markdown'
-        });
-      } catch (deleteError) {
-        console.error('Erreur dans handler:', deleteError);
-        await ctx.answerCbQuery('❌ Erreur lors du chargement');
-      }
-    }
+    // Utiliser la fonction helper pour afficher avec image
+    await editMessageWithImage(ctx, messageText, keyboard, config, { parse_mode: 'Markdown' });
     
     // Confirmer la callback pour éviter le loading
     await ctx.answerCbQuery();
@@ -111,25 +95,8 @@ const handleVipPlugs = async (ctx, page = 0) => {
     
     const messageText = `${config?.botTexts?.vipTitle || '👑 Boutiques VIP Premium'}\n\n${config?.botTexts?.vipDescription || '✨ Découvrez nos boutiques sélectionnées'}\n\n${paginationText} • ${vipPlugs.length} boutique${vipPlugs.length > 1 ? 's' : ''}`;
 
-    // Toujours envoyer en texte pour éviter les erreurs d'images
-    try {
-      await ctx.editMessageText(messageText, {
-        reply_markup: keyboard.reply_markup,
-        parse_mode: 'Markdown'
-      });
-    } catch (editError) {
-      // Si impossible d'éditer (ex: message avec photo), supprimer et envoyer nouveau
-      try {
-        await ctx.deleteMessage();
-        await ctx.reply(messageText, {
-          reply_markup: keyboard.reply_markup,
-          parse_mode: 'Markdown'
-        });
-      } catch (deleteError) {
-        console.error('Erreur dans handler:', deleteError);
-        await ctx.answerCbQuery('❌ Erreur lors du chargement');
-      }
-    }
+    // Utiliser la fonction helper pour afficher avec image
+    await editMessageWithImage(ctx, messageText, keyboard, config, { parse_mode: 'Markdown' });
 
     await ctx.answerCbQuery();
   } catch (error) {
@@ -172,25 +139,8 @@ const handleAllPlugs = async (ctx, page = 0) => {
       message += `${paginationText}\n\n`;
     }
 
-    // Toujours envoyer en texte pour éviter les erreurs d'images
-    try {
-      await ctx.editMessageText(message, {
-        reply_markup: keyboard.reply_markup,
-        parse_mode: 'Markdown'
-      });
-    } catch (editError) {
-      // Si impossible d'éditer (ex: message avec photo), supprimer et envoyer nouveau
-      try {
-        await ctx.deleteMessage();
-        await ctx.reply(message, {
-          reply_markup: keyboard.reply_markup,
-          parse_mode: 'Markdown'
-        });
-      } catch (deleteError) {
-        console.error('Erreur dans handler:', deleteError);
-        await ctx.answerCbQuery('❌ Erreur lors du chargement');
-      }
-    }
+    // Utiliser la fonction helper pour afficher avec image
+    await editMessageWithImage(ctx, message, keyboard, config, { parse_mode: 'Markdown' });
     
     // Confirmer la callback pour éviter le loading
     await ctx.answerCbQuery();
@@ -226,25 +176,8 @@ const handleFilterService = async (ctx) => {
     
     const messageText = `${config?.botTexts?.filterServiceTitle || '🔍 Filtrer par service'}\n\n${config?.botTexts?.filterServiceDescription || 'Choisissez le type de service :'}\n\n📊 **Disponibilité :**\n🚚 Livraison: ${deliveryCount} boutiques\n✈️ Postal: ${postalCount} boutiques\n🏠 Meetup: ${meetupCount} boutiques`;
     
-    // Toujours envoyer en texte pour éviter les erreurs d'images
-    try {
-      await ctx.editMessageText(messageText, {
-        reply_markup: keyboard.reply_markup,
-        parse_mode: 'Markdown'
-      });
-    } catch (editError) {
-      // Si impossible d'éditer (ex: message avec photo), supprimer et envoyer nouveau
-      try {
-        await ctx.deleteMessage();
-        await ctx.reply(messageText, {
-          reply_markup: keyboard.reply_markup,
-          parse_mode: 'Markdown'
-        });
-      } catch (deleteError) {
-        console.error('Erreur dans handler:', deleteError);
-        await ctx.answerCbQuery('❌ Erreur lors du chargement');
-      }
-    }
+    // Utiliser la fonction helper pour afficher avec image
+    await editMessageWithImage(ctx, messageText, keyboard, config, { parse_mode: 'Markdown' });
     
     // Confirmer la callback pour éviter le loading
     await ctx.answerCbQuery();
@@ -338,25 +271,8 @@ const handleFilterCountry = async (ctx) => {
     const config = await Config.findById('main');
     const messageText = `${config.botTexts?.filterCountryTitle || '🌍 Filtrer par pays'}\n\n${config.botTexts?.filterCountryDescription || 'Choisissez un pays :'}`;
     
-    // Toujours envoyer en texte pour éviter les erreurs d'images
-    try {
-      await ctx.editMessageText(messageText, {
-        reply_markup: keyboard.reply_markup,
-        parse_mode: 'Markdown'
-      });
-    } catch (editError) {
-      // Si impossible d'éditer (ex: message avec photo), supprimer et envoyer nouveau
-      try {
-        await ctx.deleteMessage();
-        await ctx.reply(messageText, {
-          reply_markup: keyboard.reply_markup,
-          parse_mode: 'Markdown'
-        });
-      } catch (deleteError) {
-        console.error('Erreur dans handler:', deleteError);
-        await ctx.answerCbQuery('❌ Erreur lors du chargement');
-      }
-    }
+    // Utiliser la fonction helper pour afficher avec image
+    await editMessageWithImage(ctx, messageText, keyboard, config, { parse_mode: 'Markdown' });
     
     // Confirmer la callback pour éviter le loading
     await ctx.answerCbQuery();
@@ -389,10 +305,8 @@ const handleCountryFilter = async (ctx, country, page = 0) => {
     message += `📊 Total : ${plugs.length} plugs\n`;
     message += `📄 Page ${page + 1}/${totalPages}`;
 
-    await ctx.editMessageText(message, {
-      reply_markup: keyboard.reply_markup,
-      parse_mode: 'Markdown'
-    });
+    const config = await Config.findById('main');
+    await editMessageWithImage(ctx, message, keyboard, config, { parse_mode: 'Markdown' });
   } catch (error) {
     console.error('Erreur dans handleCountryFilter:', error);
     await ctx.answerCbQuery('❌ Erreur lors du chargement');
@@ -436,26 +350,10 @@ const handlePlugDetails = async (ctx, plugId, returnContext = 'top_plugs') => {
     }
 
     const keyboard = createPlugKeyboard(plug, returnContext);
+    const config = await Config.findById('main');
 
-    // Toujours envoyer en texte pour éviter les erreurs d'images
-    try {
-      await ctx.editMessageText(message, {
-        reply_markup: keyboard.reply_markup,
-        parse_mode: 'Markdown'
-      });
-    } catch (editError) {
-      // Si impossible d'éditer (ex: message avec photo), supprimer et envoyer nouveau
-      try {
-        await ctx.deleteMessage();
-        await ctx.reply(message, {
-          reply_markup: keyboard.reply_markup,
-          parse_mode: 'Markdown'
-        });
-      } catch (deleteError) {
-        console.error('Erreur dans handler:', deleteError);
-        await ctx.answerCbQuery('❌ Erreur lors du chargement');
-      }
-    }
+    // Utiliser la fonction helper pour afficher avec image
+    await editMessageWithImage(ctx, message, keyboard, config, { parse_mode: 'Markdown' });
   } catch (error) {
     console.error('Erreur dans handlePlugDetails:', error);
     await ctx.answerCbQuery('❌ Erreur lors du chargement');
@@ -499,11 +397,9 @@ const handlePlugServiceDetails = async (ctx, plugId, serviceType) => {
     message += '📱 **Contactez directement :**';
 
     const keyboard = createPlugKeyboard(plug);
+    const config = await Config.findById('main');
 
-    await ctx.editMessageText(message, {
-      reply_markup: keyboard.reply_markup,
-      parse_mode: 'Markdown'
-    });
+    await editMessageWithImage(ctx, message, keyboard, config, { parse_mode: 'Markdown' });
 
   } catch (error) {
     console.error('Erreur dans handlePlugServiceDetails:', error);

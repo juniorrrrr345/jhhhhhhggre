@@ -66,16 +66,21 @@ export default function Config() {
   const applyUserBoutiqueConfig = () => {
     setConfig(prev => ({
       ...prev,
+      welcome: {
+        ...prev.welcome,
+        text: '🌟 Bienvenue sur SafePlugs !\n\n🔌 Découvrez nos boutiques de confiance\n🎯 Services vérifiés et sécurisés\n⭐ Section VIP premium\n\nChoisissez une option ci-dessous :'
+      },
       boutique: {
         ...prev.boutique,
-        name: 'cacaca',
-        subtitle: 'fac caca',
-        logo: 'https://imgur.com/a/4VbSOHD',
-        searchTitle: 'TESTE',
-        vipTitle: 'TESTE'
+        name: 'SafePlugs Store',
+        subtitle: 'Boutique de confiance',
+        logo: 'https://via.placeholder.com/100x100/4F46E5/FFFFFF?text=SP',
+        backgroundImage: 'https://images.unsplash.com/photo-1557804506-669a67965ba0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
+        searchTitle: 'Recherche',
+        vipTitle: 'Section VIP'
       }
     }));
-    toast.success('Configuration boutique appliquée ! N\'oubliez pas de sauvegarder.');
+    toast.success('Configuration complète appliquée ! N\'oubliez pas de sauvegarder.');
   };
 
   const fetchConfig = async (token) => {
@@ -384,11 +389,27 @@ export default function Config() {
                 <div className="mb-3">
                   <button
                     onClick={applyUserBoutiqueConfig}
-                    className="w-full bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors text-sm font-medium"
+                    className="w-full bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors text-sm font-medium mb-3"
                   >
-                    ⚡ Appliquer la configuration fournie
+                    ⚡ Appliquer la configuration de test
                   </button>
-                  <p className="text-xs text-green-600 mt-1">Applique : cacaca, fac caca, Logo, TESTE</p>
+                  
+                  <button
+                    onClick={() => {
+                      saveConfig();
+                      triggerBoutiqueSync();
+                    }}
+                    className="w-full bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition-colors text-sm font-medium"
+                  >
+                    🔄 Sauvegarder et Synchroniser
+                  </button>
+                                      <div className="text-xs text-green-600 mt-2 p-2 bg-green-50 rounded">
+                      <strong>Configuration actuelle :</strong><br/>
+                      • Nom boutique: {config?.boutique?.name || 'Non défini'}<br/>
+                      • Logo: {config?.boutique?.logo ? '✅ Défini' : '❌ Non défini'}<br/>
+                      • Background: {config?.boutique?.backgroundImage ? '✅ Défini' : '❌ Non défini'}<br/>
+                      • Message bot: {config?.welcome?.text ? '✅ Défini' : '❌ Non défini'}
+                    </div>
                 </div>
                 
                 <div className="space-y-3">
@@ -417,6 +438,14 @@ export default function Config() {
                   </button>
 
                   <button
+                    onClick={() => editText('boutique', 'backgroundImage', config.boutique?.backgroundImage || '', 'Image de fond (URL)')}
+                    className="w-full text-left bg-white border border-green-300 rounded-lg p-3 hover:bg-green-50 transition-colors"
+                  >
+                    <div className="text-sm font-medium text-green-800">Background :</div>
+                    <div className="text-green-600 text-xs break-all">{config.boutique?.backgroundImage || 'Cliquez pour définir'}</div>
+                  </button>
+
+                  <button
                     onClick={() => editText('boutique', 'searchTitle', config.boutique?.searchTitle || '', 'Titre page Recherche')}
                     className="w-full text-left bg-white border border-green-300 rounded-lg p-3 hover:bg-green-50 transition-colors"
                   >
@@ -430,6 +459,15 @@ export default function Config() {
                   >
                     <div className="text-sm font-medium text-green-800">Titre VIP :</div>
                     <div className="text-green-600">{config.boutique?.vipTitle || 'Cliquez pour définir'}</div>
+                  </button>
+
+                  <button
+                    onClick={() => editText('welcome', 'text', config.welcome?.text || '', 'Message d\'accueil du bot (/start)')}
+                    className="w-full text-left bg-white border border-blue-300 rounded-lg p-3 hover:bg-blue-50 transition-colors"
+                  >
+                    <div className="text-sm font-medium text-blue-800">Message d'accueil Bot :</div>
+                    <div className="text-blue-600 text-sm">{config.welcome?.text || '🌟 Bienvenue sur notre bot !'}</div>
+                    <div className="text-xs text-blue-500 mt-1">Affiché quand on tape /start sur le bot</div>
                   </button>
                 </div>
               </div>
@@ -533,22 +571,7 @@ export default function Config() {
             </h2>
           </div>
           <div className="p-6 space-y-6">
-            {/* Message d'accueil */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Message d'accueil (/start)
-              </label>
-              <textarea
-                value={config.messages?.welcome || ''}
-                onChange={(e) => updateConfig('messages', 'welcome', e.target.value)}
-                rows={4}
-                className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Bienvenue sur notre bot ! 🎉..."
-              />
-              <p className="mt-1 text-sm text-gray-500">
-                Message affiché quand un utilisateur tape /start
-              </p>
-            </div>
+
 
             {/* Message aucun plug trouvé */}
             <div>
@@ -630,6 +653,20 @@ export default function Config() {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
+                Image de fond de la boutique
+              </label>
+              <input
+                type="url"
+                value={config.boutique?.backgroundImage || ''}
+                onChange={(e) => updateConfig('boutique', 'backgroundImage', e.target.value)}
+                className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                placeholder="https://example.com/background.jpg"
+              />
+              <p className="text-sm text-gray-500 mt-1">URL de l'image de fond affichée sur toutes les pages de la boutique</p>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 Titre section VIP
               </label>
               <input
@@ -686,76 +723,7 @@ export default function Config() {
            </div>
          </div>
 
-        {/* Textes des boutons */}
-        <div className="bg-white shadow rounded-lg">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-lg font-medium text-gray-900">Textes des Boutons</h2>
-          </div>
-          <div className="p-6 space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Bouton "Top Des Plugs"
-                </label>
-                <input
-                  type="text"
-                  value={config.buttons?.topPlugs?.text || ''}
-                  onChange={(e) => updateNestedConfig('buttons', 'topPlugs', 'text', e.target.value)}
-                  className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="🔌 Top Des Plugs"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Bouton "Contact"
-                </label>
-                <input
-                  type="text"
-                  value={config.buttons?.contact?.text || ''}
-                  onChange={(e) => updateNestedConfig('buttons', 'contact', 'text', e.target.value)}
-                  className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="📞 Contact"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Contenu page "Contact"
-                </label>
-                <textarea
-                  value={config.buttons?.contact?.content || ''}
-                  onChange={(e) => updateNestedConfig('buttons', 'contact', 'content', e.target.value)}
-                  rows={4}
-                  className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="Contactez-nous pour plus d'informations..."
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Bouton "Info"
-                </label>
-                <input
-                  type="text"
-                  value={config.buttons?.info?.text || ''}
-                  onChange={(e) => updateNestedConfig('buttons', 'info', 'text', e.target.value)}
-                  className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="ℹ️ Info"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Contenu page "Info"
-                </label>
-                <textarea
-                  value={config.buttons?.info?.content || ''}
-                  onChange={(e) => updateNestedConfig('buttons', 'info', 'content', e.target.value)}
-                  rows={4}
-                  className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="Informations sur notre plateforme..."
-                />
-              </div>
-            </div>
-          </div>
-        </div>
+
 
         {/* Configuration des services et pays */}
         <div className="bg-white shadow rounded-lg">

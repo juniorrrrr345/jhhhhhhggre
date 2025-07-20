@@ -159,6 +159,8 @@ const getReturnButtonText = (context) => {
   switch(context) {
     case 'top_plugs':
       return '🔙 Retour aux filtres';
+    case 'all':
+      return '🔙 Retour à la liste';
     case 'plugs_all':
       return '🔙 Retour à la liste';
     case 'plugs_vip':
@@ -200,8 +202,14 @@ const createPlugListKeyboard = (plugs, page = 0, totalPages = 1, context = 'all'
     buttons.push(navButtons);
   }
   
-  // Bouton retour
-  buttons.push([Markup.button.callback('🔙 Retour', 'top_plugs')]);
+  // Bouton retour intelligent selon le contexte
+  let returnAction = 'top_plugs';
+  if (context === 'all') {
+    returnAction = 'top_plugs'; // Retour vers le menu des filtres
+  } else if (context === 'plugs_vip') {
+    returnAction = 'back_main'; // Retour vers menu principal pour VIP
+  }
+  buttons.push([Markup.button.callback('🔙 Retour', returnAction)]);
   
   return Markup.inlineKeyboard(buttons);
 };

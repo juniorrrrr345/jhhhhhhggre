@@ -28,51 +28,20 @@ export default function ShopHome() {
       fetchPlugs()
     }, 30000)
     
-    // Écouter les signaux de synchronisation du panel admin
-    const handleSyncSignal = (event) => {
-      if (event.key === 'boutique_sync_signal') {
-        console.log('🔄 Signal de synchronisation reçu, rechargement...');
-        fetchConfig();
-        fetchPlugs();
-        toast.success('Configuration mise à jour !');
-      }
-    };
-    
+    // Écouter les signaux de synchronisation du panel admin (simplifié)
     const handleStorageChange = (event) => {
-      if (event.key === 'boutique_sync_signal') {
-        console.log('🔄 Signal de synchronisation cross-tab reçu, rechargement...');
+      if (event?.key === 'boutique_sync_signal') {
+        console.log('🔄 Signal de synchronisation reçu, rechargement...');
         fetchConfig();
         fetchPlugs();
       }
     };
     
     // Écouter les événements de synchronisation
-    window.addEventListener('storage', handleSyncSignal);
     window.addEventListener('storage', handleStorageChange);
-    
-    // Vérifier s'il y a un signal en attente au chargement
-    const checkPendingSync = () => {
-      const pendingSync = localStorage.getItem('boutique_sync_signal');
-      if (pendingSync) {
-        try {
-          const signal = JSON.parse(pendingSync);
-          // Si le signal est récent (moins de 5 minutes), on synchronise
-          if (Date.now() - signal.timestamp < 300000) {
-            console.log('🔄 Signal de synchronisation en attente détecté');
-            fetchConfig();
-            fetchPlugs();
-          }
-        } catch (error) {
-          console.error('Erreur parsing signal sync:', error);
-        }
-      }
-    };
-    
-    checkPendingSync();
     
     return () => {
       clearInterval(interval);
-      window.removeEventListener('storage', handleSyncSignal);
       window.removeEventListener('storage', handleStorageChange);
     };
   }, [])
@@ -196,12 +165,20 @@ export default function ShopHome() {
   return (
     <>
       <Head>
-        <title>{config?.boutique?.name || 'Ma Boutique'} - Découvrez nos produits premium</title>
+        <title>{config?.boutique?.name || 'Boutique'}</title>
         <meta name="description" content="Découvrez notre sélection de produits premium avec livraison, envoi postal et meetup disponibles." />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
 
-              <div className="min-h-screen bg-white">
+              <div 
+                className="min-h-screen bg-white"
+                style={config?.boutique?.backgroundImage ? {
+                  backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9)), url(${config.boutique.backgroundImage})`,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  backgroundRepeat: 'no-repeat'
+                } : {}}
+              >
         {/* Header */}
         <header className="bg-gray-900 shadow-lg">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -215,17 +192,19 @@ export default function ShopHome() {
                       className="h-8 w-8 rounded-lg object-cover"
                     />
                   ) : (
-                    <div className="h-8 w-8 bg-white rounded-lg flex items-center justify-center">
-                      <StarIcon className="h-5 w-5 text-gray-900" />
+                    <div className="h-8 w-8 bg-gray-700 rounded-lg flex items-center justify-center">
+                      <span className="text-white text-xs font-bold">
+                        {config?.boutique?.name ? config.boutique.name.charAt(0).toUpperCase() : 'B'}
+                      </span>
                     </div>
                   )}
                 </div>
                 <div className="ml-3">
                   <h1 className="text-xl font-bold text-white">
-                    {config?.boutique?.name || 'Ma Boutique'}
+                    {config?.boutique?.name || ''}
                   </h1>
                   <p className="text-gray-300 text-sm">
-                    {config?.boutique?.subtitle || 'Découvrez nos produits'}
+                    {config?.boutique?.subtitle || ''}
                   </p>
                 </div>
               </div>
@@ -263,13 +242,12 @@ export default function ShopHome() {
                 href="/shop/vip" 
                 className="text-gray-500 hover:text-gray-700 pb-3 flex items-center"
               >
-                {config?.boutique?.logo ? (
+                {config?.boutique?.logo && (
                   <img src={config.boutique.logo} alt="Logo" className="h-4 w-4 mr-2 rounded object-cover" />
-                ) : (
-                  <span className="mr-1">⭐</span>
                 )}
                 VIP
               </Link>
+
             </div>
           </div>
         </nav>
@@ -287,17 +265,24 @@ export default function ShopHome() {
                   className="h-12 w-12 rounded-lg object-cover mr-4"
                 />
               ) : (
-                <div className="h-12 w-12 bg-gray-100 rounded-lg flex items-center justify-center mr-4">
-                  <StarIcon className="h-8 w-8 text-gray-600" />
+                <div className="h-12 w-12 bg-gray-200 rounded-lg flex items-center justify-center mr-4">
+                  <span className="text-gray-700 text-lg font-bold">
+                    {config?.boutique?.name ? config.boutique.name.charAt(0).toUpperCase() : 'B'}
+                  </span>
                 </div>
               )}
               <h3 className="text-3xl font-bold text-gray-900">
-                {config?.boutique?.name || 'Ma Boutique'}
+                {config?.boutique?.name || 'Boutique'}
               </h3>
             </div>
             <p className="text-gray-600 max-w-2xl mx-auto">
-              {config?.boutique?.subtitle || 'Découvrez notre sélection de produits premium.'}
+              {config?.boutique?.subtitle || 'Bienvenue dans notre boutique'}
             </p>
+            {lastUpdate && (
+              <p className="text-xs text-gray-400 mt-2">
+                Dernière mise à jour: {lastUpdate}
+              </p>
+            )}
           </div>
 
           {loading ? (
