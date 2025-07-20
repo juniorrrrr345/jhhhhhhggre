@@ -28,45 +28,17 @@ export default function ShopHome() {
       fetchPlugs()
     }, 30000)
     
-    // Écouter les signaux de synchronisation du panel admin
-    const handleSyncSignal = (event) => {
-      if (event.key === 'boutique_sync_signal') {
-        console.log('🔄 Signal de synchronisation reçu, rechargement...');
-        fetchConfig();
-        fetchPlugs();
-        toast.success('Configuration mise à jour !');
-      }
-    };
-    
+    // Écouter les signaux de synchronisation du panel admin (simplifié)
     const handleStorageChange = (event) => {
-      if (event.key === 'boutique_sync_signal') {
-        console.log('🔄 Signal de synchronisation cross-tab reçu, rechargement...');
+      if (event?.key === 'boutique_sync_signal') {
+        console.log('🔄 Signal de synchronisation reçu, rechargement...');
         fetchConfig();
         fetchPlugs();
       }
     };
     
     // Écouter les événements de synchronisation
-    window.addEventListener('storage', handleSyncSignal);
     window.addEventListener('storage', handleStorageChange);
-    
-    // Vérifier s'il y a un signal en attente au chargement
-    const checkPendingSync = () => {
-      const pendingSync = localStorage.getItem('boutique_sync_signal');
-      if (pendingSync) {
-        try {
-          const signal = JSON.parse(pendingSync);
-          // Si le signal est récent (moins de 5 minutes), on synchronise
-          if (Date.now() - signal.timestamp < 300000) {
-            console.log('🔄 Signal de synchronisation en attente détecté');
-            fetchConfig();
-            fetchPlugs();
-          }
-        } catch (error) {
-          console.error('Erreur parsing signal sync:', error);
-        }
-      }
-    };
     
     checkPendingSync();
     
@@ -202,12 +174,13 @@ export default function ShopHome() {
       </Head>
 
               <div 
-                className="min-h-screen bg-white bg-cover bg-center bg-no-repeat"
-                style={{
-                  backgroundImage: config?.boutique?.backgroundImage 
-                    ? `linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9)), url(${config.boutique.backgroundImage})`
-                    : 'none'
-                }}
+                className="min-h-screen bg-white"
+                style={config?.boutique?.backgroundImage ? {
+                  backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9)), url(${config.boutique.backgroundImage})`,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  backgroundRepeat: 'no-repeat'
+                } : {}}
               >
         {/* Header */}
         <header className="bg-gray-900 shadow-lg">

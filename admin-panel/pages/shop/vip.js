@@ -188,12 +188,13 @@ export default function ShopVIP() {
       </Head>
 
       <div 
-        className="min-h-screen bg-white bg-cover bg-center bg-no-repeat"
-        style={{
-          backgroundImage: config?.boutique?.backgroundImage 
-            ? `linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9)), url(${config.boutique.backgroundImage})`
-            : 'none'
-        }}
+        className="min-h-screen bg-white"
+        style={config?.boutique?.backgroundImage ? {
+          backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9)), url(${config.boutique.backgroundImage})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat'
+        } : {}}
       >
         {/* Header */}
         <header className="bg-gray-900 shadow-lg">
