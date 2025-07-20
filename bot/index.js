@@ -456,6 +456,9 @@ const start = async () => {
     
     // Configuration du webhook pour la production
     if (process.env.NODE_ENV === 'production') {
+      // Keep-alive pour éviter que Render s'endorme
+      require('./keep-alive');
+      
       const webhookUrl = `${process.env.WEBHOOK_URL}/webhook/${process.env.TELEGRAM_BOT_TOKEN}`;
       
       // Route pour le webhook
