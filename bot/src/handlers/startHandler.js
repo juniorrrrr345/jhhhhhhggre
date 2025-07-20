@@ -67,11 +67,14 @@ const handleBackMain = async (ctx) => {
   try {
     console.log('🔙 Retour au menu principal demandé');
     
+    // Confirmer immédiatement la callback pour éviter le loading
+    await ctx.answerCbQuery();
+    
     // Toujours récupérer la config fraîche
     const config = await Config.findById('main');
     if (!config) {
       console.log('❌ Configuration non trouvée');
-      return ctx.answerCbQuery('❌ Configuration non trouvée');
+      return;
     }
 
     console.log('📋 Configuration récupérée pour le retour');
@@ -86,12 +89,11 @@ const handleBackMain = async (ctx) => {
     await editMessageWithImage(ctx, welcomeMessage, keyboard, config, { parse_mode: 'HTML' });
     
     console.log('✅ Retour au menu principal terminé');
-    await ctx.answerCbQuery();
   } catch (error) {
     console.error('❌ Erreur dans handleBackMain:', error);
     // Fallback : répondre avec le message de démarrage
     try {
-      await ctx.answerCbQuery('❌ Erreur lors du retour au menu');
+      await ctx.answerCbQuery('❌ Erreur lors du retour au menu').catch(() => {});
     } catch (cbError) {
       console.error('❌ Erreur lors de answerCbQuery:', cbError);
     }

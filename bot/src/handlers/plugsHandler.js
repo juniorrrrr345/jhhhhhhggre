@@ -13,6 +13,9 @@ const { sendMessageWithImage, editMessageWithImage } = require('../utils/message
 // Afficher le menu des plugs
 const handleTopPlugs = async (ctx) => {
   try {
+    // Confirmer immédiatement la callback pour éviter le loading
+    await ctx.answerCbQuery();
+    
     // Toujours récupérer la config fraîche
     const config = await Config.findById('main');
     const keyboard = createPlugsFilterKeyboard(config);
@@ -22,17 +25,18 @@ const handleTopPlugs = async (ctx) => {
     // Utiliser la fonction helper pour afficher avec image
     await editMessageWithImage(ctx, messageText, keyboard, config, { parse_mode: 'Markdown' });
     
-    // Confirmer la callback pour éviter le loading
-    await ctx.answerCbQuery();
   } catch (error) {
     console.error('Erreur dans handleTopPlugs:', error);
-    await ctx.answerCbQuery('❌ Erreur lors du chargement');
+    await ctx.answerCbQuery('❌ Erreur lors du chargement').catch(() => {});
   }
 };
 
 // Afficher les boutiques VIP
 const handleVipPlugs = async (ctx, page = 0) => {
   try {
+    // Confirmer immédiatement la callback pour éviter le loading
+    await ctx.answerCbQuery();
+    
     // Toujours récupérer la config fraîche
     const config = await Config.findById('main');
     const vipPlugs = await Plug.find({ isActive: true, isVip: true })
@@ -51,7 +55,6 @@ const handleVipPlugs = async (ctx, page = 0) => {
           parse_mode: 'Markdown'
         }
       );
-      await ctx.answerCbQuery();
       return;
     }
 
@@ -99,16 +102,18 @@ const handleVipPlugs = async (ctx, page = 0) => {
     // Utiliser la fonction helper pour afficher avec image
     await editMessageWithImage(ctx, messageText, keyboard, config, { parse_mode: 'Markdown' });
 
-    await ctx.answerCbQuery();
   } catch (error) {
     console.error('Erreur dans handleVipPlugs:', error);
-    await ctx.answerCbQuery('❌ Erreur lors du chargement des boutiques VIP');
+    await ctx.answerCbQuery('❌ Erreur lors du chargement des boutiques VIP').catch(() => {});
   }
 };
 
 // Afficher tous les plugs
 const handleAllPlugs = async (ctx, page = 0) => {
   try {
+    // Confirmer immédiatement la callback pour éviter le loading
+    await ctx.answerCbQuery();
+    
     const config = await Config.findById('main');
     const plugs = await Plug.find({ isActive: true })
       .sort({ likes: -1, isVip: -1, vipOrder: 1, createdAt: -1 });
@@ -118,7 +123,6 @@ const handleAllPlugs = async (ctx, page = 0) => {
       const keyboard = createPlugsFilterKeyboard(config);
       
       await editMessageWithImage(ctx, messageText, keyboard, config, { parse_mode: 'Markdown' });
-      await ctx.answerCbQuery();
       return;
     }
 
@@ -147,11 +151,9 @@ const handleAllPlugs = async (ctx, page = 0) => {
     // Utiliser la fonction helper pour afficher avec image
     await editMessageWithImage(ctx, message, keyboard, config, { parse_mode: 'Markdown' });
     
-    // Confirmer la callback pour éviter le loading
-    await ctx.answerCbQuery();
   } catch (error) {
     console.error('Erreur dans handleAllPlugs:', error);
-    await ctx.answerCbQuery('❌ Erreur lors du chargement');
+    await ctx.answerCbQuery('❌ Erreur lors du chargement').catch(() => {});
   }
 };
 
@@ -159,6 +161,9 @@ const handleAllPlugs = async (ctx, page = 0) => {
 const handleFilterService = async (ctx) => {
   try {
     console.log('🔍 Affichage du menu des services');
+    
+    // Confirmer immédiatement la callback pour éviter le loading
+    await ctx.answerCbQuery();
     
     const config = await Config.findById('main');
     const keyboard = createServicesKeyboard(config);
@@ -184,11 +189,9 @@ const handleFilterService = async (ctx) => {
     // Utiliser la fonction helper pour afficher avec image
     await editMessageWithImage(ctx, messageText, keyboard, config, { parse_mode: 'Markdown' });
     
-    // Confirmer la callback pour éviter le loading
-    await ctx.answerCbQuery();
   } catch (error) {
     console.error('❌ Erreur dans handleFilterService:', error);
-    await ctx.answerCbQuery('❌ Erreur lors du chargement');
+    await ctx.answerCbQuery('❌ Erreur lors du chargement').catch(() => {});
   }
 };
 
@@ -196,6 +199,9 @@ const handleFilterService = async (ctx) => {
 const handleServiceFilter = async (ctx, serviceType, page = 0) => {
   try {
     console.log(`🔍 Recherche de plugs avec service: ${serviceType}`);
+    
+    // Confirmer immédiatement la callback pour éviter le loading
+    await ctx.answerCbQuery();
     
     const config = await Config.findById('main');
     const serviceField = `services.${serviceType}.enabled`;
@@ -226,7 +232,6 @@ const handleServiceFilter = async (ctx, serviceType, page = 0) => {
       const keyboard = createServicesKeyboard(config);
       
       await editMessageWithImage(ctx, messageText, keyboard, config, { parse_mode: 'Markdown' });
-      await ctx.answerCbQuery();
       return;
     }
 
@@ -248,17 +253,18 @@ const handleServiceFilter = async (ctx, serviceType, page = 0) => {
 
     await editMessageWithImage(ctx, message, keyboard, config, { parse_mode: 'Markdown' });
     
-    // Confirmer la callback
-    await ctx.answerCbQuery();
   } catch (error) {
     console.error('❌ Erreur dans handleServiceFilter:', error);
-    await ctx.answerCbQuery('❌ Erreur lors du chargement');
+    await ctx.answerCbQuery('❌ Erreur lors du chargement').catch(() => {});
   }
 };
 
 // Afficher le menu des pays
 const handleFilterCountry = async (ctx) => {
   try {
+    // Confirmer immédiatement la callback pour éviter le loading
+    await ctx.answerCbQuery();
+    
     // Récupérer tous les pays uniques
     const countries = await Plug.distinct('countries', { isActive: true });
     
@@ -276,11 +282,9 @@ const handleFilterCountry = async (ctx) => {
     // Utiliser la fonction helper pour afficher avec image
     await editMessageWithImage(ctx, messageText, keyboard, config, { parse_mode: 'Markdown' });
     
-    // Confirmer la callback pour éviter le loading
-    await ctx.answerCbQuery();
   } catch (error) {
     console.error('Erreur dans handleFilterCountry:', error);
-    await ctx.answerCbQuery('❌ Erreur lors du chargement');
+    await ctx.answerCbQuery('❌ Erreur lors du chargement').catch(() => {});
   }
 };
 
@@ -319,12 +323,16 @@ const handleCountryFilter = async (ctx, country, page = 0) => {
 const handlePlugDetails = async (ctx, plugId, returnContext = 'top_plugs') => {
   try {
     console.log(`🔍 handlePlugDetails: plugId=${plugId}, returnContext=${returnContext}`);
+    
+    // Confirmer immédiatement la callback pour éviter le loading
+    await ctx.answerCbQuery();
+    
     const plug = await Plug.findById(plugId);
     console.log(`📦 Plug found:`, plug ? `${plug.name} (active: ${plug.isActive})` : 'null');
     
     if (!plug || !plug.isActive) {
       console.log('❌ Plug non trouvé ou inactif');
-      return ctx.answerCbQuery('❌ Plug non trouvé ou inactif');
+      return;
     }
 
     // Récupérer la config pour les textes personnalisés
@@ -364,11 +372,9 @@ const handlePlugDetails = async (ctx, plugId, returnContext = 'top_plugs') => {
     // Utiliser la fonction helper pour afficher avec image
     await editMessageWithImage(ctx, message, keyboard, config, { parse_mode: 'Markdown' });
     
-    // Confirmer la callback pour éviter le loading
-    await ctx.answerCbQuery();
   } catch (error) {
     console.error('Erreur dans handlePlugDetails:', error);
-    await ctx.answerCbQuery('❌ Erreur lors du chargement');
+    await ctx.answerCbQuery('❌ Erreur lors du chargement').catch(() => {});
   }
 };
 
@@ -376,17 +382,21 @@ const handlePlugDetails = async (ctx, plugId, returnContext = 'top_plugs') => {
 const handlePlugServiceDetails = async (ctx, plugId, serviceType) => {
   try {
     console.log(`🔧 handlePlugServiceDetails: plugId=${plugId}, serviceType=${serviceType}`);
+    
+    // Confirmer immédiatement la callback pour éviter le loading
+    await ctx.answerCbQuery();
+    
     const plug = await Plug.findById(plugId);
     console.log(`📦 Plug found for service:`, plug ? `${plug.name} (active: ${plug.isActive})` : 'null');
     
     if (!plug || !plug.isActive) {
       console.log('❌ Plug non trouvé pour service');
-      return ctx.answerCbQuery('❌ Plug non trouvé');
+      return;
     }
 
     const service = plug.services[serviceType];
     if (!service || !service.enabled) {
-      return ctx.answerCbQuery('❌ Service non disponible');
+      return;
     }
 
     // Récupérer la config pour les textes et images
@@ -446,13 +456,10 @@ const handlePlugServiceDetails = async (ctx, plugId, serviceType) => {
     const keyboard = Markup.inlineKeyboard(buttons);
 
     await editMessageWithImage(ctx, message, keyboard, config, { parse_mode: 'Markdown' });
-    
-    // Confirmer la callback pour éviter le loading
-    await ctx.answerCbQuery();
 
   } catch (error) {
     console.error('Erreur dans handlePlugServiceDetails:', error);
-    await ctx.answerCbQuery('❌ Erreur lors du chargement');
+    await ctx.answerCbQuery('❌ Erreur lors du chargement').catch(() => {});
   }
 };
 

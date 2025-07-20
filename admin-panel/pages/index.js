@@ -14,22 +14,37 @@ export default function Login() {
     setLoading(true)
 
     try {
+      // Vérifier si le mot de passe est vide
+      if (!password.trim()) {
+        toast.error('Veuillez entrer un mot de passe');
+        setLoading(false);
+        return;
+      }
+
       // Essayer d'abord l'API directe
       let success = false;
+      let errorMessage = '';
+      
       try {
         const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://jhhhhhhggre.onrender.com';
         console.log('🔐 Login tentative directe:', apiBaseUrl);
         
         const response = await fetch(`${apiBaseUrl}/api/config`, {
+          method: 'GET',
           headers: {
             'Authorization': `Bearer ${password}`,
-            'Cache-Control': 'no-cache'
-          }
+            'Cache-Control': 'no-cache',
+            'Content-Type': 'application/json'
+          },
+          timeout: 10000 // 10 secondes de timeout
         });
 
         if (response.ok) {
           console.log('✅ Login direct réussi');
           success = true;
+        } else if (response.status === 401) {
+          errorMessage = 'Mot de passe incorrect';
+          throw new Error(`HTTP ${response.status}`);
         } else {
           throw new Error(`HTTP ${response.status}`);
         }
@@ -38,18 +53,28 @@ export default function Login() {
         console.log('🔄 Login tentative via proxy...');
         
         // Fallback vers le proxy
-        const proxyResponse = await fetch('/api/proxy?endpoint=/api/config', {
-          headers: {
-            'Authorization': password,
-            'Cache-Control': 'no-cache'
-          }
-        });
+        try {
+          const proxyResponse = await fetch('/api/proxy?endpoint=/api/config', {
+            method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${password}`,
+              'Cache-Control': 'no-cache',
+              'Content-Type': 'application/json'
+            }
+          });
 
-        if (proxyResponse.ok) {
-          console.log('✅ Login proxy réussi');
-          success = true;
-        } else {
-          throw new Error(`Login proxy failed: HTTP ${proxyResponse.status}`);
+          if (proxyResponse.ok) {
+            console.log('✅ Login proxy réussi');
+            success = true;
+          } else if (proxyResponse.status === 401) {
+            errorMessage = 'Mot de passe incorrect';
+            throw new Error(`Login proxy failed: HTTP ${proxyResponse.status}`);
+          } else {
+            throw new Error(`Login proxy failed: HTTP ${proxyResponse.status}`);
+          }
+        } catch (proxyError) {
+          console.log('❌ Login proxy échoué:', proxyError.message);
+          throw new Error('Impossible de se connecter au serveur');
         }
       }
 
@@ -57,13 +82,25 @@ export default function Login() {
         // Stocker le token
         localStorage.setItem('adminToken', password);
         toast.success('Connexion réussie !');
-        router.push('/admin');
+        
+        // Attendre un peu avant la redirection pour que l'utilisateur voie le message
+        setTimeout(() => {
+          router.push('/admin');
+        }, 1000);
       } else {
-        toast.error('Mot de passe incorrect');
+        toast.error(errorMessage || 'Erreur de connexion');
       }
     } catch (error) {
       console.error('💥 Login error final:', error);
-      toast.error('Erreur de connexion - Vérifiez votre mot de passe');
+      
+      // Message d'erreur plus spécifique
+      if (error.message.includes('401') || error.message.includes('incorrect')) {
+        toast.error('Mot de passe incorrect');
+      } else if (error.message.includes('timeout') || error.message.includes('connexion')) {
+        toast.error('Connexion impossible - Le serveur est peut-être en cours de démarrage');
+      } else {
+        toast.error('Erreur de connexion - Veuillez réessayer');
+      }
     } finally {
       setLoading(false);
     }

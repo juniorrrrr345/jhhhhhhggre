@@ -53,7 +53,11 @@ export default async function handler(req, res) {
     
     // Ajouter l'authorization si présente
     if (req.headers.authorization) {
-      fetchOptions.headers.Authorization = req.headers.authorization
+      // Assurer le format Bearer
+      const auth = req.headers.authorization.startsWith('Bearer ') 
+        ? req.headers.authorization 
+        : `Bearer ${req.headers.authorization}`;
+      fetchOptions.headers.Authorization = auth;
     }
     
     const response = await fetch(targetUrl, fetchOptions)
