@@ -144,24 +144,7 @@ export default function ShopVIP() {
           </div>
         </nav>
 
-        {/* Hero Section VIP */}
-        <div className="bg-gradient-to-r from-yellow-500 to-orange-600 py-16">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <div className="text-6xl mb-4">⭐</div>
-            <h2 className="text-4xl font-bold text-white mb-4">
-              Boutiques VIP Exclusives
-            </h2>
-            <p className="text-xl text-yellow-100 mb-8 max-w-2xl mx-auto">
-              Nos partenaires premium sélectionnés pour leur excellence, 
-              leur fiabilité et la qualité de leurs services.
-            </p>
-            <div className="bg-white/20 rounded-lg p-4 inline-block">
-              <p className="text-white font-medium">
-                ✨ Services garantis • 🚀 Livraison prioritaire • 🛡️ Support premium
-              </p>
-            </div>
-          </div>
-        </div>
+
 
         {/* Boutiques VIP */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">

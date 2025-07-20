@@ -150,20 +150,20 @@ export default function ShopSearch() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
 
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-white">
         {/* Header */}
-        <header className="bg-gradient-to-r from-blue-600 to-purple-700 shadow-lg">
+        <header className="bg-gray-900 shadow-lg">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between h-16">
               <div className="flex items-center">
                 <div className="flex-shrink-0">
                   <div className="h-8 w-8 bg-white rounded-lg flex items-center justify-center">
-                    <StarIcon className="h-5 w-5 text-blue-600" />
+                    <MagnifyingGlassIcon className="h-5 w-5 text-gray-900" />
                   </div>
                 </div>
                 <div className="ml-3">
-                  <h1 className="text-xl font-bold text-white">Boutique VIP</h1>
-                  <p className="text-blue-100 text-sm">Plugs premium sélectionnés</p>
+                  <h1 className="text-xl font-bold text-white">Recherche Boutiques</h1>
+                  <p className="text-gray-300 text-sm">Trouvez la boutique parfaite</p>
                 </div>
               </div>
               <div className="flex items-center space-x-4">
@@ -207,11 +207,11 @@ export default function ShopSearch() {
         </nav>
 
         {/* Section de recherche */}
-        <div className="bg-gradient-to-r from-blue-600 to-purple-700 py-12">
+        <div className="bg-gray-800 py-12">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-8">
               <h2 className="text-3xl font-bold text-white mb-4">🔍 Recherche avancée</h2>
-              <p className="text-blue-100">Trouvez la boutique parfaite selon vos critères</p>
+              <p className="text-gray-300">Trouvez la boutique parfaite selon vos critères</p>
             </div>
             
             {/* Filtres de recherche */}
@@ -328,7 +328,7 @@ export default function ShopSearch() {
                     />
                     {plug.isVip && (
                       <div className="absolute top-3 left-3">
-                        <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gradient-to-r from-yellow-400 to-orange-500 text-white shadow-lg">
+                        <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-900 text-white">
                           <StarIcon className="w-4 h-4 mr-1" />
                           VIP
                         </span>
