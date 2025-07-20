@@ -192,9 +192,27 @@ const handleAllPlugs = async (ctx, page = 0) => {
 // Afficher le menu des services
 const handleFilterService = async (ctx) => {
   try {
+    console.log('🔍 Affichage du menu des services');
+    
     const keyboard = createServicesKeyboard();
     
-    const messageText = `${config.botTexts?.filterServiceTitle || '🔍 Filtrer par service'}\n\n${config.botTexts?.filterServiceDescription || 'Choisissez le type de service :'}`;
+    // Statistiques des services disponibles
+    const deliveryCount = await Plug.countDocuments({ 
+      isActive: true, 
+      'services.delivery.enabled': true 
+    });
+    const postalCount = await Plug.countDocuments({ 
+      isActive: true, 
+      'services.postal.enabled': true 
+    });
+    const meetupCount = await Plug.countDocuments({ 
+      isActive: true, 
+      'services.meetup.enabled': true 
+    });
+    
+    console.log(`📊 Services disponibles: Livraison(${deliveryCount}), Postal(${postalCount}), Meetup(${meetupCount})`);
+    
+    const messageText = `${config.botTexts?.filterServiceTitle || '🔍 Filtrer par service'}\n\n${config.botTexts?.filterServiceDescription || 'Choisissez le type de service :'}\n\n📊 **Disponibilité :**\n🚚 Livraison: ${deliveryCount} boutiques\n✈️ Postal: ${postalCount} boutiques\n🏠 Meetup: ${meetupCount} boutiques`;
     
     if (config.welcome?.image) {
       try {
@@ -222,7 +240,7 @@ const handleFilterService = async (ctx) => {
     // Confirmer la callback pour éviter le loading
     await ctx.answerCbQuery();
   } catch (error) {
-    console.error('Erreur dans handleFilterService:', error);
+    console.error('❌ Erreur dans handleFilterService:', error);
     await ctx.answerCbQuery('❌ Erreur lors du chargement');
   }
 };
@@ -230,19 +248,41 @@ const handleFilterService = async (ctx) => {
 // Filtrer par service spécifique
 const handleServiceFilter = async (ctx, serviceType, page = 0) => {
   try {
+    console.log(`🔍 Recherche de plugs avec service: ${serviceType}`);
+    
     const config = await Config.findById('main');
     const serviceField = `services.${serviceType}.enabled`;
     
+    console.log(`📋 Requête MongoDB: { isActive: true, "${serviceField}": true }`);
+    
+    // Recherche avec requête corrigée
     const plugs = await Plug.find({ 
       isActive: true,
       [serviceField]: true
     }).sort({ isVip: -1, vipOrder: 1, createdAt: -1 });
 
+    console.log(`✅ Plugs trouvés pour ${serviceType}:`, plugs.length);
+    
     if (plugs.length === 0) {
-      return ctx.editMessageText(
-        `😅 Aucun plug trouvé pour ce service.`,
+      // Vérification debug : combien de plugs actifs au total ?
+      const totalPlugs = await Plug.countDocuments({ isActive: true });
+      console.log(`📊 Total plugs actifs: ${totalPlugs}`);
+      
+      // Vérification debug : quels services sont disponibles ?
+      const allPlugs = await Plug.find({ isActive: true }, 'name services').limit(5);
+      console.log('🔧 Services des premiers plugs:');
+      allPlugs.forEach(plug => {
+        console.log(`- ${plug.name}:`, plug.services);
+      });
+      
+      await ctx.editMessageText(
+        `😅 Aucun plug trouvé pour ce service.\n\n🔧 Vérifiez que les boutiques ont ce service activé dans le panel admin.`,
         { reply_markup: createServicesKeyboard().reply_markup }
       );
+      
+      // Confirmer la callback
+      await ctx.answerCbQuery();
+      return;
     }
 
     const itemsPerPage = 5;
@@ -263,8 +303,11 @@ const handleServiceFilter = async (ctx, serviceType, page = 0) => {
       reply_markup: keyboard.reply_markup,
       parse_mode: 'Markdown'
     });
+    
+    // Confirmer la callback
+    await ctx.answerCbQuery();
   } catch (error) {
-    console.error('Erreur dans handleServiceFilter:', error);
+    console.error('❌ Erreur dans handleServiceFilter:', error);
     await ctx.answerCbQuery('❌ Erreur lors du chargement');
   }
 };
