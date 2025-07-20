@@ -32,7 +32,7 @@ const PORT = process.env.PORT || 3000;
 app.use(cors({
   origin: [
     'http://localhost:3000',
-    'https://admin-panel-bot.vercel.app',
+    'https://jhhhhhhggre.vercel.app',
     /\.vercel\.app$/,
     /\.onrender\.com$/
   ],
