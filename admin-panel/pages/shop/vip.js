@@ -291,6 +291,7 @@ export default function ShopVIP() {
                       )}
                     </div>
                   </div>
+                  </div>
                 </Link>
               ))}
             </div>
