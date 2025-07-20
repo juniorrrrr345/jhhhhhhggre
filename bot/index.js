@@ -93,6 +93,7 @@ bot.command('admin', async (ctx) => {
 // Gestionnaires des callbacks
 bot.action('back_main', handleBackMain);
 bot.action('top_plugs', handleTopPlugs);
+bot.action('plugs_vip', handleVipPlugs);
 bot.action('plugs_all', (ctx) => handleAllPlugs(ctx, 0));
 bot.action('filter_service', handleFilterService);
 bot.action('filter_country', handleFilterCountry);
@@ -111,6 +112,8 @@ bot.action(/^page_(.+)_(\d+)$/, (ctx) => {
   
   if (context === 'all') {
     return handleAllPlugs(ctx, page);
+  } else if (context === 'vip') {
+    return handleVipPlugs(ctx, page);
   } else if (context.startsWith('service_')) {
     const serviceType = context.split('_')[1];
     return handleServiceFilter(ctx, serviceType, page);

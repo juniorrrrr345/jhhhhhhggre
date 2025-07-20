@@ -30,6 +30,73 @@ const handleTopPlugs = async (ctx) => {
   }
 };
 
+// Afficher les boutiques VIP
+const handleVipPlugs = async (ctx, page = 0) => {
+  try {
+    const config = await Config.findById('main');
+    const vipPlugs = await Plug.find({ isActive: true, isVip: true })
+      .sort({ vipOrder: 1, createdAt: -1 });
+
+    if (vipPlugs.length === 0) {
+      const backKeyboard = Markup.inlineKeyboard([
+        [Markup.button.callback('🔙 Retour', 'back_main')]
+      ]);
+      
+      await ctx.editMessageText(
+        '👑 **Boutiques VIP**\n\n❌ Aucune boutique VIP disponible pour le moment.',
+        {
+          reply_markup: backKeyboard.reply_markup,
+          parse_mode: 'Markdown'
+        }
+      );
+      await ctx.answerCbQuery();
+      return;
+    }
+
+    const plugsPerPage = 5;
+    const totalPages = Math.ceil(vipPlugs.length / plugsPerPage);
+    const startIndex = page * plugsPerPage;
+    const endIndex = startIndex + plugsPerPage;
+    const currentPagePlugs = vipPlugs.slice(startIndex, endIndex);
+
+    // Créer les boutons pour chaque plug VIP
+    const buttons = [];
+    
+    for (const plug of currentPagePlugs) {
+      buttons.push([Markup.button.callback(`👑 ${plug.name}`, `plug_${plug._id}_plugs_vip`)]);
+    }
+
+    // Boutons de navigation
+    const navButtons = [];
+    if (page > 0) {
+      navButtons.push(Markup.button.callback('⬅️ Précédent', `page_vip_${page - 1}`));
+    }
+    if (page < totalPages - 1) {
+      navButtons.push(Markup.button.callback('➡️ Suivant', `page_vip_${page + 1}`));
+    }
+    if (navButtons.length > 0) {
+      buttons.push(navButtons);
+    }
+
+    // Bouton retour
+    buttons.push([Markup.button.callback('🔙 Retour', 'back_main')]);
+
+    const keyboard = Markup.inlineKeyboard(buttons);
+    
+    const messageText = `👑 **Boutiques VIP Premium**\n\n✨ Découvrez nos boutiques sélectionnées\n\n📄 Page ${page + 1}/${totalPages} • ${vipPlugs.length} boutique${vipPlugs.length > 1 ? 's' : ''}`;
+
+    await ctx.editMessageText(messageText, {
+      reply_markup: keyboard.reply_markup,
+      parse_mode: 'Markdown'
+    });
+
+    await ctx.answerCbQuery();
+  } catch (error) {
+    console.error('Erreur dans handleVipPlugs:', error);
+    await ctx.answerCbQuery('❌ Erreur lors du chargement des boutiques VIP');
+  }
+};
+
 // Afficher tous les plugs
 const handleAllPlugs = async (ctx, page = 0) => {
   try {
