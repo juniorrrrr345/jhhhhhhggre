@@ -389,6 +389,9 @@ const handlePlugServiceDetails = async (ctx, plugId, serviceType) => {
       return ctx.answerCbQuery('❌ Service non disponible');
     }
 
+    // Récupérer la config pour les textes et images
+    const config = await Config.findById('main');
+
     const serviceNames = {
       delivery: '🚚 Livraison',
       postal: '✈️ Envoi postal',
@@ -408,10 +411,44 @@ const handlePlugServiceDetails = async (ctx, plugId, serviceType) => {
 
     message += '📱 **Contactez directement :**';
 
-    const keyboard = createPlugKeyboard(plug);
-    const config = await Config.findById('main');
+    // Créer un clavier spécifique pour les services avec retour intelligent
+    const buttons = [];
+    
+    // Réseaux sociaux du plug
+    const socialButtons = [];
+    if (plug.socialMedia.telegram) {
+      socialButtons.push(Markup.button.url('📱 Telegram', plug.socialMedia.telegram));
+    }
+    if (plug.socialMedia.instagram) {
+      socialButtons.push(Markup.button.url('📸 Instagram', plug.socialMedia.instagram));
+    }
+    if (socialButtons.length > 0) {
+      buttons.push(socialButtons);
+    }
+    
+    const socialButtons2 = [];
+    if (plug.socialMedia.whatsapp) {
+      socialButtons2.push(Markup.button.url('💬 WhatsApp', plug.socialMedia.whatsapp));
+    }
+    if (plug.socialMedia.website) {
+      socialButtons2.push(Markup.button.url('🌐 Site', plug.socialMedia.website));
+    }
+    if (socialButtons2.length > 0) {
+      buttons.push(socialButtons2);
+    }
+    
+    // Bouton like
+    buttons.push([Markup.button.callback('👤 Liker cette boutique', `like_${plug._id}`)]);
+    
+    // Bouton retour vers les détails du plug
+    buttons.push([Markup.button.callback('🔙 Retour aux détails', `plug_${plug._id}_from_top_plugs`)]);
+    
+    const keyboard = Markup.inlineKeyboard(buttons);
 
     await editMessageWithImage(ctx, message, keyboard, config, { parse_mode: 'Markdown' });
+    
+    // Confirmer la callback pour éviter le loading
+    await ctx.answerCbQuery();
 
   } catch (error) {
     console.error('Erreur dans handlePlugServiceDetails:', error);

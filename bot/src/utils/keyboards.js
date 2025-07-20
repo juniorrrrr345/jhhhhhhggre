@@ -176,6 +176,9 @@ const getReturnButtonText = (context) => {
       if (context.startsWith('service_')) {
         return '🔙 Retour aux services';
       }
+      if (context.startsWith('plug_') && context.endsWith('_details')) {
+        return '🔙 Retour aux détails';
+      }
       return '🔙 Retour à la liste';
   }
 };
@@ -203,6 +206,11 @@ const getReturnAction = (context) => {
       if (context.startsWith('service_')) {
         const serviceType = context.split('_')[1];
         return `service_${serviceType}`;
+      }
+      if (context.startsWith('plug_') && context.endsWith('_details')) {
+        // Extraire l'ID du plug et retourner vers ses détails
+        const plugId = context.replace('plug_', '').replace('_details', '');
+        return `plug_${plugId}_from_top_plugs`;
       }
       return 'plugs_all';
   }
