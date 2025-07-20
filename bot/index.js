@@ -441,18 +441,24 @@ app.get('/health', (req, res) => {
 
 // Test simple pour Vercel
 app.get('/test', (req, res) => {
-  res.set({
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'GET, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type',
-    'Cache-Control': 'no-cache'
-  });
-  
-  res.json({ 
-    message: 'Test endpoint OK',
-    timestamp: new Date().toISOString(),
-    source: 'render-api'
-  });
+  try {
+    res.set({
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type',
+      'Cache-Control': 'no-cache'
+    });
+    
+    res.json({ 
+      message: 'Test endpoint OK',
+      timestamp: new Date().toISOString(),
+      source: 'render-api',
+      method: req.method
+    });
+  } catch (error) {
+    console.error('Test endpoint error:', error);
+    res.status(500).json({ error: 'Test endpoint failed', message: error.message });
+  }
 });
 
 // Route par défaut
