@@ -58,12 +58,12 @@ bot.command('admin', async (ctx) => {
   const adminId = 7670522278; // Votre ID admin
   
   if (userId === adminId) {
-    const adminUrl = process.env.ADMIN_URL || 'https://votre-admin-url.onrender.com';
+    const adminUrl = process.env.ADMIN_URL || 'https://jhhhhhhggre.onrender.com';
     await ctx.reply(
       `🔑 **Accès Admin Autorisé**\n\n` +
       `👋 Bonjour Admin !\n\n` +
       `🌐 **Panel Admin :** [Cliquer ici](${adminUrl})\n\n` +
-      `🔒 **Mot de passe :** \`${process.env.ADMIN_PASSWORD || 'admin123'}\`\n\n` +
+      `🔒 **Mot de passe :** \`${process.env.ADMIN_PASSWORD || 'JuniorAdmon123'}\`\n\n` +
       `💡 *Cliquez sur le lien pour accéder au panel d'administration*`,
       { 
         parse_mode: 'Markdown',
