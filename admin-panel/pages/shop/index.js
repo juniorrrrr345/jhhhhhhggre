@@ -274,6 +274,7 @@ export default function ShopHome() {
                       )}
                     </div>
                   </div>
+                  </div>
                 </Link>
               ))}
             </div>

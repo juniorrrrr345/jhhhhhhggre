@@ -38,35 +38,55 @@ export default function ShopSearch() {
   const fetchAllPlugs = async () => {
     try {
       setLoading(true)
-      // Utiliser l'endpoint public pour la boutique
-      const timestamp = new Date().getTime()
-      const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://jhhhhhhggre.onrender.com'
-      const url = `${apiBaseUrl}/api/public/plugs?filter=active&limit=100&t=${timestamp}`
       
-      console.log('🔍 Search fetching from:', url)
-      const response = await fetch(url, {
-        cache: 'no-cache',
-        headers: {
-          'Cache-Control': 'no-cache'
-        }
-      })
-      
-      if (response.ok) {
-        const data = await response.json()
-        console.log('📊 Search data received:', data.plugs?.length || 0, 'plugs')
+      // Essayer d'abord l'API directe
+      let data
+      try {
+        const timestamp = new Date().getTime()
+        const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://jhhhhhhggre.onrender.com'
+        const url = `${apiBaseUrl}/api/public/plugs?filter=active&limit=100&t=${timestamp}`
         
-        if (data && Array.isArray(data.plugs)) {
-          setAllPlugs(data.plugs)
-          setPlugs(data.plugs)
+        console.log('🔍 Search tentative directe:', url)
+        const response = await fetch(url, {
+          cache: 'no-cache',
+          headers: { 'Cache-Control': 'no-cache' }
+        })
+        
+        if (response.ok) {
+          data = await response.json()
+          console.log('✅ Search API directe réussie')
         } else {
-          console.error('❌ Invalid search data structure:', data)
-          setAllPlugs([])
-          setPlugs([])
+          throw new Error(`HTTP ${response.status}`)
         }
-      } else {
-        console.error('❌ Search response error:', response.status)
+      } catch (directError) {
+        console.log('❌ Search API directe échouée:', directError.message)
+        console.log('🔄 Search tentative via proxy...')
+        
+        // Fallback vers le proxy
+        const proxyUrl = `/api/proxy?endpoint=/api/public/plugs&filter=active&limit=100&t=${new Date().getTime()}`
+        const proxyResponse = await fetch(proxyUrl, {
+          cache: 'no-cache',
+          headers: { 'Cache-Control': 'no-cache' }
+        })
+        
+        if (proxyResponse.ok) {
+          data = await proxyResponse.json()
+          console.log('✅ Search proxy réussi')
+        } else {
+          throw new Error(`Search proxy failed: HTTP ${proxyResponse.status}`)
+        }
       }
-    } catch (error) {
+      
+      if (data && Array.isArray(data.plugs)) {
+        console.log('📊 Search data received:', data.plugs.length, 'plugs')
+        setAllPlugs(data.plugs)
+        setPlugs(data.plugs)
+      } else {
+        console.error('❌ Invalid search data structure:', data)
+        setAllPlugs([])
+        setPlugs([])
+             }
+     } catch (error) {
       console.error('💥 Search fetch error:', error)
     } finally {
       setLoading(false)

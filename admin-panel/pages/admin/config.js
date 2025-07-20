@@ -72,38 +72,66 @@ export default function Config() {
     }
   }
 
-  const saveConfig = async () => {
-    const token = localStorage.getItem('adminToken')
-    setSaving(true)
+        const saveConfig = async () => {
+        const token = localStorage.getItem('adminToken')
+        setSaving(true)
 
-    try {
-      const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || process.env.API_BASE_URL || 'https://jhhhhhhggre.onrender.com'
-      console.log('💾 Saving config to:', apiBaseUrl)
-      
-      const response = await fetch(`${apiBaseUrl}/api/config`, {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(config)
-      })
+        try {
+          // Essayer d'abord l'API directe
+          let success = false
+          try {
+            const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://jhhhhhhggre.onrender.com'
+            console.log('💾 Admin config tentative directe:', apiBaseUrl)
+            
+            const response = await fetch(`${apiBaseUrl}/api/config`, {
+              method: 'PUT',
+              headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(config)
+            })
 
-      console.log('💾 Save response status:', response.status)
+            if (response.ok) {
+              console.log('✅ Admin config direct réussi')
+              success = true
+              toast.success('Configuration sauvegardée !')
+            } else {
+              throw new Error(`HTTP ${response.status}`)
+            }
+          } catch (directError) {
+            console.log('❌ Admin config direct échoué:', directError.message)
+            console.log('🔄 Admin config tentative via proxy...')
+            
+            // Fallback vers le proxy
+            const proxyResponse = await fetch('/api/proxy?endpoint=/api/config', {
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': token
+              },
+              body: JSON.stringify(config)
+            })
 
-      if (response.ok) {
-        toast.success('Configuration sauvegardée !')
-      } else {
-        console.error('❌ Save error:', response.status, response.statusText)
-        toast.error('Erreur lors de la sauvegarde')
+            if (proxyResponse.ok) {
+              console.log('✅ Admin config proxy réussi')
+              success = true
+              toast.success('Configuration sauvegardée via proxy !')
+            } else {
+              throw new Error(`Proxy failed: HTTP ${proxyResponse.status}`)
+            }
+          }
+
+          if (!success) {
+            toast.error('Erreur lors de la sauvegarde')
+          }
+        } catch (error) {
+          console.error('💥 Admin config error final:', error)
+          toast.error('Erreur de connexion')
+        } finally {
+          setSaving(false)
+        }
       }
-    } catch (error) {
-      console.error('💥 Save error:', error)
-      toast.error('Erreur de connexion')
-    } finally {
-      setSaving(false)
-    }
-  }
 
   const updateConfig = (section, field, value) => {
     setConfig(prev => ({

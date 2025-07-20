@@ -27,33 +27,53 @@ export default function ShopVIP() {
   const fetchVipPlugs = async () => {
     try {
       setLoading(true)
-      // Utiliser l'endpoint public pour la boutique
-      const timestamp = new Date().getTime()
-      const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://jhhhhhhggre.onrender.com'
-      const url = `${apiBaseUrl}/api/public/plugs?filter=vip&limit=50&t=${timestamp}`
       
-      console.log('🔍 Fetching VIP from:', url)
-      const response = await fetch(url, {
-        cache: 'no-cache',
-        headers: {
-          'Cache-Control': 'no-cache'
-        }
-      })
-      
-      if (response.ok) {
-        const data = await response.json()
-        console.log('👑 VIP data received:', data.plugs?.length || 0, 'VIP plugs')
+      // Essayer d'abord l'API directe
+      let data
+      try {
+        const timestamp = new Date().getTime()
+        const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://jhhhhhhggre.onrender.com'
+        const url = `${apiBaseUrl}/api/public/plugs?filter=vip&limit=50&t=${timestamp}`
         
-        if (data && Array.isArray(data.plugs)) {
-          setVipPlugs(data.plugs)
+        console.log('🔍 VIP tentative directe:', url)
+        const response = await fetch(url, {
+          cache: 'no-cache',
+          headers: { 'Cache-Control': 'no-cache' }
+        })
+        
+        if (response.ok) {
+          data = await response.json()
+          console.log('✅ VIP API directe réussie')
         } else {
-          console.error('❌ Invalid VIP data structure:', data)
-          setVipPlugs([])
+          throw new Error(`HTTP ${response.status}`)
         }
-      } else {
-        console.error('❌ VIP response error:', response.status)
+      } catch (directError) {
+        console.log('❌ VIP API directe échouée:', directError.message)
+        console.log('🔄 VIP tentative via proxy...')
+        
+        // Fallback vers le proxy
+        const proxyUrl = `/api/proxy?endpoint=/api/public/plugs&filter=vip&limit=50&t=${new Date().getTime()}`
+        const proxyResponse = await fetch(proxyUrl, {
+          cache: 'no-cache',
+          headers: { 'Cache-Control': 'no-cache' }
+        })
+        
+        if (proxyResponse.ok) {
+          data = await proxyResponse.json()
+          console.log('✅ VIP proxy réussi')
+        } else {
+          throw new Error(`VIP proxy failed: HTTP ${proxyResponse.status}`)
+        }
       }
-    } catch (error) {
+      
+      if (data && Array.isArray(data.plugs)) {
+        console.log('👑 VIP data received:', data.plugs.length, 'VIP plugs')
+        setVipPlugs(data.plugs)
+      } else {
+        console.error('❌ Invalid VIP data structure:', data)
+        setVipPlugs([])
+             }
+     } catch (error) {
       console.error('💥 VIP fetch error:', error)
     } finally {
       setLoading(false)
