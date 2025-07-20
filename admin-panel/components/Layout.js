@@ -5,7 +5,6 @@ import {
   HomeIcon,
   CogIcon,
   UserGroupIcon,
-  ChatBubbleLeftRightIcon,
   ChartBarIcon,
   ArrowRightOnRectangleIcon,
   Bars3Icon,
@@ -16,7 +15,6 @@ const navigation = [
   { name: 'Dashboard', href: '/admin', icon: HomeIcon },
   { name: 'Boutiques/Plugs', href: '/admin/plugs', icon: UserGroupIcon },
   { name: 'Configuration Bot', href: '/admin/config', icon: CogIcon },
-  { name: 'Messages', href: '/admin/messages', icon: ChatBubbleLeftRightIcon },
   { name: 'Statistiques', href: '/admin/stats', icon: ChartBarIcon },
 ]
 
