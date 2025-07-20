@@ -5,7 +5,18 @@ import { toast } from 'react-hot-toast';
 
 export default function MessagesPage() {
   const router = useRouter();
-  const [config, setConfig] = useState(null);
+  const [config, setConfig] = useState({
+    welcome: { text: '', image: '' },
+    boutique: { name: '', subtitle: '', logo: '', vipTitle: '', vipSubtitle: '' },
+    botTexts: {},
+    buttons: { 
+      topPlugs: { text: '' }, 
+      vipPlugs: { text: '' }, 
+      contact: { text: '', content: '' }, 
+      info: { text: '', content: '' } 
+    },
+    filters: { all: '', byService: '', byCountry: '' }
+  });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
@@ -63,7 +74,28 @@ export default function MessagesPage() {
         }
       }
 
-      setConfig(data);
+      // Fusionner les données reçues avec la structure par défaut
+      if (data && typeof data === 'object') {
+        setConfig(prevConfig => ({
+          ...prevConfig,
+          ...data,
+          welcome: { ...prevConfig.welcome, ...(data.welcome || {}) },
+          boutique: { ...prevConfig.boutique, ...(data.boutique || {}) },
+          botTexts: { ...prevConfig.botTexts, ...(data.botTexts || {}) },
+          buttons: {
+            ...prevConfig.buttons,
+            ...(data.buttons || {}),
+            topPlugs: { ...prevConfig.buttons.topPlugs, ...(data.buttons?.topPlugs || {}) },
+            vipPlugs: { ...prevConfig.buttons.vipPlugs, ...(data.buttons?.vipPlugs || {}) },
+            contact: { ...prevConfig.buttons.contact, ...(data.buttons?.contact || {}) },
+            info: { ...prevConfig.buttons.info, ...(data.buttons?.info || {}) }
+          },
+          filters: { ...prevConfig.filters, ...(data.filters || {}) }
+        }));
+      } else {
+        console.error('Données de configuration invalides:', data);
+        toast.error('Données de configuration invalides reçues');
+      }
     } catch (error) {
       console.error('Erreur lors du chargement de la config:', error);
       toast.error('Erreur lors du chargement de la configuration');
@@ -144,26 +176,50 @@ export default function MessagesPage() {
   };
 
   const updateConfig = (section, field, value) => {
-    setConfig(prev => ({
-      ...prev,
-      [section]: {
-        ...prev[section],
-        [field]: value
-      }
-    }));
+    try {
+      setConfig(prev => {
+        if (!prev || typeof prev !== 'object') {
+          console.error('Config invalide:', prev);
+          return prev;
+        }
+        
+        return {
+          ...prev,
+          [section]: {
+            ...prev[section],
+            [field]: value
+          }
+        };
+      });
+    } catch (error) {
+      console.error('Erreur updateConfig:', error);
+      toast.error('Erreur lors de la mise à jour');
+    }
   };
 
   const updateNestedConfig = (section, subsection, field, value) => {
-    setConfig(prev => ({
-      ...prev,
-      [section]: {
-        ...prev[section],
-        [subsection]: {
-          ...prev[section]?.[subsection],
-          [field]: value
+    try {
+      setConfig(prev => {
+        if (!prev || typeof prev !== 'object') {
+          console.error('Config invalide:', prev);
+          return prev;
         }
-      }
-    }));
+        
+        return {
+          ...prev,
+          [section]: {
+            ...prev[section],
+            [subsection]: {
+              ...prev[section]?.[subsection],
+              [field]: value
+            }
+          }
+        };
+      });
+    } catch (error) {
+      console.error('Erreur updateNestedConfig:', error);
+      toast.error('Erreur lors de la mise à jour');
+    }
   };
 
   // Fonction pour recharger le bot
@@ -272,7 +328,7 @@ export default function MessagesPage() {
 
         {/* Contenu */}
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          {config && (
+          {!loading && config && (
             <div className="space-y-8">
               {/* Message d'accueil */}
               <div className="bg-white rounded-lg shadow p-6">
