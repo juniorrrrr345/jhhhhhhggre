@@ -154,6 +154,8 @@ const getReturnButtonText = (context) => {
       return '🔙 Retour aux filtres';
     case 'plugs_all':
       return '🔙 Retour à la liste';
+    case 'plugs_vip':
+      return '🔙 Retour aux VIP';
     case 'service_delivery':
     case 'service_postal':
     case 'service_meetup':

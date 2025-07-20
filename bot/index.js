@@ -93,9 +93,9 @@ bot.command('admin', async (ctx) => {
 
 // Gestionnaires des callbacks
 bot.action('back_main', handleBackMain);
-bot.action('top_plugs', handleTopPlugs);
-bot.action('plugs_vip', handleVipPlugs);
-bot.action('plugs_all', (ctx) => handleAllPlugs(ctx, 0));
+  bot.action('top_plugs', handleTopPlugs);
+  bot.action('plugs_all', (ctx) => handleAllPlugs(ctx, 0));
+  bot.action('plugs_vip', (ctx) => handleVipPlugs(ctx, 0));
 bot.action('filter_service', handleFilterService);
 bot.action('filter_country', handleFilterCountry);
 bot.action('contact', handleContact);

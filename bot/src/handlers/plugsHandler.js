@@ -35,7 +35,7 @@ const handleVipPlugs = async (ctx, page = 0) => {
   try {
     const config = await Config.findById('main');
     const vipPlugs = await Plug.find({ isActive: true, isVip: true })
-      .sort({ vipOrder: 1, createdAt: -1 });
+      .sort({ likes: -1, vipOrder: 1, createdAt: -1 });
 
     if (vipPlugs.length === 0) {
       const backKeyboard = Markup.inlineKeyboard([
