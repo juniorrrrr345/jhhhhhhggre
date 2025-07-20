@@ -226,27 +226,24 @@ const handleFilterService = async (ctx) => {
     
     const messageText = `${config?.botTexts?.filterServiceTitle || '🔍 Filtrer par service'}\n\n${config?.botTexts?.filterServiceDescription || 'Choisissez le type de service :'}\n\n📊 **Disponibilité :**\n🚚 Livraison: ${deliveryCount} boutiques\n✈️ Postal: ${postalCount} boutiques\n🏠 Meetup: ${meetupCount} boutiques`;
     
-    if (config?.welcome?.image) {
-      try {
-        await ctx.editMessageMedia({
-          type: 'photo',
-          media: config.welcome.image,
-          caption: messageText,
-          parse_mode: 'Markdown'
-        }, {
-          reply_markup: keyboard.reply_markup
-        });
-      } catch (error) {
-        await ctx.editMessageText(messageText, {
-          reply_markup: keyboard.reply_markup,
-          parse_mode: 'Markdown'
-        });
-      }
-    } else {
+    // Toujours envoyer en texte pour éviter les erreurs d'images
+    try {
       await ctx.editMessageText(messageText, {
         reply_markup: keyboard.reply_markup,
         parse_mode: 'Markdown'
       });
+    } catch (editError) {
+      // Si impossible d'éditer (ex: message avec photo), supprimer et envoyer nouveau
+      try {
+        await ctx.deleteMessage();
+        await ctx.reply(messageText, {
+          reply_markup: keyboard.reply_markup,
+          parse_mode: 'Markdown'
+        });
+      } catch (deleteError) {
+        console.error('Erreur dans handler:', deleteError);
+        await ctx.answerCbQuery('❌ Erreur lors du chargement');
+      }
     }
     
     // Confirmer la callback pour éviter le loading
@@ -341,27 +338,24 @@ const handleFilterCountry = async (ctx) => {
     const config = await Config.findById('main');
     const messageText = `${config.botTexts?.filterCountryTitle || '🌍 Filtrer par pays'}\n\n${config.botTexts?.filterCountryDescription || 'Choisissez un pays :'}`;
     
-    if (config.welcome?.image) {
-      try {
-        await ctx.editMessageMedia({
-          type: 'photo',
-          media: config.welcome.image,
-          caption: messageText,
-          parse_mode: 'Markdown'
-        }, {
-          reply_markup: keyboard.reply_markup
-        });
-      } catch (error) {
-        await ctx.editMessageText(messageText, {
-          reply_markup: keyboard.reply_markup,
-          parse_mode: 'Markdown'
-        });
-      }
-    } else {
+    // Toujours envoyer en texte pour éviter les erreurs d'images
+    try {
       await ctx.editMessageText(messageText, {
         reply_markup: keyboard.reply_markup,
         parse_mode: 'Markdown'
       });
+    } catch (editError) {
+      // Si impossible d'éditer (ex: message avec photo), supprimer et envoyer nouveau
+      try {
+        await ctx.deleteMessage();
+        await ctx.reply(messageText, {
+          reply_markup: keyboard.reply_markup,
+          parse_mode: 'Markdown'
+        });
+      } catch (deleteError) {
+        console.error('Erreur dans handler:', deleteError);
+        await ctx.answerCbQuery('❌ Erreur lors du chargement');
+      }
     }
     
     // Confirmer la callback pour éviter le loading
@@ -443,28 +437,24 @@ const handlePlugDetails = async (ctx, plugId, returnContext = 'top_plugs') => {
 
     const keyboard = createPlugKeyboard(plug, returnContext);
 
-    if (plug.image) {
-      try {
-        await ctx.editMessageMedia({
-          type: 'photo',
-          media: plug.image,
-          caption: message,
-          parse_mode: 'Markdown'
-        }, {
-          reply_markup: keyboard.reply_markup
-        });
-      } catch (error) {
-        console.error('Erreur envoi image plug:', error);
-        await ctx.editMessageText(message, {
-          reply_markup: keyboard.reply_markup,
-          parse_mode: 'Markdown'
-        });
-      }
-    } else {
+    // Toujours envoyer en texte pour éviter les erreurs d'images
+    try {
       await ctx.editMessageText(message, {
         reply_markup: keyboard.reply_markup,
         parse_mode: 'Markdown'
       });
+    } catch (editError) {
+      // Si impossible d'éditer (ex: message avec photo), supprimer et envoyer nouveau
+      try {
+        await ctx.deleteMessage();
+        await ctx.reply(message, {
+          reply_markup: keyboard.reply_markup,
+          parse_mode: 'Markdown'
+        });
+      } catch (deleteError) {
+        console.error('Erreur dans handler:', deleteError);
+        await ctx.answerCbQuery('❌ Erreur lors du chargement');
+      }
     }
   } catch (error) {
     console.error('Erreur dans handlePlugDetails:', error);
