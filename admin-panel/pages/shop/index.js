@@ -185,25 +185,25 @@ export default function ShopHome() {
                          alt={plug.name}
                          className="w-full h-full object-cover grayscale"
                        />
-                                               {/* Badges en haut à gauche */}
-                        <div className="absolute top-2 left-2 space-y-1">
-                          {plug.isVip && (
-                            <div>
-                              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-900 text-white">
-                                <StarIcon className="w-3 h-3 mr-1" />
-                                VIP
-                              </span>
-                            </div>
-                          )}
-                          {/* Badge Top 3 */}
-                          {index < 3 && plug.likes > 0 && (
-                            <div>
-                              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-500 text-white">
-                                {index === 0 ? '🥇' : index === 1 ? '🥈' : '🥉'} Top {index + 1}
-                              </span>
-                            </div>
-                          )}
-                        </div>
+                                                                       {/* Badges en haut à droite pour ne pas cacher le nom */}
+                         <div className="absolute top-2 right-2 space-y-1">
+                           {plug.isVip && (
+                             <div>
+                               <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-900 text-white">
+                                 <StarIcon className="w-3 h-3 mr-1" />
+                                 VIP
+                               </span>
+                             </div>
+                           )}
+                           {/* Badge Top 3 */}
+                           {index < 3 && plug.likes > 0 && (
+                             <div>
+                               <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-500 text-white">
+                                 {index === 0 ? '🥇' : index === 1 ? '🥈' : '🥉'}
+                               </span>
+                             </div>
+                           )}
+                         </div>
                      </div>
 
                   {/* Contenu */}

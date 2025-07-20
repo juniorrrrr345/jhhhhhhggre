@@ -225,6 +225,29 @@ const authenticateAdmin = (req, res, next) => {
 
 // ===== ROUTES CONFIGURATION =====
 
+// Endpoint pour les statistiques
+app.get('/api/stats', authenticateAdmin, async (req, res) => {
+  try {
+    const totalPlugs = await Plug.countDocuments();
+    const activePlugs = await Plug.countDocuments({ isActive: true });
+    const vipPlugs = await Plug.countDocuments({ isVip: true });
+    
+    // Calculer le total des likes
+    const plugsWithLikes = await Plug.find({}, 'likes');
+    const totalLikes = plugsWithLikes.reduce((sum, plug) => sum + (plug.likes || 0), 0);
+    
+    res.json({
+      totalPlugs,
+      activePlugs,
+      vipPlugs,
+      totalLikes
+    });
+  } catch (error) {
+    console.error('Erreur lors du chargement des stats:', error);
+    res.status(500).json({ error: 'Erreur serveur' });
+  }
+});
+
 // Récupérer la configuration
 app.get('/api/config', authenticateAdmin, async (req, res) => {
   try {
