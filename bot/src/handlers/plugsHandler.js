@@ -478,28 +478,24 @@ const handlePlugDetails = async (ctx, plugId, returnContext = 'top_plugs') => {
 
     const keyboard = createPlugKeyboard(plug, returnContext);
 
-    if (plug.image) {
-      try {
-        await ctx.editMessageMedia({
-          type: 'photo',
-          media: plug.image,
-          caption: message,
-          parse_mode: 'Markdown'
-        }, {
-          reply_markup: keyboard.reply_markup
-        });
-      } catch (error) {
-        console.error('Erreur envoi image plug:', error);
-        await ctx.editMessageText(message, {
-          reply_markup: keyboard.reply_markup,
-          parse_mode: 'Markdown'
-        });
-      }
-    } else {
+    // Toujours envoyer en texte pour éviter les erreurs d'images
+    try {
       await ctx.editMessageText(message, {
         reply_markup: keyboard.reply_markup,
         parse_mode: 'Markdown'
       });
+    } catch (editError) {
+      // Si impossible d'éditer (ex: message avec photo), supprimer et envoyer nouveau
+      try {
+        await ctx.deleteMessage();
+        await ctx.reply(message, {
+          reply_markup: keyboard.reply_markup,
+          parse_mode: 'Markdown'
+        });
+      } catch (deleteError) {
+        console.error('Erreur dans handlePlugDetails:', deleteError);
+        await ctx.answerCbQuery('❌ Erreur lors du chargement');
+      }
     }
   } catch (error) {
     console.error('Erreur dans handlePlugDetails:', error);
