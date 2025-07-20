@@ -211,6 +211,49 @@ export default function Config() {
     }
   };
 
+  // Fonction pour tester la configuration boutique
+  const testBoutiqueConfig = async () => {
+    try {
+      console.log('🧪 Test configuration boutique...');
+      
+      // Vérifier les éléments requis
+      const requiredFields = {
+        'Nom boutique': config?.boutique?.name,
+        'Logo': config?.boutique?.logo,
+        'Background': config?.boutique?.backgroundImage,
+        'Message accueil': config?.welcome?.text
+      };
+      
+      const missing = Object.entries(requiredFields)
+        .filter(([key, value]) => !value)
+        .map(([key]) => key);
+      
+      if (missing.length > 0) {
+        toast.error(`Éléments manquants: ${missing.join(', ')}`);
+        return false;
+      }
+      
+      // Test de l'API publique
+      const response = await fetch('/api/proxy?endpoint=/api/public/config', {
+        headers: { 'Cache-Control': 'no-cache' }
+      });
+      
+      if (response.ok) {
+        const publicConfig = await response.json();
+        console.log('✅ Configuration publique accessible:', publicConfig);
+        toast.success('Configuration boutique testée avec succès !');
+        return true;
+      } else {
+        throw new Error(`API publique: ${response.status}`);
+      }
+      
+    } catch (error) {
+      console.error('❌ Erreur test boutique:', error);
+      toast.error('Erreur lors du test de la configuration boutique');
+      return false;
+    }
+  };
+
   const updateConfig = (section, field, value) => {
     setConfig(prev => ({
       ...prev,
@@ -383,95 +426,61 @@ export default function Config() {
 
               {/* Configuration rapide boutique */}
               <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                <h3 className="text-lg font-medium text-green-900 mb-3">🏪 Boutique Vercel</h3>
+                <h3 className="text-lg font-medium text-green-900 mb-3">🏪 Configuration Boutique</h3>
                 
-                {/* Bouton pour appliquer la config utilisateur */}
-                <div className="mb-3">
+                {/* Statut de la configuration */}
+                <div className="text-xs text-green-600 mb-3 p-2 bg-green-50 rounded border">
+                  <strong>Configuration actuelle :</strong><br/>
+                  • Nom boutique: {config?.boutique?.name || 'Non défini'}<br/>
+                  • Logo: {config?.boutique?.logo ? '✅ Défini' : '❌ Non défini'}<br/>
+                  • Background: {config?.boutique?.backgroundImage ? '✅ Défini' : '❌ Non défini'}<br/>
+                  • Message bot: {config?.welcome?.text ? '✅ Défini' : '❌ Non défini'}
+                </div>
+                
+                {/* Boutons d'action */}
+                <div className="space-y-2">
                   <button
                     onClick={applyUserBoutiqueConfig}
-                    className="w-full bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors text-sm font-medium mb-3"
+                    className="w-full bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors text-sm font-medium"
                   >
                     ⚡ Appliquer la configuration de test
                   </button>
                   
                   <button
-                    onClick={() => {
-                      saveConfig();
-                      triggerBoutiqueSync();
-                    }}
-                    className="w-full bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition-colors text-sm font-medium"
+                    onClick={() => setViewMode('advanced')}
+                    className="w-full bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg transition-colors text-sm font-medium"
                   >
-                    🔄 Sauvegarder et Synchroniser
-                  </button>
-                                      <div className="text-xs text-green-600 mt-2 p-2 bg-green-50 rounded">
-                      <strong>Configuration actuelle :</strong><br/>
-                      • Nom boutique: {config?.boutique?.name || 'Non défini'}<br/>
-                      • Logo: {config?.boutique?.logo ? '✅ Défini' : '❌ Non défini'}<br/>
-                      • Background: {config?.boutique?.backgroundImage ? '✅ Défini' : '❌ Non défini'}<br/>
-                      • Message bot: {config?.welcome?.text ? '✅ Défini' : '❌ Non défini'}
-                    </div>
-                </div>
-                
-                <div className="space-y-3">
-                  <button
-                    onClick={() => editText('boutique', 'name', config.boutique?.name || '', 'Nom de la boutique')}
-                    className="w-full text-left bg-white border border-green-300 rounded-lg p-3 hover:bg-green-50 transition-colors"
-                  >
-                    <div className="text-sm font-medium text-green-800">Nom :</div>
-                    <div className="text-green-600">{config.boutique?.name || 'Cliquez pour définir'}</div>
-                  </button>
-                  
-                  <button
-                    onClick={() => editText('boutique', 'subtitle', config.boutique?.subtitle || '', 'Sous-titre de la boutique')}
-                    className="w-full text-left bg-white border border-green-300 rounded-lg p-3 hover:bg-green-50 transition-colors"
-                  >
-                    <div className="text-sm font-medium text-green-800">Sous-titre :</div>
-                    <div className="text-green-600">{config.boutique?.subtitle || 'Cliquez pour définir'}</div>
-                  </button>
-                  
-                  <button
-                    onClick={() => editText('boutique', 'logo', config.boutique?.logo || '', 'Logo de la boutique (URL)')}
-                    className="w-full text-left bg-white border border-green-300 rounded-lg p-3 hover:bg-green-50 transition-colors"
-                  >
-                    <div className="text-sm font-medium text-green-800">Logo :</div>
-                    <div className="text-green-600 text-xs break-all">{config.boutique?.logo || 'Cliquez pour définir'}</div>
-                  </button>
+                                         ⚙️ Modifier la configuration boutique
+                   </button>
+                 </div>
+               </div>
 
-                  <button
-                    onClick={() => editText('boutique', 'backgroundImage', config.boutique?.backgroundImage || '', 'Image de fond (URL)')}
-                    className="w-full text-left bg-white border border-green-300 rounded-lg p-3 hover:bg-green-50 transition-colors"
-                  >
-                    <div className="text-sm font-medium text-green-800">Background :</div>
-                    <div className="text-green-600 text-xs break-all">{config.boutique?.backgroundImage || 'Cliquez pour définir'}</div>
-                  </button>
-
-                  <button
-                    onClick={() => editText('boutique', 'searchTitle', config.boutique?.searchTitle || '', 'Titre page Recherche')}
-                    className="w-full text-left bg-white border border-green-300 rounded-lg p-3 hover:bg-green-50 transition-colors"
-                  >
-                    <div className="text-sm font-medium text-green-800">Titre Recherche :</div>
-                    <div className="text-green-600">{config.boutique?.searchTitle || 'Cliquez pour définir'}</div>
-                  </button>
-
-                  <button
-                    onClick={() => editText('boutique', 'vipTitle', config.boutique?.vipTitle || '', 'Titre section VIP')}
-                    className="w-full text-left bg-white border border-green-300 rounded-lg p-3 hover:bg-green-50 transition-colors"
-                  >
-                    <div className="text-sm font-medium text-green-800">Titre VIP :</div>
-                    <div className="text-green-600">{config.boutique?.vipTitle || 'Cliquez pour définir'}</div>
-                  </button>
-
-                  <button
-                    onClick={() => editText('welcome', 'text', config.welcome?.text || '', 'Message d\'accueil du bot (/start)')}
-                    className="w-full text-left bg-white border border-blue-300 rounded-lg p-3 hover:bg-blue-50 transition-colors"
-                  >
-                    <div className="text-sm font-medium text-blue-800">Message d'accueil Bot :</div>
-                    <div className="text-blue-600 text-sm">{config.welcome?.text || '🌟 Bienvenue sur notre bot !'}</div>
-                    <div className="text-xs text-blue-500 mt-1">Affiché quand on tape /start sur le bot</div>
-                  </button>
-                </div>
-              </div>
-            </div>
+               {/* Gestion des réseaux sociaux du message d'accueil */}
+               <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
+                 <h3 className="text-lg font-medium text-purple-900 mb-3">📱 Réseaux Sociaux - Message d'Accueil</h3>
+                 <p className="text-sm text-purple-700 mb-3">
+                   Ajoutez des liens vers vos réseaux sociaux directement dans le message d'accueil du bot.
+                 </p>
+                 
+                 <div className="space-y-2">
+                   <a
+                     href="/admin/config/welcome-social"
+                     className="w-full bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg transition-colors text-sm font-medium inline-block text-center"
+                   >
+                     ⚙️ Gérer les réseaux sociaux d'accueil
+                   </a>
+                   
+                   <button
+                     onClick={() => editText('welcome', 'text', config.welcome?.text || '', 'Message d\'accueil du bot (/start)')}
+                     className="w-full text-left bg-white border border-purple-300 rounded-lg p-3 hover:bg-purple-50 transition-colors"
+                   >
+                     <div className="text-sm font-medium text-purple-800">Message d'accueil Bot :</div>
+                     <div className="text-purple-600 text-sm">{config.welcome?.text || '🌟 Bienvenue sur notre bot !'}</div>
+                     <div className="text-xs text-purple-500 mt-1">Affiché quand on tape /start sur le bot</div>
+                   </button>
+                 </div>
+               </div>
+             </div>
 
             {/* Simulation du bot Telegram */}
             <div className="lg:w-2/3">
@@ -888,23 +897,30 @@ export default function Config() {
         <div className="bg-white rounded-lg shadow p-4">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <h3 className="text-base font-medium text-gray-900">💾 Sauvegarde</h3>
-              <p className="text-sm text-gray-500">Appliquez vos modifications</p>
+              <h3 className="text-base font-medium text-gray-900">💾 Sauvegarde & Tests</h3>
+              <p className="text-sm text-gray-500">Appliquez et testez vos modifications</p>
             </div>
             <div className="flex flex-col sm:flex-row gap-2">
+              <button
+                onClick={testBoutiqueConfig}
+                disabled={saving}
+                className="bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-white px-4 py-2 rounded text-sm font-medium transition-colors"
+              >
+                🧪 Test Boutique
+              </button>
               <button
                 onClick={forceBoutiqueSync}
                 disabled={saving}
                 className="bg-purple-500 hover:bg-purple-600 disabled:opacity-50 text-white px-4 py-2 rounded text-sm font-medium transition-colors"
               >
-                🔄 Test Sync
+                🔄 Sync Boutique
               </button>
               <button
                 onClick={reloadBot}
                 disabled={saving}
                 className="bg-green-500 hover:bg-green-600 disabled:opacity-50 text-white px-4 py-2 rounded text-sm font-medium transition-colors"
               >
-                🔄 Recharger
+                🔄 Recharger Bot
               </button>
               <button
                 onClick={saveConfig}
