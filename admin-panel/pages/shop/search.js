@@ -12,6 +12,7 @@ import {
 
 export default function ShopSearch() {
   const [plugs, setPlugs] = useState([])
+  const [config, setConfig] = useState(null)
   const [loading, setLoading] = useState(false)
   const [search, setSearch] = useState('')
   const [selectedCountry, setSelectedCountry] = useState('')
@@ -19,10 +20,12 @@ export default function ShopSearch() {
   const [allPlugs, setAllPlugs] = useState([])
 
   useEffect(() => {
+    fetchConfig()
     fetchAllPlugs()
     
     // Auto-refresh toutes les 30 secondes pour la synchronisation
     const interval = setInterval(() => {
+      fetchConfig()
       fetchAllPlugs()
     }, 30000)
     
@@ -34,6 +37,20 @@ export default function ShopSearch() {
       filterPlugs()
     }
   }, [search, selectedCountry, selectedService, allPlugs])
+
+  const fetchConfig = async () => {
+    try {
+      const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://jhhhhhhggre.onrender.com'
+      const response = await fetch(`${apiBaseUrl}/api/config`)
+      
+      if (response.ok) {
+        const data = await response.json()
+        setConfig(data)
+      }
+    } catch (error) {
+      console.log('Config load failed, using defaults')
+    }
+  }
 
   const fetchAllPlugs = async () => {
     try {
@@ -158,24 +175,26 @@ export default function ShopSearch() {
             <div className="flex items-center justify-between h-16">
               <div className="flex items-center">
                 <div className="flex-shrink-0">
-                  <div className="h-8 w-8 bg-white rounded-lg flex items-center justify-center">
-                    <MagnifyingGlassIcon className="h-5 w-5 text-gray-900" />
-                  </div>
+                  {config?.boutique?.logo ? (
+                    <img 
+                      src={config.boutique.logo} 
+                      alt="Logo" 
+                      className="h-8 w-8 rounded-lg object-cover"
+                    />
+                  ) : (
+                    <div className="h-8 w-8 bg-white rounded-lg flex items-center justify-center">
+                      <MagnifyingGlassIcon className="h-5 w-5 text-gray-900" />
+                    </div>
+                  )}
                 </div>
                 <div className="ml-3">
-                  <h1 className="text-xl font-bold text-white">Recherche Boutiques</h1>
-                  <p className="text-gray-300 text-sm">Trouvez la boutique parfaite</p>
+                  <h1 className="text-xl font-bold text-white">
+                    {config?.boutique?.searchTitle || 'Recherche Boutiques'}
+                  </h1>
+                  <p className="text-gray-300 text-sm">
+                    {config?.boutique?.searchSubtitle || 'Trouvez la boutique parfaite'}
+                  </p>
                 </div>
-              </div>
-              <div className="flex items-center space-x-4">
-                <a
-                  href="https://t.me/votre_bot"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
-                >
-                  📱 Telegram Bot
-                </a>
               </div>
             </div>
           </div>
@@ -187,21 +206,36 @@ export default function ShopSearch() {
             <div className="flex space-x-8 h-12 items-center">
               <Link 
                 href="/shop" 
-                className="text-gray-500 hover:text-gray-700 pb-3"
+                className="text-gray-500 hover:text-gray-700 pb-3 flex items-center"
               >
-                🏠 Accueil
+                {config?.boutique?.logo ? (
+                  <img src={config.boutique.logo} alt="Logo" className="h-4 w-4 mr-2 rounded object-cover" />
+                ) : (
+                  <span className="mr-1">🏠</span>
+                )}
+                Accueil
               </Link>
               <Link 
                 href="/shop/search" 
-                className="text-blue-600 font-medium border-b-2 border-blue-600 pb-3"
+                className="text-blue-600 font-medium border-b-2 border-blue-600 pb-3 flex items-center"
               >
-                🔍 Recherche
+                {config?.boutique?.logo ? (
+                  <img src={config.boutique.logo} alt="Logo" className="h-4 w-4 mr-2 rounded object-cover" />
+                ) : (
+                  <span className="mr-1">🔍</span>
+                )}
+                Recherche
               </Link>
               <Link 
                 href="/shop/vip" 
-                className="text-gray-500 hover:text-gray-700 pb-3"
+                className="text-gray-500 hover:text-gray-700 pb-3 flex items-center"
               >
-                ⭐ VIP
+                {config?.boutique?.logo ? (
+                  <img src={config.boutique.logo} alt="Logo" className="h-4 w-4 mr-2 rounded object-cover" />
+                ) : (
+                  <span className="mr-1">⭐</span>
+                )}
+                VIP
               </Link>
             </div>
           </div>

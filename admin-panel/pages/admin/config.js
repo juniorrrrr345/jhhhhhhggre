@@ -22,7 +22,9 @@ export default function Config() {
       subtitle: '',
       logo: '',
       vipTitle: '',
-      vipSubtitle: ''
+      vipSubtitle: '',
+      searchTitle: '',
+      searchSubtitle: ''
     },
     messages: {
       welcome: '',
@@ -350,6 +352,22 @@ export default function Config() {
                     <div className="text-sm font-medium text-green-800">Logo :</div>
                     <div className="text-green-600 text-xs break-all">{config.boutique?.logo || 'Cliquez pour définir'}</div>
                   </button>
+
+                  <button
+                    onClick={() => editText('boutique', 'searchTitle', config.boutique?.searchTitle || '', 'Titre page Recherche')}
+                    className="w-full text-left bg-white border border-green-300 rounded-lg p-3 hover:bg-green-50 transition-colors"
+                  >
+                    <div className="text-sm font-medium text-green-800">Titre Recherche :</div>
+                    <div className="text-green-600">{config.boutique?.searchTitle || 'Cliquez pour définir'}</div>
+                  </button>
+
+                  <button
+                    onClick={() => editText('boutique', 'vipTitle', config.boutique?.vipTitle || '', 'Titre section VIP')}
+                    className="w-full text-left bg-white border border-green-300 rounded-lg p-3 hover:bg-green-50 transition-colors"
+                  >
+                    <div className="text-sm font-medium text-green-800">Titre VIP :</div>
+                    <div className="text-green-600">{config.boutique?.vipTitle || 'Cliquez pour définir'}</div>
+                  </button>
                 </div>
               </div>
             </div>
@@ -561,21 +579,49 @@ export default function Config() {
               <p className="text-sm text-gray-500 mt-1">Titre de la section VIP sur le site</p>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Sous-titre section VIP
-              </label>
-              <input
-                type="text"
-                value={config.boutique?.vipSubtitle || ''}
-                onChange={(e) => updateConfig('boutique', 'vipSubtitle', e.target.value)}
-                className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Sélection premium exclusive"
-              />
-              <p className="text-sm text-gray-500 mt-1">Sous-titre de la section VIP</p>
-            </div>
-          </div>
-        </div>
+                         <div>
+               <label className="block text-sm font-medium text-gray-700 mb-2">
+                 Sous-titre section VIP
+               </label>
+               <input
+                 type="text"
+                 value={config.boutique?.vipSubtitle || ''}
+                 onChange={(e) => updateConfig('boutique', 'vipSubtitle', e.target.value)}
+                 className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                 placeholder="Sélection premium exclusive"
+               />
+               <p className="text-sm text-gray-500 mt-1">Sous-titre de la section VIP</p>
+             </div>
+
+             <div>
+               <label className="block text-sm font-medium text-gray-700 mb-2">
+                 Titre page Recherche
+               </label>
+               <input
+                 type="text"
+                 value={config.boutique?.searchTitle || ''}
+                 onChange={(e) => updateConfig('boutique', 'searchTitle', e.target.value)}
+                 className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                 placeholder="Recherche Boutiques"
+               />
+               <p className="text-sm text-gray-500 mt-1">Titre affiché sur la page de recherche</p>
+             </div>
+
+             <div>
+               <label className="block text-sm font-medium text-gray-700 mb-2">
+                 Sous-titre page Recherche
+               </label>
+               <input
+                 type="text"
+                 value={config.boutique?.searchSubtitle || ''}
+                 onChange={(e) => updateConfig('boutique', 'searchSubtitle', e.target.value)}
+                 className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                 placeholder="Trouvez la boutique parfaite"
+               />
+               <p className="text-sm text-gray-500 mt-1">Sous-titre affiché sur la page de recherche</p>
+             </div>
+           </div>
+         </div>
 
         {/* Textes des boutons */}
         <div className="bg-white shadow rounded-lg">
