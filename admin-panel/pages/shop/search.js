@@ -23,13 +23,64 @@ export default function ShopSearch() {
     fetchConfig()
     fetchAllPlugs()
     
-    // Auto-refresh toutes les 30 secondes pour la synchronisation
+    // Auto-refresh pour la synchronisation (réduit à 15 secondes pour la recherche)
     const interval = setInterval(() => {
       fetchConfig()
-      fetchAllPlugs()
-    }, 30000)
+      if (allPlugs.length === 0) {
+        fetchAllPlugs()
+      }
+    }, 15000)
     
-    return () => clearInterval(interval)
+    // Écouter les signaux de synchronisation du panel admin
+    const handleSyncSignal = (event) => {
+      if (event.key === 'boutique_sync_signal') {
+        console.log('🔄 [SEARCH] Signal de synchronisation reçu, rechargement...');
+        fetchConfig();
+        // Relancer la recherche actuelle si il y en a une
+        if (searchTerm || selectedService || selectedCountry) {
+          searchPlugs();
+        }
+      }
+    };
+    
+    const handleStorageChange = (event) => {
+      if (event.key === 'boutique_sync_signal') {
+        console.log('🔄 [SEARCH] Signal de synchronisation cross-tab reçu, rechargement...');
+        fetchConfig();
+        if (searchTerm || selectedService || selectedCountry) {
+          searchPlugs();
+        }
+      }
+    };
+    
+    // Écouter les événements de synchronisation
+    window.addEventListener('storage', handleSyncSignal);
+    window.addEventListener('storage', handleStorageChange);
+    
+    // Vérifier s'il y a un signal en attente au chargement
+    const checkPendingSync = () => {
+      const pendingSync = localStorage.getItem('boutique_sync_signal');
+      if (pendingSync) {
+        try {
+          const signal = JSON.parse(pendingSync);
+          // Si le signal est récent (moins de 5 minutes), on synchronise
+          if (Date.now() - signal.timestamp < 300000) {
+            console.log('🔄 [SEARCH] Signal de synchronisation en attente détecté');
+            fetchConfig();
+          }
+        } catch (error) {
+          console.error('[SEARCH] Erreur parsing signal sync:', error);
+        }
+      }
+    };
+    
+    checkPendingSync();
+    
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('storage', handleSyncSignal);
+      window.removeEventListener('storage', handleStorageChange);
+    };
   }, [])
 
   useEffect(() => {

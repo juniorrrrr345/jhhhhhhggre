@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import Head from 'next/head'
 import Link from 'next/link'
 import { api } from '../../lib/api'
+import toast from 'react-hot-toast'
 import {
   StarIcon,
   MapPinIcon,
@@ -27,7 +28,53 @@ export default function ShopHome() {
       fetchPlugs()
     }, 30000)
     
-    return () => clearInterval(interval)
+    // Écouter les signaux de synchronisation du panel admin
+    const handleSyncSignal = (event) => {
+      if (event.key === 'boutique_sync_signal') {
+        console.log('🔄 Signal de synchronisation reçu, rechargement...');
+        fetchConfig();
+        fetchPlugs();
+        toast.success('Configuration mise à jour !');
+      }
+    };
+    
+    const handleStorageChange = (event) => {
+      if (event.key === 'boutique_sync_signal') {
+        console.log('🔄 Signal de synchronisation cross-tab reçu, rechargement...');
+        fetchConfig();
+        fetchPlugs();
+      }
+    };
+    
+    // Écouter les événements de synchronisation
+    window.addEventListener('storage', handleSyncSignal);
+    window.addEventListener('storage', handleStorageChange);
+    
+    // Vérifier s'il y a un signal en attente au chargement
+    const checkPendingSync = () => {
+      const pendingSync = localStorage.getItem('boutique_sync_signal');
+      if (pendingSync) {
+        try {
+          const signal = JSON.parse(pendingSync);
+          // Si le signal est récent (moins de 5 minutes), on synchronise
+          if (Date.now() - signal.timestamp < 300000) {
+            console.log('🔄 Signal de synchronisation en attente détecté');
+            fetchConfig();
+            fetchPlugs();
+          }
+        } catch (error) {
+          console.error('Erreur parsing signal sync:', error);
+        }
+      }
+    };
+    
+    checkPendingSync();
+    
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('storage', handleSyncSignal);
+      window.removeEventListener('storage', handleStorageChange);
+    };
   }, [])
 
   const fetchConfig = async () => {

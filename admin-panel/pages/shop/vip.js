@@ -24,7 +24,52 @@ export default function ShopVIP() {
       fetchVipPlugs()
     }, 30000)
     
-    return () => clearInterval(interval)
+    // Écouter les signaux de synchronisation du panel admin
+    const handleSyncSignal = (event) => {
+      if (event.key === 'boutique_sync_signal') {
+        console.log('🔄 [VIP] Signal de synchronisation reçu, rechargement...');
+        fetchConfig();
+        fetchVipPlugs();
+      }
+    };
+    
+    const handleStorageChange = (event) => {
+      if (event.key === 'boutique_sync_signal') {
+        console.log('🔄 [VIP] Signal de synchronisation cross-tab reçu, rechargement...');
+        fetchConfig();
+        fetchVipPlugs();
+      }
+    };
+    
+    // Écouter les événements de synchronisation
+    window.addEventListener('storage', handleSyncSignal);
+    window.addEventListener('storage', handleStorageChange);
+    
+    // Vérifier s'il y a un signal en attente au chargement
+    const checkPendingSync = () => {
+      const pendingSync = localStorage.getItem('boutique_sync_signal');
+      if (pendingSync) {
+        try {
+          const signal = JSON.parse(pendingSync);
+          // Si le signal est récent (moins de 5 minutes), on synchronise
+          if (Date.now() - signal.timestamp < 300000) {
+            console.log('🔄 [VIP] Signal de synchronisation en attente détecté');
+            fetchConfig();
+            fetchVipPlugs();
+          }
+        } catch (error) {
+          console.error('[VIP] Erreur parsing signal sync:', error);
+        }
+      }
+    };
+    
+    checkPendingSync();
+    
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('storage', handleSyncSignal);
+      window.removeEventListener('storage', handleStorageChange);
+    };
   }, [])
 
   const fetchConfig = async () => {
