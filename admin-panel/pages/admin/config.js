@@ -17,6 +17,13 @@ export default function Config() {
       text: '🎉 Bienvenue sur notre bot premium !', 
       image: 'https://via.placeholder.com/400x200/4F46E5/FFFFFF?text=Bot+Image' 
     },
+    boutique: {
+      name: '',
+      subtitle: '',
+      logo: '',
+      vipTitle: '',
+      vipSubtitle: ''
+    },
     messages: {
       welcome: '',
       noPlugsFound: '',
@@ -305,7 +312,7 @@ export default function Config() {
           /* Mode Visuel */
           <div className="flex flex-col lg:flex-row gap-8">
             {/* Instructions */}
-            <div className="lg:w-1/3">
+            <div className="lg:w-1/3 space-y-4">
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                 <h3 className="text-lg font-medium text-blue-900 mb-3">💡 Comment ça marche ?</h3>
                 <ul className="space-y-2 text-sm text-blue-800">
@@ -314,6 +321,36 @@ export default function Config() {
                   <li>• 🔘 Cliquez sur les boutons pour modifier leur texte</li>
                   <li>• 💾 N'oubliez pas de sauvegarder !</li>
                 </ul>
+              </div>
+
+              {/* Configuration rapide boutique */}
+              <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                <h3 className="text-lg font-medium text-green-900 mb-3">🏪 Boutique Vercel</h3>
+                <div className="space-y-3">
+                  <button
+                    onClick={() => editText('boutique', 'name', config.boutique?.name || '', 'Nom de la boutique')}
+                    className="w-full text-left bg-white border border-green-300 rounded-lg p-3 hover:bg-green-50 transition-colors"
+                  >
+                    <div className="text-sm font-medium text-green-800">Nom :</div>
+                    <div className="text-green-600">{config.boutique?.name || 'Cliquez pour définir'}</div>
+                  </button>
+                  
+                  <button
+                    onClick={() => editText('boutique', 'subtitle', config.boutique?.subtitle || '', 'Sous-titre de la boutique')}
+                    className="w-full text-left bg-white border border-green-300 rounded-lg p-3 hover:bg-green-50 transition-colors"
+                  >
+                    <div className="text-sm font-medium text-green-800">Sous-titre :</div>
+                    <div className="text-green-600">{config.boutique?.subtitle || 'Cliquez pour définir'}</div>
+                  </button>
+                  
+                  <button
+                    onClick={() => editText('boutique', 'logo', config.boutique?.logo || '', 'Logo de la boutique (URL)')}
+                    className="w-full text-left bg-white border border-green-300 rounded-lg p-3 hover:bg-green-50 transition-colors"
+                  >
+                    <div className="text-sm font-medium text-green-800">Logo :</div>
+                    <div className="text-green-600 text-xs break-all">{config.boutique?.logo || 'Cliquez pour définir'}</div>
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -458,6 +495,84 @@ export default function Config() {
                 className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                 placeholder="❌ Une erreur est survenue..."
               />
+            </div>
+          </div>
+        </div>
+
+        {/* Configuration boutique Vercel */}
+        <div className="bg-white shadow rounded-lg">
+          <div className="px-6 py-4 border-b border-gray-200">
+            <h2 className="text-lg font-medium text-gray-900">🏪 Boutique Vercel</h2>
+          </div>
+          <div className="p-6 space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Nom de la boutique
+              </label>
+              <input
+                type="text"
+                value={config.boutique?.name || ''}
+                onChange={(e) => updateConfig('boutique', 'name', e.target.value)}
+                className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Boutique Premium"
+              />
+              <p className="text-sm text-gray-500 mt-1">Titre principal affiché sur le site web</p>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Sous-titre de la boutique
+              </label>
+              <input
+                type="text"
+                value={config.boutique?.subtitle || ''}
+                onChange={(e) => updateConfig('boutique', 'subtitle', e.target.value)}
+                className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Classement par likes"
+              />
+              <p className="text-sm text-gray-500 mt-1">Sous-titre affiché sous le titre principal</p>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Logo de la boutique (URL)
+              </label>
+              <input
+                type="url"
+                value={config.boutique?.logo || ''}
+                onChange={(e) => updateConfig('boutique', 'logo', e.target.value)}
+                className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                placeholder="https://example.com/logo.png"
+              />
+              <p className="text-sm text-gray-500 mt-1">URL du logo affiché en haut de la boutique</p>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Titre section VIP
+              </label>
+              <input
+                type="text"
+                value={config.boutique?.vipTitle || ''}
+                onChange={(e) => updateConfig('boutique', 'vipTitle', e.target.value)}
+                className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Boutiques VIP"
+              />
+              <p className="text-sm text-gray-500 mt-1">Titre de la section VIP sur le site</p>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Sous-titre section VIP
+              </label>
+              <input
+                type="text"
+                value={config.boutique?.vipSubtitle || ''}
+                onChange={(e) => updateConfig('boutique', 'vipSubtitle', e.target.value)}
+                className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Sélection premium exclusive"
+              />
+              <p className="text-sm text-gray-500 mt-1">Sous-titre de la section VIP</p>
             </div>
           </div>
         </div>
