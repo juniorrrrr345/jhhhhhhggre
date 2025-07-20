@@ -52,7 +52,7 @@ export default function PlugDetails() {
         setLoading(true);
         setError('');
         
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem('adminToken') || localStorage.getItem('token');
         if (!token) {
           router.push('/');
           return;
@@ -88,7 +88,7 @@ export default function PlugDetails() {
     
     try {
       setLiking(true);
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('adminToken') || localStorage.getItem('token');
       
       const response = await apiCall(`/api/plugs/${id}/like`, {
         method: 'POST',

@@ -153,6 +153,19 @@ export default function MessagesPage() {
     }));
   };
 
+  const updateNestedConfig = (section, subsection, field, value) => {
+    setConfig(prev => ({
+      ...prev,
+      [section]: {
+        ...prev[section],
+        [subsection]: {
+          ...prev[section]?.[subsection],
+          [field]: value
+        }
+      }
+    }));
+  };
+
   // Fonction pour recharger le bot
   const reloadBot = async () => {
     const token = localStorage.getItem('adminToken');
@@ -506,9 +519,9 @@ export default function MessagesPage() {
                 </div>
               </div>
 
-              {/* Textes des boutons */}
+              {/* Textes des boutons et filtres */}
               <div className="bg-white rounded-lg shadow p-6">
-                <h2 className="text-lg font-medium text-gray-900 mb-4">🔘 Textes des Boutons</h2>
+                <h2 className="text-lg font-medium text-gray-900 mb-4">🔘 Textes des Boutons et Filtres</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -517,10 +530,7 @@ export default function MessagesPage() {
                     <input
                       type="text"
                       value={config.buttons?.topPlugs?.text || ''}
-                      onChange={(e) => updateConfig('buttons', 'topPlugs', { 
-                        ...config.buttons?.topPlugs, 
-                        text: e.target.value 
-                      })}
+                      onChange={(e) => updateNestedConfig('buttons', 'topPlugs', 'text', e.target.value)}
                       className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                       placeholder="🔌 Top Des Plugs"
                     />
@@ -533,10 +543,7 @@ export default function MessagesPage() {
                     <input
                       type="text"
                       value={config.buttons?.vipPlugs?.text || ''}
-                      onChange={(e) => updateConfig('buttons', 'vipPlugs', { 
-                        ...config.buttons?.vipPlugs, 
-                        text: e.target.value 
-                      })}
+                      onChange={(e) => updateNestedConfig('buttons', 'vipPlugs', 'text', e.target.value)}
                       className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                       placeholder="🛍️ Boutiques VIP"
                     />
@@ -549,10 +556,7 @@ export default function MessagesPage() {
                     <input
                       type="text"
                       value={config.buttons?.contact?.text || ''}
-                      onChange={(e) => updateConfig('buttons', 'contact', { 
-                        ...config.buttons?.contact, 
-                        text: e.target.value 
-                      })}
+                      onChange={(e) => updateNestedConfig('buttons', 'contact', 'text', e.target.value)}
                       className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                       placeholder="📞 Contact"
                     />
@@ -565,10 +569,7 @@ export default function MessagesPage() {
                     <input
                       type="text"
                       value={config.buttons?.info?.text || ''}
-                      onChange={(e) => updateConfig('buttons', 'info', { 
-                        ...config.buttons?.info, 
-                        text: e.target.value 
-                      })}
+                      onChange={(e) => updateNestedConfig('buttons', 'info', 'text', e.target.value)}
                       className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                       placeholder="ℹ️ Info"
                     />
@@ -638,6 +639,45 @@ export default function MessagesPage() {
                       placeholder="Choisissez un pays :"
                     />
                   </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Bouton "Tous les plugs"
+                    </label>
+                    <input
+                      type="text"
+                      value={config.filters?.all || ''}
+                      onChange={(e) => updateConfig('filters', 'all', e.target.value)}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      placeholder="📋 Tous les plugs"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Bouton "Par service"
+                    </label>
+                    <input
+                      type="text"
+                      value={config.filters?.byService || ''}
+                      onChange={(e) => updateConfig('filters', 'byService', e.target.value)}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      placeholder="🔍 Filtrer par service"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Bouton "Par pays"
+                    </label>
+                    <input
+                      type="text"
+                      value={config.filters?.byCountry || ''}
+                      onChange={(e) => updateConfig('filters', 'byCountry', e.target.value)}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      placeholder="🌍 Filtrer par pays"
+                    />
+                  </div>
                 </div>
               </div>
 
@@ -651,10 +691,7 @@ export default function MessagesPage() {
                     </label>
                     <textarea
                       value={config.buttons?.contact?.content || ''}
-                      onChange={(e) => updateConfig('buttons', 'contact', { 
-                        ...config.buttons?.contact, 
-                        content: e.target.value 
-                      })}
+                      onChange={(e) => updateNestedConfig('buttons', 'contact', 'content', e.target.value)}
                       rows={4}
                       className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                       placeholder="Contactez-nous pour plus d'informations..."
@@ -667,10 +704,7 @@ export default function MessagesPage() {
                     </label>
                     <textarea
                       value={config.buttons?.info?.content || ''}
-                      onChange={(e) => updateConfig('buttons', 'info', { 
-                        ...config.buttons?.info, 
-                        content: e.target.value 
-                      })}
+                      onChange={(e) => updateNestedConfig('buttons', 'info', 'content', e.target.value)}
                       rows={4}
                       className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                       placeholder="Informations sur notre service..."

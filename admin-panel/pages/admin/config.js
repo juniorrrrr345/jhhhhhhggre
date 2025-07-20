@@ -154,7 +154,7 @@ export default function Config() {
       [section]: {
         ...prev[section],
         [subsection]: {
-          ...prev[section][subsection],
+          ...prev[section]?.[subsection],
           [field]: value
         }
       }

@@ -64,7 +64,7 @@ export default function EditPlug() {
         setLoading(true);
         setError('');
         
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem('adminToken') || localStorage.getItem('token');
         if (!token) {
           router.push('/');
           return;
@@ -82,20 +82,24 @@ export default function EditPlug() {
         }
 
         const data = await response.json();
-        setFormData({
-          name: data.name || '',
-          description: data.description || '',
-          image: data.image || '',
-          telegramLink: data.telegramLink || '',
-          vip: data.vip || false,
-          category: data.category || '',
-          price: data.price || '',
-          location: data.location || '',
-          contact: data.contact || '',
-          tags: Array.isArray(data.tags) ? data.tags.join(', ') : (data.tags || ''),
-          featured: data.featured || false,
-          active: data.active !== false
-        });
+        if (data && typeof data === 'object') {
+          setFormData({
+            name: data.name || '',
+            description: data.description || '',
+            image: data.image || '',
+            telegramLink: data.telegramLink || '',
+            vip: Boolean(data.vip),
+            category: data.category || '',
+            price: data.price || '',
+            location: data.location || '',
+            contact: data.contact || '',
+            tags: Array.isArray(data.tags) ? data.tags.join(', ') : (data.tags || ''),
+            featured: Boolean(data.featured),
+            active: data.active !== false
+          });
+        } else {
+          throw new Error('Données invalides reçues du serveur');
+        }
       } catch (err) {
         console.error('Erreur chargement boutique:', err);
         setError(`Erreur lors du chargement: ${err.message}`);
@@ -109,10 +113,15 @@ export default function EditPlug() {
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: type === 'checkbox' ? checked : value
-    }));
+    
+    try {
+      setFormData(prev => ({
+        ...prev,
+        [name]: type === 'checkbox' ? checked : value
+      }));
+    } catch (error) {
+      console.error('Erreur lors de la mise à jour du formulaire:', error);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -122,7 +131,7 @@ export default function EditPlug() {
     setSuccess('');
 
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('adminToken') || localStorage.getItem('token');
       if (!token) {
         router.push('/');
         return;
@@ -148,7 +157,7 @@ export default function EditPlug() {
 
       setSuccess('Boutique modifiée avec succès !');
       setTimeout(() => {
-        router.push('/admin/plugs');
+        router.push(`/admin/plugs/${id}`);
       }, 2000);
     } catch (err) {
       console.error('Erreur sauvegarde:', err);
@@ -165,7 +174,7 @@ export default function EditPlug() {
 
     try {
       setSaving(true);
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('adminToken') || localStorage.getItem('token');
       
       const response = await apiCall(`/api/plugs/${id}`, {
         method: 'DELETE',
