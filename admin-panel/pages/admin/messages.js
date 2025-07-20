@@ -2,10 +2,22 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 import { toast } from 'react-hot-toast';
+import dynamic from 'next/dynamic';
+
+// Import dynamique pour éviter les problèmes SSR sur Vercel
+const ClientOnly = dynamic(() => import('../../components/ClientOnly'), {
+  ssr: false
+});
 
 export default function MessagesPage() {
   const router = useRouter();
-  const [config, setConfig] = useState({
+  const [config, setConfig] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  // Structure par défaut pour éviter les erreurs
+  const defaultConfig = {
     welcome: { text: '', image: '' },
     boutique: { name: '', subtitle: '', logo: '', vipTitle: '', vipSubtitle: '' },
     botTexts: {},
@@ -16,11 +28,15 @@ export default function MessagesPage() {
       info: { text: '', content: '' } 
     },
     filters: { all: '', byService: '', byCountry: '' }
-  });
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
+  };
 
   useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!mounted) return;
+    
     const token = localStorage.getItem('adminToken');
     if (!token) {
       router.push('/admin');
@@ -28,7 +44,7 @@ export default function MessagesPage() {
     }
     
     fetchConfig();
-  }, [router]);
+  }, [router, mounted]);
 
   const fetchConfig = async () => {
     try {
@@ -76,29 +92,32 @@ export default function MessagesPage() {
 
       // Fusionner les données reçues avec la structure par défaut
       if (data && typeof data === 'object') {
-        setConfig(prevConfig => ({
-          ...prevConfig,
+        const mergedConfig = {
+          ...defaultConfig,
           ...data,
-          welcome: { ...prevConfig.welcome, ...(data.welcome || {}) },
-          boutique: { ...prevConfig.boutique, ...(data.boutique || {}) },
-          botTexts: { ...prevConfig.botTexts, ...(data.botTexts || {}) },
+          welcome: { ...defaultConfig.welcome, ...(data.welcome || {}) },
+          boutique: { ...defaultConfig.boutique, ...(data.boutique || {}) },
+          botTexts: { ...defaultConfig.botTexts, ...(data.botTexts || {}) },
           buttons: {
-            ...prevConfig.buttons,
+            ...defaultConfig.buttons,
             ...(data.buttons || {}),
-            topPlugs: { ...prevConfig.buttons.topPlugs, ...(data.buttons?.topPlugs || {}) },
-            vipPlugs: { ...prevConfig.buttons.vipPlugs, ...(data.buttons?.vipPlugs || {}) },
-            contact: { ...prevConfig.buttons.contact, ...(data.buttons?.contact || {}) },
-            info: { ...prevConfig.buttons.info, ...(data.buttons?.info || {}) }
+            topPlugs: { ...defaultConfig.buttons.topPlugs, ...(data.buttons?.topPlugs || {}) },
+            vipPlugs: { ...defaultConfig.buttons.vipPlugs, ...(data.buttons?.vipPlugs || {}) },
+            contact: { ...defaultConfig.buttons.contact, ...(data.buttons?.contact || {}) },
+            info: { ...defaultConfig.buttons.info, ...(data.buttons?.info || {}) }
           },
-          filters: { ...prevConfig.filters, ...(data.filters || {}) }
-        }));
+          filters: { ...defaultConfig.filters, ...(data.filters || {}) }
+        };
+        setConfig(mergedConfig);
       } else {
         console.error('Données de configuration invalides:', data);
-        toast.error('Données de configuration invalides reçues');
+        setConfig(defaultConfig);
+        toast.error('Utilisation de la configuration par défaut');
       }
     } catch (error) {
       console.error('Erreur lors du chargement de la config:', error);
-      toast.error('Erreur lors du chargement de la configuration');
+      setConfig(defaultConfig);
+      toast.error('Erreur lors du chargement, configuration par défaut utilisée');
     } finally {
       setLoading(false);
     }
@@ -180,13 +199,13 @@ export default function MessagesPage() {
       setConfig(prev => {
         if (!prev || typeof prev !== 'object') {
           console.error('Config invalide:', prev);
-          return prev;
+          return defaultConfig;
         }
         
         return {
           ...prev,
           [section]: {
-            ...prev[section],
+            ...(prev[section] || {}),
             [field]: value
           }
         };
@@ -202,15 +221,15 @@ export default function MessagesPage() {
       setConfig(prev => {
         if (!prev || typeof prev !== 'object') {
           console.error('Config invalide:', prev);
-          return prev;
+          return defaultConfig;
         }
         
         return {
           ...prev,
           [section]: {
-            ...prev[section],
+            ...(prev[section] || {}),
             [subsection]: {
-              ...prev[section]?.[subsection],
+              ...(prev[section]?.[subsection] || {}),
               [field]: value
             }
           }
@@ -281,6 +300,18 @@ export default function MessagesPage() {
     }
   };
 
+  // Protection contre l'hydratation côté client
+  if (!mounted) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-4xl mb-4">⏳</div>
+          <p className="text-gray-600">Initialisation...</p>
+        </div>
+      </div>
+    );
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -328,8 +359,14 @@ export default function MessagesPage() {
 
         {/* Contenu */}
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          {!loading && config && (
-            <div className="space-y-8">
+          <ClientOnly fallback={
+            <div className="text-center py-12">
+              <div className="text-4xl mb-4">⏳</div>
+              <p className="text-gray-600">Chargement de l'interface...</p>
+            </div>
+          }>
+            {config && (
+              <div className="space-y-8">
               {/* Message d'accueil */}
               <div className="bg-white rounded-lg shadow p-6">
                 <h2 className="text-lg font-medium text-gray-900 mb-4">🌟 Message d'accueil</h2>
@@ -789,7 +826,8 @@ export default function MessagesPage() {
                 </div>
               </div>
             </div>
-          )}
+            )}
+          </ClientOnly>
         </div>
       </div>
     </>
