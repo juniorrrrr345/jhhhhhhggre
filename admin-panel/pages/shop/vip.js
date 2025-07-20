@@ -88,20 +88,20 @@ export default function ShopVIP() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
 
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-white">
         {/* Header */}
-        <header className="bg-gradient-to-r from-yellow-500 to-orange-600 shadow-lg">
+        <header className="bg-gray-900 shadow-lg">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between h-16">
               <div className="flex items-center">
                 <div className="flex-shrink-0">
                   <div className="h-8 w-8 bg-white rounded-lg flex items-center justify-center">
-                    <StarIcon className="h-5 w-5 text-yellow-600" />
+                    <StarIcon className="h-5 w-5 text-gray-900" />
                   </div>
                 </div>
                 <div className="ml-3">
                   <h1 className="text-xl font-bold text-white">Boutique VIP</h1>
-                  <p className="text-yellow-100 text-sm">Sélection premium exclusive</p>
+                  <p className="text-gray-300 text-sm">Sélection premium exclusive</p>
                 </div>
               </div>
               <div className="flex items-center space-x-4">
