@@ -68,11 +68,12 @@ export default function Config() {
       ...prev,
       boutique: {
         ...prev.boutique,
-        name: 'cacaca',
-        subtitle: 'fac caca',
-        logo: 'https://imgur.com/a/4VbSOHD',
-        searchTitle: 'TESTE',
-        vipTitle: 'TESTE'
+        name: 'SafePlugs Store',
+        subtitle: 'Boutique de confiance',
+        logo: 'https://via.placeholder.com/100x100/4F46E5/FFFFFF?text=SP', // URL directe d'image qui fonctionne
+        backgroundImage: 'https://images.unsplash.com/photo-1557804506-669a67965ba0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
+        searchTitle: 'Recherche',
+        vipTitle: 'Section VIP'
       }
     }));
     toast.success('Configuration boutique appliquée ! N\'oubliez pas de sauvegarder.');
@@ -384,11 +385,26 @@ export default function Config() {
                 <div className="mb-3">
                   <button
                     onClick={applyUserBoutiqueConfig}
-                    className="w-full bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors text-sm font-medium"
+                    className="w-full bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors text-sm font-medium mb-3"
                   >
-                    ⚡ Appliquer la configuration fournie
+                    ⚡ Appliquer la configuration de test
                   </button>
-                  <p className="text-xs text-green-600 mt-1">Applique : cacaca, fac caca, Logo, TESTE</p>
+                  
+                  <button
+                    onClick={() => {
+                      saveConfig();
+                      triggerBoutiqueSync();
+                    }}
+                    className="w-full bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition-colors text-sm font-medium"
+                  >
+                    🔄 Sauvegarder et Synchroniser
+                  </button>
+                                      <div className="text-xs text-green-600 mt-2 p-2 bg-green-50 rounded">
+                      <strong>Configuration actuelle :</strong><br/>
+                      • Nom: {config?.boutique?.name || 'Non défini'}<br/>
+                      • Logo: {config?.boutique?.logo ? '✅ Défini' : '❌ Non défini'}<br/>
+                      • Background: {config?.boutique?.backgroundImage ? '✅ Défini' : '❌ Non défini'}
+                    </div>
                 </div>
                 
                 <div className="space-y-3">

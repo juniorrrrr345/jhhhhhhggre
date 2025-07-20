@@ -277,6 +277,17 @@ export default function ShopHome() {
                 )}
                 VIP
               </Link>
+              <button 
+                onClick={() => {
+                  console.log('🔄 Test de rechargement manuel...')
+                  fetchConfig()
+                  fetchPlugs()
+                }}
+                className="text-blue-500 hover:text-blue-700 pb-3 text-sm"
+                title="Recharger la configuration"
+              >
+                🔄 Refresh
+              </button>
             </div>
           </div>
         </nav>
@@ -301,12 +312,17 @@ export default function ShopHome() {
                 </div>
               )}
               <h3 className="text-3xl font-bold text-gray-900">
-                {config?.boutique?.name || ''}
+                {config?.boutique?.name || 'Boutique'}
               </h3>
             </div>
             <p className="text-gray-600 max-w-2xl mx-auto">
-              {config?.boutique?.subtitle || ''}
+              {config?.boutique?.subtitle || 'Bienvenue dans notre boutique'}
             </p>
+            {lastUpdate && (
+              <p className="text-xs text-gray-400 mt-2">
+                Dernière mise à jour: {lastUpdate}
+              </p>
+            )}
           </div>
 
           {loading ? (
