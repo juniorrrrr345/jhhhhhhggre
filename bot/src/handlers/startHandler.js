@@ -6,7 +6,7 @@ const handleStart = async (ctx) => {
   try {
     console.log('🚀 Commande /start reçue de:', ctx.from.id);
     
-    // Récupérer la configuration avec fallback
+    // Récupérer la configuration avec fallback (toujours fresh)
     let config;
     try {
       config = await Config.findById('main');
@@ -64,38 +64,22 @@ const handleStart = async (ctx) => {
 // Gestionnaire pour retour au menu principal
 const handleBackMain = async (ctx) => {
   try {
+    console.log('🔙 Retour au menu principal demandé');
+    
+    // Toujours récupérer la config fraîche
     const config = await Config.findById('main');
     if (!config) {
+      console.log('❌ Configuration non trouvée');
       return ctx.answerCbQuery('❌ Configuration non trouvée');
     }
 
-    // Récupérer les plugs VIP si activés pour l'affichage
-    let vipPlugs = [];
-    if (config.vip.enabled) {
-      vipPlugs = await Plug.find({ 
-        isVip: true, 
-        isActive: true 
-      }).sort({ vipOrder: 1, createdAt: -1 }).limit(5);
-    }
+    console.log('📋 Configuration récupérée pour le retour');
 
-    // Construire le même message d'accueil que dans handleStart
-    let welcomeMessage = config.welcome.text;
-
-    // Ajouter la section VIP si elle est en position 'top' et qu'il y a des plugs VIP
-    if (config.vip.enabled && config.vip.position === 'top' && vipPlugs.length > 0) {
-      welcomeMessage += `\n\n✨ ${config.vip.title} ✨\n${config.vip.description}\n`;
-      
-      vipPlugs.forEach((plug, index) => {
-        welcomeMessage += `\n⭐ ${plug.name}`;
-        if (plug.description && plug.description.length < 50) {
-          welcomeMessage += ` - ${plug.description}`;
-        }
-      });
-      
-      welcomeMessage += '\n';
-    }
-    
+    // Utiliser le même message d'accueil que dans handleStart (sans section VIP)
+    const welcomeMessage = config.welcome?.text || '🌟 Bienvenue sur notre bot !';
     const keyboard = createMainKeyboard(config);
+    
+    console.log('📝 Message d\'accueil préparé pour le retour');
     
     // Utiliser editMessageText pour une navigation fluide
     await ctx.editMessageText(welcomeMessage, {
@@ -103,9 +87,10 @@ const handleBackMain = async (ctx) => {
       parse_mode: 'HTML'
     });
     
+    console.log('✅ Retour au menu principal terminé');
     await ctx.answerCbQuery();
   } catch (error) {
-    console.error('Erreur dans handleBackMain:', error);
+    console.error('❌ Erreur dans handleBackMain:', error);
     // Fallback : répondre avec le message de démarrage
     await ctx.answerCbQuery('❌ Erreur lors du retour au menu');
   }

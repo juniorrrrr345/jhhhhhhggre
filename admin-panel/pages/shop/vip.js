@@ -11,18 +11,35 @@ import {
 
 export default function ShopVIP() {
   const [vipPlugs, setVipPlugs] = useState([])
+  const [config, setConfig] = useState(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    fetchConfig()
     fetchVipPlugs()
     
     // Auto-refresh toutes les 30 secondes pour la synchronisation
     const interval = setInterval(() => {
+      fetchConfig()
       fetchVipPlugs()
     }, 30000)
     
     return () => clearInterval(interval)
   }, [])
+
+  const fetchConfig = async () => {
+    try {
+      const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://jhhhhhhggre.onrender.com'
+      const response = await fetch(`${apiBaseUrl}/api/config`)
+      
+      if (response.ok) {
+        const data = await response.json()
+        setConfig(data)
+      }
+    } catch (error) {
+      console.log('Config load failed, using defaults')
+    }
+  }
 
   const fetchVipPlugs = async () => {
     try {
@@ -100,8 +117,12 @@ export default function ShopVIP() {
                   </div>
                 </div>
                 <div className="ml-3">
-                  <h1 className="text-xl font-bold text-white">Boutique VIP</h1>
-                  <p className="text-gray-300 text-sm">Sélection premium exclusive</p>
+                  <h1 className="text-xl font-bold text-white">
+                    {config?.boutique?.vipTitle || 'Boutique VIP'}
+                  </h1>
+                  <p className="text-gray-300 text-sm">
+                    {config?.boutique?.vipSubtitle || 'Sélection premium exclusive'}
+                  </p>
                 </div>
               </div>
               <div className="flex items-center space-x-4">

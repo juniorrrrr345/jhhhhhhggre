@@ -231,6 +231,39 @@ const authenticateAdmin = (req, res, next) => {
 
 // ===== ROUTES CONFIGURATION =====
 
+// Cache de configuration
+let configCache = null;
+let lastConfigUpdate = 0;
+
+// Fonction pour recharger la configuration
+const reloadBotConfig = async () => {
+  try {
+    console.log('🔄 Rechargement de la configuration du bot...');
+    configCache = await Config.findById('main');
+    lastConfigUpdate = Date.now();
+    console.log('✅ Configuration rechargée avec succès');
+    return configCache;
+  } catch (error) {
+    console.error('❌ Erreur lors du rechargement de la config:', error);
+    throw error;
+  }
+};
+
+// Endpoint pour recharger la configuration du bot
+app.post('/api/bot/reload', authenticateAdmin, async (req, res) => {
+  try {
+    await reloadBotConfig();
+    res.json({ 
+      success: true, 
+      message: 'Configuration du bot rechargée avec succès',
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('Erreur reload config:', error);
+    res.status(500).json({ error: 'Erreur lors du rechargement de la configuration' });
+  }
+});
+
 // Endpoint pour les statistiques
 app.get('/api/stats', authenticateAdmin, async (req, res) => {
   try {

@@ -96,6 +96,11 @@ export default function Config() {
               console.log('✅ Admin config direct réussi')
               success = true
               toast.success('Configuration sauvegardée !')
+              
+              // Recharger automatiquement le bot après sauvegarde
+              setTimeout(() => {
+                reloadBot();
+              }, 1000);
             } else {
               throw new Error(`HTTP ${response.status}`)
             }
@@ -154,6 +159,44 @@ export default function Config() {
         }
       }
     }))
+  }
+
+  // Fonction pour recharger le bot
+  const reloadBot = async () => {
+    const token = localStorage.getItem('adminToken');
+
+    try {
+      console.log('🔄 Rechargement du bot...');
+      
+      // Essayer l'API directe d'abord
+      try {
+        const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://jhhhhhhggre.onrender.com';
+        const response = await fetch(`${apiBaseUrl}/api/bot/reload`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (response.ok) {
+          console.log('✅ Bot rechargé avec succès');
+        }
+      } catch (directError) {
+        console.log('❌ Rechargement direct échoué, tentative proxy...');
+        
+        // Fallback vers le proxy
+        await fetch('/api/reload-bot', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+      }
+    } catch (error) {
+      console.error('💥 Erreur rechargement bot:', error);
+    }
   }
 
   if (loading) {

@@ -13,19 +13,36 @@ import {
 
 export default function ShopHome() {
   const [plugs, setPlugs] = useState([])
+  const [config, setConfig] = useState(null)
   const [loading, setLoading] = useState(true)
   const [lastUpdate, setLastUpdate] = useState(null)
 
   useEffect(() => {
+    fetchConfig()
     fetchPlugs()
     
     // Auto-refresh toutes les 30 secondes pour la synchronisation
     const interval = setInterval(() => {
+      fetchConfig()
       fetchPlugs()
     }, 30000)
     
     return () => clearInterval(interval)
   }, [])
+
+  const fetchConfig = async () => {
+    try {
+      const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://jhhhhhhggre.onrender.com'
+      const response = await fetch(`${apiBaseUrl}/api/config`)
+      
+      if (response.ok) {
+        const data = await response.json()
+        setConfig(data)
+      }
+    } catch (error) {
+      console.log('Config load failed, using defaults')
+    }
+  }
 
   const fetchPlugs = async () => {
     try {
@@ -114,8 +131,12 @@ export default function ShopHome() {
                   </div>
                 </div>
                 <div className="ml-3">
-                  <h1 className="text-xl font-bold text-white">Boutique</h1>
-                  <p className="text-gray-300 text-sm">Classement par likes</p>
+                  <h1 className="text-xl font-bold text-white">
+                    {config?.boutique?.name || 'Boutique'}
+                  </h1>
+                  <p className="text-gray-300 text-sm">
+                    {config?.boutique?.subtitle || 'Classement par likes'}
+                  </p>
                 </div>
               </div>
             </div>

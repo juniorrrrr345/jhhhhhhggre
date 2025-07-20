@@ -12,33 +12,16 @@ const {
 // Afficher le menu des plugs
 const handleTopPlugs = async (ctx) => {
   try {
+    // Toujours récupérer la config fraîche
     const config = await Config.findById('main');
     const keyboard = createPlugsFilterKeyboard(config);
     
     const messageText = `${config.botTexts?.topPlugsTitle || '🔌 Top Des Plugs'}\n\n${config.botTexts?.topPlugsDescription || 'Choisissez une option pour découvrir nos plugs :'}`;
     
-    if (config.welcome?.image) {
-      try {
-        await ctx.editMessageMedia({
-          type: 'photo',
-          media: config.welcome.image,
-          caption: messageText,
-          parse_mode: 'Markdown'
-        }, {
-          reply_markup: keyboard.reply_markup
-        });
-      } catch (error) {
-        await ctx.editMessageText(messageText, {
-          reply_markup: keyboard.reply_markup,
-          parse_mode: 'Markdown'
-        });
-      }
-    } else {
-      await ctx.editMessageText(messageText, {
-        reply_markup: keyboard.reply_markup,
-        parse_mode: 'Markdown'
-      });
-    }
+    await ctx.editMessageText(messageText, {
+      reply_markup: keyboard.reply_markup,
+      parse_mode: 'Markdown'
+    });
     
     // Confirmer la callback pour éviter le loading
     await ctx.answerCbQuery();
@@ -51,13 +34,15 @@ const handleTopPlugs = async (ctx) => {
 // Afficher les boutiques VIP
 const handleVipPlugs = async (ctx, page = 0) => {
   try {
+    // Toujours récupérer la config fraîche
     const config = await Config.findById('main');
     const vipPlugs = await Plug.find({ isActive: true, isVip: true })
       .sort({ likes: -1, vipOrder: 1, createdAt: -1 });
 
     if (vipPlugs.length === 0) {
+      const backButtonText = config.botTexts?.backButtonText || '🔙 Retour';
       const backKeyboard = Markup.inlineKeyboard([
-        [Markup.button.callback('🔙 Retour', 'back_main')]
+        [Markup.button.callback(backButtonText, 'back_main')]
       ]);
       
       await ctx.editMessageText(
@@ -98,11 +83,17 @@ const handleVipPlugs = async (ctx, page = 0) => {
     }
 
     // Bouton retour
-    buttons.push([Markup.button.callback('🔙 Retour', 'back_main')]);
+    const backButtonText = config.botTexts?.backButtonText || '🔙 Retour';
+    buttons.push([Markup.button.callback(backButtonText, 'back_main')]);
 
     const keyboard = Markup.inlineKeyboard(buttons);
     
-    const messageText = `${config.botTexts?.vipTitle || '👑 Boutiques VIP Premium'}\n\n${config.botTexts?.vipDescription || '✨ Découvrez nos boutiques sélectionnées'}\n\n📄 Page ${page + 1}/${totalPages} • ${vipPlugs.length} boutique${vipPlugs.length > 1 ? 's' : ''}`;
+    const paginationFormat = config.botTexts?.paginationFormat || '📄 Page {page}/{total}';
+    const paginationText = paginationFormat
+      .replace('{page}', page + 1)
+      .replace('{total}', totalPages);
+    
+    const messageText = `${config.botTexts?.vipTitle || '👑 Boutiques VIP Premium'}\n\n${config.botTexts?.vipDescription || '✨ Découvrez nos boutiques sélectionnées'}\n\n${paginationText} • ${vipPlugs.length} boutique${vipPlugs.length > 1 ? 's' : ''}`;
 
     if (config.welcome?.image) {
       try {
@@ -153,9 +144,19 @@ const handleAllPlugs = async (ctx, page = 0) => {
     const totalPages = Math.ceil(plugs.length / itemsPerPage);
     const keyboard = createPlugListKeyboard(plugs, page, totalPages, 'all');
 
-    let message = `${config.botTexts?.allPlugsTitle || '📋 Tous nos plugs :'}\n\n`;
-    message += `📊 Total : ${plugs.length} plugs\n`;
-    message += `📄 Page ${page + 1}/${totalPages}`;
+    let message = `${config.botTexts?.allPlugsText || '📋 Tous nos plugs :'}\n\n`;
+    
+    // Format du compteur total configurable
+    const totalCountFormat = config.botTexts?.totalCountFormat || '📊 Total : {count} plugs';
+    const totalCountText = totalCountFormat.replace('{count}', plugs.length);
+    message += `${totalCountText}\n`;
+    
+    // Format de pagination configurable
+    const paginationFormat = config.botTexts?.paginationFormat || '📄 Page {page}/{total}';
+    const paginationText = paginationFormat
+      .replace('{page}', page + 1)
+      .replace('{total}', totalPages);
+    message += paginationText;
 
     if (config.welcome?.image) {
       try {
