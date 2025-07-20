@@ -18,10 +18,53 @@ const handleTopPlugs = async (ctx) => {
     
     const messageText = `${config?.botTexts?.topPlugsTitle || '🔌 Top Des Plugs'}\n\n${config?.botTexts?.topPlugsDescription || 'Choisissez une option pour découvrir nos plugs :'}`;
     
-    await ctx.editMessageText(messageText, {
-      reply_markup: keyboard.reply_markup,
-      parse_mode: 'Markdown'
-    });
+    // Gestion intelligente du type de message (photo vs texte)
+    try {
+      // D'abord essayer d'éditer comme message texte
+      await ctx.editMessageText(messageText, {
+        reply_markup: keyboard.reply_markup,
+        parse_mode: 'Markdown'
+      });
+    } catch (editError) {
+      // Si c'est un message photo, utiliser editMessageMedia ou supprimer/renvoyer
+      if (editError.description && editError.description.includes('there is no text in the message to edit')) {
+        try {
+          // Essayer d'éditer comme média avec image
+          if (config?.welcome?.image) {
+            await ctx.editMessageMedia({
+              type: 'photo',
+              media: config.welcome.image,
+              caption: messageText,
+              parse_mode: 'Markdown'
+            }, {
+              reply_markup: keyboard.reply_markup
+            });
+          } else {
+            // Si pas d'image dans la config, supprimer et renvoyer
+            await ctx.deleteMessage();
+            await ctx.reply(messageText, {
+              reply_markup: keyboard.reply_markup,
+              parse_mode: 'Markdown'
+            });
+          }
+        } catch (mediaError) {
+          // Dernier recours : supprimer et renvoyer un nouveau message
+          try {
+            await ctx.deleteMessage();
+          } catch (deleteError) {
+            console.log('⚠️ Impossible de supprimer le message:', deleteError.message);
+          }
+          
+          await ctx.reply(messageText, {
+            reply_markup: keyboard.reply_markup,
+            parse_mode: 'Markdown'
+          });
+        }
+      } else {
+        // Autre type d'erreur, la relancer
+        throw editError;
+      }
+    }
     
     // Confirmer la callback pour éviter le loading
     await ctx.answerCbQuery();
