@@ -79,7 +79,25 @@ const handleStart = async (ctx) => {
 
 // Gestionnaire pour retour au menu principal
 const handleBackMain = async (ctx) => {
-  await handleStart(ctx);
+  try {
+    const config = await Config.findById('main');
+    const { createMainKeyboard } = require('../utils/keyboards');
+    
+    let message = config.messages.welcome;
+    const keyboard = createMainKeyboard(config);
+    
+    // Utiliser editMessageText pour une navigation fluide
+    await ctx.editMessageText(message, {
+      reply_markup: keyboard.reply_markup,
+      parse_mode: 'Markdown'
+    });
+    
+    await ctx.answerCbQuery();
+  } catch (error) {
+    console.error('Erreur dans handleBackMain:', error);
+    // Fallback : répondre avec le message de démarrage
+    await handleStart(ctx);
+  }
 };
 
 module.exports = {

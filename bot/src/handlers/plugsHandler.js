@@ -21,6 +21,9 @@ const handleTopPlugs = async (ctx) => {
         parse_mode: 'Markdown'
       }
     );
+    
+    // Confirmer la callback pour éviter le loading
+    await ctx.answerCbQuery();
   } catch (error) {
     console.error('Erreur dans handleTopPlugs:', error);
     await ctx.answerCbQuery('❌ Erreur lors du chargement');
@@ -53,6 +56,9 @@ const handleAllPlugs = async (ctx, page = 0) => {
       reply_markup: keyboard.reply_markup,
       parse_mode: 'Markdown'
     });
+    
+    // Confirmer la callback pour éviter le loading
+    await ctx.answerCbQuery();
   } catch (error) {
     console.error('Erreur dans handleAllPlugs:', error);
     await ctx.answerCbQuery('❌ Erreur lors du chargement');
@@ -71,6 +77,9 @@ const handleFilterService = async (ctx) => {
         parse_mode: 'Markdown'
       }
     );
+    
+    // Confirmer la callback pour éviter le loading
+    await ctx.answerCbQuery();
   } catch (error) {
     console.error('Erreur dans handleFilterService:', error);
     await ctx.answerCbQuery('❌ Erreur lors du chargement');
@@ -141,6 +150,9 @@ const handleFilterCountry = async (ctx) => {
         parse_mode: 'Markdown'
       }
     );
+    
+    // Confirmer la callback pour éviter le loading
+    await ctx.answerCbQuery();
   } catch (error) {
     console.error('Erreur dans handleFilterCountry:', error);
     await ctx.answerCbQuery('❌ Erreur lors du chargement');

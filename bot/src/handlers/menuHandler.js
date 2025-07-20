@@ -30,6 +30,9 @@ const handleContact = async (ctx) => {
       reply_markup: keyboard.reply_markup,
       parse_mode: 'Markdown'
     });
+    
+    // Confirmer la callback pour éviter le loading
+    await ctx.answerCbQuery();
 
   } catch (error) {
     console.error('Erreur dans handleContact:', error);
@@ -84,6 +87,9 @@ const handleInfo = async (ctx) => {
       reply_markup: keyboard.reply_markup,
       parse_mode: 'Markdown'
     });
+    
+    // Confirmer la callback pour éviter le loading
+    await ctx.answerCbQuery();
 
   } catch (error) {
     console.error('Erreur dans handleInfo:', error);
