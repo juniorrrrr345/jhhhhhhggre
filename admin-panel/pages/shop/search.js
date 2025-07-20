@@ -268,8 +268,10 @@ export default function ShopSearch() {
                       className="h-8 w-8 rounded-lg object-cover"
                     />
                   ) : (
-                    <div className="h-8 w-8 bg-white rounded-lg flex items-center justify-center">
-                      <MagnifyingGlassIcon className="h-5 w-5 text-gray-900" />
+                    <div className="h-8 w-8 bg-gray-700 rounded-lg flex items-center justify-center">
+                      <span className="text-white text-xs font-bold">
+                        {config?.boutique?.name ? config.boutique.name.charAt(0).toUpperCase() : 'B'}
+                      </span>
                     </div>
                   )}
                 </div>

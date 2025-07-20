@@ -201,8 +201,10 @@ export default function ShopVIP() {
                       className="h-8 w-8 rounded-lg object-cover"
                     />
                   ) : (
-                    <div className="h-8 w-8 bg-white rounded-lg flex items-center justify-center">
-                      <StarIcon className="h-5 w-5 text-gray-900" />
+                    <div className="h-8 w-8 bg-gray-700 rounded-lg flex items-center justify-center">
+                      <span className="text-white text-xs font-bold">
+                        {config?.boutique?.name ? config.boutique.name.charAt(0).toUpperCase() : 'B'}
+                      </span>
                     </div>
                   )}
                 </div>
@@ -273,8 +275,10 @@ export default function ShopVIP() {
                   className="h-12 w-12 rounded-lg object-cover mr-4"
                 />
               ) : (
-                <div className="h-12 w-12 bg-gray-100 rounded-lg flex items-center justify-center mr-4">
-                  <StarIcon className="h-8 w-8 text-yellow-500" />
+                <div className="h-12 w-12 bg-gray-200 rounded-lg flex items-center justify-center mr-4">
+                  <span className="text-gray-700 text-lg font-bold">
+                    {config?.boutique?.name ? config.boutique.name.charAt(0).toUpperCase() : 'B'}
+                  </span>
                 </div>
               )}
               <h3 className="text-3xl font-bold text-gray-900">
