@@ -8,91 +8,50 @@ const {
   createPlugListKeyboard,
   createPlugKeyboard 
 } = require('../utils/keyboards');
-const { editMessageRobust, answerCallbackSafe, logHandler } = require('../utils/messageUtils');
 
 // Afficher le menu des plugs
 const handleTopPlugs = async (ctx) => {
   try {
-    logHandler('TopPlugs', 'Début');
-    
     // Toujours récupérer la config fraîche
     const config = await Config.findById('main');
-    if (!config) {
-      logHandler('TopPlugs', 'Configuration non trouvée');
-      return await answerCallbackSafe(ctx, '❌ Configuration non trouvée');
-    }
-    
     const keyboard = createPlugsFilterKeyboard(config);
-    const messageText = `${config.botTexts?.topPlugsTitle || '🔌 Top Des Plugs'}\n\n${config.botTexts?.topPlugsDescription || 'Choisissez une option pour découvrir nos plugs :'}`;
     
-    logHandler('TopPlugs', 'Message préparé', { textLength: messageText.length });
+    const messageText = `${config?.botTexts?.topPlugsTitle || '🔌 Top Des Plugs'}\n\n${config?.botTexts?.topPlugsDescription || 'Choisissez une option pour découvrir nos plugs :'}`;
     
-    // Utiliser l'utilitaire robuste pour éditer le message
-    const success = await editMessageRobust(ctx, messageText, {
+    await ctx.editMessageText(messageText, {
       reply_markup: keyboard.reply_markup,
       parse_mode: 'Markdown'
     });
     
-    if (success) {
-      logHandler('TopPlugs', 'Succès');
-    } else {
-      logHandler('TopPlugs', 'Échec édition message');
-    }
-    
     // Confirmer la callback pour éviter le loading
-    await answerCallbackSafe(ctx);
-    
+    await ctx.answerCbQuery();
   } catch (error) {
-    logHandler('TopPlugs', 'Erreur', { error: error.message });
-    await answerCallbackSafe(ctx, '❌ Erreur lors du chargement');
+    console.error('Erreur dans handleTopPlugs:', error);
+    await ctx.answerCbQuery('❌ Erreur lors du chargement');
   }
 };
 
 // Afficher les boutiques VIP
 const handleVipPlugs = async (ctx, page = 0) => {
   try {
-    console.log('👑 Gestion Boutiques VIP, page:', page);
-    
     // Toujours récupérer la config fraîche
     const config = await Config.findById('main');
-    if (!config) {
-      console.log('❌ Configuration non trouvée pour VIP');
-      return ctx.answerCbQuery('❌ Configuration non trouvée');
-    }
-    
     const vipPlugs = await Plug.find({ isActive: true, isVip: true })
       .sort({ likes: -1, vipOrder: 1, createdAt: -1 });
 
-    console.log(`📊 ${vipPlugs.length} boutiques VIP trouvées`);
-
     if (vipPlugs.length === 0) {
-      const backButtonText = config.botTexts?.backButtonText || '🔙 Retour';
+      const backButtonText = config?.botTexts?.backButtonText || '🔙 Retour';
       const backKeyboard = Markup.inlineKeyboard([
         [Markup.button.callback(backButtonText, 'back_main')]
       ]);
       
-      const noVipMessage = '👑 **Boutiques VIP**\n\n❌ Aucune boutique VIP disponible pour le moment.';
-      
-      // Essayer editMessageText puis editMessageCaption
-      try {
-        await ctx.editMessageText(noVipMessage, {
+      await ctx.editMessageText(
+        '👑 **Boutiques VIP**\n\n❌ Aucune boutique VIP disponible pour le moment.',
+        {
           reply_markup: backKeyboard.reply_markup,
           parse_mode: 'Markdown'
-        });
-      } catch (error) {
-        try {
-          await ctx.editMessageCaption(noVipMessage, {
-            reply_markup: backKeyboard.reply_markup,
-            parse_mode: 'Markdown'
-          });
-        } catch (captionError) {
-          await ctx.reply(noVipMessage, {
-            reply_markup: backKeyboard.reply_markup,
-            parse_mode: 'Markdown'
-          });
         }
-      }
-      
+      );
       await ctx.answerCbQuery();
       return;
     }
@@ -130,75 +89,40 @@ const handleVipPlugs = async (ctx, page = 0) => {
 
     const keyboard = Markup.inlineKeyboard(buttons);
     
-    const paginationFormat = config.botTexts?.paginationFormat || '📄 Page {page}/{total}';
+    const paginationFormat = config?.botTexts?.paginationFormat || '📄 Page {page}/{total}';
     const paginationText = paginationFormat
       .replace('{page}', page + 1)
       .replace('{total}', totalPages);
     
-    const messageText = `${config.botTexts?.vipTitle || '👑 Boutiques VIP Premium'}\n\n${config.botTexts?.vipDescription || '✨ Découvrez nos boutiques sélectionnées'}\n\n${paginationText} • ${vipPlugs.length} boutique${vipPlugs.length > 1 ? 's' : ''}`;
+    const messageText = `${config?.botTexts?.vipTitle || '👑 Boutiques VIP Premium'}\n\n${config?.botTexts?.vipDescription || '✨ Découvrez nos boutiques sélectionnées'}\n\n${paginationText} • ${vipPlugs.length} boutique${vipPlugs.length > 1 ? 's' : ''}`;
 
-    console.log('📝 Message VIP préparé');
-
-    // Essayer différentes méthodes d'édition selon le contexte
-    const welcomeImage = config.welcome?.image;
-    
-    try {
-      if (welcomeImage) {
-        console.log('🖼️ VIP avec image');
+    if (config?.welcome?.image) {
+      try {
         await ctx.editMessageMedia({
           type: 'photo',
-          media: welcomeImage,
+          media: config.welcome.image,
           caption: messageText,
           parse_mode: 'Markdown'
         }, {
           reply_markup: keyboard.reply_markup
         });
-        console.log('✅ EditMessageMedia réussi pour VIP');
-      } else {
+      } catch (error) {
+        // Fallback vers texte simple si l'image échoue
         await ctx.editMessageText(messageText, {
           reply_markup: keyboard.reply_markup,
           parse_mode: 'Markdown'
         });
-        console.log('✅ EditMessageText réussi pour VIP');
       }
-    } catch (error) {
-      console.log('⚠️ Première méthode échouée, tentative fallback');
-      try {
-        if (welcomeImage) {
-          await ctx.editMessageCaption(messageText, {
-            reply_markup: keyboard.reply_markup,
-            parse_mode: 'Markdown'
-          });
-        } else {
-          await ctx.editMessageCaption(messageText, {
-            reply_markup: keyboard.reply_markup,
-            parse_mode: 'Markdown'
-          });
-        }
-        console.log('✅ EditMessageCaption réussi pour VIP');
-      } catch (captionError) {
-        console.log('⚠️ Toutes les méthodes d\'édition ont échoué, envoi nouveau message');
-        if (welcomeImage) {
-          await ctx.replyWithPhoto(welcomeImage, {
-            caption: messageText,
-            reply_markup: keyboard.reply_markup,
-            parse_mode: 'Markdown'
-          });
-        } else {
-          await ctx.reply(messageText, {
-            reply_markup: keyboard.reply_markup,
-            parse_mode: 'Markdown'
-          });
-        }
-        console.log('✅ Nouveau message envoyé pour VIP');
-      }
+    } else {
+      await ctx.editMessageText(messageText, {
+        reply_markup: keyboard.reply_markup,
+        parse_mode: 'Markdown'
+      });
     }
 
     await ctx.answerCbQuery();
-    console.log('✅ VIP terminé avec succès');
-    
   } catch (error) {
-    console.error('❌ Erreur dans handleVipPlugs:', error);
+    console.error('Erreur dans handleVipPlugs:', error);
     await ctx.answerCbQuery('❌ Erreur lors du chargement des boutiques VIP');
   }
 };
