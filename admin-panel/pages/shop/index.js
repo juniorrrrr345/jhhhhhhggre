@@ -158,37 +158,7 @@ export default function ShopHome() {
           </div>
         </nav>
 
-        {/* Hero Section */}
-        <div className="bg-gradient-to-r from-blue-600 to-purple-700 py-16">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 className="text-4xl font-bold text-white mb-4">
-              🌟 Boutiques Premium
-            </h2>
-            <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
-              Découvrez notre sélection exclusive de boutiques vérifiées avec livraison rapide, 
-              envoi postal sécurisé et options de meetup.
-            </p>
-            {lastUpdate && (
-              <p className="text-sm text-blue-200 mb-6">
-                🔄 Dernière synchronisation : {lastUpdate.toLocaleTimeString('fr-FR')}
-              </p>
-            )}
-            <div className="flex justify-center space-x-4">
-              <Link
-                href="/shop/search"
-                className="bg-white text-blue-600 px-6 py-3 rounded-lg font-medium hover:bg-blue-50 transition-colors"
-              >
-                🔍 Rechercher une boutique
-              </Link>
-              <Link
-                href="/shop/vip"
-                className="bg-yellow-500 text-white px-6 py-3 rounded-lg font-medium hover:bg-yellow-600 transition-colors"
-              >
-                ⭐ Voir les VIP
-              </Link>
-            </div>
-          </div>
-        </div>
+
 
         {/* Toutes les boutiques */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
@@ -216,10 +186,8 @@ export default function ShopHome() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {plugs.map((plug) => (
-                <div
-                  key={plug._id}
-                  className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
-                >
+                <Link key={plug._id} href={`/shop/${plug._id}`}>
+                  <div className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 cursor-pointer">
                   {/* Image */}
                   <div className="relative h-48">
                     <img
@@ -306,35 +274,13 @@ export default function ShopHome() {
                       )}
                     </div>
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
           )}
         </div>
 
-        {/* Footer */}
-        <footer className="bg-gray-800 text-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <div className="text-center">
-              <h3 className="text-lg font-medium mb-2">Boutique VIP</h3>
-              <p className="text-gray-400 mb-4">Votre sélection de boutiques premium</p>
-              <div className="flex justify-center space-x-4">
-                <a
-                  href="https://t.me/votre_bot"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-400 hover:text-blue-300"
-                >
-                  📱 Telegram Bot
-                </a>
-                <span className="text-gray-600">•</span>
-                <Link href="/admin" className="text-purple-400 hover:text-purple-300">
-                  🔧 Admin
-                </Link>
-              </div>
-            </div>
-          </div>
-        </footer>
+
       </div>
     </>
   )
