@@ -14,25 +14,58 @@ export default function Login() {
     setLoading(true)
 
     try {
-      // Vérifier le mot de passe
-      const response = await fetch(`${process.env.API_BASE_URL}/api/config`, {
-        headers: {
-          'Authorization': `Bearer ${password}`
-        }
-      })
+      // Essayer d'abord l'API directe
+      let success = false;
+      try {
+        const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://jhhhhhhggre.onrender.com';
+        console.log('🔐 Login tentative directe:', apiBaseUrl);
+        
+        const response = await fetch(`${apiBaseUrl}/api/config`, {
+          headers: {
+            'Authorization': `Bearer ${password}`,
+            'Cache-Control': 'no-cache'
+          }
+        });
 
-      if (response.ok) {
+        if (response.ok) {
+          console.log('✅ Login direct réussi');
+          success = true;
+        } else {
+          throw new Error(`HTTP ${response.status}`);
+        }
+      } catch (directError) {
+        console.log('❌ Login direct échoué:', directError.message);
+        console.log('🔄 Login tentative via proxy...');
+        
+        // Fallback vers le proxy
+        const proxyResponse = await fetch('/api/proxy?endpoint=/api/config', {
+          headers: {
+            'Authorization': password,
+            'Cache-Control': 'no-cache'
+          }
+        });
+
+        if (proxyResponse.ok) {
+          console.log('✅ Login proxy réussi');
+          success = true;
+        } else {
+          throw new Error(`Login proxy failed: HTTP ${proxyResponse.status}`);
+        }
+      }
+
+      if (success) {
         // Stocker le token
-        localStorage.setItem('adminToken', password)
-        toast.success('Connexion réussie !')
-        router.push('/admin')
+        localStorage.setItem('adminToken', password);
+        toast.success('Connexion réussie !');
+        router.push('/admin');
       } else {
-        toast.error('Mot de passe incorrect')
+        toast.error('Mot de passe incorrect');
       }
     } catch (error) {
-      toast.error('Erreur de connexion')
+      console.error('💥 Login error final:', error);
+      toast.error('Erreur de connexion - Vérifiez votre mot de passe');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
