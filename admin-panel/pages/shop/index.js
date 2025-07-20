@@ -196,7 +196,7 @@ export default function ShopHome() {
   return (
     <>
       <Head>
-        <title>{config?.boutique?.name || 'Boutique'} - Produits premium</title>
+        <title>{config?.boutique?.name || 'Boutique'}</title>
         <meta name="description" content="Découvrez notre sélection de produits premium avec livraison, envoi postal et meetup disponibles." />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
@@ -222,10 +222,10 @@ export default function ShopHome() {
                 </div>
                 <div className="ml-3">
                   <h1 className="text-xl font-bold text-white">
-                    {config?.boutique?.name || 'Ma Boutique'}
+                    {config?.boutique?.name || ''}
                   </h1>
                   <p className="text-gray-300 text-sm">
-                    {config?.boutique?.subtitle || 'Découvrez nos produits'}
+                    {config?.boutique?.subtitle || ''}
                   </p>
                 </div>
               </div>
@@ -292,11 +292,11 @@ export default function ShopHome() {
                 </div>
               )}
               <h3 className="text-3xl font-bold text-gray-900">
-                {config?.boutique?.name || 'Ma Boutique'}
+                {config?.boutique?.name || ''}
               </h3>
             </div>
             <p className="text-gray-600 max-w-2xl mx-auto">
-              {config?.boutique?.subtitle || 'Découvrez notre sélection de produits premium.'}
+              {config?.boutique?.subtitle || ''}
             </p>
           </div>
 

@@ -182,7 +182,7 @@ export default function ShopVIP() {
   return (
     <>
       <Head>
-        <title>{config?.boutique?.vipTitle || config?.boutique?.name || 'Section VIP'} - Selection Premium</title>
+        <title>{config?.boutique?.vipTitle || config?.boutique?.name || 'VIP'}</title>
         <meta name="description" content="Découvrez notre sélection exclusive de boutiques VIP premium avec services garantis." />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
@@ -207,12 +207,12 @@ export default function ShopVIP() {
                   )}
                 </div>
                 <div className="ml-3">
-                  <h1 className="text-xl font-bold text-white">
-                    {config?.boutique?.vipTitle || config?.boutique?.name || 'Section VIP'}
-                  </h1>
-                  <p className="text-gray-300 text-sm">
-                    {config?.boutique?.vipSubtitle || 'Produits premium exclusifs'}
-                  </p>
+                              <h1 className="text-xl font-bold text-white">
+              {config?.boutique?.vipTitle || config?.boutique?.name || ''}
+            </h1>
+            <p className="text-gray-300 text-sm">
+              {config?.boutique?.vipSubtitle || ''}
+            </p>
                 </div>
               </div>
             </div>
@@ -278,11 +278,11 @@ export default function ShopVIP() {
                 </div>
               )}
               <h3 className="text-3xl font-bold text-gray-900">
-                {config?.boutique?.vipTitle || config?.boutique?.name || 'Section VIP'}
+                {config?.boutique?.vipTitle || config?.boutique?.name || ''}
               </h3>
             </div>
             <p className="text-gray-600 max-w-2xl mx-auto">
-              {config?.boutique?.vipSubtitle || 'Découvrez notre sélection premium exclusive.'} • {loading ? 'Chargement...' : `${vipPlugs.length} produit(s) VIP disponible(s)`}
+              {config?.boutique?.vipSubtitle || ''} • {loading ? 'Chargement...' : `${vipPlugs.length} produit(s) VIP disponible(s)`}
             </p>
           </div>
 
