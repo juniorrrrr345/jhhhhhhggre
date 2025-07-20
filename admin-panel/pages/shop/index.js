@@ -40,11 +40,8 @@ export default function ShopHome() {
     // Écouter les événements de synchronisation
     window.addEventListener('storage', handleStorageChange);
     
-    checkPendingSync();
-    
     return () => {
       clearInterval(interval);
-      window.removeEventListener('storage', handleSyncSignal);
       window.removeEventListener('storage', handleStorageChange);
     };
   }, [])

@@ -1,6 +1,7 @@
 const Config = require('../models/Config');
 const Plug = require('../models/Plug');
 const { createMainKeyboard, createVIPKeyboard } = require('../utils/keyboards');
+const { sendMessageWithImage, editMessageWithImage } = require('../utils/messageHelper');
 
 const handleStart = async (ctx) => {
   try {
@@ -81,46 +82,8 @@ const handleBackMain = async (ctx) => {
     
     console.log('📝 Message d\'accueil préparé pour le retour');
     
-    // Vérifier le type de message et agir en conséquence
-    try {
-      // Essayer d'abord d'éditer le message texte
-      await ctx.editMessageText(welcomeMessage, {
-        reply_markup: keyboard.reply_markup,
-        parse_mode: 'HTML'
-      });
-      console.log('✅ Message texte édité avec succès');
-    } catch (editError) {
-      console.log('⚠️ Impossible d\'éditer le message (probablement une photo), suppression et envoi d\'un nouveau message');
-      
-      try {
-        // Supprimer le message actuel
-        await ctx.deleteMessage();
-        console.log('🗑️ Message précédent supprimé');
-      } catch (deleteError) {
-        console.log('⚠️ Impossible de supprimer le message précédent:', deleteError.message);
-      }
-      
-      // Envoyer un nouveau message
-      const welcomeImage = config.welcome?.image || null;
-      
-      if (welcomeImage) {
-        try {
-          console.log('📸 Envoi nouveau message avec image');
-          await ctx.replyWithPhoto(welcomeImage, {
-            caption: welcomeMessage,
-            reply_markup: keyboard.reply_markup,
-            parse_mode: 'HTML'
-          });
-          console.log('✅ Nouveau message avec image envoyé');
-        } catch (photoError) {
-          console.error('❌ Erreur envoi photo, fallback vers texte:', photoError);
-          await ctx.reply(welcomeMessage, keyboard);
-        }
-      } else {
-        console.log('📝 Envoi nouveau message texte');
-        await ctx.reply(welcomeMessage, keyboard);
-      }
-    }
+    // Utiliser la fonction helper pour gérer l'image de façon cohérente
+    await editMessageWithImage(ctx, welcomeMessage, keyboard, config, { parse_mode: 'HTML' });
     
     console.log('✅ Retour au menu principal terminé');
     await ctx.answerCbQuery();
