@@ -48,14 +48,21 @@ export default function Config() {
   const fetchConfig = async (token) => {
     try {
       setLoading(true)
-      const response = await fetch(`${process.env.API_BASE_URL}/api/config`, {
+      const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || process.env.API_BASE_URL
+      console.log('🔍 Fetching config from:', apiBaseUrl)
+      
+      const response = await fetch(`${apiBaseUrl}/api/config`, {
         headers: { 'Authorization': `Bearer ${token}` }
       })
 
+      console.log('⚙️ Config fetch response:', response.status)
+
       if (response.ok) {
         const data = await response.json()
+        console.log('✅ Config loaded:', data)
         setConfig(data)
       } else {
+        console.error('❌ Config fetch error:', response.status, response.statusText)
         toast.error('Erreur lors du chargement')
       }
     } catch (error) {

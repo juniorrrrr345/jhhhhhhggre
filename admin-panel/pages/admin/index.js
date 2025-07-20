@@ -33,33 +33,46 @@ export default function Dashboard() {
 
   const fetchDashboardData = async (token) => {
     try {
+      const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || process.env.API_BASE_URL
+      console.log('🔍 Fetching dashboard data from:', apiBaseUrl)
+      
       // Récupérer les stats des plugs
-      const plugsResponse = await fetch(`${process.env.API_BASE_URL}/api/plugs?limit=1000`, {
+      const plugsResponse = await fetch(`${apiBaseUrl}/api/plugs?limit=1000`, {
         headers: { 'Authorization': `Bearer ${token}` }
       })
+      
+      console.log('📊 Plugs response status:', plugsResponse.status)
       
       if (plugsResponse.ok) {
         const plugsData = await plugsResponse.json()
+        console.log('✅ Plugs data:', plugsData)
         setStats({
-          totalPlugs: plugsData.total,
-          activePlugs: plugsData.plugs.filter(p => p.isActive).length,
-          vipPlugs: plugsData.plugs.filter(p => p.isVip).length,
+          totalPlugs: plugsData.pagination?.total || plugsData.plugs?.length || 0,
+          activePlugs: plugsData.plugs?.filter(p => p.isActive).length || 0,
+          vipPlugs: plugsData.plugs?.filter(p => p.isVip).length || 0,
           totalUsers: 0 // À implémenter plus tard
         })
+      } else {
+        console.error('❌ Plugs response error:', plugsResponse.status, plugsResponse.statusText)
       }
 
       // Récupérer la config
-      const configResponse = await fetch(`${process.env.API_BASE_URL}/api/config`, {
+      const configResponse = await fetch(`${apiBaseUrl}/api/config`, {
         headers: { 'Authorization': `Bearer ${token}` }
       })
       
+      console.log('⚙️ Config response status:', configResponse.status)
+      
       if (configResponse.ok) {
         const configData = await configResponse.json()
+        console.log('✅ Config data:', configData)
         setConfig(configData)
+      } else {
+        console.error('❌ Config response error:', configResponse.status, configResponse.statusText)
       }
 
     } catch (error) {
-      console.error('Erreur fetch dashboard:', error)
+      console.error('💥 Erreur fetch dashboard:', error)
     } finally {
       setLoading(false)
     }
