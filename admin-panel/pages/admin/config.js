@@ -222,6 +222,18 @@ export default function Config() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Contenu page "Contact"
+                </label>
+                <textarea
+                  value={config.buttons?.contact?.content || ''}
+                  onChange={(e) => updateNestedConfig('buttons', 'contact', 'content', e.target.value)}
+                  rows={4}
+                  className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="Contactez-nous pour plus d'informations..."
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   Bouton "Info"
                 </label>
                 <input
@@ -230,6 +242,18 @@ export default function Config() {
                   onChange={(e) => updateNestedConfig('buttons', 'info', 'text', e.target.value)}
                   className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                   placeholder="ℹ️ Info"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Contenu page "Info"
+                </label>
+                <textarea
+                  value={config.buttons?.info?.content || ''}
+                  onChange={(e) => updateNestedConfig('buttons', 'info', 'content', e.target.value)}
+                  rows={4}
+                  className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="Informations sur notre plateforme..."
                 />
               </div>
             </div>

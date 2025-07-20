@@ -192,8 +192,8 @@ const handleCountryFilter = async (ctx, country, page = 0) => {
   }
 };
 
-// Afficher un plug spécifique
-const handlePlugDetails = async (ctx, plugId) => {
+// Afficher un plug spécifique avec contexte de retour
+const handlePlugDetails = async (ctx, plugId, returnContext = 'top_plugs') => {
   try {
     const plug = await Plug.findById(plugId);
     
@@ -225,7 +225,7 @@ const handlePlugDetails = async (ctx, plugId) => {
       message += `🌍 **Pays desservis :** ${plug.countries.join(', ')}\n\n`;
     }
 
-    const keyboard = createPlugKeyboard(plug);
+    const keyboard = createPlugKeyboard(plug, returnContext);
 
     if (plug.image) {
       try {

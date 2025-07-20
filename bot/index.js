@@ -126,10 +126,17 @@ bot.action(/^country_(.+)$/, (ctx) => {
   return handleCountryFilter(ctx, country, 0);
 });
 
-// Détails d'un plug
+// Détails d'un plug (ancien format pour compatibilité)
 bot.action(/^plug_([a-f\d]{24})$/, (ctx) => {
   const plugId = ctx.match[1];
-  return handlePlugDetails(ctx, plugId);
+  return handlePlugDetails(ctx, plugId, 'top_plugs');
+});
+
+// Détails d'un plug avec contexte
+bot.action(/^plug_([a-f\d]{24})_from_(.+)$/, (ctx) => {
+  const plugId = ctx.match[1];
+  const context = ctx.match[2];
+  return handlePlugDetails(ctx, plugId, context);
 });
 
 // Détails d'un service d'un plug
