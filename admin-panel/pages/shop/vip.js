@@ -29,15 +29,50 @@ export default function ShopVIP() {
 
   const fetchConfig = async () => {
     try {
+      // Utiliser l'endpoint public de configuration
+      const timestamp = new Date().getTime()
       const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://jhhhhhhggre.onrender.com'
-      const response = await fetch(`${apiBaseUrl}/api/config`)
       
-      if (response.ok) {
-        const data = await response.json()
-        setConfig(data)
+      console.log('🔍 Récupération config VIP depuis:', apiBaseUrl)
+      
+      // Essayer d'abord l'API directe
+      try {
+        const response = await fetch(`${apiBaseUrl}/api/public/config?t=${timestamp}`, {
+          cache: 'no-cache',
+          headers: { 
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache'
+          }
+        })
+        
+        if (response.ok) {
+          const data = await response.json()
+          console.log('✅ Config VIP chargée:', data)
+          setConfig(data)
+          return
+        }
+      } catch (directError) {
+        console.log('❌ Config VIP directe échouée:', directError.message)
       }
+      
+      // Fallback vers le proxy si disponible
+      try {
+        const response = await fetch(`/api/proxy?endpoint=/api/public/config&t=${timestamp}`, {
+          cache: 'no-cache',
+          headers: { 'Cache-Control': 'no-cache' }
+        })
+        
+        if (response.ok) {
+          const data = await response.json()
+          console.log('✅ Config VIP via proxy chargée:', data)
+          setConfig(data)
+        }
+      } catch (proxyError) {
+        console.log('❌ Config VIP proxy échouée:', proxyError.message)
+      }
+      
     } catch (error) {
-      console.log('Config load failed, using defaults')
+      console.log('❌ Erreur chargement config VIP:', error)
     }
   }
 

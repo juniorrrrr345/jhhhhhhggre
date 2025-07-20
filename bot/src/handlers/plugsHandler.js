@@ -67,24 +67,25 @@ const handleVipPlugs = async (ctx, page = 0) => {
     
     for (const plug of currentPagePlugs) {
       const likesText = plug.likes > 0 ? ` ❤️${plug.likes}` : '';
-      buttons.push([Markup.button.callback(`👑 ${plug.name}${likesText}`, `plug_${plug._id}_plugs_vip`)]);
+      buttons.push([Markup.button.callback(`👑 ${plug.name}${likesText}`, `plug_${plug._id}_from_plugs_vip`)]);
     }
 
     // Boutons de navigation
-    const navButtons = [];
-    if (page > 0) {
-      navButtons.push(Markup.button.callback('⬅️ Précédent', `page_vip_${page - 1}`));
-    }
-    if (page < totalPages - 1) {
-      navButtons.push(Markup.button.callback('➡️ Suivant', `page_vip_${page + 1}`));
-    }
-    if (navButtons.length > 0) {
+    if (totalPages > 1) {
+      const navButtons = [];
+      if (page > 0) {
+        navButtons.push(Markup.button.callback('⬅️ Précédent', `page_vip_${page - 1}`));
+      }
+      navButtons.push(Markup.button.callback(`${page + 1}/${totalPages}`, 'current_page'));
+      if (page < totalPages - 1) {
+        navButtons.push(Markup.button.callback('➡️ Suivant', `page_vip_${page + 1}`));
+      }
       buttons.push(navButtons);
     }
 
     // Bouton retour
     const backButtonText = config?.botTexts?.backButtonText || '🔙 Retour';
-    buttons.push([Markup.button.callback(backButtonText, 'top_plugs')]);
+    buttons.push([Markup.button.callback(backButtonText, 'back_main')]);
 
     const keyboard = Markup.inlineKeyboard(buttons);
     

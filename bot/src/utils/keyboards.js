@@ -211,8 +211,12 @@ const createVIPKeyboard = (vipPlugs) => {
   const buttons = [];
   
   vipPlugs.forEach(plug => {
-    buttons.push([Markup.button.callback(`⭐ ${plug.name}`, `plug_${plug._id}`)]);
+    const likesText = plug.likes > 0 ? ` ❤️${plug.likes}` : '';
+    buttons.push([Markup.button.callback(`⭐ ${plug.name}${likesText}`, `plug_${plug._id}_from_plugs_vip`)]);
   });
+  
+  // Bouton retour
+  buttons.push([Markup.button.callback('🔙 Retour', 'back_main')]);
   
   return Markup.inlineKeyboard(buttons);
 };
