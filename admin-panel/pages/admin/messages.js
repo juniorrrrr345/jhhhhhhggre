@@ -299,15 +299,30 @@ export default function MessagesPage() {
                 <div className="space-y-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Nom de la boutique
+                      Nom de la boutique (Frontend)
                     </label>
                     <input
                       type="text"
                       value={config.boutique?.name || ''}
                       onChange={(e) => updateConfig('boutique', 'name', e.target.value)}
                       className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      placeholder="Ma Boutique VIP"
+                      placeholder="Boutique"
                     />
+                    <p className="text-sm text-gray-500 mt-1">Titre affiché sur le site web</p>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Sous-titre de la boutique (Frontend)
+                    </label>
+                    <input
+                      type="text"
+                      value={config.boutique?.subtitle || ''}
+                      onChange={(e) => updateConfig('boutique', 'subtitle', e.target.value)}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      placeholder="Classement par likes"
+                    />
+                    <p className="text-sm text-gray-500 mt-1">Sous-titre affiché sur le site web</p>
                   </div>
 
                   <div>
@@ -325,15 +340,30 @@ export default function MessagesPage() {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Sous-titre de la boutique
+                      Titre VIP Frontend
                     </label>
                     <input
                       type="text"
-                      value={config.boutique?.subtitle || ''}
-                      onChange={(e) => updateConfig('boutique', 'subtitle', e.target.value)}
+                      value={config.boutique?.vipTitle || ''}
+                      onChange={(e) => updateConfig('boutique', 'vipTitle', e.target.value)}
                       className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      placeholder="Votre sélection de boutiques premium"
+                      placeholder="Boutique VIP"
                     />
+                    <p className="text-sm text-gray-500 mt-1">Titre pour la section VIP sur le site</p>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Sous-titre VIP Frontend
+                    </label>
+                    <input
+                      type="text"
+                      value={config.boutique?.vipSubtitle || ''}
+                      onChange={(e) => updateConfig('boutique', 'vipSubtitle', e.target.value)}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      placeholder="Sélection premium exclusive"
+                    />
+                    <p className="text-sm text-gray-500 mt-1">Sous-titre pour la section VIP sur le site</p>
                   </div>
                 </div>
               </div>
@@ -342,32 +372,6 @@ export default function MessagesPage() {
               <div className="bg-white rounded-lg shadow p-6">
                 <h2 className="text-lg font-medium text-gray-900 mb-4">🤖 Textes du Bot</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Titre VIP
-                    </label>
-                    <input
-                      type="text"
-                      value={config.botTexts?.vipTitle || ''}
-                      onChange={(e) => updateConfig('botTexts', 'vipTitle', e.target.value)}
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      placeholder="👑 Boutiques VIP Premium"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Description VIP
-                    </label>
-                    <input
-                      type="text"
-                      value={config.botTexts?.vipDescription || ''}
-                      onChange={(e) => updateConfig('botTexts', 'vipDescription', e.target.value)}
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      placeholder="✨ Découvrez nos boutiques sélectionnées"
-                    />
-                  </div>
-
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Titre Top Plugs
@@ -392,6 +396,112 @@ export default function MessagesPage() {
                       className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                       placeholder="Choisissez une option pour découvrir nos plugs :"
                     />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Titre Filtrer par Pays
+                    </label>
+                    <input
+                      type="text"
+                      value={config.botTexts?.filterCountryTitle || ''}
+                      onChange={(e) => updateConfig('botTexts', 'filterCountryTitle', e.target.value)}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      placeholder="🌍 Filtrer par pays"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Description Filtrer par Pays
+                    </label>
+                    <input
+                      type="text"
+                      value={config.botTexts?.filterCountryDescription || ''}
+                      onChange={(e) => updateConfig('botTexts', 'filterCountryDescription', e.target.value)}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      placeholder="Choisissez un pays :"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Titre VIP Bot
+                    </label>
+                    <input
+                      type="text"
+                      value={config.botTexts?.vipTitle || ''}
+                      onChange={(e) => updateConfig('botTexts', 'vipTitle', e.target.value)}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      placeholder="👑 Boutiques VIP Premium"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Description VIP Bot
+                    </label>
+                    <input
+                      type="text"
+                      value={config.botTexts?.vipDescription || ''}
+                      onChange={(e) => updateConfig('botTexts', 'vipDescription', e.target.value)}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      placeholder="✨ Découvrez nos boutiques sélectionnées"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Texte "Tous nos plugs"
+                    </label>
+                    <input
+                      type="text"
+                      value={config.botTexts?.allPlugsText || ''}
+                      onChange={(e) => updateConfig('botTexts', 'allPlugsText', e.target.value)}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      placeholder="📋 Tous nos plugs :"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Format pagination
+                    </label>
+                    <input
+                      type="text"
+                      value={config.botTexts?.paginationFormat || ''}
+                      onChange={(e) => updateConfig('botTexts', 'paginationFormat', e.target.value)}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      placeholder="📄 Page {page}/{total}"
+                    />
+                    <p className="text-sm text-gray-500 mt-1">Utilisez {page} et {total} comme variables</p>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Texte bouton retour
+                    </label>
+                    <input
+                      type="text"
+                      value={config.botTexts?.backButtonText || ''}
+                      onChange={(e) => updateConfig('botTexts', 'backButtonText', e.target.value)}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      placeholder="🔙 Retour"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Format compteur total
+                    </label>
+                    <input
+                      type="text"
+                      value={config.botTexts?.totalCountFormat || ''}
+                      onChange={(e) => updateConfig('botTexts', 'totalCountFormat', e.target.value)}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      placeholder="📊 Total : {count} plugs"
+                    />
+                    <p className="text-sm text-gray-500 mt-1">Utilisez {count} comme variable</p>
                   </div>
                 </div>
               </div>
