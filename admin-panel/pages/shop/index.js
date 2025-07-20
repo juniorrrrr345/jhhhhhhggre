@@ -174,66 +174,66 @@ export default function ShopHome() {
               <p className="text-gray-500">Revenez plus tard pour découvrir nos boutiques.</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               {plugs.map((plug) => (
                                 <Link key={plug._id} href={`/shop/${plug._id}`}>
                   <div className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:border-gray-400 transition-colors duration-300 cursor-pointer">
-                    {/* Image */}
-                    <div className="relative h-48">
-                      <img
-                        src={plug.image || '/placeholder.jpg'}
-                        alt={plug.name}
-                        className="w-full h-full object-cover grayscale"
-                      />
-                      {plug.isVip && (
-                        <div className="absolute top-3 left-3">
-                          <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-900 text-white">
-                            <StarIcon className="w-4 h-4 mr-1" />
-                            VIP
-                          </span>
-                        </div>
-                      )}
-                    </div>
+                                        {/* Image */}
+                     <div className="relative h-32 sm:h-40">
+                       <img
+                         src={plug.image || '/placeholder.jpg'}
+                         alt={plug.name}
+                         className="w-full h-full object-cover grayscale"
+                       />
+                       {plug.isVip && (
+                         <div className="absolute top-2 left-2">
+                           <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-900 text-white">
+                             <StarIcon className="w-3 h-3 mr-1" />
+                             VIP
+                           </span>
+                         </div>
+                       )}
+                     </div>
 
                   {/* Contenu */}
-                  <div className="p-6">
-                    <h3 className="text-xl font-bold text-gray-900 mb-2">{plug.name}</h3>
-                    <p className="text-gray-600 mb-4 line-clamp-2">{plug.description}</p>
+                  <div className="p-3 sm:p-4">
+                    <h3 className="text-sm sm:text-base font-bold text-gray-900 mb-2 truncate">{plug.name}</h3>
+                    <p className="text-gray-600 mb-3 text-xs sm:text-sm line-clamp-2 h-8">{plug.description}</p>
 
                     {/* Localisation */}
                     {plug.countries && plug.countries.length > 0 && (
-                      <div className="flex items-center text-sm text-gray-500 mb-3">
-                        <MapPinIcon className="w-4 h-4 mr-1" />
-                        {plug.countries.join(', ')}
+                      <div className="flex items-center text-xs sm:text-sm text-gray-500 mb-2">
+                        <MapPinIcon className="w-3 h-3 mr-1" />
+                        <span className="truncate">{plug.countries.join(', ')}</span>
                       </div>
                     )}
 
                     {/* Services */}
-                    <div className="flex flex-wrap gap-2 mb-4">
+                    <div className="flex flex-wrap gap-1 mb-3">
                       {plug.services?.delivery?.enabled && (
-                        <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                          <TruckIcon className="w-3 h-3 mr-1" />
+                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">
+                          <TruckIcon className="w-2.5 h-2.5 mr-1" />
                           Livraison
                         </span>
                       )}
                       {plug.services?.postal?.enabled && (
-                        <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                          <GlobeAltIcon className="w-3 h-3 mr-1" />
+                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">
+                          <GlobeAltIcon className="w-2.5 h-2.5 mr-1" />
                           Postal
                         </span>
                       )}
                       {plug.services?.meetup?.enabled && (
-                        <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-                          <HomeIcon className="w-3 h-3 mr-1" />
+                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">
+                          <HomeIcon className="w-2.5 h-2.5 mr-1" />
                           Meetup
                         </span>
                       )}
                     </div>
 
                     {/* Likes */}
-                    <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-                      <span className="text-gray-600 text-sm">Voir les détails</span>
-                      <div className="flex items-center text-gray-500 text-sm">
+                    <div className="flex items-center justify-between pt-2 border-t border-gray-100">
+                      <span className="text-gray-600 text-xs sm:text-sm">Voir détails</span>
+                      <div className="flex items-center text-gray-500 text-xs sm:text-sm">
                         <span className="mr-1">❤️</span>
                         <span>{plug.likes || 0}</span>
                       </div>

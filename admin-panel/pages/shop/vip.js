@@ -192,30 +192,29 @@ export default function ShopVIP() {
               </Link>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               {vipPlugs.map((plug) => (
                 <Link key={plug._id} href={`/shop/${plug._id}`}>
-                  <div className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 border-2 border-yellow-200 cursor-pointer">
-                  {/* Image avec badge VIP prominent */}
-                  <div className="relative h-48">
-                    <img
-                      src={plug.image || '/placeholder.jpg'}
-                      alt={plug.name}
-                      className="w-full h-full object-cover"
-                    />
-                    <div className="absolute top-3 left-3">
-                      <span className="inline-flex items-center px-4 py-2 rounded-full text-sm font-bold bg-gradient-to-r from-yellow-400 to-orange-500 text-white shadow-lg">
-                        <StarIcon className="w-5 h-5 mr-2" />
-                        VIP PREMIUM
-                      </span>
+                                      <div className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:border-gray-400 transition-colors duration-300 cursor-pointer">
+                                      {/* Image avec badge VIP */}
+                    <div className="relative h-32 sm:h-40">
+                      <img
+                        src={plug.image || '/placeholder.jpg'}
+                        alt={plug.name}
+                        className="w-full h-full object-cover grayscale"
+                      />
+                      <div className="absolute top-2 left-2">
+                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-900 text-white">
+                          <StarIcon className="w-3 h-3 mr-1" />
+                          VIP
+                        </span>
+                      </div>
                     </div>
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
-                  </div>
 
                   {/* Contenu */}
-                  <div className="p-6">
-                    <div className="flex items-center mb-2">
-                      <h3 className="text-xl font-bold text-gray-900 flex-1">{plug.name}</h3>
+                  <div className="p-3 sm:p-4">
+                    <div className="mb-2">
+                      <h3 className="text-sm sm:text-base font-bold text-gray-900 truncate">{plug.name}</h3>
                       <div className="text-yellow-500">
                         <StarIcon className="w-6 h-6" />
                       </div>
