@@ -196,7 +196,7 @@ export default function ShopHome() {
   return (
     <>
       <Head>
-        <title>{config?.boutique?.name || 'Ma Boutique'} - Découvrez nos produits premium</title>
+        <title>{config?.boutique?.name || 'Boutique'} - Produits premium</title>
         <meta name="description" content="Découvrez notre sélection de produits premium avec livraison, envoi postal et meetup disponibles." />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
