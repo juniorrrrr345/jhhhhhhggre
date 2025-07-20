@@ -5,25 +5,21 @@ const createMainKeyboard = (config) => {
   const buttons = [];
   
   // Bouton Top Des Plugs
-  if (config.buttons.topPlugs.enabled) {
-    buttons.push([Markup.button.callback(config.buttons.topPlugs.text, 'top_plugs')]);
-  }
+  const topPlugsText = config?.buttons?.topPlugs?.text || '🔌 Top Des Plugs';
+  buttons.push([Markup.button.callback(topPlugsText, 'top_plugs')]);
   
   // Bouton Boutique VIP
-  const vipButtonText = config.buttons?.vipPlugs?.text || '🛍️ Boutiques VIP';
+  const vipButtonText = config?.buttons?.vipPlugs?.text || '🛍️ Boutiques VIP';
   buttons.push([Markup.button.callback(vipButtonText, 'plugs_vip')]);
   
   // Boutons Contact et Info sur la même ligne
   const secondRow = [];
-  if (config.buttons.contact.enabled) {
-    secondRow.push(Markup.button.callback(config.buttons.contact.text, 'contact'));
-  }
-  if (config.buttons.info.enabled) {
-    secondRow.push(Markup.button.callback(config.buttons.info.text, 'info'));
-  }
-  if (secondRow.length > 0) {
-    buttons.push(secondRow);
-  }
+  const contactText = config?.buttons?.contact?.text || '📞 Contact';
+  const infoText = config?.buttons?.info?.text || 'ℹ️ Info';
+  
+  secondRow.push(Markup.button.callback(contactText, 'contact'));
+  secondRow.push(Markup.button.callback(infoText, 'info'));
+  buttons.push(secondRow);
   
   // Réseaux sociaux
   const socialRow = [];
@@ -53,21 +49,31 @@ const createMainKeyboard = (config) => {
 
 // Clavier des filtres de plugs
 const createPlugsFilterKeyboard = (config) => {
+  const allText = config?.filters?.all || 'Tous les plugs';
+  const serviceText = config?.filters?.byService || 'Par service';
+  const countryText = config?.filters?.byCountry || 'Par pays';
+  const backText = config?.botTexts?.backButtonText || '🔙 Retour';
+  
   return Markup.inlineKeyboard([
-    [Markup.button.callback(config.filters.all, 'plugs_all')],
-    [Markup.button.callback(config.filters.byService, 'filter_service')],
-    [Markup.button.callback(config.filters.byCountry, 'filter_country')],
-    [Markup.button.callback('🔙 Retour', 'back_main')]
+    [Markup.button.callback(allText, 'plugs_all')],
+    [Markup.button.callback(serviceText, 'filter_service')],
+    [Markup.button.callback(countryText, 'filter_country')],
+    [Markup.button.callback(backText, 'back_main')]
   ]);
 };
 
 // Clavier des services
-const createServicesKeyboard = () => {
+const createServicesKeyboard = (config) => {
+  const deliveryText = config?.botTexts?.deliveryServiceText || '🚚 Livraison';
+  const postalText = config?.botTexts?.postalServiceText || '✈️ Envoi postal';
+  const meetupText = config?.botTexts?.meetupServiceText || '🏠 Meetup';
+  const backText = config?.botTexts?.backButtonText || '🔙 Retour';
+  
   return Markup.inlineKeyboard([
-    [Markup.button.callback('🚚 Livraison', 'service_delivery')],
-    [Markup.button.callback('✈️ Envoi postal', 'service_postal')],
-    [Markup.button.callback('🏠 Meetup', 'service_meetup')],
-    [Markup.button.callback('🔙 Retour', 'top_plugs')]
+    [Markup.button.callback(deliveryText, 'service_delivery')],
+    [Markup.button.callback(postalText, 'service_postal')],
+    [Markup.button.callback(meetupText, 'service_meetup')],
+    [Markup.button.callback(backText, 'top_plugs')]
   ]);
 };
 

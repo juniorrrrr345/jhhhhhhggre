@@ -118,11 +118,11 @@ export default function Dashboard() {
       color: 'bg-blue-500'
     },
     {
-      name: 'Modifier le message d\'accueil',
-      description: 'Personnaliser le message de bienvenue',
+      name: '🎨 Configuration Bot',
+      description: 'Mode visuel et avancé pour configurer le bot',
       href: '/admin/config',
-      icon: ChatBubbleLeftRightIcon,
-      color: 'bg-green-500'
+      icon: EyeIcon,
+      color: 'bg-indigo-500'
     },
     {
       name: 'Configuration générale',

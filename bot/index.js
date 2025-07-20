@@ -93,9 +93,9 @@ bot.command('start', handleStart);
 
 // Gestionnaires des callbacks
 bot.action('back_main', handleBackMain);
-  bot.action('top_plugs', handleTopPlugs);
-  bot.action('plugs_all', (ctx) => handleAllPlugs(ctx, 0));
-  bot.action('plugs_vip', (ctx) => handleVipPlugs(ctx, 0));
+bot.action('top_plugs', handleTopPlugs);
+bot.action('plugs_all', (ctx) => handleAllPlugs(ctx, 0));
+bot.action('plugs_vip', (ctx) => handleVipPlugs(ctx, 0));
 bot.action('filter_service', handleFilterService);
 bot.action('filter_country', handleFilterCountry);
 bot.action('contact', handleContact);
@@ -136,14 +136,14 @@ bot.action(/^plug_([a-f\d]{24})$/, (ctx) => {
   return handlePlugDetails(ctx, plugId, 'top_plugs');
 });
 
-// Détails d'un plug avec contexte
+// Détails d'un plug avec contexte (couvre aussi plugs_vip)
 bot.action(/^plug_([a-f\d]{24})_from_(.+)$/, (ctx) => {
   const plugId = ctx.match[1];
   const context = ctx.match[2];
   return handlePlugDetails(ctx, plugId, context);
 });
 
-// Détails d'un plug VIP spécifique
+// Détails d'un plug VIP spécifique (format direct)
 bot.action(/^plug_([a-f\d]{24})_plugs_vip$/, (ctx) => {
   const plugId = ctx.match[1];
   return handlePlugDetails(ctx, plugId, 'plugs_vip');

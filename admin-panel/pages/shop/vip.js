@@ -114,9 +114,17 @@ export default function ShopVIP() {
             <div className="flex items-center justify-between h-16">
               <div className="flex items-center">
                 <div className="flex-shrink-0">
-                  <div className="h-8 w-8 bg-white rounded-lg flex items-center justify-center">
-                    <StarIcon className="h-5 w-5 text-gray-900" />
-                  </div>
+                  {config?.boutique?.logo ? (
+                    <img 
+                      src={config.boutique.logo} 
+                      alt="Logo" 
+                      className="h-8 w-8 rounded-lg object-cover"
+                    />
+                  ) : (
+                    <div className="h-8 w-8 bg-white rounded-lg flex items-center justify-center">
+                      <StarIcon className="h-5 w-5 text-gray-900" />
+                    </div>
+                  )}
                 </div>
                 <div className="ml-3">
                   <h1 className="text-xl font-bold text-white">
@@ -126,16 +134,6 @@ export default function ShopVIP() {
                     {config?.boutique?.vipSubtitle || 'Sélection premium exclusive'}
                   </p>
                 </div>
-              </div>
-              <div className="flex items-center space-x-4">
-                <a
-                  href="https://t.me/votre_bot"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
-                >
-                  📱 Telegram Bot
-                </a>
               </div>
             </div>
           </div>
@@ -147,21 +145,36 @@ export default function ShopVIP() {
             <div className="flex space-x-8 h-12 items-center">
               <Link 
                 href="/shop" 
-                className="text-gray-500 hover:text-gray-700 pb-3"
+                className="text-gray-500 hover:text-gray-700 pb-3 flex items-center"
               >
-                🏠 Accueil
+                {config?.boutique?.logo ? (
+                  <img src={config.boutique.logo} alt="Logo" className="h-4 w-4 mr-2 rounded object-cover" />
+                ) : (
+                  <span className="mr-1">🏠</span>
+                )}
+                Accueil
               </Link>
               <Link 
                 href="/shop/search" 
-                className="text-gray-500 hover:text-gray-700 pb-3"
+                className="text-gray-500 hover:text-gray-700 pb-3 flex items-center"
               >
-                🔍 Recherche
+                {config?.boutique?.logo ? (
+                  <img src={config.boutique.logo} alt="Logo" className="h-4 w-4 mr-2 rounded object-cover" />
+                ) : (
+                  <span className="mr-1">🔍</span>
+                )}
+                Recherche
               </Link>
               <Link 
                 href="/shop/vip" 
-                className="text-yellow-600 font-medium border-b-2 border-yellow-600 pb-3"
+                className="text-yellow-600 font-medium border-b-2 border-yellow-600 pb-3 flex items-center"
               >
-                ⭐ VIP
+                {config?.boutique?.logo ? (
+                  <img src={config.boutique.logo} alt="Logo" className="h-4 w-4 mr-2 rounded object-cover" />
+                ) : (
+                  <span className="mr-1">⭐</span>
+                )}
+                VIP
               </Link>
             </div>
           </div>

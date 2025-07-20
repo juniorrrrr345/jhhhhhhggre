@@ -126,9 +126,17 @@ export default function ShopHome() {
             <div className="flex items-center justify-between h-16">
               <div className="flex items-center">
                 <div className="flex-shrink-0">
-                  <div className="h-8 w-8 bg-white rounded-lg flex items-center justify-center">
-                    <StarIcon className="h-5 w-5 text-gray-900" />
-                  </div>
+                  {config?.boutique?.logo ? (
+                    <img 
+                      src={config.boutique.logo} 
+                      alt="Logo" 
+                      className="h-8 w-8 rounded-lg object-cover"
+                    />
+                  ) : (
+                    <div className="h-8 w-8 bg-white rounded-lg flex items-center justify-center">
+                      <StarIcon className="h-5 w-5 text-gray-900" />
+                    </div>
+                  )}
                 </div>
                 <div className="ml-3">
                   <h1 className="text-xl font-bold text-white">
@@ -149,21 +157,36 @@ export default function ShopHome() {
             <div className="flex space-x-8 h-12 items-center">
               <Link 
                 href="/shop" 
-                className="text-gray-900 font-medium border-b-2 border-gray-900 pb-3"
+                className="text-gray-900 font-medium border-b-2 border-gray-900 pb-3 flex items-center"
               >
-                🏠 Accueil
+                {config?.boutique?.logo ? (
+                  <img src={config.boutique.logo} alt="Logo" className="h-4 w-4 mr-2 rounded object-cover" />
+                ) : (
+                  <span className="mr-1">🏠</span>
+                )}
+                Accueil
               </Link>
               <Link 
                 href="/shop/search" 
-                className="text-gray-500 hover:text-gray-700 pb-3"
+                className="text-gray-500 hover:text-gray-700 pb-3 flex items-center"
               >
-                🔍 Recherche
+                {config?.boutique?.logo ? (
+                  <img src={config.boutique.logo} alt="Logo" className="h-4 w-4 mr-2 rounded object-cover" />
+                ) : (
+                  <span className="mr-1">🔍</span>
+                )}
+                Recherche
               </Link>
               <Link 
                 href="/shop/vip" 
-                className="text-gray-500 hover:text-gray-700 pb-3"
+                className="text-gray-500 hover:text-gray-700 pb-3 flex items-center"
               >
-                ⭐ VIP
+                {config?.boutique?.logo ? (
+                  <img src={config.boutique.logo} alt="Logo" className="h-4 w-4 mr-2 rounded object-cover" />
+                ) : (
+                  <span className="mr-1">⭐</span>
+                )}
+                VIP
               </Link>
             </div>
           </div>

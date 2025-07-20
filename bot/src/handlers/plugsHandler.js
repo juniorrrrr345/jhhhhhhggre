@@ -83,8 +83,8 @@ const handleVipPlugs = async (ctx, page = 0) => {
     }
 
     // Bouton retour
-    const backButtonText = config.botTexts?.backButtonText || '🔙 Retour';
-    buttons.push([Markup.button.callback(backButtonText, 'back_main')]);
+    const backButtonText = config?.botTexts?.backButtonText || '🔙 Retour';
+    buttons.push([Markup.button.callback(backButtonText, 'top_plugs')]);
 
     const keyboard = Markup.inlineKeyboard(buttons);
     
@@ -194,7 +194,8 @@ const handleFilterService = async (ctx) => {
   try {
     console.log('🔍 Affichage du menu des services');
     
-    const keyboard = createServicesKeyboard();
+    const config = await Config.findById('main');
+    const keyboard = createServicesKeyboard(config);
     
     // Statistiques des services disponibles
     const deliveryCount = await Plug.countDocuments({ 
@@ -212,9 +213,9 @@ const handleFilterService = async (ctx) => {
     
     console.log(`📊 Services disponibles: Livraison(${deliveryCount}), Postal(${postalCount}), Meetup(${meetupCount})`);
     
-    const messageText = `${config.botTexts?.filterServiceTitle || '🔍 Filtrer par service'}\n\n${config.botTexts?.filterServiceDescription || 'Choisissez le type de service :'}\n\n📊 **Disponibilité :**\n🚚 Livraison: ${deliveryCount} boutiques\n✈️ Postal: ${postalCount} boutiques\n🏠 Meetup: ${meetupCount} boutiques`;
+    const messageText = `${config?.botTexts?.filterServiceTitle || '🔍 Filtrer par service'}\n\n${config?.botTexts?.filterServiceDescription || 'Choisissez le type de service :'}\n\n📊 **Disponibilité :**\n🚚 Livraison: ${deliveryCount} boutiques\n✈️ Postal: ${postalCount} boutiques\n🏠 Meetup: ${meetupCount} boutiques`;
     
-    if (config.welcome?.image) {
+    if (config?.welcome?.image) {
       try {
         await ctx.editMessageMedia({
           type: 'photo',

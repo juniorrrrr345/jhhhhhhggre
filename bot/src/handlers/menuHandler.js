@@ -10,10 +10,10 @@ const handleContact = async (ctx) => {
       return ctx.answerCbQuery('❌ Configuration non trouvée');
     }
 
-    let message = `📞 **Contact**\n\n${config.buttons.contact.content}`;
+    let message = `📞 **Contact**\n\n${config?.buttons?.contact?.content || 'Contactez-nous pour plus d\'informations !'}`;
 
     // Ajouter les réseaux sociaux globaux
-    if (config.socialMedia.telegram || config.socialMedia.whatsapp) {
+    if (config?.socialMedia?.telegram || config?.socialMedia?.whatsapp) {
       message += '\n\n📱 **Nous contacter :**\n';
       
       if (config.socialMedia.telegram) {
@@ -26,10 +26,28 @@ const handleContact = async (ctx) => {
 
     const keyboard = createMainKeyboard(config);
 
-    await ctx.editMessageText(message, {
-      reply_markup: keyboard.reply_markup,
-      parse_mode: 'Markdown'
-    });
+    if (config?.welcome?.image) {
+      try {
+        await ctx.editMessageMedia({
+          type: 'photo',
+          media: config.welcome.image,
+          caption: message,
+          parse_mode: 'Markdown'
+        }, {
+          reply_markup: keyboard.reply_markup
+        });
+      } catch (error) {
+        await ctx.editMessageText(message, {
+          reply_markup: keyboard.reply_markup,
+          parse_mode: 'Markdown'
+        });
+      }
+    } else {
+      await ctx.editMessageText(message, {
+        reply_markup: keyboard.reply_markup,
+        parse_mode: 'Markdown'
+      });
+    }
     
     // Confirmer la callback pour éviter le loading
     await ctx.answerCbQuery();
@@ -49,15 +67,33 @@ const handleInfo = async (ctx) => {
       return ctx.answerCbQuery('❌ Configuration non trouvée');
     }
 
-    // Utiliser uniquement le contenu personnalisé du panel admin
-    const message = config.buttons.info.content;
+    // Utiliser le contenu personnalisé du panel admin
+    const message = `ℹ️ **Informations**\n\n${config?.buttons?.info?.content || 'Découvrez notre plateforme premium.'}`;
 
     const keyboard = createMainKeyboard(config);
 
-    await ctx.editMessageText(message, {
-      reply_markup: keyboard.reply_markup,
-      parse_mode: 'Markdown'
-    });
+    if (config?.welcome?.image) {
+      try {
+        await ctx.editMessageMedia({
+          type: 'photo',
+          media: config.welcome.image,
+          caption: message,
+          parse_mode: 'Markdown'
+        }, {
+          reply_markup: keyboard.reply_markup
+        });
+      } catch (error) {
+        await ctx.editMessageText(message, {
+          reply_markup: keyboard.reply_markup,
+          parse_mode: 'Markdown'
+        });
+      }
+    } else {
+      await ctx.editMessageText(message, {
+        reply_markup: keyboard.reply_markup,
+        parse_mode: 'Markdown'
+      });
+    }
     
     // Confirmer la callback pour éviter le loading
     await ctx.answerCbQuery();
