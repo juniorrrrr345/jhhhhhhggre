@@ -196,8 +196,8 @@ export default function ShopHome() {
   return (
     <>
       <Head>
-        <title>Boutique VIP - Découvrez nos plugs premium</title>
-        <meta name="description" content="Découvrez notre sélection de boutiques VIP avec livraison, envoi postal et meetup disponibles." />
+        <title>{config?.boutique?.name || 'Ma Boutique'} - Découvrez nos produits premium</title>
+        <meta name="description" content="Découvrez notre sélection de produits premium avec livraison, envoi postal et meetup disponibles." />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
 
@@ -222,10 +222,10 @@ export default function ShopHome() {
                 </div>
                 <div className="ml-3">
                   <h1 className="text-xl font-bold text-white">
-                    {config?.boutique?.name || 'Boutique'}
+                    {config?.boutique?.name || 'Ma Boutique'}
                   </h1>
                   <p className="text-gray-300 text-sm">
-                    {config?.boutique?.subtitle || 'Classement par likes'}
+                    {config?.boutique?.subtitle || 'Découvrez nos produits'}
                   </p>
                 </div>
               </div>
@@ -292,24 +292,24 @@ export default function ShopHome() {
                 </div>
               )}
               <h3 className="text-3xl font-bold text-gray-900">
-                {config?.boutique?.name || 'Boutique Premium'}
+                {config?.boutique?.name || 'Ma Boutique'}
               </h3>
             </div>
             <p className="text-gray-600 max-w-2xl mx-auto">
-              {config?.boutique?.subtitle || 'Découvrez notre sélection de boutiques premium classées par popularité.'}
+              {config?.boutique?.subtitle || 'Découvrez notre sélection de produits premium.'}
             </p>
           </div>
 
           {loading ? (
             <div className="text-center py-12">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
-              <p className="mt-4 text-gray-500">Chargement des boutiques...</p>
+              <p className="mt-4 text-gray-500">Chargement des produits...</p>
             </div>
           ) : plugs.length === 0 ? (
             <div className="text-center py-12">
               <div className="text-6xl mb-4">🏪</div>
-              <h3 className="text-xl font-medium text-gray-900 mb-2">Aucune boutique disponible</h3>
-              <p className="text-gray-500">Revenez plus tard pour découvrir nos boutiques.</p>
+                              <h3 className="text-xl font-medium text-gray-900 mb-2">Aucun produit disponible</h3>
+                <p className="text-gray-500">Revenez plus tard pour découvrir nos produits.</p>
             </div>
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">

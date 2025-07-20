@@ -182,7 +182,7 @@ export default function ShopVIP() {
   return (
     <>
       <Head>
-        <title>Boutiques VIP - Selection Premium</title>
+        <title>{config?.boutique?.vipTitle || config?.boutique?.name || 'Section VIP'} - Selection Premium</title>
         <meta name="description" content="Découvrez notre sélection exclusive de boutiques VIP premium avec services garantis." />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
@@ -208,10 +208,10 @@ export default function ShopVIP() {
                 </div>
                 <div className="ml-3">
                   <h1 className="text-xl font-bold text-white">
-                    {config?.boutique?.vipTitle || 'Boutique VIP'}
+                    {config?.boutique?.vipTitle || config?.boutique?.name || 'Section VIP'}
                   </h1>
                   <p className="text-gray-300 text-sm">
-                    {config?.boutique?.vipSubtitle || 'Sélection premium exclusive'}
+                    {config?.boutique?.vipSubtitle || 'Produits premium exclusifs'}
                   </p>
                 </div>
               </div>
@@ -278,24 +278,24 @@ export default function ShopVIP() {
                 </div>
               )}
               <h3 className="text-3xl font-bold text-gray-900">
-                {config?.boutique?.vipTitle || config?.boutique?.name || 'Boutique VIP'}
+                {config?.boutique?.vipTitle || config?.boutique?.name || 'Section VIP'}
               </h3>
             </div>
             <p className="text-gray-600 max-w-2xl mx-auto">
-              {config?.boutique?.vipSubtitle || 'Découvrez notre sélection premium exclusive.'} • {loading ? 'Chargement...' : `${vipPlugs.length} boutique(s) VIP disponible(s)`}
+              {config?.boutique?.vipSubtitle || 'Découvrez notre sélection premium exclusive.'} • {loading ? 'Chargement...' : `${vipPlugs.length} produit(s) VIP disponible(s)`}
             </p>
           </div>
 
           {loading ? (
             <div className="text-center py-12">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-500 mx-auto"></div>
-              <p className="mt-4 text-gray-500">Chargement des boutiques VIP...</p>
+              <p className="mt-4 text-gray-500">Chargement des produits VIP...</p>
             </div>
           ) : vipPlugs.length === 0 ? (
             <div className="text-center py-12">
               <div className="text-6xl mb-4">👑</div>
-              <h3 className="text-xl font-medium text-gray-900 mb-2">Aucune boutique VIP disponible</h3>
-              <p className="text-gray-500 mb-6">Les boutiques VIP seront bientôt disponibles.</p>
+              <h3 className="text-xl font-medium text-gray-900 mb-2">Aucun produit VIP disponible</h3>
+              <p className="text-gray-500 mb-6">Les produits VIP seront bientôt disponibles.</p>
               <Link
                 href="/shop"
                 className="bg-yellow-500 text-white px-6 py-3 rounded-lg hover:bg-yellow-600 transition-colors"

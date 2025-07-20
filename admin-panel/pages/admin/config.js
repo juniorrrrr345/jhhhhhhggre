@@ -595,7 +595,7 @@ export default function Config() {
                 value={config.boutique?.name || ''}
                 onChange={(e) => updateConfig('boutique', 'name', e.target.value)}
                 className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Boutique Premium"
+                placeholder="Ma Boutique"
               />
               <p className="text-sm text-gray-500 mt-1">Titre principal affiché sur le site web</p>
             </div>
@@ -609,7 +609,7 @@ export default function Config() {
                 value={config.boutique?.subtitle || ''}
                 onChange={(e) => updateConfig('boutique', 'subtitle', e.target.value)}
                 className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Classement par likes"
+                placeholder="Découvrez nos produits"
               />
               <p className="text-sm text-gray-500 mt-1">Sous-titre affiché sous le titre principal</p>
             </div>
