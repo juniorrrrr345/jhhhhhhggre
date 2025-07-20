@@ -14,6 +14,32 @@ const plugSchema = new mongoose.Schema({
     type: String, // URL de l'image
     default: ''
   },
+  category: {
+    type: String,
+    trim: true,
+    default: ''
+  },
+  price: {
+    type: String, // Gamme de prix en texte libre
+    default: ''
+  },
+  contact: {
+    type: String,
+    default: ''
+  },
+  tags: [{
+    type: String,
+    trim: true
+  }],
+  location: {
+    type: String,
+    trim: true,
+    default: ''
+  },
+  featured: {
+    type: Boolean,
+    default: false
+  },
   countries: [{
     type: String, // Liste des pays desservis
     trim: true
@@ -49,6 +75,10 @@ const plugSchema = new mongoose.Schema({
         default: ''
       }
     }
+  },
+  telegramLink: {
+    type: String, // Pour compatibilité avec l'admin panel
+    default: ''
   },
   socialMedia: {
     telegram: {

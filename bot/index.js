@@ -654,42 +654,158 @@ app.get('/api/plugs/:id', authenticateAdmin, async (req, res) => {
 // Créer un nouveau plug
 app.post('/api/plugs', authenticateAdmin, async (req, res) => {
   try {
-    const plug = new Plug(req.body);
+    const createData = req.body;
+    
+    console.log(`🆕 Création nouveau plug:`, createData);
+    
+    // Nettoyer les données avant la création
+    const cleanData = { ...createData };
+    
+    // Convertir les tags en tableau si c'est une chaîne
+    if (typeof cleanData.tags === 'string') {
+      cleanData.tags = cleanData.tags.split(',').map(tag => tag.trim()).filter(tag => tag);
+    }
+    
+    // S'assurer que les booléens sont corrects
+    if (cleanData.vip !== undefined) cleanData.isVip = cleanData.vip;
+    if (cleanData.active !== undefined) cleanData.isActive = cleanData.active;
+    
+    // Synchroniser telegramLink avec socialMedia.telegram si fourni
+    if (cleanData.telegramLink && !cleanData.socialMedia?.telegram) {
+      if (!cleanData.socialMedia) cleanData.socialMedia = {};
+      cleanData.socialMedia.telegram = cleanData.telegramLink;
+    }
+    
+    console.log(`📝 Données nettoyées pour création:`, cleanData);
+    
+    const plug = new Plug(cleanData);
     await plug.save();
+    
+    console.log(`✅ Nouveau plug créé:`, plug.name);
+    
     res.status(201).json(plug);
   } catch (error) {
-    console.error('Erreur création plug:', error);
-    res.status(500).json({ error: 'Erreur serveur' });
+    console.error('❌ Erreur création plug:', error);
+    res.status(500).json({ error: 'Erreur serveur', details: error.message });
   }
 });
 
 // Mettre à jour un plug
 app.put('/api/plugs/:id', authenticateAdmin, async (req, res) => {
   try {
-    const plug = await Plug.findByIdAndUpdate(req.params.id, req.body, { 
-      new: true 
+    const plugId = req.params.id;
+    const updateData = req.body;
+    
+    console.log(`🔄 Mise à jour plug ${plugId}:`, updateData);
+    
+    // Nettoyer les données avant la mise à jour
+    const cleanData = { ...updateData };
+    
+    // Convertir les tags en tableau si c'est une chaîne
+    if (typeof cleanData.tags === 'string') {
+      cleanData.tags = cleanData.tags.split(',').map(tag => tag.trim()).filter(tag => tag);
+    }
+    
+    // S'assurer que les booléens sont corrects
+    if (cleanData.vip !== undefined) cleanData.isVip = cleanData.vip;
+    if (cleanData.active !== undefined) cleanData.isActive = cleanData.active;
+    
+    // Synchroniser telegramLink avec socialMedia.telegram si fourni
+    if (cleanData.telegramLink && !cleanData.socialMedia?.telegram) {
+      if (!cleanData.socialMedia) cleanData.socialMedia = {};
+      cleanData.socialMedia.telegram = cleanData.telegramLink;
+    }
+    
+    console.log(`📝 Données nettoyées:`, cleanData);
+    
+    const plug = await Plug.findByIdAndUpdate(plugId, cleanData, { 
+      new: true,
+      runValidators: true
     });
+    
     if (!plug) {
       return res.status(404).json({ error: 'Plug non trouvé' });
     }
+    
+    console.log(`✅ Plug mis à jour:`, plug.name);
+    
+    // Headers pour éviter le cache
+    res.set({
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      'Pragma': 'no-cache',
+      'Expires': '0',
+      'Last-Modified': new Date().toUTCString()
+    });
+    
     res.json(plug);
   } catch (error) {
-    console.error('Erreur mise à jour plug:', error);
-    res.status(500).json({ error: 'Erreur serveur' });
+    console.error('❌ Erreur mise à jour plug:', error);
+    res.status(500).json({ error: 'Erreur serveur', details: error.message });
   }
 });
 
 // Supprimer un plug
 app.delete('/api/plugs/:id', authenticateAdmin, async (req, res) => {
   try {
-    const plug = await Plug.findByIdAndDelete(req.params.id);
+    const plugId = req.params.id;
+    console.log(`🗑️ Suppression plug ${plugId}`);
+    
+    const plug = await Plug.findByIdAndDelete(plugId);
     if (!plug) {
       return res.status(404).json({ error: 'Plug non trouvé' });
     }
+    
+    console.log(`✅ Plug supprimé:`, plug.name);
+    
+    // Headers pour éviter le cache
+    res.set({
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      'Pragma': 'no-cache',
+      'Expires': '0'
+    });
+    
     res.json({ message: 'Plug supprimé' });
   } catch (error) {
-    console.error('Erreur suppression plug:', error);
-    res.status(500).json({ error: 'Erreur serveur' });
+    console.error('❌ Erreur suppression plug:', error);
+    res.status(500).json({ error: 'Erreur serveur', details: error.message });
+  }
+});
+
+// Route pour forcer la synchronisation des plugs
+app.post('/api/plugs/sync', authenticateAdmin, async (req, res) => {
+  try {
+    console.log('🔄 Synchronisation forcée des plugs...');
+    
+    // Récupérer tous les plugs actifs pour vérifier l'état
+    const plugs = await Plug.find({ isActive: true });
+    
+    const stats = {
+      total: plugs.length,
+      vip: plugs.filter(p => p.isVip).length,
+      withImages: plugs.filter(p => p.image).length,
+      withPrice: plugs.filter(p => p.price).length,
+      withContact: plugs.filter(p => p.contact).length,
+      withTags: plugs.filter(p => p.tags && p.tags.length > 0).length,
+      timestamp: new Date().toISOString()
+    };
+    
+    console.log('📊 Stats synchronisation:', stats);
+    
+    res.set({
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      'Pragma': 'no-cache',
+      'Expires': '0',
+      'Last-Modified': new Date().toUTCString()
+    });
+    
+    res.json({
+      message: 'Synchronisation effectuée',
+      stats,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('❌ Erreur synchronisation:', error);
+    res.status(500).json({ error: 'Erreur serveur', details: error.message });
   }
 });
 
