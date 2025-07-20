@@ -182,6 +182,22 @@ const defaultConfig = {
   messages: {
     noPlugsFound: "😅 Aucun plug trouvé pour ces critères.\nEssayez d'autres filtres ou contactez-nous.",
     errorOccurred: "❌ Une erreur est survenue, veuillez réessayer dans quelques instants."
+  },
+  botTexts: {
+    vipTitle: "👑 Boutiques VIP Premium",
+    vipDescription: "✨ Découvrez nos boutiques sélectionnées",
+    topPlugsTitle: "🔌 Top Des Plugs", 
+    topPlugsDescription: "Choisissez une option pour découvrir nos plugs :",
+    allPlugsTitle: "📋 Tous nos plugs :",
+    filterServiceTitle: "🔍 Filtrer par service",
+    filterServiceDescription: "Choisissez le type de service :",
+    filterCountryTitle: "🌍 Filtrer par pays",
+    filterCountryDescription: "Choisissez un pays :"
+  },
+  boutique: {
+    name: "Boutique",
+    logo: "",
+    subtitle: "Sélection de boutiques"
   }
 };
 

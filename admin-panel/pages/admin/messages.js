@@ -269,6 +269,129 @@ export default function MessagesPage() {
                 </div>
               </div>
 
+              {/* Textes du bot */}
+              <div className="bg-white rounded-lg shadow p-6">
+                <h2 className="text-lg font-medium text-gray-900 mb-4">🤖 Textes du Bot</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Titre VIP
+                    </label>
+                    <input
+                      type="text"
+                      value={config.botTexts?.vipTitle || ''}
+                      onChange={(e) => updateConfig('botTexts', 'vipTitle', e.target.value)}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      placeholder="👑 Boutiques VIP Premium"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Description VIP
+                    </label>
+                    <input
+                      type="text"
+                      value={config.botTexts?.vipDescription || ''}
+                      onChange={(e) => updateConfig('botTexts', 'vipDescription', e.target.value)}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      placeholder="✨ Découvrez nos boutiques sélectionnées"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Titre Top Plugs
+                    </label>
+                    <input
+                      type="text"
+                      value={config.botTexts?.topPlugsTitle || ''}
+                      onChange={(e) => updateConfig('botTexts', 'topPlugsTitle', e.target.value)}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      placeholder="🔌 Top Des Plugs"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Description Top Plugs
+                    </label>
+                    <input
+                      type="text"
+                      value={config.botTexts?.topPlugsDescription || ''}
+                      onChange={(e) => updateConfig('botTexts', 'topPlugsDescription', e.target.value)}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      placeholder="Choisissez une option pour découvrir nos plugs :"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Titre Tous les Plugs
+                    </label>
+                    <input
+                      type="text"
+                      value={config.botTexts?.allPlugsTitle || ''}
+                      onChange={(e) => updateConfig('botTexts', 'allPlugsTitle', e.target.value)}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      placeholder="📋 Tous nos plugs :"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Titre Filtrer par Service
+                    </label>
+                    <input
+                      type="text"
+                      value={config.botTexts?.filterServiceTitle || ''}
+                      onChange={(e) => updateConfig('botTexts', 'filterServiceTitle', e.target.value)}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      placeholder="🔍 Filtrer par service"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Description Filtrer par Service
+                    </label>
+                    <input
+                      type="text"
+                      value={config.botTexts?.filterServiceDescription || ''}
+                      onChange={(e) => updateConfig('botTexts', 'filterServiceDescription', e.target.value)}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      placeholder="Choisissez le type de service :"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Titre Filtrer par Pays
+                    </label>
+                    <input
+                      type="text"
+                      value={config.botTexts?.filterCountryTitle || ''}
+                      onChange={(e) => updateConfig('botTexts', 'filterCountryTitle', e.target.value)}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      placeholder="🌍 Filtrer par pays"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Description Filtrer par Pays
+                    </label>
+                    <input
+                      type="text"
+                      value={config.botTexts?.filterCountryDescription || ''}
+                      onChange={(e) => updateConfig('botTexts', 'filterCountryDescription', e.target.value)}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      placeholder="Choisissez un pays :"
+                    />
+                  </div>
+                </div>
+              </div>
+
               {/* Messages de contact et info */}
               <div className="bg-white rounded-lg shadow p-6">
                 <h2 className="text-lg font-medium text-gray-900 mb-4">📞 Messages Contact & Info</h2>

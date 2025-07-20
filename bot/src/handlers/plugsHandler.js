@@ -15,13 +15,30 @@ const handleTopPlugs = async (ctx) => {
     const config = await Config.findById('main');
     const keyboard = createPlugsFilterKeyboard(config);
     
-    await ctx.editMessageText(
-      '🔌 **Top Des Plugs**\n\nChoisissez une option pour découvrir nos plugs :',
-      {
+    const messageText = `${config.botTexts?.topPlugsTitle || '🔌 Top Des Plugs'}\n\n${config.botTexts?.topPlugsDescription || 'Choisissez une option pour découvrir nos plugs :'}`;
+    
+    if (config.welcome?.image) {
+      try {
+        await ctx.editMessageMedia({
+          type: 'photo',
+          media: config.welcome.image,
+          caption: messageText,
+          parse_mode: 'Markdown'
+        }, {
+          reply_markup: keyboard.reply_markup
+        });
+      } catch (error) {
+        await ctx.editMessageText(messageText, {
+          reply_markup: keyboard.reply_markup,
+          parse_mode: 'Markdown'
+        });
+      }
+    } else {
+      await ctx.editMessageText(messageText, {
         reply_markup: keyboard.reply_markup,
         parse_mode: 'Markdown'
-      }
-    );
+      });
+    }
     
     // Confirmer la callback pour éviter le loading
     await ctx.answerCbQuery();
@@ -85,12 +102,31 @@ const handleVipPlugs = async (ctx, page = 0) => {
 
     const keyboard = Markup.inlineKeyboard(buttons);
     
-    const messageText = `👑 **Boutiques VIP Premium**\n\n✨ Découvrez nos boutiques sélectionnées\n\n📄 Page ${page + 1}/${totalPages} • ${vipPlugs.length} boutique${vipPlugs.length > 1 ? 's' : ''}`;
+    const messageText = `${config.botTexts?.vipTitle || '👑 Boutiques VIP Premium'}\n\n${config.botTexts?.vipDescription || '✨ Découvrez nos boutiques sélectionnées'}\n\n📄 Page ${page + 1}/${totalPages} • ${vipPlugs.length} boutique${vipPlugs.length > 1 ? 's' : ''}`;
 
-    await ctx.editMessageText(messageText, {
-      reply_markup: keyboard.reply_markup,
-      parse_mode: 'Markdown'
-    });
+    if (config.welcome?.image) {
+      try {
+        await ctx.editMessageMedia({
+          type: 'photo',
+          media: config.welcome.image,
+          caption: messageText,
+          parse_mode: 'Markdown'
+        }, {
+          reply_markup: keyboard.reply_markup
+        });
+      } catch (error) {
+        // Fallback vers texte simple si l'image échoue
+        await ctx.editMessageText(messageText, {
+          reply_markup: keyboard.reply_markup,
+          parse_mode: 'Markdown'
+        });
+      }
+    } else {
+      await ctx.editMessageText(messageText, {
+        reply_markup: keyboard.reply_markup,
+        parse_mode: 'Markdown'
+      });
+    }
 
     await ctx.answerCbQuery();
   } catch (error) {
@@ -117,14 +153,32 @@ const handleAllPlugs = async (ctx, page = 0) => {
     const totalPages = Math.ceil(plugs.length / itemsPerPage);
     const keyboard = createPlugListKeyboard(plugs, page, totalPages, 'all');
 
-    let message = '📋 **Tous nos plugs :**\n\n';
+    let message = `${config.botTexts?.allPlugsTitle || '📋 Tous nos plugs :'}\n\n`;
     message += `📊 Total : ${plugs.length} plugs\n`;
     message += `📄 Page ${page + 1}/${totalPages}`;
 
-    await ctx.editMessageText(message, {
-      reply_markup: keyboard.reply_markup,
-      parse_mode: 'Markdown'
-    });
+    if (config.welcome?.image) {
+      try {
+        await ctx.editMessageMedia({
+          type: 'photo',
+          media: config.welcome.image,
+          caption: message,
+          parse_mode: 'Markdown'
+        }, {
+          reply_markup: keyboard.reply_markup
+        });
+      } catch (error) {
+        await ctx.editMessageText(message, {
+          reply_markup: keyboard.reply_markup,
+          parse_mode: 'Markdown'
+        });
+      }
+    } else {
+      await ctx.editMessageText(message, {
+        reply_markup: keyboard.reply_markup,
+        parse_mode: 'Markdown'
+      });
+    }
     
     // Confirmer la callback pour éviter le loading
     await ctx.answerCbQuery();
