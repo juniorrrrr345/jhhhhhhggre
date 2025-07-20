@@ -15,14 +15,21 @@ export default function ShopVIP() {
 
   useEffect(() => {
     fetchVipPlugs()
+    
+    // Auto-refresh toutes les 30 secondes pour la synchronisation
+    const interval = setInterval(() => {
+      fetchVipPlugs()
+    }, 30000)
+    
+    return () => clearInterval(interval)
   }, [])
 
   const fetchVipPlugs = async () => {
     try {
       setLoading(true)
-      // Ajouter un timestamp pour éviter le cache
+      // Utiliser l'endpoint public pour la boutique
       const timestamp = new Date().getTime()
-      const url = `${process.env.API_BASE_URL}/api/plugs?filter=vip&limit=50&t=${timestamp}`
+      const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/public/plugs?filter=vip&limit=50&t=${timestamp}`
       
       console.log('🔍 Fetching VIP from:', url)
       const response = await fetch(url, {

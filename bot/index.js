@@ -192,7 +192,7 @@ app.put('/api/config', authenticateAdmin, async (req, res) => {
 
 // ===== ROUTES PLUGS =====
 
-// Récupérer tous les plugs
+// Récupérer tous les plugs (Admin seulement)
 app.get('/api/plugs', authenticateAdmin, async (req, res) => {
   try {
     const { page = 1, limit = 10, search = '', filter = 'all' } = req.query;
@@ -224,6 +224,13 @@ app.get('/api/plugs', authenticateAdmin, async (req, res) => {
       
     const total = await Plug.countDocuments(query);
     
+    // Headers pour éviter le cache
+    res.set({
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      'Pragma': 'no-cache',
+      'Expires': '0'
+    });
+    
     res.json({
       plugs,
       pagination: {
@@ -234,6 +241,57 @@ app.get('/api/plugs', authenticateAdmin, async (req, res) => {
     });
   } catch (error) {
     console.error('Erreur récupération plugs:', error);
+    res.status(500).json({ error: 'Erreur serveur' });
+  }
+});
+
+// Récupérer les plugs publics (pour la boutique Vercel)
+app.get('/api/public/plugs', async (req, res) => {
+  try {
+    const { page = 1, limit = 100, search = '', filter = 'active' } = req.query;
+    const skip = (page - 1) * limit;
+    
+    let query = { isActive: true }; // Seulement les plugs actifs pour le public
+    
+    // Filtre de recherche
+    if (search) {
+      query.$or = [
+        { name: { $regex: search, $options: 'i' } },
+        { description: { $regex: search, $options: 'i' } }
+      ];
+    }
+    
+    // Filtre par type
+    if (filter === 'vip') {
+      query.isVip = true;
+    }
+    
+    const plugs = await Plug.find(query)
+      .sort({ isVip: -1, vipOrder: 1, createdAt: -1 })
+      .skip(skip)
+      .limit(parseInt(limit));
+      
+    const total = await Plug.countDocuments(query);
+    
+    // Headers pour éviter le cache
+    res.set({
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      'Pragma': 'no-cache',
+      'Expires': '0',
+      'Last-Modified': new Date().toUTCString()
+    });
+    
+    res.json({
+      plugs,
+      pagination: {
+        page: parseInt(page),
+        pages: Math.ceil(total / limit),
+        total
+      },
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('Erreur récupération plugs publics:', error);
     res.status(500).json({ error: 'Erreur serveur' });
   }
 });
@@ -372,7 +430,8 @@ app.get('/', (req, res) => {
       'GET /health',
       'GET /api/config',
       'PUT /api/config',
-      'GET /api/plugs',
+      'GET /api/plugs (admin)',
+      'GET /api/public/plugs (public)',
       'POST /api/plugs',
       'GET /api/stats'
     ]

@@ -13,17 +13,25 @@ import {
 export default function ShopHome() {
   const [plugs, setPlugs] = useState([])
   const [loading, setLoading] = useState(true)
+  const [lastUpdate, setLastUpdate] = useState(null)
 
   useEffect(() => {
     fetchPlugs()
+    
+    // Auto-refresh toutes les 30 secondes pour la synchronisation
+    const interval = setInterval(() => {
+      fetchPlugs()
+    }, 30000)
+    
+    return () => clearInterval(interval)
   }, [])
 
   const fetchPlugs = async () => {
     try {
       setLoading(true)
-      // Ajouter un timestamp pour éviter le cache
+      // Utiliser l'endpoint public pour la boutique
       const timestamp = new Date().getTime()
-      const url = `${process.env.API_BASE_URL}/api/plugs?filter=active&limit=100&t=${timestamp}`
+      const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/public/plugs?filter=active&limit=100&t=${timestamp}`
       
       console.log('🔍 Fetching from:', url)
       const response = await fetch(url, {
@@ -48,6 +56,7 @@ export default function ShopHome() {
         
         console.log('✅ Plugs loaded:', sortedPlugs.length)
         setPlugs(sortedPlugs)
+        setLastUpdate(new Date())
       } else {
         console.error('❌ Response error:', response.status, response.statusText)
       }
@@ -132,6 +141,11 @@ export default function ShopHome() {
               Découvrez notre sélection exclusive de boutiques vérifiées avec livraison rapide, 
               envoi postal sécurisé et options de meetup.
             </p>
+            {lastUpdate && (
+              <p className="text-sm text-blue-200 mb-6">
+                🔄 Dernière synchronisation : {lastUpdate.toLocaleTimeString('fr-FR')}
+              </p>
+            )}
             <div className="flex justify-center space-x-4">
               <Link
                 href="/shop/search"
@@ -145,12 +159,6 @@ export default function ShopHome() {
               >
                 ⭐ Voir les VIP
               </Link>
-              <button
-                onClick={fetchPlugs}
-                className="bg-green-500 text-white px-6 py-3 rounded-lg font-medium hover:bg-green-600 transition-colors"
-              >
-                🔄 Actualiser
-              </button>
             </div>
           </div>
         </div>

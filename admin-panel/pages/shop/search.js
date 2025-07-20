@@ -20,6 +20,13 @@ export default function ShopSearch() {
 
   useEffect(() => {
     fetchAllPlugs()
+    
+    // Auto-refresh toutes les 30 secondes pour la synchronisation
+    const interval = setInterval(() => {
+      fetchAllPlugs()
+    }, 30000)
+    
+    return () => clearInterval(interval)
   }, [])
 
   useEffect(() => {
@@ -31,9 +38,9 @@ export default function ShopSearch() {
   const fetchAllPlugs = async () => {
     try {
       setLoading(true)
-      // Ajouter un timestamp pour éviter le cache
+      // Utiliser l'endpoint public pour la boutique
       const timestamp = new Date().getTime()
-      const url = `${process.env.API_BASE_URL}/api/plugs?filter=active&limit=100&t=${timestamp}`
+      const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/public/plugs?filter=active&limit=100&t=${timestamp}`
       
       console.log('🔍 Fetching from:', url)
       const response = await fetch(url, {
