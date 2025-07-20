@@ -62,26 +62,7 @@ export default function Config() {
     fetchConfig(token)
   }, [])
 
-  // Fonction pour appliquer la configuration boutique fournie par l'utilisateur
-  const applyUserBoutiqueConfig = () => {
-    setConfig(prev => ({
-      ...prev,
-      welcome: {
-        ...prev.welcome,
-        text: '🌟 Bienvenue sur SafePlugs !\n\n🔌 Découvrez nos boutiques de confiance\n🎯 Services vérifiés et sécurisés\n⭐ Section VIP premium\n\nChoisissez une option ci-dessous :'
-      },
-      boutique: {
-        ...prev.boutique,
-        name: 'SafePlugs Store',
-        subtitle: 'Boutique de confiance',
-        logo: 'https://via.placeholder.com/100x100/4F46E5/FFFFFF?text=SP',
-        backgroundImage: 'https://images.unsplash.com/photo-1557804506-669a67965ba0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
-        searchTitle: 'Recherche',
-        vipTitle: 'Section VIP'
-      }
-    }));
-    toast.success('Configuration complète appliquée ! N\'oubliez pas de sauvegarder.');
-  };
+
 
   const fetchConfig = async (token) => {
     try {
@@ -388,27 +369,40 @@ export default function Config() {
                 {/* Bouton pour appliquer la config utilisateur */}
                 <div className="mb-3">
                   <button
-                    onClick={applyUserBoutiqueConfig}
-                    className="w-full bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors text-sm font-medium mb-3"
+                    onClick={saveConfig}
+                    className="w-full bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition-colors text-sm font-medium mb-2"
                   >
-                    ⚡ Appliquer la configuration de test
+                    💾 Sauvegarder la configuration
                   </button>
                   
                   <button
                     onClick={() => {
-                      saveConfig();
-                      triggerBoutiqueSync();
+                      const testPassed = [
+                        typeof setConfig === 'function',
+                        typeof saveConfig === 'function', 
+                        typeof editText === 'function',
+                        typeof updateConfig === 'function',
+                        config !== null
+                      ].every(Boolean);
+                      
+                      if (testPassed) {
+                        toast.success('✅ Toutes les fonctionnalités sont opérationnelles !');
+                      } else {
+                        toast.error('❌ Certaines fonctionnalités ne marchent pas');
+                      }
                     }}
-                    className="w-full bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition-colors text-sm font-medium"
+                    className="w-full bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors text-xs"
                   >
-                    🔄 Sauvegarder et Synchroniser
+                    🧪 Tester les fonctionnalités
                   </button>
                                       <div className="text-xs text-green-600 mt-2 p-2 bg-green-50 rounded">
-                      <strong>Configuration actuelle :</strong><br/>
-                      • Nom boutique: {config?.boutique?.name || 'Non défini'}<br/>
-                      • Logo: {config?.boutique?.logo ? '✅ Défini' : '❌ Non défini'}<br/>
-                      • Background: {config?.boutique?.backgroundImage ? '✅ Défini' : '❌ Non défini'}<br/>
-                      • Message bot: {config?.welcome?.text ? '✅ Défini' : '❌ Non défini'}
+                      <strong>📊 État de la configuration :</strong><br/>
+                      🏪 Nom boutique: {config?.boutique?.name || 'Non défini'}<br/>
+                      🖼️ Logo: {config?.boutique?.logo ? '✅ Défini' : '❌ Non défini'}<br/>
+                      🎨 Background: {config?.boutique?.backgroundImage ? '✅ Défini' : '❌ Non défini'}<br/>
+                      🤖 Message bot: {config?.welcome?.text ? '✅ Défini' : '❌ Non défini'}<br/>
+                      <hr className="my-1 border-green-200"/>
+                      <small><strong>💡 Mode d'emploi :</strong> Cliquez sur les boutons ci-dessus pour modifier, puis sauvegardez !</small>
                     </div>
                 </div>
                 

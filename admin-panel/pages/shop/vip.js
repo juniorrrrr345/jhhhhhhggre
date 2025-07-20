@@ -187,15 +187,7 @@ export default function ShopVIP() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
 
-      <div 
-        className="min-h-screen bg-white"
-        style={config?.boutique?.backgroundImage ? {
-          backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9)), url(${config.boutique.backgroundImage})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat'
-        } : {}}
-      >
+      <div className="min-h-screen bg-white">
         {/* Header */}
         <header className="bg-gray-900 shadow-lg">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
