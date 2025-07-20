@@ -239,39 +239,7 @@ export default function ShopHome() {
                       </div>
                     </div>
 
-                    {/* Boutons de contact */}
-                    <div className="space-y-2">
-                      {plug.socialMedia?.telegram && (
-                        <a
-                          href={plug.socialMedia.telegram}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="block w-full bg-blue-500 hover:bg-blue-600 text-white text-center py-2 px-4 rounded-lg font-medium transition-colors"
-                        >
-                          📱 Contacter sur Telegram
-                        </a>
-                      )}
-                      {plug.socialMedia?.whatsapp && (
-                        <a
-                          href={plug.socialMedia.whatsapp}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="block w-full bg-green-500 hover:bg-green-600 text-white text-center py-2 px-4 rounded-lg font-medium transition-colors"
-                        >
-                          💬 Contacter sur WhatsApp
-                        </a>
-                      )}
-                      {plug.socialMedia?.website && (
-                        <a
-                          href={plug.socialMedia.website}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="block w-full bg-gray-500 hover:bg-gray-600 text-white text-center py-2 px-4 rounded-lg font-medium transition-colors"
-                        >
-                          🌐 Visiter le site
-                        </a>
-                      )}
-                    </div>
+
                   </div>
                   </div>
                 </Link>

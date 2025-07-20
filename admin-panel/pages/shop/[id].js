@@ -111,27 +111,27 @@ export default function ShopDetail() {
         <meta name="description" content={plug.description} />
       </Head>
 
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-white">
         {/* Header */}
-        <header className="bg-gradient-to-r from-blue-600 to-purple-700 shadow-lg">
+        <header className="bg-gray-900 shadow-lg">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between h-16">
               <div className="flex items-center">
-                <Link 
-                  href="/shop"
-                  className="flex items-center text-white hover:text-blue-100 mr-4"
-                >
+                                  <Link 
+                    href="/shop"
+                    className="flex items-center text-white hover:text-gray-300 mr-4"
+                  >
                   <ArrowLeftIcon className="h-5 w-5 mr-2" />
                   Retour
                 </Link>
-                <div className="flex-shrink-0">
-                  <div className="h-8 w-8 bg-white rounded-lg flex items-center justify-center">
-                    <StarIcon className="h-5 w-5 text-blue-600" />
+                                  <div className="flex-shrink-0">
+                    <div className="h-8 w-8 bg-white rounded-lg flex items-center justify-center">
+                      <StarIcon className="h-5 w-5 text-gray-900" />
+                    </div>
                   </div>
-                </div>
                 <div className="ml-3">
                   <h1 className="text-xl font-bold text-white">{plug.name}</h1>
-                  {plug.isVip && <p className="text-yellow-200 text-sm">⭐ Boutique VIP</p>}
+                                      {plug.isVip && <p className="text-gray-300 text-sm">⭐ Boutique VIP</p>}
                 </div>
               </div>
             </div>
@@ -153,11 +153,17 @@ export default function ShopDetail() {
             <div className="p-6">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-2xl font-bold text-gray-900">{plug.name}</h2>
-                {plug.isVip && (
-                  <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800">
-                    ⭐ VIP
-                  </span>
-                )}
+                <div className="flex items-center space-x-3">
+                  {plug.isVip && (
+                    <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-900 text-white">
+                      ⭐ VIP
+                    </span>
+                  )}
+                  <div className="flex items-center text-gray-500">
+                    <span className="mr-1">❤️</span>
+                    <span className="font-medium">{plug.likes || 0} likes</span>
+                  </div>
+                </div>
               </div>
               
               <p className="text-gray-600 mb-6">{plug.description}</p>
@@ -214,7 +220,7 @@ export default function ShopDetail() {
                       href={plug.socialMedia.telegram}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center justify-center bg-blue-500 hover:bg-blue-600 text-white py-3 px-4 rounded-lg font-medium transition-colors"
+                      className="flex items-center justify-center bg-gray-900 hover:bg-gray-700 text-white py-3 px-4 rounded-lg font-medium transition-colors"
                     >
                       📱 Telegram
                     </a>
@@ -224,7 +230,7 @@ export default function ShopDetail() {
                       href={plug.socialMedia.whatsapp}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center justify-center bg-green-500 hover:bg-green-600 text-white py-3 px-4 rounded-lg font-medium transition-colors"
+                      className="flex items-center justify-center bg-gray-700 hover:bg-gray-600 text-white py-3 px-4 rounded-lg font-medium transition-colors"
                     >
                       💬 WhatsApp
                     </a>
@@ -234,7 +240,7 @@ export default function ShopDetail() {
                       href={plug.socialMedia.instagram}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center justify-center bg-pink-500 hover:bg-pink-600 text-white py-3 px-4 rounded-lg font-medium transition-colors"
+                      className="flex items-center justify-center bg-gray-600 hover:bg-gray-500 text-white py-3 px-4 rounded-lg font-medium transition-colors"
                     >
                       📸 Instagram
                     </a>
@@ -244,7 +250,7 @@ export default function ShopDetail() {
                       href={plug.socialMedia.website}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center justify-center bg-gray-500 hover:bg-gray-600 text-white py-3 px-4 rounded-lg font-medium transition-colors"
+                      className="flex items-center justify-center bg-gray-500 hover:bg-gray-400 text-white py-3 px-4 rounded-lg font-medium transition-colors"
                     >
                       🌐 Site web
                     </a>
