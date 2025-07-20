@@ -16,7 +16,25 @@ const configSchema = new mongoose.Schema({
     text: {
       type: String,
       default: 'Message d\'accueil personnalisé à configurer dans le panel admin.'
-    }
+    },
+    socialMedia: [{
+      name: {
+        type: String,
+        required: true
+      },
+      emoji: {
+        type: String,
+        required: true
+      },
+      url: {
+        type: String,
+        required: true
+      },
+      order: {
+        type: Number,
+        default: 0
+      }
+    }]
   },
   
   // Boutons principaux

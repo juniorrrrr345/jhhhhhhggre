@@ -352,6 +352,138 @@ app.put('/api/config', authenticateAdmin, async (req, res) => {
   }
 });
 
+// ===== ROUTES RÉSEAUX SOCIAUX DU MESSAGE D'ACCUEIL =====
+
+// Récupérer les réseaux sociaux du message d'accueil
+app.get('/api/config/welcome/social-media', authenticateAdmin, async (req, res) => {
+  try {
+    const config = await Config.findById('main');
+    const socialMedia = config?.welcome?.socialMedia || [];
+    res.json(socialMedia.sort((a, b) => a.order - b.order));
+  } catch (error) {
+    console.error('Erreur récupération réseaux sociaux accueil:', error);
+    res.status(500).json({ error: 'Erreur serveur' });
+  }
+});
+
+// Ajouter un réseau social au message d'accueil
+app.post('/api/config/welcome/social-media', authenticateAdmin, async (req, res) => {
+  try {
+    const { name, emoji, url, order = 0 } = req.body;
+    
+    // Validation
+    if (!name || !emoji || !url) {
+      return res.status(400).json({ error: 'Nom, emoji et URL sont requis' });
+    }
+    
+    // Valider l'URL
+    try {
+      new URL(url);
+    } catch {
+      return res.status(400).json({ error: 'URL invalide' });
+    }
+    
+    const config = await Config.findById('main');
+    if (!config) {
+      return res.status(404).json({ error: 'Configuration non trouvée' });
+    }
+    
+    // Initialiser le tableau si nécessaire
+    if (!config.welcome) config.welcome = {};
+    if (!config.welcome.socialMedia) config.welcome.socialMedia = [];
+    
+    // Créer le nouveau réseau social
+    const newSocialMedia = {
+      _id: new require('mongoose').Types.ObjectId(),
+      name: name.trim(),
+      emoji: emoji.trim(),
+      url: url.trim(),
+      order: parseInt(order) || 0
+    };
+    
+    config.welcome.socialMedia.push(newSocialMedia);
+    await config.save();
+    
+    res.status(201).json(newSocialMedia);
+  } catch (error) {
+    console.error('Erreur ajout réseau social accueil:', error);
+    res.status(500).json({ error: 'Erreur serveur' });
+  }
+});
+
+// Modifier un réseau social du message d'accueil
+app.put('/api/config/welcome/social-media/:id', authenticateAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, emoji, url, order } = req.body;
+    
+    // Validation
+    if (!name || !emoji || !url) {
+      return res.status(400).json({ error: 'Nom, emoji et URL sont requis' });
+    }
+    
+    // Valider l'URL
+    try {
+      new URL(url);
+    } catch {
+      return res.status(400).json({ error: 'URL invalide' });
+    }
+    
+    const config = await Config.findById('main');
+    if (!config || !config.welcome?.socialMedia) {
+      return res.status(404).json({ error: 'Configuration ou réseaux sociaux non trouvés' });
+    }
+    
+    // Trouver et modifier le réseau social
+    const socialMediaIndex = config.welcome.socialMedia.findIndex(sm => sm._id.toString() === id);
+    if (socialMediaIndex === -1) {
+      return res.status(404).json({ error: 'Réseau social non trouvé' });
+    }
+    
+    config.welcome.socialMedia[socialMediaIndex] = {
+      ...config.welcome.socialMedia[socialMediaIndex],
+      name: name.trim(),
+      emoji: emoji.trim(),
+      url: url.trim(),
+      order: parseInt(order) || 0
+    };
+    
+    await config.save();
+    
+    res.json(config.welcome.socialMedia[socialMediaIndex]);
+  } catch (error) {
+    console.error('Erreur modification réseau social accueil:', error);
+    res.status(500).json({ error: 'Erreur serveur' });
+  }
+});
+
+// Supprimer un réseau social du message d'accueil
+app.delete('/api/config/welcome/social-media/:id', authenticateAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    const config = await Config.findById('main');
+    if (!config || !config.welcome?.socialMedia) {
+      return res.status(404).json({ error: 'Configuration ou réseaux sociaux non trouvés' });
+    }
+    
+    // Supprimer le réseau social
+    const initialLength = config.welcome.socialMedia.length;
+    config.welcome.socialMedia = config.welcome.socialMedia.filter(sm => sm._id.toString() !== id);
+    
+    if (config.welcome.socialMedia.length === initialLength) {
+      return res.status(404).json({ error: 'Réseau social non trouvé' });
+    }
+    
+    await config.save();
+    
+    res.json({ message: 'Réseau social supprimé avec succès' });
+  } catch (error) {
+    console.error('Erreur suppression réseau social accueil:', error);
+    res.status(500).json({ error: 'Erreur serveur' });
+  }
+});
+
 // ===== ROUTES PLUGS =====
 
 // Récupérer tous les plugs (Admin seulement)

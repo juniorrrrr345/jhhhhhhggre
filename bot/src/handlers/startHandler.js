@@ -27,8 +27,18 @@ const handleStart = async (ctx) => {
     
     console.log('📝 Message d\'accueil préparé:', welcomeText.substring(0, 50) + '...');
 
-    // Construire le message d'accueil (sans section VIP)
+    // Construire le message d'accueil
     let welcomeMessage = welcomeText;
+
+    // Ajouter les réseaux sociaux du message d'accueil s'ils existent
+    if (config.welcome?.socialMedia && config.welcome.socialMedia.length > 0) {
+      const sortedSocialMedia = config.welcome.socialMedia.sort((a, b) => a.order - b.order);
+      welcomeMessage += '\n\n📱 **Suivez-nous :**\n';
+      
+      sortedSocialMedia.forEach(social => {
+        welcomeMessage += `${social.emoji} [${social.name}](${social.url})\n`;
+      });
+    }
 
     // Créer le clavier principal
     const keyboard = createMainKeyboard(config);
@@ -80,7 +90,18 @@ const handleBackMain = async (ctx) => {
     console.log('📋 Configuration récupérée pour le retour');
 
     // Utiliser le même message d'accueil que dans handleStart
-    const welcomeMessage = config.welcome?.text || '🌟 Bienvenue sur notre bot !';
+    let welcomeMessage = config.welcome?.text || '🌟 Bienvenue sur notre bot !';
+    
+    // Ajouter les réseaux sociaux du message d'accueil s'ils existent
+    if (config.welcome?.socialMedia && config.welcome.socialMedia.length > 0) {
+      const sortedSocialMedia = config.welcome.socialMedia.sort((a, b) => a.order - b.order);
+      welcomeMessage += '\n\n📱 **Suivez-nous :**\n';
+      
+      sortedSocialMedia.forEach(social => {
+        welcomeMessage += `${social.emoji} [${social.name}](${social.url})\n`;
+      });
+    }
+    
     const keyboard = createMainKeyboard(config);
     
     console.log('📝 Message d\'accueil préparé pour le retour');
