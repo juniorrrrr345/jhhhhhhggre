@@ -279,12 +279,24 @@ export default function ShopHome() {
         {/* Toutes les boutiques */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="text-center mb-12">
-            <h3 className="text-3xl font-bold text-gray-900 mb-4">
-              🏆 Classement des Boutiques
-            </h3>
+            <div className="flex items-center justify-center mb-4">
+              {config?.boutique?.logo ? (
+                <img 
+                  src={config.boutique.logo} 
+                  alt="Logo" 
+                  className="h-12 w-12 rounded-lg object-cover mr-4"
+                />
+              ) : (
+                <div className="h-12 w-12 bg-gray-100 rounded-lg flex items-center justify-center mr-4">
+                  <StarIcon className="h-8 w-8 text-gray-600" />
+                </div>
+              )}
+              <h3 className="text-3xl font-bold text-gray-900">
+                {config?.boutique?.name || 'Boutique Premium'}
+              </h3>
+            </div>
             <p className="text-gray-600 max-w-2xl mx-auto">
-              Boutiques classées par nombre de likes des utilisateurs. Les plus appréciées en premier ! 
-              Les boutiques VIP sont mises en avant.
+              {config?.boutique?.subtitle || 'Découvrez notre sélection de boutiques premium classées par popularité.'}
             </p>
           </div>
 

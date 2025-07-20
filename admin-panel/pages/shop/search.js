@@ -331,8 +331,25 @@ export default function ShopSearch() {
         <div className="bg-gray-800 py-12">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-8">
-              <h2 className="text-3xl font-bold text-white mb-4">🔍 Recherche avancée</h2>
-              <p className="text-gray-300">Trouvez la boutique parfaite selon vos critères</p>
+              <div className="flex items-center justify-center mb-4">
+                {config?.boutique?.logo ? (
+                  <img 
+                    src={config.boutique.logo} 
+                    alt="Logo" 
+                    className="h-12 w-12 rounded-lg object-cover mr-4"
+                  />
+                ) : (
+                  <div className="h-12 w-12 bg-gray-700 rounded-lg flex items-center justify-center mr-4">
+                    <MagnifyingGlassIcon className="h-8 w-8 text-white" />
+                  </div>
+                )}
+                <h2 className="text-3xl font-bold text-white">
+                  {config?.boutique?.searchTitle || config?.boutique?.name || 'Recherche Boutiques'}
+                </h2>
+              </div>
+              <p className="text-gray-300">
+                {config?.boutique?.searchSubtitle || 'Découvrez notre catalogue complet de boutiques.'}
+              </p>
             </div>
             
             {/* Filtres de recherche */}
@@ -521,22 +538,21 @@ export default function ShopSearch() {
         <footer className="bg-gray-800 text-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div className="text-center">
-              <h3 className="text-lg font-medium mb-2">Boutique VIP</h3>
-              <p className="text-gray-400 mb-4">Votre sélection de boutiques premium</p>
-              <div className="flex justify-center space-x-4">
-                <a
-                  href="https://t.me/votre_bot"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-400 hover:text-blue-300"
-                >
-                  📱 Telegram Bot
-                </a>
-                <span className="text-gray-600">•</span>
-                <Link href="/admin" className="text-purple-400 hover:text-purple-300">
-                  🔧 Admin
-                </Link>
+              <div className="flex items-center justify-center mb-2">
+                {config?.boutique?.logo ? (
+                  <img 
+                    src={config.boutique.logo} 
+                    alt="Logo" 
+                    className="h-6 w-6 rounded object-cover mr-2"
+                  />
+                ) : null}
+                <h3 className="text-lg font-medium">
+                  {config?.boutique?.name || 'Boutique Premium'}
+                </h3>
               </div>
+              <p className="text-gray-400 mb-4">
+                {config?.boutique?.subtitle || 'Votre destination shopping premium'}
+              </p>
             </div>
           </div>
         </footer>

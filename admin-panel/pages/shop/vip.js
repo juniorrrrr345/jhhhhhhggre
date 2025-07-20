@@ -265,11 +265,24 @@ export default function ShopVIP() {
         {/* Boutiques VIP */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="text-center mb-12">
-            <h3 className="text-3xl font-bold text-gray-900 mb-4">
-              👑 Collection VIP
-            </h3>
+            <div className="flex items-center justify-center mb-4">
+              {config?.boutique?.logo ? (
+                <img 
+                  src={config.boutique.logo} 
+                  alt="Logo" 
+                  className="h-12 w-12 rounded-lg object-cover mr-4"
+                />
+              ) : (
+                <div className="h-12 w-12 bg-gray-100 rounded-lg flex items-center justify-center mr-4">
+                  <StarIcon className="h-8 w-8 text-yellow-500" />
+                </div>
+              )}
+              <h3 className="text-3xl font-bold text-gray-900">
+                {config?.boutique?.vipTitle || config?.boutique?.name || 'Boutique VIP'}
+              </h3>
+            </div>
             <p className="text-gray-600 max-w-2xl mx-auto">
-              {loading ? 'Chargement...' : `${vipPlugs.length} boutique(s) VIP disponible(s)`}
+              {config?.boutique?.vipSubtitle || 'Découvrez notre sélection premium exclusive.'} • {loading ? 'Chargement...' : `${vipPlugs.length} boutique(s) VIP disponible(s)`}
             </p>
           </div>
 
