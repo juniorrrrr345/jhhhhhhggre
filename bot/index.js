@@ -143,6 +143,12 @@ bot.action(/^plug_([a-f\d]{24})_from_(.+)$/, (ctx) => {
   return handlePlugDetails(ctx, plugId, context);
 });
 
+// Détails d'un plug VIP spécifique
+bot.action(/^plug_([a-f\d]{24})_plugs_vip$/, (ctx) => {
+  const plugId = ctx.match[1];
+  return handlePlugDetails(ctx, plugId, 'plugs_vip');
+});
+
 // Détails d'un service d'un plug
 bot.action(/^plug_service_([a-f\d]{24})_(.+)$/, (ctx) => {
   const plugId = ctx.match[1];

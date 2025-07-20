@@ -115,7 +115,7 @@ export default function ShopHome() {
                 </div>
                 <div className="ml-3">
                   <h1 className="text-xl font-bold text-white">Boutique</h1>
-                  <p className="text-gray-300 text-sm">Sélection de boutiques</p>
+                  <p className="text-gray-300 text-sm">Classement par likes</p>
                 </div>
               </div>
             </div>

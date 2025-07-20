@@ -193,13 +193,30 @@ const handleFilterService = async (ctx) => {
   try {
     const keyboard = createServicesKeyboard();
     
-    await ctx.editMessageText(
-      '🔍 **Filtrer par service**\n\nChoisissez le type de service :',
-      {
+    const messageText = `${config.botTexts?.filterServiceTitle || '🔍 Filtrer par service'}\n\n${config.botTexts?.filterServiceDescription || 'Choisissez le type de service :'}`;
+    
+    if (config.welcome?.image) {
+      try {
+        await ctx.editMessageMedia({
+          type: 'photo',
+          media: config.welcome.image,
+          caption: messageText,
+          parse_mode: 'Markdown'
+        }, {
+          reply_markup: keyboard.reply_markup
+        });
+      } catch (error) {
+        await ctx.editMessageText(messageText, {
+          reply_markup: keyboard.reply_markup,
+          parse_mode: 'Markdown'
+        });
+      }
+    } else {
+      await ctx.editMessageText(messageText, {
         reply_markup: keyboard.reply_markup,
         parse_mode: 'Markdown'
-      }
-    );
+      });
+    }
     
     // Confirmer la callback pour éviter le loading
     await ctx.answerCbQuery();
@@ -265,14 +282,31 @@ const handleFilterCountry = async (ctx) => {
     }
 
     const keyboard = createCountriesKeyboard(countries.sort());
+    const config = await Config.findById('main');
+    const messageText = `${config.botTexts?.filterCountryTitle || '🌍 Filtrer par pays'}\n\n${config.botTexts?.filterCountryDescription || 'Choisissez un pays :'}`;
     
-    await ctx.editMessageText(
-      '🌍 **Filtrer par pays**\n\nChoisissez un pays :',
-      {
+    if (config.welcome?.image) {
+      try {
+        await ctx.editMessageMedia({
+          type: 'photo',
+          media: config.welcome.image,
+          caption: messageText,
+          parse_mode: 'Markdown'
+        }, {
+          reply_markup: keyboard.reply_markup
+        });
+      } catch (error) {
+        await ctx.editMessageText(messageText, {
+          reply_markup: keyboard.reply_markup,
+          parse_mode: 'Markdown'
+        });
+      }
+    } else {
+      await ctx.editMessageText(messageText, {
         reply_markup: keyboard.reply_markup,
         parse_mode: 'Markdown'
-      }
-    );
+      });
+    }
     
     // Confirmer la callback pour éviter le loading
     await ctx.answerCbQuery();

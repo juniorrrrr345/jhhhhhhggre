@@ -215,12 +215,17 @@ const seedDatabase = async () => {
   try {
     await connectDB();
     
-    console.log('🗃️ Nettoyage de la base de données...');
+    console.log('🗃️ Nettoyage des plugs...');
     await Plug.deleteMany({});
-    await Config.deleteMany({});
     
-    console.log('📝 Création de la configuration par défaut...');
-    await Config.create(defaultConfig);
+    console.log('📝 Vérification de la configuration...');
+    const existingConfig = await Config.findById('main');
+    if (!existingConfig) {
+      await Config.create(defaultConfig);
+      console.log('✅ Configuration par défaut créée');
+    } else {
+      console.log('ℹ️ Configuration existante conservée');
+    }
     
     console.log('👥 Création des plugs d\'exemple...');
     await Plug.insertMany(samplePlugs);

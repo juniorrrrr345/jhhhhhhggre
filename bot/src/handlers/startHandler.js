@@ -19,22 +19,8 @@ const handleStart = async (ctx) => {
       }).sort({ vipOrder: 1, createdAt: -1 }).limit(5);
     }
 
-    // Construire le message d'accueil
+    // Construire le message d'accueil (sans section VIP)
     let welcomeMessage = config.welcome.text;
-
-    // Ajouter la section VIP si elle est en position 'top' et qu'il y a des plugs VIP
-    if (config.vip.enabled && config.vip.position === 'top' && vipPlugs.length > 0) {
-      welcomeMessage += `\n\n✨ ${config.vip.title} ✨\n${config.vip.description}\n`;
-      
-      vipPlugs.forEach((plug, index) => {
-        welcomeMessage += `\n⭐ ${plug.name}`;
-        if (plug.description && plug.description.length < 50) {
-          welcomeMessage += ` - ${plug.description}`;
-        }
-      });
-      
-      welcomeMessage += '\n';
-    }
 
     // Créer le clavier principal
     const keyboard = createMainKeyboard(config);
