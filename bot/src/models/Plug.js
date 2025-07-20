@@ -80,6 +80,14 @@ const plugSchema = new mongoose.Schema({
     type: Boolean,
     default: true
   },
+  likes: {
+    type: Number,
+    default: 0
+  },
+  likedBy: [{
+    type: Number, // Telegram user ID
+    required: false
+  }],
   createdAt: {
     type: Date,
     default: Date.now

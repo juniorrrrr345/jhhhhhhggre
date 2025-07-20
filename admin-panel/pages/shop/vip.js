@@ -194,10 +194,8 @@ export default function ShopVIP() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {vipPlugs.map((plug) => (
-                <div
-                  key={plug._id}
-                  className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 border-2 border-yellow-200"
-                >
+                <Link key={plug._id} href={`/shop/${plug._id}`}>
+                  <div className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 border-2 border-yellow-200 cursor-pointer">
                   {/* Image avec badge VIP prominent */}
                   <div className="relative h-48">
                     <img
@@ -257,15 +255,7 @@ export default function ShopVIP() {
                       </div>
                     </div>
 
-                    {/* Garanties VIP */}
-                    <div className="bg-yellow-50 rounded-lg p-3 mb-4">
-                      <p className="text-xs font-medium text-yellow-800 mb-1">Garanties VIP :</p>
-                      <div className="text-xs text-yellow-700 space-y-1">
-                        <div>✓ Support prioritaire 24/7</div>
-                        <div>✓ Remboursement garanti</div>
-                        <div>✓ Livraison express</div>
-                      </div>
-                    </div>
+
 
                     {/* Boutons de contact premium */}
                     <div className="space-y-2">
@@ -301,35 +291,13 @@ export default function ShopVIP() {
                       )}
                     </div>
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
           )}
         </div>
 
-        {/* Footer */}
-        <footer className="bg-gray-800 text-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <div className="text-center">
-              <h3 className="text-lg font-medium mb-2">Boutique VIP</h3>
-              <p className="text-gray-400 mb-4">Votre sélection de boutiques premium</p>
-              <div className="flex justify-center space-x-4">
-                <a
-                  href="https://t.me/votre_bot"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-400 hover:text-blue-300"
-                >
-                  📱 Telegram Bot
-                </a>
-                <span className="text-gray-600">•</span>
-                <Link href="/admin" className="text-purple-400 hover:text-purple-300">
-                  🔧 Admin
-                </Link>
-              </div>
-            </div>
-          </div>
-        </footer>
+
       </div>
     </>
   )

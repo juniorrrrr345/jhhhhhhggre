@@ -137,6 +137,9 @@ const createPlugKeyboard = (plug, returnContext = 'top_plugs') => {
     buttons.push(socialButtons2);
   }
   
+  // Bouton like
+  buttons.push([Markup.button.callback('👤 Liker cette boutique', `like_${plug._id}`)]);
+  
   // Bouton retour intelligent selon le contexte
   const returnText = getReturnButtonText(returnContext);
   buttons.push([Markup.button.callback(returnText, returnContext)]);

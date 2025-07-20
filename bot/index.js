@@ -146,6 +146,55 @@ bot.action(/^plug_service_([a-f\d]{24})_(.+)$/, (ctx) => {
   return handlePlugServiceDetails(ctx, plugId, serviceType);
 });
 
+// Liker une boutique
+bot.action(/^like_([a-f\d]{24})$/, async (ctx) => {
+  try {
+    const plugId = ctx.match[1];
+    const userId = ctx.from.id;
+    
+    console.log(`User ${userId} wants to like plug ${plugId}`);
+    
+    // Vérifier si la boutique existe
+    const Plug = require('./src/models/Plug');
+    const plug = await Plug.findById(plugId);
+    
+    if (!plug) {
+      return ctx.answerCbQuery('❌ Boutique non trouvée');
+    }
+    
+    const hasLiked = plug.likedBy.includes(userId);
+    const action = hasLiked ? 'unlike' : 'like';
+    
+    // Mettre à jour les likes
+    if (action === 'like') {
+      plug.likedBy.push(userId);
+      plug.likes += 1;
+      await plug.save();
+      await ctx.answerCbQuery(`❤️ Vous avez liké ${plug.name} ! (${plug.likes} likes)`);
+    } else {
+      plug.likedBy = plug.likedBy.filter(id => id !== userId);
+      plug.likes -= 1;
+      await plug.save();
+      await ctx.answerCbQuery(`💔 Like retiré de ${plug.name} (${plug.likes} likes)`);
+    }
+    
+    // Mettre à jour le clavier avec le nouveau statut
+    const { createPlugKeyboard } = require('./src/utils/keyboards');
+    const newKeyboard = createPlugKeyboard(plug, 'top_plugs');
+    
+    try {
+      await ctx.editMessageReplyMarkup(newKeyboard.reply_markup);
+    } catch (error) {
+      // Ignore si le message n'a pas changé
+      console.log('Keyboard update skipped');
+    }
+    
+  } catch (error) {
+    console.error('Erreur like boutique:', error);
+    await ctx.answerCbQuery('❌ Erreur lors du like');
+  }
+});
+
 // Callback ignoré (page actuelle)
 bot.action('current_page', handleIgnoredCallback);
 
@@ -302,6 +351,50 @@ app.get('/api/public/plugs', async (req, res) => {
     });
   } catch (error) {
     console.error('Erreur récupération plugs publics:', error);
+    res.status(500).json({ error: 'Erreur serveur' });
+  }
+});
+
+// Liker/disliker un plug (endpoint public)
+app.post('/api/public/plugs/:id/like', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { userId, action } = req.body; // action: 'like' ou 'unlike'
+    
+    console.log(`${action} plug ${id} by user ${userId}`);
+    
+    const plug = await Plug.findById(id);
+    if (!plug) {
+      return res.status(404).json({ error: 'Plug non trouvé' });
+    }
+    
+    const hasLiked = plug.likedBy.includes(userId);
+    
+    if (action === 'like' && !hasLiked) {
+      plug.likedBy.push(userId);
+      plug.likes += 1;
+    } else if (action === 'unlike' && hasLiked) {
+      plug.likedBy = plug.likedBy.filter(id => id !== userId);
+      plug.likes -= 1;
+    }
+    
+    await plug.save();
+    
+    res.set({
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type',
+      'Cache-Control': 'no-cache'
+    });
+    
+    res.json({ 
+      likes: plug.likes,
+      liked: plug.likedBy.includes(userId),
+      message: action === 'like' ? 'Like ajouté' : 'Like retiré'
+    });
+    
+  } catch (error) {
+    console.error('Erreur like/unlike:', error);
     res.status(500).json({ error: 'Erreur serveur' });
   }
 });

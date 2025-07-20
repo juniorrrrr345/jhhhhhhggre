@@ -102,31 +102,21 @@ export default function ShopHome() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
 
-      <div className="min-h-screen bg-gray-50">
+              <div className="min-h-screen bg-white">
         {/* Header */}
-        <header className="bg-gradient-to-r from-blue-600 to-purple-700 shadow-lg">
+        <header className="bg-gray-900 shadow-lg">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between h-16">
               <div className="flex items-center">
                 <div className="flex-shrink-0">
                   <div className="h-8 w-8 bg-white rounded-lg flex items-center justify-center">
-                    <StarIcon className="h-5 w-5 text-blue-600" />
+                    <StarIcon className="h-5 w-5 text-gray-900" />
                   </div>
                 </div>
                 <div className="ml-3">
-                  <h1 className="text-xl font-bold text-white">Boutique VIP</h1>
-                  <p className="text-blue-100 text-sm">Plugs premium sélectionnés</p>
+                  <h1 className="text-xl font-bold text-white">Boutique</h1>
+                  <p className="text-gray-300 text-sm">Sélection de boutiques</p>
                 </div>
-              </div>
-              <div className="flex items-center space-x-4">
-                <a
-                  href="https://t.me/votre_bot"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
-                >
-                  📱 Telegram Bot
-                </a>
               </div>
             </div>
           </div>
@@ -138,7 +128,7 @@ export default function ShopHome() {
             <div className="flex space-x-8 h-12 items-center">
               <Link 
                 href="/shop" 
-                className="text-blue-600 font-medium border-b-2 border-blue-600 pb-3"
+                className="text-gray-900 font-medium border-b-2 border-gray-900 pb-3"
               >
                 🏠 Accueil
               </Link>
@@ -186,24 +176,24 @@ export default function ShopHome() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {plugs.map((plug) => (
-                <Link key={plug._id} href={`/shop/${plug._id}`}>
-                  <div className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 cursor-pointer">
-                  {/* Image */}
-                  <div className="relative h-48">
-                    <img
-                      src={plug.image || '/placeholder.jpg'}
-                      alt={plug.name}
-                      className="w-full h-full object-cover"
-                    />
-                    {plug.isVip && (
-                      <div className="absolute top-3 left-3">
-                        <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gradient-to-r from-yellow-400 to-orange-500 text-white shadow-lg">
-                          <StarIcon className="w-4 h-4 mr-1" />
-                          VIP
-                        </span>
-                      </div>
-                    )}
-                  </div>
+                                <Link key={plug._id} href={`/shop/${plug._id}`}>
+                  <div className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:border-gray-400 transition-colors duration-300 cursor-pointer">
+                    {/* Image */}
+                    <div className="relative h-48">
+                      <img
+                        src={plug.image || '/placeholder.jpg'}
+                        alt={plug.name}
+                        className="w-full h-full object-cover grayscale"
+                      />
+                      {plug.isVip && (
+                        <div className="absolute top-3 left-3">
+                          <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-900 text-white">
+                            <StarIcon className="w-4 h-4 mr-1" />
+                            VIP
+                          </span>
+                        </div>
+                      )}
+                    </div>
 
                   {/* Contenu */}
                   <div className="p-6">
@@ -238,6 +228,15 @@ export default function ShopHome() {
                           Meetup
                         </span>
                       )}
+                    </div>
+
+                    {/* Likes */}
+                    <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+                      <span className="text-gray-600 text-sm">Voir les détails</span>
+                      <div className="flex items-center text-gray-500 text-sm">
+                        <span className="mr-1">❤️</span>
+                        <span>{plug.likes || 0}</span>
+                      </div>
                     </div>
 
                     {/* Boutons de contact */}
