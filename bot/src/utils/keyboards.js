@@ -149,7 +149,8 @@ const createPlugKeyboard = (plug, returnContext = 'top_plugs') => {
   
   // Bouton retour intelligent selon le contexte
   const returnText = getReturnButtonText(returnContext);
-  buttons.push([Markup.button.callback(returnText, returnContext)]);
+  const returnAction = getReturnAction(returnContext);
+  buttons.push([Markup.button.callback(returnText, returnAction)]);
   
   return Markup.inlineKeyboard(buttons);
 };
@@ -159,9 +160,8 @@ const getReturnButtonText = (context) => {
   switch(context) {
     case 'top_plugs':
       return '🔙 Retour aux filtres';
-    case 'all':
-      return '🔙 Retour à la liste';
     case 'plugs_all':
+    case 'all':
       return '🔙 Retour à la liste';
     case 'plugs_vip':
       return '🔙 Retour aux VIP';
@@ -170,18 +170,52 @@ const getReturnButtonText = (context) => {
     case 'service_meetup':
       return '🔙 Retour aux services';
     default:
-      return '🔙 Retour';
+      if (context.startsWith('country_')) {
+        return '🔙 Retour aux pays';
+      }
+      if (context.startsWith('service_')) {
+        return '🔙 Retour aux services';
+      }
+      return '🔙 Retour à la liste';
+  }
+};
+
+// Fonction pour obtenir l'action de retour selon le contexte
+const getReturnAction = (context) => {
+  switch(context) {
+    case 'top_plugs':
+      return 'top_plugs';
+    case 'plugs_all':
+    case 'all':
+      return 'plugs_all';
+    case 'plugs_vip':
+      return 'plugs_vip';
+    case 'service_delivery':
+      return 'service_delivery';
+    case 'service_postal':
+      return 'service_postal';
+    case 'service_meetup':
+      return 'service_meetup';
+    default:
+      if (context.startsWith('country_')) {
+        return 'filter_country';
+      }
+      if (context.startsWith('service_')) {
+        const serviceType = context.split('_')[1];
+        return `service_${serviceType}`;
+      }
+      return 'plugs_all';
   }
 };
 
 // Clavier pour la liste des plugs
-const createPlugListKeyboard = (plugs, page = 0, totalPages = 1, context = 'all') => {
+const createPlugListKeyboard = (plugs, page = 0, totalPages = 1, context = 'plugs_all') => {
   const buttons = [];
   const itemsPerPage = 5;
   const startIndex = page * itemsPerPage;
   const endIndex = Math.min(startIndex + itemsPerPage, plugs.length);
   
-  // Plugs de la page actuelle
+  // Plugs de la page actuelle avec le bon contexte
   for (let i = startIndex; i < endIndex; i++) {
     const plug = plugs[i];
     const vipIcon = plug.isVip ? '⭐ ' : '';
@@ -204,12 +238,23 @@ const createPlugListKeyboard = (plugs, page = 0, totalPages = 1, context = 'all'
   
   // Bouton retour intelligent selon le contexte
   let returnAction = 'top_plugs';
-  if (context === 'all') {
+  let returnText = '🔙 Retour';
+  
+  if (context === 'plugs_all') {
     returnAction = 'top_plugs'; // Retour vers le menu des filtres
+    returnText = '🔙 Retour aux filtres';
   } else if (context === 'plugs_vip') {
     returnAction = 'back_main'; // Retour vers menu principal pour VIP
+    returnText = '🔙 Retour au menu';
+  } else if (context.startsWith('service_')) {
+    returnAction = 'filter_service'; // Retour vers le menu des services
+    returnText = '🔙 Retour aux services';
+  } else if (context.startsWith('country_')) {
+    returnAction = 'filter_country'; // Retour vers le menu des pays
+    returnText = '🔙 Retour aux pays';
   }
-  buttons.push([Markup.button.callback('🔙 Retour', returnAction)]);
+  
+  buttons.push([Markup.button.callback(returnText, returnAction)]);
   
   return Markup.inlineKeyboard(buttons);
 };
