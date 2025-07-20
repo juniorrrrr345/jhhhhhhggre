@@ -14,13 +14,28 @@ export default function ShopDetail() {
   const router = useRouter()
   const { id } = router.query
   const [plug, setPlug] = useState(null)
+  const [config, setConfig] = useState(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     if (id) {
       fetchPlug()
     }
+    fetchConfig()
   }, [id])
+
+  const fetchConfig = async () => {
+    try {
+      const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://jhhhhhhggre.onrender.com'
+      const response = await fetch(`${apiBaseUrl}/api/config`)
+      if (response.ok) {
+        const data = await response.json()
+        setConfig(data)
+      }
+    } catch (error) {
+      console.error('Erreur chargement config:', error)
+    }
+  }
 
   const fetchPlug = async () => {
     try {
@@ -111,7 +126,14 @@ export default function ShopDetail() {
         <meta name="description" content={plug.description} />
       </Head>
 
-      <div className="min-h-screen bg-white">
+      <div 
+        className="min-h-screen bg-white bg-cover bg-center bg-no-repeat"
+        style={{
+          backgroundImage: config?.boutique?.backgroundImage 
+            ? `linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9)), url(${config.boutique.backgroundImage})`
+            : 'none'
+        }}
+      >
         {/* Header */}
         <header className="bg-gray-900 shadow-lg">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -124,14 +146,24 @@ export default function ShopDetail() {
                   <ArrowLeftIcon className="h-5 w-5 mr-2" />
                   Retour
                 </Link>
-                                  <div className="flex-shrink-0">
-                    <div className="h-8 w-8 bg-white rounded-lg flex items-center justify-center">
-                      <StarIcon className="h-5 w-5 text-gray-900" />
+                                                  <div className="flex-shrink-0">
+                  {config?.boutique?.logo ? (
+                    <img 
+                      src={config.boutique.logo} 
+                      alt="Logo" 
+                      className="h-8 w-8 rounded-lg object-cover"
+                    />
+                  ) : (
+                    <div className="h-8 w-8 bg-gray-700 rounded-lg flex items-center justify-center">
+                      <span className="text-white text-xs font-bold">
+                        {config?.boutique?.name ? config.boutique.name.charAt(0).toUpperCase() : 'B'}
+                      </span>
                     </div>
-                  </div>
+                  )}
+                </div>
                 <div className="ml-3">
                   <h1 className="text-xl font-bold text-white">{plug.name}</h1>
-                                      {plug.isVip && <p className="text-gray-300 text-sm">⭐ Boutique VIP</p>}
+                                      {plug.isVip && <p className="text-gray-300 text-sm">Boutique VIP</p>}
                 </div>
               </div>
             </div>
@@ -156,7 +188,7 @@ export default function ShopDetail() {
                 <div className="flex items-center space-x-3">
                   {plug.isVip && (
                     <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-900 text-white">
-                      ⭐ VIP
+                      VIP
                     </span>
                   )}
                   <div className="flex items-center text-gray-500">

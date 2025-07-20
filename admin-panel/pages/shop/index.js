@@ -201,7 +201,14 @@ export default function ShopHome() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
 
-              <div className="min-h-screen bg-white">
+              <div 
+                className="min-h-screen bg-white bg-cover bg-center bg-no-repeat"
+                style={{
+                  backgroundImage: config?.boutique?.backgroundImage 
+                    ? `linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9)), url(${config.boutique.backgroundImage})`
+                    : 'none'
+                }}
+              >
         {/* Header */}
         <header className="bg-gray-900 shadow-lg">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -265,10 +272,8 @@ export default function ShopHome() {
                 href="/shop/vip" 
                 className="text-gray-500 hover:text-gray-700 pb-3 flex items-center"
               >
-                {config?.boutique?.logo ? (
+                {config?.boutique?.logo && (
                   <img src={config.boutique.logo} alt="Logo" className="h-4 w-4 mr-2 rounded object-cover" />
-                ) : (
-                  <span className="mr-1">⭐</span>
                 )}
                 VIP
               </Link>

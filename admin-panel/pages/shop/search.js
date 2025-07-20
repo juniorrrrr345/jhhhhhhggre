@@ -254,7 +254,14 @@ export default function ShopSearch() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
 
-      <div className="min-h-screen bg-white">
+      <div 
+        className="min-h-screen bg-white bg-cover bg-center bg-no-repeat"
+        style={{
+          backgroundImage: config?.boutique?.backgroundImage 
+            ? `linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9)), url(${config.boutique.backgroundImage})`
+            : 'none'
+        }}
+      >
         {/* Header */}
         <header className="bg-gray-900 shadow-lg">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -318,10 +325,8 @@ export default function ShopSearch() {
                 href="/shop/vip" 
                 className="text-gray-500 hover:text-gray-700 pb-3 flex items-center"
               >
-                {config?.boutique?.logo ? (
+                {config?.boutique?.logo && (
                   <img src={config.boutique.logo} alt="Logo" className="h-4 w-4 mr-2 rounded object-cover" />
-                ) : (
-                  <span className="mr-1">⭐</span>
                 )}
                 VIP
               </Link>
@@ -342,7 +347,9 @@ export default function ShopSearch() {
                   />
                 ) : (
                   <div className="h-12 w-12 bg-gray-700 rounded-lg flex items-center justify-center mr-4">
-                    <MagnifyingGlassIcon className="h-8 w-8 text-white" />
+                    <span className="text-white text-lg font-bold">
+                      {config?.boutique?.name ? config.boutique.name.charAt(0).toUpperCase() : 'B'}
+                    </span>
                   </div>
                 )}
                 <h2 className="text-3xl font-bold text-white">
