@@ -196,81 +196,46 @@ export default function ShopVIP() {
 
                   {/* Contenu */}
                   <div className="p-3 sm:p-4">
-                    <div className="mb-2">
-                      <h3 className="text-sm sm:text-base font-bold text-gray-900 truncate">{plug.name}</h3>
-                      <div className="text-yellow-500">
-                        <StarIcon className="w-6 h-6" />
-                      </div>
-                    </div>
-                    <p className="text-gray-600 mb-4 line-clamp-2">{plug.description}</p>
+                    <h3 className="text-sm sm:text-base font-bold text-gray-900 mb-2 truncate">{plug.name}</h3>
+                    <p className="text-gray-600 mb-3 text-xs sm:text-sm line-clamp-2 h-8">{plug.description}</p>
 
                     {/* Localisation */}
                     {plug.countries && plug.countries.length > 0 && (
-                      <div className="flex items-center text-sm text-gray-500 mb-3">
-                        <MapPinIcon className="w-4 h-4 mr-1" />
-                        {plug.countries.join(', ')}
+                      <div className="flex items-center text-xs sm:text-sm text-gray-500 mb-2">
+                        <MapPinIcon className="w-3 h-3 mr-1" />
+                        <span className="truncate">{plug.countries.join(', ')}</span>
                       </div>
                     )}
 
-                    {/* Services premium */}
-                    <div className="mb-4">
-                      <p className="text-sm font-medium text-gray-700 mb-2">Services VIP:</p>
-                      <div className="flex flex-wrap gap-2">
-                        {plug.services?.delivery?.enabled && (
-                          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gradient-to-r from-blue-500 to-blue-600 text-white">
-                            <TruckIcon className="w-3 h-3 mr-1" />
-                            Livraison Express
-                          </span>
-                        )}
-                        {plug.services?.postal?.enabled && (
-                          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gradient-to-r from-green-500 to-green-600 text-white">
-                            <GlobeAltIcon className="w-3 h-3 mr-1" />
-                            Postal Sécurisé
-                          </span>
-                        )}
-                        {plug.services?.meetup?.enabled && (
-                          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gradient-to-r from-purple-500 to-purple-600 text-white">
-                            <HomeIcon className="w-3 h-3 mr-1" />
-                            Meetup VIP
-                          </span>
-                        )}
-                      </div>
+                    {/* Services */}
+                    <div className="flex flex-wrap gap-1 mb-3">
+                      {plug.services?.delivery?.enabled && (
+                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">
+                          <TruckIcon className="w-2.5 h-2.5 mr-1" />
+                          Livraison
+                        </span>
+                      )}
+                      {plug.services?.postal?.enabled && (
+                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">
+                          <GlobeAltIcon className="w-2.5 h-2.5 mr-1" />
+                          Postal
+                        </span>
+                      )}
+                      {plug.services?.meetup?.enabled && (
+                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">
+                          <HomeIcon className="w-2.5 h-2.5 mr-1" />
+                          Meetup
+                        </span>
+                      )}
                     </div>
 
-
-
-                    {/* Boutons de contact premium */}
-                    <div className="space-y-2">
-                      {plug.socialMedia?.telegram && (
-                        <a
-                          href={plug.socialMedia.telegram}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="block w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white text-center py-3 px-4 rounded-lg font-medium transition-all duration-200 shadow-md"
-                        >
-                          📱 Contact VIP Telegram
-                        </a>
-                      )}
-                      {plug.socialMedia?.whatsapp && (
-                        <a
-                          href={plug.socialMedia.whatsapp}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="block w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white text-center py-3 px-4 rounded-lg font-medium transition-all duration-200 shadow-md"
-                        >
-                          💬 Contact VIP WhatsApp
-                        </a>
-                      )}
-                      {plug.socialMedia?.website && (
-                        <a
-                          href={plug.socialMedia.website}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="block w-full bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-white text-center py-3 px-4 rounded-lg font-medium transition-all duration-200 shadow-md"
-                        >
-                          🌐 Site Web Premium
-                        </a>
-                      )}
+                    {/* Likes */}
+                    <div className="flex items-center justify-between pt-2 border-t border-gray-100">
+                      <span className="text-gray-600 text-xs sm:text-sm">Voir détails</span>
+                      <div className="flex items-center text-red-500 text-xs sm:text-sm font-medium">
+                        <span className="mr-1">❤️</span>
+                        <span>{plug.likes || 0} like{(plug.likes || 0) !== 1 ? 's' : ''}</span>
+                      </div>
                     </div>
                   </div>
                   </div>
