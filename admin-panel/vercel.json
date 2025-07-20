@@ -1,38 +1,4 @@
 {
   "framework": "nextjs",
-  "regions": ["fra1"],
-  "env": {
-    "API_BASE_URL": "https://jhhhhhhggre.onrender.com",
-    "ADMIN_PASSWORD": "@admin-password"
-  },
-  "build": {
-    "env": {
-      "API_BASE_URL": "https://jhhhhhhggre.onrender.com",
-      "ADMIN_PASSWORD": "@admin-password"
-    }
-  },
-  "functions": {
-    "pages/**/*.js": {
-      "maxDuration": 10
-    }
-  },
-  "headers": [
-    {
-      "source": "/api/(.*)",
-      "headers": [
-        {
-          "key": "Access-Control-Allow-Origin",
-          "value": "*"
-        },
-        {
-          "key": "Access-Control-Allow-Methods",
-          "value": "GET, POST, PUT, DELETE, OPTIONS"
-        },
-        {
-          "key": "Access-Control-Allow-Headers",
-          "value": "Content-Type, Authorization"
-        }
-      ]
-    }
-  ]
+  "regions": ["fra1"]
 }
