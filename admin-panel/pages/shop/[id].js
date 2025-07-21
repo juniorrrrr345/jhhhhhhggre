@@ -11,8 +11,7 @@ import {
   TruckIcon,
   GlobeAltIcon,
   HomeIcon,
-  ArrowLeftIcon,
-  HeartIcon
+  ArrowLeftIcon
 } from '@heroicons/react/24/outline'
 
 export default function ShopPlugDetail() {
@@ -314,10 +313,10 @@ export default function ShopPlugDetail() {
               </button>
             </div>
 
-            {/* Plug details */}
-            <div className="bg-gray-800 border border-gray-700 rounded-xl shadow-lg overflow-hidden">
-              {/* Image simplifiée - comme dans le bot */}
-              <div className="relative h-64 md:h-80 bg-gray-900">
+            {/* Plug details - Même style que les cartes mais plus grand */}
+            <div className="shop-card bg-gray-800 border border-gray-700 rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-shadow duration-300 w-full">
+              {/* Image - même style que les cartes */}
+              <div className="relative h-64 md:h-80 bg-gray-900 overflow-hidden">
                 {plug.image && plug.image.trim() !== '' ? (
                   <img
                     src={getProxiedImageUrl(plug.image)}
@@ -328,16 +327,16 @@ export default function ShopPlugDetail() {
                 ) : (
                   <div className="absolute inset-0 flex items-center justify-center bg-gray-900">
                     <div className="text-center">
-                      <GlobeAltIcon className="w-20 h-20 text-gray-600 mx-auto mb-2" />
+                      <GlobeAltIcon className="w-16 h-16 sm:w-20 sm:h-20 text-gray-600 mx-auto mb-2" />
                       <p className="text-gray-500">Aucune image</p>
                     </div>
                   </div>
                 )}
                 
-                {/* VIP Badge amélioré */}
+                {/* VIP Badge - même style que les cartes */}
                 {plug.isVip && (
                   <div className="absolute top-4 right-4">
-                    <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-bold bg-yellow-500 text-white shadow-lg">
+                    <span className="inline-flex items-center px-3 py-2 rounded-full text-sm font-bold bg-yellow-500 text-white shadow-lg">
                       <StarIcon className="w-4 h-4 mr-2" />
                       VIP
                     </span>
@@ -345,97 +344,67 @@ export default function ShopPlugDetail() {
                 )}
               </div>
 
-              {/* Content */}
-              <div className="p-6">
-                <h2 style={{ color: 'white' }} className="text-2xl font-bold mb-4">{plug.name}</h2>
-                <p style={{ color: '#e5e7eb' }} className="mb-6">{plug.description}</p>
+              {/* Content - même structure que les cartes mais plus détaillé */}
+              <div className="p-4 md:p-6">
+                <h2 style={{ color: 'white' }} className="text-xl md:text-2xl font-bold mb-2">{plug.name}</h2>
+                <p style={{ color: '#e5e7eb' }} className="mb-4 text-sm md:text-base">{plug.description}</p>
 
-                {/* Location */}
+                {/* Location - même style que les cartes */}
                 {plug.countries && plug.countries.length > 0 && (
-                  <div className="mb-6">
-                    <h3 style={{ color: 'white' }} className="text-lg font-semibold mb-2">📍 Localisation</h3>
-                    <div className="flex items-center" style={{ color: 'white' }}>
-                      <MapPinIcon className="w-5 h-5 mr-2" />
-                      <span>{plug.countries.join(', ')}</span>
-                    </div>
+                  <div className="flex items-center text-sm mb-3" style={{ color: 'white' }}>
+                    <MapPinIcon className="w-4 h-4 mr-2 flex-shrink-0" />
+                    <span>{plug.countries.join(', ')}</span>
                   </div>
                 )}
 
-                {/* Services */}
-                <div className="mb-6">
-                  <h3 style={{ color: 'white' }} className="text-lg font-semibold mb-3">🚀 Services disponibles</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    {/* Delivery */}
-                    <div className={`p-4 rounded-lg border ${plug.services?.delivery?.enabled ? 'bg-green-900 border-green-600' : 'bg-gray-800 border-gray-600'}`}>
-                      <div className="flex items-center mb-2">
-                        <TruckIcon className="w-5 h-5 mr-2 text-green-400" />
-                        <h4 style={{ color: 'white' }} className="font-semibold">Livraison</h4>
-                      </div>
-                      {plug.services?.delivery?.enabled ? (
-                        <>
-                          <p style={{ color: '#e5e7eb' }} className="text-sm mb-2">Service disponible</p>
-                          {plug.services.delivery.price && (
-                            <p style={{ color: 'white' }} className="text-sm font-semibold">{plug.services.delivery.price}</p>
-                          )}
-                        </>
-                      ) : (
-                        <p style={{ color: '#9ca3af' }} className="text-sm">Non disponible</p>
-                      )}
-                    </div>
-
-                    {/* Postal */}
-                    <div className={`p-4 rounded-lg border ${plug.services?.postal?.enabled ? 'bg-gray-800 border-gray-600' : 'bg-gray-800 border-gray-600'}`}>
-                      <div className="flex items-center mb-2">
-                        <GlobeAltIcon className="w-5 h-5 mr-2 text-white" />
-                        <h4 style={{ color: 'white' }} className="font-semibold">Postal</h4>
-                      </div>
-                      {plug.services?.postal?.enabled ? (
-                        <>
-                          <p style={{ color: '#e5e7eb' }} className="text-sm mb-2">Service disponible</p>
-                          {plug.services.postal.price && (
-                            <p style={{ color: 'white' }} className="text-sm font-semibold">{plug.services.postal.price}</p>
-                          )}
-                        </>
-                      ) : (
-                        <p style={{ color: '#9ca3af' }} className="text-sm">Non disponible</p>
-                      )}
-                    </div>
-
-                    {/* Meetup */}
-                    <div className={`p-4 rounded-lg border ${plug.services?.meetup?.enabled ? 'bg-gray-800 border-gray-600' : 'bg-gray-800 border-gray-600'}`}>
-                      <div className="flex items-center mb-2">
-                        <HomeIcon className="w-5 h-5 mr-2 text-white" />
-                        <h4 style={{ color: 'white' }} className="font-semibold">Meetup</h4>
-                      </div>
-                      {plug.services?.meetup?.enabled ? (
-                        <>
-                          <p style={{ color: '#e5e7eb' }} className="text-sm mb-2">Service disponible</p>
-                          {plug.services.meetup.price && (
-                            <p style={{ color: 'white' }} className="text-sm font-semibold">{plug.services.meetup.price}</p>
-                          )}
-                        </>
-                      ) : (
-                        <p style={{ color: '#9ca3af' }} className="text-sm">Non disponible</p>
-                      )}
-                    </div>
+                {/* Services - même style que les cartes mais plus grand */}
+                <div className="mb-4">
+                  <div className="flex flex-wrap gap-2">
+                    {plug.services?.delivery?.enabled && (
+                      <span className="px-3 py-1.5 bg-green-600 text-white text-sm rounded-full flex items-center">
+                        <TruckIcon className="w-4 h-4 mr-2" />
+                        Livraison
+                        {plug.services.delivery.price && (
+                          <span className="ml-2 font-semibold">• {plug.services.delivery.price}</span>
+                        )}
+                      </span>
+                    )}
+                    {plug.services?.postal?.enabled && (
+                      <span className="px-3 py-1.5 bg-gray-800 text-white text-sm rounded-full border border-gray-600 flex items-center">
+                        <span className="text-sm mr-2">📮</span>
+                        Postal
+                        {plug.services.postal.price && (
+                          <span className="ml-2 font-semibold">• {plug.services.postal.price}</span>
+                        )}
+                      </span>
+                    )}
+                    {plug.services?.meetup?.enabled && (
+                      <span className="px-3 py-1.5 bg-purple-600 text-white text-sm rounded-full flex items-center">
+                        <HomeIcon className="w-4 h-4 mr-2" />
+                        Meetup
+                        {plug.services.meetup.price && (
+                          <span className="ml-2 font-semibold">• {plug.services.meetup.price}</span>
+                        )}
+                      </span>
+                    )}
                   </div>
                 </div>
 
-                {/* Réseaux sociaux améliorés */}
+                {/* Réseaux sociaux */}
                 {plug.socialMedia && plug.socialMedia.length > 0 && (
-                  <div className="mb-6">
-                    <h3 style={{ color: 'white' }} className="text-lg font-semibold mb-4">🌐 Réseaux sociaux</h3>
-                    <div className="flex flex-wrap gap-3">
+                  <div className="mb-4">
+                    <h3 style={{ color: 'white' }} className="text-lg font-semibold mb-3">🌐 Contact</h3>
+                    <div className="flex flex-wrap gap-2">
                       {plug.socialMedia.map((social, index) => (
                         <a
                           key={index}
                           href={social.url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex items-center px-4 py-2 bg-gray-700 hover:bg-gray-600 border border-gray-600 rounded-lg transition-colors duration-200 text-white hover:text-white"
+                          className="inline-flex items-center px-3 py-1.5 bg-gray-700 hover:bg-gray-600 border border-gray-600 rounded-full transition-colors duration-200 text-white text-sm"
                           style={{ textDecoration: 'none' }}
                         >
-                          <span className="text-lg mr-2">{social.emoji}</span>
+                          <span className="mr-2">{social.emoji}</span>
                           <span className="font-medium">{social.name}</span>
                         </a>
                       ))}
@@ -445,24 +414,24 @@ export default function ShopPlugDetail() {
 
                 {/* Additional info */}
                 {plug.additionalInfo && (
-                  <div className="mb-6">
+                  <div className="mb-4">
                     <h3 style={{ color: 'white' }} className="text-lg font-semibold mb-3">ℹ️ Informations complémentaires</h3>
-                    <div style={{ color: '#e5e7eb' }} className="prose prose-invert max-w-none">
+                    <div style={{ color: '#e5e7eb' }} className="text-sm leading-relaxed">
                       {formatText(plug.additionalInfo)}
                     </div>
                   </div>
                 )}
 
-                {/* Likes */}
-                <div className="flex items-center justify-between pt-6 border-t border-gray-700">
-                  <div className="flex items-center" style={{ color: 'white' }}>
-                    <HeartIcon className="w-6 h-6 mr-2 text-red-500" />
-                    <span className="text-lg font-semibold">{plug.likes || 0} like{(plug.likes || 0) !== 1 ? 's' : ''}</span>
+                {/* Likes - même style que les cartes */}
+                <div className="flex items-center justify-between pt-4 border-t border-gray-700">
+                  <div className="flex items-center text-sm font-medium" style={{ color: 'white' }}>
+                    <span className="mr-2">❤️</span>
+                    <span>{plug.likes || 0} like{(plug.likes || 0) !== 1 ? 's' : ''}</span>
                   </div>
                   <Link 
                     href="/shop" 
                     style={{ color: 'white', textDecoration: 'none' }}
-                    className="hover:opacity-75"
+                    className="hover:opacity-75 text-sm"
                   >
                     Retour aux boutiques
                   </Link>
