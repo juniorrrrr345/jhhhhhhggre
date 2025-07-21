@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import Head from 'next/head'
 import Link from 'next/link'
 import { api } from '../../lib/api'
+import { getProxiedImageUrl } from '../../lib/imageUtils'
 import toast from 'react-hot-toast'
 import Pagination from '../../components/Pagination'
 import {
@@ -199,7 +200,12 @@ export default function ShopHome() {
       // Diagnostic des images
       sortedPlugs.forEach((plug, index) => {
         if (plug.image) {
-          console.log(`📸 Plug ${index} "${plug.name}": ${plug.image}`)
+          const originalUrl = plug.image
+          const proxiedUrl = getProxiedImageUrl(plug.image)
+          console.log(`📸 Plug ${index} "${plug.name}":`)
+          console.log(`   Original: ${originalUrl}`)
+          console.log(`   Proxified: ${proxiedUrl}`)
+          console.log(`   Needs proxy: ${originalUrl !== proxiedUrl}`)
         } else {
           console.log(`❌ Plug ${index} "${plug.name}": PAS D'IMAGE`)
         }
@@ -356,7 +362,7 @@ export default function ShopHome() {
                           {plug.image && plug.image.trim() !== '' ? (
                             <>
                               <img
-                                src={plug.image}
+                                src={getProxiedImageUrl(plug.image)}
                                 alt={plug.name || 'Boutique'}
                                 className="w-full h-full object-cover"
                                 loading="lazy"

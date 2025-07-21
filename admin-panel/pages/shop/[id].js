@@ -3,6 +3,7 @@ import { useRouter } from 'next/router'
 import Head from 'next/head'
 import Link from 'next/link'
 import { api } from '../../lib/api'
+import { getProxiedImageUrl } from '../../lib/imageUtils'
 import toast from 'react-hot-toast'
 import {
   StarIcon,
@@ -319,7 +320,7 @@ export default function ShopPlugDetail() {
               <div className="relative h-64 md:h-80 bg-gray-900">
                 {plug.image && plug.image.trim() !== '' ? (
                   <img
-                    src={plug.image}
+                    src={getProxiedImageUrl(plug.image)}
                     alt={plug.name || 'Boutique'}
                     className="w-full h-full object-cover"
                     loading="lazy"

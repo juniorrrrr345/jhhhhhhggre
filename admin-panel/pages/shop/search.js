@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import Head from 'next/head'
 import Link from 'next/link'
 import { api } from '../../lib/api'
+import { getProxiedImageUrl } from '../../lib/imageUtils'
 import toast from 'react-hot-toast'
 import Pagination from '../../components/Pagination'
 import {
@@ -487,7 +488,7 @@ export default function ShopSearch() {
                         <div className="relative h-32 sm:h-40 md:h-48 bg-gray-900 overflow-hidden">
                           {plug.image && plug.image.trim() !== '' ? (
                             <img
-                              src={plug.image}
+                              src={getProxiedImageUrl(plug.image)}
                               alt={plug.name || 'Boutique'}
                               className="w-full h-full object-cover"
                               loading="lazy"
