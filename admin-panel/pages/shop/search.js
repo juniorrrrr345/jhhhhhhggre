@@ -454,7 +454,10 @@ export default function ShopSearch() {
             ) : (
               <>
                 {/* Products Grid - 2 boutiques par ligne même sur mobile */}
-                <div className="grid grid-cols-2 gap-4 sm:gap-8 mb-8">
+                <div className="grid grid-cols-2 gap-2 sm:gap-4 md:gap-6 mb-8" style={{ 
+                  gridTemplateColumns: '1fr 1fr',
+                  width: '100%'
+                }}>
                   {currentPlugs.map((plug, index) => (
                     <Link 
                       key={plug._id || index} 
@@ -462,9 +465,9 @@ export default function ShopSearch() {
                       className="block group hover:scale-105 transition-transform duration-200"
                       style={{ textDecoration: 'none' }}
                     >
-                      <div className="bg-gray-800 border border-gray-700 rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-shadow duration-300">
+                      <div className="bg-gray-800 border border-gray-700 rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-shadow duration-300 w-full max-w-none">
                         {/* Image */}
-                        <div className="relative aspect-square bg-gray-900">
+                        <div className="relative h-32 sm:h-40 md:h-48 bg-gray-900">
                           {plug.image ? (
                             <img
                               src={plug.image}
@@ -495,7 +498,7 @@ export default function ShopSearch() {
                         </div>
 
                         {/* Content */}
-                        <div className="p-3 sm:p-4">
+                        <div className="p-2 sm:p-3 md:p-4">
                           <h3 style={{ color: 'white' }} className="text-sm sm:text-base font-bold mb-2 truncate">{plug.name}</h3>
                           <p style={{ color: '#e5e7eb' }} className="mb-3 text-xs sm:text-sm line-clamp-2 h-8">{plug.description}</p>
 
