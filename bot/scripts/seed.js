@@ -144,7 +144,7 @@ const defaultConfig = {
   _id: 'main',
   welcome: {
     image: "https://via.placeholder.com/500x300/4F46E5/FFFFFF?text=Bot+Telegram+VIP",
-    text: "🌟 Bienvenue sur notre plateforme VIP !\n\nDécouvrez nos meilleurs plugs sélectionnés avec soin pour vous offrir un service de qualité premium.\n\n🔥 Section VIP mise à jour quotidiennement\n✅ Services vérifiés et de confiance"
+    text: "🌟 Bienvenue sur notre plateforme VIP !\n\nDécouvrez nos meilleurs plugs sélectionnés avec soin pour vous offrir un service de qualité premium.\n\n🔥 Section VIP mise à jour quotidiennement\n✅ Services vérifiés"
   },
   buttons: {
     topPlugs: {
