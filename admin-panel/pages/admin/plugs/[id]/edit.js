@@ -47,10 +47,7 @@ export default function EditPlug() {
     telegramLink: '',
     vip: false,
     category: '',
-    price: '',
     location: '',
-    contact: '',
-    tags: '',
     featured: false,
     active: true
   });
@@ -90,10 +87,7 @@ export default function EditPlug() {
             telegramLink: data.telegramLink || '',
             vip: Boolean(data.vip),
             category: data.category || '',
-            price: data.price || '',
             location: data.location || '',
-            contact: data.contact || '',
-            tags: Array.isArray(data.tags) ? data.tags.join(', ') : (data.tags || ''),
             featured: Boolean(data.featured),
             active: data.active !== false
           });
@@ -138,8 +132,7 @@ export default function EditPlug() {
       }
 
       const submitData = {
-        ...formData,
-        tags: formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag)
+        ...formData
       };
 
       const response = await apiCall(`/api/plugs/${id}`, {
@@ -265,20 +258,7 @@ export default function EditPlug() {
               />
             </div>
 
-            {/* Catégorie */}
-            <div>
-              <label className="block text-sm font-medium mb-2">
-                Catégorie
-              </label>
-              <input
-                type="text"
-                name="category"
-                value={formData.category}
-                onChange={handleInputChange}
-                className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Ex: Fashion, Tech, Food..."
-              />
-            </div>
+
           </div>
 
           {/* Description */}
@@ -331,21 +311,6 @@ export default function EditPlug() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Prix */}
-            <div>
-              <label className="block text-sm font-medium mb-2">
-                Prix / Gamme de prix
-              </label>
-              <input
-                type="text"
-                name="price"
-                value={formData.price}
-                onChange={handleInputChange}
-                className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Ex: 10-50€, Gratuit, Sur devis..."
-              />
-            </div>
-
             {/* Localisation */}
             <div>
               <label className="block text-sm font-medium mb-2">
@@ -358,38 +323,6 @@ export default function EditPlug() {
                 onChange={handleInputChange}
                 className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="Ex: Paris, France, Online..."
-              />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Contact */}
-            <div>
-              <label className="block text-sm font-medium mb-2">
-                Contact
-              </label>
-              <input
-                type="text"
-                name="contact"
-                value={formData.contact}
-                onChange={handleInputChange}
-                className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Email, téléphone, etc."
-              />
-            </div>
-
-            {/* Tags */}
-            <div>
-              <label className="block text-sm font-medium mb-2">
-                Tags (séparés par des virgules)
-              </label>
-              <input
-                type="text"
-                name="tags"
-                value={formData.tags}
-                onChange={handleInputChange}
-                className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="tag1, tag2, tag3"
               />
             </div>
           </div>
@@ -428,6 +361,167 @@ export default function EditPlug() {
               />
               Boutique active
             </label>
+          </div>
+
+          {/* Services */}
+          <div className="space-y-6">
+            <h3 className="text-lg font-semibold border-b border-gray-600 pb-2">Services disponibles</h3>
+            
+            {/* Livraison */}
+            <div className="bg-gray-800 p-4 rounded-lg">
+              <div className="flex items-center mb-3">
+                <input
+                  type="checkbox"
+                  id="delivery-enabled"
+                  checked={formData.services?.delivery?.enabled || false}
+                  onChange={(e) => {
+                    setFormData(prev => ({
+                      ...prev,
+                      services: {
+                        ...prev.services,
+                        delivery: {
+                          ...prev.services?.delivery,
+                          enabled: e.target.checked
+                        }
+                      }
+                    }))
+                  }}
+                  className="mr-3 rounded"
+                />
+                <label htmlFor="delivery-enabled" className="text-lg font-medium">
+                  🚚 Livraison
+                </label>
+              </div>
+              {formData.services?.delivery?.enabled && (
+                <div>
+                  <label className="block text-sm font-medium mb-2">
+                    Description du service de livraison
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.services?.delivery?.description || ''}
+                    onChange={(e) => {
+                      setFormData(prev => ({
+                        ...prev,
+                        services: {
+                          ...prev.services,
+                          delivery: {
+                            ...prev.services?.delivery,
+                            description: e.target.value
+                          }
+                        }
+                      }))
+                    }}
+                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="Ex: Livraison rapide en moins de 2h dans Paris"
+                  />
+                </div>
+              )}
+            </div>
+
+            {/* Envoi postal */}
+            <div className="bg-gray-800 p-4 rounded-lg">
+              <div className="flex items-center mb-3">
+                <input
+                  type="checkbox"
+                  id="postal-enabled"
+                  checked={formData.services?.postal?.enabled || false}
+                  onChange={(e) => {
+                    setFormData(prev => ({
+                      ...prev,
+                      services: {
+                        ...prev.services,
+                        postal: {
+                          ...prev.services?.postal,
+                          enabled: e.target.checked
+                        }
+                      }
+                    }))
+                  }}
+                  className="mr-3 rounded"
+                />
+                <label htmlFor="postal-enabled" className="text-lg font-medium">
+                  ✈️ Envoi postal
+                </label>
+              </div>
+              {formData.services?.postal?.enabled && (
+                <div>
+                  <label className="block text-sm font-medium mb-2">
+                    Description du service d'envoi postal
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.services?.postal?.description || ''}
+                    onChange={(e) => {
+                      setFormData(prev => ({
+                        ...prev,
+                        services: {
+                          ...prev.services,
+                          postal: {
+                            ...prev.services?.postal,
+                            description: e.target.value
+                          }
+                        }
+                      }))
+                    }}
+                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="Ex: Envoi postal sécurisé dans toute la France"
+                  />
+                </div>
+              )}
+            </div>
+
+            {/* Meetup */}
+            <div className="bg-gray-800 p-4 rounded-lg">
+              <div className="flex items-center mb-3">
+                <input
+                  type="checkbox"
+                  id="meetup-enabled"
+                  checked={formData.services?.meetup?.enabled || false}
+                  onChange={(e) => {
+                    setFormData(prev => ({
+                      ...prev,
+                      services: {
+                        ...prev.services,
+                        meetup: {
+                          ...prev.services?.meetup,
+                          enabled: e.target.checked
+                        }
+                      }
+                    }))
+                  }}
+                  className="mr-3 rounded"
+                />
+                <label htmlFor="meetup-enabled" className="text-lg font-medium">
+                  🏠 Meetup
+                </label>
+              </div>
+              {formData.services?.meetup?.enabled && (
+                <div>
+                  <label className="block text-sm font-medium mb-2">
+                    Description du service de meetup
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.services?.meetup?.description || ''}
+                    onChange={(e) => {
+                      setFormData(prev => ({
+                        ...prev,
+                        services: {
+                          ...prev.services,
+                          meetup: {
+                            ...prev.services?.meetup,
+                            description: e.target.value
+                          }
+                        }
+                      }))
+                    }}
+                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="Ex: Rendez-vous possible dans les lieux publics"
+                  />
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Boutons */}

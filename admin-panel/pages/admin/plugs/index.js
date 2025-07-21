@@ -88,6 +88,8 @@ export default function PlugsManagement() {
     }
   }
 
+
+
   const deletePlug = async (plugId, plugName) => {
     if (!confirm(`Êtes-vous sûr de vouloir supprimer "${plugName}" ?`)) return
 

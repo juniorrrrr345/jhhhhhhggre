@@ -262,6 +262,12 @@ app.get('/api/public/config', async (req, res) => {
     console.log('🔍 Récupération config publique pour la boutique');
     const config = await Config.findById('main');
     
+    console.log('📊 Config récupérée pour boutique:', {
+      boutique: config?.boutique?.name || 'Non défini',
+      logo: config?.boutique?.logo ? 'Défini' : 'Non défini',
+      background: config?.boutique?.backgroundImage ? 'Défini' : 'Non défini'
+    });
+    
     // Ne retourner que les données publiques nécessaires pour la boutique
     const publicConfig = {
       boutique: config?.boutique || {},
@@ -271,7 +277,7 @@ app.get('/api/public/config', async (req, res) => {
       buttons: config?.buttons || {}
     };
     
-    // Headers pour CORS et cache
+    // Headers pour CORS et cache forcé
     res.set({
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Methods': 'GET, OPTIONS',
@@ -341,13 +347,158 @@ app.get('/api/config', authenticateAdmin, async (req, res) => {
 // Mettre à jour la configuration
 app.put('/api/config', authenticateAdmin, async (req, res) => {
   try {
+    console.log('🔧 Mise à jour configuration...', req.body);
+    
     const config = await Config.findByIdAndUpdate('main', req.body, { 
       new: true, 
       upsert: true 
     });
+    
+    console.log('✅ Configuration mise à jour:', config);
+    
+    // Headers anti-cache pour forcer la synchronisation
+    res.set({
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      'Pragma': 'no-cache',
+      'Expires': '0',
+      'Last-Modified': new Date().toUTCString()
+    });
+    
     res.json(config);
   } catch (error) {
     console.error('Erreur mise à jour config:', error);
+    res.status(500).json({ error: 'Erreur serveur' });
+  }
+});
+
+// ===== ROUTES RÉSEAUX SOCIAUX DU MESSAGE D'ACCUEIL =====
+
+// Récupérer les réseaux sociaux du message d'accueil
+app.get('/api/config/welcome/social-media', authenticateAdmin, async (req, res) => {
+  try {
+    const config = await Config.findById('main');
+    const socialMedia = config?.welcome?.socialMedia || [];
+    res.json(socialMedia.sort((a, b) => a.order - b.order));
+  } catch (error) {
+    console.error('Erreur récupération réseaux sociaux accueil:', error);
+    res.status(500).json({ error: 'Erreur serveur' });
+  }
+});
+
+// Ajouter un réseau social au message d'accueil
+app.post('/api/config/welcome/social-media', authenticateAdmin, async (req, res) => {
+  try {
+    const { name, emoji, url, order = 0 } = req.body;
+    
+    // Validation
+    if (!name || !emoji || !url) {
+      return res.status(400).json({ error: 'Nom, emoji et URL sont requis' });
+    }
+    
+    // Valider l'URL
+    try {
+      new URL(url);
+    } catch {
+      return res.status(400).json({ error: 'URL invalide' });
+    }
+    
+    const config = await Config.findById('main');
+    if (!config) {
+      return res.status(404).json({ error: 'Configuration non trouvée' });
+    }
+    
+    // Initialiser le tableau si nécessaire
+    if (!config.welcome) config.welcome = {};
+    if (!config.welcome.socialMedia) config.welcome.socialMedia = [];
+    
+    // Créer le nouveau réseau social
+    const newSocialMedia = {
+      _id: new require('mongoose').Types.ObjectId(),
+      name: name.trim(),
+      emoji: emoji.trim(),
+      url: url.trim(),
+      order: parseInt(order) || 0
+    };
+    
+    config.welcome.socialMedia.push(newSocialMedia);
+    await config.save();
+    
+    res.status(201).json(newSocialMedia);
+  } catch (error) {
+    console.error('Erreur ajout réseau social accueil:', error);
+    res.status(500).json({ error: 'Erreur serveur' });
+  }
+});
+
+// Modifier un réseau social du message d'accueil
+app.put('/api/config/welcome/social-media/:id', authenticateAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, emoji, url, order } = req.body;
+    
+    // Validation
+    if (!name || !emoji || !url) {
+      return res.status(400).json({ error: 'Nom, emoji et URL sont requis' });
+    }
+    
+    // Valider l'URL
+    try {
+      new URL(url);
+    } catch {
+      return res.status(400).json({ error: 'URL invalide' });
+    }
+    
+    const config = await Config.findById('main');
+    if (!config || !config.welcome?.socialMedia) {
+      return res.status(404).json({ error: 'Configuration ou réseaux sociaux non trouvés' });
+    }
+    
+    // Trouver et modifier le réseau social
+    const socialMediaIndex = config.welcome.socialMedia.findIndex(sm => sm._id.toString() === id);
+    if (socialMediaIndex === -1) {
+      return res.status(404).json({ error: 'Réseau social non trouvé' });
+    }
+    
+    config.welcome.socialMedia[socialMediaIndex] = {
+      ...config.welcome.socialMedia[socialMediaIndex],
+      name: name.trim(),
+      emoji: emoji.trim(),
+      url: url.trim(),
+      order: parseInt(order) || 0
+    };
+    
+    await config.save();
+    
+    res.json(config.welcome.socialMedia[socialMediaIndex]);
+  } catch (error) {
+    console.error('Erreur modification réseau social accueil:', error);
+    res.status(500).json({ error: 'Erreur serveur' });
+  }
+});
+
+// Supprimer un réseau social du message d'accueil
+app.delete('/api/config/welcome/social-media/:id', authenticateAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    const config = await Config.findById('main');
+    if (!config || !config.welcome?.socialMedia) {
+      return res.status(404).json({ error: 'Configuration ou réseaux sociaux non trouvés' });
+    }
+    
+    // Supprimer le réseau social
+    const initialLength = config.welcome.socialMedia.length;
+    config.welcome.socialMedia = config.welcome.socialMedia.filter(sm => sm._id.toString() !== id);
+    
+    if (config.welcome.socialMedia.length === initialLength) {
+      return res.status(404).json({ error: 'Réseau social non trouvé' });
+    }
+    
+    await config.save();
+    
+    res.json({ message: 'Réseau social supprimé avec succès' });
+  } catch (error) {
+    console.error('Erreur suppression réseau social accueil:', error);
     res.status(500).json({ error: 'Erreur serveur' });
   }
 });
@@ -522,42 +673,167 @@ app.get('/api/plugs/:id', authenticateAdmin, async (req, res) => {
 // Créer un nouveau plug
 app.post('/api/plugs', authenticateAdmin, async (req, res) => {
   try {
-    const plug = new Plug(req.body);
+    const createData = req.body;
+    
+    console.log(`🆕 Création nouveau plug:`, createData);
+    
+    // Nettoyer les données avant la création
+    const cleanData = { ...createData };
+    
+    // Convertir les tags en tableau si c'est une chaîne
+    if (typeof cleanData.tags === 'string') {
+      cleanData.tags = cleanData.tags.split(',').map(tag => tag.trim()).filter(tag => tag);
+    }
+    
+    // S'assurer que les booléens sont corrects
+    if (cleanData.vip !== undefined) cleanData.isVip = cleanData.vip;
+    if (cleanData.active !== undefined) cleanData.isActive = cleanData.active;
+    
+    // Synchroniser telegramLink avec socialMedia.telegram si fourni
+    if (cleanData.telegramLink && !cleanData.socialMedia?.telegram) {
+      if (!cleanData.socialMedia) cleanData.socialMedia = {};
+      cleanData.socialMedia.telegram = cleanData.telegramLink;
+    }
+    
+    console.log(`📝 Données nettoyées pour création:`, cleanData);
+    
+    const plug = new Plug(cleanData);
     await plug.save();
+    
+    console.log(`✅ Nouveau plug créé:`, plug.name);
+    
     res.status(201).json(plug);
   } catch (error) {
-    console.error('Erreur création plug:', error);
-    res.status(500).json({ error: 'Erreur serveur' });
+    console.error('❌ Erreur création plug:', error);
+    res.status(500).json({ error: 'Erreur serveur', details: error.message });
   }
 });
 
 // Mettre à jour un plug
 app.put('/api/plugs/:id', authenticateAdmin, async (req, res) => {
   try {
-    const plug = await Plug.findByIdAndUpdate(req.params.id, req.body, { 
-      new: true 
+    const plugId = req.params.id;
+    const updateData = req.body;
+    
+    console.log(`🔄 Mise à jour plug ${plugId}:`, updateData);
+    
+    // Nettoyer les données avant la mise à jour
+    const cleanData = { ...updateData };
+    
+    // Convertir les tags en tableau si c'est une chaîne
+    if (typeof cleanData.tags === 'string') {
+      cleanData.tags = cleanData.tags.split(',').map(tag => tag.trim()).filter(tag => tag);
+    }
+    
+    // S'assurer que les booléens sont corrects
+    if (cleanData.vip !== undefined) cleanData.isVip = cleanData.vip;
+    if (cleanData.active !== undefined) cleanData.isActive = cleanData.active;
+    
+    // Synchroniser telegramLink avec socialMedia.telegram si fourni
+    if (cleanData.telegramLink && !cleanData.socialMedia?.telegram) {
+      if (!cleanData.socialMedia) cleanData.socialMedia = {};
+      cleanData.socialMedia.telegram = cleanData.telegramLink;
+    }
+    
+    console.log(`📝 Données nettoyées:`, cleanData);
+    
+    const plug = await Plug.findByIdAndUpdate(plugId, cleanData, { 
+      new: true,
+      runValidators: true
     });
+    
     if (!plug) {
       return res.status(404).json({ error: 'Plug non trouvé' });
     }
+    
+    console.log(`✅ Plug mis à jour:`, plug.name);
+    
+    // Headers pour éviter le cache
+    res.set({
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      'Pragma': 'no-cache',
+      'Expires': '0',
+      'Last-Modified': new Date().toUTCString()
+    });
+    
     res.json(plug);
   } catch (error) {
-    console.error('Erreur mise à jour plug:', error);
-    res.status(500).json({ error: 'Erreur serveur' });
+    console.error('❌ Erreur mise à jour plug:', error);
+    res.status(500).json({ error: 'Erreur serveur', details: error.message });
   }
 });
 
 // Supprimer un plug
 app.delete('/api/plugs/:id', authenticateAdmin, async (req, res) => {
   try {
-    const plug = await Plug.findByIdAndDelete(req.params.id);
+    const plugId = req.params.id;
+    console.log(`🗑️ Suppression plug ${plugId}`);
+    
+    const plug = await Plug.findByIdAndDelete(plugId);
     if (!plug) {
       return res.status(404).json({ error: 'Plug non trouvé' });
     }
+    
+    console.log(`✅ Plug supprimé:`, plug.name);
+    
+    // Headers pour éviter le cache
+    res.set({
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      'Pragma': 'no-cache',
+      'Expires': '0'
+    });
+    
     res.json({ message: 'Plug supprimé' });
   } catch (error) {
-    console.error('Erreur suppression plug:', error);
-    res.status(500).json({ error: 'Erreur serveur' });
+    console.error('❌ Erreur suppression plug:', error);
+    res.status(500).json({ error: 'Erreur serveur', details: error.message });
+  }
+});
+
+// Route pour nettoyer la configuration boutique
+app.post('/api/config/clean-boutique', authenticateAdmin, async (req, res) => {
+  try {
+    console.log('🧹 Nettoyage configuration boutique...');
+    
+    const config = await Config.findById('main');
+    if (!config) {
+      return res.status(404).json({ error: 'Configuration non trouvée' });
+    }
+    
+    // Nettoyer la configuration boutique avec des valeurs vides par défaut
+    config.boutique = {
+      name: config.boutique?.name || "",
+      logo: config.boutique?.logo || "",
+      subtitle: config.boutique?.subtitle || "",
+      backgroundImage: config.boutique?.backgroundImage || "",
+      vipTitle: config.boutique?.vipTitle || "",
+      vipSubtitle: config.boutique?.vipSubtitle || "",
+      searchTitle: config.boutique?.searchTitle || "",
+      searchSubtitle: config.boutique?.searchSubtitle || ""
+    };
+    
+    // Forcer la mise à jour du timestamp
+    config.updatedAt = new Date();
+    
+    await config.save();
+    
+    console.log('✅ Configuration boutique nettoyée:', config.boutique);
+    
+    res.set({
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      'Pragma': 'no-cache',
+      'Expires': '0',
+      'Last-Modified': new Date().toUTCString()
+    });
+    
+    res.json({
+      message: 'Configuration boutique nettoyée',
+      boutique: config.boutique,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('❌ Erreur nettoyage boutique:', error);
+    res.status(500).json({ error: 'Erreur serveur', details: error.message });
   }
 });
 

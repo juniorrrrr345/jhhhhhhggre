@@ -285,11 +285,8 @@ export default function ShopSearch() {
                 </div>
                 <div className="ml-3">
                   <h1 className="text-xl font-bold text-white">
-                    {config?.boutique?.searchTitle || config?.boutique?.name || ''}
+                    {config?.boutique?.name || ''}
                   </h1>
-                  <p className="text-gray-300 text-sm">
-                    {config?.boutique?.searchSubtitle || ''}
-                  </p>
                 </div>
               </div>
             </div>
@@ -355,12 +352,9 @@ export default function ShopSearch() {
                   </div>
                 )}
                 <h2 className="text-3xl font-bold text-white">
-                  {config?.boutique?.searchTitle || config?.boutique?.name || ''}
+                  {config?.boutique?.name || ''}
                 </h2>
               </div>
-              <p className="text-gray-300">
-                {config?.boutique?.searchSubtitle || ''}
-              </p>
             </div>
             
             {/* Filtres de recherche */}
@@ -471,7 +465,7 @@ export default function ShopSearch() {
                       <img
                         src={plug.image || '/placeholder.jpg'}
                         alt={plug.name}
-                        className="w-full h-full object-cover grayscale"
+                                                  className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
                       />
                       {/* Badges en haut à droite pour ne pas cacher le nom */}
                       <div className="absolute top-2 right-2 space-y-1">

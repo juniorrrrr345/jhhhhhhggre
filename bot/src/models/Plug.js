@@ -14,6 +14,20 @@ const plugSchema = new mongoose.Schema({
     type: String, // URL de l'image
     default: ''
   },
+  category: {
+    type: String,
+    trim: true,
+    default: ''
+  },
+  location: {
+    type: String,
+    trim: true,
+    default: ''
+  },
+  featured: {
+    type: Boolean,
+    default: false
+  },
   countries: [{
     type: String, // Liste des pays desservis
     trim: true
@@ -50,22 +64,17 @@ const plugSchema = new mongoose.Schema({
       }
     }
   },
+  telegramLink: {
+    type: String, // Pour compatibilité avec l'admin panel
+    default: ''
+  },
   socialMedia: {
-    telegram: {
-      type: String,
-      default: ''
-    },
-    instagram: {
-      type: String,
-      default: ''
-    },
-    whatsapp: {
-      type: String,
-      default: ''
-    },
-    website: {
-      type: String,
-      default: ''
+    type: mongoose.Schema.Types.Mixed, // Permet objet ou array
+    default: {
+      telegram: '',
+      instagram: '',
+      whatsapp: '',
+      website: ''
     }
   },
   isVip: {

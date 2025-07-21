@@ -62,26 +62,7 @@ export default function Config() {
     fetchConfig(token)
   }, [])
 
-  // Fonction pour appliquer la configuration boutique fournie par l'utilisateur
-  const applyUserBoutiqueConfig = () => {
-    setConfig(prev => ({
-      ...prev,
-      welcome: {
-        ...prev.welcome,
-        text: '🌟 Bienvenue sur SafePlugs !\n\n🔌 Découvrez nos boutiques de confiance\n🎯 Services vérifiés et sécurisés\n⭐ Section VIP premium\n\nChoisissez une option ci-dessous :'
-      },
-      boutique: {
-        ...prev.boutique,
-        name: 'SafePlugs Store',
-        subtitle: 'Boutique de confiance',
-        logo: 'https://via.placeholder.com/100x100/4F46E5/FFFFFF?text=SP',
-        backgroundImage: 'https://images.unsplash.com/photo-1557804506-669a67965ba0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
-        searchTitle: 'Recherche',
-        vipTitle: 'Section VIP'
-      }
-    }));
-    toast.success('Configuration complète appliquée ! N\'oubliez pas de sauvegarder.');
-  };
+
 
   const fetchConfig = async (token) => {
     try {
@@ -115,69 +96,64 @@ export default function Config() {
         setSaving(true)
 
         try {
-          // Essayer d'abord l'API directe
-          let success = false
-          try {
-            const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://jhhhhhhggre.onrender.com'
-            console.log('💾 Admin config tentative directe:', apiBaseUrl)
-            
-            const response = await fetch(`${apiBaseUrl}/api/config`, {
-              method: 'PUT',
-              headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify(config)
-            })
+          // Préparer les données sans la section boutique
+          const { boutique, ...botConfig } = config
+          
+          console.log('💾 Sauvegarde configuration bot uniquement...', botConfig)
+          
+          // Essayer l'API directe d'abord
+          const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://jhhhhhhggre.onrender.com'
+          
+          const response = await fetch(`${apiBaseUrl}/api/config`, {
+            method: 'PUT',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json',
+              'Cache-Control': 'no-cache',
+              'Pragma': 'no-cache'
+            },
+            body: JSON.stringify(botConfig)
+          })
 
-            if (response.ok) {
-              console.log('✅ Admin config direct réussi')
-              success = true
-              toast.success('Configuration sauvegardée !')
-              
-              // Recharger automatiquement le bot après sauvegarde
-              setTimeout(() => {
-                reloadBot();
-              }, 1000);
-
-              // Forcer la synchronisation avec la boutique
-              await forceBoutiqueSync();
-              
-            } else {
-              throw new Error(`HTTP ${response.status}`)
-            }
-          } catch (directError) {
-            console.log('❌ Admin config direct échoué:', directError.message)
-            console.log('🔄 Admin config tentative via proxy...')
+          if (response.ok) {
+            console.log('✅ Configuration bot sauvegardée')
+            toast.success('Configuration bot sauvegardée avec succès !')
             
+            // Recharger le bot après sauvegarde
+            setTimeout(() => {
+              reloadBot();
+            }, 1000);
+            
+          } else {
             // Fallback vers le proxy
+            console.log('🔄 Tentative via proxy...')
+            
             const proxyResponse = await fetch('/api/proxy?endpoint=/api/config', {
-              method: 'PUT',
+              method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
-                'Authorization': token
+                'Authorization': `Bearer ${token}`,
+                'Cache-Control': 'no-cache'
               },
-              body: JSON.stringify(config)
+              body: JSON.stringify({
+                _method: 'PUT',
+                ...botConfig
+              })
             })
 
             if (proxyResponse.ok) {
-              console.log('✅ Admin config proxy réussi')
-              success = true
+              console.log('✅ Configuration sauvegardée via proxy')
               toast.success('Configuration sauvegardée via proxy !')
-              
-              // Forcer la synchronisation avec la boutique même en mode proxy
-              await forceBoutiqueSync();
+              setTimeout(() => {
+                reloadBot();
+              }, 1000);
             } else {
-              throw new Error(`Proxy failed: HTTP ${proxyResponse.status}`)
+              throw new Error(`Erreur API: ${response.status}`)
             }
           }
-
-          if (!success) {
-            toast.error('Erreur lors de la sauvegarde')
-          }
         } catch (error) {
-          console.error('💥 Admin config error final:', error)
-          toast.error('Erreur de connexion')
+          console.error('💥 Erreur sauvegarde config:', error)
+          toast.error('Erreur lors de la sauvegarde')
         } finally {
           setSaving(false)
         }
@@ -208,6 +184,49 @@ export default function Config() {
       
     } catch (error) {
       console.error('❌ Erreur synchronisation boutique:', error);
+    }
+  };
+
+  // Fonction pour tester la configuration boutique
+  const testBoutiqueConfig = async () => {
+    try {
+      console.log('🧪 Test configuration boutique...');
+      
+      // Vérifier les éléments requis
+      const requiredFields = {
+        'Nom boutique': config?.boutique?.name,
+        'Logo': config?.boutique?.logo,
+        'Background': config?.boutique?.backgroundImage,
+        'Message accueil': config?.welcome?.text
+      };
+      
+      const missing = Object.entries(requiredFields)
+        .filter(([key, value]) => !value)
+        .map(([key]) => key);
+      
+      if (missing.length > 0) {
+        toast.error(`Éléments manquants: ${missing.join(', ')}`);
+        return false;
+      }
+      
+      // Test de l'API publique
+      const response = await fetch('/api/proxy?endpoint=/api/public/config', {
+        headers: { 'Cache-Control': 'no-cache' }
+      });
+      
+      if (response.ok) {
+        const publicConfig = await response.json();
+        console.log('✅ Configuration publique accessible:', publicConfig);
+        toast.success('Configuration boutique testée avec succès !');
+        return true;
+      } else {
+        throw new Error(`API publique: ${response.status}`);
+      }
+      
+    } catch (error) {
+      console.error('❌ Erreur test boutique:', error);
+      toast.error('Erreur lors du test de la configuration boutique');
+      return false;
     }
   };
 
@@ -335,7 +354,12 @@ export default function Config() {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h1 className="text-2xl font-bold text-gray-900">Configuration du Bot</h1>
-            <p className="text-gray-600">Personnalisez votre bot Telegram</p>
+            <p className="text-gray-600">Personnalisez uniquement votre bot Telegram</p>
+            <div className="mt-2 p-3 bg-blue-50 border border-blue-200 rounded-lg max-w-md">
+              <p className="text-blue-800 text-sm">
+                ℹ️ <strong>Info :</strong> Cette page configure uniquement le bot. Pour la boutique, utilisez <a href="/admin/configuration" className="underline font-medium">Configuration</a> dans le menu.
+              </p>
+            </div>
           </div>
           <div className="mt-4 sm:mt-0">
             <div className="flex rounded-lg bg-gray-100 p-1">
@@ -381,97 +405,34 @@ export default function Config() {
                 </ul>
               </div>
 
-              {/* Configuration rapide boutique */}
-              <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                <h3 className="text-lg font-medium text-green-900 mb-3">🏪 Boutique Vercel</h3>
-                
-                {/* Bouton pour appliquer la config utilisateur */}
-                <div className="mb-3">
-                  <button
-                    onClick={applyUserBoutiqueConfig}
-                    className="w-full bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors text-sm font-medium mb-3"
-                  >
-                    ⚡ Appliquer la configuration de test
-                  </button>
-                  
-                  <button
-                    onClick={() => {
-                      saveConfig();
-                      triggerBoutiqueSync();
-                    }}
-                    className="w-full bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition-colors text-sm font-medium"
-                  >
-                    🔄 Sauvegarder et Synchroniser
-                  </button>
-                                      <div className="text-xs text-green-600 mt-2 p-2 bg-green-50 rounded">
-                      <strong>Configuration actuelle :</strong><br/>
-                      • Nom boutique: {config?.boutique?.name || 'Non défini'}<br/>
-                      • Logo: {config?.boutique?.logo ? '✅ Défini' : '❌ Non défini'}<br/>
-                      • Background: {config?.boutique?.backgroundImage ? '✅ Défini' : '❌ Non défini'}<br/>
-                      • Message bot: {config?.welcome?.text ? '✅ Défini' : '❌ Non défini'}
-                    </div>
-                </div>
-                
-                <div className="space-y-3">
-                  <button
-                    onClick={() => editText('boutique', 'name', config.boutique?.name || '', 'Nom de la boutique')}
-                    className="w-full text-left bg-white border border-green-300 rounded-lg p-3 hover:bg-green-50 transition-colors"
-                  >
-                    <div className="text-sm font-medium text-green-800">Nom :</div>
-                    <div className="text-green-600">{config.boutique?.name || 'Cliquez pour définir'}</div>
-                  </button>
-                  
-                  <button
-                    onClick={() => editText('boutique', 'subtitle', config.boutique?.subtitle || '', 'Sous-titre de la boutique')}
-                    className="w-full text-left bg-white border border-green-300 rounded-lg p-3 hover:bg-green-50 transition-colors"
-                  >
-                    <div className="text-sm font-medium text-green-800">Sous-titre :</div>
-                    <div className="text-green-600">{config.boutique?.subtitle || 'Cliquez pour définir'}</div>
-                  </button>
-                  
-                  <button
-                    onClick={() => editText('boutique', 'logo', config.boutique?.logo || '', 'Logo de la boutique (URL)')}
-                    className="w-full text-left bg-white border border-green-300 rounded-lg p-3 hover:bg-green-50 transition-colors"
-                  >
-                    <div className="text-sm font-medium text-green-800">Logo :</div>
-                    <div className="text-green-600 text-xs break-all">{config.boutique?.logo || 'Cliquez pour définir'}</div>
-                  </button>
 
-                  <button
-                    onClick={() => editText('boutique', 'backgroundImage', config.boutique?.backgroundImage || '', 'Image de fond (URL)')}
-                    className="w-full text-left bg-white border border-green-300 rounded-lg p-3 hover:bg-green-50 transition-colors"
-                  >
-                    <div className="text-sm font-medium text-green-800">Background :</div>
-                    <div className="text-green-600 text-xs break-all">{config.boutique?.backgroundImage || 'Cliquez pour définir'}</div>
-                  </button>
 
-                  <button
-                    onClick={() => editText('boutique', 'searchTitle', config.boutique?.searchTitle || '', 'Titre page Recherche')}
-                    className="w-full text-left bg-white border border-green-300 rounded-lg p-3 hover:bg-green-50 transition-colors"
-                  >
-                    <div className="text-sm font-medium text-green-800">Titre Recherche :</div>
-                    <div className="text-green-600">{config.boutique?.searchTitle || 'Cliquez pour définir'}</div>
-                  </button>
-
-                  <button
-                    onClick={() => editText('boutique', 'vipTitle', config.boutique?.vipTitle || '', 'Titre section VIP')}
-                    className="w-full text-left bg-white border border-green-300 rounded-lg p-3 hover:bg-green-50 transition-colors"
-                  >
-                    <div className="text-sm font-medium text-green-800">Titre VIP :</div>
-                    <div className="text-green-600">{config.boutique?.vipTitle || 'Cliquez pour définir'}</div>
-                  </button>
-
-                  <button
-                    onClick={() => editText('welcome', 'text', config.welcome?.text || '', 'Message d\'accueil du bot (/start)')}
-                    className="w-full text-left bg-white border border-blue-300 rounded-lg p-3 hover:bg-blue-50 transition-colors"
-                  >
-                    <div className="text-sm font-medium text-blue-800">Message d'accueil Bot :</div>
-                    <div className="text-blue-600 text-sm">{config.welcome?.text || '🌟 Bienvenue sur notre bot !'}</div>
-                    <div className="text-xs text-blue-500 mt-1">Affiché quand on tape /start sur le bot</div>
-                  </button>
-                </div>
-              </div>
-            </div>
+               {/* Gestion des réseaux sociaux du message d'accueil */}
+               <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
+                 <h3 className="text-lg font-medium text-purple-900 mb-3">📱 Réseaux Sociaux - Message d'Accueil</h3>
+                 <p className="text-sm text-purple-700 mb-3">
+                   Ajoutez des liens vers vos réseaux sociaux directement dans le message d'accueil du bot.
+                 </p>
+                 
+                 <div className="space-y-2">
+                   <a
+                     href="/admin/config/welcome-social"
+                     className="w-full bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg transition-colors text-sm font-medium inline-block text-center"
+                   >
+                     ⚙️ Gérer les réseaux sociaux d'accueil
+                   </a>
+                   
+                   <button
+                     onClick={() => editText('welcome', 'text', config.welcome?.text || '', 'Message d\'accueil du bot (/start)')}
+                     className="w-full text-left bg-white border border-purple-300 rounded-lg p-3 hover:bg-purple-50 transition-colors"
+                   >
+                     <div className="text-sm font-medium text-purple-800">Message d'accueil Bot :</div>
+                     <div className="text-purple-600 text-sm">{config.welcome?.text || '🌟 Bienvenue sur notre bot !'}</div>
+                     <div className="text-xs text-purple-500 mt-1">Affiché quand on tape /start sur le bot</div>
+                   </button>
+                 </div>
+               </div>
+             </div>
 
             {/* Simulation du bot Telegram */}
             <div className="lg:w-2/3">
@@ -603,125 +564,7 @@ export default function Config() {
           </div>
         </div>
 
-        {/* Configuration boutique Vercel */}
-        <div className="bg-white shadow rounded-lg">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-lg font-medium text-gray-900">🏪 Boutique Vercel</h2>
-          </div>
-          <div className="p-6 space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Nom de la boutique
-              </label>
-              <input
-                type="text"
-                value={config.boutique?.name || ''}
-                onChange={(e) => updateConfig('boutique', 'name', e.target.value)}
-                className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Ma Boutique"
-              />
-              <p className="text-sm text-gray-500 mt-1">Titre principal affiché sur le site web</p>
-            </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Sous-titre de la boutique
-              </label>
-              <input
-                type="text"
-                value={config.boutique?.subtitle || ''}
-                onChange={(e) => updateConfig('boutique', 'subtitle', e.target.value)}
-                className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Découvrez nos produits"
-              />
-              <p className="text-sm text-gray-500 mt-1">Sous-titre affiché sous le titre principal</p>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Logo de la boutique (URL)
-              </label>
-              <input
-                type="url"
-                value={config.boutique?.logo || ''}
-                onChange={(e) => updateConfig('boutique', 'logo', e.target.value)}
-                className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                placeholder="https://example.com/logo.png"
-              />
-              <p className="text-sm text-gray-500 mt-1">URL du logo affiché en haut de la boutique</p>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Image de fond de la boutique
-              </label>
-              <input
-                type="url"
-                value={config.boutique?.backgroundImage || ''}
-                onChange={(e) => updateConfig('boutique', 'backgroundImage', e.target.value)}
-                className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                placeholder="https://example.com/background.jpg"
-              />
-              <p className="text-sm text-gray-500 mt-1">URL de l'image de fond affichée sur toutes les pages de la boutique</p>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Titre section VIP
-              </label>
-              <input
-                type="text"
-                value={config.boutique?.vipTitle || ''}
-                onChange={(e) => updateConfig('boutique', 'vipTitle', e.target.value)}
-                className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Boutiques VIP"
-              />
-              <p className="text-sm text-gray-500 mt-1">Titre de la section VIP sur le site</p>
-            </div>
-
-                         <div>
-               <label className="block text-sm font-medium text-gray-700 mb-2">
-                 Sous-titre section VIP
-               </label>
-               <input
-                 type="text"
-                 value={config.boutique?.vipSubtitle || ''}
-                 onChange={(e) => updateConfig('boutique', 'vipSubtitle', e.target.value)}
-                 className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                 placeholder="Sélection premium exclusive"
-               />
-               <p className="text-sm text-gray-500 mt-1">Sous-titre de la section VIP</p>
-             </div>
-
-             <div>
-               <label className="block text-sm font-medium text-gray-700 mb-2">
-                 Titre page Recherche
-               </label>
-               <input
-                 type="text"
-                 value={config.boutique?.searchTitle || ''}
-                 onChange={(e) => updateConfig('boutique', 'searchTitle', e.target.value)}
-                 className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                 placeholder="Recherche Boutiques"
-               />
-               <p className="text-sm text-gray-500 mt-1">Titre affiché sur la page de recherche</p>
-             </div>
-
-             <div>
-               <label className="block text-sm font-medium text-gray-700 mb-2">
-                 Sous-titre page Recherche
-               </label>
-               <input
-                 type="text"
-                 value={config.boutique?.searchSubtitle || ''}
-                 onChange={(e) => updateConfig('boutique', 'searchSubtitle', e.target.value)}
-                 className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                 placeholder="Trouvez la boutique parfaite"
-               />
-               <p className="text-sm text-gray-500 mt-1">Sous-titre affiché sur la page de recherche</p>
-             </div>
-           </div>
-         </div>
 
 
 
@@ -777,10 +620,22 @@ export default function Config() {
         {/* Réseaux sociaux */}
         <div className="bg-white shadow rounded-lg">
           <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-lg font-medium text-gray-900 flex items-center">
-              <GlobeAltIcon className="w-5 h-5 mr-2" />
-              Réseaux Sociaux
-            </h2>
+            <div className="flex justify-between items-center">
+              <h2 className="text-lg font-medium text-gray-900 flex items-center">
+                <GlobeAltIcon className="w-5 h-5 mr-2" />
+                Réseaux Sociaux
+              </h2>
+              <a
+                href="/admin/config/welcome-social"
+                className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm flex items-center space-x-1"
+              >
+                <span>📱</span>
+                <span>Gérer réseaux d'accueil</span>
+              </a>
+            </div>
+            <p className="text-sm text-gray-600 mt-1">
+              Réseaux sociaux globaux • <a href="/admin/config/welcome-social" className="text-blue-500 hover:text-blue-600">Gérer les réseaux du message d'accueil →</a>
+            </p>
           </div>
           <div className="p-6 space-y-4">
             <div>
@@ -872,7 +727,7 @@ export default function Config() {
           </div>
         )}
 
-        {/* Section de sauvegarde commune */}
+        {/* Section de sauvegarde */}
         <div className="bg-white rounded-lg shadow p-4">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
@@ -881,18 +736,11 @@ export default function Config() {
             </div>
             <div className="flex flex-col sm:flex-row gap-2">
               <button
-                onClick={forceBoutiqueSync}
-                disabled={saving}
-                className="bg-purple-500 hover:bg-purple-600 disabled:opacity-50 text-white px-4 py-2 rounded text-sm font-medium transition-colors"
-              >
-                🔄 Test Sync
-              </button>
-              <button
                 onClick={reloadBot}
                 disabled={saving}
                 className="bg-green-500 hover:bg-green-600 disabled:opacity-50 text-white px-4 py-2 rounded text-sm font-medium transition-colors"
               >
-                🔄 Recharger
+                🔄 Recharger Bot
               </button>
               <button
                 onClick={saveConfig}

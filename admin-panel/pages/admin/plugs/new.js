@@ -40,11 +40,9 @@ export default function NewPlug() {
         description: ''
       }
     },
-    socialMedia: {
-      telegram: '',
-      whatsapp: '',
-      website: ''
-    }
+    socialMedia: [
+      // Chaque réseau social aura : name, emoji, url
+    ]
   })
   const [loading, setLoading] = useState(false)
   const router = useRouter()
@@ -93,6 +91,29 @@ export default function NewPlug() {
       countries: prev.countries.includes(country)
         ? prev.countries.filter(c => c !== country)
         : [...prev.countries, country]
+    }))
+  }
+
+  const addSocialMedia = () => {
+    setFormData(prev => ({
+      ...prev,
+      socialMedia: [...prev.socialMedia, { name: '', emoji: '', url: '' }]
+    }))
+  }
+
+  const removeSocialMedia = (index) => {
+    setFormData(prev => ({
+      ...prev,
+      socialMedia: prev.socialMedia.filter((_, i) => i !== index)
+    }))
+  }
+
+  const updateSocialMedia = (index, field, value) => {
+    setFormData(prev => ({
+      ...prev,
+      socialMedia: prev.socialMedia.map((social, i) => 
+        i === index ? { ...social, [field]: value } : social
+      )
     }))
   }
 
@@ -318,42 +339,63 @@ export default function NewPlug() {
                 <h2 className="text-lg font-medium text-gray-900">Réseaux sociaux</h2>
               </div>
               <div className="p-6 space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    📱 Telegram
-                  </label>
-                  <input
-                    type="url"
-                    value={formData.socialMedia.telegram}
-                    onChange={(e) => handleNestedChange('socialMedia', 'telegram', e.target.value)}
-                    className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="https://t.me/username"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    💬 WhatsApp
-                  </label>
-                  <input
-                    type="url"
-                    value={formData.socialMedia.whatsapp}
-                    onChange={(e) => handleNestedChange('socialMedia', 'whatsapp', e.target.value)}
-                    className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="https://wa.me/33123456789"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    🌐 Site Web
-                  </label>
-                  <input
-                    type="url"
-                    value={formData.socialMedia.website}
-                    onChange={(e) => handleNestedChange('socialMedia', 'website', e.target.value)}
-                    className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="https://exemple.com"
-                  />
-                </div>
+                {formData.socialMedia.map((social, index) => (
+                  <div key={index} className="flex space-x-2 items-end">
+                    <div className="flex-1">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Nom du réseau
+                      </label>
+                      <input
+                        type="text"
+                        value={social.name || ''}
+                        onChange={(e) => updateSocialMedia(index, 'name', e.target.value)}
+                        className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                        placeholder="Ex: Instagram, TikTok, Discord..."
+                      />
+                    </div>
+                    <div className="w-20">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Emoji
+                      </label>
+                      <input
+                        type="text"
+                        value={social.emoji || ''}
+                        onChange={(e) => updateSocialMedia(index, 'emoji', e.target.value)}
+                        className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-center"
+                        placeholder="📱"
+                        maxLength="2"
+                      />
+                    </div>
+                    <div className="flex-2">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Lien
+                      </label>
+                      <input
+                        type="url"
+                        value={social.url || ''}
+                        onChange={(e) => updateSocialMedia(index, 'url', e.target.value)}
+                        className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                        placeholder="https://exemple.com"
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => removeSocialMedia(index)}
+                      className="px-3 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
+                    >
+                      <XMarkIcon className="h-5 w-5" />
+                    </button>
+                  </div>
+                ))}
+                
+                <button
+                  type="button"
+                  onClick={addSocialMedia}
+                  className="w-full flex items-center justify-center px-4 py-2 border border-dashed border-gray-300 rounded-md text-gray-600 hover:text-gray-800 hover:border-gray-400"
+                >
+                  <PlusIcon className="h-5 w-5 mr-2" />
+                  Ajouter un réseau social
+                </button>
               </div>
             </div>
           </div>

@@ -4,10 +4,13 @@ const { createMainKeyboard } = require('../utils/keyboards');
 // Gestionnaire pour le bouton Contact
 const handleContact = async (ctx) => {
   try {
+    // Confirmer immédiatement la callback pour éviter le loading
+    await ctx.answerCbQuery();
+    
     const config = await Config.findById('main');
     
     if (!config) {
-      return ctx.answerCbQuery('❌ Configuration non trouvée');
+      return;
     }
 
     let message = `📞 **Contact**\n\n${config?.buttons?.contact?.content || 'Contactez-nous pour plus d\'informations !'}`;
@@ -48,23 +51,23 @@ const handleContact = async (ctx) => {
         parse_mode: 'Markdown'
       });
     }
-    
-    // Confirmer la callback pour éviter le loading
-    await ctx.answerCbQuery();
 
   } catch (error) {
     console.error('Erreur dans handleContact:', error);
-    await ctx.answerCbQuery('❌ Erreur lors du chargement');
+    await ctx.answerCbQuery('❌ Erreur lors du chargement').catch(() => {});
   }
 };
 
 // Gestionnaire pour le bouton Info
 const handleInfo = async (ctx) => {
   try {
+    // Confirmer immédiatement la callback pour éviter le loading
+    await ctx.answerCbQuery();
+    
     const config = await Config.findById('main');
     
     if (!config) {
-      return ctx.answerCbQuery('❌ Configuration non trouvée');
+      return;
     }
 
     // Utiliser le contenu personnalisé du panel admin
@@ -94,13 +97,10 @@ const handleInfo = async (ctx) => {
         parse_mode: 'Markdown'
       });
     }
-    
-    // Confirmer la callback pour éviter le loading
-    await ctx.answerCbQuery();
 
   } catch (error) {
     console.error('Erreur dans handleInfo:', error);
-    await ctx.answerCbQuery('❌ Erreur lors du chargement');
+    await ctx.answerCbQuery('❌ Erreur lors du chargement').catch(() => {});
   }
 };
 

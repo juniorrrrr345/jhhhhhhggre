@@ -16,7 +16,25 @@ const configSchema = new mongoose.Schema({
     text: {
       type: String,
       default: 'Message d\'accueil personnalisé à configurer dans le panel admin.'
-    }
+    },
+    socialMedia: [{
+      name: {
+        type: String,
+        required: true
+      },
+      emoji: {
+        type: String,
+        required: true
+      },
+      url: {
+        type: String,
+        required: true
+      },
+      order: {
+        type: Number,
+        default: 0
+      }
+    }]
   },
   
   // Boutons principaux
@@ -127,6 +145,42 @@ const configSchema = new mongoose.Schema({
     errorOccurred: {
       type: String,
       default: '❌ Une erreur est survenue, veuillez réessayer.'
+    }
+  },
+  
+  // Configuration de la boutique Vercel
+  boutique: {
+    name: {
+      type: String,
+      default: ''
+    },
+    logo: {
+      type: String,
+      default: ''
+    },
+    subtitle: {
+      type: String,
+      default: ''
+    },
+    backgroundImage: {
+      type: String,
+      default: ''
+    },
+    vipTitle: {
+      type: String,
+      default: ''
+    },
+    vipSubtitle: {
+      type: String,
+      default: ''
+    },
+    searchTitle: {
+      type: String,
+      default: ''
+    },
+    searchSubtitle: {
+      type: String,
+      default: ''
     }
   },
   

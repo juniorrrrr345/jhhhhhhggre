@@ -225,15 +225,12 @@ export default function ShopHome() {
                 </div>
               )}
               <h3 className="text-3xl font-bold text-gray-900">
-                {config?.boutique?.name || 'Boutique'}
+                {config?.boutique?.name || ''}
               </h3>
             </div>
-            <p className="text-gray-600 max-w-2xl mx-auto">
-              {config?.boutique?.subtitle || 'Bienvenue dans notre boutique'}
-            </p>
-            {lastUpdate && (
-              <p className="text-xs text-gray-400 mt-2">
-                Dernière mise à jour: {lastUpdate.toLocaleTimeString()}
+            {config?.boutique?.subtitle && (
+              <p className="text-gray-600 max-w-2xl mx-auto">
+                {config.boutique.subtitle}
               </p>
             )}
           </div>
@@ -259,7 +256,7 @@ export default function ShopHome() {
                       <img
                         src={plug.image || '/placeholder.jpg'}
                         alt={plug.name}
-                        className="w-full h-full object-cover grayscale"
+                        className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
                       />
                       {/* Badges en haut à droite pour ne pas cacher le nom */}
                       <div className="absolute top-2 right-2 space-y-1">
