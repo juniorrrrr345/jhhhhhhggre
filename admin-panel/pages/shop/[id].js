@@ -16,11 +16,20 @@ export default function ShopPlugDetail() {
   const [notFound, setNotFound] = useState(false)
 
   useEffect(() => {
-    if (id) {
-      fetchConfig()
-      fetchPlug(id)
+    if (router.isReady && id) {
+      const loadData = async () => {
+        try {
+          setInitialLoading(true)
+          await Promise.all([fetchConfig(), fetchPlug(id)])
+        } catch (error) {
+          console.error('❌ Erreur chargement données:', error)
+        } finally {
+          setInitialLoading(false)
+        }
+      }
+      loadData()
     }
-  }, [id])
+  }, [router.isReady, id])
 
   const fetchConfig = async () => {
     try {
