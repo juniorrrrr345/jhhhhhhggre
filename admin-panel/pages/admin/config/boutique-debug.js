@@ -7,6 +7,10 @@ export default function BoutiqueDebug() {
   const [config, setConfig] = useState(null)
   const [publicConfig, setPublicConfig] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [serverStatus, setServerStatus] = useState({
+    admin: 'unknown',
+    bot: 'unknown'
+  })
   const router = useRouter()
 
   useEffect(() => {
@@ -27,35 +31,56 @@ export default function BoutiqueDebug() {
     try {
       const token = localStorage.getItem('adminToken')
       
-      // Charger la config admin
-      const adminResponse = await fetch('/api/proxy?endpoint=/api/config', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Cache-Control': 'no-cache'
-        }
-      })
+      // Test de l'état des serveurs
+      setServerStatus(prev => ({ ...prev, admin: 'testing', bot: 'testing' }))
       
-      if (adminResponse.ok) {
-        const adminData = await adminResponse.json()
-        setConfig(adminData)
-        console.log('🔧 Config admin:', adminData)
+      // Charger la config admin
+      try {
+        const adminResponse = await fetch('/api/proxy?endpoint=/api/config', {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Cache-Control': 'no-cache'
+          }
+        })
+        
+        if (adminResponse.ok) {
+          const adminData = await adminResponse.json()
+          setConfig(adminData)
+          setServerStatus(prev => ({ ...prev, admin: 'online' }))
+          console.log('🔧 Config admin:', adminData)
+        } else {
+          setServerStatus(prev => ({ ...prev, admin: 'error' }))
+          console.error('❌ Erreur config admin:', adminResponse.status)
+        }
+      } catch (error) {
+        setServerStatus(prev => ({ ...prev, admin: 'offline' }))
+        console.error('❌ Erreur connexion admin:', error)
       }
       
       // Charger la config publique
-      const publicResponse = await fetch('/api/proxy?endpoint=/api/public/config', {
-        headers: {
-          'Cache-Control': 'no-cache'
+      try {
+        const publicResponse = await fetch('/api/proxy?endpoint=/api/public/config', {
+          headers: {
+            'Cache-Control': 'no-cache'
+          }
+        })
+        
+        if (publicResponse.ok) {
+          const publicData = await publicResponse.json()
+          setPublicConfig(publicData)
+          setServerStatus(prev => ({ ...prev, bot: 'online' }))
+          console.log('🏪 Config publique:', publicData)
+        } else {
+          setServerStatus(prev => ({ ...prev, bot: 'error' }))
+          console.error('❌ Erreur config publique:', publicResponse.status)
         }
-      })
-      
-      if (publicResponse.ok) {
-        const publicData = await publicResponse.json()
-        setPublicConfig(publicData)
-        console.log('🏪 Config publique:', publicData)
+      } catch (error) {
+        setServerStatus(prev => ({ ...prev, bot: 'offline' }))
+        console.error('❌ Erreur connexion bot:', error)
       }
       
     } catch (error) {
-      console.error('Erreur:', error)
+      console.error('Erreur générale:', error)
     } finally {
       setLoading(false)
     }
@@ -140,6 +165,41 @@ export default function BoutiqueDebug() {
           <div>
             <h1 className="text-2xl font-bold text-gray-900">Diagnostic Boutique</h1>
             <p className="text-gray-600 mt-1">Vérifiez la synchronisation de la configuration boutique</p>
+            
+            {/* État des serveurs */}
+            <div className="flex space-x-4 mt-2">
+              <div className={`flex items-center space-x-1 px-2 py-1 rounded text-sm ${
+                serverStatus.admin === 'online' ? 'bg-green-100 text-green-800' :
+                serverStatus.admin === 'offline' ? 'bg-red-100 text-red-800' :
+                serverStatus.admin === 'error' ? 'bg-orange-100 text-orange-800' :
+                'bg-gray-100 text-gray-800'
+              }`}>
+                <span>🖥️ Serveur Admin:</span>
+                <span>{
+                  serverStatus.admin === 'online' ? '✅ En ligne' :
+                  serverStatus.admin === 'offline' ? '❌ Hors ligne' :
+                  serverStatus.admin === 'error' ? '⚠️ Erreur' :
+                  serverStatus.admin === 'testing' ? '🔄 Test...' :
+                  '❓ Inconnu'
+                }</span>
+              </div>
+              
+              <div className={`flex items-center space-x-1 px-2 py-1 rounded text-sm ${
+                serverStatus.bot === 'online' ? 'bg-green-100 text-green-800' :
+                serverStatus.bot === 'offline' ? 'bg-red-100 text-red-800' :
+                serverStatus.bot === 'error' ? 'bg-orange-100 text-orange-800' :
+                'bg-gray-100 text-gray-800'
+              }`}>
+                <span>🤖 Serveur Bot:</span>
+                <span>{
+                  serverStatus.bot === 'online' ? '✅ En ligne' :
+                  serverStatus.bot === 'offline' ? '❌ Hors ligne' :
+                  serverStatus.bot === 'error' ? '⚠️ Erreur' :
+                  serverStatus.bot === 'testing' ? '🔄 Test...' :
+                  '❓ Inconnu'
+                }</span>
+              </div>
+            </div>
           </div>
           <div className="space-x-3">
             <button

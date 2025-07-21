@@ -146,12 +146,21 @@ export default function Configuration() {
 
   const testSynchronisation = async () => {
     try {
-      // Test de l'API publique
+      console.log('🔍 Test de synchronisation en cours...')
+      
+      // Test de l'API publique avec timeout plus long
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 10000) // 10 secondes timeout
+      
       const response = await fetch('/api/proxy?endpoint=/api/public/config', {
         headers: {
-          'Cache-Control': 'no-cache'
-        }
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        },
+        signal: controller.signal
       })
+      
+      clearTimeout(timeoutId)
       
       if (response.ok) {
         const publicConfig = await response.json()
@@ -161,17 +170,31 @@ export default function Configuration() {
         const localName = config?.boutique?.name
         const publicName = publicConfig?.boutique?.name
         
+        console.log('📊 Comparaison:', { local: localName, public: publicName })
+        
         if (localName === publicName) {
-          toast.success('✅ Synchronisation OK ! Nom: ' + localName)
+          toast.success(`✅ Synchronisation OK ! Nom: "${localName}"`)
         } else {
           toast.error(`❌ Désynchronisé ! Local: "${localName}" vs Public: "${publicName}"`)
         }
       } else {
-        toast.error('❌ Erreur test synchronisation')
+        console.error('❌ Erreur HTTP:', response.status, response.statusText)
+        if (response.status === 502 || response.status === 503) {
+          toast.error('❌ Serveur bot non accessible. Vérifiez que le serveur bot est démarré.')
+        } else {
+          toast.error(`❌ Erreur API: ${response.status}`)
+        }
       }
     } catch (error) {
       console.error('❌ Erreur test sync:', error)
-      toast.error('❌ Erreur de connexion')
+      
+      if (error.name === 'AbortError') {
+        toast.error('❌ Timeout: Le serveur bot ne répond pas (>10s)')
+      } else if (error.message.includes('Failed to fetch')) {
+        toast.error('❌ Impossible de contacter le serveur. Vérifiez que le serveur bot est démarré sur le port 3000.')
+      } else {
+        toast.error(`❌ Erreur de connexion: ${error.message}`)
+      }
     }
   }
 
