@@ -73,9 +73,26 @@ export default async function handler(req, res) {
     }
     
     const response = await fetch(targetUrl, fetchOptions)
-    const data = await response.json()
     
-    console.log('✅ Proxy response:', response.status)
+    console.log('✅ Proxy response:', response.status, response.headers.get('content-type'))
+    
+    // Vérifier le content-type de la réponse
+    const contentType = response.headers.get('content-type')
+    
+    if (!contentType || !contentType.includes('application/json')) {
+      // Si ce n'est pas du JSON, récupérer le texte
+      const text = await response.text()
+      console.error('❌ Réponse non-JSON reçue:', text.substring(0, 200))
+      
+      return res.status(response.status).json({
+        error: 'Réponse invalide du serveur',
+        contentType,
+        preview: text.substring(0, 200),
+        fullResponse: text.length < 1000 ? text : `${text.substring(0, 1000)}...`
+      })
+    }
+    
+    const data = await response.json()
     
     // Retourner la réponse
     res.status(response.status).json(data)

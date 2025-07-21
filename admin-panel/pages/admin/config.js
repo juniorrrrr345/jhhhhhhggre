@@ -611,125 +611,54 @@ export default function Config() {
           </div>
         </div>
 
-        {/* Configuration boutique Vercel */}
+        {/* Navigation vers pages de configuration séparées */}
         <div className="bg-white shadow rounded-lg">
           <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-lg font-medium text-gray-900">🏪 Boutique Vercel</h2>
+            <h2 className="text-lg font-medium text-gray-900">⚡ Configuration Séparée</h2>
           </div>
-          <div className="p-6 space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Nom de la boutique
-              </label>
-              <input
-                type="text"
-                value={config.boutique?.name || ''}
-                onChange={(e) => updateConfig('boutique', 'name', e.target.value)}
-                className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Ma Boutique"
-              />
-              <p className="text-sm text-gray-500 mt-1">Titre principal affiché sur le site web</p>
+          <div className="p-6">
+            <div className="text-center space-y-4">
+              <p className="text-gray-600 text-sm mb-6">
+                Configuration séparée pour éviter les conflits et améliorer la stabilité
+              </p>
+              
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <a
+                  href="/admin/bot"
+                  className="block bg-green-500 hover:bg-green-600 text-white px-6 py-4 rounded-lg transition-colors text-center"
+                >
+                  <div className="text-2xl mb-2">🤖</div>
+                  <div className="font-medium">Configuration Bot</div>
+                  <div className="text-sm opacity-90 mt-1">Messages, textes, bienvenue</div>
+                </a>
+                
+                <a
+                  href="/admin/boutique"
+                  className="block bg-blue-500 hover:bg-blue-600 text-white px-6 py-4 rounded-lg transition-colors text-center"
+                >
+                  <div className="text-2xl mb-2">🏪</div>
+                  <div className="font-medium">Configuration Boutique</div>
+                  <div className="text-sm opacity-90 mt-1">Nom, logo, apparence, textes</div>
+                </a>
+                
+                <a
+                  href="/admin/config/boutique-debug"
+                  className="block bg-red-500 hover:bg-red-600 text-white px-6 py-4 rounded-lg transition-colors text-center"
+                >
+                  <div className="text-2xl mb-2">🔍</div>
+                  <div className="font-medium">Diagnostic</div>
+                  <div className="text-sm opacity-90 mt-1">Vérifier la synchronisation</div>
+                </a>
+              </div>
+              
+              <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                <p className="text-yellow-800 text-sm">
+                  💡 <strong>Nouveau :</strong> Configurations séparées pour Bot et Boutique pour éviter les erreurs de proxy et améliorer la stabilité.
+                </p>
+              </div>
             </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Sous-titre de la boutique
-              </label>
-              <input
-                type="text"
-                value={config.boutique?.subtitle || ''}
-                onChange={(e) => updateConfig('boutique', 'subtitle', e.target.value)}
-                className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Découvrez nos produits"
-              />
-              <p className="text-sm text-gray-500 mt-1">Sous-titre affiché sous le titre principal</p>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Logo de la boutique (URL)
-              </label>
-              <input
-                type="url"
-                value={config.boutique?.logo || ''}
-                onChange={(e) => updateConfig('boutique', 'logo', e.target.value)}
-                className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                placeholder="https://example.com/logo.png"
-              />
-              <p className="text-sm text-gray-500 mt-1">URL du logo affiché en haut de la boutique</p>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Image de fond de la boutique
-              </label>
-              <input
-                type="url"
-                value={config.boutique?.backgroundImage || ''}
-                onChange={(e) => updateConfig('boutique', 'backgroundImage', e.target.value)}
-                className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                placeholder="https://example.com/background.jpg"
-              />
-              <p className="text-sm text-gray-500 mt-1">URL de l'image de fond affichée sur toutes les pages de la boutique</p>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Titre section VIP
-              </label>
-              <input
-                type="text"
-                value={config.boutique?.vipTitle || ''}
-                onChange={(e) => updateConfig('boutique', 'vipTitle', e.target.value)}
-                className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Boutiques VIP"
-              />
-              <p className="text-sm text-gray-500 mt-1">Titre de la section VIP sur le site</p>
-            </div>
-
-                         <div>
-               <label className="block text-sm font-medium text-gray-700 mb-2">
-                 Sous-titre section VIP
-               </label>
-               <input
-                 type="text"
-                 value={config.boutique?.vipSubtitle || ''}
-                 onChange={(e) => updateConfig('boutique', 'vipSubtitle', e.target.value)}
-                 className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                 placeholder="Sélection premium exclusive"
-               />
-               <p className="text-sm text-gray-500 mt-1">Sous-titre de la section VIP</p>
-             </div>
-
-             <div>
-               <label className="block text-sm font-medium text-gray-700 mb-2">
-                 Titre page Recherche
-               </label>
-               <input
-                 type="text"
-                 value={config.boutique?.searchTitle || ''}
-                 onChange={(e) => updateConfig('boutique', 'searchTitle', e.target.value)}
-                 className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                 placeholder="Recherche Boutiques"
-               />
-               <p className="text-sm text-gray-500 mt-1">Titre affiché sur la page de recherche</p>
-             </div>
-
-             <div>
-               <label className="block text-sm font-medium text-gray-700 mb-2">
-                 Sous-titre page Recherche
-               </label>
-               <input
-                 type="text"
-                 value={config.boutique?.searchSubtitle || ''}
-                 onChange={(e) => updateConfig('boutique', 'searchSubtitle', e.target.value)}
-                 className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                 placeholder="Trouvez la boutique parfaite"
-               />
-               <p className="text-sm text-gray-500 mt-1">Sous-titre affiché sur la page de recherche</p>
-             </div>
-           </div>
-         </div>
+          </div>
+        </div>
 
 
 
