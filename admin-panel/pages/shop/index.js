@@ -16,15 +16,31 @@ export default function ShopHome() {
   useEffect(() => {
     fetchConfig()
     fetchPlugs()
+    
+    // Debug logs
+    console.log('🔄 Boutique initialisée')
   }, [])
+
+  // Debug: afficher la config quand elle change
+  useEffect(() => {
+    if (config) {
+      console.log('📊 Config reçue:', {
+        boutique: config.boutique,
+        hasName: !!config.boutique?.name,
+        hasSubtitle: !!config.boutique?.subtitle
+      })
+    }
+  }, [config])
 
   const fetchConfig = async () => {
     try {
-      const response = await fetch('/api/proxy?endpoint=/api/public/config', {
+      const timestamp = Date.now()
+      const response = await fetch(`/api/proxy?endpoint=/api/public/config&t=${timestamp}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'Cache-Control': 'no-cache'
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache'
         }
       })
 
