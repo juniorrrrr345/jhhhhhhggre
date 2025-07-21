@@ -1,5 +1,49 @@
 const { Markup } = require('telegraf');
 
+// Fonction pour valider une URL
+const isValidUrl = (url) => {
+  if (!url || typeof url !== 'string') return false;
+  
+  // Nettoyer l'URL
+  url = url.trim();
+  if (url === '') return false;
+  
+  try {
+    // Ajouter http:// si aucun protocole n'est spécifié
+    if (!url.startsWith('http://') && !url.startsWith('https://')) {
+      url = 'https://' + url;
+    }
+    
+    // Valider avec l'objet URL
+    new URL(url);
+    return true;
+  } catch (error) {
+    console.warn('🚫 URL invalide détectée:', url, error.message);
+    return false;
+  }
+};
+
+// Fonction pour nettoyer et corriger une URL
+const cleanUrl = (url) => {
+  if (!url || typeof url !== 'string') return null;
+  
+  url = url.trim();
+  if (url === '') return null;
+  
+  // Ajouter https:// si aucun protocole n'est spécifié
+  if (!url.startsWith('http://') && !url.startsWith('https://')) {
+    url = 'https://' + url;
+  }
+  
+  try {
+    new URL(url);
+    return url;
+  } catch (error) {
+    console.warn('🚫 Impossible de corriger l\'URL:', url);
+    return null;
+  }
+};
+
 // Clavier principal de la page d'accueil
 const createMainKeyboard = (config) => {
   const buttons = [];
@@ -8,18 +52,45 @@ const createMainKeyboard = (config) => {
   if (config?.welcome?.socialMedia && config.welcome.socialMedia.length > 0) {
     const sortedSocialMedia = config.welcome.socialMedia.sort((a, b) => a.order - b.order);
     
-    // Grouper les réseaux sociaux par lignes de 2
-    for (let i = 0; i < sortedSocialMedia.length; i += 2) {
-      const socialRow = [];
-      const social1 = sortedSocialMedia[i];
-      socialRow.push(Markup.button.url(`${social1.emoji} ${social1.name}`, social1.url));
-      
-      if (sortedSocialMedia[i + 1]) {
-        const social2 = sortedSocialMedia[i + 1];
-        socialRow.push(Markup.button.url(`${social2.emoji} ${social2.name}`, social2.url));
+    // Filtrer et valider les réseaux sociaux
+    const validSocialMedia = sortedSocialMedia.filter(social => {
+      if (!social || !social.name || !social.emoji || !social.url) {
+        console.warn('🚫 Réseau social incomplet détecté:', social);
+        return false;
       }
       
-      buttons.push(socialRow);
+      const cleanedUrl = cleanUrl(social.url);
+      if (!cleanedUrl) {
+        console.warn('🚫 URL invalide pour le réseau social:', social.name, social.url);
+        return false;
+      }
+      
+      // Mettre à jour l'URL nettoyée
+      social.url = cleanedUrl;
+      return true;
+    });
+    
+    console.log(`✅ ${validSocialMedia.length}/${sortedSocialMedia.length} réseaux sociaux valides dans welcome`);
+    
+    // Grouper les réseaux sociaux par lignes de 2
+    for (let i = 0; i < validSocialMedia.length; i += 2) {
+      const socialRow = [];
+      const social1 = validSocialMedia[i];
+      
+      try {
+        socialRow.push(Markup.button.url(`${social1.emoji} ${social1.name}`, social1.url));
+        console.log(`📱 Bouton créé: ${social1.emoji} ${social1.name} -> ${social1.url}`);
+        
+        if (validSocialMedia[i + 1]) {
+          const social2 = validSocialMedia[i + 1];
+          socialRow.push(Markup.button.url(`${social2.emoji} ${social2.name}`, social2.url));
+          console.log(`📱 Bouton créé: ${social2.emoji} ${social2.name} -> ${social2.url}`);
+        }
+        
+        buttons.push(socialRow);
+      } catch (error) {
+        console.error(`❌ Erreur création bouton social:`, error);
+      }
     }
   }
   
@@ -43,10 +114,22 @@ const createMainKeyboard = (config) => {
   // Réseaux sociaux globaux (gardés pour compatibilité)
   const socialRow = [];
   if (config?.socialMedia?.telegram) {
-    socialRow.push(Markup.button.url('📱 Telegram', config.socialMedia.telegram));
+    const cleanedTelegramUrl = cleanUrl(config.socialMedia.telegram);
+    if (cleanedTelegramUrl) {
+      socialRow.push(Markup.button.url('📱 Telegram', cleanedTelegramUrl));
+      console.log('📱 Bouton Telegram global créé:', cleanedTelegramUrl);
+    } else {
+      console.warn('🚫 URL Telegram globale invalide:', config.socialMedia.telegram);
+    }
   }
   if (config?.socialMedia?.instagram) {
-    socialRow.push(Markup.button.url('📸 Instagram', config.socialMedia.instagram));
+    const cleanedInstagramUrl = cleanUrl(config.socialMedia.instagram);
+    if (cleanedInstagramUrl) {
+      socialRow.push(Markup.button.url('📸 Instagram', cleanedInstagramUrl));
+      console.log('📱 Bouton Instagram global créé:', cleanedInstagramUrl);
+    } else {
+      console.warn('🚫 URL Instagram globale invalide:', config.socialMedia.instagram);
+    }
   }
   if (socialRow.length > 0) {
     buttons.push(socialRow);
@@ -54,10 +137,22 @@ const createMainKeyboard = (config) => {
   
   const socialRow2 = [];
   if (config?.socialMedia?.whatsapp) {
-    socialRow2.push(Markup.button.url('💬 WhatsApp', config.socialMedia.whatsapp));
+    const cleanedWhatsappUrl = cleanUrl(config.socialMedia.whatsapp);
+    if (cleanedWhatsappUrl) {
+      socialRow2.push(Markup.button.url('💬 WhatsApp', cleanedWhatsappUrl));
+      console.log('📱 Bouton WhatsApp global créé:', cleanedWhatsappUrl);
+    } else {
+      console.warn('🚫 URL WhatsApp globale invalide:', config.socialMedia.whatsapp);
+    }
   }
   if (config?.socialMedia?.website) {
-    socialRow2.push(Markup.button.url('🌐 Site Web', config.socialMedia.website));
+    const cleanedWebsiteUrl = cleanUrl(config.socialMedia.website);
+    if (cleanedWebsiteUrl) {
+      socialRow2.push(Markup.button.url('🌐 Site Web', cleanedWebsiteUrl));
+      console.log('📱 Bouton Site Web global créé:', cleanedWebsiteUrl);
+    } else {
+      console.warn('🚫 URL Site Web globale invalide:', config.socialMedia.website);
+    }
   }
   if (socialRow2.length > 0) {
     buttons.push(socialRow2);
@@ -142,18 +237,37 @@ const createPlugKeyboard = (plug, returnContext = 'top_plugs') => {
   
   // Lien Telegram optionnel
   if (plug.telegramLink) {
-    buttons.push([Markup.button.url('📱 Telegram', plug.telegramLink)]);
+    const cleanedTelegramUrl = cleanUrl(plug.telegramLink);
+    if (cleanedTelegramUrl) {
+      buttons.push([Markup.button.url('📱 Telegram', cleanedTelegramUrl)]);
+      console.log(`📱 Bouton Telegram du plug créé: ${cleanedTelegramUrl}`);
+    } else {
+      console.warn(`🚫 URL Telegram invalide pour le plug ${plug.name}:`, plug.telegramLink);
+    }
   }
   
   // Réseaux sociaux personnalisés du plug - CORRECTION
   console.log(`🔧 Réseaux sociaux du plug ${plug.name}:`, plug.socialMedia);
   if (plug.socialMedia && Array.isArray(plug.socialMedia) && plug.socialMedia.length > 0) {
-    // Filtrer les réseaux sociaux valides
-    const validSocialMedia = plug.socialMedia.filter(social => 
-      social && social.name && social.emoji && social.url && social.url.trim() !== ''
-    );
+    // Filtrer les réseaux sociaux valides avec validation d'URL
+    const validSocialMedia = plug.socialMedia.filter(social => {
+      if (!social || !social.name || !social.emoji || !social.url) {
+        console.warn(`🚫 Réseau social incomplet pour ${plug.name}:`, social);
+        return false;
+      }
+      
+      const cleanedUrl = cleanUrl(social.url);
+      if (!cleanedUrl) {
+        console.warn(`🚫 URL invalide pour le réseau social ${social.name} du plug ${plug.name}:`, social.url);
+        return false;
+      }
+      
+      // Mettre à jour l'URL nettoyée
+      social.url = cleanedUrl;
+      return true;
+    });
     
-    console.log(`✅ Réseaux sociaux valides pour ${plug.name}:`, validSocialMedia.length);
+    console.log(`✅ ${validSocialMedia.length}/${plug.socialMedia.length} réseaux sociaux valides pour ${plug.name}`);
     
     // Grouper les réseaux sociaux par lignes de 2
     for (let i = 0; i < validSocialMedia.length; i += 2) {
