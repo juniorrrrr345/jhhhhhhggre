@@ -33,7 +33,7 @@ export default function Dashboard() {
 
   const fetchDashboardData = async (token) => {
     try {
-      const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || process.env.API_BASE_URL
+      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || process.env.API_BASE_URL
       console.log('🔍 Fetching dashboard data from:', apiBaseUrl)
       
       // Récupérer les stats des plugs

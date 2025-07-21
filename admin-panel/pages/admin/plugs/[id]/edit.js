@@ -53,7 +53,7 @@ export default function EditPlug() {
   const loadPlug = async () => {
     try {
       const token = localStorage.getItem('adminToken')
-      const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://jhhhhhhggre.onrender.com'
+      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://jhhhhhhggre.onrender.com'
       
       let response
       try {
@@ -172,7 +172,7 @@ export default function EditPlug() {
     
     try {
       const token = localStorage.getItem('adminToken')
-      const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://jhhhhhhggre.onrender.com'
+      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://jhhhhhhggre.onrender.com'
       
       let response
       try {

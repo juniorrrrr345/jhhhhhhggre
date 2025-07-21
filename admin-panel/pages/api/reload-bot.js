@@ -4,7 +4,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://jhhhhhhggre.onrender.com';
+    const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://jhhhhhhggre.onrender.com';
     
     // Appeler l'endpoint de redémarrage du bot
     const response = await fetch(`${API_BASE_URL}/api/bot/reload`, {

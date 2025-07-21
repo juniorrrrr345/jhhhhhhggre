@@ -4,7 +4,7 @@ import Head from 'next/head';
 import { HeartIcon, PencilIcon, ArrowLeftIcon } from '@heroicons/react/24/outline';
 import { HeartIcon as HeartSolidIcon } from '@heroicons/react/24/solid';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
 // Fonction utilitaire pour appeler l'API avec fallback proxy
 const apiCall = async (endpoint, options = {}) => {

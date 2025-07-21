@@ -28,7 +28,7 @@ export default function Login() {
       let errorMessage = '';
       
       try {
-        const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://jhhhhhhggre.onrender.com';
+        const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://jhhhhhhggre.onrender.com';
         console.log('🔐 Login tentative directe:', apiBaseUrl);
         
         // Test de santé du serveur d'abord

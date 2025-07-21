@@ -13,14 +13,14 @@ export default function Debug() {
     // Test 1: Variables d'environnement
     console.log('🔧 Test des variables d\'environnement')
     testResults.env = {
-      NEXT_PUBLIC_API_BASE_URL: process.env.NEXT_PUBLIC_API_BASE_URL,
+      NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
       NODE_ENV: process.env.NODE_ENV
     }
 
     // Test 2: API directe - Health check
     try {
       console.log('🏥 Test API directe - Health check')
-      const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://jhhhhhhggre.onrender.com'
+      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://jhhhhhhggre.onrender.com'
       const healthResponse = await fetch(`${apiBaseUrl}/health`, {
         method: 'GET',
         headers: { 'Cache-Control': 'no-cache' }
@@ -40,7 +40,7 @@ export default function Debug() {
     // Test 3: API directe - Config (sans auth)
     try {
       console.log('⚙️ Test API directe - Config (sans auth)')
-      const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://jhhhhhhggre.onrender.com'
+      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://jhhhhhhggre.onrender.com'
       const configResponse = await fetch(`${apiBaseUrl}/api/public/config`, {
         method: 'GET',
         headers: { 'Cache-Control': 'no-cache' }
