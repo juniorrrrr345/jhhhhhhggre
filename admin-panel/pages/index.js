@@ -133,27 +133,7 @@ export default function Login() {
             </button>
           </form>
 
-          {/* Liens utiles */}
-          <div className="mt-6 text-center space-y-2">
-            <a 
-              href="/login-proxy" 
-              className="block text-sm text-purple-500 hover:text-purple-700 underline font-bold"
-            >
-              🔄 Connexion PROXY (recommandée)
-            </a>
-            <a 
-              href="/login-direct" 
-              className="block text-sm text-blue-500 hover:text-blue-700 underline font-medium"
-            >
-              🚀 Connexion directe automatique
-            </a>
-            <a 
-              href="/diagnostic" 
-              className="block text-sm text-gray-500 hover:text-gray-700 underline"
-            >
-              🔧 Page de diagnostic de connexion
-            </a>
-          </div>
+
 
 
         </div>

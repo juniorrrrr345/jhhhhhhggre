@@ -8,6 +8,7 @@ import {
   EyeIcon,
   PlusIcon
 } from '@heroicons/react/24/outline'
+import { api } from '../../lib/api-proxy'
 
 export default function Dashboard() {
   const [stats, setStats] = useState({
