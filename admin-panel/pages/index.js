@@ -207,6 +207,12 @@ export default function Login() {
           {/* Liens utiles */}
           <div className="mt-6 text-center space-y-2">
             <a 
+              href="/login-proxy" 
+              className="block text-sm text-purple-500 hover:text-purple-700 underline font-bold"
+            >
+              🔄 Connexion PROXY (recommandée)
+            </a>
+            <a 
               href="/login-direct" 
               className="block text-sm text-blue-500 hover:text-blue-700 underline font-medium"
             >
