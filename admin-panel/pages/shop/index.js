@@ -156,7 +156,7 @@ export default function ShopHome() {
                 </div>
                 <div className="ml-3">
                   <h1 className="text-xl font-bold text-white">
-                    {config?.boutique?.name || ''}
+                    {config?.boutique?.name || 'Boutique'}
                   </h1>
                   <p className="text-gray-300 text-sm">
                     {config?.boutique?.subtitle || ''}
@@ -228,12 +228,9 @@ export default function ShopHome() {
                 {config?.boutique?.name || 'Boutique'}
               </h3>
             </div>
-            <p className="text-gray-600 max-w-2xl mx-auto">
-              {config?.boutique?.subtitle || 'Bienvenue dans notre boutique'}
-            </p>
-            {lastUpdate && (
-              <p className="text-xs text-gray-400 mt-2">
-                Dernière mise à jour: {lastUpdate.toLocaleTimeString()}
+            {config?.boutique?.subtitle && (
+              <p className="text-gray-600 max-w-2xl mx-auto">
+                {config.boutique.subtitle}
               </p>
             )}
           </div>
