@@ -87,7 +87,8 @@ export default function ShopPlugDetail() {
       
       let data
       try {
-        const directResponse = await fetch(`${apiBaseUrl}/api/public/plugs/${id}?t=${timestamp}`, {
+        // D'abord essayer de récupérer le plug spécifique
+        const directResponse = await fetch(`${apiBaseUrl}/api/public/plugs?limit=1000&t=${timestamp}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -99,10 +100,7 @@ export default function ShopPlugDetail() {
         
         if (directResponse.ok) {
           data = await directResponse.json()
-          console.log('✅ Plug trouvé:', data.name)
-        } else if (directResponse.status === 404) {
-          setNotFound(true)
-          return
+          console.log('✅ API détail directe réussie:', data)
         } else {
           throw new Error(`Direct plug failed: HTTP ${directResponse.status}`)
         }
@@ -110,7 +108,7 @@ export default function ShopPlugDetail() {
         console.log('❌ Plug détail direct échoué:', directError.message)
         
         try {
-          const proxyResponse = await fetch(`/api/proxy?endpoint=/api/public/plugs/${id}&t=${new Date().getTime()}`, {
+          const proxyResponse = await fetch(`/api/proxy?endpoint=/api/public/plugs&limit=1000&t=${new Date().getTime()}`, {
             method: 'GET',
             headers: {
               'Content-Type': 'application/json',
@@ -120,7 +118,7 @@ export default function ShopPlugDetail() {
           
           if (proxyResponse.ok) {
             data = await proxyResponse.json()
-            console.log('✅ Plug trouvé via proxy:', data.name)
+            console.log('✅ Plug détail via proxy:', data)
           } else if (proxyResponse.status === 404) {
             setNotFound(true)
             return
@@ -134,7 +132,28 @@ export default function ShopPlugDetail() {
         }
       }
 
-      setPlug(data)
+      // Traiter la structure de réponse et trouver le plug spécifique
+      let plugsArray = []
+      if (data && Array.isArray(data.plugs)) {
+        plugsArray = data.plugs
+      } else if (Array.isArray(data)) {
+        // Fallback si la réponse est directement un tableau
+        plugsArray = data
+      } else {
+        console.error('❌ Structure de données détail inattendue:', data)
+        setNotFound(true)
+        return
+      }
+
+      // Trouver le plug avec l'ID correspondant
+      const foundPlug = plugsArray.find(p => p._id === id)
+      if (foundPlug) {
+        console.log('✅ Plug trouvé:', foundPlug.name)
+        setPlug(foundPlug)
+      } else {
+        console.log('❌ Plug non trouvé avec ID:', id)
+        setNotFound(true)
+      }
     } catch (error) {
       console.error('❌ Erreur chargement plug détail:', error)
       setNotFound(true)

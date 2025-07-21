@@ -104,6 +104,7 @@ export default function ShopSearch() {
         
         if (directResponse.ok) {
           data = await directResponse.json()
+          console.log('✅ API recherche directe réussie:', data)
         } else {
           throw new Error(`Direct plugs failed: HTTP ${directResponse.status}`)
         }
@@ -124,13 +125,27 @@ export default function ShopSearch() {
           }
           
           data = await proxyResponse.json()
+          console.log('✅ Recherche proxy réussi:', data)
         } catch (proxyError) {
           console.log('❌ Plugs recherche proxy échoués:', proxyError.message)
           throw proxyError
         }
       }
 
-      setAllPlugs(data)
+      // Traiter la structure de réponse correcte { plugs: [...] }
+      let plugsArray = []
+      if (data && Array.isArray(data.plugs)) {
+        plugsArray = data.plugs
+      } else if (Array.isArray(data)) {
+        // Fallback si la réponse est directement un tableau
+        plugsArray = data
+      } else {
+        console.error('❌ Structure de données recherche inattendue:', data)
+        plugsArray = []
+      }
+
+      console.log('🔍 Plugs recherche chargés:', plugsArray.length, 'boutiques')
+      setAllPlugs(plugsArray)
     } catch (error) {
       console.error('❌ Erreur chargement plugs recherche:', error)
       setAllPlugs([])

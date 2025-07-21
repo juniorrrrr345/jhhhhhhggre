@@ -126,6 +126,7 @@ export default function ShopHome() {
         
         if (directResponse.ok) {
           data = await directResponse.json()
+          console.log('✅ API directe réussie:', data)
         } else {
           throw new Error(`Direct plugs failed: HTTP ${directResponse.status}`)
         }
@@ -146,18 +147,32 @@ export default function ShopHome() {
           }
           
           data = await proxyResponse.json()
+          console.log('✅ Proxy réussi:', data)
         } catch (proxyError) {
           console.log('❌ Plugs proxy échoués:', proxyError.message)
           throw proxyError
         }
       }
 
-      const sortedPlugs = data.sort((a, b) => {
+      // Traiter la structure de réponse correcte { plugs: [...] }
+      let plugsArray = []
+      if (data && Array.isArray(data.plugs)) {
+        plugsArray = data.plugs
+      } else if (Array.isArray(data)) {
+        // Fallback si la réponse est directement un tableau
+        plugsArray = data
+      } else {
+        console.error('❌ Structure de données inattendue:', data)
+        plugsArray = []
+      }
+
+      const sortedPlugs = plugsArray.sort((a, b) => {
         if (a.isVip && !b.isVip) return -1
         if (!a.isVip && b.isVip) return 1
         return 0
       })
 
+      console.log('🔌 Plugs chargés:', sortedPlugs.length, 'boutiques')
       setPlugs(sortedPlugs)
     } catch (error) {
       console.error('❌ Erreur chargement plugs:', error)

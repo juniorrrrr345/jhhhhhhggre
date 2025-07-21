@@ -123,6 +123,7 @@ export default function ShopVIP() {
         
         if (directResponse.ok) {
           data = await directResponse.json()
+          console.log('✅ API VIP directe réussie:', data)
         } else {
           throw new Error(`VIP direct failed: HTTP ${directResponse.status}`)
         }
@@ -144,13 +145,27 @@ export default function ShopVIP() {
           }
           
           data = await proxyResponse.json()
+          console.log('✅ VIP proxy réussi:', data)
         } catch (proxyError) {
           console.log('❌ VIP proxy échoués:', proxyError.message)
           throw proxyError
         }
       }
 
-      const sortedPlugs = data.sort((a, b) => (b.likes || 0) - (a.likes || 0))
+      // Traiter la structure de réponse correcte { plugs: [...] }
+      let plugsArray = []
+      if (data && Array.isArray(data.plugs)) {
+        plugsArray = data.plugs
+      } else if (Array.isArray(data)) {
+        // Fallback si la réponse est directement un tableau
+        plugsArray = data
+      } else {
+        console.error('❌ Structure de données VIP inattendue:', data)
+        plugsArray = []
+      }
+
+      const sortedPlugs = plugsArray.sort((a, b) => (b.likes || 0) - (a.likes || 0))
+      console.log('👑 Plugs VIP chargés:', sortedPlugs.length, 'boutiques VIP')
       setVipPlugs(sortedPlugs)
     } catch (error) {
       console.error('💥 VIP fetch error:', error)
