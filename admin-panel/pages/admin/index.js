@@ -125,9 +125,9 @@ export default function Dashboard() {
       color: 'bg-green-500'
     },
     {
-      name: 'Messages Bot',
-      description: 'Envoyer un message à tous les utilisateurs',
-      href: '/admin/broadcast',
+      name: 'Configuration Bot',
+      description: 'Configurer le bot et envoyer des messages',
+      href: '/admin/bot-config',
       icon: ChatBubbleLeftRightIcon,
       color: 'bg-orange-500'
     },

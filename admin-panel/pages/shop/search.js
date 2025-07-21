@@ -678,6 +678,27 @@ export default function ShopSearch() {
                   />
                 </div>
               )}
+
+              {/* Texte final */}
+              {config?.boutique?.searchFinalText && (
+                <div style={{ 
+                  textAlign: 'center', 
+                  marginTop: '40px',
+                  padding: '20px',
+                  backgroundColor: '#1a1a1a',
+                  borderRadius: '12px',
+                  border: '1px solid #2a2a2a'
+                }}>
+                  <p style={{ 
+                    color: '#ffffff', 
+                    fontSize: '16px', 
+                    margin: '0',
+                    lineHeight: '1.5'
+                  }}>
+                    {config.boutique.searchFinalText}
+                  </p>
+                </div>
+              )}
             </>
           )}
         </main>

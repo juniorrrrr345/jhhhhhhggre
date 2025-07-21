@@ -15,9 +15,11 @@ export default function ConfigurationSimple() {
       vipTitle: '',
       vipSubtitle: '',
       vipBlueText: '',
+      vipFinalText: '',
       searchTitle: '',
       searchSubtitle: '',
-      searchBlueText: ''
+      searchBlueText: '',
+      searchFinalText: ''
     },
     // Message d'accueil Bot
     welcome: {
@@ -84,9 +86,11 @@ export default function ConfigurationSimple() {
             vipTitle: data.boutique?.vipTitle || '',
             vipSubtitle: data.boutique?.vipSubtitle || '',
             vipBlueText: data.boutique?.vipBlueText || '',
+            vipFinalText: data.boutique?.vipFinalText || '',
             searchTitle: data.boutique?.searchTitle || '',
             searchSubtitle: data.boutique?.searchSubtitle || '',
-            searchBlueText: data.boutique?.searchBlueText || ''
+            searchBlueText: data.boutique?.searchBlueText || '',
+            searchFinalText: data.boutique?.searchFinalText || ''
           },
           welcome: {
             text: data.welcome?.text || '',
@@ -350,6 +354,16 @@ export default function ConfigurationSimple() {
                           placeholder="Texte en bleu pour la page VIP"
                         />
                       </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700">Texte final VIP</label>
+                        <input
+                          type="text"
+                          value={config.boutique.vipFinalText}
+                          onChange={(e) => updateBoutique('vipFinalText', e.target.value)}
+                          className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                          placeholder="Texte final affiché en bas de la page VIP"
+                        />
+                      </div>
                     </div>
                   </div>
                   
@@ -384,6 +398,16 @@ export default function ConfigurationSimple() {
                           onChange={(e) => updateBoutique('searchBlueText', e.target.value)}
                           className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                           placeholder="Texte en bleu pour la page recherche"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700">Texte final Recherche</label>
+                        <input
+                          type="text"
+                          value={config.boutique.searchFinalText}
+                          onChange={(e) => updateBoutique('searchFinalText', e.target.value)}
+                          className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                          placeholder="Texte final affiché en bas de la page recherche"
                         />
                       </div>
                     </div>
