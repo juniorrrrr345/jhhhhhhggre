@@ -1018,6 +1018,36 @@ app.delete('/api/config/welcome/social-media/:id', authenticateAdmin, async (req
 
 // ===== ROUTES PLUGS =====
 
+// Récupérer un plug par ID (Admin seulement)
+app.get('/api/plugs/:id', authenticateAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    console.log(`🔍 Recherche du plug avec ID: ${id}`);
+    
+    const plug = await Plug.findById(id);
+    
+    if (!plug) {
+      console.log(`❌ Plug non trouvé: ${id}`);
+      return res.status(404).json({ error: 'Plug non trouvé' });
+    }
+    
+    console.log(`✅ Plug trouvé: ${plug.name}`);
+    
+    // Headers pour éviter le cache
+    res.set({
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      'Pragma': 'no-cache',
+      'Expires': '0'
+    });
+    
+    res.json(plug);
+  } catch (error) {
+    console.error('Erreur récupération plug par ID:', error);
+    res.status(500).json({ error: 'Erreur serveur' });
+  }
+});
+
 // Récupérer tous les plugs (Admin seulement)
 app.get('/api/plugs', authenticateAdmin, async (req, res) => {
   try {
@@ -1323,6 +1353,7 @@ app.get('/', (req, res) => {
       'GET /api/config (admin)',
       'PUT /api/config (admin)',
       'GET /api/plugs (admin)',
+      'GET /api/plugs/:id (admin)',
       'POST /api/plugs (admin)',
       'PUT /api/plugs/:id (admin)',
       'DELETE /api/plugs/:id (admin)'
