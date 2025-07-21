@@ -11,7 +11,11 @@ export default function ConfigurationSimple() {
       subtitle: '',
       taglineHighlight: 'MINI-APP TELEGRAM',
       tagline2: 'CHILL',
-      backgroundImage: ''
+      backgroundImage: '',
+      vipTitle: '',
+      vipSubtitle: '',
+      searchTitle: '',
+      searchSubtitle: ''
     },
     // Message d'accueil Bot
     welcome: {
@@ -80,7 +84,11 @@ export default function ConfigurationSimple() {
             subtitle: data.boutique?.subtitle || '',
             taglineHighlight: data.boutique?.taglineHighlight || 'MINI-APP TELEGRAM',
             tagline2: data.boutique?.tagline2 || 'CHILL',
-            backgroundImage: data.boutique?.backgroundImage || ''
+            backgroundImage: data.boutique?.backgroundImage || '',
+            vipTitle: data.boutique?.vipTitle || '',
+            vipSubtitle: data.boutique?.vipSubtitle || '',
+            searchTitle: data.boutique?.searchTitle || '',
+            searchSubtitle: data.boutique?.searchSubtitle || ''
           },
           welcome: {
             text: data.welcome?.text || '',
@@ -316,6 +324,58 @@ export default function ConfigurationSimple() {
                       className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                       placeholder="https://example.com/image.jpg"
                     />
+                  </div>
+                  
+                  <div className="border-t pt-4">
+                    <h4 className="text-md font-medium text-gray-900 mb-3">Page VIP</h4>
+                    <div className="space-y-3">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700">Titre VIP</label>
+                        <input
+                          type="text"
+                          value={config.boutique.vipTitle}
+                          onChange={(e) => updateBoutique('vipTitle', e.target.value)}
+                          className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                          placeholder="tous service tous pays"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700">Sous-titre VIP</label>
+                        <input
+                          type="text"
+                          value={config.boutique.vipSubtitle}
+                          onChange={(e) => updateBoutique('vipSubtitle', e.target.value)}
+                          className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                          placeholder="en blanc"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="border-t pt-4">
+                    <h4 className="text-md font-medium text-gray-900 mb-3">Page Recherche</h4>
+                    <div className="space-y-3">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700">Titre Recherche</label>
+                        <input
+                          type="text"
+                          value={config.boutique.searchTitle}
+                          onChange={(e) => updateBoutique('searchTitle', e.target.value)}
+                          className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                          placeholder="Titre pour la page recherche"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700">Sous-titre Recherche</label>
+                        <input
+                          type="text"
+                          value={config.boutique.searchSubtitle}
+                          onChange={(e) => updateBoutique('searchSubtitle', e.target.value)}
+                          className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                          placeholder="Sous-titre pour la page recherche"
+                        />
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>

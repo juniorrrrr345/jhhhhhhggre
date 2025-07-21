@@ -17,102 +17,26 @@ export default function ShopVIP() {
   useEffect(() => {
     fetchConfig()
     fetchPlugs()
-    
-    const interval = setInterval(() => {
-      fetchConfig()
-      fetchPlugs()
-    }, 15000)
-    
-    const handleStorageChange = (event) => {
-      if (event?.key === 'boutique_sync_signal' || event?.key === 'global_sync_signal') {
-        console.log('🔄 Signal de synchronisation reçu:', event.key)
-        setTimeout(() => {
-          fetchConfig()
-          fetchPlugs()
-        }, 500)
-        if (typeof toast !== 'undefined') {
-          toast.success('🔄 Données synchronisées!', {
-            duration: 2000,
-            icon: '🔄'
-          })
-        }
-      }
-    }
-
-    const handleFocus = () => {
-      console.log('👁️ Fenêtre focus - rafraîchissement des données VIP')
-      fetchConfig()
-      fetchPlugs()
-    }
-
-    const handleVisibilityChange = () => {
-      if (!document.hidden) {
-        console.log('👁️ Page VIP visible - vérification des mises à jour')
-        fetchConfig()
-        fetchPlugs()
-      }
-    }
-
-    window.addEventListener('storage', handleStorageChange)
-    window.addEventListener('focus', handleFocus)
-    document.addEventListener('visibilitychange', handleVisibilityChange)
-    
-    return () => {
-      clearInterval(interval)
-      window.removeEventListener('storage', handleStorageChange)
-      window.removeEventListener('focus', handleFocus)
-      document.removeEventListener('visibilitychange', handleVisibilityChange)
-    }
   }, [])
 
   const fetchConfig = async () => {
     try {
-      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
-      const timestamp = new Date().getTime()
-      
-      let data
-      try {
-        const directResponse = await fetch(`${apiBaseUrl}/api/public/config?t=${timestamp}`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'Cache-Control': 'no-cache, no-store, must-revalidate',
-            'Pragma': 'no-cache',
-            'Expires': '0'
-          }
-        })
-        
-        if (directResponse.ok) {
-          data = await directResponse.json()
-        } else {
-          throw new Error(`Direct config failed: HTTP ${directResponse.status}`)
+      const timestamp = Date.now()
+      const response = await fetch(`/api/proxy?endpoint=/api/public/config&t=${timestamp}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache'
         }
-      } catch (directError) {
-        console.log('❌ Config VIP directe échouée:', directError.message)
-        
-        try {
-          const proxyResponse = await fetch(`/api/proxy?endpoint=/api/public/config&t=${new Date().getTime()}`, {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-              'Cache-Control': 'no-cache'
-            }
-          })
-          
-          if (!proxyResponse.ok) {
-            throw new Error(`Config proxy failed: HTTP ${proxyResponse.status}`)
-          }
-          
-          data = await proxyResponse.json()
-        } catch (proxyError) {
-          console.log('❌ Config VIP proxy échouée:', proxyError.message)
-          throw proxyError
-        }
-      }
+      })
 
-      setConfig(data)
+      if (response.ok) {
+        const data = await response.json()
+        setConfig(data)
+      }
     } catch (error) {
-      console.log('❌ Erreur chargement config VIP:', error)
+      console.error('❌ Erreur chargement config VIP:', error)
     } finally {
       setInitialLoading(false)
     }
@@ -271,24 +195,15 @@ export default function ShopVIP() {
             fontSize: '32px', 
             fontWeight: 'bold', 
             margin: '0 0 8px 0',
-            color: '#FFD700',
+            color: '#ffffff',
             letterSpacing: '2px'
           }}>
-            VIP {config?.interface?.title || 'PLUGS FINDER'}
+            {config?.boutique?.vipTitle || config?.boutique?.name || 'VIP PLUGS FINDER'}
           </h2>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-            <span style={{ color: '#ffffff', fontSize: '14px' }}>BOUTIQUES</span>
-            <span style={{ 
-              backgroundColor: '#FFD700', 
-              color: '#000000', 
-              padding: '4px 8px', 
-              borderRadius: '12px',
-              fontSize: '12px',
-              fontWeight: 'bold'
-            }}>
-              PREMIUM VIP
+            <span style={{ color: '#ffffff', fontSize: '14px' }}>
+              {config?.boutique?.vipSubtitle || ''}
             </span>
-            <span style={{ color: '#ffffff', fontSize: '14px' }}>EXCLUSIVES</span>
           </div>
         </div>
 

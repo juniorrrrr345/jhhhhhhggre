@@ -321,24 +321,15 @@ export default function ShopSearch() {
             fontSize: '32px', 
             fontWeight: 'bold', 
             margin: '0 0 8px 0',
-            color: '#007AFF',
+            color: '#ffffff',
             letterSpacing: '2px'
           }}>
-            RECHERCHE {config?.interface?.title || 'PLUGS'}
+            {config?.boutique?.searchTitle || config?.boutique?.name || 'RECHERCHE'}
           </h2>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-            <span style={{ color: '#ffffff', fontSize: '14px' }}>TROUVEZ</span>
-            <span style={{ 
-              backgroundColor: '#007AFF', 
-              color: '#ffffff', 
-              padding: '4px 8px', 
-              borderRadius: '12px',
-              fontSize: '12px',
-              fontWeight: 'bold'
-            }}>
-              VOTRE BOUTIQUE
+            <span style={{ color: '#ffffff', fontSize: '14px' }}>
+              {config?.boutique?.searchSubtitle || ''}
             </span>
-            <span style={{ color: '#ffffff', fontSize: '14px' }}>IDÉALE</span>
           </div>
         </div>
 
