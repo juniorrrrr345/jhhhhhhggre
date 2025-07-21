@@ -331,8 +331,8 @@ export default function ShopHome() {
               </div>
             ) : (
               <>
-                {/* Products Grid - 2 boutiques par ligne */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                {/* Products Grid - 2 boutiques par ligne même sur mobile */}
+                <div className="grid grid-cols-2 gap-4 sm:gap-8 mb-8">
                   {currentPlugs.map((plug, index) => (
                     <Link 
                       key={plug._id || index} 
@@ -394,7 +394,7 @@ export default function ShopHome() {
                               </span>
                             )}
                             {plug.services?.postal?.enabled && (
-                              <span className="px-2 py-1 bg-blue-600 text-white text-xs rounded-full">
+                              <span className="px-2 py-1 bg-gray-800 text-white text-xs rounded-full border border-gray-600">
                                 📮 Postal
                               </span>
                             )}

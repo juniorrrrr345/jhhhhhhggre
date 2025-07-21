@@ -382,9 +382,9 @@ export default function ShopPlugDetail() {
                     </div>
 
                     {/* Postal */}
-                    <div className={`p-4 rounded-lg border ${plug.services?.postal?.enabled ? 'bg-blue-900 border-blue-600' : 'bg-gray-800 border-gray-600'}`}>
+                    <div className={`p-4 rounded-lg border ${plug.services?.postal?.enabled ? 'bg-gray-800 border-gray-600' : 'bg-gray-800 border-gray-600'}`}>
                       <div className="flex items-center mb-2">
-                        <GlobeAltIcon className="w-5 h-5 mr-2 text-blue-400" />
+                        <GlobeAltIcon className="w-5 h-5 mr-2 text-white" />
                         <h4 style={{ color: 'white' }} className="font-semibold">Postal</h4>
                       </div>
                       {plug.services?.postal?.enabled ? (
@@ -400,9 +400,9 @@ export default function ShopPlugDetail() {
                     </div>
 
                     {/* Meetup */}
-                    <div className={`p-4 rounded-lg border ${plug.services?.meetup?.enabled ? 'bg-purple-900 border-purple-600' : 'bg-gray-800 border-gray-600'}`}>
+                    <div className={`p-4 rounded-lg border ${plug.services?.meetup?.enabled ? 'bg-gray-800 border-gray-600' : 'bg-gray-800 border-gray-600'}`}>
                       <div className="flex items-center mb-2">
-                        <HomeIcon className="w-5 h-5 mr-2 text-purple-400" />
+                        <HomeIcon className="w-5 h-5 mr-2 text-white" />
                         <h4 style={{ color: 'white' }} className="font-semibold">Meetup</h4>
                       </div>
                       {plug.services?.meetup?.enabled ? (
@@ -418,6 +418,30 @@ export default function ShopPlugDetail() {
                     </div>
                   </div>
                 </div>
+
+                {/* Réseaux sociaux personnalisés */}
+                {plug.socialMedia && plug.socialMedia.length > 0 && (
+                  <div className="mb-6">
+                    <h3 style={{ color: 'white' }} className="text-lg font-semibold mb-4">🌐 Réseaux sociaux</h3>
+                    <div className="grid grid-cols-2 gap-4">
+                      {plug.socialMedia.map((social, index) => (
+                        <a
+                          key={index}
+                          href={social.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center p-4 bg-gray-800 border border-gray-600 rounded-lg hover:bg-gray-700 transition-colors duration-200"
+                        >
+                          <span className="text-2xl mr-3">{social.emoji}</span>
+                          <div>
+                            <h4 style={{ color: 'white' }} className="font-medium">{social.name}</h4>
+                            <p style={{ color: '#9ca3af' }} className="text-sm truncate">{social.url}</p>
+                          </div>
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
                 {/* Additional info */}
                 {plug.additionalInfo && (

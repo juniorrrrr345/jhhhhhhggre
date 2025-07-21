@@ -348,7 +348,7 @@ export default function ShopSearch() {
                         type="text"
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
-                        className="block w-full pl-10 pr-3 py-2 border border-gray-600 rounded-md bg-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        className="block w-full pl-10 pr-3 py-2 border border-gray-600 rounded-md bg-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white focus:border-white"
                         style={{ color: 'white' }}
                         placeholder="Rechercher une boutique..."
                       />
@@ -363,7 +363,7 @@ export default function ShopSearch() {
                     <select
                       value={countryFilter}
                       onChange={(e) => setCountryFilter(e.target.value)}
-                      className="block w-full px-3 py-2 border border-gray-600 rounded-md bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      className="block w-full px-3 py-2 border border-gray-600 rounded-md bg-gray-800 focus:outline-none focus:ring-2 focus:ring-white focus:border-white"
                       style={{ color: 'white' }}
                     >
                       <option value="">Tous les pays</option>
@@ -381,7 +381,7 @@ export default function ShopSearch() {
                     <select
                       value={serviceFilter}
                       onChange={(e) => setServiceFilter(e.target.value)}
-                      className="block w-full px-3 py-2 border border-gray-600 rounded-md bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      className="block w-full px-3 py-2 border border-gray-600 rounded-md bg-gray-800 focus:outline-none focus:ring-2 focus:ring-white focus:border-white"
                       style={{ color: 'white' }}
                     >
                       <option value="">Tous les services</option>
@@ -399,7 +399,7 @@ export default function ShopSearch() {
                     <select
                       value={vipFilter}
                       onChange={(e) => setVipFilter(e.target.value)}
-                      className="block w-full px-3 py-2 border border-gray-600 rounded-md bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      className="block w-full px-3 py-2 border border-gray-600 rounded-md bg-gray-800 focus:outline-none focus:ring-2 focus:ring-white focus:border-white"
                       style={{ color: 'white' }}
                     >
                       <option value="">Tous</option>
@@ -453,8 +453,8 @@ export default function ShopSearch() {
               </div>
             ) : (
               <>
-                {/* Products Grid - 2 boutiques par ligne */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                {/* Products Grid - 2 boutiques par ligne même sur mobile */}
+                <div className="grid grid-cols-2 gap-4 sm:gap-8 mb-8">
                   {currentPlugs.map((plug, index) => (
                     <Link 
                       key={plug._id || index} 
@@ -516,7 +516,7 @@ export default function ShopSearch() {
                               </span>
                             )}
                             {plug.services?.postal?.enabled && (
-                              <span className="px-2 py-1 bg-blue-600 text-white text-xs rounded-full">
+                              <span className="px-2 py-1 bg-gray-800 text-white text-xs rounded-full border border-gray-600">
                                 📮 Postal
                               </span>
                             )}
