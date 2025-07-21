@@ -43,11 +43,17 @@ export default function ConfigurationSimple() {
       console.log('🔄 Chargement configuration...')
       
       const token = localStorage.getItem('adminToken')
-      const response = await fetch('/api/proxy?endpoint=/api/config', {
+      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || process.env.API_BASE_URL
+      const response = await fetch(`${apiBaseUrl}/api/proxy`, {
+        method: 'POST',
         headers: { 
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
-        }
+        },
+        body: JSON.stringify({
+          endpoint: '/admin/config',
+          method: 'GET'
+        })
       })
 
       if (response.ok) {
