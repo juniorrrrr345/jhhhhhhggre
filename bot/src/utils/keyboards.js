@@ -111,51 +111,62 @@ const createMainKeyboard = (config) => {
   secondRow.push(Markup.button.callback(infoText, 'info'));
   buttons.push(secondRow);
   
-  // Réseaux sociaux globaux (gardés pour compatibilité)
-  const socialRow = [];
-  if (config?.socialMedia?.telegram) {
-    const cleanedTelegramUrl = cleanUrl(config.socialMedia.telegram);
-    if (cleanedTelegramUrl) {
-      socialRow.push(Markup.button.url('📱 Telegram', cleanedTelegramUrl));
-      console.log('📱 Bouton Telegram global créé:', cleanedTelegramUrl);
-    } else {
-      console.warn('🚫 URL Telegram globale invalide:', config.socialMedia.telegram);
+  // Réseaux sociaux personnalisés en bas du menu
+  if (config?.socialMedia && Array.isArray(config.socialMedia) && config.socialMedia.length > 0) {
+    console.log('🔄 Création des boutons réseaux sociaux personnalisés...');
+    
+    // Grouper les réseaux sociaux par rangées de 2 boutons max
+    const socialButtons = [];
+    const socialRows = [];
+    
+    config.socialMedia.forEach((social, index) => {
+      if (social.name && social.url) {
+        const cleanedUrl = cleanUrl(social.url);
+        if (cleanedUrl) {
+          const emoji = social.emoji || '🌐';
+          const buttonText = `${emoji} ${social.name}`;
+          
+          socialButtons.push(Markup.button.url(buttonText, cleanedUrl));
+          console.log(`📱 Bouton réseau social créé: ${buttonText} -> ${cleanedUrl}`);
+          
+          // Créer une nouvelle rangée tous les 2 boutons
+          if (socialButtons.length === 2 || index === config.socialMedia.length - 1) {
+            socialRows.push([...socialButtons]);
+            socialButtons.length = 0; // Vider le tableau
+          }
+        } else {
+          console.warn(`🚫 URL invalide pour ${social.name}:`, social.url);
+        }
+      }
+    });
+    
+    // Ajouter toutes les rangées de réseaux sociaux en bas
+    socialRows.forEach(row => {
+      buttons.push(row);
+    });
+    
+  } else if (config?.socialMedia?.telegram || config?.socialMedia?.whatsapp) {
+    // Compatibilité avec l'ancienne structure (au cas où)
+    console.log('🔄 Utilisation de l\'ancienne structure socialMedia...');
+    const socialRow = [];
+    
+    if (config.socialMedia.telegram) {
+      const cleanedTelegramUrl = cleanUrl(config.socialMedia.telegram);
+      if (cleanedTelegramUrl) {
+        socialRow.push(Markup.button.url('📱 Telegram', cleanedTelegramUrl));
+      }
     }
-  }
-  if (config?.socialMedia?.instagram) {
-    const cleanedInstagramUrl = cleanUrl(config.socialMedia.instagram);
-    if (cleanedInstagramUrl) {
-      socialRow.push(Markup.button.url('📸 Instagram', cleanedInstagramUrl));
-      console.log('📱 Bouton Instagram global créé:', cleanedInstagramUrl);
-    } else {
-      console.warn('🚫 URL Instagram globale invalide:', config.socialMedia.instagram);
+    
+    if (config.socialMedia.whatsapp) {
+      const cleanedWhatsappUrl = cleanUrl(config.socialMedia.whatsapp);
+      if (cleanedWhatsappUrl) {
+        socialRow.push(Markup.button.url('💬 WhatsApp', cleanedWhatsappUrl));
+      }
     }
-  }
-  if (socialRow.length > 0) {
-    buttons.push(socialRow);
-  }
-  
-  const socialRow2 = [];
-  if (config?.socialMedia?.whatsapp) {
-    const cleanedWhatsappUrl = cleanUrl(config.socialMedia.whatsapp);
-    if (cleanedWhatsappUrl) {
-      socialRow2.push(Markup.button.url('💬 WhatsApp', cleanedWhatsappUrl));
-      console.log('📱 Bouton WhatsApp global créé:', cleanedWhatsappUrl);
-    } else {
-      console.warn('🚫 URL WhatsApp globale invalide:', config.socialMedia.whatsapp);
+    
+    if (socialRow.length > 0) {
+      buttons.push(socialRow);
     }
-  }
-  if (config?.socialMedia?.website) {
-    const cleanedWebsiteUrl = cleanUrl(config.socialMedia.website);
-    if (cleanedWebsiteUrl) {
-      socialRow2.push(Markup.button.url('🌐 Site Web', cleanedWebsiteUrl));
-      console.log('📱 Bouton Site Web global créé:', cleanedWebsiteUrl);
-    } else {
-      console.warn('🚫 URL Site Web globale invalide:', config.socialMedia.website);
-    }
-  }
-  if (socialRow2.length > 0) {
-    buttons.push(socialRow2);
   }
   
   return Markup.inlineKeyboard(buttons);
