@@ -13,6 +13,7 @@ export default function ShopVIP() {
   const [vipPlugs, setVipPlugs] = useState([])
   const [config, setConfig] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [initialLoading, setInitialLoading] = useState(true)
 
   useEffect(() => {
     fetchConfig()
@@ -118,6 +119,8 @@ export default function ShopVIP() {
       
     } catch (error) {
       console.log('❌ Erreur chargement config VIP:', error)
+    } finally {
+      setInitialLoading(false)
     }
   }
 
@@ -179,6 +182,24 @@ export default function ShopVIP() {
     }
   }
 
+  // Afficher le chargement initial jusqu'à ce que la config soit chargée
+  if (initialLoading) {
+    return (
+      <>
+        <Head>
+          <title>Chargement...</title>
+          <meta name="viewport" content="width=device-width, initial-scale=1" />
+        </Head>
+        <div className="min-h-screen bg-white flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-500 mx-auto mb-4"></div>
+            <p className="text-gray-600">Chargement de la boutique VIP...</p>
+          </div>
+        </div>
+      </>
+    )
+  }
+
   return (
     <>
       <Head>
@@ -197,102 +218,107 @@ export default function ShopVIP() {
         } : {}}
       >
         {/* Header */}
-        <header className="bg-gray-900 shadow-lg">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center justify-between h-16">
-              <div className="flex items-center">
-                <div className="flex-shrink-0">
-                  {config?.boutique?.logo ? (
-                    <img 
-                      src={config.boutique.logo} 
-                      alt="Logo" 
-                      className="h-8 w-8 rounded-lg object-cover"
-                    />
-                  ) : (
-                    <div className="h-8 w-8 bg-gray-700 rounded-lg flex items-center justify-center">
-                      <span className="text-white text-xs font-bold">
-                        {config?.boutique?.name ? config.boutique.name.charAt(0).toUpperCase() : 'B'}
-                      </span>
-                    </div>
-                  )}
-                </div>
-                <div className="ml-3">
-                                                <h1 className="text-xl font-bold text-white">
-                    {config?.boutique?.name || ''}
-                  </h1>
+        {config && (
+          <header className="bg-gray-900 shadow-lg">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="flex items-center justify-between h-16">
+                <div className="flex items-center">
+                  <div className="flex-shrink-0">
+                    {config?.boutique?.logo ? (
+                      <img 
+                        src={config.boutique.logo} 
+                        alt="Logo" 
+                        className="h-8 w-8 rounded-lg object-cover"
+                      />
+                    ) : (
+                      <div className="h-8 w-8 bg-gray-700 rounded-lg flex items-center justify-center">
+                        <span className="text-white text-xs font-bold">
+                          {config?.boutique?.name ? config.boutique.name.charAt(0).toUpperCase() : 'B'}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                  <div className="ml-3">
+                    <h1 className="text-xl font-bold text-white">
+                      {config?.boutique?.name || ''}
+                    </h1>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        </header>
+          </header>
+        )}
 
         {/* Navigation */}
-        <nav className="bg-white shadow-sm border-b">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex space-x-8 h-12 items-center">
-              <Link 
-                href="/shop" 
-                className="text-gray-500 hover:text-gray-700 pb-3 flex items-center"
-              >
-                {config?.boutique?.logo ? (
-                  <img src={config.boutique.logo} alt="Logo" className="h-4 w-4 mr-2 rounded object-cover" />
-                ) : (
-                  <span className="mr-1">🏠</span>
-                )}
-                Accueil
-              </Link>
-              <Link 
-                href="/shop/search" 
-                className="text-gray-500 hover:text-gray-700 pb-3 flex items-center"
-              >
-                {config?.boutique?.logo ? (
-                  <img src={config.boutique.logo} alt="Logo" className="h-4 w-4 mr-2 rounded object-cover" />
-                ) : (
-                  <span className="mr-1">🔍</span>
-                )}
-                Recherche
-              </Link>
-              <Link 
-                href="/shop/vip" 
-                className="text-yellow-600 font-medium border-b-2 border-yellow-600 pb-3 flex items-center"
-              >
-                {config?.boutique?.logo && (
-                  <img src={config.boutique.logo} alt="Logo" className="h-4 w-4 mr-2 rounded object-cover" />
-                )}
-                VIP
-              </Link>
+        {config && (
+          <nav className="bg-white shadow-sm border-b">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="flex space-x-8 h-12 items-center">
+                <Link 
+                  href="/shop" 
+                  className="text-gray-500 hover:text-gray-700 pb-3 flex items-center"
+                >
+                  {config?.boutique?.logo ? (
+                    <img src={config.boutique.logo} alt="Logo" className="h-4 w-4 mr-2 rounded object-cover" />
+                  ) : (
+                    <span className="mr-1">🏠</span>
+                  )}
+                  Accueil
+                </Link>
+                <Link 
+                  href="/shop/search" 
+                  className="text-gray-500 hover:text-gray-700 pb-3 flex items-center"
+                >
+                  {config?.boutique?.logo ? (
+                    <img src={config.boutique.logo} alt="Logo" className="h-4 w-4 mr-2 rounded object-cover" />
+                  ) : (
+                    <span className="mr-1">🔍</span>
+                  )}
+                  Recherche
+                </Link>
+                <Link 
+                  href="/shop/vip" 
+                  className="text-yellow-600 font-medium border-b-2 border-yellow-600 pb-3 flex items-center"
+                >
+                  {config?.boutique?.logo && (
+                    <img src={config.boutique.logo} alt="Logo" className="h-4 w-4 mr-2 rounded object-cover" />
+                  )}
+                  VIP
+                </Link>
 
+              </div>
             </div>
-          </div>
-        </nav>
+          </nav>
+        )}
 
 
 
         {/* Boutiques VIP */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <div className="text-center mb-12">
-            <div className="flex items-center justify-center mb-4">
-              {config?.boutique?.logo ? (
-                <img 
-                  src={config.boutique.logo} 
-                  alt="Logo" 
-                  className="h-12 w-12 rounded-lg object-cover mr-4"
-                />
-              ) : (
-                <div className="h-12 w-12 bg-gray-200 rounded-lg flex items-center justify-center mr-4">
-                  <span className="text-gray-700 text-lg font-bold">
-                    {config?.boutique?.name ? config.boutique.name.charAt(0).toUpperCase() : 'B'}
-                  </span>
-                </div>
-              )}
-              <h3 className="text-3xl font-bold text-gray-900">
-                {config?.boutique?.name || ''}
-              </h3>
+        {config && (
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+            <div className="text-center mb-12">
+              <div className="flex items-center justify-center mb-4">
+                {config?.boutique?.logo ? (
+                  <img 
+                    src={config.boutique.logo} 
+                    alt="Logo" 
+                    className="h-12 w-12 rounded-lg object-cover mr-4"
+                  />
+                ) : (
+                  <div className="h-12 w-12 bg-gray-200 rounded-lg flex items-center justify-center mr-4">
+                    <span className="text-gray-700 text-lg font-bold">
+                      {config?.boutique?.name ? config.boutique.name.charAt(0).toUpperCase() : 'B'}
+                    </span>
+                  </div>
+                )}
+                <h3 className="text-3xl font-bold text-gray-900">
+                  {config?.boutique?.name || ''}
+                </h3>
+              </div>
+              <p className="text-gray-600 max-w-2xl mx-auto">
+                {loading ? 'Chargement...' : `${vipPlugs.length} produit(s) VIP disponible(s)`}
+              </p>
             </div>
-            <p className="text-gray-600 max-w-2xl mx-auto">
-              {loading ? 'Chargement...' : `${vipPlugs.length} produit(s) VIP disponible(s)`}
-            </p>
-          </div>
 
           {loading ? (
             <div className="text-center py-12">
@@ -391,7 +417,7 @@ export default function ShopVIP() {
               ))}
             </div>
           )}
-        </div>
+        )}
 
 
       </div>

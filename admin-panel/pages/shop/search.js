@@ -14,6 +14,7 @@ export default function ShopSearch() {
   const [plugs, setPlugs] = useState([])
   const [config, setConfig] = useState(null)
   const [loading, setLoading] = useState(false)
+  const [initialLoading, setInitialLoading] = useState(true)
   const [search, setSearch] = useState('')
   const [selectedCountry, setSelectedCountry] = useState('')
   const [selectedService, setSelectedService] = useState('')
@@ -135,6 +136,8 @@ export default function ShopSearch() {
       
     } catch (error) {
       console.log('❌ Erreur chargement config recherche:', error)
+    } finally {
+      setInitialLoading(false)
     }
   }
 
@@ -246,6 +249,24 @@ export default function ShopSearch() {
     setSelectedService('')
   }
 
+  // Afficher le chargement initial jusqu'à ce que la config soit chargée
+  if (initialLoading) {
+    return (
+      <>
+        <Head>
+          <title>Chargement...</title>
+          <meta name="viewport" content="width=device-width, initial-scale=1" />
+        </Head>
+        <div className="min-h-screen bg-white flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+            <p className="text-gray-600">Chargement de la boutique...</p>
+          </div>
+        </div>
+      </>
+    )
+  }
+
   return (
     <>
       <Head>
@@ -264,98 +285,103 @@ export default function ShopSearch() {
         } : {}}
       >
         {/* Header */}
-        <header className="bg-gray-900 shadow-lg">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center justify-between h-16">
-              <div className="flex items-center">
-                <div className="flex-shrink-0">
+        {config && (
+          <header className="bg-gray-900 shadow-lg">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="flex items-center justify-between h-16">
+                <div className="flex items-center">
+                  <div className="flex-shrink-0">
+                    {config?.boutique?.logo ? (
+                      <img 
+                        src={config.boutique.logo} 
+                        alt="Logo" 
+                        className="h-8 w-8 rounded-lg object-cover"
+                      />
+                    ) : (
+                      <div className="h-8 w-8 bg-gray-700 rounded-lg flex items-center justify-center">
+                        <span className="text-white text-xs font-bold">
+                          {config?.boutique?.name ? config.boutique.name.charAt(0).toUpperCase() : 'B'}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                  <div className="ml-3">
+                    <h1 className="text-xl font-bold text-white">
+                      {config?.boutique?.name || ''}
+                    </h1>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </header>
+        )}
+
+        {/* Navigation */}
+        {config && (
+          <nav className="bg-white shadow-sm border-b">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="flex space-x-8 h-12 items-center">
+                <Link 
+                  href="/shop" 
+                  className="text-gray-500 hover:text-gray-700 pb-3 flex items-center"
+                >
+                  {config?.boutique?.logo ? (
+                    <img src={config.boutique.logo} alt="Logo" className="h-4 w-4 mr-2 rounded object-cover" />
+                  ) : (
+                    <span className="mr-1">🏠</span>
+                  )}
+                  Accueil
+                </Link>
+                <Link 
+                  href="/shop/search" 
+                  className="text-blue-600 font-medium border-b-2 border-blue-600 pb-3 flex items-center"
+                >
+                  {config?.boutique?.logo ? (
+                    <img src={config.boutique.logo} alt="Logo" className="h-4 w-4 mr-2 rounded object-cover" />
+                  ) : (
+                    <span className="mr-1">🔍</span>
+                  )}
+                  Recherche
+                </Link>
+                <Link 
+                  href="/shop/vip" 
+                  className="text-gray-500 hover:text-gray-700 pb-3 flex items-center"
+                >
+                  {config?.boutique?.logo && (
+                    <img src={config.boutique.logo} alt="Logo" className="h-4 w-4 mr-2 rounded object-cover" />
+                  )}
+                  VIP
+                </Link>
+
+              </div>
+            </div>
+          </nav>
+        )}
+
+        {/* Section de recherche */}
+        {config && (
+          <div className="bg-gray-800 py-12">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="text-center mb-8">
+                <div className="flex items-center justify-center mb-4">
                   {config?.boutique?.logo ? (
                     <img 
                       src={config.boutique.logo} 
                       alt="Logo" 
-                      className="h-8 w-8 rounded-lg object-cover"
+                      className="h-12 w-12 rounded-lg object-cover mr-4"
                     />
                   ) : (
-                    <div className="h-8 w-8 bg-gray-700 rounded-lg flex items-center justify-center">
-                      <span className="text-white text-xs font-bold">
+                    <div className="h-12 w-12 bg-gray-700 rounded-lg flex items-center justify-center mr-4">
+                      <span className="text-white text-lg font-bold">
                         {config?.boutique?.name ? config.boutique.name.charAt(0).toUpperCase() : 'B'}
                       </span>
                     </div>
                   )}
-                </div>
-                <div className="ml-3">
-                  <h1 className="text-xl font-bold text-white">
+                  <h2 className="text-3xl font-bold text-white">
                     {config?.boutique?.name || ''}
-                  </h1>
+                  </h2>
                 </div>
               </div>
-            </div>
-          </div>
-        </header>
-
-        {/* Navigation */}
-        <nav className="bg-white shadow-sm border-b">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex space-x-8 h-12 items-center">
-              <Link 
-                href="/shop" 
-                className="text-gray-500 hover:text-gray-700 pb-3 flex items-center"
-              >
-                {config?.boutique?.logo ? (
-                  <img src={config.boutique.logo} alt="Logo" className="h-4 w-4 mr-2 rounded object-cover" />
-                ) : (
-                  <span className="mr-1">🏠</span>
-                )}
-                Accueil
-              </Link>
-              <Link 
-                href="/shop/search" 
-                className="text-blue-600 font-medium border-b-2 border-blue-600 pb-3 flex items-center"
-              >
-                {config?.boutique?.logo ? (
-                  <img src={config.boutique.logo} alt="Logo" className="h-4 w-4 mr-2 rounded object-cover" />
-                ) : (
-                  <span className="mr-1">🔍</span>
-                )}
-                Recherche
-              </Link>
-              <Link 
-                href="/shop/vip" 
-                className="text-gray-500 hover:text-gray-700 pb-3 flex items-center"
-              >
-                {config?.boutique?.logo && (
-                  <img src={config.boutique.logo} alt="Logo" className="h-4 w-4 mr-2 rounded object-cover" />
-                )}
-                VIP
-              </Link>
-
-            </div>
-          </div>
-        </nav>
-
-        {/* Section de recherche */}
-        <div className="bg-gray-800 py-12">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-8">
-              <div className="flex items-center justify-center mb-4">
-                {config?.boutique?.logo ? (
-                  <img 
-                    src={config.boutique.logo} 
-                    alt="Logo" 
-                    className="h-12 w-12 rounded-lg object-cover mr-4"
-                  />
-                ) : (
-                  <div className="h-12 w-12 bg-gray-700 rounded-lg flex items-center justify-center mr-4">
-                    <span className="text-white text-lg font-bold">
-                      {config?.boutique?.name ? config.boutique.name.charAt(0).toUpperCase() : 'B'}
-                    </span>
-                  </div>
-                )}
-                <h2 className="text-3xl font-bold text-white">
-                  {config?.boutique?.name || ''}
-                </h2>
-              </div>
-            </div>
             
             {/* Filtres de recherche */}
             <div className="bg-white rounded-xl shadow-lg p-6">
@@ -425,37 +451,38 @@ export default function ShopSearch() {
               </div>
             </div>
           </div>
-        </div>
+        )}
 
         {/* Résultats */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <div className="mb-8">
-            <h3 className="text-2xl font-bold text-gray-900 mb-2">
-              📋 Résultats de recherche
-            </h3>
-            <p className="text-gray-600">
-              {loading ? 'Recherche en cours...' : `${plugs.length} boutique(s) trouvée(s)`}
-            </p>
-          </div>
+        {config && (
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+            <div className="mb-8">
+              <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                📋 Résultats de recherche
+              </h3>
+              <p className="text-gray-600">
+                {loading ? 'Recherche en cours...' : `${plugs.length} boutique(s) trouvée(s)`}
+              </p>
+            </div>
 
-          {loading ? (
-            <div className="text-center py-12">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
-              <p className="mt-4 text-gray-500">Recherche en cours...</p>
-            </div>
-          ) : plugs.length === 0 ? (
-            <div className="text-center py-12">
-              <div className="text-6xl mb-4">🔍</div>
-              <h3 className="text-xl font-medium text-gray-900 mb-2">Aucune boutique trouvée</h3>
-              <p className="text-gray-500 mb-6">Essayez de modifier vos critères de recherche.</p>
-              <button
-                onClick={resetFilters}
-                className="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition-colors"
-              >
-                🔄 Réinitialiser les filtres
-              </button>
-            </div>
-          ) : (
+            {loading ? (
+              <div className="text-center py-12">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
+                <p className="mt-4 text-gray-500">Recherche en cours...</p>
+              </div>
+            ) : plugs.length === 0 ? (
+              <div className="text-center py-12">
+                <div className="text-6xl mb-4">🔍</div>
+                <h3 className="text-xl font-medium text-gray-900 mb-2">Aucune boutique trouvée</h3>
+                <p className="text-gray-500 mb-6">Essayez de modifier vos critères de recherche.</p>
+                <button
+                  onClick={resetFilters}
+                  className="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition-colors"
+                >
+                  🔄 Réinitialiser les filtres
+                </button>
+              </div>
+            ) : (
             <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-2 gap-4">
               {plugs.map((plug, index) => (
                 <Link key={plug._id} href={`/shop/${plug._id}`}>
@@ -537,30 +564,32 @@ export default function ShopSearch() {
               ))}
             </div>
           )}
-        </div>
+        )}
 
         {/* Footer */}
-        <footer className="bg-gray-800 text-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <div className="text-center">
-              <div className="flex items-center justify-center mb-2">
-                {config?.boutique?.logo ? (
-                  <img 
-                    src={config.boutique.logo} 
-                    alt="Logo" 
-                    className="h-6 w-6 rounded object-cover mr-2"
-                  />
-                ) : null}
-                <h3 className="text-lg font-medium">
-                  {config?.boutique?.name || 'Boutique Premium'}
-                </h3>
+        {config && (
+          <footer className="bg-gray-800 text-white">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+              <div className="text-center">
+                <div className="flex items-center justify-center mb-2">
+                  {config?.boutique?.logo ? (
+                    <img 
+                      src={config.boutique.logo} 
+                      alt="Logo" 
+                      className="h-6 w-6 rounded object-cover mr-2"
+                    />
+                  ) : null}
+                  <h3 className="text-lg font-medium">
+                    {config?.boutique?.name || 'Boutique Premium'}
+                  </h3>
+                </div>
+                <p className="text-gray-400 mb-4">
+                  {config?.boutique?.subtitle || 'Votre destination shopping premium'}
+                </p>
               </div>
-              <p className="text-gray-400 mb-4">
-                {config?.boutique?.subtitle || 'Votre destination shopping premium'}
-              </p>
             </div>
-          </div>
-        </footer>
+          </footer>
+        )}
       </div>
     </>
   )
