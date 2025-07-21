@@ -103,18 +103,39 @@ export default function ShopDetail() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+      <div 
+        className="min-h-screen bg-black flex items-center justify-center"
+        style={config?.boutique?.backgroundImage ? {
+          backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url(${config.boutique.backgroundImage})`,
+          backgroundSize: '300px 300px',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'repeat',
+          backgroundAttachment: 'fixed'
+        } : {}}
+      >
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
+          <p className="text-white font-medium">Chargement de la boutique...</p>
+        </div>
       </div>
     )
   }
 
   if (!plug) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div 
+        className="min-h-screen bg-black flex items-center justify-center"
+        style={config?.boutique?.backgroundImage ? {
+          backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url(${config.boutique.backgroundImage})`,
+          backgroundSize: '300px 300px',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'repeat',
+          backgroundAttachment: 'fixed'
+        } : {}}
+      >
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">Boutique non trouvée</h1>
-          <Link href="/shop" className="text-blue-600 hover:text-blue-800">
+          <h1 className="text-2xl font-bold text-white mb-4">Boutique non trouvée</h1>
+          <Link href="/shop" className="text-white hover:text-gray-300 underline">
             ← Retour aux boutiques
           </Link>
         </div>
@@ -130,74 +151,57 @@ export default function ShopDetail() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
 
-      <div className="min-h-screen bg-white">
+      <div 
+        className="min-h-screen bg-black"
+        style={config?.boutique?.backgroundImage ? {
+          backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url(${config.boutique.backgroundImage})`,
+          backgroundSize: '300px 300px',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'repeat',
+          backgroundAttachment: 'fixed'
+        } : {}}
+      >
         {/* Header */}
         <header className="bg-gray-900 shadow-lg">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center justify-between h-16">
-              <div className="flex items-center">
-                <div className="flex-shrink-0">
-                  {config?.boutique?.logo ? (
-                    <img 
-                      src={config.boutique.logo} 
-                      alt="Logo" 
-                      className="h-8 w-8 rounded-lg object-cover"
-                    />
-                  ) : (
-                    <div className="h-8 w-8 bg-gray-700 rounded-lg flex items-center justify-center">
-                      <span className="text-white text-xs font-bold">
-                        {config?.boutique?.name ? config.boutique.name.charAt(0).toUpperCase() : 'B'}
-                      </span>
-                    </div>
-                  )}
-                </div>
-                <div className="ml-3">
-                  <h1 className="text-xl font-bold text-white">
-                    {config?.boutique?.name || ''}
-                  </h1>
-                  <p className="text-gray-300 text-sm">
-                    {plug.name}
-                  </p>
-                </div>
+            <div className="flex items-center justify-center h-16">
+              <div className="text-center">
+                <h1 className="text-xl font-bold text-white">
+                  🏪 {config?.boutique?.name || 'Boutique'}
+                </h1>
+                <p className="text-gray-300 text-sm">
+                  {plug.name}
+                </p>
               </div>
             </div>
           </div>
         </header>
 
         {/* Navigation */}
-        <nav className="bg-white shadow-sm border-b">
+        <nav className="bg-black shadow-sm border-b border-gray-700">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex space-x-8 h-12 items-center">
+            <div className="flex justify-center space-x-8 h-12 items-center">
               <Link 
                 href="/shop" 
-                className="text-gray-900 font-medium border-b-2 border-gray-900 pb-3 flex items-center"
+                className="text-white font-medium border-b-2 border-white pb-3 flex items-center"
               >
                 <ArrowLeftIcon className="w-4 h-4 mr-2" />
-                {config?.boutique?.logo ? (
-                  <img src={config.boutique.logo} alt="Logo" className="h-4 w-4 mr-2 rounded object-cover" />
-                ) : (
-                  <span className="mr-1">🏠</span>
+                <span className="mr-1">🏠</span>
                 )}
                 Retour à la liste
               </Link>
               <Link 
                 href="/shop/search" 
-                className="text-gray-500 hover:text-gray-700 pb-3 flex items-center"
+                className="text-gray-300 hover:text-white pb-3 flex items-center"
               >
-                {config?.boutique?.logo ? (
-                  <img src={config.boutique.logo} alt="Logo" className="h-4 w-4 mr-2 rounded object-cover" />
-                ) : (
-                  <span className="mr-1">🔍</span>
-                )}
+                <span className="mr-1">🔍</span>
                 Recherche
               </Link>
               <Link 
                 href="/shop/vip" 
-                className="text-gray-500 hover:text-gray-700 pb-3 flex items-center"
+                className="text-gray-300 hover:text-white pb-3 flex items-center"
               >
-                {config?.boutique?.logo && (
-                  <img src={config.boutique.logo} alt="Logo" className="h-4 w-4 mr-2 rounded object-cover" />
-                )}
+                <span className="mr-1">👑</span>
                 VIP
               </Link>
             </div>
@@ -205,7 +209,7 @@ export default function ShopDetail() {
         </nav>
 
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+          <div className="bg-black border border-gray-600 rounded-lg shadow-lg overflow-hidden">
             {plug.image && (
               <div className="h-64 bg-gray-200">
                 <img 
@@ -218,52 +222,52 @@ export default function ShopDetail() {
             
             <div className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-2xl font-bold text-gray-900">{plug.name}</h2>
+                <h2 className="text-2xl font-bold text-white">{plug.name}</h2>
                 <div className="flex items-center space-x-3">
                   {plug.isVip && (
-                    <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-900 text-white">
+                    <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-white text-black">
                       <StarIcon className="w-4 h-4 mr-1" />
                       VIP
                     </span>
                   )}
-                  <div className="flex items-center text-gray-500">
+                  <div className="flex items-center text-gray-300">
                     <span className="mr-1">❤️</span>
                     <span className="font-medium">{plug.likes || 0} likes</span>
                   </div>
                 </div>
               </div>
               
-              <p className="text-gray-600 mb-6">{plug.description}</p>
+              <p className="text-gray-300 mb-6">{plug.description}</p>
 
               {/* Services */}
               <div className="mb-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-3">🔧 Services disponibles</h3>
+                <h3 className="text-lg font-semibold text-white mb-3">🔧 Services disponibles</h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   {plug.services?.delivery?.enabled && (
-                    <div className="bg-blue-50 p-4 rounded-lg">
-                      <h4 className="font-medium text-blue-900 mb-2 flex items-center">
+                    <div className="bg-blue-900 border border-blue-700 p-4 rounded-lg">
+                      <h4 className="font-medium text-blue-100 mb-2 flex items-center">
                         <TruckIcon className="w-5 h-5 mr-2" />
                         Livraison
                       </h4>
-                      <p className="text-sm text-blue-700">{plug.services.delivery.description}</p>
+                      <p className="text-sm text-blue-200">{plug.services.delivery.description}</p>
                     </div>
                   )}
                   {plug.services?.postal?.enabled && (
-                    <div className="bg-green-50 p-4 rounded-lg">
-                      <h4 className="font-medium text-green-900 mb-2 flex items-center">
+                    <div className="bg-green-900 border border-green-700 p-4 rounded-lg">
+                      <h4 className="font-medium text-green-100 mb-2 flex items-center">
                         <GlobeAltIcon className="w-5 h-5 mr-2" />
                         Envoi postal
                       </h4>
-                      <p className="text-sm text-green-700">{plug.services.postal.description}</p>
+                      <p className="text-sm text-green-200">{plug.services.postal.description}</p>
                     </div>
                   )}
                   {plug.services?.meetup?.enabled && (
-                    <div className="bg-purple-50 p-4 rounded-lg">
-                      <h4 className="font-medium text-purple-900 mb-2 flex items-center">
+                    <div className="bg-purple-900 border border-purple-700 p-4 rounded-lg">
+                      <h4 className="font-medium text-purple-100 mb-2 flex items-center">
                         <MapPinIcon className="w-5 h-5 mr-2" />
                         Meetup
                       </h4>
-                      <p className="text-sm text-purple-700">{plug.services.meetup.description}</p>
+                      <p className="text-sm text-purple-200">{plug.services.meetup.description}</p>
                     </div>
                   )}
                 </div>
@@ -272,12 +276,12 @@ export default function ShopDetail() {
               {/* Pays */}
               {plug.countries && plug.countries.length > 0 && (
                 <div className="mb-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-3">🌍 Pays desservis</h3>
+                  <h3 className="text-lg font-semibold text-white mb-3">🌍 Pays desservis</h3>
                   <div className="flex flex-wrap gap-2">
                     {plug.countries.map((country, index) => (
                       <span 
                         key={index}
-                        className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800"
+                        className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-700 text-white border border-gray-600"
                       >
                         <MapPinIcon className="w-4 h-4 mr-1" />
                         {country}
@@ -287,50 +291,36 @@ export default function ShopDetail() {
                 </div>
               )}
 
-              {/* Contact */}
-              <div className="border-t pt-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">📱 Contact</h3>
+              {/* Contact et Réseaux Sociaux Personnalisés */}
+              <div className="border-t border-gray-600 pt-6">
+                <h3 className="text-lg font-semibold text-white mb-4">📱 Contact</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {plug.socialMedia?.telegram && (
+                  {/* Telegram principal */}
+                  {plug.telegramLink && (
                     <a
-                      href={plug.socialMedia.telegram}
+                      href={plug.telegramLink}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center justify-center bg-gray-900 hover:bg-gray-700 text-white py-3 px-4 rounded-lg font-medium transition-colors"
+                      className="flex items-center justify-center bg-blue-600 hover:bg-blue-500 text-white py-3 px-4 rounded-lg font-medium transition-colors"
                     >
                       📱 Telegram
                     </a>
                   )}
-                  {plug.socialMedia?.whatsapp && (
-                    <a
-                      href={plug.socialMedia.whatsapp}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center justify-center bg-gray-700 hover:bg-gray-600 text-white py-3 px-4 rounded-lg font-medium transition-colors"
-                    >
-                      💬 WhatsApp
-                    </a>
-                  )}
-                  {plug.socialMedia?.instagram && (
-                    <a
-                      href={plug.socialMedia.instagram}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center justify-center bg-gray-600 hover:bg-gray-500 text-white py-3 px-4 rounded-lg font-medium transition-colors"
-                    >
-                      📸 Instagram
-                    </a>
-                  )}
-                  {plug.socialMedia?.website && (
-                    <a
-                      href={plug.socialMedia.website}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center justify-center bg-gray-500 hover:bg-gray-400 text-white py-3 px-4 rounded-lg font-medium transition-colors"
-                    >
-                      🌐 Site web
-                    </a>
-                  )}
+                  
+                  {/* Réseaux sociaux personnalisés */}
+                  {plug.socialMedia && Array.isArray(plug.socialMedia) && plug.socialMedia
+                    .filter(social => social && social.name && social.url)
+                    .map((social, index) => (
+                      <a
+                        key={index}
+                        href={social.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-center bg-gray-700 hover:bg-gray-600 text-white py-3 px-4 rounded-lg font-medium transition-colors border border-gray-600"
+                      >
+                        {social.emoji} {social.name}
+                      </a>
+                    ))}
                 </div>
               </div>
             </div>

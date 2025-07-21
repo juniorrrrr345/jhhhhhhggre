@@ -165,20 +165,20 @@ export default function Config() {
             throw new Error('Token d\'authentification manquant')
           }
           
-          // Essayer l'API directe d'abord
-          const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://jhhhhhhggre.onrender.com'
-          console.log('🌐 API Base URL:', apiBaseUrl)
+          // Essayer directement par le proxy pour éviter les problèmes CORS
+          console.log('🌐 Utilisation du proxy pour la configuration...')
           
-          const response = await fetch(`${apiBaseUrl}/api/config`, {
-            method: 'PUT',
+          const response = await fetch('/api/proxy?endpoint=/api/config', {
+            method: 'POST',
             headers: {
-              'Authorization': `Bearer ${token}`,
+              'Authorization': token,
               'Content-Type': 'application/json',
-              'Cache-Control': 'no-cache',
-              'Pragma': 'no-cache'
+              'Cache-Control': 'no-cache'
             },
-            body: JSON.stringify(config),
-            // Ajouter timeout et retry
+            body: JSON.stringify({
+              _method: 'PUT',
+              ...config
+            }),
             signal: AbortSignal.timeout(30000) // 30 secondes
           })
 
