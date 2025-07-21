@@ -1309,6 +1309,15 @@ const getCachedData = async (forceRefresh = false) => {
   return { plugs: cache.plugs || [], config: cache.config };
 };
 
+// Forcer le rafraîchissement du cache
+const invalidateCache = () => {
+  console.log('🗑️ Invalidation du cache...');
+  cache.lastUpdate = null;
+  cache.plugs = [];
+  cache.config = null;
+  console.log('✅ Cache invalidé - sera rafraîchi au prochain accès');
+};
+
 // ============================================
 // ROUTES API AMÉLIORÉES AVEC CACHE
 // ============================================
