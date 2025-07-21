@@ -39,12 +39,6 @@ export default function ConfigurationSimple() {
     socialMedia: {
       telegram: '',
       whatsapp: ''
-    },
-    // Messages du bot
-    messages: {
-      welcome: '',
-      noPlugsFound: '',
-      error: ''
     }
   })
   
@@ -109,11 +103,6 @@ export default function ConfigurationSimple() {
           socialMedia: {
             telegram: data.socialMedia?.telegram || '',
             whatsapp: data.socialMedia?.whatsapp || ''
-          },
-          messages: {
-            welcome: data.messages?.welcome || '',
-            noPlugsFound: data.messages?.noPlugsFound || '',
-            error: data.messages?.error || ''
           }
         })
         
@@ -147,7 +136,12 @@ export default function ConfigurationSimple() {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(config)
+        body: JSON.stringify({
+          boutique: config.boutique,
+          welcome: config.welcome,
+          buttons: config.buttons,
+          socialMedia: config.socialMedia
+        })
       })
 
       if (response.ok) {
@@ -203,13 +197,6 @@ export default function ConfigurationSimple() {
     setConfig(prev => ({
       ...prev,
       socialMedia: { ...prev.socialMedia, [field]: value }
-    }))
-  }
-
-  const updateMessages = (field, value) => {
-    setConfig(prev => ({
-      ...prev,
-      messages: { ...prev.messages, [field]: value }
     }))
   }
 
@@ -528,50 +515,6 @@ export default function ConfigurationSimple() {
                       onChange={(e) => updateSocialMedia('whatsapp', e.target.value)}
                       className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                       placeholder="+33123456789"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Messages du Bot */}
-            <div className="bg-white shadow rounded-lg lg:col-span-2">
-              <div className="px-4 py-5 sm:p-6">
-                <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">
-                  💬 Messages du Bot
-                </h3>
-                
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">Message de bienvenue</label>
-                    <textarea
-                      value={config.messages.welcome}
-                      onChange={(e) => updateMessages('welcome', e.target.value)}
-                      rows={3}
-                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                      placeholder="Bienvenue sur notre bot !"
-                    />
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">Message "aucun résultat"</label>
-                    <textarea
-                      value={config.messages.noPlugsFound}
-                      onChange={(e) => updateMessages('noPlugsFound', e.target.value)}
-                      rows={3}
-                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                      placeholder="Aucune boutique trouvée."
-                    />
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">Message d'erreur</label>
-                    <textarea
-                      value={config.messages.error}
-                      onChange={(e) => updateMessages('error', e.target.value)}
-                      rows={3}
-                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                      placeholder="Une erreur s'est produite."
                     />
                   </div>
                 </div>
