@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import Head from 'next/head'
 import toast, { Toaster } from 'react-hot-toast'
+import { simpleApi } from '../../lib/api-simple'
 
 export default function ConfigurationSimple() {
   const [config, setConfig] = useState({
@@ -43,21 +44,7 @@ export default function ConfigurationSimple() {
       console.log('🔄 Chargement configuration...')
       
       const token = localStorage.getItem('adminToken')
-      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || process.env.API_BASE_URL
-      const response = await fetch(`${apiBaseUrl}/api/proxy`, {
-        method: 'POST',
-        headers: { 
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          endpoint: '/admin/config',
-          method: 'GET'
-        })
-      })
-
-      if (response.ok) {
-        const data = await response.json()
+      const data = await api.getConfig(token)
         console.log('✅ Configuration chargée')
         
         setConfig({
@@ -78,10 +65,8 @@ export default function ConfigurationSimple() {
           }
         })
         
+        console.log('✅ Configuration chargée')
         toast.success('Configuration chargée')
-      } else {
-        throw new Error('Erreur de chargement')
-      }
     } catch (error) {
       console.error('❌ Erreur:', error)
       toast.error('Erreur de chargement')
@@ -102,45 +87,15 @@ export default function ConfigurationSimple() {
     try {
       console.log('💾 Sauvegarde...')
       
-      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || process.env.API_BASE_URL
-      const response = await fetch(`${apiBaseUrl}/api/proxy`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          endpoint: '/admin/config',
-          method: 'PUT',
-          data: {
-            boutique: config.boutique
-          }
-        })
-      })
-
-      if (response.ok) {
-        toast.success('Configuration sauvée !')
-        
-        // Rafraîchir le cache
-        try {
-          await fetch(`${apiBaseUrl}/api/proxy`, {
-            method: 'POST',
-            headers: { 
-              'Authorization': `Bearer ${token}`,
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              endpoint: '/admin/cache/refresh',
-              method: 'POST'
-            })
-          })
-          console.log('✅ Cache rafraîchi')
-        } catch (e) {
-          console.log('Cache refresh ignoré')
-        }
-        
-      } else {
-        throw new Error('Erreur de sauvegarde')
+      await api.updateConfig(token, config)
+      toast.success('Configuration sauvée !')
+      
+      // Optionnel: Recharger le bot
+      try {
+        await api.reloadBot(token)
+        console.log('✅ Bot rechargé')
+      } catch (e) {
+        console.log('Reload bot ignoré')
       }
     } catch (error) {
       console.error('❌ Erreur:', error)
