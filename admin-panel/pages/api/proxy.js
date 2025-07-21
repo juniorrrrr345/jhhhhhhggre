@@ -83,21 +83,12 @@ export default async function handler(req, res) {
     
     // Ajouter l'authorization si présente
     if (req.headers.authorization) {
-      let auth = req.headers.authorization;
-      
-      // Nettoyer et formater correctement le token
-      if (auth.startsWith('Bearer ')) {
-        // Déjà au bon format
-        fetchOptions.headers.Authorization = auth;
-      } else if (auth.startsWith('bearer ')) {
-        // Corriger la casse
-        fetchOptions.headers.Authorization = 'Bearer ' + auth.substring(7);
-      } else {
-        // Ajouter Bearer si manquant
-        fetchOptions.headers.Authorization = 'Bearer ' + auth;
-      }
-      
-      console.log('🔐 Auth header ajouté:', fetchOptions.headers.Authorization.substring(0, 20) + '...');
+      // Assurer le format Bearer
+      const auth = req.headers.authorization.startsWith('Bearer ') 
+        ? req.headers.authorization 
+        : `Bearer ${req.headers.authorization}`;
+      fetchOptions.headers.Authorization = auth;
+      console.log('🔐 Auth header ajouté:', auth.substring(0, 20) + '...');
     }
     
     console.log('📡 Fetch options:', {

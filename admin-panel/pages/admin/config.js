@@ -56,7 +56,7 @@ export default function BotConfig() {
       
       const response = await fetch('/api/proxy?endpoint=/api/config', {
         headers: { 
-          'Authorization': `Bearer ${token}`,
+          'Authorization': token,
           'Content-Type': 'application/json',
           'Cache-Control': 'no-cache'
         }
@@ -154,7 +154,7 @@ export default function BotConfig() {
       const response = await fetch('/api/proxy?endpoint=/api/config', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${token}`,
+          'Authorization': token,
           'Content-Type': 'application/json',
           'Cache-Control': 'no-cache'
         },
@@ -162,7 +162,7 @@ export default function BotConfig() {
           _method: 'PUT',
           ...cleanedConfig
         }),
-        signal: AbortSignal.timeout(60000) // 60 secondes timeout
+        signal: AbortSignal.timeout(45000) // 45 secondes timeout
       })
 
       console.log('📡 Response status:', response.status, response.statusText)
