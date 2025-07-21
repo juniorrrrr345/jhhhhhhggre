@@ -210,7 +210,7 @@ const createCountriesKeyboard = (countries) => {
 };
 
 // Clavier pour un plug individuel avec contexte de retour
-const createPlugKeyboard = (plug, returnContext = 'top_plugs') => {
+const createPlugKeyboard = (plug, returnContext = 'top_plugs', userId = null) => {
   const buttons = [];
   
   // Services disponibles
@@ -293,8 +293,17 @@ const createPlugKeyboard = (plug, returnContext = 'top_plugs') => {
     console.log(`⚠️ Aucun réseau social configuré pour ${plug.name}`);
   }
   
-  // Bouton like
-  buttons.push([Markup.button.callback('👤 Liker cette boutique', `like_${plug._id}`)]);
+  // Bouton like avec état dynamique
+  let likeButtonText;
+  
+  // Vérifier si l'utilisateur a déjà liké
+  if (userId && plug.likedBy && plug.likedBy.includes(userId)) {
+    likeButtonText = '❤️ Vous avez liké cette boutique';
+  } else {
+    likeButtonText = '🖤 Liker cette boutique';
+  }
+  
+  buttons.push([Markup.button.callback(likeButtonText, `like_${plug._id}`)]);
   
   // Bouton retour intelligent selon le contexte
   const returnText = getReturnButtonText(returnContext);

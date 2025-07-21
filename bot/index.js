@@ -271,15 +271,23 @@ bot.action(/^like_([a-f\d]{24})$/, async (ctx) => {
       await ctx.answerCbQuery(`💔 Like retiré de ${plug.name} (${plug.likes} likes)`);
     }
     
-    // Mettre à jour le clavier avec le nouveau statut
+    // Mettre à jour le clavier avec le nouveau statut (et passer userId pour l'état du bouton)
     const { createPlugKeyboard } = require('./src/utils/keyboards');
-    const newKeyboard = createPlugKeyboard(plug, 'top_plugs');
+    
+    // Déterminer le bon contexte de retour
+    let returnContext = 'top_plugs'; // valeur par défaut
+    if (ctx.session && ctx.session.lastContext) {
+      returnContext = ctx.session.lastContext;
+    }
+    
+    const newKeyboard = createPlugKeyboard(plug, returnContext, userId);
     
     try {
       await ctx.editMessageReplyMarkup(newKeyboard.reply_markup);
+      console.log('✅ Clavier mis à jour avec le nouvel état du like');
     } catch (error) {
       // Ignore si le message n'a pas changé
-      console.log('Keyboard update skipped');
+      console.log('⚠️ Mise à jour clavier échouée:', error.message);
     }
     
   } catch (error) {

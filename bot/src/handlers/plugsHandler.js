@@ -362,8 +362,8 @@ const handlePlugDetails = async (ctx, plugId, returnContext = 'top_plugs') => {
       message += `❤️ **${plug.likes} like${plug.likes > 1 ? 's' : ''}**\n\n`;
     }
 
-    // Utiliser la fonction createPlugKeyboard qui gère déjà tout
-    const keyboard = createPlugKeyboard(plug, returnContext);
+    // Utiliser la fonction createPlugKeyboard qui gère déjà tout (avec userId pour l'état du bouton like)
+    const keyboard = createPlugKeyboard(plug, returnContext, ctx.from?.id);
 
     // Utiliser la fonction helper pour afficher avec image du plug
     await editMessageWithImage(ctx, message, keyboard, config, { 
