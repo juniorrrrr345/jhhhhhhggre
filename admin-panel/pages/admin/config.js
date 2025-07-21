@@ -26,6 +26,12 @@ export default function BotConfig() {
       image: '',
       socialMedia: []
     },
+    infoMenu: {
+      enabled: false,
+      text: '',
+      image: '',
+      socialMedia: []
+    },
     messages: {
       welcome: '',
       noPlugsFound: '',
@@ -88,6 +94,12 @@ export default function BotConfig() {
             text: data.supportMenu?.text || '',
             image: data.supportMenu?.image || '',
             socialMedia: data.supportMenu?.socialMedia || []
+          },
+          infoMenu: {
+            enabled: data.infoMenu?.enabled || false,
+            text: data.infoMenu?.text || '',
+            image: data.infoMenu?.image || '',
+            socialMedia: data.infoMenu?.socialMedia || []
           },
           messages: {
             welcome: data.messages?.welcome || '',
@@ -548,11 +560,132 @@ export default function BotConfig() {
                     </div>
                   </>
                 )}
-              </div>
-            </div>
+                             </div>
+             </div>
 
-            {/* Messages */}
-            <div className="bg-white rounded-lg shadow p-6">
+             {/* Info Menu */}
+             <div className="bg-white rounded-lg shadow p-6">
+               <h2 className="text-xl font-semibold text-gray-900 mb-4">ℹ️ Info Menu Personnalisé</h2>
+               
+               <div className="space-y-4">
+                 <div className="flex items-center space-x-3">
+                   <input
+                     type="checkbox"
+                     id="infoEnabled"
+                     checked={config.infoMenu.enabled}
+                     onChange={(e) => updateConfig('infoMenu.enabled', e.target.checked)}
+                     className="h-4 w-4 text-blue-600 rounded border-gray-300"
+                   />
+                   <label htmlFor="infoEnabled" className="text-sm font-medium text-gray-700">
+                     Activer le sous-menu Info personnalisé
+                   </label>
+                 </div>
+
+                 {config.infoMenu.enabled && (
+                   <>
+                     <div>
+                       <label className="block text-sm font-medium text-gray-700 mb-2">
+                         Texte Info
+                       </label>
+                       <textarea
+                         value={config.infoMenu.text}
+                         onChange={(e) => updateConfig('infoMenu.text', e.target.value)}
+                         className="w-full border border-gray-300 rounded-lg p-3 h-20 resize-none"
+                         placeholder="Informations sur notre service..."
+                       />
+                     </div>
+
+                     <div>
+                       <label className="block text-sm font-medium text-gray-700 mb-2">
+                         Image Info (URL)
+                       </label>
+                       <input
+                         type="url"
+                         value={config.infoMenu.image}
+                         onChange={(e) => updateConfig('infoMenu.image', e.target.value)}
+                         className="w-full border border-gray-300 rounded-lg p-3"
+                         placeholder="https://example.com/info.jpg"
+                       />
+                       {config.infoMenu.image && (
+                         <img 
+                           src={config.infoMenu.image} 
+                           alt="Info"
+                           className="mt-2 w-48 h-24 object-cover rounded border"
+                           onError={(e) => {e.target.style.display = 'none'}}
+                         />
+                       )}
+                     </div>
+
+                     <div>
+                       <div className="flex items-center justify-between mb-3">
+                         <label className="text-sm font-medium text-gray-700">
+                           Réseaux Sociaux Info
+                         </label>
+                         <button
+                           onClick={() => {
+                             const newSocialMedia = [...config.infoMenu.socialMedia, { name: '', emoji: '', url: '' }]
+                             updateConfig('infoMenu.socialMedia', newSocialMedia)
+                           }}
+                           className="bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700"
+                         >
+                           ➕ Ajouter
+                         </button>
+                       </div>
+                       
+                       {config.infoMenu.socialMedia.map((social, index) => (
+                         <div key={index} className="flex items-center space-x-2 mb-2 p-3 border rounded-lg">
+                           <input
+                             type="text"
+                             placeholder="Nom"
+                             value={social.name}
+                             onChange={(e) => {
+                               const newSocialMedia = [...config.infoMenu.socialMedia]
+                               newSocialMedia[index] = { ...newSocialMedia[index], name: e.target.value }
+                               updateConfig('infoMenu.socialMedia', newSocialMedia)
+                             }}
+                             className="flex-1 border border-gray-300 rounded px-3 py-2"
+                           />
+                           <input
+                             type="text"
+                             placeholder="📖"
+                             value={social.emoji}
+                             onChange={(e) => {
+                               const newSocialMedia = [...config.infoMenu.socialMedia]
+                               newSocialMedia[index] = { ...newSocialMedia[index], emoji: e.target.value }
+                               updateConfig('infoMenu.socialMedia', newSocialMedia)
+                             }}
+                             className="w-16 border border-gray-300 rounded px-2 py-2 text-center"
+                           />
+                           <input
+                             type="url"
+                             placeholder="https://..."
+                             value={social.url}
+                             onChange={(e) => {
+                               const newSocialMedia = [...config.infoMenu.socialMedia]
+                               newSocialMedia[index] = { ...newSocialMedia[index], url: e.target.value }
+                               updateConfig('infoMenu.socialMedia', newSocialMedia)
+                             }}
+                             className="flex-2 border border-gray-300 rounded px-3 py-2"
+                           />
+                           <button
+                             onClick={() => {
+                               const newSocialMedia = config.infoMenu.socialMedia.filter((_, i) => i !== index)
+                               updateConfig('infoMenu.socialMedia', newSocialMedia)
+                             }}
+                             className="bg-red-500 text-white px-3 py-2 rounded hover:bg-red-600"
+                           >
+                             🗑️
+                           </button>
+                         </div>
+                       ))}
+                     </div>
+                   </>
+                 )}
+               </div>
+             </div>
+
+             {/* Messages */}
+             <div className="bg-white rounded-lg shadow p-6">
               <h2 className="text-xl font-semibold text-gray-900 mb-4">💬 Messages du Bot</h2>
               <div className="space-y-4">
                 <div>
