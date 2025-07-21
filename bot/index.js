@@ -401,25 +401,19 @@ const authenticateAdmin = (req, res, next) => {
     console.log(`🔑 Authorization header:`, authHeader ? `Bearer ***${authHeader.slice(-4)}` : 'Absent');
     
     const password = authHeader?.replace('Bearer ', '');
-    const expectedPassword = process.env.ADMIN_PASSWORD;
+    const expectedPassword = process.env.ADMIN_PASSWORD || 'JuniorAdmon123';
     
     console.log(`🔍 Password fourni:`, password ? `***${password.slice(-4)}` : 'Absent');
-    console.log(`🔍 Password attendu:`, expectedPassword ? `***${expectedPassword.slice(-4)}` : 'Non configuré');
-    
-    // DEBUG TEMPORAIRE: Afficher le mot de passe complet pour diagnostic
-    console.log(`🚨 DEBUG - Password complet attendu: "${expectedPassword}"`);
-    console.log(`🚨 DEBUG - Password complet fourni: "${password}"`);
+    console.log(`🔍 Password attendu configuré:`, expectedPassword ? 'Oui' : 'Non');
     
     if (!password) {
       console.log('❌ Aucun password fourni');
       return res.status(401).json({ error: 'Token d\'authentification manquant' });
     }
     
-    // TEMPORAIRE: Accepter tout mot de passe pendant le debug
     if (password !== expectedPassword) {
       console.log('❌ Password incorrect');
-      console.log('🚨 TEMPORAIRE: Acceptation du password quand même pour debug');
-      // return res.status(401).json({ error: 'Token d\'authentification invalide' });
+      return res.status(401).json({ error: 'Token d\'authentification invalide' });
     }
     
     console.log('✅ Authentification réussie');
@@ -1502,7 +1496,120 @@ app.post('/api/public/plugs/:id/like', async (req, res) => {
   }
 });
 
-// Santé de l'API
+// ============================================
+// ROUTES POUR LA DIFFUSION ET STATISTIQUES
+// ============================================
+
+// Modèle simple pour stocker les utilisateurs
+const userStorage = new Set();
+
+// Middleware pour enregistrer les utilisateurs
+bot.use((ctx, next) => {
+  const userId = ctx.from?.id;
+  if (userId) {
+    userStorage.add(userId);
+  }
+  return next();
+});
+
+// Route pour les statistiques utilisateurs
+app.get('/api/users/stats', requireAuth, async (req, res) => {
+  try {
+    res.json({
+      totalUsers: userStorage.size,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('❌ Erreur stats utilisateurs:', error);
+    res.status(500).json({ error: 'Erreur serveur' });
+  }
+});
+
+// Route pour la diffusion de messages
+app.post('/api/broadcast', requireAuth, async (req, res) => {
+  try {
+    const { message, image } = req.body;
+    
+    if (!message || !message.trim()) {
+      return res.status(400).json({ error: 'Message requis' });
+    }
+
+    let sent = 0;
+    let failed = 0;
+    
+    console.log(`📢 Début diffusion à ${userStorage.size} utilisateur(s)`);
+    
+    // Parcourir tous les utilisateurs enregistrés
+    for (const userId of userStorage) {
+      try {
+        if (image) {
+          // Envoyer avec image
+          await bot.telegram.sendPhoto(userId, image, {
+            caption: message.trim(),
+            parse_mode: 'HTML'
+          });
+        } else {
+          // Envoyer message simple
+          await bot.telegram.sendMessage(userId, message.trim(), {
+            parse_mode: 'HTML'
+          });
+        }
+        sent++;
+        
+        // Petite pause pour éviter de surcharger l'API Telegram
+        await new Promise(resolve => setTimeout(resolve, 100));
+        
+      } catch (error) {
+        console.error(`❌ Erreur envoi à ${userId}:`, error.message);
+        failed++;
+        
+        // Supprimer l'utilisateur s'il a bloqué le bot
+        if (error.code === 403) {
+          userStorage.delete(userId);
+        }
+      }
+    }
+    
+    console.log(`✅ Diffusion terminée: ${sent} envoyés, ${failed} échecs`);
+    
+    res.json({
+      sent,
+      failed,
+      totalUsers: userStorage.size,
+      message: `Message diffusé à ${sent} utilisateur(s)`
+    });
+    
+  } catch (error) {
+    console.error('❌ Erreur diffusion:', error);
+    res.status(500).json({ error: 'Erreur lors de la diffusion' });
+  }
+});
+
+// Route pour l'upload d'images (pour la diffusion)
+app.post('/api/upload-image', requireAuth, upload.single('image'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: 'Aucune image fournie' });
+    }
+
+    // Convertir l'image en base64 pour simplifier (temporaire)
+    const imageBase64 = `data:${req.file.mimetype};base64,${req.file.buffer.toString('base64')}`;
+    
+    res.json({
+      imageUrl: imageBase64,
+      message: 'Image uploadée avec succès'
+    });
+    
+  } catch (error) {
+    console.error('❌ Erreur upload image:', error);
+    res.status(500).json({ error: 'Erreur lors de l\'upload' });
+  }
+});
+
+// ============================================
+// ROUTES DE SANTÉ ET INFORMATIONS
+// ============================================
+
 app.get('/health', (req, res) => {
   res.set({
     'Access-Control-Allow-Origin': '*',

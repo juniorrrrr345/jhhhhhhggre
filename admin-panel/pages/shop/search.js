@@ -317,7 +317,7 @@ export default function ShopSearch() {
             color: '#007AFF',
             letterSpacing: '2px'
           }}>
-            RECHERCHE PLUGS
+            RECHERCHE {config?.interface?.title || 'PLUGS'}
           </h2>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
             <span style={{ color: '#ffffff', fontSize: '14px' }}>TROUVEZ</span>

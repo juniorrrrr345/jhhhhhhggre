@@ -273,10 +273,12 @@ export default function ShopHome() {
             color: '#ffffff',
             letterSpacing: '2px'
           }}>
-            PLUGS FINDER
+            {config?.interface?.title || 'PLUGS FINDER'}
           </h2>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-            <span style={{ color: '#ffffff', fontSize: '14px' }}>JUSTE UNE</span>
+            <span style={{ color: '#ffffff', fontSize: '14px' }}>
+              {config?.interface?.tagline1 || 'JUSTE UNE'}
+            </span>
             <span style={{ 
               backgroundColor: '#007AFF', 
               color: '#ffffff', 
@@ -285,9 +287,11 @@ export default function ShopHome() {
               fontSize: '12px',
               fontWeight: 'bold'
             }}>
-              MINI-APP TELEGRAM
+              {config?.interface?.taglineHighlight || 'MINI-APP TELEGRAM'}
             </span>
-            <span style={{ color: '#ffffff', fontSize: '14px' }}>CHILL</span>
+            <span style={{ color: '#ffffff', fontSize: '14px' }}>
+              {config?.interface?.tagline2 || 'CHILL'}
+            </span>
           </div>
         </div>
 

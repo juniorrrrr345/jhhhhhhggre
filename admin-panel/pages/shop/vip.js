@@ -269,7 +269,7 @@ export default function ShopVIP() {
             color: '#FFD700',
             letterSpacing: '2px'
           }}>
-            VIP PLUGS FINDER
+            VIP {config?.interface?.title || 'PLUGS FINDER'}
           </h2>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
             <span style={{ color: '#ffffff', fontSize: '14px' }}>BOUTIQUES</span>

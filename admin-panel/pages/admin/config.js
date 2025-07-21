@@ -37,6 +37,13 @@ export default function SimpleConfig() {
       subtitle: '',
       backgroundImage: ''
     },
+    // Configuration Interface
+    interface: {
+      title: 'PLUGS FINDER',
+      tagline1: 'JUSTE UNE',
+      taglineHighlight: 'MINI-APP TELEGRAM',
+      tagline2: 'CHILL'
+    },
     // Message d'accueil Bot
     welcome: {
       text: '',
@@ -66,6 +73,10 @@ export default function SimpleConfig() {
       welcome: '',
       noPlugsFound: '',
       error: ''
+    },
+    // Messages de diffusion
+    broadcast: {
+      enabled: true
     }
   })
   
@@ -105,6 +116,12 @@ export default function SimpleConfig() {
             subtitle: data.boutique?.subtitle || '',
             backgroundImage: data.boutique?.backgroundImage || ''
           },
+          interface: {
+            title: data.interface?.title || 'PLUGS FINDER',
+            tagline1: data.interface?.tagline1 || 'JUSTE UNE',
+            taglineHighlight: data.interface?.taglineHighlight || 'MINI-APP TELEGRAM',
+            tagline2: data.interface?.tagline2 || 'CHILL'
+          },
           welcome: {
             text: data.welcome?.text || '',
             image: data.welcome?.image || '',
@@ -130,6 +147,9 @@ export default function SimpleConfig() {
             welcome: data.messages?.welcome || '',
             noPlugsFound: data.messages?.noPlugsFound || '',
             error: data.messages?.error || ''
+          },
+          broadcast: {
+            enabled: data.broadcast?.enabled !== false
           }
         })
         
@@ -389,6 +409,61 @@ export default function SimpleConfig() {
               </div>
             </div>
 
+            {/* Configuration Interface */}
+            <div className="bg-white rounded-lg shadow p-6">
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">🎨 Interface</h2>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Titre de la page
+                  </label>
+                  <input
+                    type="text"
+                    value={config.interface.title}
+                    onChange={(e) => updateConfig('interface.title', e.target.value)}
+                    className="w-full border border-gray-300 rounded-lg p-3"
+                    placeholder="PLUGS FINDER"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Ligne 1
+                  </label>
+                  <input
+                    type="text"
+                    value={config.interface.tagline1}
+                    onChange={(e) => updateConfig('interface.tagline1', e.target.value)}
+                    className="w-full border border-gray-300 rounded-lg p-3"
+                    placeholder="JUSTE UNE"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Ligne de survol
+                  </label>
+                  <input
+                    type="text"
+                    value={config.interface.taglineHighlight}
+                    onChange={(e) => updateConfig('interface.taglineHighlight', e.target.value)}
+                    className="w-full border border-gray-300 rounded-lg p-3"
+                    placeholder="MINI-APP TELEGRAM"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Ligne 2
+                  </label>
+                  <input
+                    type="text"
+                    value={config.interface.tagline2}
+                    onChange={(e) => updateConfig('interface.tagline2', e.target.value)}
+                    className="w-full border border-gray-300 rounded-lg p-3"
+                    placeholder="CHILL"
+                  />
+                </div>
+              </div>
+            </div>
+
             {/* Message d'Accueil Bot */}
             <div className="bg-white rounded-lg shadow p-6">
               <h2 className="text-lg font-semibold text-gray-900 mb-4">🎉 Message d'Accueil Bot</h2>
@@ -596,6 +671,30 @@ export default function SimpleConfig() {
                     className="w-full border border-gray-300 rounded-lg p-3"
                     placeholder="Une erreur est survenue"
                   />
+                </div>
+              </div>
+            </div>
+
+            {/* Messages de diffusion */}
+            <div className="bg-white rounded-lg shadow p-6">
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">📢 Messages de diffusion</h2>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Activer la diffusion
+                  </label>
+                  <label className="flex items-center cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={config.broadcast.enabled}
+                      onChange={(e) => updateConfig('broadcast.enabled', e.target.checked)}
+                      className="sr-only"
+                    />
+                    <div className={`relative inline-flex h-6 w-11 rounded-full transition-colors duration-200 ${config.broadcast.enabled ? 'bg-blue-600' : 'bg-gray-300'}`}>
+                      <div className={`inline-block h-5 w-5 transform rounded-full bg-white transition-transform duration-200 ${config.broadcast.enabled ? 'translate-x-5' : 'translate-x-0'} translate-y-0.5`}></div>
+                    </div>
+                    <span className="ml-2 text-sm text-gray-600">Activé</span>
+                  </label>
                 </div>
               </div>
             </div>
