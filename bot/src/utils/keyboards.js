@@ -48,13 +48,13 @@ const cleanUrl = (url) => {
 const createMainKeyboard = (config) => {
   const buttons = [];
   
-  // Réseaux sociaux personnalisés du message d'accueil en premier
-  if (config?.welcome?.socialMedia && config.welcome.socialMedia.length > 0) {
-    const sortedSocialMedia = config.welcome.socialMedia.sort((a, b) => a.order - b.order);
+  // Réseaux sociaux personnalisés en haut du menu
+  if (config?.socialMedia && Array.isArray(config.socialMedia) && config.socialMedia.length > 0) {
+    console.log('🔄 Création des boutons réseaux sociaux personnalisés...');
     
     // Filtrer et valider les réseaux sociaux
-    const validSocialMedia = sortedSocialMedia.filter(social => {
-      if (!social || !social.name || !social.emoji || !social.url) {
+    const validSocialMedia = config.socialMedia.filter(social => {
+      if (!social || !social.name || !social.url) {
         console.warn('🚫 Réseau social incomplet détecté:', social);
         return false;
       }
@@ -70,7 +70,7 @@ const createMainKeyboard = (config) => {
       return true;
     });
     
-    console.log(`✅ ${validSocialMedia.length}/${sortedSocialMedia.length} réseaux sociaux valides dans welcome`);
+    console.log(`✅ ${validSocialMedia.length}/${config.socialMedia.length} réseaux sociaux valides`);
     
     // Grouper les réseaux sociaux par lignes de 2
     for (let i = 0; i < validSocialMedia.length; i += 2) {
@@ -78,13 +78,15 @@ const createMainKeyboard = (config) => {
       const social1 = validSocialMedia[i];
       
       try {
-        socialRow.push(Markup.button.url(`${social1.emoji} ${social1.name}`, social1.url));
-        console.log(`📱 Bouton créé: ${social1.emoji} ${social1.name} -> ${social1.url}`);
+        const emoji1 = social1.emoji || '🌐';
+        socialRow.push(Markup.button.url(`${emoji1} ${social1.name}`, social1.url));
+        console.log(`📱 Bouton créé: ${emoji1} ${social1.name} -> ${social1.url}`);
         
         if (validSocialMedia[i + 1]) {
           const social2 = validSocialMedia[i + 1];
-          socialRow.push(Markup.button.url(`${social2.emoji} ${social2.name}`, social2.url));
-          console.log(`📱 Bouton créé: ${social2.emoji} ${social2.name} -> ${social2.url}`);
+          const emoji2 = social2.emoji || '🌐';
+          socialRow.push(Markup.button.url(`${emoji2} ${social2.name}`, social2.url));
+          console.log(`📱 Bouton créé: ${emoji2} ${social2.name} -> ${social2.url}`);
         }
         
         buttons.push(socialRow);
@@ -145,29 +147,7 @@ const createMainKeyboard = (config) => {
       buttons.push(row);
     });
     
-  } else if (config?.socialMedia?.telegram || config?.socialMedia?.whatsapp) {
-    // Compatibilité avec l'ancienne structure (au cas où)
-    console.log('🔄 Utilisation de l\'ancienne structure socialMedia...');
-    const socialRow = [];
-    
-    if (config.socialMedia.telegram) {
-      const cleanedTelegramUrl = cleanUrl(config.socialMedia.telegram);
-      if (cleanedTelegramUrl) {
-        socialRow.push(Markup.button.url('📱 Telegram', cleanedTelegramUrl));
-      }
-    }
-    
-    if (config.socialMedia.whatsapp) {
-      const cleanedWhatsappUrl = cleanUrl(config.socialMedia.whatsapp);
-      if (cleanedWhatsappUrl) {
-        socialRow.push(Markup.button.url('💬 WhatsApp', cleanedWhatsappUrl));
-      }
-    }
-    
-    if (socialRow.length > 0) {
-      buttons.push(socialRow);
-    }
-  }
+
   
   return Markup.inlineKeyboard(buttons);
 };

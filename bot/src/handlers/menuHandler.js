@@ -31,16 +31,6 @@ const handleContact = async (ctx) => {
           message += `• ${emoji} ${social.name} : ${social.url}\n`;
         }
       });
-    } else if (config?.socialMedia?.telegram || config?.socialMedia?.whatsapp) {
-      // Compatibilité avec l'ancienne structure
-      message += '\n\n📱 **Nous contacter :**\n';
-      
-      if (config.socialMedia.telegram) {
-        message += `• 📱 Telegram : ${config.socialMedia.telegram}\n`;
-      }
-      if (config.socialMedia.whatsapp) {
-        message += `• 💬 WhatsApp : ${config.socialMedia.whatsapp}\n`;
-      }
     }
 
     const keyboard = createMainKeyboard(config);
