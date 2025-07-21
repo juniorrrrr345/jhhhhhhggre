@@ -87,48 +87,71 @@ export default function ShopSearch() {
 
   const fetchPlugs = async () => {
     try {
-      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
-      const timestamp = new Date().getTime()
+      console.log('🧪 Utilisation de l\'API de test locale pour la recherche...')
       
       let data
       try {
-        const directResponse = await fetch(`${apiBaseUrl}/api/public/plugs?limit=100&t=${timestamp}`, {
+        // Utiliser l'API de test locale en premier
+        const testResponse = await fetch(`/api/test-plugs?limit=100&t=${new Date().getTime()}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
-            'Cache-Control': 'no-cache, no-store, must-revalidate',
-            'Pragma': 'no-cache',
-            'Expires': '0'
+            'Cache-Control': 'no-cache'
           }
         })
         
-        if (directResponse.ok) {
-          data = await directResponse.json()
-          console.log('✅ API recherche directe réussie:', data)
+        if (testResponse.ok) {
+          data = await testResponse.json()
+          console.log('✅ API de test recherche réussie:', data)
         } else {
-          throw new Error(`Direct plugs failed: HTTP ${directResponse.status}`)
+          throw new Error(`Test API failed: HTTP ${testResponse.status}`)
         }
-      } catch (directError) {
-        console.log('❌ Plugs recherche directs échoués:', directError.message)
+      } catch (testError) {
+        console.log('❌ API de test recherche échouée:', testError.message)
+        
+        // Fallback vers l'API principale
+        const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
+        const timestamp = new Date().getTime()
         
         try {
-          const proxyResponse = await fetch(`/api/proxy?endpoint=/api/public/plugs&limit=100&t=${new Date().getTime()}`, {
+          const directResponse = await fetch(`${apiBaseUrl}/api/public/plugs?limit=100&t=${timestamp}`, {
             method: 'GET',
             headers: {
               'Content-Type': 'application/json',
-              'Cache-Control': 'no-cache'
+              'Cache-Control': 'no-cache, no-store, must-revalidate',
+              'Pragma': 'no-cache',
+              'Expires': '0'
             }
           })
           
-          if (!proxyResponse.ok) {
-            throw new Error(`Plugs proxy failed: HTTP ${proxyResponse.status}`)
+          if (directResponse.ok) {
+            data = await directResponse.json()
+            console.log('✅ API recherche directe réussie:', data)
+          } else {
+            throw new Error(`Direct plugs failed: HTTP ${directResponse.status}`)
           }
+        } catch (directError) {
+          console.log('❌ Plugs recherche directs échoués:', directError.message)
           
-          data = await proxyResponse.json()
-          console.log('✅ Recherche proxy réussi:', data)
-        } catch (proxyError) {
-          console.log('❌ Plugs recherche proxy échoués:', proxyError.message)
-          throw proxyError
+          try {
+            const proxyResponse = await fetch(`/api/proxy?endpoint=/api/public/plugs&limit=100&t=${new Date().getTime()}`, {
+              method: 'GET',
+              headers: {
+                'Content-Type': 'application/json',
+                'Cache-Control': 'no-cache'
+              }
+            })
+            
+            if (!proxyResponse.ok) {
+              throw new Error(`Plugs proxy failed: HTTP ${proxyResponse.status}`)
+            }
+            
+            data = await proxyResponse.json()
+            console.log('✅ Recherche proxy réussi:', data)
+          } catch (proxyError) {
+            console.log('❌ Plugs recherche proxy échoués:', proxyError.message)
+            throw proxyError
+          }
         }
       }
 

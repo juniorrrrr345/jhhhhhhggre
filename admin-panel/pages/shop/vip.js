@@ -105,50 +105,73 @@ export default function ShopVIP() {
 
   const fetchVipPlugs = async () => {
     try {
-      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
-      const timestamp = new Date().getTime()
+      console.log('🧪 Utilisation de l\'API de test locale pour VIP...')
       
       let data
       try {
-        const url = `${apiBaseUrl}/api/public/plugs?filter=vip&limit=50&t=${timestamp}`
-        const directResponse = await fetch(url, {
+        // Utiliser l'API de test locale en premier avec filtre VIP
+        const testResponse = await fetch(`/api/test-plugs?filter=vip&limit=50&t=${new Date().getTime()}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
-            'Cache-Control': 'no-cache, no-store, must-revalidate',
-            'Pragma': 'no-cache',
-            'Expires': '0'
+            'Cache-Control': 'no-cache'
           }
         })
         
-        if (directResponse.ok) {
-          data = await directResponse.json()
-          console.log('✅ API VIP directe réussie:', data)
+        if (testResponse.ok) {
+          data = await testResponse.json()
+          console.log('✅ API de test VIP réussie:', data)
         } else {
-          throw new Error(`VIP direct failed: HTTP ${directResponse.status}`)
+          throw new Error(`Test VIP API failed: HTTP ${testResponse.status}`)
         }
-      } catch (directError) {
-        console.log('❌ VIP directs échoués:', directError.message)
+      } catch (testError) {
+        console.log('❌ API de test VIP échouée:', testError.message)
+        
+        // Fallback vers l'API principale
+        const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
+        const timestamp = new Date().getTime()
         
         try {
-          const proxyUrl = `/api/proxy?endpoint=/api/public/plugs&filter=vip&limit=50&t=${new Date().getTime()}`
-          const proxyResponse = await fetch(proxyUrl, {
+          const url = `${apiBaseUrl}/api/public/plugs?filter=vip&limit=50&t=${timestamp}`
+          const directResponse = await fetch(url, {
             method: 'GET',
             headers: {
               'Content-Type': 'application/json',
-              'Cache-Control': 'no-cache'
+              'Cache-Control': 'no-cache, no-store, must-revalidate',
+              'Pragma': 'no-cache',
+              'Expires': '0'
             }
           })
           
-          if (!proxyResponse.ok) {
-            throw new Error(`VIP proxy failed: HTTP ${proxyResponse.status}`)
+          if (directResponse.ok) {
+            data = await directResponse.json()
+            console.log('✅ API VIP directe réussie:', data)
+          } else {
+            throw new Error(`VIP direct failed: HTTP ${directResponse.status}`)
           }
+        } catch (directError) {
+          console.log('❌ VIP directs échoués:', directError.message)
           
-          data = await proxyResponse.json()
-          console.log('✅ VIP proxy réussi:', data)
-        } catch (proxyError) {
-          console.log('❌ VIP proxy échoués:', proxyError.message)
-          throw proxyError
+          try {
+            const proxyUrl = `/api/proxy?endpoint=/api/public/plugs&filter=vip&limit=50&t=${new Date().getTime()}`
+            const proxyResponse = await fetch(proxyUrl, {
+              method: 'GET',
+              headers: {
+                'Content-Type': 'application/json',
+                'Cache-Control': 'no-cache'
+              }
+            })
+            
+            if (!proxyResponse.ok) {
+              throw new Error(`VIP proxy failed: HTTP ${proxyResponse.status}`)
+            }
+            
+            data = await proxyResponse.json()
+            console.log('✅ VIP proxy réussi:', data)
+          } catch (proxyError) {
+            console.log('❌ VIP proxy échoués:', proxyError.message)
+            throw proxyError
+          }
         }
       }
 
