@@ -90,7 +90,7 @@ html, body {
   flex-direction: column;
 }
 
-/* Améliorer l'affichage des images */
+/* Améliorer l'affichage des images - simplifié */
 .shop-card img {
   object-fit: cover;
   object-position: center;
@@ -100,6 +100,11 @@ html, body {
 
 .shop-card img:hover {
   transform: scale(1.05);
+}
+
+/* Placeholder pour les images manquantes */
+.shop-card .bg-gray-900 {
+  background: linear-gradient(135deg, #374151 0%, #1f2937 100%);
 }
 
 /* Fallback pour les images cassées - simplifié */

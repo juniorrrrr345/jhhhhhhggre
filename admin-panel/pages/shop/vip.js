@@ -337,25 +337,23 @@ export default function ShopVIP() {
                       style={{ textDecoration: 'none', color: 'inherit' }}
                     >
                       <div className="shop-card bg-gray-800 border border-yellow-500 rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-shadow duration-300 w-full max-w-none">
-                        {/* Image */}
-                        <div className="relative h-32 sm:h-40 md:h-48 bg-gray-900">
-                          {plug.image ? (
+                        {/* Image simplifiée - comme dans le bot */}
+                        <div className="relative h-32 sm:h-40 md:h-48 bg-gray-900 overflow-hidden">
+                          {plug.image && plug.image.trim() !== '' ? (
                             <img
                               src={plug.image}
-                              alt={plug.name}
+                              alt={plug.name || 'Boutique'}
                               className="w-full h-full object-cover"
-                              onError={(e) => {
-                                e.target.style.display = 'none'
-                                e.target.nextSibling.style.display = 'flex'
-                              }}
+                              loading="lazy"
                             />
-                          ) : null}
-                          <div 
-                            className={`absolute inset-0 flex items-center justify-center ${plug.image ? 'hidden' : 'flex'}`}
-                            style={{ display: plug.image ? 'none' : 'flex' }}
-                          >
-                            <GlobeAltIcon className="w-16 h-16 text-gray-600" />
-                          </div>
+                          ) : (
+                            <div className="absolute inset-0 flex items-center justify-center bg-gray-900">
+                              <div className="text-center">
+                                <GlobeAltIcon className="w-8 h-8 sm:w-12 sm:h-12 text-gray-600 mx-auto mb-1" />
+                                <p className="text-gray-500 text-xs">Aucune image</p>
+                              </div>
+                            </div>
+                          )}
                           
                           {/* VIP Badge - Always shown for VIP page */}
                           <div className="absolute top-2 right-2">

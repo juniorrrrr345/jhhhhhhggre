@@ -483,34 +483,15 @@ export default function ShopSearch() {
                       style={{ textDecoration: 'none', color: 'inherit' }}
                     >
                                               <div className="shop-card bg-gray-800 border border-gray-700 rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-shadow duration-300 w-full">
-                        {/* Image simplifiée avec meilleur fallback */}
+                        {/* Image simplifiée - comme dans le bot */}
                         <div className="relative h-32 sm:h-40 md:h-48 bg-gray-900 overflow-hidden">
-                          {plug.image ? (
-                            <>
-                              <img
-                                src={plug.image}
-                                alt={plug.name || 'Boutique'}
-                                className="w-full h-full object-cover"
-                                loading="lazy"
-                                onError={(e) => {
-                                  e.target.style.display = 'none'
-                                  e.target.parentElement.querySelector('.fallback-placeholder').style.display = 'flex'
-                                }}
-                                style={{ 
-                                  display: 'block',
-                                  backgroundColor: '#1f2937'
-                                }}
-                              />
-                              <div 
-                                className="fallback-placeholder absolute inset-0 items-center justify-center bg-gray-900"
-                                style={{ display: 'none' }}
-                              >
-                                <div className="text-center">
-                                  <GlobeAltIcon className="w-8 h-8 sm:w-12 sm:h-12 text-gray-600 mx-auto mb-1" />
-                                  <p className="text-gray-500 text-xs">Image non disponible</p>
-                                </div>
-                              </div>
-                            </>
+                          {plug.image && plug.image.trim() !== '' ? (
+                            <img
+                              src={plug.image}
+                              alt={plug.name || 'Boutique'}
+                              className="w-full h-full object-cover"
+                              loading="lazy"
+                            />
                           ) : (
                             <div className="absolute inset-0 flex items-center justify-center bg-gray-900">
                               <div className="text-center">
