@@ -27,10 +27,24 @@ export default function ShopHome() {
       fetchPlugs()
     }, 30000)
     
+    // CORRECTION: Écouter les signaux de synchronisation globaux
     const handleStorageChange = (event) => {
-      if (event?.key === 'boutique_sync_signal') {
-        fetchConfig()
-        fetchPlugs()
+      if (event?.key === 'boutique_sync_signal' || event?.key === 'global_sync_signal') {
+        console.log('🔄 Signal de synchronisation reçu:', event.key)
+        
+        // Forcer la récupération des nouvelles données
+        setTimeout(() => {
+          fetchConfig()
+          fetchPlugs()
+        }, 500) // Petit délai pour s'assurer que la sauvegarde est terminée
+        
+        // Notification visuelle
+        if (typeof toast !== 'undefined') {
+          toast.success('🔄 Synchronisation en cours...', {
+            duration: 2000,
+            icon: '🔄'
+          })
+        }
       }
     }
     
@@ -45,16 +59,58 @@ export default function ShopHome() {
   const fetchConfig = async () => {
     try {
       const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://jhhhhhhggre.onrender.com'
-      const response = await fetch(`${apiBaseUrl}/api/public/config?t=${Date.now()}`, {
-        cache: 'no-cache'
+      const timestamp = Date.now()
+      
+      const response = await fetch(`${apiBaseUrl}/api/public/config?t=${timestamp}&_=${Math.random()}`, {
+        method: 'GET',
+        cache: 'no-cache',
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0'
+        }
       })
       
       if (response.ok) {
         const data = await response.json()
+        console.log('🔄 Configuration boutique mise à jour:', data?._lastUpdate || 'timestamp non disponible')
         setConfig(data)
+        
+        // Notification si c'est une mise à jour via synchronisation
+        const lastSync = localStorage.getItem('global_sync_signal')
+        if (lastSync) {
+          const syncData = JSON.parse(lastSync)
+          if (Date.now() - syncData.timestamp < 10000) { // Mise à jour récente (moins de 10s)
+            if (typeof toast !== 'undefined') {
+              toast.success('✅ Configuration boutique synchronisée !', {
+                duration: 2000,
+                icon: '✅'
+              })
+            }
+          }
+        }
       }
     } catch (error) {
       console.error('Error loading config:', error)
+      
+      // Fallback via proxy en cas d'erreur
+      try {
+        const proxyResponse = await fetch(`/api/proxy?endpoint=/api/public/config&t=${Date.now()}`, {
+          cache: 'no-cache',
+          headers: {
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache'
+          }
+        })
+        
+        if (proxyResponse.ok) {
+          const data = await proxyResponse.json()
+          console.log('🔄 Configuration via proxy:', data?._lastUpdate || 'timestamp non disponible')
+          setConfig(data)
+        }
+      } catch (proxyError) {
+        console.error('Error loading config via proxy:', proxyError)
+      }
     } finally {
       setInitialLoading(false)
     }

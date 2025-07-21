@@ -17,8 +17,20 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Endpoint requis' })
     }
 
-    // URL de base de l'API Render
-    const API_BASE_URL = process.env.API_BASE_URL || process.env.NEXT_PUBLIC_API_BASE_URL || 'https://jhhhhhhggre.onrender.com'
+    // URL de base de l'API Render avec validation et fallbacks
+    const possibleUrls = [
+      process.env.API_BASE_URL,
+      process.env.NEXT_PUBLIC_API_BASE_URL,
+      'https://jhhhhhhggre.onrender.com',
+      'https://bot-telegram-render.onrender.com' // URL alternative possible
+    ].filter(Boolean)
+    
+    const API_BASE_URL = possibleUrls[0]
+    
+    // Log pour debug
+    console.log('🔗 URLs possibles:', possibleUrls)
+    console.log('🔗 URL de base utilisée:', API_BASE_URL)
+    console.log('📡 Endpoint demandé:', endpoint)
     
     // Construction de l'URL complète
     let targetUrl = `${API_BASE_URL}${endpoint}`
@@ -99,7 +111,54 @@ export default async function handler(req, res) {
       timeout: endpoint.includes('/config') ? '45s' : '20s'
     });
     
-    const response = await fetch(targetUrl, fetchOptions)
+    // Tentative avec l'URL principale, avec fallback sur d'autres URLs si échec
+    let response = null
+    let lastError = null
+    
+         for (let i = 0; i < possibleUrls.length; i++) {
+       const currentUrl = possibleUrls[i]
+       let attemptUrl = `${currentUrl}${endpoint}`
+       
+       if (queryParams.toString()) {
+         attemptUrl += `?${queryParams.toString()}`
+       }
+      
+      try {
+        console.log(`🔄 Tentative ${i + 1}/${possibleUrls.length}: ${attemptUrl}`)
+        
+        response = await fetch(attemptUrl, fetchOptions)
+        
+        // Si la réponse est OK ou si c'est une erreur d'authentification (pas de connectivité)
+        if (response.ok || response.status === 401 || response.status === 403) {
+          console.log(`✅ Connexion réussie avec: ${currentUrl}`)
+          break
+        } else if (response.status >= 500) {
+          // Erreur serveur, essayer la prochaine URL
+          console.log(`❌ Erreur serveur ${response.status} avec ${currentUrl}, essai suivant...`)
+          lastError = new Error(`HTTP ${response.status} sur ${currentUrl}`)
+          response = null
+          continue
+        } else {
+          // Autres erreurs HTTP (4xx sauf auth), garder la réponse
+          console.log(`⚠️ Erreur HTTP ${response.status} avec ${currentUrl}`)
+          break
+        }
+      } catch (fetchError) {
+        console.log(`❌ Erreur de connexion avec ${currentUrl}: ${fetchError.message}`)
+        lastError = fetchError
+        response = null
+        
+        // Si ce n'est pas la dernière URL, continuer
+        if (i < possibleUrls.length - 1) {
+          continue
+        }
+      }
+    }
+    
+    // Si aucune URL n'a fonctionné
+    if (!response) {
+      throw lastError || new Error('Toutes les URLs de fallback ont échoué')
+    }
     
     console.log('✅ Proxy response:', {
       status: response.status,
@@ -138,14 +197,29 @@ export default async function handler(req, res) {
       size: JSON.stringify(data).length
     });
     
-    // CORRECTION: Transférer tous les headers importants
-    const importantHeaders = ['cache-control', 'last-modified', 'etag', 'expires']
+    // CORRECTION: Transférer tous les headers importants y compris ceux de synchronisation
+    const importantHeaders = [
+      'cache-control', 
+      'last-modified', 
+      'etag', 
+      'expires',
+      'x-config-updated',
+      'x-public-config-updated'
+    ]
     importantHeaders.forEach(header => {
       const value = response.headers.get(header)
       if (value) {
         res.setHeader(header, value)
       }
     })
+    
+    // Headers anti-cache forcés pour tous les endpoints de configuration
+    if (endpoint.includes('/config')) {
+      res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0')
+      res.setHeader('Pragma', 'no-cache')
+      res.setHeader('Expires', '0')
+      res.setHeader('X-Proxy-Timestamp', new Date().toISOString())
+    }
     
     // Retourner la réponse
     res.status(response.status).json(data)

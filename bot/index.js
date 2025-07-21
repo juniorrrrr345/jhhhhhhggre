@@ -412,13 +412,23 @@ app.get('/api/public/config', async (req, res) => {
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Methods': 'GET, OPTIONS',
       'Access-Control-Allow-Headers': 'Content-Type',
-      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      'Cache-Control': 'no-cache, no-store, must-revalidate, max-age=0',
       'Pragma': 'no-cache',
       'Expires': '0',
-      'Last-Modified': new Date().toUTCString()
+      'Last-Modified': new Date().toUTCString(),
+      'ETag': `"public-config-${Date.now()}"`,
+      'Access-Control-Expose-Headers': 'Last-Modified, ETag',
+      'X-Public-Config-Updated': new Date().toISOString()
     });
     
-    res.json(publicConfig);
+    // Ajouter un timestamp pour forcer la synchronisation
+    const responseData = {
+      ...publicConfig,
+      _syncTimestamp: Date.now(),
+      _lastUpdate: new Date().toISOString()
+    };
+    
+    res.json(responseData);
   } catch (error) {
     console.error('❌ Erreur récupération config publique:', error);
     res.status(500).json({ error: 'Erreur serveur' });
@@ -439,16 +449,69 @@ app.post('/api/bot/reload', authenticateAdmin, async (req, res) => {
     
     console.log('✅ Configuration du bot rechargée avec succès');
     
+    // Headers anti-cache
+    res.set({
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      'Pragma': 'no-cache',
+      'Expires': '0',
+      'X-Bot-Reloaded': new Date().toISOString()
+    });
+    
     res.json({ 
       success: true, 
       message: 'Configuration du bot rechargée avec succès',
       timestamp: new Date().toISOString(),
-      cacheCleared: true
+      cacheCleared: true,
+      configLoaded: !!configCache
     });
   } catch (error) {
     console.error('❌ Erreur reload config:', error);
     res.status(500).json({ 
       error: 'Erreur lors du rechargement de la configuration',
+      details: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
+// NOUVEL ENDPOINT: Test de synchronisation
+app.get('/api/sync/test', authenticateAdmin, async (req, res) => {
+  try {
+    console.log('🧪 Test de synchronisation demandé');
+    
+    const currentConfig = await Config.findById('main');
+    const timestamp = Date.now();
+    
+    // Test de lecture
+    const testData = {
+      success: true,
+      message: 'Test de synchronisation réussi',
+      timestamp: new Date().toISOString(),
+      config: {
+        exists: !!currentConfig,
+        lastUpdate: currentConfig?.updatedAt || 'Non défini',
+        boutiqueName: currentConfig?.boutique?.name || 'Non configuré'
+      },
+      cache: {
+        cached: !!configCache,
+        lastCacheUpdate: lastConfigUpdate ? new Date(lastConfigUpdate).toISOString() : 'Jamais',
+        cacheAge: lastConfigUpdate ? timestamp - lastConfigUpdate : 'N/A'
+      }
+    };
+    
+    // Headers anti-cache
+    res.set({
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      'Pragma': 'no-cache',
+      'Expires': '0',
+      'X-Sync-Test': timestamp.toString()
+    });
+    
+    res.json(testData);
+  } catch (error) {
+    console.error('❌ Erreur test sync:', error);
+    res.status(500).json({ 
+      error: 'Erreur test synchronisation',
       details: error.message,
       timestamp: new Date().toISOString()
     });
@@ -509,14 +572,15 @@ app.put('/api/config', authenticateAdmin, async (req, res) => {
     delete cleanConfigData.__v;
     delete cleanConfigData.createdAt;
     
-    // Forcer une nouvelle date de mise à jour
-    cleanConfigData.updatedAt = new Date();
-    
     // Nettoyer les données undefined/null de manière récursive
     const cleanRecursive = (obj) => {
       if (Array.isArray(obj)) {
         return obj.map(cleanRecursive).filter(item => item !== null && item !== undefined);
       } else if (obj !== null && typeof obj === 'object') {
+        // Gérer les dates spécialement
+        if (obj instanceof Date) {
+          return obj;
+        }
         const cleanedObj = {};
         Object.keys(obj).forEach(key => {
           const value = cleanRecursive(obj[key]);
@@ -530,6 +594,10 @@ app.put('/api/config', authenticateAdmin, async (req, res) => {
     };
     
     const finalData = cleanRecursive(cleanConfigData);
+    
+    // Forcer une nouvelle date de mise à jour APRÈS le nettoyage
+    finalData.updatedAt = new Date();
+    
     console.log('📝 Données après nettoyage:', Object.keys(finalData));
     
     // CORRECTION: Meilleure gestion de la création/mise à jour
@@ -589,19 +657,38 @@ app.put('/api/config', authenticateAdmin, async (req, res) => {
     
     // Invalider le cache et forcer un rechargement
     configCache = null;
+    lastConfigUpdate = Date.now();
+    
+    // CORRECTION: Forcer le rechargement de la configuration du bot
+    try {
+      await reloadBotConfig();
+      console.log('✅ Configuration du bot rechargée automatiquement');
+    } catch (reloadError) {
+      console.error('⚠️ Erreur rechargement automatique:', reloadError.message);
+    }
     
     // Headers anti-cache pour forcer la synchronisation
     res.set({
-      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      'Cache-Control': 'no-cache, no-store, must-revalidate, max-age=0',
       'Pragma': 'no-cache',
       'Expires': '0',
       'Last-Modified': new Date().toUTCString(),
+      'ETag': `"config-${Date.now()}"`,
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Methods': 'PUT, GET, POST, DELETE, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      'Access-Control-Expose-Headers': 'Last-Modified, ETag',
+      'X-Config-Updated': new Date().toISOString()
     });
     
-    res.json(config);
+    // Ajouter un timestamp pour forcer la synchronisation
+    const responseData = {
+      ...config.toObject(),
+      _syncTimestamp: Date.now(),
+      _lastUpdate: new Date().toISOString()
+    };
+    
+    res.json(responseData);
   } catch (error) {
     console.error('❌ Erreur détaillée mise à jour config:', {
       message: error.message,
