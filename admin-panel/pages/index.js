@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/router'
 import toast from 'react-hot-toast'
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline'
+import { api } from '../lib/api-proxy'
 
 export default function Login() {
   const [password, setPassword] = useState('')
@@ -23,108 +24,31 @@ export default function Login() {
 
       console.log('🔐 Début de la tentative de connexion...');
       
-      // Essayer d'abord l'API directe
-      let success = false;
-      let errorMessage = '';
+      // Utiliser directement l'API proxy qui fonctionne
+      console.log('🔐 Login via proxy API...');
       
       try {
-        const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://jhhhhhhggre.onrender.com';
-        console.log('🔐 Login tentative directe:', apiBaseUrl);
+        const config = await api.getConfig(password);
+        console.log('✅ Login proxy réussi');
         
-        // Test de santé du serveur d'abord
-        const healthResponse = await fetch(`${apiBaseUrl}/health`, {
-          method: 'GET',
-          headers: {
-            'Cache-Control': 'no-cache',
-            'Content-Type': 'application/json'
-          }
-        });
-
-        console.log('🏥 Health check:', healthResponse.status);
-        
-        // Utiliser le proxy pour éviter les problèmes CORS
-        const response = await fetch('/api/cors-proxy', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${password}`
-          },
-          body: JSON.stringify({
-            endpoint: '/api/config',
-            method: 'GET'
-          })
-        });
-
-        console.log('📡 Response status:', response.status);
-
-        if (response.ok) {
-          console.log('✅ Login direct réussi');
-          success = true;
-        } else if (response.status === 401) {
-          errorMessage = 'Mot de passe incorrect';
-          throw new Error(`HTTP ${response.status}`);
-        } else {
-          const responseText = await response.text();
-          console.log('❌ Response error:', responseText);
-          throw new Error(`HTTP ${response.status}: ${responseText}`);
-        }
-      } catch (directError) {
-        console.log('❌ Login direct échoué:', directError.message);
-        
-        // Si c'est une erreur 401, pas besoin d'essayer le proxy
-        if (directError.message.includes('401')) {
-          throw directError;
-        }
-        
-        console.log('🔄 Login tentative via proxy...');
-        
-        // Fallback vers le proxy
-        try {
-          const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || process.env.API_BASE_URL
-          const proxyResponse = await fetch(`${apiBaseUrl}/api/proxy`, {
-            method: 'POST',
-            headers: {
-              'Authorization': `Bearer ${password}`,
-              'Cache-Control': 'no-cache',
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              endpoint: '/admin/config',
-              method: 'GET'
-            })
-          });
-
-          console.log('📡 Proxy response status:', proxyResponse.status);
-
-          if (proxyResponse.ok) {
-            console.log('✅ Login proxy réussi');
-            success = true;
-          } else if (proxyResponse.status === 401) {
-            errorMessage = 'Mot de passe incorrect';
-            throw new Error(`Login proxy failed: HTTP ${proxyResponse.status}`);
-          } else {
-            const proxyText = await proxyResponse.text();
-            console.log('❌ Proxy response error:', proxyText);
-            throw new Error(`Login proxy failed: HTTP ${proxyResponse.status}: ${proxyText}`);
-          }
-        } catch (proxyError) {
-          console.log('❌ Login proxy échoué:', proxyError.message);
-          throw new Error('Impossible de se connecter au serveur. Le serveur bot est peut-être en cours de démarrage.');
-        }
-      }
-
-      if (success) {
         // Stocker le token
         localStorage.setItem('adminToken', password);
         toast.success('Connexion réussie !');
         
-        // Attendre un peu avant la redirection pour que l'utilisateur voie le message
+        // Redirection vers le panel admin
         setTimeout(() => {
           router.push('/admin');
         }, 1000);
-      } else {
-        toast.error(errorMessage || 'Erreur de connexion');
-      }
+        
+      } catch (directError) {
+        console.log('❌ Login échoué:', directError.message);
+        
+        // Gestion des erreurs spécifiques
+        if (directError.message.includes('Proxy error: 401')) {
+          toast.error('Mot de passe incorrect');
+        } else {
+          toast.error('Erreur de connexion. Vérifiez votre mot de passe.');
+        }
     } catch (error) {
       console.error('💥 Login error final:', error);
       
