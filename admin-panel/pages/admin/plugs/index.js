@@ -8,7 +8,8 @@ import {
   PencilIcon,
   TrashIcon,
   StarIcon,
-  HomeIcon
+  HomeIcon,
+  GiftIcon
 } from '@heroicons/react/24/outline'
 
 export default function PlugsManagement() {
@@ -18,7 +19,7 @@ export default function PlugsManagement() {
   const [filter, setFilter] = useState('all')
   const [currentPage, setCurrentPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
-  const [activeTab, setActiveTab] = useState('plugs') // 'plugs', 'search', 'vip'
+  const [activeTab, setActiveTab] = useState('plugs') // 'plugs', 'search', 'giveaway'
   const router = useRouter()
 
   useEffect(() => {
@@ -116,94 +117,92 @@ export default function PlugsManagement() {
 
   const handleTabChange = (tab) => {
     setActiveTab(tab)
-    if (tab === 'vip') {
-      setFilter('vip')
-    } else {
-      setFilter('all')
-    }
     setCurrentPage(1)
   }
 
   const renderPlugCard = (plug) => (
-    <div key={plug._id} className="bg-gray-800 rounded-2xl p-4 mb-4 relative">
-      {/* Header avec actions admin cachées */}
-      <div className="absolute top-2 right-2 opacity-30 hover:opacity-100 transition-opacity">
+    <div key={plug._id} className="bg-gray-800 rounded-3xl p-5 mb-4 relative">
+      {/* Actions admin cachées */}
+      <div className="absolute top-3 right-3 opacity-20 hover:opacity-100 transition-opacity">
         <div className="flex space-x-1">
           <button
             onClick={() => router.push(`/admin/plugs/${plug._id}`)}
-            className="text-blue-400 hover:text-blue-300 text-xs"
+            className="text-blue-400 hover:text-blue-300 p-1"
           >
-            <EyeIcon className="w-4 h-4" />
+            <EyeIcon className="w-3 h-3" />
           </button>
           <button
             onClick={() => router.push(`/admin/plugs/${plug._id}/edit`)}
-            className="text-yellow-400 hover:text-yellow-300 text-xs"
+            className="text-yellow-400 hover:text-yellow-300 p-1"
           >
-            <PencilIcon className="w-4 h-4" />
+            <PencilIcon className="w-3 h-3" />
           </button>
           <button
             onClick={() => togglePlugStatus(plug._id, plug.isActive)}
-            className={`${plug.isActive ? 'text-red-400 hover:text-red-300' : 'text-green-400 hover:text-green-300'} text-xs`}
+            className={`${plug.isActive ? 'text-red-400 hover:text-red-300' : 'text-green-400 hover:text-green-300'} p-1`}
           >
             {plug.isActive ? '⏸️' : '▶️'}
           </button>
           <button
             onClick={() => deletePlug(plug._id, plug.name)}
-            className="text-red-400 hover:text-red-300 text-xs"
+            className="text-red-400 hover:text-red-300 p-1"
           >
-            <TrashIcon className="w-4 h-4" />
+            <TrashIcon className="w-3 h-3" />
           </button>
         </div>
       </div>
 
-      <div className="flex items-center space-x-4">
-        {/* Image du plug */}
-        <div className="flex-shrink-0">
-          <img
-            src={plug.image || '/placeholder.jpg'}
-            alt={plug.name}
-            className="w-16 h-16 rounded-2xl object-cover"
-          />
+      <div className="flex items-center justify-between">
+        {/* Partie gauche avec image et infos */}
+        <div className="flex items-center space-x-4">
+          {/* Image */}
+          <div className="flex-shrink-0">
+            <img
+              src={plug.image || '/placeholder.jpg'}
+              alt={plug.name}
+              className="w-20 h-20 rounded-2xl object-cover"
+              onError={(e) => {
+                e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCA4MCA4MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjgwIiBoZWlnaHQ9IjgwIiByeD0iMTYiIGZpbGw9IiM0Qjc2ODgiLz4KPHN2ZyB4PSIyMCIgeT0iMjAiIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIj4KPHBhdGggZD0iTTEyIDJMMTMuMDkgOC4yNkwyMSA5TDEzLjA5IDE1Ljc0TDEyIDIyTDEwLjkxIDE1Ljc0TDMgOUwxMC45MSA4LjI2TDEyIDJaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4KPC9zdmc+'
+              }}
+            />
+          </div>
+
+          {/* Infos */}
+          <div className="flex-1">
+            <div className="flex items-center space-x-2 mb-2">
+              <span className="text-2xl">🇫🇷</span>
+              <h3 className="text-white text-lg font-bold uppercase tracking-wider">
+                {plug.name}
+              </h3>
+              {!plug.isActive && (
+                <span className="text-xs bg-red-500 text-white px-2 py-0.5 rounded-full">
+                  OFF
+                </span>
+              )}
+            </div>
+            
+            <div className="flex items-center space-x-3">
+              {/* Icônes services */}
+              <span className="text-xl">📦</span>
+              <span className="text-xl">📍</span>
+              <span className="text-xl">🚲</span>
+            </div>
+          </div>
         </div>
 
-        {/* Informations du plug */}
-        <div className="flex-1">
-          <div className="flex items-center space-x-2">
-            <span className="text-white text-lg font-bold">🇫🇷</span>
-            <h3 className="text-white text-lg font-bold uppercase tracking-wide">
-              {plug.name}
-            </h3>
-            {!plug.isActive && (
-              <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-full">
-                INACTIF
-              </span>
-            )}
-          </div>
-          
-          <div className="flex items-center space-x-3 mt-2">
-            {/* Services */}
-            {plug.services?.delivery?.enabled && (
-              <span className="text-orange-400" title="Livraison">📦</span>
-            )}
-            {plug.services?.postal?.enabled && (
-              <span className="text-red-400" title="Postal">📍</span>
-            )}
-            {plug.services?.meetup?.enabled && (
-              <span className="text-yellow-400" title="Meetup">🚲</span>
-            )}
-          </div>
-        </div>
-
-        {/* Badge VIP et likes */}
-        <div className="flex flex-col items-end">
+        {/* Partie droite avec badge et likes */}
+        <div className="flex flex-col items-end space-y-2">
+          {/* Badge warning pour VIP */}
           {plug.isVip && (
-            <div className="bg-yellow-500 text-black text-xs font-bold px-2 py-1 rounded-full mb-2 flex items-center">
-              <span className="text-sm">⚠️</span>
+            <div className="bg-yellow-500 text-black rounded-full p-1">
+              <span className="text-sm font-bold">⚠️</span>
             </div>
           )}
+          
+          {/* Likes */}
           <div className="flex items-center space-x-1">
-            <span className="text-yellow-400">👍</span>
-            <span className="text-white font-bold">{getRandomLikes()}</span>
+            <span className="text-yellow-400 text-xl">👍</span>
+            <span className="text-white font-bold text-lg">{getRandomLikes()}</span>
           </div>
         </div>
       </div>
@@ -211,23 +210,30 @@ export default function PlugsManagement() {
   )
 
   return (
-    <div className="min-h-screen bg-black text-white">
-      {/* Header */}
-      <div className="bg-gray-900 px-4 py-6 text-center">
-        <h1 className="text-3xl font-bold text-white mb-2">PLUGS FINDER</h1>
-        <div className="flex items-center justify-center space-x-2">
-          <span className="text-sm text-gray-300">JUSTE UNE</span>
-          <span className="bg-blue-500 text-white text-sm px-2 py-1 rounded">MINI-APP TELEGRAM</span>
-          <span className="text-sm text-gray-300">CHILL</span>
-        </div>
-        
+    <div className="min-h-screen bg-black">
+      {/* Header mobile style */}
+      <div className="bg-gray-800 px-4 py-6 relative">
         {/* Bouton admin caché */}
         <button
           onClick={() => router.push('/admin/plugs/new')}
-          className="absolute top-4 left-4 bg-blue-600 text-white p-2 rounded-full opacity-30 hover:opacity-100 transition-opacity"
+          className="absolute top-4 left-4 bg-blue-600 text-white p-2 rounded-full opacity-20 hover:opacity-100 transition-opacity z-10"
         >
-          <PlusIcon className="w-5 h-5" />
+          <PlusIcon className="w-4 h-4" />
         </button>
+
+        {/* Titre principal */}
+        <div className="text-center">
+          <h1 className="text-white text-4xl font-bold tracking-wider mb-3">
+            PLUGS FINDER
+          </h1>
+          <div className="flex items-center justify-center space-x-2">
+            <span className="text-white text-sm font-medium">JUSTE UNE</span>
+            <span className="bg-blue-500 text-white text-sm font-bold px-3 py-1 rounded">
+              MINI-APP TELEGRAM
+            </span>
+            <span className="text-white text-sm font-medium">CHILL</span>
+          </div>
+        </div>
       </div>
 
       {/* Barre de recherche (affichée seulement sur l'onglet recherche) */}
@@ -241,7 +247,7 @@ export default function PlugsManagement() {
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="block w-full pl-10 pr-3 py-3 border border-gray-600 rounded-lg bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="block w-full pl-10 pr-3 py-3 border border-gray-600 rounded-xl bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               placeholder="Rechercher un plug..."
             />
           </div>
@@ -249,18 +255,16 @@ export default function PlugsManagement() {
       )}
 
       {/* Liste des plugs */}
-      <div className="px-4 py-4 pb-20">
+      <div className="px-4 py-4 pb-24">
         {loading ? (
-          <div className="text-center py-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white mx-auto mb-4"></div>
-            <p className="text-gray-400">Chargement...</p>
+          <div className="text-center py-12">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
+            <p className="text-gray-400 text-lg">Chargement...</p>
           </div>
         ) : plugs.length === 0 ? (
-          <div className="text-center py-8">
-            <p className="text-gray-400">
-              {activeTab === 'vip' ? 'Aucun plug VIP trouvé' : 
-               activeTab === 'search' ? 'Aucun résultat pour votre recherche' : 
-               'Aucun plug trouvé'}
+          <div className="text-center py-12">
+            <p className="text-gray-400 text-lg">
+              {activeTab === 'search' ? 'Aucun résultat trouvé' : 'Aucun plug disponible'}
             </p>
           </div>
         ) : (
@@ -269,23 +273,23 @@ export default function PlugsManagement() {
             
             {/* Pagination */}
             {totalPages > 1 && (
-              <div className="flex justify-center mt-6 space-x-2">
+              <div className="flex justify-center mt-8 space-x-3">
                 <button
                   onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                   disabled={currentPage === 1}
-                  className="px-4 py-2 bg-gray-800 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-6 py-3 bg-gray-800 text-white rounded-xl disabled:opacity-50 disabled:cursor-not-allowed font-medium"
                 >
-                  Précédent
+                  ←
                 </button>
-                <span className="px-4 py-2 text-gray-400">
-                  Page {currentPage} / {totalPages}
+                <span className="px-6 py-3 text-gray-400 font-medium">
+                  {currentPage} / {totalPages}
                 </span>
                 <button
                   onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
                   disabled={currentPage === totalPages}
-                  className="px-4 py-2 bg-gray-800 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-6 py-3 bg-gray-800 text-white rounded-xl disabled:opacity-50 disabled:cursor-not-allowed font-medium"
                 >
-                  Suivant
+                  →
                 </button>
               </div>
             )}
@@ -293,37 +297,40 @@ export default function PlugsManagement() {
         )}
       </div>
 
-      {/* Navigation du bas */}
+      {/* Navigation bottom - exactement comme sur le screenshot */}
       <div className="fixed bottom-0 left-0 right-0 bg-gray-900 border-t border-gray-700">
-        <div className="flex justify-around py-2">
+        <div className="flex justify-around items-center py-3">
+          {/* Plugs */}
           <button
             onClick={() => handleTabChange('plugs')}
-            className={`flex flex-col items-center py-2 px-4 ${
+            className={`flex flex-col items-center space-y-1 px-4 py-2 ${
               activeTab === 'plugs' ? 'text-white' : 'text-gray-400'
             }`}
           >
-            <HomeIcon className="w-6 h-6 mb-1" />
-            <span className="text-xs">Plugs</span>
+            <HomeIcon className="w-7 h-7" />
+            <span className="text-xs font-medium">Plugs</span>
           </button>
           
+          {/* Rechercher */}
           <button
             onClick={() => handleTabChange('search')}
-            className={`flex flex-col items-center py-2 px-4 ${
+            className={`flex flex-col items-center space-y-1 px-4 py-2 ${
               activeTab === 'search' ? 'text-white' : 'text-gray-400'
             }`}
           >
-            <MagnifyingGlassIcon className="w-6 h-6 mb-1" />
-            <span className="text-xs">Rechercher</span>
+            <MagnifyingGlassIcon className="w-7 h-7" />
+            <span className="text-xs font-medium">Rechercher</span>
           </button>
           
+          {/* Giveaway */}
           <button
-            onClick={() => handleTabChange('vip')}
-            className={`flex flex-col items-center py-2 px-4 ${
-              activeTab === 'vip' ? 'text-white' : 'text-gray-400'
+            onClick={() => handleTabChange('giveaway')}
+            className={`flex flex-col items-center space-y-1 px-4 py-2 ${
+              activeTab === 'giveaway' ? 'text-white' : 'text-gray-400'
             }`}
           >
-            <StarIcon className="w-6 h-6 mb-1" />
-            <span className="text-xs">VIP</span>
+            <GiftIcon className="w-7 h-7" />
+            <span className="text-xs font-medium">Giveaway</span>
           </button>
         </div>
       </div>
