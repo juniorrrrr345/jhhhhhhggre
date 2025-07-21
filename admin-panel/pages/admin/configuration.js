@@ -245,12 +245,6 @@ export default function Configuration() {
             >
               🏪 Tester Boutique
             </button>
-            <button
-              onClick={testSynchronisation}
-              className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded"
-            >
-              🔄 Test Sync
-            </button>
             <a
               href="/admin/config/boutique-debug"
               className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded inline-block"

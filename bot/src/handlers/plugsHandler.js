@@ -129,9 +129,7 @@ const handleAllPlugs = async (ctx, page = 0) => {
 
     const itemsPerPage = 5;
     const totalPages = Math.ceil(plugs.length / itemsPerPage);
-    
-    // Utiliser le contexte 'plugs_all' pour que le retour fonctionne correctement
-    const keyboard = createPlugListKeyboard(plugs, page, totalPages, 'plugs_all');
+    const keyboard = createPlugListKeyboard(plugs, page, totalPages, 'all');
 
     let message = `${config.botTexts?.allPlugsTitle || 'Tous Nos Plugs Certifié 🔌'}\n`;
     
@@ -323,17 +321,13 @@ const handleCountryFilter = async (ctx, country, page = 0) => {
 // Afficher un plug spécifique avec contexte de retour
 const handlePlugDetails = async (ctx, plugId, returnContext = 'top_plugs') => {
   try {
-    // CORRECTION: Confirmer immédiatement la callback pour éviter le loading
-    await ctx.answerCbQuery();
-    
     console.log(`🔍 handlePlugDetails: plugId=${plugId}, returnContext=${returnContext}`);
-    
     const plug = await Plug.findById(plugId);
     console.log(`📦 Plug found:`, plug ? `${plug.name} (active: ${plug.isActive})` : 'null');
     
     if (!plug || !plug.isActive) {
       console.log('❌ Plug non trouvé ou inactif');
-      return;
+      return ctx.answerCbQuery('❌ Plug non trouvé ou inactif');
     }
 
     // Récupérer la config pour les textes personnalisés
@@ -344,13 +338,13 @@ const handlePlugDetails = async (ctx, plugId, returnContext = 'top_plugs') => {
 
     // Services disponibles
     const services = [];
-    if (plug.services.delivery.enabled) {
+    if (plug.services?.delivery?.enabled) {
       services.push(`🚚 **Livraison**${plug.services.delivery.description ? `: ${plug.services.delivery.description}` : ''}`);
     }
-    if (plug.services.postal.enabled) {
+    if (plug.services?.postal?.enabled) {
       services.push(`✈️ **Envoi postal**${plug.services.postal.description ? `: ${plug.services.postal.description}` : ''}`);
     }
-    if (plug.services.meetup.enabled) {
+    if (plug.services?.meetup?.enabled) {
       services.push(`🏠 **Meetup**${plug.services.meetup.description ? `: ${plug.services.meetup.description}` : ''}`);
     }
 
@@ -359,7 +353,7 @@ const handlePlugDetails = async (ctx, plugId, returnContext = 'top_plugs') => {
     }
 
     // Pays desservis
-    if (plug.countries.length > 0) {
+    if (plug.countries && plug.countries.length > 0) {
       message += `🌍 **Pays desservis :** ${plug.countries.join(', ')}\n\n`;
     }
 
@@ -368,73 +362,30 @@ const handlePlugDetails = async (ctx, plugId, returnContext = 'top_plugs') => {
       message += `❤️ **${plug.likes} like${plug.likes > 1 ? 's' : ''}**\n\n`;
     }
 
-    // Ajouter les réseaux sociaux du plug directement dans le message
-    if (plug.socialMedia) {
-      const socialLinks = [];
-      
-      // Pour l'ancienne structure (objet)
-      if (typeof plug.socialMedia === 'object' && !Array.isArray(plug.socialMedia)) {
-        if (plug.socialMedia.telegram) socialLinks.push(`📱 [Telegram](${plug.socialMedia.telegram})`);
-        if (plug.socialMedia.whatsapp) socialLinks.push(`💬 [WhatsApp](${plug.socialMedia.whatsapp})`);
-        if (plug.socialMedia.website) socialLinks.push(`🌐 [Site Web](${plug.socialMedia.website})`);
-      }
-      // Pour la nouvelle structure (array)
-      else if (Array.isArray(plug.socialMedia)) {
-        plug.socialMedia.forEach(social => {
-          if (social.url && social.name) {
-            const emoji = social.emoji || '🔗';
-            socialLinks.push(`${emoji} [${social.name}](${social.url})`);
-          }
-        });
-      }
-      
-      if (socialLinks.length > 0) {
-        message += `📱 **Contacts :**\n${socialLinks.join('\n')}\n\n`;
-      }
-    }
+    // Utiliser la fonction createPlugKeyboard qui gère déjà tout
+    const keyboard = createPlugKeyboard(plug, returnContext);
 
-    // Créer un clavier simple avec juste le bouton retour
-    const returnButtons = {
-      'top_plugs': 'top_plugs',
-      'vip_plugs': 'plugs_vip', 
-      'all_plugs': 'plugs_all',
-      'service_filter': 'filter_service',
-      'country_filter': 'filter_country'
-    };
+    // Utiliser la fonction helper pour afficher avec image
+    await editMessageWithImage(ctx, message, keyboard, config, { parse_mode: 'Markdown' });
     
-    const backAction = returnButtons[returnContext] || 'top_plugs';
-    const backText = config?.botTexts?.backButtonText || '🔙 Retour';
-    
-    const keyboard = Markup.inlineKeyboard([
-      [Markup.button.callback(backText, backAction)]
-    ]);
-
-    // Utiliser sendPlugWithImage pour afficher l'image du plug
-    await sendPlugWithImage(ctx, message, keyboard, plug, { 
-      parse_mode: 'Markdown',
-      disable_web_page_preview: false 
-    });
-    
+    // Confirmer la callback pour éviter le loading
+    await ctx.answerCbQuery();
   } catch (error) {
     console.error('Erreur dans handlePlugDetails:', error);
-    await ctx.answerCbQuery('❌ Erreur lors du chargement').catch(() => {});
+    await ctx.answerCbQuery('❌ Erreur lors du chargement');
   }
 };
 
 // Afficher les détails d'un service d'un plug
 const handlePlugServiceDetails = async (ctx, plugId, serviceType) => {
   try {
-    // CORRECTION: Confirmer immédiatement la callback pour éviter le loading
-    await ctx.answerCbQuery();
-    
     console.log(`🔧 handlePlugServiceDetails: plugId=${plugId}, serviceType=${serviceType}`);
-    
     const plug = await Plug.findById(plugId);
     console.log(`📦 Plug found for service:`, plug ? `${plug.name} (active: ${plug.isActive})` : 'null');
     
     if (!plug || !plug.isActive) {
       console.log('❌ Plug non trouvé pour service');
-      return;
+      return ctx.answerCbQuery('❌ Plug non trouvé');
     }
 
     const service = plug.services[serviceType];

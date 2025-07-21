@@ -50,7 +50,6 @@ export default function Config() {
   })
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
-  const [viewMode, setViewMode] = useState('visual') // 'visual' ou 'advanced'
   const router = useRouter()
 
   useEffect(() => {
@@ -354,45 +353,17 @@ export default function Config() {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h1 className="text-2xl font-bold text-gray-900">Configuration du Bot</h1>
-            <p className="text-gray-600">Personnalisez uniquement votre bot Telegram</p>
+            <p className="text-gray-600">Personnalisez votre bot Telegram</p>
             <div className="mt-2 p-3 bg-blue-50 border border-blue-200 rounded-lg max-w-md">
               <p className="text-blue-800 text-sm">
                 ℹ️ <strong>Info :</strong> Cette page configure uniquement le bot. Pour la boutique, utilisez <a href="/admin/configuration" className="underline font-medium">Configuration</a> dans le menu.
               </p>
             </div>
           </div>
-          <div className="mt-4 sm:mt-0">
-            <div className="flex rounded-lg bg-gray-100 p-1">
-              <button
-                onClick={() => setViewMode('visual')}
-                className={`flex items-center px-4 py-2 text-sm font-medium rounded-md transition-colors ${
-                  viewMode === 'visual'
-                    ? 'bg-white text-gray-900 shadow-sm'
-                    : 'text-gray-500 hover:text-gray-700'
-                }`}
-              >
-                <EyeIcon className="w-4 h-4 mr-2" />
-                🎨 Mode Visuel
-              </button>
-              <button
-                onClick={() => setViewMode('advanced')}
-                className={`flex items-center px-4 py-2 text-sm font-medium rounded-md transition-colors ${
-                  viewMode === 'advanced'
-                    ? 'bg-white text-gray-900 shadow-sm'
-                    : 'text-gray-500 hover:text-gray-700'
-                }`}
-              >
-                <CogIcon className="w-4 h-4 mr-2" />
-                ⚙️ Mode Avancé
-              </button>
-            </div>
-          </div>
         </div>
 
-        {/* Contenu selon le mode */}
-        {viewMode === 'visual' ? (
-          /* Mode Visuel */
-          <div className="flex flex-col lg:flex-row gap-8">
+        {/* Contenu du mode visuel */}
+        <div className="flex flex-col lg:flex-row gap-8">
             {/* Instructions */}
             <div className="lg:w-1/3 space-y-4">
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
@@ -519,213 +490,6 @@ export default function Config() {
               </div>
             </div>
           </div>
-        ) : (
-          /* Mode Avancé */
-          <div className="space-y-8">
-
-        {/* Messages du bot */}
-        <div className="bg-white shadow rounded-lg">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-lg font-medium text-gray-900 flex items-center">
-              <ChatBubbleLeftRightIcon className="w-5 h-5 mr-2" />
-              Messages du Bot
-            </h2>
-          </div>
-          <div className="p-6 space-y-6">
-
-
-            {/* Message aucun plug trouvé */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Message "Aucun plug trouvé"
-              </label>
-              <textarea
-                value={config.messages?.noPlugsFound || ''}
-                onChange={(e) => updateConfig('messages', 'noPlugsFound', e.target.value)}
-                rows={2}
-                className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                placeholder="😅 Aucun plug trouvé pour vos critères..."
-              />
-            </div>
-
-            {/* Message d'erreur */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Message d'erreur générique
-              </label>
-              <input
-                type="text"
-                value={config.messages?.error || ''}
-                onChange={(e) => updateConfig('messages', 'error', e.target.value)}
-                className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                placeholder="❌ Une erreur est survenue..."
-              />
-            </div>
-          </div>
-        </div>
-
-
-
-
-
-        {/* Configuration des services et pays */}
-        <div className="bg-white shadow rounded-lg">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-lg font-medium text-gray-900">🛠️ Services & Pays</h2>
-          </div>
-          <div className="p-6 space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Texte "Livraison"
-                </label>
-                <input
-                  type="text"
-                  value={config.botTexts?.deliveryServiceText || ''}
-                  onChange={(e) => updateConfig('botTexts', 'deliveryServiceText', e.target.value)}
-                  className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="🚚 Livraison"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Texte "Envoi postal"
-                </label>
-                <input
-                  type="text"
-                  value={config.botTexts?.postalServiceText || ''}
-                  onChange={(e) => updateConfig('botTexts', 'postalServiceText', e.target.value)}
-                  className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="✈️ Envoi postal"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Texte "Meetup"
-                </label>
-                <input
-                  type="text"
-                  value={config.botTexts?.meetupServiceText || ''}
-                  onChange={(e) => updateConfig('botTexts', 'meetupServiceText', e.target.value)}
-                  className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="🏠 Meetup"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Réseaux sociaux */}
-        <div className="bg-white shadow rounded-lg">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <div className="flex justify-between items-center">
-              <h2 className="text-lg font-medium text-gray-900 flex items-center">
-                <GlobeAltIcon className="w-5 h-5 mr-2" />
-                Réseaux Sociaux
-              </h2>
-              <a
-                href="/admin/config/welcome-social"
-                className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm flex items-center space-x-1"
-              >
-                <span>📱</span>
-                <span>Gérer réseaux d'accueil</span>
-              </a>
-            </div>
-            <p className="text-sm text-gray-600 mt-1">
-              Réseaux sociaux globaux • <a href="/admin/config/welcome-social" className="text-blue-500 hover:text-blue-600">Gérer les réseaux du message d'accueil →</a>
-            </p>
-          </div>
-          <div className="p-6 space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Telegram
-              </label>
-              <input
-                type="url"
-                value={config.socialMedia?.telegram || ''}
-                onChange={(e) => updateConfig('socialMedia', 'telegram', e.target.value)}
-                className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                placeholder="https://t.me/votre_channel"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                WhatsApp
-              </label>
-              <input
-                type="url"
-                value={config.socialMedia?.whatsapp || ''}
-                onChange={(e) => updateConfig('socialMedia', 'whatsapp', e.target.value)}
-                className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                placeholder="https://wa.me/33123456789"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Site Web
-              </label>
-              <input
-                type="url"
-                value={config.socialMedia?.website || ''}
-                onChange={(e) => updateConfig('socialMedia', 'website', e.target.value)}
-                className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                placeholder="https://votre-site.com"
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Textes des filtres */}
-        <div className="bg-white shadow rounded-lg">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-lg font-medium text-gray-900">Textes des Filtres</h2>
-          </div>
-          <div className="p-6 space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  "Tous les plugs"
-                </label>
-                <input
-                  type="text"
-                  value={config.filters?.all || ''}
-                  onChange={(e) => updateConfig('filters', 'all', e.target.value)}
-                  className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="Tous les plugs"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  "Par service"
-                </label>
-                <input
-                  type="text"
-                  value={config.filters?.byService || ''}
-                  onChange={(e) => updateConfig('filters', 'byService', e.target.value)}
-                  className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="Par service"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  "Par pays"
-                </label>
-                <input
-                  type="text"
-                  value={config.filters?.byCountry || ''}
-                  onChange={(e) => updateConfig('filters', 'byCountry', e.target.value)}
-                  className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="Par pays"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-
-          </div>
-        )}
 
         {/* Section de sauvegarde */}
         <div className="bg-white rounded-lg shadow p-4">

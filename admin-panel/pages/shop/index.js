@@ -16,7 +16,6 @@ export default function ShopHome() {
   const [plugs, setPlugs] = useState([])
   const [config, setConfig] = useState(null)
   const [loading, setLoading] = useState(true)
-  const [lastUpdate, setLastUpdate] = useState(null)
 
   useEffect(() => {
     fetchConfig()
@@ -111,7 +110,6 @@ export default function ShopHome() {
         console.log('✅ Plugs loaded:', sortedPlugs.length, 'boutiques')
         console.log('🏪 Boutiques:', sortedPlugs.map(p => ({ name: p.name, isVip: p.isVip })))
         setPlugs(sortedPlugs)
-        setLastUpdate(new Date())
       } else {
         console.error('❌ Invalid data structure:', data)
         setPlugs([])
@@ -144,15 +142,20 @@ export default function ShopHome() {
                     <img 
                       src={config.boutique.logo} 
                       alt="Logo" 
-                      className="h-8 w-8 rounded-lg object-cover"
+                      className="h-10 w-10 rounded-lg object-cover"
+                      onError={(e) => {
+                        e.target.style.display = 'none'
+                        e.target.nextSibling.style.display = 'flex'
+                      }}
                     />
-                  ) : (
-                    <div className="h-8 w-8 bg-gray-700 rounded-lg flex items-center justify-center">
-                      <span className="text-white text-xs font-bold">
-                        {config?.boutique?.name ? config.boutique.name.charAt(0).toUpperCase() : 'B'}
-                      </span>
-                    </div>
-                  )}
+                  ) : null}
+                  <div 
+                    className={`h-10 w-10 bg-gray-700 rounded-lg flex items-center justify-center ${config?.boutique?.logo ? 'hidden' : ''}`}
+                  >
+                    <span className="text-white text-sm font-bold">
+                      {config?.boutique?.name ? config.boutique.name.charAt(0).toUpperCase() : 'B'}
+                    </span>
+                  </div>
                 </div>
                 <div className="ml-3">
                   <h1 className="text-xl font-bold text-white">

@@ -21,6 +21,8 @@ export default function Login() {
         return;
       }
 
+      console.log('🔐 Début de la tentative de connexion...');
+      
       // Essayer d'abord l'API directe
       let success = false;
       let errorMessage = '';
@@ -29,15 +31,27 @@ export default function Login() {
         const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://jhhhhhhggre.onrender.com';
         console.log('🔐 Login tentative directe:', apiBaseUrl);
         
+        // Test de santé du serveur d'abord
+        const healthResponse = await fetch(`${apiBaseUrl}/health`, {
+          method: 'GET',
+          headers: {
+            'Cache-Control': 'no-cache',
+            'Content-Type': 'application/json'
+          }
+        });
+
+        console.log('🏥 Health check:', healthResponse.status);
+        
         const response = await fetch(`${apiBaseUrl}/api/config`, {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${password}`,
             'Cache-Control': 'no-cache',
             'Content-Type': 'application/json'
-          },
-          timeout: 10000 // 10 secondes de timeout
+          }
         });
+
+        console.log('📡 Response status:', response.status);
 
         if (response.ok) {
           console.log('✅ Login direct réussi');
@@ -46,10 +60,18 @@ export default function Login() {
           errorMessage = 'Mot de passe incorrect';
           throw new Error(`HTTP ${response.status}`);
         } else {
-          throw new Error(`HTTP ${response.status}`);
+          const responseText = await response.text();
+          console.log('❌ Response error:', responseText);
+          throw new Error(`HTTP ${response.status}: ${responseText}`);
         }
       } catch (directError) {
         console.log('❌ Login direct échoué:', directError.message);
+        
+        // Si c'est une erreur 401, pas besoin d'essayer le proxy
+        if (directError.message.includes('401')) {
+          throw directError;
+        }
+        
         console.log('🔄 Login tentative via proxy...');
         
         // Fallback vers le proxy
@@ -63,6 +85,8 @@ export default function Login() {
             }
           });
 
+          console.log('📡 Proxy response status:', proxyResponse.status);
+
           if (proxyResponse.ok) {
             console.log('✅ Login proxy réussi');
             success = true;
@@ -70,11 +94,13 @@ export default function Login() {
             errorMessage = 'Mot de passe incorrect';
             throw new Error(`Login proxy failed: HTTP ${proxyResponse.status}`);
           } else {
-            throw new Error(`Login proxy failed: HTTP ${proxyResponse.status}`);
+            const proxyText = await proxyResponse.text();
+            console.log('❌ Proxy response error:', proxyText);
+            throw new Error(`Login proxy failed: HTTP ${proxyResponse.status}: ${proxyText}`);
           }
         } catch (proxyError) {
           console.log('❌ Login proxy échoué:', proxyError.message);
-          throw new Error('Impossible de se connecter au serveur');
+          throw new Error('Impossible de se connecter au serveur. Le serveur bot est peut-être en cours de démarrage.');
         }
       }
 
@@ -96,15 +122,48 @@ export default function Login() {
       // Message d'erreur plus spécifique
       if (error.message.includes('401') || error.message.includes('incorrect')) {
         toast.error('Mot de passe incorrect');
-      } else if (error.message.includes('timeout') || error.message.includes('connexion')) {
-        toast.error('Connexion impossible - Le serveur est peut-être en cours de démarrage');
+      } else if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+        toast.error('Impossible de contacter le serveur. Vérifiez que le serveur bot est démarré.');
+      } else if (error.message.includes('démarrage')) {
+        toast.error('Le serveur bot est en cours de démarrage. Veuillez patienter et réessayer dans quelques secondes.');
       } else {
-        toast.error('Erreur de connexion - Veuillez réessayer');
+        toast.error(`Erreur de connexion: ${error.message}`);
       }
     } finally {
       setLoading(false);
     }
   }
+
+  const testConnection = async () => {
+    setLoading(true);
+    try {
+      const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://jhhhhhhggre.onrender.com';
+      console.log('🔐 Test de santé du serveur:', apiBaseUrl);
+
+      const healthResponse = await fetch(`${apiBaseUrl}/health`, {
+        method: 'GET',
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Content-Type': 'application/json'
+        }
+      });
+
+      console.log('🏥 Test de santé:', healthResponse.status);
+
+      if (healthResponse.ok) {
+        toast.success('Serveur bot est en ligne !');
+      } else {
+        const errorText = await healthResponse.text();
+        console.log('❌ Serveur bot est hors ligne:', errorText);
+        toast.error(`Serveur bot est hors ligne: ${healthResponse.status} - ${errorText}`);
+      }
+    } catch (error) {
+      console.error('💥 Test de connexion serveur error:', error);
+      toast.error(`Impossible de tester la connexion au serveur: ${error.message}`);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900 flex items-center justify-center p-4">
@@ -169,7 +228,25 @@ export default function Login() {
             </button>
           </form>
 
-
+          {/* Bouton de test de connexion */}
+          <div className="mt-6 pt-6 border-t border-gray-200">
+            <div className="space-y-3">
+              <button
+                onClick={testConnection}
+                disabled={loading}
+                className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 py-2 px-4 rounded-lg font-medium transition-all duration-200 disabled:opacity-50"
+              >
+                🔍 Tester la connexion serveur
+              </button>
+              <button
+                onClick={() => router.push('/debug')}
+                disabled={loading}
+                className="w-full bg-yellow-100 hover:bg-yellow-200 text-yellow-800 py-2 px-4 rounded-lg font-medium transition-all duration-200 disabled:opacity-50"
+              >
+                🔧 Diagnostic complet
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
