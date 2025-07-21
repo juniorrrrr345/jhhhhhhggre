@@ -149,6 +149,30 @@ export default function ShopDetail() {
         <title>{plug.name} - {config?.boutique?.name || 'Boutique'}</title>
         <meta name="description" content={plug.description} />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <style jsx global>{`
+          a {
+            text-decoration: none !important;
+          }
+          .no-underline {
+            text-decoration: none !important;
+          }
+          /* Force tous les liens et textes à être blancs */
+          nav a, nav a *, h1, h2, h3, h4, h5, h6, 
+          .text-white, .text-gray-200, .text-gray-300 {
+            color: white !important;
+          }
+          /* Liens de navigation spécifiquement */
+          nav a {
+            color: white !important;
+          }
+          nav a:hover {
+            color: #e5e7eb !important;
+          }
+          /* Titres des plugs */
+          h2, h3 {
+            color: white !important;
+          }
+        `}</style>
       </Head>
 
       <div 

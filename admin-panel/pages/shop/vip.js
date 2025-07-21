@@ -169,6 +169,22 @@ export default function ShopVIP() {
           .no-underline {
             text-decoration: none !important;
           }
+          /* Force tous les liens et textes à être blancs */
+          nav a, nav a *, h1, h2, h3, h4, h5, h6, 
+          .text-white, .text-gray-200, .text-gray-300 {
+            color: white !important;
+          }
+          /* Liens de navigation spécifiquement */
+          nav a {
+            color: white !important;
+          }
+          nav a:hover {
+            color: #e5e7eb !important;
+          }
+          /* Titres des plugs */
+          h3 {
+            color: white !important;
+          }
         `}</style>
       </Head>
 
