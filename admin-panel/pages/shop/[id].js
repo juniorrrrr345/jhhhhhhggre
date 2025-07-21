@@ -167,7 +167,7 @@ export default function ShopDetail() {
             <div className="flex items-center justify-center h-16">
               <div className="text-center">
                 <h1 className="text-xl font-bold text-white">
-                  🏪 {config?.boutique?.name || 'Boutique'}
+                  🔌 {config?.boutique?.name || 'Boutique'}
                 </h1>
                 <p className="text-gray-300 text-sm">
                   {plug.name}

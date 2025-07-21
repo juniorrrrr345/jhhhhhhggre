@@ -111,7 +111,7 @@ export default function ShopHome() {
         })
         
         console.log('✅ Plugs loaded:', sortedPlugs.length, 'boutiques')
-        console.log('🏪 Boutiques:', sortedPlugs.map(p => ({ name: p.name, isVip: p.isVip })))
+        console.log('🔌 Boutiques:', sortedPlugs.map(p => ({ name: p.name, isVip: p.isVip })))
         setPlugs(sortedPlugs)
       } else {
         console.error('❌ Invalid data structure:', data)
@@ -176,9 +176,9 @@ export default function ShopHome() {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <div className="flex items-center justify-center h-16">
                 <div className="text-center">
-                  <h1 className="text-xl font-bold text-white">
-                    🏪 {config?.boutique?.name || 'Boutique'}
-                  </h1>
+                                  <h1 className="text-xl font-bold text-white">
+                  🔌 {config?.boutique?.name || 'Boutique'}
+                </h1>
                   {config?.boutique?.subtitle && (
                     <p className="text-gray-300 text-sm">
                       {config.boutique.subtitle}
@@ -226,7 +226,7 @@ export default function ShopHome() {
                       <div className="text-center mb-12">
               <div className="flex items-center justify-center mb-4">
                 <h3 className="text-3xl font-bold text-white">
-                  🏪 {config?.boutique?.name || 'Boutique'}
+                  🔌 {config?.boutique?.name || 'Boutique'}
                 </h3>
               </div>
               {config?.boutique?.subtitle && (
@@ -243,7 +243,7 @@ export default function ShopHome() {
             </div>
           ) : plugs.length === 0 ? (
             <div className="text-center py-12">
-              <div className="text-6xl mb-4">🏪</div>
+              <div className="text-6xl mb-4">🔌</div>
               <h3 className="text-xl font-medium text-white mb-2">Aucun produit disponible</h3>
               <p className="text-gray-300">Revenez plus tard pour découvrir nos produits.</p>
             </div>
