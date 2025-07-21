@@ -69,21 +69,12 @@ const plugSchema = new mongoose.Schema({
     default: ''
   },
   socialMedia: {
-    telegram: {
-      type: String,
-      default: ''
-    },
-    instagram: {
-      type: String,
-      default: ''
-    },
-    whatsapp: {
-      type: String,
-      default: ''
-    },
-    website: {
-      type: String,
-      default: ''
+    type: mongoose.Schema.Types.Mixed, // Permet objet ou array
+    default: {
+      telegram: '',
+      instagram: '',
+      whatsapp: '',
+      website: ''
     }
   },
   isVip: {

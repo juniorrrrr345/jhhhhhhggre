@@ -368,10 +368,52 @@ const handlePlugDetails = async (ctx, plugId, returnContext = 'top_plugs') => {
       message += `❤️ **${plug.likes} like${plug.likes > 1 ? 's' : ''}**\n\n`;
     }
 
-    const keyboard = createPlugKeyboard(plug, returnContext);
+    // Ajouter les réseaux sociaux du plug directement dans le message
+    if (plug.socialMedia) {
+      const socialLinks = [];
+      
+      // Pour l'ancienne structure (objet)
+      if (typeof plug.socialMedia === 'object' && !Array.isArray(plug.socialMedia)) {
+        if (plug.socialMedia.telegram) socialLinks.push(`📱 [Telegram](${plug.socialMedia.telegram})`);
+        if (plug.socialMedia.whatsapp) socialLinks.push(`💬 [WhatsApp](${plug.socialMedia.whatsapp})`);
+        if (plug.socialMedia.website) socialLinks.push(`🌐 [Site Web](${plug.socialMedia.website})`);
+      }
+      // Pour la nouvelle structure (array)
+      else if (Array.isArray(plug.socialMedia)) {
+        plug.socialMedia.forEach(social => {
+          if (social.url && social.name) {
+            const emoji = social.emoji || '🔗';
+            socialLinks.push(`${emoji} [${social.name}](${social.url})`);
+          }
+        });
+      }
+      
+      if (socialLinks.length > 0) {
+        message += `📱 **Contacts :**\n${socialLinks.join('\n')}\n\n`;
+      }
+    }
 
-    // CORRECTION: Utiliser sendPlugWithImage pour afficher l'image du plug au lieu de l'image d'accueil
-    await sendPlugWithImage(ctx, message, keyboard, plug, { parse_mode: 'Markdown' });
+    // Créer un clavier simple avec juste le bouton retour
+    const returnButtons = {
+      'top_plugs': 'top_plugs',
+      'vip_plugs': 'plugs_vip', 
+      'all_plugs': 'plugs_all',
+      'service_filter': 'filter_service',
+      'country_filter': 'filter_country'
+    };
+    
+    const backAction = returnButtons[returnContext] || 'top_plugs';
+    const backText = config?.botTexts?.backButtonText || '🔙 Retour';
+    
+    const keyboard = Markup.inlineKeyboard([
+      [Markup.button.callback(backText, backAction)]
+    ]);
+
+    // Utiliser sendPlugWithImage pour afficher l'image du plug
+    await sendPlugWithImage(ctx, message, keyboard, plug, { 
+      parse_mode: 'Markdown',
+      disable_web_page_preview: false 
+    });
     
   } catch (error) {
     console.error('Erreur dans handlePlugDetails:', error);
