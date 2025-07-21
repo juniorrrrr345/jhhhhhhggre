@@ -293,14 +293,14 @@ const createPlugKeyboard = (plug, returnContext = 'top_plugs', userId = null) =>
     console.log(`⚠️ Aucun réseau social configuré pour ${plug.name}`);
   }
   
-  // Bouton like avec état dynamique
+  // Bouton like avec état dynamique (permanent)
   let likeButtonText;
   
   // Vérifier si l'utilisateur a déjà liké
   if (userId && plug.likedBy && plug.likedBy.includes(userId)) {
     likeButtonText = '❤️ Vous avez liké cette boutique';
   } else {
-    likeButtonText = '🖤 Liker cette boutique';
+    likeButtonText = '🤍 Liker cette boutique';
   }
   
   buttons.push([Markup.button.callback(likeButtonText, `like_${plug._id}`)]);

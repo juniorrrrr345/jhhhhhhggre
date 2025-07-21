@@ -102,6 +102,22 @@ const plugSchema = new mongoose.Schema({
     type: Number, // Telegram user ID
     required: false
   }],
+  likeHistory: [{
+    userId: {
+      type: Number, // Telegram user ID
+      required: true
+    },
+    timestamp: {
+      type: Date,
+      required: true,
+      default: Date.now
+    },
+    action: {
+      type: String,
+      enum: ['like', 'unlike'],
+      required: true
+    }
+  }],
   createdAt: {
     type: Date,
     default: Date.now

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import Head from 'next/head'
 import toast, { Toaster } from 'react-hot-toast'
+import SocialMediaManager from '../../components/SocialMediaManager'
 
 // Fonction wrapper pour toast avec gestion d'erreur
 const safeToast = {
@@ -38,9 +39,24 @@ export default function SimpleConfig() {
     },
     // Message d'accueil Bot
     welcome: {
-      text: ''
+      text: '',
+      image: '',
+      socialMedia: [] // Réseaux sociaux personnalisés d'accueil
     },
-    // Réseaux sociaux
+    // Boutons du bot
+    buttons: {
+      contact: {
+        text: '📞 Contact',
+        content: 'Contactez-nous pour plus d\'informations.',
+        enabled: true
+      },
+      info: {
+        text: 'ℹ️ Info',
+        content: 'Informations sur notre plateforme.',
+        enabled: true
+      }
+    },
+    // Réseaux sociaux globaux
     socialMedia: {
       telegram: '',
       whatsapp: ''
@@ -90,7 +106,21 @@ export default function SimpleConfig() {
             backgroundImage: data.boutique?.backgroundImage || ''
           },
           welcome: {
-            text: data.welcome?.text || ''
+            text: data.welcome?.text || '',
+            image: data.welcome?.image || '',
+            socialMedia: data.welcome?.socialMedia || []
+          },
+          buttons: {
+            contact: {
+              text: data.buttons?.contact?.text || '📞 Contact',
+              content: data.buttons?.contact?.content || 'Contactez-nous pour plus d\'informations.',
+              enabled: data.buttons?.contact?.enabled !== false
+            },
+            info: {
+              text: data.buttons?.info?.text || 'ℹ️ Info',
+              content: data.buttons?.info?.content || 'Informations sur notre plateforme.',
+              enabled: data.buttons?.info?.enabled !== false
+            }
           },
           socialMedia: {
             telegram: data.socialMedia?.telegram || '',
@@ -362,16 +392,41 @@ export default function SimpleConfig() {
             {/* Message d'Accueil Bot */}
             <div className="bg-white rounded-lg shadow p-6">
               <h2 className="text-lg font-semibold text-gray-900 mb-4">🎉 Message d'Accueil Bot</h2>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Texte de bienvenue
-                </label>
-                <textarea
-                  value={config.welcome.text}
-                  onChange={(e) => updateConfig('welcome.text', e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg p-3 h-20"
-                  placeholder="🎉 Bienvenue sur notre bot premium !"
-                />
+              <div className="space-y-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Image d'accueil (URL)
+                  </label>
+                  <input
+                    type="url"
+                    value={config.welcome.image || ''}
+                    onChange={(e) => updateConfig('welcome.image', e.target.value)}
+                    className="w-full border border-gray-300 rounded-lg p-3"
+                    placeholder="https://example.com/welcome-image.jpg"
+                  />
+                  <p className="text-sm text-gray-500 mt-1">
+                    📸 Cette image apparaîtra dans tous les menus du bot (sauf détails des plugs)
+                  </p>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Texte de bienvenue
+                  </label>
+                  <textarea
+                    value={config.welcome.text}
+                    onChange={(e) => updateConfig('welcome.text', e.target.value)}
+                    className="w-full border border-gray-300 rounded-lg p-3 h-20"
+                    placeholder="🎉 Bienvenue sur notre bot premium !"
+                  />
+                </div>
+                
+                {/* Gestionnaire de réseaux sociaux d'accueil */}
+                <div className="border-t border-gray-200 pt-6">
+                  <SocialMediaManager
+                    socialMedia={config.welcome.socialMedia || []}
+                    onChange={(socialMedia) => updateConfig('welcome.socialMedia', socialMedia)}
+                  />
+                </div>
               </div>
             </div>
 
@@ -403,6 +458,102 @@ export default function SimpleConfig() {
                     placeholder="+33123456789"
                   />
                 </div>
+              </div>
+            </div>
+
+            {/* Boutons du Bot */}
+            <div className="bg-white rounded-lg shadow p-6">
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">🔘 Boutons du Bot</h2>
+              <div className="space-y-6">
+                
+                {/* Bouton Contact */}
+                <div className="border border-gray-200 rounded-lg p-4">
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="text-md font-medium text-gray-900">📞 Bouton Contact</h3>
+                    <label className="flex items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={config.buttons.contact.enabled}
+                        onChange={(e) => updateConfig('buttons.contact.enabled', e.target.checked)}
+                        className="sr-only"
+                      />
+                      <div className={`relative inline-flex h-6 w-11 rounded-full transition-colors duration-200 ${config.buttons.contact.enabled ? 'bg-blue-600' : 'bg-gray-300'}`}>
+                        <div className={`inline-block h-5 w-5 transform rounded-full bg-white transition-transform duration-200 ${config.buttons.contact.enabled ? 'translate-x-5' : 'translate-x-0'} translate-y-0.5`}></div>
+                      </div>
+                      <span className="ml-2 text-sm text-gray-600">Activé</span>
+                    </label>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Texte du bouton
+                      </label>
+                      <input
+                        type="text"
+                        value={config.buttons.contact.text}
+                        onChange={(e) => updateConfig('buttons.contact.text', e.target.value)}
+                        className="w-full border border-gray-300 rounded-lg p-3"
+                        placeholder="📞 Contact"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Message affiché
+                      </label>
+                      <textarea
+                        value={config.buttons.contact.content}
+                        onChange={(e) => updateConfig('buttons.contact.content', e.target.value)}
+                        className="w-full border border-gray-300 rounded-lg p-3 h-20"
+                        placeholder="Contactez-nous pour plus d'informations."
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Bouton Info */}
+                <div className="border border-gray-200 rounded-lg p-4">
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="text-md font-medium text-gray-900">ℹ️ Bouton Info</h3>
+                    <label className="flex items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={config.buttons.info.enabled}
+                        onChange={(e) => updateConfig('buttons.info.enabled', e.target.checked)}
+                        className="sr-only"
+                      />
+                      <div className={`relative inline-flex h-6 w-11 rounded-full transition-colors duration-200 ${config.buttons.info.enabled ? 'bg-blue-600' : 'bg-gray-300'}`}>
+                        <div className={`inline-block h-5 w-5 transform rounded-full bg-white transition-transform duration-200 ${config.buttons.info.enabled ? 'translate-x-5' : 'translate-x-0'} translate-y-0.5`}></div>
+                      </div>
+                      <span className="ml-2 text-sm text-gray-600">Activé</span>
+                    </label>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Texte du bouton
+                      </label>
+                      <input
+                        type="text"
+                        value={config.buttons.info.text}
+                        onChange={(e) => updateConfig('buttons.info.text', e.target.value)}
+                        className="w-full border border-gray-300 rounded-lg p-3"
+                        placeholder="ℹ️ Info"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Message affiché
+                      </label>
+                      <textarea
+                        value={config.buttons.info.content}
+                        onChange={(e) => updateConfig('buttons.info.content', e.target.value)}
+                        className="w-full border border-gray-300 rounded-lg p-3 h-20"
+                        placeholder="Informations sur notre plateforme."
+                      />
+                    </div>
+                  </div>
+                </div>
+                
               </div>
             </div>
 

@@ -239,7 +239,7 @@ bot.action(/^plug_service_([a-f\d]{24})_(.+)$/, async (ctx) => {
 });
 
 
-// Liker une boutique
+// Liker une boutique (système de likes permanent)
 bot.action(/^like_([a-f\d]{24})$/, async (ctx) => {
   try {
     const plugId = ctx.match[1];
@@ -256,38 +256,103 @@ bot.action(/^like_([a-f\d]{24})$/, async (ctx) => {
     }
     
     const hasLiked = plug.likedBy.includes(userId);
-    const action = hasLiked ? 'unlike' : 'like';
     
-    // Mettre à jour les likes
-    if (action === 'like') {
-      plug.likedBy.push(userId);
-      plug.likes += 1;
-      await plug.save();
-      await ctx.answerCbQuery(`❤️ Vous avez liké ${plug.name} ! (${plug.likes} likes)`);
-    } else {
-      plug.likedBy = plug.likedBy.filter(id => id !== userId);
-      plug.likes -= 1;
-      await plug.save();
-      await ctx.answerCbQuery(`💔 Like retiré de ${plug.name} (${plug.likes} likes)`);
+    // Si l'utilisateur a déjà liké, afficher SEULEMENT un message de confirmation
+    // SANS modifier le message ni le clavier
+    if (hasLiked) {
+      console.log(`User ${userId} already liked plug ${plugId} - showing confirmation only`);
+      return ctx.answerCbQuery(`❤️ Vous avez déjà liké ${plug.name} ! (${plug.likes} likes)`, { 
+        show_alert: false 
+      });
     }
     
-    // Mettre à jour le clavier avec le nouveau statut (et passer userId pour l'état du bouton)
-    const { createPlugKeyboard } = require('./src/utils/keyboards');
+    // ========== NOUVEAU LIKE ==========
+    console.log(`User ${userId} is adding a new like to plug ${plugId}`);
+    
+    // Initialiser likeHistory si nécessaire
+    if (!plug.likeHistory) {
+      plug.likeHistory = [];
+    }
+    
+    // Ajouter le like (permanent)
+    plug.likedBy.push(userId);
+    plug.likes += 1;
+    
+    // Ajouter à l'historique
+    plug.likeHistory.push({
+      userId: userId,
+      timestamp: Date.now(),
+      action: 'like'
+    });
+    
+    await plug.save();
+    console.log(`✅ User ${userId} liked plug ${plugId}. New likes count: ${plug.likes}`);
+    
+    // Notification du like ajouté
+    await ctx.answerCbQuery(`❤️ Vous avez liké ${plug.name} ! (${plug.likes} likes)`);
+    
+    // ========== MISE À JOUR TEMPS RÉEL ==========
+    const Config = require('./src/models/Config');
+    const config = await Config.findById('main');
     
     // Déterminer le bon contexte de retour
-    let returnContext = 'top_plugs'; // valeur par défaut
+    let returnContext = 'top_plugs';
     if (ctx.session && ctx.session.lastContext) {
       returnContext = ctx.session.lastContext;
     }
     
+    // Mettre à jour le message complet avec les nouveaux likes
+    const { createPlugKeyboard } = require('./src/utils/keyboards');
+    const { editMessageWithImage } = require('./src/utils/messageHelper');
+    
+    // Reconstruire le message de détails du plug avec les nouveaux likes
+    let message = `${plug.isVip ? '⭐ ' : ''}**${plug.name}**\n\n`;
+    message += `📝 ${plug.description}\n\n`;
+
+    // Services disponibles
+    const services = [];
+    if (plug.services?.delivery?.enabled) {
+      services.push(`🚚 **Livraison**${plug.services.delivery.description ? `: ${plug.services.delivery.description}` : ''}`);
+    }
+    if (plug.services?.postal?.enabled) {
+      services.push(`✈️ **Envoi postal**${plug.services.postal.description ? `: ${plug.services.postal.description}` : ''}`);
+    }
+    if (plug.services?.meetup?.enabled) {
+      services.push(`🏠 **Meetup**${plug.services.meetup.description ? `: ${plug.services.meetup.description}` : ''}`);
+    }
+
+    if (services.length > 0) {
+      message += `🔧 **Services :**\n${services.join('\n')}\n\n`;
+    }
+
+    // Pays desservis
+    if (plug.countries && plug.countries.length > 0) {
+      message += `🌍 **Pays desservis :** ${plug.countries.join(', ')}\n\n`;
+    }
+
+    // Afficher les likes mis à jour en temps réel
+    const likesCount = plug.likes || 0;
+    message += `❤️ **${likesCount} like${likesCount !== 1 ? 's' : ''}**\n\n`;
+
     const newKeyboard = createPlugKeyboard(plug, returnContext, userId);
     
+    // Mettre à jour le message complet avec la nouvelle information de likes
     try {
-      await ctx.editMessageReplyMarkup(newKeyboard.reply_markup);
-      console.log('✅ Clavier mis à jour avec le nouvel état du like');
+      await editMessageWithImage(ctx, message, newKeyboard, config, { 
+        parse_mode: 'Markdown',
+        plugImage: plug.image,
+        isPlugDetails: true
+      });
+      console.log('✅ Message mis à jour avec les nouveaux likes en temps réel');
     } catch (error) {
-      // Ignore si le message n'a pas changé
-      console.log('⚠️ Mise à jour clavier échouée:', error.message);
+      console.log('⚠️ Mise à jour message échouée, mise à jour clavier seulement:', error.message);
+      // Fallback : mettre à jour seulement le clavier
+      try {
+        await ctx.editMessageReplyMarkup(newKeyboard.reply_markup);
+        console.log('✅ Clavier mis à jour avec le nouvel état du like');
+      } catch (keyboardError) {
+        console.log('⚠️ Mise à jour clavier échouée:', keyboardError.message);
+      }
     }
     
   } catch (error) {
@@ -544,7 +609,56 @@ app.get('/api/stats', authenticateAdmin, async (req, res) => {
 // Récupérer la configuration
 app.get('/api/config', authenticateAdmin, async (req, res) => {
   try {
-    const config = await Config.findById('main');
+    let config = await Config.findById('main');
+    
+    // Si la configuration n'existe pas, essayer de la créer
+    if (!config) {
+      console.log('⚠️ Configuration manquante, création automatique...');
+      try {
+                 config = await Config.create({
+           _id: 'main',
+           welcome: {
+             text: '🌟 Bienvenue sur notre bot !\n\nDécouvrez nos meilleurs plugs sélectionnés avec soin.',
+             image: '', // Image d'accueil pour les menus
+             socialMedia: []
+           },
+          boutique: {
+            name: '',
+            logo: '',
+            subtitle: '',
+            backgroundImage: '',
+            vipTitle: '',
+            vipSubtitle: '',
+            searchTitle: '',
+            searchSubtitle: ''
+          },
+          socialMedia: {
+            telegram: '',
+            instagram: '',
+            whatsapp: '',
+            website: ''
+          },
+          messages: {
+            welcome: '',
+            noPlugsFound: 'Aucun plug trouvé pour ces critères.',
+            errorOccurred: 'Une erreur est survenue, veuillez réessayer.'
+          },
+          buttons: {
+            topPlugs: { text: '🔌 Top Des Plugs', enabled: true },
+            contact: { text: '📞 Contact', content: 'Contactez-nous pour plus d\'informations.', enabled: true },
+            info: { text: 'ℹ️ Info', content: 'Informations sur notre plateforme.', enabled: true }
+          }
+        });
+        console.log('✅ Configuration automatiquement créée');
+      } catch (createError) {
+        console.error('❌ Impossible de créer la configuration:', createError);
+        return res.status(500).json({ 
+          error: 'Configuration manquante et impossible à créer automatiquement',
+          details: createError.message
+        });
+      }
+    }
+    
     res.json(config || {});
   } catch (error) {
     console.error('Erreur récupération config:', error);

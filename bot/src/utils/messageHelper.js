@@ -36,11 +36,16 @@ const sendMessageWithImage = async (ctx, text, keyboard, config, options = {}) =
 
 const editMessageWithImage = async (ctx, text, keyboard, config, options = {}) => {
   // CORRECTION: Prioriser l'image du plug si disponible, sinon image de bienvenue
+  // MAIS seulement utiliser l'image d'accueil si on n'est PAS dans les détails d'un plug
   const plugImage = options.plugImage || null;
   const welcomeImage = config?.welcome?.image || null;
-  const imageToUse = plugImage || welcomeImage;
+  const isPlugDetails = options.isPlugDetails || false;
   
-  console.log(`🖼️ Images disponibles: plug=${!!plugImage}, welcome=${!!welcomeImage}, using=${!!imageToUse}`);
+  // Si c'est les détails d'un plug, utiliser SEULEMENT l'image du plug
+  // Pour tous les autres menus/sous-menus, utiliser l'image d'accueil en fallback
+  const imageToUse = plugImage || (!isPlugDetails ? welcomeImage : null);
+  
+  console.log(`🖼️ Images: plug=${!!plugImage}, welcome=${!!welcomeImage}, isPlugDetails=${isPlugDetails}, using=${!!imageToUse}`);
   if (imageToUse) {
     console.log(`📸 URL image utilisée: ${imageToUse.substring(0, 50)}...`);
   }
@@ -109,7 +114,7 @@ const editMessageWithImage = async (ctx, text, keyboard, config, options = {}) =
   }
 };
 
-// Fonction pour envoyer un message avec l'image du plug
+// Fonction pour envoyer un message avec l'image du plug (pour les détails uniquement)
 const sendPlugWithImage = async (ctx, text, keyboard, plug, options = {}) => {
   const plugImage = plug?.image || null;
   
@@ -124,7 +129,7 @@ const sendPlugWithImage = async (ctx, text, keyboard, plug, options = {}) => {
       });
       console.log('✅ Détails plug avec image envoyés');
     } else {
-      console.log('📝 Envoi détails plug sans image');
+      console.log('📝 Envoi détails plug sans image (PAS d\'image d\'accueil en fallback)');
       await ctx.reply(text, {
         reply_markup: keyboard?.reply_markup || keyboard,
         parse_mode: options.parse_mode || 'Markdown',

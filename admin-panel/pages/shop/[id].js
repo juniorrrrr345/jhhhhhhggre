@@ -2,144 +2,224 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import Head from 'next/head'
 import Link from 'next/link'
+import { api } from '../../lib/api'
+import toast from 'react-hot-toast'
 import {
   StarIcon,
   MapPinIcon,
   TruckIcon,
   GlobeAltIcon,
-  ArrowLeftIcon
+  HomeIcon,
+  ArrowLeftIcon,
+  HeartIcon
 } from '@heroicons/react/24/outline'
 
-export default function ShopDetail() {
+export default function ShopPlugDetail() {
   const router = useRouter()
   const { id } = router.query
   const [plug, setPlug] = useState(null)
   const [config, setConfig] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [notFound, setNotFound] = useState(false)
 
   useEffect(() => {
     if (id) {
+      fetchConfig()
       fetchPlug()
     }
-    fetchConfig()
   }, [id])
 
   const fetchConfig = async () => {
     try {
-      const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://jhhhhhhggre.onrender.com'
-      const response = await fetch(`${apiBaseUrl}/api/public/config?t=${Date.now()}`, {
-        cache: 'no-cache'
-      })
+      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
+      const timestamp = new Date().getTime()
       
-      if (response.ok) {
-        const data = await response.json()
-        setConfig(data)
+      let data
+      try {
+        const directResponse = await fetch(`${apiBaseUrl}/api/public/config?t=${timestamp}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache',
+            'Expires': '0'
+          }
+        })
+        
+        if (directResponse.ok) {
+          data = await directResponse.json()
+        } else {
+          throw new Error(`Direct config failed: HTTP ${directResponse.status}`)
+        }
+      } catch (directError) {
+        console.log('❌ Config détail directe échouée:', directError.message)
+        
+        try {
+          const proxyResponse = await fetch(`/api/proxy?endpoint=/api/public/config&t=${new Date().getTime()}`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              'Cache-Control': 'no-cache'
+            }
+          })
+          
+          if (!proxyResponse.ok) {
+            throw new Error(`Config proxy failed: HTTP ${proxyResponse.status}`)
+          }
+          
+          data = await proxyResponse.json()
+        } catch (proxyError) {
+          console.log('❌ Config détail proxy échouée:', proxyError.message)
+          throw proxyError
+        }
       }
+
+      setConfig(data)
     } catch (error) {
-      console.error('Error loading config:', error)
+      console.log('❌ Erreur chargement config détail:', error)
     }
   }
 
   const fetchPlug = async () => {
     try {
-      setLoading(true)
+      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
+      const timestamp = new Date().getTime()
       
-      // Essayer d'abord l'API directe
       let data
       try {
-        const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://jhhhhhhggre.onrender.com'
-        const timestamp = new Date().getTime()
-        const url = `${apiBaseUrl}/api/public/plugs?filter=active&limit=1000&t=${timestamp}`
-        
-        console.log('🔍 Tentative directe pour détails:', url)
-        const response = await fetch(url, {
-          cache: 'no-cache',
-          headers: { 'Cache-Control': 'no-cache' }
+        // D'abord essayer de récupérer le plug spécifique
+        const directResponse = await fetch(`${apiBaseUrl}/api/public/plugs?limit=1000&t=${timestamp}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache',
+            'Expires': '0'
+          }
         })
         
-        if (response.ok) {
-          data = await response.json()
-          console.log('✅ API directe réussie pour détails')
+        if (directResponse.ok) {
+          data = await directResponse.json()
+          console.log('✅ API détail directe réussie:', data)
         } else {
-          throw new Error(`HTTP ${response.status}`)
+          throw new Error(`Direct plug failed: HTTP ${directResponse.status}`)
         }
       } catch (directError) {
-        console.log('❌ API directe échouée pour détails:', directError.message)
-        console.log('🔄 Tentative via proxy pour détails...')
+        console.log('❌ Plug détail direct échoué:', directError.message)
         
-        // Fallback vers le proxy
-        const proxyUrl = `/api/proxy?endpoint=/api/public/plugs&filter=active&limit=1000&t=${new Date().getTime()}`
-        const proxyResponse = await fetch(proxyUrl, {
-          cache: 'no-cache',
-          headers: { 'Cache-Control': 'no-cache' }
-        })
-        
-        if (proxyResponse.ok) {
-          data = await proxyResponse.json()
-          console.log('✅ Proxy réussi pour détails')
-        } else {
-          throw new Error(`Proxy failed: HTTP ${proxyResponse.status}`)
+        try {
+          const proxyResponse = await fetch(`/api/proxy?endpoint=/api/public/plugs&limit=1000&t=${new Date().getTime()}`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              'Cache-Control': 'no-cache'
+            }
+          })
+          
+          if (proxyResponse.ok) {
+            data = await proxyResponse.json()
+            console.log('✅ Plug détail via proxy:', data)
+          } else if (proxyResponse.status === 404) {
+            setNotFound(true)
+            return
+          } else {
+            throw new Error(`Plug proxy failed: HTTP ${proxyResponse.status}`)
+          }
+        } catch (proxyError) {
+          console.log('❌ Plug détail proxy échoué:', proxyError.message)
+          setNotFound(true)
+          return
         }
       }
-      
+
+      // Traiter la structure de réponse et trouver le plug spécifique
+      let plugsArray = []
       if (data && Array.isArray(data.plugs)) {
-        const foundPlug = data.plugs.find(p => p._id === id)
-        if (foundPlug) {
-          setPlug(foundPlug)
-          console.log('✅ Plug trouvé:', foundPlug.name)
-        } else {
-          console.error('❌ Plug non trouvé avec ID:', id)
-        }
+        plugsArray = data.plugs
+      } else if (Array.isArray(data)) {
+        // Fallback si la réponse est directement un tableau
+        plugsArray = data
       } else {
-        console.error('❌ Invalid data structure for details:', data)
+        console.error('❌ Structure de données détail inattendue:', data)
+        setNotFound(true)
+        return
       }
-      
+
+      // Trouver le plug avec l'ID correspondant
+      const foundPlug = plugsArray.find(p => p._id === id)
+      if (foundPlug) {
+        console.log('✅ Plug trouvé:', foundPlug.name)
+        setPlug(foundPlug)
+      } else {
+        console.log('❌ Plug non trouvé avec ID:', id)
+        setNotFound(true)
+      }
     } catch (error) {
-      console.error('💥 Fetch error pour détails:', error)
+      console.error('❌ Erreur chargement plug détail:', error)
+      setNotFound(true)
     } finally {
       setLoading(false)
     }
   }
 
+  const formatText = (text) => {
+    if (!text) return ''
+    return text.split('\\n').map((line, index) => (
+      <span key={index}>
+        {line}
+        {index < text.split('\\n').length - 1 && <br />}
+      </span>
+    ))
+  }
+
   if (loading) {
     return (
-      <div 
-        className="min-h-screen bg-black flex items-center justify-center"
-        style={config?.boutique?.backgroundImage ? {
-          backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url(${config.boutique.backgroundImage})`,
-          backgroundSize: '300px 300px',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'repeat',
-          backgroundAttachment: 'fixed'
-        } : {}}
-      >
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
-          <p className="text-white font-medium">Chargement de la boutique...</p>
+      <>
+        <Head>
+          <title>Chargement...</title>
+          <meta name="viewport" content="width=device-width, initial-scale=1" />
+        </Head>
+        <div className="min-h-screen bg-black flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
+            <p style={{ color: 'white' }} className="font-medium">Chargement du produit...</p>
+          </div>
         </div>
-      </div>
+      </>
     )
   }
 
-  if (!plug) {
+  if (notFound) {
     return (
-      <div 
-        className="min-h-screen bg-black flex items-center justify-center"
-        style={config?.boutique?.backgroundImage ? {
-          backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url(${config.boutique.backgroundImage})`,
-          backgroundSize: '300px 300px',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'repeat',
-          backgroundAttachment: 'fixed'
-        } : {}}
-      >
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-white mb-4">Boutique non trouvée</h1>
-          <Link href="/shop" className="text-white hover:text-gray-300 underline">
-            ← Retour aux boutiques
-          </Link>
+      <>
+        <Head>
+          <title>Produit non trouvé</title>
+          <meta name="viewport" content="width=device-width, initial-scale=1" />
+        </Head>
+        <div 
+          className="min-h-screen flex items-center justify-center"
+          style={{
+            backgroundColor: '#000000',
+            backgroundImage: config?.boutique?.backgroundImage ? `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url("${config.boutique.backgroundImage}")` : 'none',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat',
+            backgroundAttachment: 'fixed',
+            color: 'white'
+          }}
+        >
+          <div className="text-center">
+            <div className="mx-auto h-12 w-12 text-white mb-4 flex items-center justify-center">
+              <GlobeAltIcon className="h-8 w-8" />
+            </div>
+            <h3 style={{ color: 'white' }} className="text-xl font-medium mb-2">Boutique non trouvée</h3>
+            <p style={{ color: 'white' }} className="mb-6">Cette boutique n'existe pas ou a été supprimée.</p>
+            <Link href="/shop" style={{ color: 'white' }} className="underline hover:opacity-75">
+              Retour aux boutiques
+            </Link>
+          </div>
         </div>
-      </div>
+      </>
     )
   }
 
@@ -152,179 +232,221 @@ export default function ShopDetail() {
       </Head>
 
       <div 
-        className="min-h-screen bg-black"
-        style={config?.boutique?.backgroundImage ? {
-          backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url(${config.boutique.backgroundImage})`,
-          backgroundSize: '300px 300px',
+        className="min-h-screen"
+        style={{
+          backgroundColor: '#000000',
+          backgroundImage: config?.boutique?.backgroundImage ? `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url("${config.boutique.backgroundImage}")` : 'none',
+          backgroundSize: 'cover',
           backgroundPosition: 'center',
-          backgroundRepeat: 'repeat',
-          backgroundAttachment: 'fixed'
-        } : {}}
+          backgroundRepeat: 'no-repeat',
+          backgroundAttachment: 'fixed',
+          color: 'white'
+        }}
       >
         {/* Header */}
-        <header className="bg-gray-900 shadow-lg">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center justify-center h-16">
-              <div className="text-center">
-                <h1 className="text-xl font-bold text-white">
-                  🔌 {config?.boutique?.name || 'Boutique'}
-                </h1>
-                <p className="text-gray-300 text-sm">
-                  {plug.name}
-                </p>
+        {config && (
+          <header className="bg-gray-900 shadow-lg">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="flex items-center justify-center h-16">
+                <div className="text-center">
+                  <h1 style={{ color: 'white' }} className="text-xl font-bold">
+                    🔌 {config?.boutique?.name || 'Boutique'}
+                  </h1>
+                  {plug && (
+                    <p style={{ color: 'white' }} className="text-sm">{plug.name}</p>
+                  )}
+                </div>
               </div>
             </div>
-          </div>
-        </header>
+          </header>
+        )}
 
         {/* Navigation */}
-        <nav className="bg-black shadow-sm border-b border-gray-700">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-center space-x-8 h-12 items-center">
-              <Link 
-                href="/shop" 
-                className="text-white font-medium border-b-2 border-white pb-3 flex items-center"
-              >
-                <ArrowLeftIcon className="w-4 h-4 mr-2" />
-                <span className="mr-1">🏠</span>
-                Retour à la liste
-              </Link>
-              <Link 
-                href="/shop/search" 
-                className="text-gray-300 hover:text-white pb-3 flex items-center"
-              >
-                <span className="mr-1">🔍</span>
-                Recherche
-              </Link>
-              <Link 
-                href="/shop/vip" 
-                className="text-gray-300 hover:text-white pb-3 flex items-center"
-              >
-                <span className="mr-1">👑</span>
-                VIP
-              </Link>
-            </div>
-          </div>
-        </nav>
-
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="bg-black border border-gray-600 rounded-lg shadow-lg overflow-hidden">
-            {plug.image && (
-              <div className="h-64 bg-gray-200">
-                <img 
-                  src={plug.image} 
-                  alt={plug.name}
-                  className="w-full h-full object-cover"
-                />
+        {config && (
+          <nav className="bg-black shadow-sm border-b border-gray-700">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="flex justify-center space-x-8 h-12 items-center">
+                <Link 
+                  href="/shop" 
+                  style={{ color: 'white' }}
+                  className="pb-3 flex items-center hover:opacity-75"
+                >
+                  <span className="mr-1">🏠</span>
+                  <span style={{ color: 'white' }}>Accueil</span>
+                </Link>
+                <Link 
+                  href="/shop/search" 
+                  style={{ color: 'white' }}
+                  className="pb-3 flex items-center hover:opacity-75"
+                >
+                  <span className="mr-1">🔍</span>
+                  <span style={{ color: 'white' }}>Recherche</span>
+                </Link>
+                <Link 
+                  href="/shop/vip" 
+                  style={{ color: 'white' }}
+                  className="pb-3 flex items-center hover:opacity-75"
+                >
+                  <span className="mr-1">👑</span>
+                  <span style={{ color: 'white' }}>VIP</span>
+                </Link>
               </div>
-            )}
-            
-            <div className="p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-2xl font-bold text-white">{plug.name}</h2>
-                <div className="flex items-center space-x-3">
-                  {plug.isVip && (
-                    <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-white text-black">
-                      <StarIcon className="w-4 h-4 mr-1" />
+            </div>
+          </nav>
+        )}
+
+        {/* Main Content */}
+        <main className="py-12">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            {/* Back button */}
+            <div className="mb-6">
+              <button 
+                onClick={() => router.back()} 
+                className="flex items-center hover:opacity-75 transition-opacity"
+                style={{ color: 'white' }}
+              >
+                <ArrowLeftIcon className="w-5 h-5 mr-2" />
+                <span style={{ color: 'white' }}>Retour</span>
+              </button>
+            </div>
+
+            {/* Plug details */}
+            <div className="bg-gray-800 border border-gray-700 rounded-xl shadow-lg overflow-hidden">
+              {/* Image */}
+              <div className="relative h-64 md:h-80 bg-gray-900">
+                {plug.image ? (
+                  <img
+                    src={plug.image}
+                    alt={plug.name}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      e.target.style.display = 'none'
+                      e.target.nextSibling.style.display = 'flex'
+                    }}
+                  />
+                ) : null}
+                <div 
+                  className={`absolute inset-0 flex items-center justify-center ${plug.image ? 'hidden' : 'flex'}`}
+                  style={{ display: plug.image ? 'none' : 'flex' }}
+                >
+                  <GlobeAltIcon className="w-20 h-20 text-gray-600" />
+                </div>
+                
+                {/* VIP Badge */}
+                {plug.isVip && (
+                  <div className="absolute top-4 right-4">
+                    <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-bold bg-yellow-500" style={{ color: 'white' }}>
+                      <StarIcon className="w-4 h-4 mr-2" />
                       VIP
                     </span>
-                  )}
-                  <div className="flex items-center text-gray-300">
-                    <span className="mr-1">❤️</span>
-                    <span className="font-medium">{plug.likes || 0} likes</span>
                   </div>
-                </div>
-              </div>
-              
-              <p className="text-gray-300 mb-6">{plug.description}</p>
-
-              {/* Services */}
-              <div className="mb-6">
-                <h3 className="text-lg font-semibold text-white mb-3">🔧 Services disponibles</h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  {plug.services?.delivery?.enabled && (
-                    <div className="bg-blue-900 border border-blue-700 p-4 rounded-lg">
-                      <h4 className="font-medium text-blue-100 mb-2 flex items-center">
-                        <TruckIcon className="w-5 h-5 mr-2" />
-                        Livraison
-                      </h4>
-                      <p className="text-sm text-blue-200">{plug.services.delivery.description}</p>
-                    </div>
-                  )}
-                  {plug.services?.postal?.enabled && (
-                    <div className="bg-green-900 border border-green-700 p-4 rounded-lg">
-                      <h4 className="font-medium text-green-100 mb-2 flex items-center">
-                        <GlobeAltIcon className="w-5 h-5 mr-2" />
-                        Envoi postal
-                      </h4>
-                      <p className="text-sm text-green-200">{plug.services.postal.description}</p>
-                    </div>
-                  )}
-                  {plug.services?.meetup?.enabled && (
-                    <div className="bg-purple-900 border border-purple-700 p-4 rounded-lg">
-                      <h4 className="font-medium text-purple-100 mb-2 flex items-center">
-                        <MapPinIcon className="w-5 h-5 mr-2" />
-                        Meetup
-                      </h4>
-                      <p className="text-sm text-purple-200">{plug.services.meetup.description}</p>
-                    </div>
-                  )}
-                </div>
+                )}
               </div>
 
-              {/* Pays */}
-              {plug.countries && plug.countries.length > 0 && (
+              {/* Content */}
+              <div className="p-6">
+                <h2 style={{ color: 'white' }} className="text-2xl font-bold mb-4">{plug.name}</h2>
+                <p style={{ color: '#e5e7eb' }} className="mb-6">{plug.description}</p>
+
+                {/* Location */}
+                {plug.countries && plug.countries.length > 0 && (
+                  <div className="mb-6">
+                    <h3 style={{ color: 'white' }} className="text-lg font-semibold mb-2">📍 Localisation</h3>
+                    <div className="flex items-center" style={{ color: 'white' }}>
+                      <MapPinIcon className="w-5 h-5 mr-2" />
+                      <span>{plug.countries.join(', ')}</span>
+                    </div>
+                  </div>
+                )}
+
+                {/* Services */}
                 <div className="mb-6">
-                  <h3 className="text-lg font-semibold text-white mb-3">🌍 Pays desservis</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {plug.countries.map((country, index) => (
-                      <span 
-                        key={index}
-                        className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-700 text-white border border-gray-600"
-                      >
-                        <MapPinIcon className="w-4 h-4 mr-1" />
-                        {country}
-                      </span>
-                    ))}
+                  <h3 style={{ color: 'white' }} className="text-lg font-semibold mb-3">🚀 Services disponibles</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {/* Delivery */}
+                    <div className={`p-4 rounded-lg border ${plug.services?.delivery?.enabled ? 'bg-green-900 border-green-600' : 'bg-gray-800 border-gray-600'}`}>
+                      <div className="flex items-center mb-2">
+                        <TruckIcon className="w-5 h-5 mr-2 text-green-400" />
+                        <h4 style={{ color: 'white' }} className="font-semibold">Livraison</h4>
+                      </div>
+                      {plug.services?.delivery?.enabled ? (
+                        <>
+                          <p style={{ color: '#e5e7eb' }} className="text-sm mb-2">Service disponible</p>
+                          {plug.services.delivery.price && (
+                            <p style={{ color: 'white' }} className="text-sm font-semibold">{plug.services.delivery.price}</p>
+                          )}
+                        </>
+                      ) : (
+                        <p style={{ color: '#9ca3af' }} className="text-sm">Non disponible</p>
+                      )}
+                    </div>
+
+                    {/* Postal */}
+                    <div className={`p-4 rounded-lg border ${plug.services?.postal?.enabled ? 'bg-blue-900 border-blue-600' : 'bg-gray-800 border-gray-600'}`}>
+                      <div className="flex items-center mb-2">
+                        <GlobeAltIcon className="w-5 h-5 mr-2 text-blue-400" />
+                        <h4 style={{ color: 'white' }} className="font-semibold">Postal</h4>
+                      </div>
+                      {plug.services?.postal?.enabled ? (
+                        <>
+                          <p style={{ color: '#e5e7eb' }} className="text-sm mb-2">Service disponible</p>
+                          {plug.services.postal.price && (
+                            <p style={{ color: 'white' }} className="text-sm font-semibold">{plug.services.postal.price}</p>
+                          )}
+                        </>
+                      ) : (
+                        <p style={{ color: '#9ca3af' }} className="text-sm">Non disponible</p>
+                      )}
+                    </div>
+
+                    {/* Meetup */}
+                    <div className={`p-4 rounded-lg border ${plug.services?.meetup?.enabled ? 'bg-purple-900 border-purple-600' : 'bg-gray-800 border-gray-600'}`}>
+                      <div className="flex items-center mb-2">
+                        <HomeIcon className="w-5 h-5 mr-2 text-purple-400" />
+                        <h4 style={{ color: 'white' }} className="font-semibold">Meetup</h4>
+                      </div>
+                      {plug.services?.meetup?.enabled ? (
+                        <>
+                          <p style={{ color: '#e5e7eb' }} className="text-sm mb-2">Service disponible</p>
+                          {plug.services.meetup.price && (
+                            <p style={{ color: 'white' }} className="text-sm font-semibold">{plug.services.meetup.price}</p>
+                          )}
+                        </>
+                      ) : (
+                        <p style={{ color: '#9ca3af' }} className="text-sm">Non disponible</p>
+                      )}
+                    </div>
                   </div>
                 </div>
-              )}
 
-              {/* Contact et Réseaux Sociaux Personnalisés */}
-              <div className="border-t border-gray-600 pt-6">
-                <h3 className="text-lg font-semibold text-white mb-4">📱 Contact</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {/* Telegram principal */}
-                  {plug.telegramLink && (
-                    <a
-                      href={plug.telegramLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center justify-center bg-blue-600 hover:bg-blue-500 text-white py-3 px-4 rounded-lg font-medium transition-colors"
-                    >
-                      📱 Telegram
-                    </a>
-                  )}
-                  
-                  {/* Réseaux sociaux personnalisés */}
-                  {plug.socialMedia && Array.isArray(plug.socialMedia) && plug.socialMedia
-                    .filter(social => social && social.name && social.url)
-                    .map((social, index) => (
-                      <a
-                        key={index}
-                        href={social.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center justify-center bg-gray-700 hover:bg-gray-600 text-white py-3 px-4 rounded-lg font-medium transition-colors border border-gray-600"
-                      >
-                        {social.emoji} {social.name}
-                      </a>
-                    ))}
+                {/* Additional info */}
+                {plug.additionalInfo && (
+                  <div className="mb-6">
+                    <h3 style={{ color: 'white' }} className="text-lg font-semibold mb-3">ℹ️ Informations complémentaires</h3>
+                    <div style={{ color: '#e5e7eb' }} className="prose prose-invert max-w-none">
+                      {formatText(plug.additionalInfo)}
+                    </div>
+                  </div>
+                )}
+
+                {/* Likes */}
+                <div className="flex items-center justify-between pt-6 border-t border-gray-700">
+                  <div className="flex items-center" style={{ color: 'white' }}>
+                    <HeartIcon className="w-6 h-6 mr-2 text-red-500" />
+                    <span className="text-lg font-semibold">{plug.likes || 0} like{(plug.likes || 0) !== 1 ? 's' : ''}</span>
+                  </div>
+                  <Link 
+                    href="/shop" 
+                    style={{ color: 'white' }}
+                    className="underline hover:opacity-75"
+                  >
+                    Retour aux boutiques
+                  </Link>
                 </div>
               </div>
             </div>
           </div>
-        </div>
+        </main>
       </div>
     </>
   )

@@ -31,23 +31,74 @@ const connectDB = async (retryAttempt = 0) => {
 
     // Initialiser la configuration par défaut si elle n'existe pas
     const Config = require('../models/Config');
-    const existingConfig = await Config.findById('main').catch(() => null);
+    let existingConfig = null;
+    
+    try {
+      existingConfig = await Config.findById('main');
+    } catch (error) {
+      console.log('⚠️ Erreur lors de la recherche de configuration:', error.message);
+    }
     
     if (!existingConfig) {
       console.log('📝 Création de la configuration par défaut...');
-      const defaultConfig = new Config({ 
-        _id: 'main',
-        welcome: {
-          text: '🌟 Bienvenue sur notre bot !\n\nDécouvrez nos meilleurs plugs sélectionnés avec soin.'
-        },
-        buttons: {
-          topPlugs: { text: '🔌 Top Des Plugs', enabled: true },
-          contact: { text: '📞 Contact', content: 'Contactez-nous pour plus d\'informations.', enabled: true },
-          info: { text: 'ℹ️ Info', content: 'Informations sur notre plateforme.', enabled: true }
+      try {
+        const defaultConfig = await Config.create({
+          _id: 'main',
+          welcome: {
+            text: '🌟 Bienvenue sur notre bot !\n\nDécouvrez nos meilleurs plugs sélectionnés avec soin.',
+            image: '', // Image d'accueil pour les menus
+            socialMedia: []
+          },
+          boutique: {
+            name: '',
+            logo: '',
+            subtitle: '',
+            backgroundImage: '',
+            vipTitle: '',
+            vipSubtitle: '',
+            searchTitle: '',
+            searchSubtitle: ''
+          },
+          socialMedia: {
+            telegram: '',
+            instagram: '',
+            whatsapp: '',
+            website: ''
+          },
+          messages: {
+            welcome: '',
+            noPlugsFound: 'Aucun plug trouvé pour ces critères.',
+            errorOccurred: 'Une erreur est survenue, veuillez réessayer.'
+          },
+          buttons: {
+            topPlugs: { text: '🔌 Top Des Plugs', enabled: true },
+            contact: { text: '📞 Contact', content: 'Contactez-nous pour plus d\'informations.', enabled: true },
+            info: { text: 'ℹ️ Info', content: 'Informations sur notre plateforme.', enabled: true }
+          },
+          vip: {
+            enabled: true,
+            title: '🌟 SECTION VIP',
+            description: 'Nos plugs premium sélectionnés pour vous',
+            position: 'top'
+          },
+          filters: {
+            byService: '🔍 Filtrer par service',
+            byCountry: '🌍 Filtrer par pays',
+            all: '📋 Tous les plugs'
+          }
+        });
+        
+        // Vérifier que la création a réussi
+        const verifyConfig = await Config.findById('main');
+        if (verifyConfig) {
+          console.log('✅ Configuration par défaut créée et vérifiée');
+        } else {
+          throw new Error('Configuration créée mais non trouvée lors de la vérification');
         }
-      });
-      await defaultConfig.save();
-      console.log('✅ Configuration par défaut créée');
+      } catch (createError) {
+        console.error('❌ Erreur lors de la création de la configuration:', createError.message);
+        throw createError;
+      }
     } else {
       console.log('ℹ️ Configuration existante trouvée');
     }
