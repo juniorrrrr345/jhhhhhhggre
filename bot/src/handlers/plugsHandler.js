@@ -336,24 +336,8 @@ const handlePlugDetails = async (ctx, plugId, returnContext = 'top_plugs') => {
     let message = `${plug.isVip ? '⭐ ' : ''}**${plug.name}**\n\n`;
     message += `📝 ${plug.description}\n\n`;
 
-    // Services disponibles
-    const services = [];
-    if (plug.services.delivery.enabled) {
-      services.push(`🚚 **Livraison**${plug.services.delivery.description ? `: ${plug.services.delivery.description}` : ''}`);
-    }
-    if (plug.services.postal.enabled) {
-      services.push(`✈️ **Envoi postal**${plug.services.postal.description ? `: ${plug.services.postal.description}` : ''}`);
-    }
-    if (plug.services.meetup.enabled) {
-      services.push(`🏠 **Meetup**${plug.services.meetup.description ? `: ${plug.services.meetup.description}` : ''}`);
-    }
-
-    if (services.length > 0) {
-      message += `🔧 **Services :**\n${services.join('\n')}\n\n`;
-    }
-
     // Pays desservis
-    if (plug.countries.length > 0) {
+    if (plug.countries && plug.countries.length > 0) {
       message += `🌍 **Pays desservis :** ${plug.countries.join(', ')}\n\n`;
     }
 
@@ -362,56 +346,109 @@ const handlePlugDetails = async (ctx, plugId, returnContext = 'top_plugs') => {
       message += `❤️ **${plug.likes} like${plug.likes > 1 ? 's' : ''}**\n\n`;
     }
 
-    // Ajouter les réseaux sociaux du plug directement dans le message
-    if (plug.socialMedia) {
-      const socialLinks = [];
-      
-      // Pour l'ancienne structure (objet)
-      if (typeof plug.socialMedia === 'object' && !Array.isArray(plug.socialMedia)) {
-        if (plug.socialMedia.telegram) socialLinks.push(`📱 [Telegram](${plug.socialMedia.telegram})`);
-        if (plug.socialMedia.whatsapp) socialLinks.push(`💬 [WhatsApp](${plug.socialMedia.whatsapp})`);
-        if (plug.socialMedia.website) socialLinks.push(`🌐 [Site Web](${plug.socialMedia.website})`);
-      }
-      // Pour la nouvelle structure (array)
-      else if (Array.isArray(plug.socialMedia)) {
-        plug.socialMedia.forEach(social => {
-          if (social.url && social.name) {
-            const emoji = social.emoji || '🔗';
-            socialLinks.push(`${emoji} [${social.name}](${social.url})`);
-          }
-        });
-      }
-      
-      if (socialLinks.length > 0) {
-        message += `📱 **Contacts :**\n${socialLinks.join('\n')}\n\n`;
+    // Instructions pour contacter
+    message += `📱 **Utilisez les boutons ci-dessous pour :**\n`;
+    message += `• Voir les services disponibles\n`;
+    message += `• Contacter directement la boutique\n`;
+    message += `• Liker cette boutique`;
+
+    // Créer le clavier avec boutons
+    const buttons = [];
+    
+    // Première ligne - Services disponibles
+    const serviceButtons = [];
+    if (plug.services?.delivery?.enabled) {
+      serviceButtons.push(Markup.button.callback('🚚 Livraison', `plug_service_${plug._id}_delivery`));
+    }
+    if (plug.services?.postal?.enabled) {
+      serviceButtons.push(Markup.button.callback('✈️ Envoi postal', `plug_service_${plug._id}_postal`));
+    }
+    if (plug.services?.meetup?.enabled) {
+      serviceButtons.push(Markup.button.callback('🏠 Meetup', `plug_service_${plug._id}_meetup`));
+    }
+    
+    // Ajouter les services par paires pour un meilleur affichage
+    if (serviceButtons.length > 0) {
+      if (serviceButtons.length <= 2) {
+        buttons.push(serviceButtons);
+      } else {
+        buttons.push(serviceButtons.slice(0, 2));
+        if (serviceButtons.length > 2) {
+          buttons.push(serviceButtons.slice(2));
+        }
       }
     }
 
-    // Créer un clavier simple avec juste le bouton retour
+    // Réseaux sociaux - Première ligne
+    const socialButtons1 = [];
+    if (plug.socialMedia?.telegram) {
+      socialButtons1.push(Markup.button.url('📱 Telegram', plug.socialMedia.telegram));
+    }
+    if (plug.socialMedia?.whatsapp) {
+      socialButtons1.push(Markup.button.url('💬 WhatsApp', plug.socialMedia.whatsapp));
+    }
+    if (socialButtons1.length > 0) {
+      buttons.push(socialButtons1);
+    }
+    
+    // Réseaux sociaux - Deuxième ligne
+    const socialButtons2 = [];
+    if (plug.socialMedia?.instagram) {
+      socialButtons2.push(Markup.button.url('📸 Instagram', plug.socialMedia.instagram));
+    }
+    if (plug.socialMedia?.website) {
+      socialButtons2.push(Markup.button.url('🌐 Site Web', plug.socialMedia.website));
+    }
+    if (socialButtons2.length > 0) {
+      buttons.push(socialButtons2);
+    }
+    
+    // Gestion des réseaux sociaux sous forme de tableau (nouvelle structure)
+    if (Array.isArray(plug.socialMedia)) {
+      const socialLinksButtons = [];
+      plug.socialMedia.forEach(social => {
+        if (social.url && social.name) {
+          const emoji = social.emoji || '🔗';
+          socialLinksButtons.push(Markup.button.url(`${emoji} ${social.name}`, social.url));
+        }
+      });
+      
+      // Organiser en lignes de 2 boutons maximum
+      for (let i = 0; i < socialLinksButtons.length; i += 2) {
+        buttons.push(socialLinksButtons.slice(i, i + 2));
+      }
+    }
+    
+    // Bouton like/unlike
+    const userId = ctx.from.id;
+    const hasLiked = plug.likedBy && plug.likedBy.includes(userId);
+    const likeText = hasLiked ? '💔 Retirer like' : '❤️ Liker cette boutique';
+    buttons.push([Markup.button.callback(likeText, `like_${plug._id}`)]);
+    
+    // Bouton retour intelligent selon le contexte
     const returnButtons = {
-      'top_plugs': 'top_plugs',
-      'vip_plugs': 'plugs_vip', 
-      'all_plugs': 'plugs_all',
-      'service_filter': 'filter_service',
-      'country_filter': 'filter_country'
+      'top_plugs': { action: 'top_plugs', text: '🔙 Retour aux filtres' },
+      'plugs_vip': { action: 'plugs_vip', text: '🔙 Retour aux VIP' },
+      'plugs_all': { action: 'plugs_all', text: '🔙 Retour à la liste' },
+      'all': { action: 'plugs_all', text: '🔙 Retour à la liste' },
+      'service_delivery': { action: 'service_delivery', text: '🔙 Retour livraison' },
+      'service_postal': { action: 'service_postal', text: '🔙 Retour postal' },
+      'service_meetup': { action: 'service_meetup', text: '🔙 Retour meetup' }
     };
     
-    const backAction = returnButtons[returnContext] || 'top_plugs';
-    const backText = config?.botTexts?.backButtonText || '🔙 Retour';
-    
-    const keyboard = Markup.inlineKeyboard([
-      [Markup.button.callback(backText, backAction)]
-    ]);
+    const returnInfo = returnButtons[returnContext] || { action: 'top_plugs', text: '🔙 Retour' };
+    buttons.push([Markup.button.callback(returnInfo.text, returnInfo.action)]);
 
-    // Utiliser sendPlugWithImage pour afficher l'image du plug
-    await sendPlugWithImage(ctx, message, keyboard, plug, { 
-      parse_mode: 'Markdown',
-      disable_web_page_preview: false 
-    });
+    const keyboard = Markup.inlineKeyboard(buttons);
+
+    // Utiliser la fonction helper pour afficher avec image
+    await editMessageWithImage(ctx, message, keyboard, config, { parse_mode: 'Markdown' });
     
+    // Confirmer la callback pour éviter le loading
+    await ctx.answerCbQuery();
   } catch (error) {
     console.error('Erreur dans handlePlugDetails:', error);
-    await ctx.answerCbQuery('❌ Erreur lors du chargement').catch(() => {});
+    await ctx.answerCbQuery('❌ Erreur lors du chargement');
   }
 };
 
