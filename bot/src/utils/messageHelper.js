@@ -35,23 +35,26 @@ const sendMessageWithImage = async (ctx, text, keyboard, config, options = {}) =
 };
 
 const editMessageWithImage = async (ctx, text, keyboard, config, options = {}) => {
+  // CORRECTION: Prioriser l'image du plug si disponible, sinon image de bienvenue
+  const plugImage = options.plugImage || null;
   const welcomeImage = config?.welcome?.image || null;
+  const imageToUse = plugImage || welcomeImage;
   
   try {
-    if (welcomeImage) {
+    if (imageToUse) {
       // CORRECTION: Suppression et recréation rapide pour éviter le loading
       try {
         // Supprimer immédiatement l'ancien message
         await ctx.deleteMessage();
         
         // Recréer immédiatement avec l'image (pas de loading visible)
-        await ctx.replyWithPhoto(welcomeImage, {
+        await ctx.replyWithPhoto(imageToUse, {
           caption: text,
           reply_markup: keyboard?.reply_markup || keyboard,
           parse_mode: options.parse_mode || 'Markdown',
           ...options
         });
-        console.log('✅ Message remplacé avec image (optimisé)');
+        console.log(`✅ Message remplacé avec image ${plugImage ? '(plug)' : '(welcome)'} (optimisé)`);
       } catch (deleteError) {
         console.log('⚠️ Impossible de supprimer, édition du texte');
         // Si impossible de supprimer, on édite le texte seulement

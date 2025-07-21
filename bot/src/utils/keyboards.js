@@ -145,21 +145,38 @@ const createPlugKeyboard = (plug, returnContext = 'top_plugs') => {
     buttons.push([Markup.button.url('📱 Telegram', plug.telegramLink)]);
   }
   
-  // Réseaux sociaux personnalisés du plug
-  if (plug.socialMedia && plug.socialMedia.length > 0) {
+  // Réseaux sociaux personnalisés du plug - CORRECTION
+  console.log(`🔧 Réseaux sociaux du plug ${plug.name}:`, plug.socialMedia);
+  if (plug.socialMedia && Array.isArray(plug.socialMedia) && plug.socialMedia.length > 0) {
+    // Filtrer les réseaux sociaux valides
+    const validSocialMedia = plug.socialMedia.filter(social => 
+      social && social.name && social.emoji && social.url && social.url.trim() !== ''
+    );
+    
+    console.log(`✅ Réseaux sociaux valides pour ${plug.name}:`, validSocialMedia.length);
+    
     // Grouper les réseaux sociaux par lignes de 2
-    for (let i = 0; i < plug.socialMedia.length; i += 2) {
+    for (let i = 0; i < validSocialMedia.length; i += 2) {
       const socialRow = [];
-      const social1 = plug.socialMedia[i];
-      socialRow.push(Markup.button.url(`${social1.emoji} ${social1.name}`, social1.url));
+      const social1 = validSocialMedia[i];
       
-      if (plug.socialMedia[i + 1]) {
-        const social2 = plug.socialMedia[i + 1];
-        socialRow.push(Markup.button.url(`${social2.emoji} ${social2.name}`, social2.url));
+      try {
+        socialRow.push(Markup.button.url(`${social1.emoji} ${social1.name}`, social1.url));
+        console.log(`📱 Bouton créé: ${social1.emoji} ${social1.name} -> ${social1.url}`);
+        
+        if (validSocialMedia[i + 1]) {
+          const social2 = validSocialMedia[i + 1];
+          socialRow.push(Markup.button.url(`${social2.emoji} ${social2.name}`, social2.url));
+          console.log(`📱 Bouton créé: ${social2.emoji} ${social2.name} -> ${social2.url}`);
+        }
+        
+        buttons.push(socialRow);
+      } catch (error) {
+        console.error(`❌ Erreur création bouton social:`, error);
       }
-      
-      buttons.push(socialRow);
     }
+  } else {
+    console.log(`⚠️ Aucun réseau social configuré pour ${plug.name}`);
   }
   
   // Bouton like

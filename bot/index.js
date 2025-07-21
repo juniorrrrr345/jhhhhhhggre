@@ -44,6 +44,15 @@ app.use(cors({
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
+
+// Middleware supplémentaire pour gérer les requêtes OPTIONS
+app.options('*', (req, res) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.sendStatus(200);
+});
+
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
@@ -66,6 +75,8 @@ const upload = multer({
 // Handler générique pour debug des callbacks
 bot.on('callback_query', (ctx, next) => {
   console.log(`🔄 Callback reçu: ${ctx.callbackQuery.data}`);
+  console.log(`👤 User ID: ${ctx.from.id}, Chat ID: ${ctx.chat.id}`);
+  console.log(`📝 Message ID: ${ctx.callbackQuery.message?.message_id}`);
   return next();
 });
 
@@ -158,12 +169,26 @@ bot.action(/^plug_([a-f\d]{24})$/, (ctx) => {
 });
 
 // Détails d'un service d'un plug
-bot.action(/^plug_service_([a-f\d]{24})_(.+)$/, (ctx) => {
-  const plugId = ctx.match[1];
-  const serviceType = ctx.match[2];
-  console.log(`🔧 Service callback: plugId=${plugId}, serviceType=${serviceType}`);
-  console.log(`📱 Service callback data:`, ctx.callbackQuery.data);
-  return handlePlugServiceDetails(ctx, plugId, serviceType);
+bot.action(/^plug_service_([a-f\d]{24})_(.+)$/, async (ctx) => {
+  try {
+    const plugId = ctx.match[1];
+    const serviceType = ctx.match[2];
+    console.log(`🔧 Service callback: plugId=${plugId}, serviceType=${serviceType}`);
+    console.log(`📱 Service callback data:`, ctx.callbackQuery.data);
+    console.log(`📊 Match complet:`, ctx.match);
+    
+    // Valider le type de service
+    const validServices = ['delivery', 'postal', 'meetup'];
+    if (!validServices.includes(serviceType)) {
+      console.log(`❌ Type de service invalide: ${serviceType}`);
+      return ctx.answerCbQuery('❌ Service non reconnu');
+    }
+    
+    return await handlePlugServiceDetails(ctx, plugId, serviceType);
+  } catch (error) {
+    console.error('❌ Erreur dans le gestionnaire de service:', error);
+    await ctx.answerCbQuery('❌ Erreur lors du chargement du service').catch(() => {});
+  }
 });
 
 // Liker une boutique
@@ -706,10 +731,33 @@ app.post('/api/plugs', authenticateAdmin, async (req, res) => {
     if (cleanData.vip !== undefined) cleanData.isVip = cleanData.vip;
     if (cleanData.active !== undefined) cleanData.isActive = cleanData.active;
     
-    // S'assurer que socialMedia est un tableau pour le nouveau format
+    // CORRECTION: Synchronisation des images et réseaux sociaux
+    // S'assurer que l'image est bien synchronisée
+    if (cleanData.image) {
+      console.log(`📸 Image synchronisée: ${cleanData.image}`);
+    }
+    
+    // S'assurer que socialMedia est un tableau et bien formaté
     if (!Array.isArray(cleanData.socialMedia)) {
       cleanData.socialMedia = [];
+    } else {
+      // Valider et nettoyer chaque réseau social
+      cleanData.socialMedia = cleanData.socialMedia.filter(social => 
+        social && social.name && social.emoji && social.url
+      ).map(social => ({
+        name: social.name.trim(),
+        emoji: social.emoji.trim(),
+        url: social.url.trim()
+      }));
+      console.log(`📱 Réseaux sociaux synchronisés: ${cleanData.socialMedia.length} éléments`);
     }
+    
+    // Nettoyer les données undefined pour éviter les erreurs
+    Object.keys(cleanData).forEach(key => {
+      if (cleanData[key] === undefined || cleanData[key] === null) {
+        delete cleanData[key];
+      }
+    });
     
     console.log(`📝 Données nettoyées pour création:`, cleanData);
     
@@ -745,9 +793,25 @@ app.put('/api/plugs/:id', authenticateAdmin, async (req, res) => {
     if (cleanData.vip !== undefined) cleanData.isVip = cleanData.vip;
     if (cleanData.active !== undefined) cleanData.isActive = cleanData.active;
     
-    // S'assurer que socialMedia est un tableau pour le nouveau format
+    // CORRECTION: Synchronisation des images et réseaux sociaux pour la mise à jour
+    // S'assurer que l'image est bien synchronisée
+    if (cleanData.image) {
+      console.log(`📸 Image mise à jour: ${cleanData.image}`);
+    }
+    
+    // S'assurer que socialMedia est un tableau et bien formaté
     if (!Array.isArray(cleanData.socialMedia)) {
       cleanData.socialMedia = [];
+    } else {
+      // Valider et nettoyer chaque réseau social
+      cleanData.socialMedia = cleanData.socialMedia.filter(social => 
+        social && social.name && social.emoji && social.url
+      ).map(social => ({
+        name: social.name.trim(),
+        emoji: social.emoji.trim(),
+        url: social.url.trim()
+      }));
+      console.log(`📱 Réseaux sociaux mis à jour: ${cleanData.socialMedia.length} éléments`);
     }
     
     // Nettoyer les données undefined pour éviter les erreurs de validation
