@@ -121,6 +121,12 @@ export default function Config() {
             info: { text: 'ℹ️ Info', content: '' },
             ...data.buttons
           },
+          supportMenu: {
+            enabled: data.supportMenu?.enabled || false,
+            text: data.supportMenu?.text || 'Contactez notre équipe Support SwissQuality pour toute assistance.',
+            image: data.supportMenu?.image || '',
+            socialMedia: data.supportMenu?.socialMedia || []
+          },
           filters: {
             all: 'Tous les plugs',
             byService: 'Par service',
@@ -612,6 +618,150 @@ export default function Config() {
               </div>
             </div>
           </div>
+
+        {/* Section Support Menu */}
+        <div className="bg-white rounded-lg shadow p-6">
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">🔧 Support Menu Personnalisé</h2>
+          
+          <div className="space-y-4">
+            {/* Activer/Désactiver */}
+            <div className="flex items-center space-x-3">
+              <input
+                type="checkbox"
+                id="supportEnabled"
+                checked={config.supportMenu?.enabled || false}
+                onChange={(e) => updateNestedConfig('supportMenu', '', 'enabled', e.target.checked)}
+                className="h-4 w-4 text-blue-600 rounded border-gray-300"
+              />
+              <label htmlFor="supportEnabled" className="text-sm font-medium text-gray-700">
+                Activer le sous-menu Support Swiss
+              </label>
+            </div>
+
+            {config.supportMenu?.enabled && (
+              <>
+                {/* Texte personnalisé */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Texte du Support
+                  </label>
+                  <textarea
+                    value={config.supportMenu?.text || ''}
+                    onChange={(e) => updateNestedConfig('supportMenu', '', 'text', e.target.value)}
+                    className="w-full border border-gray-300 rounded-lg p-3 text-sm"
+                    rows="3"
+                    placeholder="Texte affiché dans le menu support..."
+                  />
+                </div>
+
+                {/* Image du support */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Image du Support (URL)
+                  </label>
+                  <input
+                    type="url"
+                    value={config.supportMenu?.image || ''}
+                    onChange={(e) => updateNestedConfig('supportMenu', '', 'image', e.target.value)}
+                    className="w-full border border-gray-300 rounded-lg p-2 text-sm"
+                    placeholder="https://example.com/support-image.jpg"
+                  />
+                  {config.supportMenu?.image && (
+                    <img 
+                      src={config.supportMenu.image} 
+                      alt="Support"
+                      className="mt-2 w-32 h-20 object-cover rounded border"
+                      onError={(e) => {e.target.style.display = 'none'}}
+                    />
+                  )}
+                </div>
+
+                {/* Réseaux sociaux personnalisés */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Réseaux Sociaux Personnalisés
+                  </label>
+                  
+                  {(config.supportMenu?.socialMedia || []).map((social, index) => (
+                    <div key={index} className="flex items-center space-x-2 mb-2 p-2 border rounded">
+                      <input
+                        type="text"
+                        placeholder="Nom"
+                        value={social.name || ''}
+                        onChange={(e) => {
+                          const newSocial = [...(config.supportMenu?.socialMedia || [])];
+                          newSocial[index] = { ...newSocial[index], name: e.target.value };
+                          updateNestedConfig('supportMenu', '', 'socialMedia', newSocial);
+                        }}
+                        className="flex-1 border border-gray-300 rounded px-2 py-1 text-sm"
+                      />
+                      <input
+                        type="text"
+                        placeholder="Emoji"
+                        value={social.emoji || ''}
+                        onChange={(e) => {
+                          const newSocial = [...(config.supportMenu?.socialMedia || [])];
+                          newSocial[index] = { ...newSocial[index], emoji: e.target.value };
+                          updateNestedConfig('supportMenu', '', 'socialMedia', newSocial);
+                        }}
+                        className="w-16 border border-gray-300 rounded px-2 py-1 text-sm text-center"
+                      />
+                      <input
+                        type="url"
+                        placeholder="URL"
+                        value={social.url || ''}
+                        onChange={(e) => {
+                          const newSocial = [...(config.supportMenu?.socialMedia || [])];
+                          newSocial[index] = { ...newSocial[index], url: e.target.value };
+                          updateNestedConfig('supportMenu', '', 'socialMedia', newSocial);
+                        }}
+                        className="flex-2 border border-gray-300 rounded px-2 py-1 text-sm"
+                      />
+                      <button
+                        onClick={() => {
+                          const newSocial = [...(config.supportMenu?.socialMedia || [])];
+                          newSocial.splice(index, 1);
+                          updateNestedConfig('supportMenu', '', 'socialMedia', newSocial);
+                        }}
+                        className="bg-red-500 text-white px-2 py-1 rounded text-sm hover:bg-red-600"
+                      >
+                        ❌
+                      </button>
+                    </div>
+                  ))}
+                  
+                  <button
+                    onClick={() => {
+                      const newSocial = [...(config.supportMenu?.socialMedia || []), { name: '', emoji: '', url: '' }];
+                      updateNestedConfig('supportMenu', '', 'socialMedia', newSocial);
+                    }}
+                    className="bg-green-500 text-white px-3 py-1 rounded text-sm hover:bg-green-600"
+                  >
+                    ➕ Ajouter réseau social
+                  </button>
+                </div>
+
+                {/* Aperçu */}
+                {config.supportMenu?.text && (
+                  <div className="bg-gray-50 border rounded-lg p-3">
+                    <h4 className="text-sm font-medium text-gray-700 mb-2">Aperçu :</h4>
+                    <div className="bg-white border rounded p-2 text-sm">
+                      {config.supportMenu.image && (
+                        <img src={config.supportMenu.image} alt="Support" className="w-full h-24 object-cover rounded mb-2" />
+                      )}
+                      <p className="text-gray-800 mb-2">{config.supportMenu.text}</p>
+                      {config.supportMenu.socialMedia?.filter(s => s.name && s.url).map((social, i) => (
+                        <span key={i} className="inline-block bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs mr-1 mb-1">
+                          {social.emoji} {social.name}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+        </div>
 
         {/* Section de sauvegarde */}
         <div className="bg-white rounded-lg shadow p-4">

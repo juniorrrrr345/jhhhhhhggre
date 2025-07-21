@@ -164,9 +164,10 @@ export default function ShopHome() {
         className="min-h-screen bg-black"
         style={config?.boutique?.backgroundImage ? {
           backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url(${config.boutique.backgroundImage})`,
-          backgroundSize: 'cover',
+          backgroundSize: '300px 300px', // Taille fixe pour répétition
           backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat'
+          backgroundRepeat: 'repeat', // Répéter le background
+          backgroundAttachment: 'fixed'
         } : {}}
       >
         {/* Header */}
