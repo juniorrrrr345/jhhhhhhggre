@@ -16,6 +16,7 @@ export default function ShopHome() {
   const [plugs, setPlugs] = useState([])
   const [config, setConfig] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [initialLoading, setInitialLoading] = useState(true)
 
   useEffect(() => {
     fetchConfig()
@@ -54,6 +55,8 @@ export default function ShopHome() {
       }
     } catch (error) {
       console.error('Error loading config:', error)
+    } finally {
+      setInitialLoading(false)
     }
   }
 
@@ -123,6 +126,32 @@ export default function ShopHome() {
     }
   }
 
+  // Afficher le chargement initial jusqu'à ce que la config soit chargée
+  if (initialLoading) {
+    return (
+      <>
+        <Head>
+          <title>Chargement...</title>
+          <meta name="viewport" content="width=device-width, initial-scale=1" />
+        </Head>
+        <div 
+          className="min-h-screen bg-black flex items-center justify-center"
+          style={{
+            backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7))',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat'
+          }}
+        >
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
+            <p className="text-white font-medium">Chargement de la boutique...</p>
+          </div>
+        </div>
+      </>
+    )
+  }
+
   return (
     <>
       <Head>
@@ -131,84 +160,96 @@ export default function ShopHome() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
 
-      <div className="min-h-screen bg-white">
+      <div 
+        className="min-h-screen bg-white"
+        style={config?.boutique?.backgroundImage ? {
+          backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9)), url(${config.boutique.backgroundImage})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat'
+        } : {}}
+      >
         {/* Header */}
-        <header className="bg-gray-900 shadow-lg">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center justify-between h-16">
-              <div className="flex items-center">
-                <div className="flex-shrink-0">
-                  {config?.boutique?.logo ? (
-                    <img 
-                      src={config.boutique.logo} 
-                      alt="Logo" 
-                      className="h-10 w-10 rounded-lg object-cover"
-                      onError={(e) => {
-                        e.target.style.display = 'none'
-                        e.target.nextSibling.style.display = 'flex'
-                      }}
-                    />
-                  ) : null}
-                  <div 
-                    className={`h-10 w-10 bg-gray-700 rounded-lg flex items-center justify-center ${config?.boutique?.logo ? 'hidden' : ''}`}
-                  >
-                    <span className="text-white text-sm font-bold">
-                      {config?.boutique?.name ? config.boutique.name.charAt(0).toUpperCase() : 'B'}
-                    </span>
+        {config && (
+          <header className="bg-gray-900 shadow-lg">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="flex items-center justify-between h-16">
+                <div className="flex items-center">
+                  <div className="flex-shrink-0">
+                    {config?.boutique?.logo ? (
+                      <img 
+                        src={config.boutique.logo} 
+                        alt="Logo" 
+                        className="h-10 w-10 rounded-lg object-cover"
+                        onError={(e) => {
+                          e.target.style.display = 'none'
+                          e.target.nextSibling.style.display = 'flex'
+                        }}
+                      />
+                    ) : null}
+                    <div 
+                      className={`h-10 w-10 bg-gray-700 rounded-lg flex items-center justify-center ${config?.boutique?.logo ? 'hidden' : ''}`}
+                    >
+                      <span className="text-white text-sm font-bold">
+                        {config?.boutique?.name ? config.boutique.name.charAt(0).toUpperCase() : 'B'}
+                      </span>
+                    </div>
                   </div>
-                </div>
-                <div className="ml-3">
-                  <h1 className="text-xl font-bold text-white">
-                    {config?.boutique?.name || ''}
-                  </h1>
-                  <p className="text-gray-300 text-sm">
-                    {config?.boutique?.subtitle || ''}
-                  </p>
+                  <div className="ml-3">
+                    <h1 className="text-xl font-bold text-white">
+                      {config?.boutique?.name || ''}
+                    </h1>
+                    <p className="text-gray-300 text-sm">
+                      {config?.boutique?.subtitle || ''}
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        </header>
+          </header>
+        )}
 
         {/* Navigation */}
-        <nav className="bg-white shadow-sm border-b">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex space-x-8 h-12 items-center">
-              <Link 
-                href="/shop" 
-                className="text-gray-900 font-medium border-b-2 border-gray-900 pb-3 flex items-center"
-              >
-                {config?.boutique?.logo ? (
-                  <img src={config.boutique.logo} alt="Logo" className="h-4 w-4 mr-2 rounded object-cover" />
-                ) : (
-                  <span className="mr-1">🏠</span>
-                )}
-                Accueil
-              </Link>
-              <Link 
-                href="/shop/search" 
-                className="text-gray-500 hover:text-gray-700 pb-3 flex items-center"
-              >
-                {config?.boutique?.logo ? (
-                  <img src={config.boutique.logo} alt="Logo" className="h-4 w-4 mr-2 rounded object-cover" />
-                ) : (
-                  <span className="mr-1">🔍</span>
-                )}
-                Recherche
-              </Link>
-              <Link 
-                href="/shop/vip" 
-                className="text-gray-500 hover:text-gray-700 pb-3 flex items-center"
-              >
-                {config?.boutique?.logo && (
-                  <img src={config.boutique.logo} alt="Logo" className="h-4 w-4 mr-2 rounded object-cover" />
-                )}
-                VIP
-              </Link>
+        {config && (
+          <nav className="bg-white shadow-sm border-b">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="flex space-x-8 h-12 items-center">
+                <Link 
+                  href="/shop" 
+                  className="text-gray-900 font-medium border-b-2 border-gray-900 pb-3 flex items-center"
+                >
+                  {config?.boutique?.logo ? (
+                    <img src={config.boutique.logo} alt="Logo" className="h-4 w-4 mr-2 rounded object-cover" />
+                  ) : (
+                    <span className="mr-1">🏠</span>
+                  )}
+                  Accueil
+                </Link>
+                <Link 
+                  href="/shop/search" 
+                  className="text-gray-500 hover:text-gray-700 pb-3 flex items-center"
+                >
+                  {config?.boutique?.logo ? (
+                    <img src={config.boutique.logo} alt="Logo" className="h-4 w-4 mr-2 rounded object-cover" />
+                  ) : (
+                    <span className="mr-1">🔍</span>
+                  )}
+                  Recherche
+                </Link>
+                <Link 
+                  href="/shop/vip" 
+                  className="text-gray-500 hover:text-gray-700 pb-3 flex items-center"
+                >
+                  {config?.boutique?.logo && (
+                    <img src={config.boutique.logo} alt="Logo" className="h-4 w-4 mr-2 rounded object-cover" />
+                  )}
+                  VIP
+                </Link>
 
+              </div>
             </div>
-          </div>
-        </nav>
+          </nav>
+        )}
 
         {/* Toutes les boutiques */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
