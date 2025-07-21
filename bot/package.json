@@ -10,7 +10,10 @@
     "migrate-social": "node scripts/migrate-social-media.js",
     "fix-db": "node scripts/fix-database.js",
     "fix-urls": "node scripts/fix-invalid-button-urls.js",
-    "diagnostic": "node diagnostic-quick.js"
+    "fix-likes": "node fix-likes-system.js",
+    "test-likes": "node test-likes-fix.js",
+    "diagnostic": "node diagnostic-quick.js",
+    "diagnostic-likes": "node diagnostic-likes.js"
   },
   "dependencies": {
     "express": "^4.18.2",

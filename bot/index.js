@@ -83,11 +83,41 @@ const upload = multer({
 // GESTIONNAIRES DU BOT TELEGRAM
 // ============================================
 
+// Session simple pour tracking du contexte
+const userSessions = new Map();
+
+// Middleware pour gérer les sessions utilisateur
+bot.use((ctx, next) => {
+  const userId = ctx.from?.id;
+  if (userId) {
+    if (!userSessions.has(userId)) {
+      userSessions.set(userId, { lastContext: 'top_plugs' });
+    }
+    ctx.session = userSessions.get(userId);
+  }
+  return next();
+});
+
 // Handler générique pour debug des callbacks
 bot.on('callback_query', (ctx, next) => {
   console.log(`🔄 Callback reçu: ${ctx.callbackQuery.data}`);
   console.log(`👤 User ID: ${ctx.from.id}, Chat ID: ${ctx.chat.id}`);
   console.log(`📝 Message ID: ${ctx.callbackQuery.message?.message_id}`);
+  
+  // Mettre à jour le contexte selon le callback
+  if (ctx.session && ctx.callbackQuery.data) {
+    const data = ctx.callbackQuery.data;
+    if (data.startsWith('plug_') && data.includes('_from_')) {
+      const contextMatch = data.match(/_from_(.+)$/);
+      if (contextMatch) {
+        ctx.session.lastContext = contextMatch[1];
+        console.log(`📍 Context updated to: ${ctx.session.lastContext}`);
+      }
+    } else if (data === 'top_plugs' || data === 'plugs_all' || data === 'plugs_vip') {
+      ctx.session.lastContext = data;
+      console.log(`📍 Context updated to: ${ctx.session.lastContext}`);
+    }
+  }
   
   // S'assurer que le callback est traité même en cas d'erreur
   ctx.answerCbQuery().catch((error) => {
@@ -214,46 +244,104 @@ bot.action(/^like_([a-f\d]{24})$/, async (ctx) => {
     const plugId = ctx.match[1];
     const userId = ctx.from.id;
     
-    console.log(`User ${userId} wants to like plug ${plugId}`);
+    console.log(`🔄 User ${userId} wants to like plug ${plugId}`);
+    
+    // Confirmer immédiatement la callback pour éviter le timeout
+    await ctx.answerCbQuery().catch(() => {});
     
     // Vérifier si la boutique existe
     const Plug = require('./src/models/Plug');
     const plug = await Plug.findById(plugId);
     
     if (!plug) {
-      return ctx.answerCbQuery('❌ Boutique non trouvée');
+      console.log(`❌ Plug ${plugId} not found`);
+      return ctx.answerCbQuery('❌ Boutique non trouvée').catch(() => {});
+    }
+    
+    // Vérifier et initialiser les champs si nécessaire
+    if (!Array.isArray(plug.likedBy)) {
+      plug.likedBy = [];
+    }
+    if (typeof plug.likes !== 'number' || isNaN(plug.likes)) {
+      plug.likes = 0;
     }
     
     const hasLiked = plug.likedBy.includes(userId);
     const action = hasLiked ? 'unlike' : 'like';
     
-    // Mettre à jour les likes
-    if (action === 'like') {
+    console.log(`🎯 Action: ${action}, hasLiked: ${hasLiked}, current likes: ${plug.likes}`);
+    
+    // Mettre à jour les likes avec vérifications
+    if (action === 'like' && !hasLiked) {
       plug.likedBy.push(userId);
-      plug.likes += 1;
+      plug.likes = plug.likedBy.length; // Synchroniser avec la longueur du tableau
       await plug.save();
-      await ctx.answerCbQuery(`❤️ Vous avez liké ${plug.name} ! (${plug.likes} likes)`);
-    } else {
+      console.log(`❤️ Like added: ${plug.likes} total likes`);
+      
+      // Notification utilisateur
+      setTimeout(() => {
+        ctx.answerCbQuery(`❤️ Vous avez liké ${plug.name} ! (${plug.likes} like${plug.likes > 1 ? 's' : ''})`).catch(() => {});
+      }, 100);
+      
+    } else if (action === 'unlike' && hasLiked) {
       plug.likedBy = plug.likedBy.filter(id => id !== userId);
-      plug.likes -= 1;
+      plug.likes = plug.likedBy.length; // Synchroniser avec la longueur du tableau
       await plug.save();
-      await ctx.answerCbQuery(`💔 Like retiré de ${plug.name} (${plug.likes} likes)`);
+      console.log(`💔 Like removed: ${plug.likes} total likes`);
+      
+      // Notification utilisateur
+      setTimeout(() => {
+        ctx.answerCbQuery(`💔 Like retiré de ${plug.name} (${plug.likes} like${plug.likes > 1 ? 's' : ''})`).catch(() => {});
+      }, 100);
+    } else {
+      console.log(`⚠️ No action needed: ${action}, hasLiked: ${hasLiked}`);
+      return;
+    }
+    
+    // Détecter le contexte de retour depuis le message ou l'historique
+    let context = 'top_plugs'; // valeur par défaut
+    
+    // Essayer de détecter le contexte depuis l'historique des callbacks
+    if (ctx.session && ctx.session.lastContext) {
+      context = ctx.session.lastContext;
     }
     
     // Mettre à jour le clavier avec le nouveau statut
-    const { createPlugKeyboard } = require('./src/utils/keyboards');
-    const newKeyboard = createPlugKeyboard(plug, 'top_plugs');
-    
     try {
+      const { createPlugKeyboard } = require('./src/utils/keyboards');
+      const newKeyboard = createPlugKeyboard(plug, context);
+      
       await ctx.editMessageReplyMarkup(newKeyboard.reply_markup);
-    } catch (error) {
-      // Ignore si le message n'a pas changé
-      console.log('Keyboard update skipped');
+      console.log(`✅ Keyboard updated successfully for context: ${context}`);
+      
+    } catch (keyboardError) {
+      console.log(`⚠️ Keyboard update failed: ${keyboardError.message}`);
+      
+      // Tentative de mise à jour avec un contexte différent
+      try {
+        const { createPlugKeyboard } = require('./src/utils/keyboards');
+        const fallbackKeyboard = createPlugKeyboard(plug, 'top_plugs');
+        await ctx.editMessageReplyMarkup(fallbackKeyboard.reply_markup);
+        console.log(`✅ Fallback keyboard updated`);
+      } catch (fallbackError) {
+        console.log(`❌ Fallback keyboard update also failed: ${fallbackError.message}`);
+      }
     }
     
   } catch (error) {
-    console.error('Erreur like boutique:', error);
-    await ctx.answerCbQuery('❌ Erreur lors du like');
+    console.error('❌ Erreur like boutique:', {
+      error: error.message,
+      stack: error.stack,
+      plugId: ctx.match ? ctx.match[1] : 'unknown',
+      userId: ctx.from ? ctx.from.id : 'unknown'
+    });
+    
+    // Notification d'erreur à l'utilisateur
+    try {
+      await ctx.answerCbQuery('❌ Erreur lors du like, veuillez réessayer');
+    } catch (notificationError) {
+      console.error('❌ Could not send error notification to user');
+    }
   }
 });
 
