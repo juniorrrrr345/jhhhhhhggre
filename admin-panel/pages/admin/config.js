@@ -44,7 +44,7 @@ export default function ConfigurationSimple() {
       console.log('🔄 Chargement configuration...')
       
       const token = localStorage.getItem('adminToken')
-      const data = await api.getConfig(token)
+      const data = await simpleApi.getConfig(token)
         console.log('✅ Configuration chargée')
         
         setConfig({
@@ -87,12 +87,12 @@ export default function ConfigurationSimple() {
     try {
       console.log('💾 Sauvegarde...')
       
-      await api.updateConfig(token, config)
+      await simpleApi.updateConfig(token, config)
       toast.success('Configuration sauvée !')
       
       // Optionnel: Recharger le bot
       try {
-        await api.reloadBot(token)
+        await simpleApi.reloadBot(token)
         console.log('✅ Bot rechargé')
       } catch (e) {
         console.log('Reload bot ignoré')
