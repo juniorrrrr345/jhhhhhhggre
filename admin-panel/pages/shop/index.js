@@ -329,15 +329,15 @@ export default function ShopHome() {
       >
         {/* Header */}
         {config && (
-          <header className="bg-gray-900 shadow-lg">
+          <header className="bg-black shadow-lg border-b border-gray-800">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <div className="flex items-center justify-center h-16">
+              <div className="flex items-center justify-center h-20">
                 <div className="text-center">
-                  <h1 style={{ color: 'white' }} className="text-xl font-bold">
+                  <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent drop-shadow-lg">
                     🔌 {config?.boutique?.name || 'Boutique'}
                   </h1>
                   {config?.boutique?.subtitle && (
-                    <p style={{ color: 'white' }} className="text-sm">{config.boutique.subtitle}</p>
+                    <p style={{ color: 'white' }} className="text-sm mt-1 text-gray-300">{config.boutique.subtitle}</p>
                   )}
                 </div>
               </div>

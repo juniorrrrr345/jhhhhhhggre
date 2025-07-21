@@ -300,11 +300,11 @@ export default function ShopVIP() {
       >
         {/* Header */}
         {config && (
-          <header className="bg-gray-900 shadow-lg">
+          <header className="bg-black shadow-lg border-b border-gray-800">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <div className="flex items-center justify-center h-16">
+              <div className="flex items-center justify-center h-20">
                 <div className="text-center">
-                  <h1 style={{ color: 'white' }} className="text-xl font-bold">
+                  <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-yellow-400 via-yellow-500 to-orange-500 bg-clip-text text-transparent drop-shadow-lg">
                     👑 {config?.boutique?.name || 'Boutique VIP'}
                   </h1>
                 </div>
