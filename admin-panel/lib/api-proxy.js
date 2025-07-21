@@ -95,6 +95,9 @@ export const apiCall = async (endpoint, options = {}) => {
   }
 };
 
+// Export de la fonction proxy pour usage direct
+export { proxyCall };
+
 // API functions optimisées pour le proxy
 export const api = {
   // Configuration
