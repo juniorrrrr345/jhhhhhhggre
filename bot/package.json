@@ -8,7 +8,9 @@
     "dev": "nodemon index.js",
     "seed": "node scripts/seed.js",
     "migrate-social": "node scripts/migrate-social-media.js",
-    "fix-db": "node scripts/fix-database.js"
+    "fix-db": "node scripts/fix-database.js",
+    "fix-urls": "node scripts/fix-invalid-button-urls.js",
+    "diagnostic": "node diagnostic-quick.js"
   },
   "dependencies": {
     "express": "^4.18.2",
