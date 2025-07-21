@@ -14,8 +14,10 @@ export default function ConfigurationSimple() {
       backgroundImage: '',
       vipTitle: '',
       vipSubtitle: '',
+      vipBlueText: '',
       searchTitle: '',
-      searchSubtitle: ''
+      searchSubtitle: '',
+      searchBlueText: ''
     },
     // Message d'accueil Bot
     welcome: {
@@ -81,8 +83,10 @@ export default function ConfigurationSimple() {
             backgroundImage: data.boutique?.backgroundImage || '',
             vipTitle: data.boutique?.vipTitle || '',
             vipSubtitle: data.boutique?.vipSubtitle || '',
+            vipBlueText: data.boutique?.vipBlueText || '',
             searchTitle: data.boutique?.searchTitle || '',
-            searchSubtitle: data.boutique?.searchSubtitle || ''
+            searchSubtitle: data.boutique?.searchSubtitle || '',
+            searchBlueText: data.boutique?.searchBlueText || ''
           },
           welcome: {
             text: data.welcome?.text || '',
@@ -336,6 +340,16 @@ export default function ConfigurationSimple() {
                           placeholder="en blanc"
                         />
                       </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700">Texte bleu VIP</label>
+                        <input
+                          type="text"
+                          value={config.boutique.vipBlueText}
+                          onChange={(e) => updateBoutique('vipBlueText', e.target.value)}
+                          className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                          placeholder="Texte en bleu pour la page VIP"
+                        />
+                      </div>
                     </div>
                   </div>
                   
@@ -360,6 +374,16 @@ export default function ConfigurationSimple() {
                           onChange={(e) => updateBoutique('searchSubtitle', e.target.value)}
                           className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                           placeholder="Sous-titre pour la page recherche"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700">Texte bleu Recherche</label>
+                        <input
+                          type="text"
+                          value={config.boutique.searchBlueText}
+                          onChange={(e) => updateBoutique('searchBlueText', e.target.value)}
+                          className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                          placeholder="Texte en bleu pour la page recherche"
                         />
                       </div>
                     </div>

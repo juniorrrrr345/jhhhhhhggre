@@ -125,6 +125,13 @@ export default function Dashboard() {
       color: 'bg-green-500'
     },
     {
+      name: 'Messages Bot',
+      description: 'Envoyer un message à tous les utilisateurs',
+      href: '/admin/broadcast',
+      icon: ChatBubbleLeftRightIcon,
+      color: 'bg-orange-500'
+    },
+    {
       name: 'Diagnostic',
       description: 'Tester la connectivité',
       href: '/admin/diagnostic',
