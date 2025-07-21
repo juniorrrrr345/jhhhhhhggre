@@ -391,14 +391,14 @@ export default function ShopHome() {
           left: '0',
           right: '0',
           backgroundColor: '#000000',
-          padding: '16px 20px',
+          padding: '20px',
           borderTop: '1px solid #2a2a2a',
           zIndex: 1000
         }}>
           <div style={{ 
             display: 'flex', 
             justifyContent: 'center', 
-            gap: '40px'
+            gap: '60px'
           }}>
             <Link href="/shop" style={{ 
               display: 'flex', 
@@ -408,18 +408,19 @@ export default function ShopHome() {
               color: '#007AFF'
             }}>
               <div style={{ 
-                width: '40px', 
-                height: '40px', 
+                width: '50px', 
+                height: '50px', 
                 backgroundColor: '#007AFF', 
-                borderRadius: '12px',
+                borderRadius: '16px',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                marginBottom: '4px'
+                marginBottom: '6px',
+                fontSize: '20px'
               }}>
                 🏠
               </div>
-              <span style={{ fontSize: '12px', color: '#ffffff' }}>Accueil</span>
+              <span style={{ fontSize: '14px', color: '#ffffff', fontWeight: '500' }}>Accueil</span>
             </Link>
             <Link href="/shop/search" style={{ 
               display: 'flex', 
@@ -429,18 +430,19 @@ export default function ShopHome() {
               color: '#8e8e93'
             }}>
               <div style={{ 
-                width: '40px', 
-                height: '40px', 
+                width: '50px', 
+                height: '50px', 
                 backgroundColor: 'transparent', 
-                borderRadius: '12px',
+                borderRadius: '16px',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                marginBottom: '4px'
+                marginBottom: '6px',
+                fontSize: '20px'
               }}>
                 🔍
               </div>
-              <span style={{ fontSize: '12px', color: '#8e8e93' }}>Recherche</span>
+              <span style={{ fontSize: '14px', color: '#8e8e93', fontWeight: '500' }}>Recherche</span>
             </Link>
             <Link href="/shop/vip" style={{ 
               display: 'flex', 
@@ -450,18 +452,19 @@ export default function ShopHome() {
               color: '#8e8e93'
             }}>
               <div style={{ 
-                width: '40px', 
-                height: '40px', 
+                width: '50px', 
+                height: '50px', 
                 backgroundColor: 'transparent', 
-                borderRadius: '12px',
+                borderRadius: '16px',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                marginBottom: '4px'
+                marginBottom: '6px',
+                fontSize: '20px'
               }}>
                 ⭐
               </div>
-              <span style={{ fontSize: '12px', color: '#8e8e93' }}>VIP</span>
+              <span style={{ fontSize: '14px', color: '#8e8e93', fontWeight: '500' }}>VIP</span>
             </Link>
           </div>
         </nav>
