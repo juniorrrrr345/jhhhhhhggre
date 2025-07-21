@@ -293,12 +293,36 @@ const createPlugKeyboard = (plug, returnContext = 'top_plugs', userId = null) =>
     console.log(`⚠️ Aucun réseau social configuré pour ${plug.name}`);
   }
   
-  // Bouton like avec état dynamique (permanent)
+  // Bouton like avec état dynamique et cooldown de 2h
   let likeButtonText;
   
   // Vérifier si l'utilisateur a déjà liké
   if (userId && plug.likedBy && plug.likedBy.includes(userId)) {
-    likeButtonText = '❤️ Vous avez liké cette boutique';
+    // Vérifier le cooldown pour unlike
+    const userLikeData = plug.likeHistory?.find(entry => 
+      entry.userId === userId && entry.action === 'like'
+    );
+    
+    if (userLikeData) {
+      const timeSinceLastLike = Date.now() - userLikeData.timestamp;
+      const cooldownPeriod = 2 * 60 * 60 * 1000; // 2 heures
+      const remainingCooldown = cooldownPeriod - timeSinceLastLike;
+      
+      if (remainingCooldown > 0) {
+        // Cooldown actif - bouton rouge avec indication
+        const remainingMinutes = Math.ceil(remainingCooldown / (60 * 1000));
+        const hours = Math.floor(remainingMinutes / 60);
+        const minutes = remainingMinutes % 60;
+        const timeDisplay = hours > 0 ? `${hours}h${minutes > 0 ? `${minutes}m` : ''}` : `${minutes}m`;
+        likeButtonText = `❤️ Liké (retirer dans ${timeDisplay})`;
+      } else {
+        // Cooldown expiré - bouton rouge cliquable
+        likeButtonText = '💔 Retirer mon like';
+      }
+    } else {
+      // Pas d'historique trouvé (ancien like)
+      likeButtonText = '❤️ Vous avez liké cette boutique';
+    }
   } else {
     likeButtonText = '🤍 Liker cette boutique';
   }
