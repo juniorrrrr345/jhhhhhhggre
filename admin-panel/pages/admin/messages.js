@@ -1,0 +1,313 @@
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/router'
+import Layout from '../../components/Layout'
+import { 
+  PaperAirplaneIcon, 
+  PhotoIcon,
+  ExclamationTriangleIcon,
+  CheckCircleIcon,
+  XMarkIcon
+} from '@heroicons/react/24/outline'
+
+export default function Messages() {
+  const [message, setMessage] = useState('')
+  const [image, setImage] = useState(null)
+  const [imagePreview, setImagePreview] = useState('')
+  const [sending, setSending] = useState(false)
+  const [success, setSuccess] = useState('')
+  const [error, setError] = useState('')
+  const [config, setConfig] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const router = useRouter()
+
+  useEffect(() => {
+    // Vérifier l'authentification
+    const token = localStorage.getItem('adminToken')
+    if (!token) {
+      router.push('/')
+      return
+    }
+
+    fetchConfig(token)
+  }, [])
+
+  const fetchConfig = async (token) => {
+    try {
+      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || process.env.API_BASE_URL
+      const response = await fetch(`${apiBaseUrl}/api/proxy`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          endpoint: '/admin/config',
+          method: 'GET'
+        })
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        setConfig(data)
+      }
+    } catch (error) {
+      console.error('❌ Erreur chargement config:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0]
+    if (file) {
+      if (file.size > 10 * 1024 * 1024) { // 10MB max
+        setError('L\'image ne doit pas dépasser 10MB')
+        return
+      }
+      
+      setImage(file)
+      const reader = new FileReader()
+      reader.onload = (e) => setImagePreview(e.target.result)
+      reader.readAsDataURL(file)
+      setError('')
+    }
+  }
+
+  const removeImage = () => {
+    setImage(null)
+    setImagePreview('')
+  }
+
+  const sendMessage = async () => {
+    if (!message.trim()) {
+      setError('Veuillez saisir un message')
+      return
+    }
+
+    setSending(true)
+    setError('')
+    setSuccess('')
+
+    try {
+      const token = localStorage.getItem('adminToken')
+      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || process.env.API_BASE_URL
+
+      const formData = new FormData()
+      formData.append('message', message.trim())
+      if (image) {
+        formData.append('image', image)
+      }
+
+      const response = await fetch(`${apiBaseUrl}/api/proxy`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          endpoint: '/admin/broadcast',
+          method: 'POST',
+          data: {
+            message: message.trim(),
+            hasImage: !!image
+          }
+        })
+      })
+
+      // Si il y a une image, envoyer aussi l'image
+      if (image && response.ok) {
+        const imageFormData = new FormData()
+        imageFormData.append('image', image)
+        
+        await fetch(`${apiBaseUrl}/api/proxy`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          },
+          body: imageFormData
+        })
+      }
+
+      if (response.ok) {
+        const result = await response.json()
+        setSuccess(`Message envoyé avec succès à ${result.sentCount || 'tous les'} utilisateurs !`)
+        setMessage('')
+        setImage(null)
+        setImagePreview('')
+      } else {
+        throw new Error('Erreur lors de l\'envoi')
+      }
+    } catch (error) {
+      console.error('❌ Erreur envoi message:', error)
+      setError('Erreur lors de l\'envoi du message. Vérifiez la configuration du bot.')
+    } finally {
+      setSending(false)
+    }
+  }
+
+  if (loading) {
+    return (
+      <Layout title="Messages">
+        <div className="flex justify-center items-center h-64">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+        </div>
+      </Layout>
+    )
+  }
+
+  return (
+    <Layout title="Messages">
+      <div className="max-w-4xl mx-auto">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900">📢 Messages Broadcast</h1>
+          <p className="mt-2 text-gray-600">
+            Envoyez des messages à tous les utilisateurs de votre bot Telegram
+          </p>
+        </div>
+
+        {/* Informations du bot */}
+        {config?.bot?.botName && (
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+            <div className="flex items-center">
+              <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold text-lg">
+                🤖
+              </div>
+              <div className="ml-3">
+                <h3 className="text-lg font-medium text-blue-900">
+                  Bot connecté : @{config.bot.botName}
+                </h3>
+                <p className="text-blue-700 text-sm">
+                  Les messages seront envoyés à tous les utilisateurs de ce bot
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Formulaire d'envoi */}
+        <div className="bg-white shadow rounded-lg p-6">
+          <div className="space-y-6">
+            {/* Message */}
+            <div>
+              <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-2">
+                Message à envoyer *
+              </label>
+              <textarea
+                id="message"
+                rows={6}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Saisissez votre message ici..."
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                maxLength={4000}
+              />
+              <div className="mt-1 text-sm text-gray-500 text-right">
+                {message.length}/4000 caractères
+              </div>
+            </div>
+
+            {/* Image optionnelle */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Image optionnelle
+              </label>
+              
+              {!imagePreview ? (
+                <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
+                  <div className="space-y-1 text-center">
+                    <PhotoIcon className="mx-auto h-12 w-12 text-gray-400" />
+                    <div className="flex text-sm text-gray-600">
+                      <label
+                        htmlFor="image-upload"
+                        className="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500"
+                      >
+                        <span>Télécharger une image</span>
+                        <input
+                          id="image-upload"
+                          name="image-upload"
+                          type="file"
+                          className="sr-only"
+                          accept="image/*"
+                          onChange={handleImageChange}
+                        />
+                      </label>
+                    </div>
+                    <p className="text-xs text-gray-500">PNG, JPG, GIF jusqu'à 10MB</p>
+                  </div>
+                </div>
+              ) : (
+                <div className="relative">
+                  <img
+                    src={imagePreview}
+                    alt="Aperçu"
+                    className="w-full max-w-md mx-auto rounded-lg shadow-md"
+                  />
+                  <button
+                    onClick={removeImage}
+                    className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                  >
+                    <XMarkIcon className="h-4 w-4" />
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* Messages d'état */}
+            {error && (
+              <div className="bg-red-50 border border-red-200 rounded-md p-4">
+                <div className="flex">
+                  <ExclamationTriangleIcon className="h-5 w-5 text-red-400 mr-2" />
+                  <span className="text-red-800">{error}</span>
+                </div>
+              </div>
+            )}
+
+            {success && (
+              <div className="bg-green-50 border border-green-200 rounded-md p-4">
+                <div className="flex">
+                  <CheckCircleIcon className="h-5 w-5 text-green-400 mr-2" />
+                  <span className="text-green-800">{success}</span>
+                </div>
+              </div>
+            )}
+
+            {/* Bouton d'envoi */}
+            <div className="flex justify-end">
+              <button
+                onClick={sendMessage}
+                disabled={sending || !message.trim()}
+                className={`inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white ${
+                  sending || !message.trim()
+                    ? 'bg-gray-400 cursor-not-allowed'
+                    : 'bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500'
+                }`}
+              >
+                {sending ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                    Envoi en cours...
+                  </>
+                ) : (
+                  <>
+                    <PaperAirplaneIcon className="h-5 w-5 mr-2" />
+                    Envoyer le message
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Conseils */}
+        <div className="mt-6 bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+          <h3 className="text-lg font-medium text-yellow-800 mb-2">💡 Conseils</h3>
+          <ul className="text-yellow-700 text-sm space-y-1">
+            <li>• Rédigez des messages courts et clairs</li>
+            <li>• Évitez d'envoyer trop de messages d'affilée (limite Telegram)</li>
+            <li>• Les images doivent être au format JPG, PNG ou GIF (max 10MB)</li>
+            <li>• Le message sera envoyé à tous les utilisateurs qui ont démarré le bot</li>
+          </ul>
+        </div>
+      </div>
+    </Layout>
+  )
+}

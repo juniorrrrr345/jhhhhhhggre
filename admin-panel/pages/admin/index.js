@@ -125,6 +125,20 @@ export default function Dashboard() {
       color: 'bg-green-500'
     },
     {
+      name: 'Configuration Bot',
+      description: 'Configurer le bot Telegram',
+      href: '/admin/bot-config',
+      icon: CogIcon,
+      color: 'bg-orange-500'
+    },
+    {
+      name: 'Messages',
+      description: 'Envoyer des messages à tous les utilisateurs',
+      href: '/admin/messages',
+      icon: ChatBubbleLeftRightIcon,
+      color: 'bg-indigo-500'
+    },
+    {
       name: 'Diagnostic',
       description: 'Tester la connectivité',
       href: '/admin/diagnostic',

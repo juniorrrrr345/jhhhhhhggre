@@ -5,14 +5,6 @@ import { api } from '../../lib/api'
 import { getProxiedImageUrl } from '../../lib/imageUtils'
 import toast from 'react-hot-toast'
 import Pagination from '../../components/Pagination'
-import {
-  StarIcon,
-  MapPinIcon,
-  TruckIcon,
-  GlobeAltIcon,
-  HomeIcon,
-  MagnifyingGlassIcon
-} from '@heroicons/react/24/outline'
 
 export default function ShopVIP() {
   const [vipPlugs, setVipPlugs] = useState([])
@@ -20,110 +12,31 @@ export default function ShopVIP() {
   const [loading, setLoading] = useState(true)
   const [initialLoading, setInitialLoading] = useState(true)
   const [currentPage, setCurrentPage] = useState(1)
-  const itemsPerPage = 12
+  const itemsPerPage = 20
 
   useEffect(() => {
     fetchConfig()
     fetchPlugs()
-    
-    // Synchronisation plus fréquente pour une meilleure réactivité
-    const interval = setInterval(() => {
-      fetchConfig()
-      fetchPlugs()
-    }, 15000) // Réduit à 15 secondes
-    
-    const handleStorageChange = (event) => {
-      if (event?.key === 'boutique_sync_signal' || event?.key === 'global_sync_signal') {
-        console.log('🔄 Signal de synchronisation reçu:', event.key)
-        setTimeout(() => {
-          fetchConfig()
-          fetchPlugs()
-        }, 500)
-        if (typeof toast !== 'undefined') {
-          toast.success('🔄 Données synchronisées!', {
-            duration: 2000,
-            icon: '🔄'
-          })
-        }
-      }
-    }
-
-    // Écouteur pour le focus de la fenêtre (rafraîchir quand l'utilisateur revient)
-    const handleFocus = () => {
-      console.log('👁️ Fenêtre focus - rafraîchissement des données VIP')
-      fetchConfig()
-      fetchPlugs()
-    }
-
-    // Écouteur pour détecter les changements de données en temps réel
-    const handleVisibilityChange = () => {
-      if (!document.hidden) {
-        console.log('👁️ Page VIP visible - vérification des mises à jour')
-        fetchConfig()
-        fetchPlugs()
-      }
-    }
-
-    window.addEventListener('storage', handleStorageChange)
-    window.addEventListener('focus', handleFocus)
-    document.addEventListener('visibilitychange', handleVisibilityChange)
-    
-    return () => {
-      clearInterval(interval)
-      window.removeEventListener('storage', handleStorageChange)
-      window.removeEventListener('focus', handleFocus)
-      document.removeEventListener('visibilitychange', handleVisibilityChange)
-    }
   }, [])
 
   const fetchConfig = async () => {
     try {
-      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
-      const timestamp = new Date().getTime()
-      
-      let data
-      try {
-        const directResponse = await fetch(`${apiBaseUrl}/api/public/config?t=${timestamp}`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'Cache-Control': 'no-cache, no-store, must-revalidate',
-            'Pragma': 'no-cache',
-            'Expires': '0'
-          }
-        })
-        
-        if (directResponse.ok) {
-          data = await directResponse.json()
-        } else {
-          throw new Error(`Direct config failed: HTTP ${directResponse.status}`)
+      const timestamp = Date.now()
+      const response = await fetch(`/api/proxy?endpoint=/api/public/config&t=${timestamp}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache'
         }
-      } catch (directError) {
-        console.log('❌ Config VIP directe échouée:', directError.message)
-        
-        try {
-          const proxyResponse = await fetch(`/api/proxy?endpoint=/api/public/config&t=${new Date().getTime()}`, {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-              'Cache-Control': 'no-cache'
-            }
-          })
-          
-          if (!proxyResponse.ok) {
-            throw new Error(`Config proxy failed: HTTP ${proxyResponse.status}`)
-          }
-          
-          data = await proxyResponse.json()
-        } catch (proxyError) {
-          console.log('❌ Config VIP proxy échouée:', proxyError.message)
-          throw proxyError
-        }
-      }
+      })
 
-      setConfig(data)
+      if (response.ok) {
+        const data = await response.json()
+        setConfig(data)
+      }
     } catch (error) {
-      console.log('❌ Erreur chargement config VIP:', error)
+      console.error('❌ Erreur chargement config VIP:', error)
     } finally {
       setInitialLoading(false)
     }
@@ -131,7 +44,7 @@ export default function ShopVIP() {
 
   const fetchPlugs = async () => {
     try {
-      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
+      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
       const timestamp = new Date().getTime()
       
       let data
@@ -178,12 +91,10 @@ export default function ShopVIP() {
         }
       }
 
-      // Traiter la structure de réponse correcte { plugs: [...] }
       let plugsArray = []
       if (data && Array.isArray(data.plugs)) {
         plugsArray = data.plugs
       } else if (Array.isArray(data)) {
-        // Fallback si la réponse est directement un tableau
         plugsArray = data
       } else {
         console.error('❌ Structure de données VIP inattendue:', data)
@@ -206,6 +117,30 @@ export default function ShopVIP() {
     currentPage * itemsPerPage
   )
 
+  const getPositionBadge = (index) => {
+    if (index === 0) return '🥇'
+    if (index === 1) return '🥈'
+    if (index === 2) return '🥉'
+    return null
+  }
+
+  const getCountryFlag = (countries) => {
+    if (!countries || countries.length === 0) return '🌍'
+    const countryFlagMap = {
+      'France': '🇫🇷',
+      'Belgique': '🇧🇪',
+      'Suisse': '🇨🇭',
+      'Canada': '🇨🇦',
+      'Allemagne': '🇩🇪',
+      'Espagne': '🇪🇸',
+      'Italie': '🇮🇹',
+      'Portugal': '🇵🇹',
+      'Royaume-Uni': '🇬🇧',
+      'Pays-Bas': '🇳🇱'
+    }
+    return countryFlagMap[countries[0]] || '🌍'
+  }
+
   if (initialLoading) {
     return (
       <>
@@ -213,10 +148,18 @@ export default function ShopVIP() {
           <title>Chargement...</title>
           <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
         </Head>
-        <div className="min-h-screen bg-black flex items-center justify-center">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
-            <p style={{ color: 'white' }} className="font-medium">Chargement de la boutique VIP...</p>
+        <div style={{ backgroundColor: '#000000', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ 
+              width: '48px', 
+              height: '48px', 
+              border: '2px solid transparent',
+              borderTop: '2px solid #ffffff',
+              borderRadius: '50%',
+              animation: 'spin 1s linear infinite',
+              margin: '0 auto 16px'
+            }}></div>
+            <p style={{ color: '#ffffff', fontWeight: '500' }}>Chargement des boutiques VIP...</p>
           </div>
         </div>
       </>
@@ -226,215 +169,394 @@ export default function ShopVIP() {
   return (
     <>
       <Head>
-        <title>{config?.boutique?.vipTitle || config?.boutique?.name || 'VIP'}</title>
+        <title>VIP - {config?.boutique?.name || 'PlugsFinder Bot'}</title>
         <meta name="description" content="Découvrez notre sélection exclusive de boutiques VIP premium avec services garantis." />
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
       </Head>
 
-      <div 
-        className="min-h-screen"
-        style={{
+      <div style={{ 
+        backgroundColor: '#000000', 
+        minHeight: '100vh',
+        color: '#ffffff',
+        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+        backgroundImage: config?.boutique?.backgroundImage ? `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url("${config.boutique.backgroundImage}")` : 'none',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        backgroundAttachment: 'fixed'
+      }}>
+        {/* Header Titre Principal VIP */}
+        <div style={{ 
           backgroundColor: '#000000',
-          backgroundImage: config?.boutique?.backgroundImage ? `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url("${config.boutique.backgroundImage}")` : 'none',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat',
-          backgroundAttachment: 'fixed',
-          color: 'white'
-        }}
-      >
-        {/* Header */}
-        {config && (
-          <header className="bg-gray-900 shadow-lg">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <div className="flex items-center justify-center h-16">
-                <div className="text-center">
-                  <h1 style={{ color: 'white' }} className="text-xl font-bold">
-                    👑 {config?.boutique?.name || 'Boutique VIP'}
-                  </h1>
-                </div>
-              </div>
-            </div>
-          </header>
-        )}
+          padding: '20px',
+          textAlign: 'center'
+        }}>
+          <h2 style={{ 
+            fontSize: '32px', 
+            fontWeight: 'bold', 
+            margin: '0 0 8px 0',
+            color: '#ffffff',
+            letterSpacing: '2px'
+          }}>
+            {config?.boutique?.vipTitle || config?.boutique?.name || 'VIP PLUGS FINDER'}
+          </h2>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+            <span style={{ color: '#ffffff', fontSize: '14px' }}>
+              {config?.boutique?.vipSubtitle || ''}
+            </span>
+            <span style={{ 
+              backgroundColor: '#007AFF', 
+              color: '#ffffff', 
+              padding: '4px 8px', 
+              borderRadius: '12px',
+              fontSize: '12px',
+              fontWeight: 'bold'
+            }}>
+              {config?.boutique?.vipBlueText || 'VIP'}
+            </span>
+          </div>
+        </div>
 
-        {/* Navigation */}
-        {config && (
-          <nav className="bg-black shadow-sm border-b border-gray-700">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <div className="flex justify-center space-x-8 h-12 items-center">
-                <Link 
-                  href="/shop" 
-                  style={{ color: 'white' }}
-                  className="pb-3 flex items-center hover:opacity-75 transition-opacity"
-                >
-                  <span className="mr-1">🏠</span>
-                  <span style={{ color: 'white' }}>Accueil</span>
-                </Link>
-                <Link 
-                  href="/shop/search" 
-                  style={{ color: 'white' }}
-                  className="pb-3 flex items-center hover:opacity-75 transition-opacity"
-                >
-                  <span className="mr-1">🔍</span>
-                  <span style={{ color: 'white' }}>Recherche</span>
-                </Link>
-                <Link 
-                  href="/shop/vip" 
-                  style={{ color: 'white' }}
-                  className="font-medium pb-3 flex items-center hover:opacity-75 transition-opacity"
-                >
-                  <span className="mr-1">👑</span>
-                  <span style={{ color: 'white' }}>VIP</span>
-                </Link>
-              </div>
-            </div>
-          </nav>
-        )}
+
 
         {/* Main Content */}
-        <main className="py-12">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            {/* Hero Section */}
-            {config && (
-              <div className="text-center mb-12">
-                <div className="flex items-center justify-center mb-4">
-                  <h2 style={{ color: 'white' }} className="text-3xl font-bold">
-                    👑 VIP - {config?.boutique?.name || 'Boutique Premium'}
-                  </h2>
-                </div>
-                <p style={{ color: 'white' }} className="max-w-2xl mx-auto">
-                  {loading ? 'Chargement...' : `${vipPlugs.length} produit(s) VIP disponible(s)`}
-                </p>
-              </div>
-            )}
-
-            {/* Loading */}
-            {loading ? (
-              <div className="text-center py-12">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
-                <p style={{ color: 'white' }}>Chargement des produits VIP...</p>
-              </div>
-            ) : vipPlugs.length === 0 ? (
-              <div className="text-center py-12">
-                <div className="mx-auto h-12 w-12 text-white mb-4 flex items-center justify-center">
-                  <StarIcon className="h-8 w-8" />
-                </div>
-                <h3 style={{ color: 'white' }} className="text-xl font-medium mb-2">Aucun produit VIP disponible</h3>
-                <p style={{ color: 'white' }} className="mb-6">Les produits VIP seront bientôt disponibles.</p>
-                <Link href="/shop" style={{ color: 'white', textDecoration: 'none' }} className="hover:opacity-75">
-                  Retour à la boutique
-                </Link>
-              </div>
-            ) : (
-              <>
-                {/* Products Grid - 2 colonnes adaptatif pour tous appareils */}
-                <div className="grid grid-cols-2 gap-2 sm:gap-3 md:gap-4 lg:gap-6 mb-8">
-                  {currentPlugs.map((plug, index) => (
-                    <Link 
-                      key={plug._id || index} 
-                      href={`/shop/${plug._id}`} 
-                      className="block group hover:scale-105 transition-transform duration-200"
-                      style={{ textDecoration: 'none', color: 'inherit' }}
+        <main style={{ padding: '20px', paddingBottom: '90px' }}>
+          {loading ? (
+            <div style={{ textAlign: 'center', padding: '48px 0' }}>
+              <div style={{ 
+                width: '48px', 
+                height: '48px', 
+                border: '2px solid transparent',
+                borderTop: '2px solid #FFD700',
+                borderRadius: '50%',
+                animation: 'spin 1s linear infinite',
+                margin: '0 auto 16px'
+              }}></div>
+              <p style={{ color: '#ffffff' }}>Chargement des boutiques VIP...</p>
+            </div>
+          ) : vipPlugs.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '48px 0' }}>
+              <div style={{ fontSize: '48px', marginBottom: '16px' }}>👑</div>
+              <h3 style={{ color: '#ffffff', fontSize: '20px', fontWeight: '500', marginBottom: '8px' }}>
+                Aucune boutique VIP disponible
+              </h3>
+              <p style={{ color: '#8e8e93', marginBottom: '24px' }}>Les boutiques VIP seront bientôt disponibles.</p>
+              <Link href="/shop" style={{ 
+                color: '#007AFF', 
+                textDecoration: 'none',
+                fontSize: '16px'
+              }}>
+                Retour aux boutiques
+              </Link>
+            </div>
+          ) : (
+            <>
+              {/* Liste des boutiques VIP */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
+                {currentPlugs.map((plug, index) => (
+                  <Link 
+                    key={plug._id || index} 
+                    href={`/shop/${plug._id}`}
+                    style={{ textDecoration: 'none', color: 'inherit' }}
+                  >
+                    <div style={{ 
+                      backgroundColor: '#1a1a1a',
+                      padding: '16px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '12px',
+                      cursor: 'pointer',
+                      transition: 'background-color 0.2s ease',
+                      border: '1px solid #FFD700',
+                      borderRadius: '8px',
+                      marginBottom: '8px'
+                    }}
+                    onMouseEnter={(e) => e.target.style.backgroundColor = '#2a2a1a'}
+                    onMouseLeave={(e) => e.target.style.backgroundColor = '#1a1a1a'}
                     >
-                      <div className="shop-card bg-gray-800 border border-yellow-500 rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-shadow duration-300 w-full max-w-none">
-                        {/* Image simplifiée - comme dans le bot */}
-                        <div className="relative h-32 sm:h-40 md:h-48 bg-gray-900 overflow-hidden">
-                          {plug.image && plug.image.trim() !== '' ? (
-                            <img
-                              src={getProxiedImageUrl(plug.image)}
-                              alt={plug.name || 'Boutique'}
-                              className="w-full h-full object-cover"
-                              loading="lazy"
-                            />
-                          ) : (
-                            <div className="absolute inset-0 flex items-center justify-center bg-gray-900">
-                              <div className="text-center">
-                                <GlobeAltIcon className="w-8 h-8 sm:w-12 sm:h-12 text-gray-600 mx-auto mb-1" />
-                                <p className="text-gray-500 text-xs">Aucune image</p>
-                              </div>
-                            </div>
-                          )}
-                          
-                          {/* VIP Badge amélioré - Always shown for VIP page */}
-                          <div className="absolute top-2 right-2">
-                            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-bold bg-yellow-500 text-white shadow-lg">
-                              <StarIcon className="w-3 h-3 mr-1" />
-                              VIP
-                            </span>
-                          </div>
-
-                          {/* Ranking Badge for top 3 */}
-                          {index < 3 && (
-                            <div className="absolute top-2 left-2">
-                              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-bold bg-red-600" style={{ color: 'white' }}>
-                                {index === 0 ? '🥇' : index === 1 ? '🥈' : '🥉'}
-                              </span>
-                            </div>
-                          )}
+                      {/* Image/Logo avec effet VIP */}
+                      <div style={{ 
+                        width: '64px', 
+                        height: '64px', 
+                        borderRadius: '12px',
+                        overflow: 'hidden',
+                        backgroundColor: '#2a2a2a',
+                        flexShrink: 0,
+                        border: '2px solid #FFD700',
+                        position: 'relative'
+                      }}>
+                        {plug.image && plug.image.trim() !== '' ? (
+                          <img
+                            src={getProxiedImageUrl(plug.image)}
+                            alt={plug.name || 'Boutique'}
+                            style={{ 
+                              width: '100%', 
+                              height: '100%', 
+                              objectFit: 'cover'
+                            }}
+                            onError={(e) => {
+                              e.target.style.display = 'none'
+                              e.target.nextElementSibling.style.display = 'flex'
+                            }}
+                          />
+                        ) : null}
+                        <div style={{ 
+                          width: '100%', 
+                          height: '100%', 
+                          display: plug.image ? 'none' : 'flex',
+                          alignItems: 'center', 
+                          justifyContent: 'center',
+                          fontSize: '24px'
+                        }}>
+                          👑
                         </div>
-
-                        {/* Content */}
-                        <div className="p-2 sm:p-3 md:p-4">
-                          <h3 style={{ color: 'white' }} className="text-sm sm:text-base font-bold mb-2 truncate">{plug.name}</h3>
-                          <p style={{ color: '#e5e7eb' }} className="mb-3 text-xs sm:text-sm line-clamp-2 h-8">{plug.description}</p>
-
-                          {/* Location */}
-                          {plug.countries && plug.countries.length > 0 && (
-                            <div className="flex items-center text-xs sm:text-sm mb-2" style={{ color: 'white' }}>
-                              <MapPinIcon className="w-3 h-3 mr-1" />
-                              <span className="truncate">{plug.countries.join(', ')}</span>
-                            </div>
-                          )}
-
-                          {/* Services */}
-                          <div className="flex flex-wrap gap-1 mb-3">
-                            {plug.services?.delivery?.enabled && (
-                              <span className="px-2 py-1 bg-green-600 text-white text-xs rounded-full flex items-center">
-                                <TruckIcon className="w-3 h-3 mr-1" />
-                                Livraison
-                              </span>
-                            )}
-                            {plug.services?.postal?.enabled && (
-                              <span className="px-2 py-1 bg-gray-800 text-white text-xs rounded-full border border-gray-600">
-                                📮 Postal
-                              </span>
-                            )}
-                            {plug.services?.meetup?.enabled && (
-                              <span className="px-2 py-1 bg-purple-600 text-white text-xs rounded-full flex items-center">
-                                <HomeIcon className="w-3 h-3 mr-1" />
-                                Meetup
-                              </span>
-                            )}
-                          </div>
-
-                          {/* Likes */}
-                          <div className="flex items-center text-xs sm:text-sm font-medium" style={{ color: 'white' }}>
-                            <span className="mr-1">❤️</span>
-                            <span>{plug.likes || 0} like{(plug.likes || 0) !== 1 ? 's' : ''}</span>
-                          </div>
+                        {/* Badge VIP en overlay */}
+                        <div style={{
+                          position: 'absolute',
+                          top: '-2px',
+                          right: '-2px',
+                          backgroundColor: '#FFD700',
+                          color: '#000000',
+                          fontSize: '10px',
+                          fontWeight: 'bold',
+                          padding: '2px 4px',
+                          borderRadius: '6px'
+                        }}>
+                          VIP
                         </div>
                       </div>
-                    </Link>
-                  ))}
-                </div>
 
-                {/* Pagination */}
-                {vipPlugs.length > itemsPerPage && (
-                  <div className="flex justify-center">
-                    <Pagination
-                      currentPage={currentPage}
-                      totalItems={vipPlugs.length}
-                      itemsPerPage={itemsPerPage}
-                      onPageChange={setCurrentPage}
-                    />
-                  </div>
-                )}
-              </>
-            )}
-          </div>
+                      {/* Contenu principal */}
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        {/* Nom et drapeau */}
+                        <div style={{ 
+                          display: 'flex', 
+                          alignItems: 'center', 
+                          gap: '8px',
+                          marginBottom: '4px'
+                        }}>
+                          <span style={{ fontSize: '16px' }}>{getCountryFlag(plug.countries)}</span>
+                          <h3 style={{ 
+                            fontSize: '16px',
+                            fontWeight: '600',
+                            margin: '0',
+                            color: '#FFD700',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            whiteSpace: 'nowrap'
+                          }}>
+                            {plug.name}
+                          </h3>
+                        </div>
+
+                        {/* Services */}
+                        <div style={{ 
+                          display: 'flex', 
+                          alignItems: 'center', 
+                          gap: '8px',
+                          marginBottom: '4px'
+                        }}>
+                          {plug.services?.delivery?.enabled && (
+                            <div style={{ 
+                              display: 'flex', 
+                              alignItems: 'center', 
+                              gap: '4px',
+                              fontSize: '12px',
+                              color: '#ffffff'
+                            }}>
+                              <span>📦</span>
+                              <span>Livraison</span>
+                            </div>
+                          )}
+                          {plug.services?.postal?.enabled && (
+                            <div style={{ 
+                              display: 'flex', 
+                              alignItems: 'center', 
+                              gap: '4px',
+                              fontSize: '12px',
+                              color: '#ffffff'
+                            }}>
+                              <span>📍</span>
+                              <span>Postal</span>
+                            </div>
+                          )}
+                          {plug.services?.meetup?.enabled && (
+                            <div style={{ 
+                              display: 'flex', 
+                              alignItems: 'center', 
+                              gap: '4px',
+                              fontSize: '12px',
+                              color: '#ffffff'
+                            }}>
+                              <span>💰</span>
+                              <span>Meetup</span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Likes et badge position VIP */}
+                      <div style={{ 
+                        display: 'flex', 
+                        flexDirection: 'column', 
+                        alignItems: 'flex-end',
+                        gap: '4px'
+                      }}>
+                        {getPositionBadge(index) && (
+                          <span style={{ fontSize: '20px' }}>{getPositionBadge(index)}</span>
+                        )}
+                        <div style={{ 
+                          display: 'flex', 
+                          alignItems: 'center', 
+                          gap: '4px'
+                        }}>
+                          <span style={{ fontSize: '16px' }}>👍</span>
+                          <span style={{ 
+                            fontSize: '16px',
+                            fontWeight: '600',
+                            color: '#FFD700'
+                          }}>
+                            {plug.likes || 0}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+
+              {/* Pagination */}
+              {vipPlugs.length > itemsPerPage && (
+                <div style={{ 
+                  display: 'flex', 
+                  justifyContent: 'center',
+                  marginTop: '32px'
+                }}>
+                  <Pagination
+                    currentPage={currentPage}
+                    totalItems={vipPlugs.length}
+                    itemsPerPage={itemsPerPage}
+                    onPageChange={setCurrentPage}
+                  />
+                </div>
+              )}
+
+              {/* Texte final */}
+              {config?.boutique?.vipFinalText && (
+                <div style={{ 
+                  textAlign: 'center', 
+                  marginTop: '40px',
+                  padding: '20px',
+                  backgroundColor: '#1a1a1a',
+                  borderRadius: '12px',
+                  border: '1px solid #2a2a2a'
+                }}>
+                  <p style={{ 
+                    color: '#ffffff', 
+                    fontSize: '16px', 
+                    margin: '0',
+                    lineHeight: '1.5'
+                  }}>
+                    {config.boutique.vipFinalText}
+                  </p>
+                </div>
+              )}
+            </>
+          )}
         </main>
+
+        {/* Navigation en bas */}
+        <nav style={{ 
+          position: 'fixed',
+          bottom: '0',
+          left: '0',
+          right: '0',
+          backgroundColor: '#000000',
+          padding: '12px 20px',
+          borderTop: '1px solid #2a2a2a',
+          zIndex: 1000
+        }}>
+          <div style={{ 
+            display: 'flex', 
+            justifyContent: 'center', 
+            gap: '40px'
+          }}>
+            <Link href="/shop" style={{ 
+              display: 'flex', 
+              flexDirection: 'column', 
+              alignItems: 'center', 
+              textDecoration: 'none',
+              color: '#8e8e93'
+            }}>
+              <div style={{ 
+                width: '45px', 
+                height: '45px', 
+                backgroundColor: 'transparent', 
+                borderRadius: '12px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginBottom: '6px',
+                fontSize: '22px'
+              }}>
+                🏠
+              </div>
+              <span style={{ fontSize: '13px', color: '#8e8e93', fontWeight: '500' }}>Accueil</span>
+            </Link>
+            <Link href="/shop/search" style={{ 
+              display: 'flex', 
+              flexDirection: 'column', 
+              alignItems: 'center', 
+              textDecoration: 'none',
+              color: '#8e8e93'
+            }}>
+              <div style={{ 
+                width: '45px', 
+                height: '45px', 
+                backgroundColor: 'transparent', 
+                borderRadius: '12px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginBottom: '6px',
+                fontSize: '22px'
+              }}>
+                🔍
+              </div>
+              <span style={{ fontSize: '13px', color: '#8e8e93', fontWeight: '500' }}>Recherche</span>
+            </Link>
+            <Link href="/shop/vip" style={{ 
+              display: 'flex', 
+              flexDirection: 'column', 
+              alignItems: 'center', 
+              textDecoration: 'none',
+              color: '#FFD700'
+            }}>
+              <div style={{ 
+                width: '45px', 
+                height: '45px', 
+                backgroundColor: '#FFD700', 
+                borderRadius: '12px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginBottom: '6px',
+                fontSize: '22px'
+              }}>
+                ⭐
+              </div>
+              <span style={{ fontSize: '13px', color: '#ffffff', fontWeight: '500' }}>VIP</span>
+            </Link>
+          </div>
+        </nav>
       </div>
+
+      <style jsx>{`
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+      `}</style>
     </>
   )
 }

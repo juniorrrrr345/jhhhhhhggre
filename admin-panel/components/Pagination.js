@@ -2,35 +2,35 @@ import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline'
 
 export default function Pagination({ 
   currentPage, 
-  totalPages, 
+  totalItems,
+  itemsPerPage,
+  totalPages,
   onPageChange, 
   className = "" 
 }) {
-  if (totalPages <= 1) return null
+  // Calculer totalPages à partir de totalItems et itemsPerPage si non fourni
+  const calculatedTotalPages = totalPages || Math.ceil(totalItems / itemsPerPage)
+  
+  if (calculatedTotalPages <= 1) return null
 
   const generatePageNumbers = () => {
     const pages = []
     const maxVisiblePages = 5
     
-    if (totalPages <= maxVisiblePages) {
-      // Afficher toutes les pages si <= 5
-      for (let i = 1; i <= totalPages; i++) {
+    if (calculatedTotalPages <= maxVisiblePages) {
+      for (let i = 1; i <= calculatedTotalPages; i++) {
         pages.push(i)
       }
     } else {
-      // Logique pour plus de 5 pages
       if (currentPage <= 3) {
-        // Début : 1, 2, 3, 4, 5
         for (let i = 1; i <= 5; i++) {
           pages.push(i)
         }
-      } else if (currentPage >= totalPages - 2) {
-        // Fin : ..., n-4, n-3, n-2, n-1, n
-        for (let i = totalPages - 4; i <= totalPages; i++) {
+      } else if (currentPage >= calculatedTotalPages - 2) {
+        for (let i = calculatedTotalPages - 4; i <= calculatedTotalPages; i++) {
           pages.push(i)
         }
       } else {
-        // Milieu : ..., current-2, current-1, current, current+1, current+2
         for (let i = currentPage - 2; i <= currentPage + 2; i++) {
           pages.push(i)
         }
@@ -43,22 +43,44 @@ export default function Pagination({
   const pageNumbers = generatePageNumbers()
 
   return (
-    <div className={`flex items-center justify-center space-x-2 ${className}`}>
+    <div style={{ 
+      display: 'flex', 
+      alignItems: 'center', 
+      justifyContent: 'center', 
+      gap: '8px',
+      padding: '16px 0'
+    }}>
       {/* Bouton Précédent */}
       <button
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 1}
-        className={`
-          flex items-center justify-center w-10 h-10 rounded-lg 
-          border border-gray-500 bg-black bg-opacity-30 backdrop-blur-sm
-          transition-all duration-200 hover:bg-opacity-50
-          ${currentPage === 1 
-            ? 'text-gray-500 cursor-not-allowed' 
-            : 'text-white hover:border-gray-300'
+        style={{
+          width: '40px',
+          height: '40px',
+          borderRadius: '8px',
+          backgroundColor: currentPage === 1 ? '#2a2a2a' : '#1a1a1a',
+          border: '1px solid #3a3a3a',
+          color: currentPage === 1 ? '#666666' : '#ffffff',
+          cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontSize: '16px',
+          fontWeight: '500',
+          transition: 'all 0.2s ease'
+        }}
+        onMouseEnter={(e) => {
+          if (currentPage !== 1) {
+            e.target.style.backgroundColor = '#2a2a2a'
           }
-        `}
+        }}
+        onMouseLeave={(e) => {
+          if (currentPage !== 1) {
+            e.target.style.backgroundColor = '#1a1a1a'
+          }
+        }}
       >
-        <ChevronLeftIcon className="w-4 h-4" />
+        ←
       </button>
 
       {/* Première page + ellipsis si nécessaire */}
@@ -66,16 +88,28 @@ export default function Pagination({
         <>
           <button
             onClick={() => onPageChange(1)}
-            className="
-              flex items-center justify-center w-10 h-10 rounded-lg 
-              border border-gray-500 bg-black bg-opacity-30 backdrop-blur-sm
-              text-white transition-all duration-200 hover:bg-opacity-50 hover:border-gray-300
-            "
+            style={{
+              width: '40px',
+              height: '40px',
+              borderRadius: '8px',
+              backgroundColor: '#1a1a1a',
+              border: '1px solid #3a3a3a',
+              color: '#ffffff',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '14px',
+              fontWeight: '500',
+              transition: 'all 0.2s ease'
+            }}
+            onMouseEnter={(e) => e.target.style.backgroundColor = '#2a2a2a'}
+            onMouseLeave={(e) => e.target.style.backgroundColor = '#1a1a1a'}
           >
             1
           </button>
           {pageNumbers[0] > 2 && (
-            <span className="text-gray-400 px-2">...</span>
+            <span style={{ color: '#8e8e93', padding: '0 8px' }}>...</span>
           )}
         </>
       )}
@@ -85,34 +119,63 @@ export default function Pagination({
         <button
           key={page}
           onClick={() => onPageChange(page)}
-          className={`
-            flex items-center justify-center w-10 h-10 rounded-lg 
-            border transition-all duration-200 backdrop-blur-sm
-            ${page === currentPage
-              ? 'bg-white bg-opacity-20 border-white text-white font-semibold'
-              : 'border-gray-500 bg-black bg-opacity-30 text-white hover:bg-opacity-50 hover:border-gray-300'
+          style={{
+            width: '40px',
+            height: '40px',
+            borderRadius: '8px',
+            backgroundColor: page === currentPage ? '#007AFF' : '#1a1a1a',
+            border: page === currentPage ? '1px solid #007AFF' : '1px solid #3a3a3a',
+            color: '#ffffff',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: '14px',
+            fontWeight: page === currentPage ? 'bold' : '500',
+            transition: 'all 0.2s ease'
+          }}
+          onMouseEnter={(e) => {
+            if (page !== currentPage) {
+              e.target.style.backgroundColor = '#2a2a2a'
             }
-          `}
+          }}
+          onMouseLeave={(e) => {
+            if (page !== currentPage) {
+              e.target.style.backgroundColor = '#1a1a1a'
+            }
+          }}
         >
           {page}
         </button>
       ))}
 
       {/* Ellipsis + dernière page si nécessaire */}
-      {pageNumbers[pageNumbers.length - 1] < totalPages && (
+      {pageNumbers[pageNumbers.length - 1] < calculatedTotalPages && (
         <>
-          {pageNumbers[pageNumbers.length - 1] < totalPages - 1 && (
-            <span className="text-gray-400 px-2">...</span>
+          {pageNumbers[pageNumbers.length - 1] < calculatedTotalPages - 1 && (
+            <span style={{ color: '#8e8e93', padding: '0 8px' }}>...</span>
           )}
           <button
-            onClick={() => onPageChange(totalPages)}
-            className="
-              flex items-center justify-center w-10 h-10 rounded-lg 
-              border border-gray-500 bg-black bg-opacity-30 backdrop-blur-sm
-              text-white transition-all duration-200 hover:bg-opacity-50 hover:border-gray-300
-            "
+            onClick={() => onPageChange(calculatedTotalPages)}
+            style={{
+              width: '40px',
+              height: '40px',
+              borderRadius: '8px',
+              backgroundColor: '#1a1a1a',
+              border: '1px solid #3a3a3a',
+              color: '#ffffff',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '14px',
+              fontWeight: '500',
+              transition: 'all 0.2s ease'
+            }}
+            onMouseEnter={(e) => e.target.style.backgroundColor = '#2a2a2a'}
+            onMouseLeave={(e) => e.target.style.backgroundColor = '#1a1a1a'}
           >
-            {totalPages}
+            {calculatedTotalPages}
           </button>
         </>
       )}
@@ -120,23 +183,44 @@ export default function Pagination({
       {/* Bouton Suivant */}
       <button
         onClick={() => onPageChange(currentPage + 1)}
-        disabled={currentPage === totalPages}
-        className={`
-          flex items-center justify-center w-10 h-10 rounded-lg 
-          border border-gray-500 bg-black bg-opacity-30 backdrop-blur-sm
-          transition-all duration-200 hover:bg-opacity-50
-          ${currentPage === totalPages 
-            ? 'text-gray-500 cursor-not-allowed' 
-            : 'text-white hover:border-gray-300'
+        disabled={currentPage === calculatedTotalPages}
+        style={{
+          width: '40px',
+          height: '40px',
+          borderRadius: '8px',
+          backgroundColor: currentPage === calculatedTotalPages ? '#2a2a2a' : '#1a1a1a',
+          border: '1px solid #3a3a3a',
+          color: currentPage === calculatedTotalPages ? '#666666' : '#ffffff',
+          cursor: currentPage === calculatedTotalPages ? 'not-allowed' : 'pointer',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontSize: '16px',
+          fontWeight: '500',
+          transition: 'all 0.2s ease'
+        }}
+        onMouseEnter={(e) => {
+          if (currentPage !== calculatedTotalPages) {
+            e.target.style.backgroundColor = '#2a2a2a'
           }
-        `}
+        }}
+        onMouseLeave={(e) => {
+          if (currentPage !== calculatedTotalPages) {
+            e.target.style.backgroundColor = '#1a1a1a'
+          }
+        }}
       >
-        <ChevronRightIcon className="w-4 h-4" />
+        →
       </button>
 
       {/* Info sur la pagination */}
-      <div className="ml-4 text-sm text-gray-300">
-        Page {currentPage} sur {totalPages}
+      <div style={{ 
+        marginLeft: '16px', 
+        fontSize: '12px', 
+        color: '#8e8e93',
+        fontWeight: '500'
+      }}>
+        Page {currentPage} sur {calculatedTotalPages}
       </div>
     </div>
   )
