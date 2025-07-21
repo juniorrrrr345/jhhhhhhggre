@@ -15,7 +15,7 @@ const WORKING_CONFIG = {
       {
         name: 'Telegram',
         emoji: '📱',
-        url: '@swissqualitysupport',
+        url: 'https://t.me/swissqualitysupport',
         order: 1
       },
       {
@@ -74,7 +74,7 @@ SwissQuality - La qualité suisse à votre service ! 🎯`,
   },
   
   socialMedia: {
-    telegram: '@swissqualitysupport',
+    telegram: 'https://t.me/swissqualitysupport',
     instagram: '',
     whatsapp: '',
     website: ''
