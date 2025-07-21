@@ -259,7 +259,7 @@ export default function ShopHome() {
                       <img
                         src={plug.image || '/placeholder.jpg'}
                         alt={plug.name}
-                        className="w-full h-full object-cover grayscale"
+                        className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
                       />
                       {/* Badges en haut à droite pour ne pas cacher le nom */}
                       <div className="absolute top-2 right-2 space-y-1">
