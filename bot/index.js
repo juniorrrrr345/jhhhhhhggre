@@ -583,6 +583,65 @@ app.get('/api/sync/test', authenticateAdmin, async (req, res) => {
   }
 });
 
+// NOUVEL ENDPOINT: Diagnostic de synchronisation
+app.get('/api/diagnostic/sync', async (req, res) => {
+  try {
+    console.log('🔍 Diagnostic de synchronisation demandé');
+    
+    // Vérifier la connexion à la DB
+    const dbStatus = await Plug.db.readyState;
+    
+    // Compter les plugs directement en DB
+    const totalPlugsInDb = await Plug.countDocuments();
+    const activePlugsInDb = await Plug.countDocuments({ isActive: true });
+    const vipPlugsInDb = await Plug.countDocuments({ isVip: true, isActive: true });
+    
+    // Vérifier la config
+    const configInDb = await Config.findById('main');
+    
+    res.set({
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type',
+      'Cache-Control': 'no-cache'
+    });
+    
+    res.json({
+      status: 'success',
+      timestamp: new Date().toISOString(),
+      database: {
+        status: dbStatus === 1 ? 'connected' : 'disconnected',
+        totalPlugs: totalPlugsInDb,
+        activePlugs: activePlugsInDb,
+        vipPlugs: vipPlugsInDb,
+        configExists: !!configInDb
+      },
+      cache: {
+        plugsCount: cache.plugs?.length || 0,
+        configExists: !!cache.config,
+        lastUpdate: cache.lastUpdate,
+        updateInterval: cache.updateInterval,
+        isStale: cache.lastUpdate && (new Date() - cache.lastUpdate) > cache.updateInterval
+      },
+      environment: {
+        nodeEnv: process.env.NODE_ENV,
+        port: PORT,
+        webhookUrl: process.env.WEBHOOK_URL || process.env.RENDER_URL || 'non configuré',
+        botToken: process.env.TELEGRAM_BOT_TOKEN ? 'configuré' : 'manquant'
+      }
+    });
+    
+  } catch (error) {
+    console.error('❌ Erreur diagnostic synchronisation:', error);
+    res.status(500).json({ 
+      status: 'error',
+      error: 'Erreur diagnostic synchronisation',
+      message: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
 // Endpoint pour les statistiques
 app.get('/api/stats', authenticateAdmin, async (req, res) => {
   try {
@@ -959,6 +1018,36 @@ app.delete('/api/config/welcome/social-media/:id', authenticateAdmin, async (req
 
 // ===== ROUTES PLUGS =====
 
+// Récupérer un plug par ID (Admin seulement)
+app.get('/api/plugs/:id', authenticateAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    console.log(`🔍 Recherche du plug avec ID: ${id}`);
+    
+    const plug = await Plug.findById(id);
+    
+    if (!plug) {
+      console.log(`❌ Plug non trouvé: ${id}`);
+      return res.status(404).json({ error: 'Plug non trouvé' });
+    }
+    
+    console.log(`✅ Plug trouvé: ${plug.name}`);
+    
+    // Headers pour éviter le cache
+    res.set({
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      'Pragma': 'no-cache',
+      'Expires': '0'
+    });
+    
+    res.json(plug);
+  } catch (error) {
+    console.error('Erreur récupération plug par ID:', error);
+    res.status(500).json({ error: 'Erreur serveur' });
+  }
+});
+
 // Récupérer tous les plugs (Admin seulement)
 app.get('/api/plugs', authenticateAdmin, async (req, res) => {
   try {
@@ -1264,6 +1353,7 @@ app.get('/', (req, res) => {
       'GET /api/config (admin)',
       'PUT /api/config (admin)',
       'GET /api/plugs (admin)',
+      'GET /api/plugs/:id (admin)',
       'POST /api/plugs (admin)',
       'PUT /api/plugs/:id (admin)',
       'DELETE /api/plugs/:id (admin)'
@@ -1309,14 +1399,33 @@ const start = async () => {
       // Keep-alive pour éviter que Render s'endorme
       require('./keep-alive');
       
-      const webhookUrl = `${process.env.WEBHOOK_URL}/webhook/${process.env.TELEGRAM_BOT_TOKEN}`;
+      // Construire l'URL de webhook avec fallback
+      const baseUrl = process.env.WEBHOOK_URL || process.env.RENDER_URL || 'https://jhhhhhhggre.onrender.com';
+      const webhookUrl = `${baseUrl}/webhook/${process.env.TELEGRAM_BOT_TOKEN}`;
       
       // Route pour le webhook
       app.use(bot.webhookCallback(`/webhook/${process.env.TELEGRAM_BOT_TOKEN}`));
       
-      // Définir le webhook
-      await bot.telegram.setWebhook(webhookUrl);
-      console.log(`✅ Webhook configuré: ${webhookUrl}`);
+      // Définir le webhook avec retry et gestion d'erreur
+      try {
+        await bot.telegram.setWebhook(webhookUrl, {
+          allowed_updates: ['message', 'callback_query']
+        });
+        console.log(`✅ Webhook configuré: ${webhookUrl}`);
+      } catch (webhookError) {
+        console.error('❌ Erreur configuration webhook:', webhookError.message);
+        console.log('🔄 Tentative de fallback en mode polling...');
+        
+        // Fallback en mode polling si le webhook échoue
+        try {
+          await bot.telegram.deleteWebhook();
+          bot.launch();
+          console.log('✅ Bot basculé en mode polling (fallback)');
+        } catch (pollingError) {
+          console.error('❌ Erreur fallback polling:', pollingError.message);
+          throw new Error('Impossible de démarrer le bot (webhook et polling échoués)');
+        }
+      }
     } else {
       // Mode polling pour le développement
       bot.launch();

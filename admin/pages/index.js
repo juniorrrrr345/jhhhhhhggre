@@ -38,7 +38,7 @@ export default function Dashboard() {
       name: 'Total Plugs',
       value: stats.totalPlugs,
       icon: Users,
-      color: 'bg-blue-500',
+      color: 'bg-gray-800',
       change: '+12%',
       changeType: 'increase'
     },
@@ -73,7 +73,7 @@ export default function Dashboard() {
       name: 'Livraison',
       value: stats.services.delivery,
       icon: Truck,
-      color: 'text-blue-600 bg-blue-100'
+      color: 'text-white bg-gray-800'
     },
     {
       name: 'Envoi postal',
@@ -202,7 +202,7 @@ export default function Dashboard() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               <a
                 href="/plugs/new"
-                className="group relative bg-primary-600 p-6 rounded-lg text-white hover:bg-primary-700 transition-colors"
+                className="group relative bg-gray-800 p-6 rounded-lg text-white hover:bg-gray-700 transition-colors"
               >
                 <div>
                   <Users className="h-8 w-8 mb-3" />

@@ -46,13 +46,13 @@ const Layout = ({ children, title = 'Admin Panel' }) => {
         fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0
         ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
       `}>
-        <div className="flex items-center justify-between h-16 px-4 bg-primary-600">
+                    <div className="flex items-center justify-between h-16 px-4 bg-gray-800">
           <h1 className="text-xl font-bold text-white">
             🤖 Bot Admin
           </h1>
           <button
             onClick={() => setSidebarOpen(false)}
-            className="lg:hidden text-white hover:bg-primary-700 p-2 rounded-md"
+                            className="lg:hidden text-white hover:bg-gray-700 p-2 rounded-md"
           >
             <X className="h-5 w-5" />
           </button>
@@ -67,7 +67,7 @@ const Layout = ({ children, title = 'Admin Panel' }) => {
                 className={`
                   group flex items-center px-2 py-2 text-sm font-medium rounded-md transition-colors
                   ${item.current
-                    ? 'bg-primary-100 text-primary-900'
+                    ? 'bg-gray-700 text-white'
                     : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                   }
                 `}
@@ -76,7 +76,7 @@ const Layout = ({ children, title = 'Admin Panel' }) => {
                 <item.icon
                   className={`
                     mr-3 h-5 w-5 transition-colors
-                    ${item.current ? 'text-primary-500' : 'text-gray-400 group-hover:text-gray-500'}
+                    ${item.current ? 'text-white' : 'text-gray-400 group-hover:text-gray-500'}
                   `}
                 />
                 {item.name}

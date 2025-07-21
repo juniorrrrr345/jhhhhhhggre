@@ -96,11 +96,13 @@ export default function EditPlug() {
           socialMedia: Array.isArray(plug.socialMedia) ? plug.socialMedia : []
         })
       } else {
-        toast.error('Erreur lors du chargement du plug')
+        const errorText = await response.text()
+        console.error('Erreur response:', response.status, errorText)
+        toast.error(`Erreur lors du chargement du plug: ${response.status}`)
       }
     } catch (error) {
       console.error('Erreur:', error)
-      toast.error('Erreur lors du chargement')
+      toast.error(`Erreur lors du chargement: ${error.message}`)
     } finally {
       setLoading(false)
     }

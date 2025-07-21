@@ -294,7 +294,7 @@ export default function ShopSearch() {
                 <Link 
                   href="/shop" 
                   style={{ color: 'white' }}
-                  className="pb-3 flex items-center hover:opacity-75 border-b-2 border-transparent hover:border-white transition-all"
+                  className="pb-3 flex items-center hover:opacity-75 transition-opacity"
                 >
                   <span className="mr-1">🏠</span>
                   <span style={{ color: 'white' }}>Accueil</span>
@@ -302,7 +302,7 @@ export default function ShopSearch() {
                 <Link 
                   href="/shop/search" 
                   style={{ color: 'white' }}
-                  className="font-medium pb-3 flex items-center hover:opacity-75 border-b-2 border-transparent hover:border-white transition-all"
+                  className="font-medium pb-3 flex items-center hover:opacity-75 transition-opacity"
                 >
                   <span className="mr-1">🔍</span>
                   <span style={{ color: 'white' }}>Recherche</span>
@@ -310,7 +310,7 @@ export default function ShopSearch() {
                 <Link 
                   href="/shop/vip" 
                   style={{ color: 'white' }}
-                  className="pb-3 flex items-center hover:opacity-75 border-b-2 border-transparent hover:border-white transition-all"
+                  className="pb-3 flex items-center hover:opacity-75 transition-opacity"
                 >
                   <span className="mr-1">👑</span>
                   <span style={{ color: 'white' }}>VIP</span>
@@ -348,7 +348,7 @@ export default function ShopSearch() {
                         type="text"
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
-                        className="block w-full pl-10 pr-3 py-2 border border-gray-600 rounded-md bg-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        className="block w-full pl-10 pr-3 py-2 border border-gray-600 rounded-md bg-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white focus:border-white"
                         style={{ color: 'white' }}
                         placeholder="Rechercher une boutique..."
                       />
@@ -363,7 +363,7 @@ export default function ShopSearch() {
                     <select
                       value={countryFilter}
                       onChange={(e) => setCountryFilter(e.target.value)}
-                      className="block w-full px-3 py-2 border border-gray-600 rounded-md bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      className="block w-full px-3 py-2 border border-gray-600 rounded-md bg-gray-800 focus:outline-none focus:ring-2 focus:ring-white focus:border-white"
                       style={{ color: 'white' }}
                     >
                       <option value="">Tous les pays</option>
@@ -381,7 +381,7 @@ export default function ShopSearch() {
                     <select
                       value={serviceFilter}
                       onChange={(e) => setServiceFilter(e.target.value)}
-                      className="block w-full px-3 py-2 border border-gray-600 rounded-md bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      className="block w-full px-3 py-2 border border-gray-600 rounded-md bg-gray-800 focus:outline-none focus:ring-2 focus:ring-white focus:border-white"
                       style={{ color: 'white' }}
                     >
                       <option value="">Tous les services</option>
@@ -399,7 +399,7 @@ export default function ShopSearch() {
                     <select
                       value={vipFilter}
                       onChange={(e) => setVipFilter(e.target.value)}
-                      className="block w-full px-3 py-2 border border-gray-600 rounded-md bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      className="block w-full px-3 py-2 border border-gray-600 rounded-md bg-gray-800 focus:outline-none focus:ring-2 focus:ring-white focus:border-white"
                       style={{ color: 'white' }}
                     >
                       <option value="">Tous</option>
@@ -453,18 +453,21 @@ export default function ShopSearch() {
               </div>
             ) : (
               <>
-                {/* Products Grid - 2 boutiques par ligne */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                {/* Products Grid - 2 boutiques par ligne même sur mobile */}
+                <div className="grid grid-cols-2 gap-2 sm:gap-4 md:gap-6 mb-8" style={{ 
+                  gridTemplateColumns: '1fr 1fr',
+                  width: '100%'
+                }}>
                   {currentPlugs.map((plug, index) => (
                     <Link 
                       key={plug._id || index} 
                       href={`/shop/${plug._id}`} 
                       className="block group hover:scale-105 transition-transform duration-200"
-                      style={{ textDecoration: 'none' }}
+                      style={{ textDecoration: 'none', color: 'inherit' }}
                     >
-                      <div className="bg-gray-800 border border-gray-700 rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-shadow duration-300">
+                      <div className="shop-card bg-gray-800 border border-gray-700 rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-shadow duration-300 w-full max-w-none">
                         {/* Image */}
-                        <div className="relative aspect-square bg-gray-900">
+                        <div className="relative h-32 sm:h-40 md:h-48 bg-gray-900">
                           {plug.image ? (
                             <img
                               src={plug.image}
@@ -495,7 +498,7 @@ export default function ShopSearch() {
                         </div>
 
                         {/* Content */}
-                        <div className="p-3 sm:p-4">
+                        <div className="p-2 sm:p-3 md:p-4">
                           <h3 style={{ color: 'white' }} className="text-sm sm:text-base font-bold mb-2 truncate">{plug.name}</h3>
                           <p style={{ color: '#e5e7eb' }} className="mb-3 text-xs sm:text-sm line-clamp-2 h-8">{plug.description}</p>
 
@@ -516,7 +519,7 @@ export default function ShopSearch() {
                               </span>
                             )}
                             {plug.services?.postal?.enabled && (
-                              <span className="px-2 py-1 bg-blue-600 text-white text-xs rounded-full">
+                              <span className="px-2 py-1 bg-gray-800 text-white text-xs rounded-full border border-gray-600">
                                 📮 Postal
                               </span>
                             )}
