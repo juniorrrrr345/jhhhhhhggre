@@ -47,10 +47,21 @@ app.use(cors({
 
 // Middleware supplémentaire pour gérer les requêtes OPTIONS
 app.options('*', (req, res) => {
+  console.log(`🔧 OPTIONS request: ${req.path}`);
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   res.sendStatus(200);
+});
+
+// Middleware de logging pour toutes les requêtes
+app.use((req, res, next) => {
+  console.log(`📡 ${req.method} ${req.path} - IP: ${req.ip} - UserAgent: ${req.get('User-Agent')}`);
+  console.log(`📋 Headers:`, Object.keys(req.headers));
+  if (req.body && Object.keys(req.body).length > 0) {
+    console.log(`📦 Body size:`, JSON.stringify(req.body).length, 'chars');
+  }
+  next();
 });
 
 app.use(express.json({ limit: '10mb' }));

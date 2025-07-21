@@ -68,23 +68,78 @@ export default function Config() {
       setLoading(true)
       const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || process.env.API_BASE_URL
       console.log('🔍 Fetching config from:', apiBaseUrl)
+      console.log('🔐 Using token:', token ? `***${token.slice(-4)}` : 'Absent')
       
       const response = await fetch(`${apiBaseUrl}/api/config`, {
-        headers: { 'Authorization': `Bearer ${token}` }
+        headers: { 
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+          'Cache-Control': 'no-cache'
+        }
       })
 
-      console.log('⚙️ Config fetch response:', response.status)
+      console.log('⚙️ Config fetch response:', response.status, response.statusText)
 
       if (response.ok) {
         const data = await response.json()
-        console.log('✅ Config loaded:', data)
-        setConfig(data)
+        console.log('✅ Config loaded:', Object.keys(data))
+        
+        // Merger avec la configuration par défaut pour éviter les champs manquants
+        const mergedConfig = {
+          welcome: { 
+            text: '🎉 Bienvenue sur notre bot premium !', 
+            image: 'https://via.placeholder.com/400x200/4F46E5/FFFFFF?text=Bot+Image',
+            ...data.welcome
+          },
+          boutique: {
+            name: '',
+            subtitle: '',
+            logo: '',
+            vipTitle: '',
+            vipSubtitle: '',
+            searchTitle: '',
+            searchSubtitle: '',
+            backgroundImage: '',
+            ...data.boutique
+          },
+          messages: {
+            welcome: '',
+            noPlugsFound: '',
+            error: '',
+            ...data.messages
+          },
+          socialMedia: {
+            telegram: '',
+            whatsapp: '',
+            website: '',
+            ...data.socialMedia
+          },
+          buttons: {
+            topPlugs: { text: '🔌 Top Des Plugs' },
+            vipPlugs: { text: '⭐ Boutiques VIP' },
+            contact: { text: '📞 Contact', content: '' },
+            info: { text: 'ℹ️ Info', content: '' },
+            ...data.buttons
+          },
+          filters: {
+            all: 'Tous les plugs',
+            byService: 'Par service',
+            byCountry: 'Par pays',
+            ...data.filters
+          },
+          ...data
+        }
+        
+        setConfig(mergedConfig)
+        console.log('📊 Config merged successfully')
       } else {
-        console.error('❌ Config fetch error:', response.status, response.statusText)
-        toast.error('Erreur lors du chargement')
+        const errorText = await response.text()
+        console.error('❌ Config fetch error:', response.status, errorText)
+        toast.error(`Erreur lors du chargement: ${response.status}`)
       }
     } catch (error) {
-      toast.error('Erreur de connexion')
+      console.error('💥 Config fetch exception:', error)
+      toast.error(`Erreur de connexion: ${error.message}`)
     } finally {
       setLoading(false)
     }
@@ -95,13 +150,17 @@ export default function Config() {
         setSaving(true)
 
         try {
-          // Préparer les données sans la section boutique
-          const { boutique, ...botConfig } = config
+          console.log('💾 Sauvegarde configuration complète...', config)
+          console.log('🔐 Token admin:', token ? `***${token.slice(-4)}` : 'Absent')
           
-          console.log('💾 Sauvegarde configuration bot uniquement...', botConfig)
+          // Valider le token
+          if (!token) {
+            throw new Error('Token d\'authentification manquant')
+          }
           
           // Essayer l'API directe d'abord
           const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://jhhhhhhggre.onrender.com'
+          console.log('🌐 API Base URL:', apiBaseUrl)
           
           const response = await fetch(`${apiBaseUrl}/api/config`, {
             method: 'PUT',
@@ -111,12 +170,18 @@ export default function Config() {
               'Cache-Control': 'no-cache',
               'Pragma': 'no-cache'
             },
-            body: JSON.stringify(botConfig)
+            body: JSON.stringify(config)  // Sauvegarder toute la configuration
           })
 
+          console.log('📡 Réponse API:', response.status, response.statusText)
+
           if (response.ok) {
-            console.log('✅ Configuration bot sauvegardée')
-            toast.success('Configuration bot sauvegardée avec succès !')
+            const savedConfig = await response.json()
+            console.log('✅ Configuration sauvegardée:', savedConfig)
+            toast.success('Configuration sauvegardée avec succès !')
+            
+            // Forcer la synchronisation boutique
+            forceBoutiqueSync()
             
             // Recharger le bot après sauvegarde
             setTimeout(() => {
@@ -124,6 +189,9 @@ export default function Config() {
             }, 1000);
             
           } else {
+            const errorText = await response.text()
+            console.error('❌ Erreur API directe:', response.status, errorText)
+            
             // Fallback vers le proxy
             console.log('🔄 Tentative via proxy...')
             
@@ -136,23 +204,26 @@ export default function Config() {
               },
               body: JSON.stringify({
                 _method: 'PUT',
-                ...botConfig
+                ...config
               })
             })
 
             if (proxyResponse.ok) {
               console.log('✅ Configuration sauvegardée via proxy')
               toast.success('Configuration sauvegardée via proxy !')
+              forceBoutiqueSync()
               setTimeout(() => {
                 reloadBot();
               }, 1000);
             } else {
-              throw new Error(`Erreur API: ${response.status}`)
+              const proxyError = await proxyResponse.text()
+              console.error('❌ Erreur proxy:', proxyResponse.status, proxyError)
+              throw new Error(`Erreur API et Proxy: ${response.status} / ${proxyResponse.status}`)
             }
           }
         } catch (error) {
           console.error('💥 Erreur sauvegarde config:', error)
-          toast.error('Erreur lors de la sauvegarde')
+          toast.error(`Erreur lors de la sauvegarde: ${error.message}`)
         } finally {
           setSaving(false)
         }
@@ -305,9 +376,16 @@ export default function Config() {
     try {
       console.log('🔄 Rechargement du bot...');
       
+      if (!token) {
+        console.error('❌ Token manquant pour recharger le bot');
+        return;
+      }
+      
       // Essayer l'API directe d'abord
       try {
         const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://jhhhhhhggre.onrender.com';
+        console.log('🌐 Rechargement bot via:', `${apiBaseUrl}/api/bot/reload`);
+        
         const response = await fetch(`${apiBaseUrl}/api/bot/reload`, {
           method: 'POST',
           headers: {
@@ -317,19 +395,35 @@ export default function Config() {
         });
 
         if (response.ok) {
-          console.log('✅ Bot rechargé avec succès');
+          const result = await response.json();
+          console.log('✅ Bot rechargé avec succès:', result);
+          toast.success('Bot rechargé avec succès !');
+        } else {
+          const errorText = await response.text();
+          console.error('❌ Erreur rechargement bot:', response.status, errorText);
+          throw new Error(`Erreur ${response.status}: ${errorText}`);
         }
       } catch (directError) {
-        console.log('❌ Rechargement direct échoué, tentative proxy...');
+        console.log('❌ Rechargement direct échoué:', directError.message);
+        console.log('🔄 Tentative proxy...');
         
         // Fallback vers le proxy
-        await fetch('/api/reload-bot', {
+        const proxyResponse = await fetch('/api/reload-bot', {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
           }
         });
+
+        if (proxyResponse.ok) {
+          console.log('✅ Bot rechargé via proxy');
+          toast.success('Bot rechargé via proxy !');
+        } else {
+          const proxyError = await proxyResponse.text();
+          console.error('❌ Erreur proxy rechargement:', proxyResponse.status, proxyError);
+          throw new Error(`Erreur proxy: ${proxyResponse.status}`);
+        }
       }
     } catch (error) {
       console.error('💥 Erreur rechargement bot:', error);
