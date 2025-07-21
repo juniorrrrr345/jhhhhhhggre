@@ -141,7 +141,7 @@ export default function NewPlug() {
       const response = await fetch(`${process.env.API_BASE_URL}/api/plugs`, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${token}`
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify(formData)

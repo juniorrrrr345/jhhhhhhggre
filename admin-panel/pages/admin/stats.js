@@ -30,7 +30,7 @@ export default function StatsPage() {
         
         const response = await fetch(`${apiBaseUrl}/api/stats`, {
           headers: {
-            'Authorization': `Bearer ${token}`
+            'Authorization': `Bearer ${token}`,
             'Cache-Control': 'no-cache'
           }
         });

@@ -94,7 +94,7 @@ export default function BoutiqueDebug() {
       const updateResponse = await fetch('/api/proxy?endpoint=/api/config', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${token}`
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
@@ -126,7 +126,7 @@ export default function BoutiqueDebug() {
       const cleanResponse = await fetch('/api/proxy?endpoint=/api/config/clean-boutique', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${token}`
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({ _method: 'POST' })
