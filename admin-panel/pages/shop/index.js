@@ -20,9 +20,7 @@ export default function ShopHome() {
 
   const fetchConfig = async () => {
     try {
-      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
-      
-      const response = await fetch(`${apiBaseUrl}/api/public/config`, {
+      const response = await fetch('/api/proxy?endpoint=/api/public/config', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -32,7 +30,13 @@ export default function ShopHome() {
 
       if (response.ok) {
         const data = await response.json()
+        console.log('✅ Config boutique chargée:', {
+          name: data.boutique?.name,
+          subtitle: data.boutique?.subtitle
+        })
         setConfig(data)
+      } else {
+        console.error('❌ Erreur API proxy:', response.status)
       }
     } catch (error) {
       console.error('❌ Erreur chargement config:', error)
@@ -41,9 +45,7 @@ export default function ShopHome() {
 
   const fetchPlugs = async () => {
     try {
-      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
-      
-      const response = await fetch(`${apiBaseUrl}/api/public/plugs?limit=50`, {
+      const response = await fetch('/api/proxy?endpoint=/api/public/plugs&limit=50', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json'
