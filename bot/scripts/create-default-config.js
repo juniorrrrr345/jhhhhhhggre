@@ -30,7 +30,7 @@ async function createDefaultConfig() {
         welcome: {
           text: '🌟 Bienvenue sur notre bot !\n\nDécouvrez nos meilleurs plugs sélectionnés avec soin.',
           image: '', // Image d'accueil pour les menus
-          socialMedia: []
+          socialMedia: [] // Réseaux sociaux d'accueil personnalisés
         },
         boutique: {
           name: '',
