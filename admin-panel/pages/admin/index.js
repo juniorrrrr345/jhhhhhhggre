@@ -8,7 +8,7 @@ import {
   EyeIcon,
   PlusIcon
 } from '@heroicons/react/24/outline'
-import { api } from '../../lib/api-proxy'
+import { simpleApi } from '../../lib/api-simple'
 
 export default function Dashboard() {
   const [stats, setStats] = useState({
@@ -36,8 +36,8 @@ export default function Dashboard() {
     try {
       console.log('🔍 Fetching dashboard data via proxy CORS...')
       
-      // Récupérer les stats via proxy
-      const statsData = await api.getStats(token)
+      // Récupérer les stats via proxy simple
+      const statsData = await simpleApi.getStats(token)
       console.log('✅ Stats data:', statsData)
       
       setStats({
@@ -47,8 +47,8 @@ export default function Dashboard() {
         totalUsers: 0
       })
       
-      // Récupérer la config via proxy
-      const configData = await api.getConfig(token)
+      // Récupérer la config via proxy simple
+      const configData = await simpleApi.getConfig(token)
       console.log('✅ Config data:', configData)
       setConfig(configData)
       

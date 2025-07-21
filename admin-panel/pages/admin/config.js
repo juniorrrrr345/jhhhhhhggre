@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import Head from 'next/head'
 import toast, { Toaster } from 'react-hot-toast'
-import { api } from '../../lib/api-proxy'
+import { simpleApi } from '../../lib/api-simple'
 
 export default function ConfigurationSimple() {
   const [config, setConfig] = useState({
