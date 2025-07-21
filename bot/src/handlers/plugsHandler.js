@@ -462,9 +462,6 @@ const handlePlugServiceDetails = async (ctx, plugId, serviceType) => {
       }
     }
     
-    // Bouton like
-    buttons.push([Markup.button.callback('👤 Liker cette boutique', `like_${plug._id}`)]);
-    
     // Bouton retour vers les détails du plug
     buttons.push([Markup.button.callback('🔙 Retour aux détails', `plug_${plug._id}_from_top_plugs`)]);
     
