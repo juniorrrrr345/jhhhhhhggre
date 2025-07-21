@@ -135,7 +135,7 @@ export default function ShopDetail() {
       >
         <div className="text-center">
           <h1 className="text-2xl font-bold text-white mb-4">Boutique non trouvée</h1>
-          <Link href="/shop" className="text-white hover:text-gray-300 underline">
+          <Link href="/shop" className="text-white hover:text-gray-200 underline">
             ← Retour aux boutiques
           </Link>
         </div>
@@ -152,14 +152,15 @@ export default function ShopDetail() {
       </Head>
 
       <div 
-        className="min-h-screen bg-black"
-        style={config?.boutique?.backgroundImage ? {
-          backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url(${config.boutique.backgroundImage})`,
-          backgroundSize: '300px 300px',
+        className="min-h-screen"
+        style={{
+          backgroundColor: '#000000',
+          backgroundImage: config?.boutique?.backgroundImage ? `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url("${config.boutique.backgroundImage}")` : 'none',
+          backgroundSize: 'cover',
           backgroundPosition: 'center',
-          backgroundRepeat: 'repeat',
+          backgroundRepeat: 'no-repeat',
           backgroundAttachment: 'fixed'
-        } : {}}
+        }}
       >
         {/* Header */}
         <header className="bg-gray-900 shadow-lg">
@@ -169,7 +170,7 @@ export default function ShopDetail() {
                 <h1 className="text-xl font-bold text-white">
                   🔌 {config?.boutique?.name || 'Boutique'}
                 </h1>
-                <p className="text-gray-300 text-sm">
+                <p className="text-white text-sm">
                   {plug.name}
                 </p>
               </div>
@@ -191,14 +192,14 @@ export default function ShopDetail() {
               </Link>
               <Link 
                 href="/shop/search" 
-                className="text-gray-300 hover:text-white pb-3 flex items-center"
+                className="text-white hover:text-gray-200 pb-3 flex items-center"
               >
                 <span className="mr-1">🔍</span>
                 Recherche
               </Link>
               <Link 
                 href="/shop/vip" 
-                className="text-gray-300 hover:text-white pb-3 flex items-center"
+                className="text-white hover:text-gray-200 pb-3 flex items-center"
               >
                 <span className="mr-1">👑</span>
                 VIP
@@ -229,14 +230,14 @@ export default function ShopDetail() {
                       VIP
                     </span>
                   )}
-                  <div className="flex items-center text-gray-300">
+                  <div className="flex items-center text-white">
                     <span className="mr-1">❤️</span>
                     <span className="font-medium">{plug.likes || 0} likes</span>
                   </div>
                 </div>
               </div>
               
-              <p className="text-gray-300 mb-6">{plug.description}</p>
+              <p className="text-gray-200 mb-6">{plug.description}</p>
 
               {/* Services */}
               <div className="mb-6">
