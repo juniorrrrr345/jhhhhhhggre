@@ -303,7 +303,7 @@ export default function ShopSearch() {
                     </label>
                     <div className="relative">
                       <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <MagnifyingGlassIcon className="h-5 w-5 text-gray-400" />
+                        <MagnifyingGlassIcon className="h-5 w-5 text-white" />
                       </div>
                       <input
                         type="text"
@@ -427,12 +427,12 @@ export default function ShopSearch() {
                         <h3 className="text-sm sm:text-base font-bold text-white mb-2 truncate">{plug.name}</h3>
                         <p className="text-gray-200 mb-3 text-xs sm:text-sm line-clamp-2 h-8">{plug.description}</p>
 
-                        {plug.countries && plug.countries.length > 0 && (
-                          <div className="flex items-center text-xs sm:text-sm text-gray-400 mb-2">
-                            <MapPinIcon className="w-3 h-3 mr-1" />
-                            <span className="truncate">{plug.countries.join(', ')}</span>
-                          </div>
-                        )}
+                                                  {plug.countries && plug.countries.length > 0 && (
+                            <div className="flex items-center text-xs sm:text-sm text-white mb-2">
+                              <MapPinIcon className="w-3 h-3 mr-1" />
+                              <span className="truncate">{plug.countries.join(', ')}</span>
+                            </div>
+                          )}
 
                         <div className="flex flex-wrap gap-1 mb-3">
                           {plug.services?.delivery?.enabled && (
@@ -479,7 +479,7 @@ export default function ShopSearch() {
                 <h3 className="text-lg font-medium mb-2">
                   🔍 {config?.boutique?.name || 'Boutique Premium'}
                 </h3>
-                <p className="text-gray-400">
+                <p className="text-white">
                   {config?.boutique?.subtitle || 'Votre destination shopping premium'}
                 </p>
               </div>

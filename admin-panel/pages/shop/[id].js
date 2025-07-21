@@ -225,7 +225,7 @@ export default function ShopDetail() {
                 <h2 className="text-2xl font-bold text-white">{plug.name}</h2>
                 <div className="flex items-center space-x-3">
                   {plug.isVip && (
-                    <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-white text-black">
+                    <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-500 text-white">
                       <StarIcon className="w-4 h-4 mr-1" />
                       VIP
                     </span>
