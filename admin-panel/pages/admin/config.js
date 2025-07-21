@@ -558,12 +558,6 @@ export default function ConfigurationSimple() {
                   >
                     🔗 Ouvrir la boutique
                   </button>
-                  <button
-                    onClick={() => router.push('/admin/broadcast')}
-                    className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
-                  >
-                    📢 Messages diffusion
-                  </button>
                 </div>
               </div>
             </div>

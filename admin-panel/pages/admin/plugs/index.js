@@ -10,7 +10,6 @@ import {
   TrashIcon,
   StarIcon,
   ChartBarIcon,
-  UserGroupIcon,
   ShoppingBagIcon,
   CogIcon
 } from '@heroicons/react/24/outline'
@@ -20,8 +19,7 @@ export default function AccueilAdmin() {
   const [stats, setStats] = useState({
     totalPlugs: 0,
     activePlugs: 0,
-    vipPlugs: 0,
-    totalUsers: 0
+    vipPlugs: 0
   })
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
@@ -43,11 +41,8 @@ export default function AccueilAdmin() {
     try {
       setLoading(true)
       
-      // Récupérer les statistiques en parallèle
-      const [plugsResponse, usersResponse] = await Promise.all([
-        fetchPlugs(token),
-        fetchUserStats(token)
-      ])
+      // Récupérer seulement les plugs
+      await fetchPlugs(token)
       
     } catch (error) {
       console.error('❌ Erreur chargement données:', error)
@@ -94,25 +89,6 @@ export default function AccueilAdmin() {
     } catch (error) {
       console.error('❌ Erreur chargement plugs:', error)
       throw error
-    }
-  }
-
-  const fetchUserStats = async (token) => {
-    try {
-      const response = await fetch('http://localhost:3000/api/users/stats', {
-        headers: { 'Authorization': `Bearer ${token}` }
-      })
-
-      if (response.ok) {
-        const data = await response.json()
-        setStats(prev => ({
-          ...prev,
-          totalUsers: data.totalUsers || 0
-        }))
-        return data
-      }
-    } catch (error) {
-      console.log('⚠️ Stats utilisateurs non disponibles:', error.message)
     }
   }
 
@@ -195,7 +171,7 @@ export default function AccueilAdmin() {
         </div>
 
         {/* Statistiques */}
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
           <div className="bg-white overflow-hidden shadow rounded-lg">
             <div className="p-5">
               <div className="flex items-center">
@@ -255,26 +231,6 @@ export default function AccueilAdmin() {
               </div>
             </div>
           </div>
-
-          <div className="bg-white overflow-hidden shadow rounded-lg">
-            <div className="p-5">
-              <div className="flex items-center">
-                <div className="flex-shrink-0">
-                  <UserGroupIcon className="h-6 w-6 text-blue-400" />
-                </div>
-                <div className="ml-5 w-0 flex-1">
-                  <dl>
-                    <dt className="text-sm font-medium text-gray-500 truncate">
-                      Utilisateurs Bot
-                    </dt>
-                    <dd className="text-lg font-medium text-gray-900">
-                      {stats.totalUsers}
-                    </dd>
-                  </dl>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
 
         {/* Actions rapides */}
@@ -283,7 +239,7 @@ export default function AccueilAdmin() {
             <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">
               🚀 Actions rapides
             </h3>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-2">
               <button
                 onClick={() => router.push('/admin/config')}
                 className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
@@ -293,27 +249,11 @@ export default function AccueilAdmin() {
               </button>
               
               <button
-                onClick={() => router.push('/admin/broadcast')}
-                className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
-              >
-                📢
-                <span className="ml-2">Diffusion</span>
-              </button>
-              
-              <button
                 onClick={() => window.open('/shop', '_blank')}
                 className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
               >
                 <EyeIcon className="-ml-1 mr-2 h-5 w-5 text-gray-400" />
                 Voir Boutique
-              </button>
-              
-              <button
-                onClick={() => router.push('/admin/diagnostic')}
-                className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
-              >
-                <ChartBarIcon className="-ml-1 mr-2 h-5 w-5 text-gray-400" />
-                Diagnostic
               </button>
             </div>
           </div>
