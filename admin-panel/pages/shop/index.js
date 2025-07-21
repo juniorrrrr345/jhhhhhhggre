@@ -175,6 +175,19 @@ export default function ShopHome() {
             <span style={{ color: '#ffffff', fontSize: '14px' }}>
               {config?.boutique?.subtitle || ''}
             </span>
+            <span style={{ 
+              backgroundColor: '#007AFF', 
+              color: '#ffffff', 
+              padding: '4px 8px', 
+              borderRadius: '12px',
+              fontSize: '12px',
+              fontWeight: 'bold'
+            }}>
+              {config?.boutique?.taglineHighlight || 'MINI-APP TELEGRAM'}
+            </span>
+            <span style={{ color: '#ffffff', fontSize: '14px' }}>
+              {config?.boutique?.tagline2 || 'CHILL'}
+            </span>
           </div>
         </div>
 

@@ -9,6 +9,8 @@ export default function ConfigurationSimple() {
     boutique: {
       name: 'PlugsFinder Bot',
       subtitle: '',
+      taglineHighlight: 'MINI-APP TELEGRAM',
+      tagline2: 'CHILL',
       backgroundImage: ''
     },
     // Message d'accueil Bot
@@ -76,6 +78,8 @@ export default function ConfigurationSimple() {
           boutique: {
             name: data.boutique?.name || 'PlugsFinder Bot',
             subtitle: data.boutique?.subtitle || '',
+            taglineHighlight: data.boutique?.taglineHighlight || 'MINI-APP TELEGRAM',
+            tagline2: data.boutique?.tagline2 || 'CHILL',
             backgroundImage: data.boutique?.backgroundImage || ''
           },
           welcome: {
@@ -278,6 +282,28 @@ export default function ConfigurationSimple() {
                       onChange={(e) => updateBoutique('subtitle', e.target.value)}
                       className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                       placeholder="Description courte"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Texte en surbrillance</label>
+                    <input
+                      type="text"
+                      value={config.boutique.taglineHighlight}
+                      onChange={(e) => updateBoutique('taglineHighlight', e.target.value)}
+                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                      placeholder="MINI-APP TELEGRAM"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Texte final</label>
+                    <input
+                      type="text"
+                      value={config.boutique.tagline2}
+                      onChange={(e) => updateBoutique('tagline2', e.target.value)}
+                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                      placeholder="CHILL"
                     />
                   </div>
                   
@@ -509,8 +535,14 @@ export default function ConfigurationSimple() {
                       {config.boutique.name || 'PLUGS FINDER'}
                     </h2>
                     <div className="text-lg">
-                      <span className="text-white">
+                      <span className="text-white mr-2">
                         {config.boutique.subtitle || 'Votre boutique'}
+                      </span>
+                      <span className="bg-blue-500 text-white px-2 py-1 rounded text-xs font-bold mr-2">
+                        {config.boutique.taglineHighlight || 'MINI-APP TELEGRAM'}
+                      </span>
+                      <span className="text-white">
+                        {config.boutique.tagline2 || 'CHILL'}
                       </span>
                     </div>
                   </div>
