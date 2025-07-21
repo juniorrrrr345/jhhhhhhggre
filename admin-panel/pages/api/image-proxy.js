@@ -17,12 +17,20 @@ export default async function handler(req, res) {
   try {
     const { url } = req.query
     
+    console.log('🖼️ Image proxy appelé avec:', { url, query: req.query })
+    
     if (!url) {
+      console.log('❌ URL manquante')
       return res.status(400).json({ error: 'URL d\'image requise' })
     }
 
     // Valider que l'URL est une image valide
-    if (!url.match(/\.(jpg|jpeg|png|gif|webp|svg)$/i) && !url.includes('postimg.cc') && !url.includes('imgur.com')) {
+    const isValidImage = url.match(/\.(jpg|jpeg|png|gif|webp|svg)$/i) || 
+                        url.includes('postimg.cc') || 
+                        url.includes('imgur.com')
+    
+    if (!isValidImage) {
+      console.log('❌ URL d\'image non valide:', url)
       return res.status(400).json({ error: 'URL d\'image non valide' })
     }
 
@@ -39,12 +47,20 @@ export default async function handler(req, res) {
       signal: AbortSignal.timeout(10000)
     })
 
+    console.log('📡 Réponse image:', {
+      status: imageResponse.status,
+      statusText: imageResponse.statusText,
+      contentType: imageResponse.headers.get('content-type'),
+      contentLength: imageResponse.headers.get('content-length')
+    })
+
     if (!imageResponse.ok) {
       console.log('❌ Erreur récupération image:', imageResponse.status, imageResponse.statusText)
       return res.status(imageResponse.status).json({ 
         error: 'Impossible de récupérer l\'image',
         status: imageResponse.status,
-        statusText: imageResponse.statusText
+        statusText: imageResponse.statusText,
+        url: url
       })
     }
 
@@ -52,7 +68,7 @@ export default async function handler(req, res) {
     const contentType = imageResponse.headers.get('content-type')
     if (!contentType || !contentType.startsWith('image/')) {
       console.log('❌ Type de contenu invalide:', contentType)
-      return res.status(400).json({ error: 'Le contenu n\'est pas une image valide' })
+      return res.status(400).json({ error: 'Le contenu n\'est pas une image valide', contentType })
     }
 
     // Transférer les headers importants
@@ -65,7 +81,8 @@ export default async function handler(req, res) {
 
     console.log('✅ Image proxifiée avec succès:', {
       contentType,
-      contentLength: imageResponse.headers.get('content-length')
+      contentLength: imageResponse.headers.get('content-length'),
+      url: url
     })
 
     // Streamer l'image
