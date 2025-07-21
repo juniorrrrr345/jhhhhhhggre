@@ -214,7 +214,7 @@ export default function ShopPlugDetail() {
             </div>
             <h3 style={{ color: 'white' }} className="text-xl font-medium mb-2">Boutique non trouvée</h3>
             <p style={{ color: 'white' }} className="mb-6">Cette boutique n'existe pas ou a été supprimée.</p>
-            <Link href="/shop" style={{ color: 'white' }} className="underline hover:opacity-75">
+            <Link href="/shop" style={{ color: 'white', textDecoration: 'none' }} className="hover:opacity-75">
               Retour aux boutiques
             </Link>
           </div>
@@ -461,8 +461,8 @@ export default function ShopPlugDetail() {
                   </div>
                   <Link 
                     href="/shop" 
-                    style={{ color: 'white' }}
-                    className="underline hover:opacity-75"
+                    style={{ color: 'white', textDecoration: 'none' }}
+                    className="hover:opacity-75"
                   >
                     Retour aux boutiques
                   </Link>

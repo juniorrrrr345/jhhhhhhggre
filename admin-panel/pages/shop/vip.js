@@ -318,7 +318,7 @@ export default function ShopVIP() {
                 </div>
                 <h3 style={{ color: 'white' }} className="text-xl font-medium mb-2">Aucun produit VIP disponible</h3>
                 <p style={{ color: 'white' }} className="mb-6">Les produits VIP seront bientôt disponibles.</p>
-                <Link href="/shop" style={{ color: 'white' }} className="underline hover:opacity-75">
+                <Link href="/shop" style={{ color: 'white', textDecoration: 'none' }} className="hover:opacity-75">
                   Retour à la boutique
                 </Link>
               </div>
@@ -334,9 +334,9 @@ export default function ShopVIP() {
                       key={plug._id || index} 
                       href={`/shop/${plug._id}`} 
                       className="block group hover:scale-105 transition-transform duration-200"
-                      style={{ textDecoration: 'none' }}
+                      style={{ textDecoration: 'none', color: 'inherit' }}
                     >
-                      <div className="bg-gray-800 border border-yellow-500 rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-shadow duration-300 w-full max-w-none">
+                      <div className="shop-card bg-gray-800 border border-yellow-500 rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-shadow duration-300 w-full max-w-none">
                         {/* Image */}
                         <div className="relative h-32 sm:h-40 md:h-48 bg-gray-900">
                           {plug.image ? (

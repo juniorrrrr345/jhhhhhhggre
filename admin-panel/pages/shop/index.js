@@ -341,9 +341,9 @@ export default function ShopHome() {
                       key={plug._id || index} 
                       href={`/shop/${plug._id}`} 
                       className="block group hover:scale-105 transition-transform duration-200"
-                      style={{ textDecoration: 'none' }}
+                      style={{ textDecoration: 'none', color: 'inherit' }}
                     >
-                      <div className="bg-gray-800 border border-gray-700 rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-shadow duration-300 w-full max-w-none">
+                      <div className="shop-card bg-gray-800 border border-gray-700 rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-shadow duration-300 w-full max-w-none">
                         {/* Image */}
                         <div className="relative h-32 sm:h-40 md:h-48 bg-gray-900">
                           {plug.image ? (
