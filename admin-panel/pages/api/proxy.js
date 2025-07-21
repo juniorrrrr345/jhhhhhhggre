@@ -57,8 +57,8 @@ export default async function handler(req, res) {
         'User-Agent': 'Vercel-Proxy/1.0',
         'Cache-Control': 'no-cache'
       },
-      // Ajouter un timeout de 15 secondes
-      signal: AbortSignal.timeout(15000)
+      // Ajouter un timeout de 30 secondes pour la configuration
+      signal: AbortSignal.timeout(endpoint.includes('/config') ? 30000 : 15000)
     }
     
     // Ajouter le body pour POST/PUT

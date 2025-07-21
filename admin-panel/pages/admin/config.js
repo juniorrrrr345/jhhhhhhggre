@@ -145,13 +145,14 @@ export default function Config() {
     }
   }
 
-        const saveConfig = async () => {
+        const saveConfig = async (retryCount = 0) => {
         const token = localStorage.getItem('adminToken')
         setSaving(true)
 
         try {
           console.log('💾 Sauvegarde configuration complète...', config)
           console.log('🔐 Token admin:', token ? `***${token.slice(-4)}` : 'Absent')
+          console.log('🔄 Tentative:', retryCount + 1)
           
           // Valider le token
           if (!token) {
@@ -170,7 +171,9 @@ export default function Config() {
               'Cache-Control': 'no-cache',
               'Pragma': 'no-cache'
             },
-            body: JSON.stringify(config)  // Sauvegarder toute la configuration
+            body: JSON.stringify(config),
+            // Ajouter timeout et retry
+            signal: AbortSignal.timeout(30000) // 30 secondes
           })
 
           console.log('📡 Réponse API:', response.status, response.statusText)
@@ -223,7 +226,32 @@ export default function Config() {
           }
         } catch (error) {
           console.error('💥 Erreur sauvegarde config:', error)
-          toast.error(`Erreur lors de la sauvegarde: ${error.message}`)
+          
+          // Retry automatique pour les erreurs de réseau
+          if ((error.message.includes('Load failed') || error.message.includes('fetch') || error.name === 'AbortError') 
+              && retryCount < 2) {
+            console.log('🔄 Retry automatique dans 2 secondes...')
+            toast.info(`Retry ${retryCount + 1}/3 dans 2 secondes...`)
+            
+            setTimeout(() => {
+              saveConfig(retryCount + 1)
+            }, 2000)
+            return
+          }
+          
+          // Messages d'erreur spécifiques
+          let errorMessage = 'Erreur lors de la sauvegarde'
+          if (error.name === 'AbortError' || error.message.includes('timeout')) {
+            errorMessage = 'Timeout: La sauvegarde a pris trop de temps'
+          } else if (error.message.includes('Load failed') || error.message.includes('fetch')) {
+            errorMessage = 'Erreur de connexion: Vérifiez votre réseau'
+          } else if (error.message.includes('401')) {
+            errorMessage = 'Erreur d\'authentification: Reconnectez-vous'
+          } else if (error.message.includes('400')) {
+            errorMessage = 'Données invalides: Vérifiez les champs'
+          }
+          
+          toast.error(errorMessage)
         } finally {
           setSaving(false)
         }
@@ -603,9 +631,17 @@ export default function Config() {
               <button
                 onClick={saveConfig}
                 disabled={saving}
-                className="bg-blue-500 hover:bg-blue-600 disabled:opacity-50 text-white px-4 py-2 rounded text-sm font-medium transition-colors"
+                className={`${saving ? 'bg-orange-500 animate-pulse' : 'bg-blue-500 hover:bg-blue-600'} disabled:opacity-50 text-white px-4 py-2 rounded text-sm font-medium transition-colors min-w-[120px]`}
               >
-                {saving ? 'Sauvegarde...' : '💾 Sauvegarder'}
+                {saving ? (
+                  <span className="flex items-center">
+                    <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Sauvegarde...
+                  </span>
+                ) : '💾 Sauvegarder'}
               </button>
             </div>
           </div>
