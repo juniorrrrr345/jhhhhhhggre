@@ -141,13 +141,34 @@ export default function SimpleConfig() {
       // Nettoyer les données avant envoi (éviter les problèmes de sérialisation)
       const cleanData = JSON.parse(JSON.stringify(config))
       
-      // Supprimer les champs qui peuvent poser problème
-      delete cleanData._id
-      delete cleanData.__v
-      delete cleanData.updatedAt
-      delete cleanData.createdAt
+      // Fonction récursive pour nettoyer les objets vides et les champs problématiques
+      const deepClean = (obj) => {
+        if (Array.isArray(obj)) {
+          return obj.map(deepClean).filter(item => item !== null && item !== undefined)
+        } else if (obj !== null && typeof obj === 'object') {
+          const cleaned = {}
+          Object.keys(obj).forEach(key => {
+            // Ignorer les champs système et dates problématiques
+            if (['_id', '__v', 'updatedAt', 'createdAt'].includes(key)) {
+              return
+            }
+            
+            const value = deepClean(obj[key])
+            if (value !== undefined && value !== null) {
+              // Éviter les objets vides
+              if (typeof value === 'object' && !Array.isArray(value) && Object.keys(value).length === 0) {
+                return
+              }
+              cleaned[key] = value
+            }
+          })
+          return cleaned
+        }
+        return obj
+      }
       
-      console.log('📦 Données nettoyées:', Object.keys(cleanData))
+      const finalData = deepClean(cleanData)
+      console.log('📦 Données finales nettoyées:', Object.keys(finalData))
 
       // Sauvegarde de la configuration
       const response = await Promise.race([
@@ -159,7 +180,7 @@ export default function SimpleConfig() {
           },
           body: JSON.stringify({
             _method: 'PUT',
-            ...cleanData
+            ...finalData
           })
         }),
         new Promise((_, reject) => 
