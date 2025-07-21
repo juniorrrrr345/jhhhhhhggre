@@ -13,6 +13,62 @@ import {
   MagnifyingGlassIcon
 } from '@heroicons/react/24/outline'
 
+// Composant pour gérer l'affichage des images avec fallback
+const ImageWithFallback = ({ src, alt, className, fallbackIcon: FallbackIcon = GlobeAltIcon }) => {
+  const [imageError, setImageError] = useState(false)
+  const [imageLoading, setImageLoading] = useState(true)
+
+  // Reset state when src changes
+  useEffect(() => {
+    setImageError(false)
+    setImageLoading(true)
+  }, [src])
+
+  const handleImageLoad = () => {
+    setImageLoading(false)
+  }
+
+  const handleImageError = () => {
+    console.log('❌ Erreur chargement image:', src)
+    setImageError(true)
+    setImageLoading(false)
+  }
+
+  // Si pas d'image source ou erreur, afficher le fallback
+  if (!src || imageError) {
+    return (
+      <div className="absolute inset-0 flex items-center justify-center bg-gray-900">
+        <FallbackIcon className="w-16 h-16 text-gray-600" />
+      </div>
+    )
+  }
+
+  return (
+    <>
+      {/* Loading placeholder */}
+      {imageLoading && (
+        <div className="absolute inset-0 flex items-center justify-center bg-gray-900">
+          <div className="animate-pulse">
+            <FallbackIcon className="w-16 h-16 text-gray-600" />
+          </div>
+        </div>
+      )}
+      
+      {/* Image */}
+      <img
+        src={src}
+        alt={alt}
+        className={className}
+        onLoad={handleImageLoad}
+        onError={handleImageError}
+        style={{
+          display: imageLoading ? 'none' : 'block'
+        }}
+      />
+    </>
+  )
+}
+
 export default function ShopSearch() {
   const [plugs, setPlugs] = useState([])
   const [allPlugs, setAllPlugs] = useState([])
@@ -137,7 +193,7 @@ export default function ShopSearch() {
     }
   }
 
-  const fetchPlugs = async () => {
+  const fetchPlugs = async (forceRefresh = false) => {
     try {
       const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
       const timestamp = new Date().getTime()
@@ -489,22 +545,17 @@ export default function ShopSearch() {
                         {/* Image */}
                         <div className="relative h-32 sm:h-40 md:h-48 bg-gray-900">
                           {plug.image ? (
-                            <img
+                            <ImageWithFallback
                               src={plug.image}
                               alt={plug.name}
                               className="w-full h-full object-cover"
-                              onError={(e) => {
-                                e.target.style.display = 'none'
-                                e.target.nextSibling.style.display = 'flex'
-                              }}
                             />
-                          ) : null}
-                          <div 
-                            className={`absolute inset-0 flex items-center justify-center ${plug.image ? 'hidden' : 'flex'}`}
-                            style={{ display: plug.image ? 'none' : 'flex' }}
-                          >
-                            <GlobeAltIcon className="w-16 h-16 text-gray-600" />
-                          </div>
+                          ) : (
+                            <ImageWithFallback
+                              fallbackIcon={GlobeAltIcon}
+                              className="w-full h-full object-cover"
+                            />
+                          )}
                           
                           {/* VIP Badge */}
                           {plug.isVip && (

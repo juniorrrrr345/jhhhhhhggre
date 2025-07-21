@@ -13,6 +13,62 @@ import {
   MagnifyingGlassIcon
 } from '@heroicons/react/24/outline'
 
+// Composant pour gérer l'affichage des images avec fallback
+const ImageWithFallback = ({ src, alt, className, fallbackIcon: FallbackIcon = GlobeAltIcon }) => {
+  const [imageError, setImageError] = useState(false)
+  const [imageLoading, setImageLoading] = useState(true)
+
+  // Reset state when src changes
+  useEffect(() => {
+    setImageError(false)
+    setImageLoading(true)
+  }, [src])
+
+  const handleImageLoad = () => {
+    setImageLoading(false)
+  }
+
+  const handleImageError = () => {
+    console.log('❌ Erreur chargement image:', src)
+    setImageError(true)
+    setImageLoading(false)
+  }
+
+  // Si pas d'image source ou erreur, afficher le fallback
+  if (!src || imageError) {
+    return (
+      <div className="absolute inset-0 flex items-center justify-center bg-gray-900">
+        <FallbackIcon className="w-16 h-16 text-gray-600" />
+      </div>
+    )
+  }
+
+  return (
+    <>
+      {/* Loading placeholder */}
+      {imageLoading && (
+        <div className="absolute inset-0 flex items-center justify-center bg-gray-900">
+          <div className="animate-pulse">
+            <FallbackIcon className="w-16 h-16 text-gray-600" />
+          </div>
+        </div>
+      )}
+      
+      {/* Image */}
+      <img
+        src={src}
+        alt={alt}
+        className={className}
+        onLoad={handleImageLoad}
+        onError={handleImageError}
+        style={{
+          display: imageLoading ? 'none' : 'block'
+        }}
+      />
+    </>
+  )
+}
+
 export default function ShopHome() {
   const [plugs, setPlugs] = useState([])
   const [config, setConfig] = useState(null)
@@ -36,7 +92,7 @@ export default function ShopHome() {
         console.log('🔄 Signal de synchronisation reçu:', event.key)
         setTimeout(() => {
           fetchConfig()
-          fetchPlugs()
+          fetchPlugs(true) // Forcer le rafraîchissement
         }, 500)
         if (typeof toast !== 'undefined') {
           toast.success('🔄 Données synchronisées!', {
@@ -51,7 +107,7 @@ export default function ShopHome() {
     const handleFocus = () => {
       console.log('👁️ Fenêtre focus - rafraîchissement des données')
       fetchConfig()
-      fetchPlugs()
+      fetchPlugs(true) // Forcer le rafraîchissement au focus
     }
 
     // Écouteur pour détecter les changements de données en temps réel
@@ -59,7 +115,7 @@ export default function ShopHome() {
       if (!document.hidden) {
         console.log('👁️ Page visible - vérification des mises à jour')
         fetchConfig()
-        fetchPlugs()
+        fetchPlugs(true) // Forcer le rafraîchissement quand la page redevient visible
       }
     }
 
@@ -129,20 +185,24 @@ export default function ShopHome() {
     }
   }
 
-  const fetchPlugs = async () => {
+  const fetchPlugs = async (forceRefresh = false) => {
     try {
       const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
       const timestamp = new Date().getTime()
       
+      // Si c'est un rafraîchissement forcé, ajouter plus de paramètres anti-cache
+      const cacheParams = forceRefresh ? `&refresh=${timestamp}&bust=${Math.random()}` : `&t=${timestamp}`
+      
       let data
       try {
-        const directResponse = await fetch(`${apiBaseUrl}/api/public/plugs?limit=50&t=${timestamp}`, {
+        const directResponse = await fetch(`${apiBaseUrl}/api/public/plugs?limit=50${cacheParams}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
             'Cache-Control': 'no-cache, no-store, must-revalidate',
             'Pragma': 'no-cache',
-            'Expires': '0'
+            'Expires': '0',
+            ...(forceRefresh && { 'X-Force-Refresh': 'true' })
           }
         })
         
@@ -156,11 +216,12 @@ export default function ShopHome() {
         console.log('❌ Plugs directs échoués:', directError.message)
         
         try {
-          const proxyResponse = await fetch(`/api/proxy?endpoint=/api/public/plugs&limit=50&t=${new Date().getTime()}`, {
+          const proxyResponse = await fetch(`/api/proxy?endpoint=/api/public/plugs&limit=50${cacheParams}`, {
             method: 'GET',
             headers: {
               'Content-Type': 'application/json',
-              'Cache-Control': 'no-cache'
+              'Cache-Control': 'no-cache',
+              ...(forceRefresh && { 'X-Force-Refresh': 'true' })
             }
           })
           
@@ -188,13 +249,33 @@ export default function ShopHome() {
         plugsArray = []
       }
 
-      const sortedPlugs = plugsArray.sort((a, b) => {
+      // Nettoyer les données pour éviter les cartes corrompues
+      const cleanedPlugs = plugsArray.filter(plug => {
+        // Vérifier que les propriétés essentielles existent
+        if (!plug || !plug._id || !plug.name) {
+          console.warn('🚮 Plug invalide filtré:', plug)
+          return false
+        }
+        
+        // Nettoyer l'URL d'image si elle existe
+        if (plug.image && typeof plug.image === 'string') {
+          plug.image = plug.image.trim()
+          // Si l'URL est vide après trim, la supprimer
+          if (plug.image === '') {
+            delete plug.image
+          }
+        }
+        
+        return true
+      })
+
+      const sortedPlugs = cleanedPlugs.sort((a, b) => {
         if (a.isVip && !b.isVip) return -1
         if (!a.isVip && b.isVip) return 1
         return 0
       })
 
-      console.log('🔌 Plugs chargés:', sortedPlugs.length, 'boutiques')
+      console.log('🔌 Plugs chargés:', sortedPlugs.length, 'boutiques (', plugsArray.length - cleanedPlugs.length, 'filtrés)')
       setPlugs(sortedPlugs)
     } catch (error) {
       console.error('❌ Erreur chargement plugs:', error)
@@ -347,22 +428,17 @@ export default function ShopHome() {
                         {/* Image */}
                         <div className="relative h-32 sm:h-40 md:h-48 bg-gray-900">
                           {plug.image ? (
-                            <img
+                            <ImageWithFallback
                               src={plug.image}
                               alt={plug.name}
                               className="w-full h-full object-cover"
-                              onError={(e) => {
-                                e.target.style.display = 'none'
-                                e.target.nextSibling.style.display = 'flex'
-                              }}
                             />
-                          ) : null}
-                          <div 
-                            className={`absolute inset-0 flex items-center justify-center ${plug.image ? 'hidden' : 'flex'}`}
-                            style={{ display: plug.image ? 'none' : 'flex' }}
-                          >
-                            <GlobeAltIcon className="w-16 h-16 text-gray-600" />
-                          </div>
+                          ) : (
+                            <ImageWithFallback
+                              fallbackIcon={GlobeAltIcon}
+                              className="w-full h-full object-cover"
+                            />
+                          )}
                           
                           {/* VIP Badge */}
                           {plug.isVip && (

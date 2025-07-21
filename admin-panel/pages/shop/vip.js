@@ -13,6 +13,62 @@ import {
   MagnifyingGlassIcon
 } from '@heroicons/react/24/outline'
 
+// Composant pour gérer l'affichage des images avec fallback
+const ImageWithFallback = ({ src, alt, className, fallbackIcon: FallbackIcon = GlobeAltIcon }) => {
+  const [imageError, setImageError] = useState(false)
+  const [imageLoading, setImageLoading] = useState(true)
+
+  // Reset state when src changes
+  useEffect(() => {
+    setImageError(false)
+    setImageLoading(true)
+  }, [src])
+
+  const handleImageLoad = () => {
+    setImageLoading(false)
+  }
+
+  const handleImageError = () => {
+    console.log('❌ Erreur chargement image:', src)
+    setImageError(true)
+    setImageLoading(false)
+  }
+
+  // Si pas d'image source ou erreur, afficher le fallback
+  if (!src || imageError) {
+    return (
+      <div className="absolute inset-0 flex items-center justify-center bg-gray-900">
+        <FallbackIcon className="w-16 h-16 text-gray-600" />
+      </div>
+    )
+  }
+
+  return (
+    <>
+      {/* Loading placeholder */}
+      {imageLoading && (
+        <div className="absolute inset-0 flex items-center justify-center bg-gray-900">
+          <div className="animate-pulse">
+            <FallbackIcon className="w-16 h-16 text-gray-600" />
+          </div>
+        </div>
+      )}
+      
+      {/* Image */}
+      <img
+        src={src}
+        alt={alt}
+        className={className}
+        onLoad={handleImageLoad}
+        onError={handleImageError}
+        style={{
+          display: imageLoading ? 'none' : 'block'
+        }}
+      />
+    </>
+  )
+}
+
 export default function ShopVIP() {
   const [vipPlugs, setVipPlugs] = useState([])
   const [config, setConfig] = useState(null)
@@ -343,22 +399,17 @@ export default function ShopVIP() {
                         {/* Image */}
                         <div className="relative h-32 sm:h-40 md:h-48 bg-gray-900">
                           {plug.image ? (
-                            <img
+                            <ImageWithFallback
                               src={plug.image}
                               alt={plug.name}
                               className="w-full h-full object-cover"
-                              onError={(e) => {
-                                e.target.style.display = 'none'
-                                e.target.nextSibling.style.display = 'flex'
-                              }}
                             />
-                          ) : null}
-                          <div 
-                            className={`absolute inset-0 flex items-center justify-center ${plug.image ? 'hidden' : 'flex'}`}
-                            style={{ display: plug.image ? 'none' : 'flex' }}
-                          >
-                            <GlobeAltIcon className="w-16 h-16 text-gray-600" />
-                          </div>
+                          ) : (
+                            <ImageWithFallback
+                              fallbackIcon={GlobeAltIcon}
+                              className="w-full h-full object-cover"
+                            />
+                          )}
                           
                           {/* VIP Badge - Always shown for VIP page */}
                           <div className="absolute top-2 right-2">
