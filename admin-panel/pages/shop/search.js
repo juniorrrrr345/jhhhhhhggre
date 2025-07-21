@@ -18,6 +18,7 @@ export default function ShopSearch() {
   const [allPlugs, setAllPlugs] = useState([])
   const [config, setConfig] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [initialLoading, setInitialLoading] = useState(true)
   const [search, setSearch] = useState('')
   const [countryFilter, setCountryFilter] = useState('')
   const [serviceFilter, setServiceFilter] = useState('')
@@ -131,6 +132,8 @@ export default function ShopSearch() {
       setConfig(data)
     } catch (error) {
       console.log('❌ Erreur chargement config recherche:', error)
+    } finally {
+      setInitialLoading(false)
     }
   }
 
@@ -250,6 +253,23 @@ export default function ShopSearch() {
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   )
+
+  if (initialLoading) {
+    return (
+      <>
+        <Head>
+          <title>Chargement...</title>
+          <meta name="viewport" content="width=device-width, initial-scale=1" />
+        </Head>
+        <div className="min-h-screen bg-black flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
+            <p style={{ color: 'white' }} className="font-medium">Chargement de la recherche...</p>
+          </div>
+        </div>
+      </>
+    )
+  }
 
   return (
     <>
