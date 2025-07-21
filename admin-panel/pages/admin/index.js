@@ -34,63 +34,33 @@ export default function Dashboard() {
 
   const fetchDashboardData = async (token) => {
     try {
-      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || process.env.API_BASE_URL
-      console.log('🔍 Fetching dashboard data from:', apiBaseUrl)
+      console.log('🔍 Fetching dashboard data via proxy CORS...')
       
-      // Récupérer les stats des plugs
-      const plugsResponse = await fetch(`${apiBaseUrl}/api/proxy`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          endpoint: '/admin/plugs',
-          method: 'GET',
-          params: { limit: 1000 }
-        })
+      // Récupérer les stats via proxy
+      const statsData = await api.getStats(token)
+      console.log('✅ Stats data:', statsData)
+      
+      setStats({
+        totalPlugs: statsData.totalPlugs || 0,
+        activePlugs: statsData.activePlugs || 0,
+        vipPlugs: statsData.vipPlugs || 0,
+        totalUsers: 0
       })
       
-      console.log('📊 Plugs response status:', plugsResponse.status)
+      // Récupérer la config via proxy
+      const configData = await api.getConfig(token)
+      console.log('✅ Config data:', configData)
+      setConfig(configData)
       
-      if (plugsResponse.ok) {
-        const plugsData = await plugsResponse.json()
-        console.log('✅ Plugs data:', plugsData)
-        setStats({
-          totalPlugs: plugsData.pagination?.total || plugsData.plugs?.length || 0,
-          activePlugs: plugsData.plugs?.filter(p => p.isActive).length || 0,
-          vipPlugs: plugsData.plugs?.filter(p => p.isVip).length || 0,
-          totalUsers: 0 // À implémenter plus tard
-        })
-      } else {
-        console.error('❌ Plugs response error:', plugsResponse.status, plugsResponse.statusText)
-      }
-
-      // Récupérer la config
-      const configResponse = await fetch(`${apiBaseUrl}/api/proxy`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          endpoint: '/admin/config',
-          method: 'GET'
-        })
-      })
-      
-      console.log('⚙️ Config response status:', configResponse.status)
-      
-      if (configResponse.ok) {
-        const configData = await configResponse.json()
-        console.log('✅ Config data:', configData)
-        setConfig(configData)
-      } else {
-        console.error('❌ Config response error:', configResponse.status, configResponse.statusText)
-      }
-
     } catch (error) {
-      console.error('💥 Erreur fetch dashboard:', error)
+      console.error('❌ Error fetching dashboard data:', error)
+      // Fallback avec des valeurs par défaut
+      setStats({
+        totalPlugs: 0,
+        activePlugs: 0,
+        vipPlugs: 0,
+        totalUsers: 0
+      })
     } finally {
       setLoading(false)
     }
