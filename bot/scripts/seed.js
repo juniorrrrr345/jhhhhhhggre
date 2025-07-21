@@ -197,9 +197,14 @@ const defaultConfig = {
     filterCountryDescription: "Choisissez un pays :"
   },
   boutique: {
-    name: "Boutique",
+    name: "",
     logo: "",
-    subtitle: "Sélection de boutiques"
+    subtitle: "",
+    backgroundImage: "",
+    vipTitle: "",
+    vipSubtitle: "",
+    searchTitle: "",
+    searchSubtitle: ""
   }
 };
 

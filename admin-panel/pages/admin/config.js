@@ -438,12 +438,19 @@ export default function Config() {
                     ⚡ Appliquer la configuration de test
                   </button>
                   
-                  <button
+                                    <button
                     onClick={() => setViewMode('advanced')}
                     className="w-full bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg transition-colors text-sm font-medium"
                   >
-                                         ⚙️ Modifier la configuration boutique
-                   </button>
+                    ⚙️ Modifier la configuration boutique
+                  </button>
+                  
+                  <a
+                    href="/admin/config/boutique-debug"
+                    className="w-full bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors text-sm font-medium inline-block text-center"
+                  >
+                    🔍 Diagnostic Boutique
+                  </a>
                  </div>
                </div>
 

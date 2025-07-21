@@ -771,25 +771,34 @@ app.delete('/api/plugs/:id', authenticateAdmin, async (req, res) => {
   }
 });
 
-// Route pour forcer la synchronisation des plugs
-app.post('/api/plugs/sync', authenticateAdmin, async (req, res) => {
+// Route pour nettoyer la configuration boutique
+app.post('/api/config/clean-boutique', authenticateAdmin, async (req, res) => {
   try {
-    console.log('🔄 Synchronisation forcée des plugs...');
+    console.log('🧹 Nettoyage configuration boutique...');
     
-    // Récupérer tous les plugs actifs pour vérifier l'état
-    const plugs = await Plug.find({ isActive: true });
+    const config = await Config.findById('main');
+    if (!config) {
+      return res.status(404).json({ error: 'Configuration non trouvée' });
+    }
     
-    const stats = {
-      total: plugs.length,
-      vip: plugs.filter(p => p.isVip).length,
-      withImages: plugs.filter(p => p.image).length,
-      withPrice: plugs.filter(p => p.price).length,
-      withContact: plugs.filter(p => p.contact).length,
-      withTags: plugs.filter(p => p.tags && p.tags.length > 0).length,
-      timestamp: new Date().toISOString()
+    // Nettoyer la configuration boutique avec des valeurs vides par défaut
+    config.boutique = {
+      name: config.boutique?.name || "",
+      logo: config.boutique?.logo || "",
+      subtitle: config.boutique?.subtitle || "",
+      backgroundImage: config.boutique?.backgroundImage || "",
+      vipTitle: config.boutique?.vipTitle || "",
+      vipSubtitle: config.boutique?.vipSubtitle || "",
+      searchTitle: config.boutique?.searchTitle || "",
+      searchSubtitle: config.boutique?.searchSubtitle || ""
     };
     
-    console.log('📊 Stats synchronisation:', stats);
+    // Forcer la mise à jour du timestamp
+    config.updatedAt = new Date();
+    
+    await config.save();
+    
+    console.log('✅ Configuration boutique nettoyée:', config.boutique);
     
     res.set({
       'Cache-Control': 'no-cache, no-store, must-revalidate',
@@ -799,12 +808,12 @@ app.post('/api/plugs/sync', authenticateAdmin, async (req, res) => {
     });
     
     res.json({
-      message: 'Synchronisation effectuée',
-      stats,
+      message: 'Configuration boutique nettoyée',
+      boutique: config.boutique,
       timestamp: new Date().toISOString()
     });
   } catch (error) {
-    console.error('❌ Erreur synchronisation:', error);
+    console.error('❌ Erreur nettoyage boutique:', error);
     res.status(500).json({ error: 'Erreur serveur', details: error.message });
   }
 });
