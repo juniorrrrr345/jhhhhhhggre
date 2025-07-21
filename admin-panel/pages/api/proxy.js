@@ -49,13 +49,16 @@ export default async function handler(req, res) {
       bodyData = rest
     }
     
-    // Faire la requête vers Render
+    // Faire la requête vers Render avec timeout
     const fetchOptions = {
       method: actualMethod,
       headers: {
         'Content-Type': 'application/json',
-        'User-Agent': 'Vercel-Proxy/1.0'
-      }
+        'User-Agent': 'Vercel-Proxy/1.0',
+        'Cache-Control': 'no-cache'
+      },
+      // Ajouter un timeout de 15 secondes
+      signal: AbortSignal.timeout(15000)
     }
     
     // Ajouter le body pour POST/PUT
@@ -72,9 +75,16 @@ export default async function handler(req, res) {
       fetchOptions.headers.Authorization = auth;
     }
     
+    console.log('📡 Fetch options:', {
+      url: targetUrl,
+      method: actualMethod,
+      hasAuth: !!fetchOptions.headers.Authorization,
+      hasBody: !!fetchOptions.body
+    });
+    
     const response = await fetch(targetUrl, fetchOptions)
     
-    console.log('✅ Proxy response:', response.status, response.headers.get('content-type'))
+    console.log('✅ Proxy response:', response.status, response.statusText, response.headers.get('content-type'))
     
     // Vérifier le content-type de la réponse
     const contentType = response.headers.get('content-type')
@@ -87,21 +97,38 @@ export default async function handler(req, res) {
       return res.status(response.status).json({
         error: 'Réponse invalide du serveur',
         contentType,
+        status: response.status,
+        statusText: response.statusText,
         preview: text.substring(0, 200),
         fullResponse: text.length < 1000 ? text : `${text.substring(0, 1000)}...`
       })
     }
     
     const data = await response.json()
+    console.log('📊 Proxy data received:', typeof data, Array.isArray(data) ? 'array' : 'object');
     
     // Retourner la réponse
     res.status(response.status).json(data)
     
   } catch (error) {
     console.error('❌ Proxy error:', error)
-    res.status(500).json({ 
+    
+    // Différencier les types d'erreurs
+    let errorMessage = error.message;
+    let statusCode = 500;
+    
+    if (error.name === 'AbortError' || error.message.includes('timeout')) {
+      errorMessage = 'Timeout: Le serveur bot ne répond pas';
+      statusCode = 504;
+    } else if (error.message.includes('fetch')) {
+      errorMessage = 'Impossible de contacter le serveur bot';
+      statusCode = 503;
+    }
+    
+    res.status(statusCode).json({ 
       error: 'Erreur proxy', 
-      message: error.message,
+      message: errorMessage,
+      originalError: error.message,
       timestamp: new Date().toISOString()
     })
   }
