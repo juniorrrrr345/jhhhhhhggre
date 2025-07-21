@@ -42,10 +42,9 @@ export default function ConfigurationSimple() {
       }
     },
     // Configuration Réseaux Sociaux
-    socialMedia: {
-      telegram: '',
-      whatsapp: ''
-    }
+    socialMedia: [
+      // { name: 'Telegram', emoji: '📱', url: '' }
+    ]
   })
   
   const [loading, setLoading] = useState(true)
@@ -102,10 +101,7 @@ export default function ConfigurationSimple() {
               content: data.buttons?.info?.content || 'Voici les informations importantes'
             }
           },
-          socialMedia: {
-            telegram: data.socialMedia?.telegram || '',
-            whatsapp: data.socialMedia?.whatsapp || ''
-          }
+          socialMedia: data.socialMedia || []
         })
         
         console.log('✅ Configuration chargée')
@@ -172,10 +168,26 @@ export default function ConfigurationSimple() {
     }))
   }
 
-  const updateSocialMedia = (field, value) => {
+  const addSocialMedia = () => {
     setConfig(prev => ({
       ...prev,
-      socialMedia: { ...prev.socialMedia, [field]: value }
+      socialMedia: [...prev.socialMedia, { name: '', emoji: '🌐', url: '' }]
+    }))
+  }
+
+  const updateSocialMedia = (index, field, value) => {
+    setConfig(prev => ({
+      ...prev,
+      socialMedia: prev.socialMedia.map((item, i) => 
+        i === index ? { ...item, [field]: value } : item
+      )
+    }))
+  }
+
+  const removeSocialMedia = (index) => {
+    setConfig(prev => ({
+      ...prev,
+      socialMedia: prev.socialMedia.filter((_, i) => i !== index)
     }))
   }
 
@@ -500,32 +512,76 @@ export default function ConfigurationSimple() {
             {/* Réseaux Sociaux */}
             <div className="bg-white shadow rounded-lg">
               <div className="px-4 py-5 sm:p-6">
-                <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">
-                  📱 Réseaux Sociaux
-                </h3>
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg leading-6 font-medium text-gray-900">
+                    📱 Réseaux Sociaux
+                  </h3>
+                  <button
+                    onClick={addSocialMedia}
+                    className="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-blue-600 bg-blue-100 hover:bg-blue-200"
+                  >
+                    + Ajouter
+                  </button>
+                </div>
                 
                 <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">Telegram</label>
-                    <input
-                      type="text"
-                      value={config.socialMedia.telegram}
-                      onChange={(e) => updateSocialMedia('telegram', e.target.value)}
-                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                      placeholder="@votre_channel"
-                    />
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">WhatsApp</label>
-                    <input
-                      type="text"
-                      value={config.socialMedia.whatsapp}
-                      onChange={(e) => updateSocialMedia('whatsapp', e.target.value)}
-                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                      placeholder="+33123456789"
-                    />
-                  </div>
+                  {config.socialMedia.length === 0 ? (
+                    <p className="text-sm text-gray-500 italic">
+                      Aucun réseau social configuré. Cliquez sur "Ajouter" pour en créer un.
+                    </p>
+                  ) : (
+                    config.socialMedia.map((social, index) => (
+                      <div key={index} className="border border-gray-200 rounded-lg p-4">
+                        <div className="flex items-center justify-between mb-3">
+                          <h4 className="text-sm font-medium text-gray-900">
+                            Réseau Social #{index + 1}
+                          </h4>
+                          <button
+                            onClick={() => removeSocialMedia(index)}
+                            className="text-red-600 hover:text-red-800 text-sm"
+                          >
+                            ✕ Supprimer
+                          </button>
+                        </div>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                          <div>
+                            <label className="block text-xs font-medium text-gray-700">Nom du réseau</label>
+                            <input
+                              type="text"
+                              value={social.name}
+                              onChange={(e) => updateSocialMedia(index, 'name', e.target.value)}
+                              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm"
+                              placeholder="Ex: Telegram, Discord, etc."
+                            />
+                          </div>
+                          
+                          <div>
+                            <label className="block text-xs font-medium text-gray-700">Emoji</label>
+                            <input
+                              type="text"
+                              value={social.emoji}
+                              onChange={(e) => updateSocialMedia(index, 'emoji', e.target.value)}
+                              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm"
+                              placeholder="📱"
+                              maxLength="2"
+                            />
+                          </div>
+                          
+                          <div>
+                            <label className="block text-xs font-medium text-gray-700">URL/Lien</label>
+                            <input
+                              type="text"
+                              value={social.url}
+                              onChange={(e) => updateSocialMedia(index, 'url', e.target.value)}
+                              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm"
+                              placeholder="https://... ou @username"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    ))
+                  )}
                 </div>
               </div>
             </div>
