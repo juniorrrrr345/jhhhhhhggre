@@ -367,7 +367,8 @@ const handlePlugDetails = async (ctx, plugId, returnContext = 'top_plugs') => {
     // Utiliser la fonction helper pour afficher avec image du plug
     await editMessageWithImage(ctx, message, keyboard, config, { 
       parse_mode: 'Markdown',
-      plugImage: plug.image  // Passer l'image du plug
+      plugImage: plug.image,  // Passer l'image du plug
+      isPlugDetails: true     // Indiquer que c'est les détails d'un plug (pas d'image d'accueil en fallback)
     });
     
     // Confirmer la callback pour éviter le loading

@@ -550,12 +550,13 @@ app.get('/api/config', authenticateAdmin, async (req, res) => {
     if (!config) {
       console.log('⚠️ Configuration manquante, création automatique...');
       try {
-        config = await Config.create({
-          _id: 'main',
-          welcome: {
-            text: '🌟 Bienvenue sur notre bot !\n\nDécouvrez nos meilleurs plugs sélectionnés avec soin.',
-            socialMedia: []
-          },
+                 config = await Config.create({
+           _id: 'main',
+           welcome: {
+             text: '🌟 Bienvenue sur notre bot !\n\nDécouvrez nos meilleurs plugs sélectionnés avec soin.',
+             image: '', // Image d'accueil pour les menus
+             socialMedia: []
+           },
           boutique: {
             name: '',
             logo: '',

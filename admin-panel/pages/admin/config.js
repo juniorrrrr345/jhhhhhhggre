@@ -38,7 +38,8 @@ export default function SimpleConfig() {
     },
     // Message d'accueil Bot
     welcome: {
-      text: ''
+      text: '',
+      image: ''
     },
     // Réseaux sociaux
     socialMedia: {
@@ -90,7 +91,8 @@ export default function SimpleConfig() {
             backgroundImage: data.boutique?.backgroundImage || ''
           },
           welcome: {
-            text: data.welcome?.text || ''
+            text: data.welcome?.text || '',
+            image: data.welcome?.image || ''
           },
           socialMedia: {
             telegram: data.socialMedia?.telegram || '',
@@ -362,16 +364,33 @@ export default function SimpleConfig() {
             {/* Message d'Accueil Bot */}
             <div className="bg-white rounded-lg shadow p-6">
               <h2 className="text-lg font-semibold text-gray-900 mb-4">🎉 Message d'Accueil Bot</h2>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Texte de bienvenue
-                </label>
-                <textarea
-                  value={config.welcome.text}
-                  onChange={(e) => updateConfig('welcome.text', e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg p-3 h-20"
-                  placeholder="🎉 Bienvenue sur notre bot premium !"
-                />
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Image d'accueil (URL)
+                  </label>
+                  <input
+                    type="url"
+                    value={config.welcome.image || ''}
+                    onChange={(e) => updateConfig('welcome.image', e.target.value)}
+                    className="w-full border border-gray-300 rounded-lg p-3"
+                    placeholder="https://example.com/welcome-image.jpg"
+                  />
+                  <p className="text-sm text-gray-500 mt-1">
+                    📸 Cette image apparaîtra dans tous les menus du bot (sauf détails des plugs)
+                  </p>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Texte de bienvenue
+                  </label>
+                  <textarea
+                    value={config.welcome.text}
+                    onChange={(e) => updateConfig('welcome.text', e.target.value)}
+                    className="w-full border border-gray-300 rounded-lg p-3 h-20"
+                    placeholder="🎉 Bienvenue sur notre bot premium !"
+                  />
+                </div>
               </div>
             </div>
 
