@@ -20,7 +20,7 @@ export default async function handler(req, res) {
     // URL de base de l'API Render avec validation et fallbacks
     const possibleUrls = [
       process.env.API_BASE_URL,
-      process.env.NEXT_PUBLIC_API_BASE_URL,
+      process.env.NEXT_PUBLIC_API_URL,
       'https://jhhhhhhggre.onrender.com',
       'https://bot-telegram-render.onrender.com' // URL alternative possible
     ].filter(Boolean)

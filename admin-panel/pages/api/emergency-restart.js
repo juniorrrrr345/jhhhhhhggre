@@ -19,8 +19,8 @@ export default async function handler(req, res) {
     
     // URLs possibles pour le bot
     const possibleUrls = [
-      process.env.API_BASE_URL,
-      process.env.NEXT_PUBLIC_API_BASE_URL,
+          process.env.API_BASE_URL,
+    process.env.NEXT_PUBLIC_API_URL,
       'https://jhhhhhhggre.onrender.com',
       'https://bot-telegram-render.onrender.com'
     ].filter(Boolean)

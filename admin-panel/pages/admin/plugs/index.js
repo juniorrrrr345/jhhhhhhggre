@@ -39,7 +39,7 @@ export default function PlugsManagement() {
         filter
       })
 
-      const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || process.env.API_BASE_URL || 'https://jhhhhhhggre.onrender.com'
+      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || process.env.API_BASE_URL || 'https://jhhhhhhggre.onrender.com'
       console.log('📋 Fetching admin plugs from:', apiBaseUrl)
 
       const response = await fetch(`${apiBaseUrl}/api/plugs?${params}`, {
@@ -68,7 +68,7 @@ export default function PlugsManagement() {
   const togglePlugStatus = async (plugId, currentStatus) => {
     const token = localStorage.getItem('adminToken')
     try {
-      const response = await fetch(`${process.env.API_BASE_URL}/api/plugs/${plugId}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/plugs/${plugId}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -95,7 +95,7 @@ export default function PlugsManagement() {
 
     const token = localStorage.getItem('adminToken')
     try {
-      const response = await fetch(`${process.env.API_BASE_URL}/api/plugs/${plugId}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/plugs/${plugId}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       })

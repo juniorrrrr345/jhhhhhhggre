@@ -1048,6 +1048,161 @@ app.get('/api/plugs/:id', authenticateAdmin, async (req, res) => {
   }
 });
 
+// Créer un nouveau plug (Admin seulement)
+app.post('/api/plugs', authenticateAdmin, async (req, res) => {
+  try {
+    console.log('🆕 Création d\'un nouveau plug');
+    console.log('📝 Données reçues:', req.body);
+    
+    const plugData = req.body;
+    
+    // Validation des champs requis
+    if (!plugData.name || !plugData.description) {
+      return res.status(400).json({ 
+        error: 'Le nom et la description sont requis' 
+      });
+    }
+    
+    // Créer le nouveau plug
+    const newPlug = new Plug({
+      name: plugData.name,
+      description: plugData.description,
+      image: plugData.image || '',
+      telegramLink: plugData.telegramLink || '',
+      isVip: plugData.isVip || false,
+      isActive: plugData.isActive !== undefined ? plugData.isActive : true,
+      countries: plugData.countries || [],
+      services: {
+        delivery: {
+          enabled: plugData.services?.delivery?.enabled || false,
+          description: plugData.services?.delivery?.description || ''
+        },
+        postal: {
+          enabled: plugData.services?.postal?.enabled || false,
+          description: plugData.services?.postal?.description || ''
+        },
+        meetup: {
+          enabled: plugData.services?.meetup?.enabled || false,
+          description: plugData.services?.meetup?.description || ''
+        }
+      },
+      socialMedia: plugData.socialMedia || [],
+      likes: 0,
+      likedBy: []
+    });
+    
+    const savedPlug = await newPlug.save();
+    console.log('✅ Plug créé:', savedPlug.name);
+    
+    // Invalider le cache
+    invalidateCache();
+    
+    res.status(201).json(savedPlug);
+  } catch (error) {
+    console.error('Erreur création plug:', error);
+    res.status(500).json({ error: 'Erreur lors de la création du plug' });
+  }
+});
+
+// Modifier un plug (Admin seulement)
+app.put('/api/plugs/:id', authenticateAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updateData = req.body;
+    
+    console.log(`📝 Modification du plug ${id}`);
+    console.log('📝 Données de mise à jour:', updateData);
+    
+    // Validation de l'ID
+    if (!id || id === 'undefined' || id === 'null') {
+      return res.status(400).json({ error: 'ID de plug invalide' });
+    }
+    
+    // Validation des champs requis
+    if (!updateData.name || !updateData.description) {
+      return res.status(400).json({ 
+        error: 'Le nom et la description sont requis' 
+      });
+    }
+    
+    // Chercher et mettre à jour le plug
+    const plug = await Plug.findById(id);
+    if (!plug) {
+      console.log(`❌ Plug non trouvé: ${id}`);
+      return res.status(404).json({ error: 'Plug non trouvé' });
+    }
+    
+    // Mettre à jour les champs
+    plug.name = updateData.name;
+    plug.description = updateData.description;
+    plug.image = updateData.image || '';
+    plug.telegramLink = updateData.telegramLink || '';
+    plug.isVip = updateData.isVip || false;
+    plug.isActive = updateData.isActive !== undefined ? updateData.isActive : plug.isActive;
+    plug.countries = updateData.countries || [];
+    
+    // Mettre à jour les services
+    if (updateData.services) {
+      plug.services = {
+        delivery: {
+          enabled: updateData.services.delivery?.enabled || false,
+          description: updateData.services.delivery?.description || ''
+        },
+        postal: {
+          enabled: updateData.services.postal?.enabled || false,
+          description: updateData.services.postal?.description || ''
+        },
+        meetup: {
+          enabled: updateData.services.meetup?.enabled || false,
+          description: updateData.services.meetup?.description || ''
+        }
+      };
+    }
+    
+    // Mettre à jour les réseaux sociaux
+    if (updateData.socialMedia) {
+      plug.socialMedia = updateData.socialMedia;
+    }
+    
+    // Sauvegarder
+    const updatedPlug = await plug.save();
+    console.log('✅ Plug modifié:', updatedPlug.name);
+    
+    // Invalider le cache
+    invalidateCache();
+    
+    res.json(updatedPlug);
+  } catch (error) {
+    console.error('Erreur modification plug:', error);
+    res.status(500).json({ error: 'Erreur lors de la modification du plug' });
+  }
+});
+
+// Supprimer un plug (Admin seulement)
+app.delete('/api/plugs/:id', authenticateAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    console.log(`🗑️ Suppression du plug ${id}`);
+    
+    const plug = await Plug.findById(id);
+    if (!plug) {
+      return res.status(404).json({ error: 'Plug non trouvé' });
+    }
+    
+    await Plug.findByIdAndDelete(id);
+    console.log('✅ Plug supprimé:', plug.name);
+    
+    // Invalider le cache
+    invalidateCache();
+    
+    res.json({ message: 'Plug supprimé avec succès' });
+  } catch (error) {
+    console.error('Erreur suppression plug:', error);
+    res.status(500).json({ error: 'Erreur lors de la suppression du plug' });
+  }
+});
+
 // Récupérer tous les plugs (Admin seulement)
 app.get('/api/plugs', authenticateAdmin, async (req, res) => {
   try {
@@ -1152,6 +1307,15 @@ const getCachedData = async (forceRefresh = false) => {
   }
   
   return { plugs: cache.plugs || [], config: cache.config };
+};
+
+// Forcer le rafraîchissement du cache
+const invalidateCache = () => {
+  console.log('🗑️ Invalidation du cache...');
+  cache.lastUpdate = null;
+  cache.plugs = [];
+  cache.config = null;
+  console.log('✅ Cache invalidé - sera rafraîchi au prochain accès');
 };
 
 // ============================================

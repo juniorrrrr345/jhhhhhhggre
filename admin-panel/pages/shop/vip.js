@@ -17,6 +17,7 @@ export default function ShopVIP() {
   const [vipPlugs, setVipPlugs] = useState([])
   const [config, setConfig] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [initialLoading, setInitialLoading] = useState(true)
   const [currentPage, setCurrentPage] = useState(1)
   const itemsPerPage = 12
 
@@ -122,6 +123,8 @@ export default function ShopVIP() {
       setConfig(data)
     } catch (error) {
       console.log('❌ Erreur chargement config VIP:', error)
+    } finally {
+      setInitialLoading(false)
     }
   }
 
@@ -202,7 +205,7 @@ export default function ShopVIP() {
     currentPage * itemsPerPage
   )
 
-  if (loading) {
+  if (initialLoading) {
     return (
       <>
         <Head>

@@ -1,7 +1,7 @@
 // Utilitaire pour les appels API
 const getApiBaseUrl = () => {
-  // Priorité: NEXT_PUBLIC_API_BASE_URL > API_BASE_URL > fallback
-  const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 
+  // Priorité: NEXT_PUBLIC_API_URL > API_BASE_URL > fallback
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 
                  process.env.API_BASE_URL || 
                  'https://jhhhhhhggre.onrender.com';
   

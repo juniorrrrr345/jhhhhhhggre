@@ -18,7 +18,7 @@ export default async function handler(req, res) {
 
   try {
     // URL de base de l'API
-    const API_BASE_URL = process.env.API_BASE_URL || process.env.NEXT_PUBLIC_API_BASE_URL || 'https://jhhhhhhggre.onrender.com'
+    const API_BASE_URL = process.env.API_BASE_URL || process.env.NEXT_PUBLIC_API_URL || 'https://jhhhhhhggre.onrender.com'
     
     console.log('🔍 Démarrage diagnostic connectivité bot...')
     console.log('🔗 URL cible:', API_BASE_URL)

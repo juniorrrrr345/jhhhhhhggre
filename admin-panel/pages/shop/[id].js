@@ -20,6 +20,7 @@ export default function ShopPlugDetail() {
   const [plug, setPlug] = useState(null)
   const [config, setConfig] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [initialLoading, setInitialLoading] = useState(true)
   const [notFound, setNotFound] = useState(false)
 
   useEffect(() => {
@@ -77,6 +78,8 @@ export default function ShopPlugDetail() {
       setConfig(data)
     } catch (error) {
       console.log('❌ Erreur chargement config détail:', error)
+    } finally {
+      setInitialLoading(false)
     }
   }
 
@@ -172,7 +175,7 @@ export default function ShopPlugDetail() {
     ))
   }
 
-  if (loading) {
+  if (initialLoading) {
     return (
       <>
         <Head>
