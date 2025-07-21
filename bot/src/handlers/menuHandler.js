@@ -72,40 +72,10 @@ const handleSupportMenu = async (ctx, config) => {
     // Message du support avec texte personnalisé
     let message = `🔧 **Support SwissQuality**\n\n${config.supportMenu.text || 'Contactez notre équipe pour toute assistance.'}`;
 
-    // Créer les boutons de réseaux sociaux personnalisés
-    const buttons = [];
-    
-    if (config.supportMenu.socialMedia && Array.isArray(config.supportMenu.socialMedia)) {
-      const validSocialMedia = config.supportMenu.socialMedia.filter(social => 
-        social && social.name && social.emoji && social.url && social.url.trim() !== ''
-      );
-      
-      console.log(`📱 Support Menu: ${validSocialMedia.length} réseaux sociaux configurés`);
-      
-      // Grouper les réseaux sociaux par lignes de 2
-      for (let i = 0; i < validSocialMedia.length; i += 2) {
-        const socialRow = [];
-        const social1 = validSocialMedia[i];
-        
-        try {
-          socialRow.push(Markup.button.url(`${social1.emoji} ${social1.name}`, social1.url));
-          console.log(`📱 Bouton support créé: ${social1.emoji} ${social1.name} -> ${social1.url}`);
-          
-          if (validSocialMedia[i + 1]) {
-            const social2 = validSocialMedia[i + 1];
-            socialRow.push(Markup.button.url(`${social2.emoji} ${social2.name}`, social2.url));
-            console.log(`📱 Bouton support créé: ${social2.emoji} ${social2.name} -> ${social2.url}`);
-          }
-          
-          buttons.push(socialRow);
-        } catch (error) {
-          console.error(`❌ Erreur création bouton social support:`, error);
-        }
-      }
-    }
-    
     // Bouton retour au menu principal
-    buttons.push([Markup.button.callback('🔙 Retour au menu', 'back_main')]);
+    const buttons = [
+      [Markup.button.callback('🔙 Retour au menu', 'back_main')]
+    ];
     
     const keyboard = Markup.inlineKeyboard(buttons);
 
@@ -201,40 +171,10 @@ const handleInfoMenu = async (ctx, config) => {
     // Message info avec texte personnalisé
     let message = `ℹ️ **Informations**\n\n${config.infoMenu.text || 'Informations sur notre service.'}`;
 
-    // Créer les boutons de réseaux sociaux personnalisés
-    const buttons = [];
-    
-    if (config.infoMenu.socialMedia && Array.isArray(config.infoMenu.socialMedia)) {
-      const validSocialMedia = config.infoMenu.socialMedia.filter(social => 
-        social && social.name && social.emoji && social.url && social.url.trim() !== ''
-      );
-      
-      console.log(`📱 Info Menu: ${validSocialMedia.length} réseaux sociaux configurés`);
-      
-      // Grouper les réseaux sociaux par lignes de 2
-      for (let i = 0; i < validSocialMedia.length; i += 2) {
-        const socialRow = [];
-        const social1 = validSocialMedia[i];
-        
-        try {
-          socialRow.push(Markup.button.url(`${social1.emoji} ${social1.name}`, social1.url));
-          console.log(`📱 Bouton info créé: ${social1.emoji} ${social1.name} -> ${social1.url}`);
-          
-          if (validSocialMedia[i + 1]) {
-            const social2 = validSocialMedia[i + 1];
-            socialRow.push(Markup.button.url(`${social2.emoji} ${social2.name}`, social2.url));
-            console.log(`📱 Bouton info créé: ${social2.emoji} ${social2.name} -> ${social2.url}`);
-          }
-          
-          buttons.push(socialRow);
-        } catch (error) {
-          console.error(`❌ Erreur création bouton social info:`, error);
-        }
-      }
-    }
-    
     // Bouton retour au menu principal
-    buttons.push([Markup.button.callback('🔙 Retour au menu', 'back_main')]);
+    const buttons = [
+      [Markup.button.callback('🔙 Retour au menu', 'back_main')]
+    ];
     
     const keyboard = Markup.inlineKeyboard(buttons);
 

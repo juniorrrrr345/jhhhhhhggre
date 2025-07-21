@@ -23,14 +23,12 @@ export default function BotConfig() {
     supportMenu: {
       enabled: false,
       text: '',
-      image: '',
-      socialMedia: []
+      image: ''
     },
     infoMenu: {
       enabled: false,
       text: '',
-      image: '',
-      socialMedia: []
+      image: ''
     },
     messages: {
       welcome: '',
@@ -92,14 +90,12 @@ export default function BotConfig() {
           supportMenu: {
             enabled: data.supportMenu?.enabled || false,
             text: data.supportMenu?.text || '',
-            image: data.supportMenu?.image || '',
-            socialMedia: data.supportMenu?.socialMedia || []
+            image: data.supportMenu?.image || ''
           },
           infoMenu: {
             enabled: data.infoMenu?.enabled || false,
             text: data.infoMenu?.text || '',
-            image: data.infoMenu?.image || '',
-            socialMedia: data.infoMenu?.socialMedia || []
+            image: data.infoMenu?.image || ''
           },
           messages: {
             welcome: data.messages?.welcome || '',
@@ -235,21 +231,7 @@ export default function BotConfig() {
     })
   }
 
-  const addSocialMedia = () => {
-    const newSocialMedia = [...config.supportMenu.socialMedia, { name: '', emoji: '', url: '' }]
-    updateConfig('supportMenu.socialMedia', newSocialMedia)
-  }
 
-  const removeSocialMedia = (index) => {
-    const newSocialMedia = config.supportMenu.socialMedia.filter((_, i) => i !== index)
-    updateConfig('supportMenu.socialMedia', newSocialMedia)
-  }
-
-  const updateSocialMedia = (index, field, value) => {
-    const newSocialMedia = [...config.supportMenu.socialMedia]
-    newSocialMedia[index] = { ...newSocialMedia[index], [field]: value }
-    updateConfig('supportMenu.socialMedia', newSocialMedia)
-  }
 
   if (loading) {
     return (
@@ -511,53 +493,7 @@ export default function BotConfig() {
                           onError={(e) => {e.target.style.display = 'none'}}
                         />
                       )}
-                    </div>
-
-                    <div>
-                      <div className="flex items-center justify-between mb-3">
-                        <label className="text-sm font-medium text-gray-700">
-                          Réseaux Sociaux Support
-                        </label>
-                        <button
-                          onClick={addSocialMedia}
-                          className="bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700"
-                        >
-                          ➕ Ajouter
-                        </button>
-                      </div>
-                      
-                      {config.supportMenu.socialMedia.map((social, index) => (
-                        <div key={index} className="flex items-center space-x-2 mb-2 p-3 border rounded-lg">
-                          <input
-                            type="text"
-                            placeholder="Nom"
-                            value={social.name}
-                            onChange={(e) => updateSocialMedia(index, 'name', e.target.value)}
-                            className="flex-1 border border-gray-300 rounded px-3 py-2"
-                          />
-                          <input
-                            type="text"
-                            placeholder="🎯"
-                            value={social.emoji}
-                            onChange={(e) => updateSocialMedia(index, 'emoji', e.target.value)}
-                            className="w-16 border border-gray-300 rounded px-2 py-2 text-center"
-                          />
-                          <input
-                            type="url"
-                            placeholder="https://..."
-                            value={social.url}
-                            onChange={(e) => updateSocialMedia(index, 'url', e.target.value)}
-                            className="flex-2 border border-gray-300 rounded px-3 py-2"
-                          />
-                          <button
-                            onClick={() => removeSocialMedia(index)}
-                            className="bg-red-500 text-white px-3 py-2 rounded hover:bg-red-600"
-                          >
-                            🗑️
-                          </button>
-                        </div>
-                      ))}
-                    </div>
+                                         </div>
                   </>
                 )}
                              </div>
@@ -614,71 +550,7 @@ export default function BotConfig() {
                            onError={(e) => {e.target.style.display = 'none'}}
                          />
                        )}
-                     </div>
-
-                     <div>
-                       <div className="flex items-center justify-between mb-3">
-                         <label className="text-sm font-medium text-gray-700">
-                           Réseaux Sociaux Info
-                         </label>
-                         <button
-                           onClick={() => {
-                             const newSocialMedia = [...config.infoMenu.socialMedia, { name: '', emoji: '', url: '' }]
-                             updateConfig('infoMenu.socialMedia', newSocialMedia)
-                           }}
-                           className="bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700"
-                         >
-                           ➕ Ajouter
-                         </button>
-                       </div>
-                       
-                       {config.infoMenu.socialMedia.map((social, index) => (
-                         <div key={index} className="flex items-center space-x-2 mb-2 p-3 border rounded-lg">
-                           <input
-                             type="text"
-                             placeholder="Nom"
-                             value={social.name}
-                             onChange={(e) => {
-                               const newSocialMedia = [...config.infoMenu.socialMedia]
-                               newSocialMedia[index] = { ...newSocialMedia[index], name: e.target.value }
-                               updateConfig('infoMenu.socialMedia', newSocialMedia)
-                             }}
-                             className="flex-1 border border-gray-300 rounded px-3 py-2"
-                           />
-                           <input
-                             type="text"
-                             placeholder="📖"
-                             value={social.emoji}
-                             onChange={(e) => {
-                               const newSocialMedia = [...config.infoMenu.socialMedia]
-                               newSocialMedia[index] = { ...newSocialMedia[index], emoji: e.target.value }
-                               updateConfig('infoMenu.socialMedia', newSocialMedia)
-                             }}
-                             className="w-16 border border-gray-300 rounded px-2 py-2 text-center"
-                           />
-                           <input
-                             type="url"
-                             placeholder="https://..."
-                             value={social.url}
-                             onChange={(e) => {
-                               const newSocialMedia = [...config.infoMenu.socialMedia]
-                               newSocialMedia[index] = { ...newSocialMedia[index], url: e.target.value }
-                               updateConfig('infoMenu.socialMedia', newSocialMedia)
-                             }}
-                             className="flex-2 border border-gray-300 rounded px-3 py-2"
-                           />
-                           <button
-                             onClick={() => {
-                               const newSocialMedia = config.infoMenu.socialMedia.filter((_, i) => i !== index)
-                               updateConfig('infoMenu.socialMedia', newSocialMedia)
-                             }}
-                             className="bg-red-500 text-white px-3 py-2 rounded hover:bg-red-600"
-                           >
-                             🗑️
-                           </button>
-                         </div>
-                       ))}
-                     </div>
+                                            </div>
                    </>
                  )}
                </div>
