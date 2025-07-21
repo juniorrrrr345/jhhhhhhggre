@@ -111,7 +111,7 @@ export default function ShopHome() {
         })
         
         console.log('✅ Plugs loaded:', sortedPlugs.length, 'boutiques')
-        console.log('🏪 Boutiques:', sortedPlugs.map(p => ({ name: p.name, isVip: p.isVip })))
+        console.log('🔌 Boutiques:', sortedPlugs.map(p => ({ name: p.name, isVip: p.isVip })))
         setPlugs(sortedPlugs)
       } else {
         console.error('❌ Invalid data structure:', data)
@@ -161,48 +161,29 @@ export default function ShopHome() {
       </Head>
 
       <div 
-        className="min-h-screen bg-white"
+        className="min-h-screen bg-black"
         style={config?.boutique?.backgroundImage ? {
-          backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9)), url(${config.boutique.backgroundImage})`,
-          backgroundSize: 'cover',
+          backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url(${config.boutique.backgroundImage})`,
+          backgroundSize: '300px 300px', // Taille fixe pour répétition
           backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat'
+          backgroundRepeat: 'repeat', // Répéter le background
+          backgroundAttachment: 'fixed'
         } : {}}
       >
         {/* Header */}
         {config && (
           <header className="bg-gray-900 shadow-lg">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <div className="flex items-center justify-between h-16">
-                <div className="flex items-center">
-                  <div className="flex-shrink-0">
-                    {config?.boutique?.logo ? (
-                      <img 
-                        src={config.boutique.logo} 
-                        alt="Logo" 
-                        className="h-10 w-10 rounded-lg object-cover"
-                        onError={(e) => {
-                          e.target.style.display = 'none'
-                          e.target.nextSibling.style.display = 'flex'
-                        }}
-                      />
-                    ) : null}
-                    <div 
-                      className={`h-10 w-10 bg-gray-700 rounded-lg flex items-center justify-center ${config?.boutique?.logo ? 'hidden' : ''}`}
-                    >
-                      <span className="text-white text-sm font-bold">
-                        {config?.boutique?.name ? config.boutique.name.charAt(0).toUpperCase() : 'B'}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="ml-3">
-                    <h1 className="text-xl font-bold text-white">
-                      {config?.boutique?.name || ''}
-                    </h1>
+              <div className="flex items-center justify-center h-16">
+                <div className="text-center">
+                                  <h1 className="text-xl font-bold text-white">
+                  🔌 {config?.boutique?.name || 'Boutique'}
+                </h1>
+                  {config?.boutique?.subtitle && (
                     <p className="text-gray-300 text-sm">
-                      {config?.boutique?.subtitle || ''}
+                      {config.boutique.subtitle}
                     </p>
-                  </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -211,41 +192,30 @@ export default function ShopHome() {
 
         {/* Navigation */}
         {config && (
-          <nav className="bg-white shadow-sm border-b">
+          <nav className="bg-black shadow-sm border-b border-gray-700">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <div className="flex space-x-8 h-12 items-center">
+              <div className="flex justify-center space-x-8 h-12 items-center">
                 <Link 
                   href="/shop" 
-                  className="text-gray-900 font-medium border-b-2 border-gray-900 pb-3 flex items-center"
+                  className="text-white font-medium border-b-2 border-white pb-3 flex items-center"
                 >
-                  {config?.boutique?.logo ? (
-                    <img src={config.boutique.logo} alt="Logo" className="h-4 w-4 mr-2 rounded object-cover" />
-                  ) : (
-                    <span className="mr-1">🏠</span>
-                  )}
+                  <span className="mr-1">🏠</span>
                   Accueil
                 </Link>
                 <Link 
                   href="/shop/search" 
-                  className="text-gray-500 hover:text-gray-700 pb-3 flex items-center"
+                  className="text-gray-300 hover:text-white pb-3 flex items-center"
                 >
-                  {config?.boutique?.logo ? (
-                    <img src={config.boutique.logo} alt="Logo" className="h-4 w-4 mr-2 rounded object-cover" />
-                  ) : (
-                    <span className="mr-1">🔍</span>
-                  )}
+                  <span className="mr-1">🔍</span>
                   Recherche
                 </Link>
                 <Link 
                   href="/shop/vip" 
-                  className="text-gray-500 hover:text-gray-700 pb-3 flex items-center"
+                  className="text-gray-300 hover:text-white pb-3 flex items-center"
                 >
-                  {config?.boutique?.logo && (
-                    <img src={config.boutique.logo} alt="Logo" className="h-4 w-4 mr-2 rounded object-cover" />
-                  )}
+                  <span className="mr-1">👑</span>
                   VIP
                 </Link>
-
               </div>
             </div>
           </nav>
@@ -253,48 +223,35 @@ export default function ShopHome() {
 
         {/* Toutes les boutiques */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <div className="text-center mb-12">
-            <div className="flex items-center justify-center mb-4">
-              {config?.boutique?.logo ? (
-                <img 
-                  src={config.boutique.logo} 
-                  alt="Logo" 
-                  className="h-12 w-12 rounded-lg object-cover mr-4"
-                />
-              ) : (
-                <div className="h-12 w-12 bg-gray-200 rounded-lg flex items-center justify-center mr-4">
-                  <span className="text-gray-700 text-lg font-bold">
-                    {config?.boutique?.name ? config.boutique.name.charAt(0).toUpperCase() : 'B'}
-                  </span>
-                </div>
+                      <div className="text-center mb-12">
+              <div className="flex items-center justify-center mb-4">
+                <h3 className="text-3xl font-bold text-white">
+                  🔌 {config?.boutique?.name || 'Boutique'}
+                </h3>
+              </div>
+              {config?.boutique?.subtitle && (
+                <p className="text-gray-300 max-w-2xl mx-auto">
+                  {config.boutique.subtitle}
+                </p>
               )}
-              <h3 className="text-3xl font-bold text-gray-900">
-                {config?.boutique?.name || ''}
-              </h3>
             </div>
-            {config?.boutique?.subtitle && (
-              <p className="text-gray-600 max-w-2xl mx-auto">
-                {config.boutique.subtitle}
-              </p>
-            )}
-          </div>
 
           {loading ? (
             <div className="text-center py-12">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
-              <p className="mt-4 text-gray-500">Chargement des produits...</p>
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto"></div>
+              <p className="mt-4 text-gray-300">Chargement des produits...</p>
             </div>
           ) : plugs.length === 0 ? (
             <div className="text-center py-12">
-              <div className="text-6xl mb-4">🏪</div>
-              <h3 className="text-xl font-medium text-gray-900 mb-2">Aucun produit disponible</h3>
-              <p className="text-gray-500">Revenez plus tard pour découvrir nos produits.</p>
+              <div className="text-6xl mb-4">🔌</div>
+              <h3 className="text-xl font-medium text-white mb-2">Aucun produit disponible</h3>
+              <p className="text-gray-300">Revenez plus tard pour découvrir nos produits.</p>
             </div>
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               {plugs.map((plug, index) => (
                 <Link key={plug._id} href={`/shop/${plug._id}`}>
-                  <div className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:border-gray-400 transition-colors duration-300 cursor-pointer">
+                  <div className="bg-black border border-gray-600 rounded-lg overflow-hidden hover:border-gray-400 transition-colors duration-300 cursor-pointer">
                     {/* Image */}
                     <div className="relative h-32 sm:h-40">
                       <img
@@ -325,12 +282,12 @@ export default function ShopHome() {
 
                     {/* Contenu */}
                     <div className="p-3 sm:p-4">
-                      <h3 className="text-sm sm:text-base font-bold text-gray-900 mb-2 truncate">{plug.name}</h3>
-                      <p className="text-gray-600 mb-3 text-xs sm:text-sm line-clamp-2 h-8">{plug.description}</p>
+                      <h3 className="text-sm sm:text-base font-bold text-white mb-2 truncate">{plug.name}</h3>
+                      <p className="text-gray-300 mb-3 text-xs sm:text-sm line-clamp-2 h-8">{plug.description}</p>
 
                       {/* Localisation */}
                       {plug.countries && plug.countries.length > 0 && (
-                        <div className="flex items-center text-xs sm:text-sm text-gray-500 mb-2">
+                        <div className="flex items-center text-xs sm:text-sm text-gray-400 mb-2">
                           <MapPinIcon className="w-3 h-3 mr-1" />
                           <span className="truncate">{plug.countries.join(', ')}</span>
                         </div>
@@ -339,19 +296,19 @@ export default function ShopHome() {
                       {/* Services */}
                       <div className="flex flex-wrap gap-1 mb-3">
                         {plug.services?.delivery?.enabled && (
-                          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">
+                          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-700 text-white">
                             <TruckIcon className="w-2.5 h-2.5 mr-1" />
                             Livraison
                           </span>
                         )}
                         {plug.services?.postal?.enabled && (
-                          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">
+                          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-700 text-white">
                             <GlobeAltIcon className="w-2.5 h-2.5 mr-1" />
                             Postal
                           </span>
                         )}
                         {plug.services?.meetup?.enabled && (
-                          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">
+                          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-700 text-white">
                             <HomeIcon className="w-2.5 h-2.5 mr-1" />
                             Meetup
                           </span>
@@ -359,9 +316,9 @@ export default function ShopHome() {
                       </div>
 
                       {/* Likes */}
-                      <div className="flex items-center justify-between pt-2 border-t border-gray-100">
-                        <span className="text-gray-600 text-xs sm:text-sm">Voir détails</span>
-                        <div className="flex items-center text-red-500 text-xs sm:text-sm font-medium">
+                      <div className="flex items-center justify-between pt-2 border-t border-gray-700">
+                        <span className="text-gray-300 text-xs sm:text-sm">Voir détails</span>
+                        <div className="flex items-center text-red-400 text-xs sm:text-sm font-medium">
                           <span className="mr-1">❤️</span>
                           <span>{plug.likes || 0} like{(plug.likes || 0) !== 1 ? 's' : ''}</span>
                         </div>

@@ -225,40 +225,24 @@ export default function ShopSearch() {
       </Head>
 
       <div 
-        className="min-h-screen bg-white"
+        className="min-h-screen bg-black"
         style={config?.boutique?.backgroundImage ? {
-          backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9)), url(${config.boutique.backgroundImage})`,
-          backgroundSize: 'cover',
+          backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url(${config.boutique.backgroundImage})`,
+          backgroundSize: '300px 300px', // Taille fixe pour répétition
           backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat'
+          backgroundRepeat: 'repeat', // Répéter le background
+          backgroundAttachment: 'fixed'
         } : {}}
       >
         {/* Header */}
         {config && (
           <header className="bg-gray-900 shadow-lg">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <div className="flex items-center justify-between h-16">
-                <div className="flex items-center">
-                  <div className="flex-shrink-0">
-                    {config?.boutique?.logo ? (
-                      <img 
-                        src={config.boutique.logo} 
-                        alt="Logo" 
-                        className="h-8 w-8 rounded-lg object-cover"
-                      />
-                    ) : (
-                      <div className="h-8 w-8 bg-gray-700 rounded-lg flex items-center justify-center">
-                        <span className="text-white text-xs font-bold">
-                          {config?.boutique?.name ? config.boutique.name.charAt(0).toUpperCase() : 'B'}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                  <div className="ml-3">
-                    <h1 className="text-xl font-bold text-white">
-                      {config?.boutique?.name || ''}
-                    </h1>
-                  </div>
+              <div className="flex items-center justify-center h-16">
+                <div className="text-center">
+                  <h1 className="text-xl font-bold text-white">
+                    🔍 {config?.boutique?.name || 'Boutique'}
+                  </h1>
                 </div>
               </div>
             </div>
@@ -267,38 +251,28 @@ export default function ShopSearch() {
 
         {/* Navigation */}
         {config && (
-          <nav className="bg-white shadow-sm border-b">
+          <nav className="bg-black shadow-sm border-b border-gray-700">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <div className="flex space-x-8 h-12 items-center">
+              <div className="flex justify-center space-x-8 h-12 items-center">
                 <Link 
                   href="/shop" 
-                  className="text-gray-500 hover:text-gray-700 pb-3 flex items-center"
+                  className="text-gray-300 hover:text-white pb-3 flex items-center"
                 >
-                  {config?.boutique?.logo ? (
-                    <img src={config.boutique.logo} alt="Logo" className="h-4 w-4 mr-2 rounded object-cover" />
-                  ) : (
-                    <span className="mr-1">🏠</span>
-                  )}
+                  <span className="mr-1">🏠</span>
                   Accueil
                 </Link>
                 <Link 
                   href="/shop/search" 
-                  className="text-blue-600 font-medium border-b-2 border-blue-600 pb-3 flex items-center"
+                  className="text-white font-medium border-b-2 border-white pb-3 flex items-center"
                 >
-                  {config?.boutique?.logo ? (
-                    <img src={config.boutique.logo} alt="Logo" className="h-4 w-4 mr-2 rounded object-cover" />
-                  ) : (
-                    <span className="mr-1">🔍</span>
-                  )}
+                  <span className="mr-1">🔍</span>
                   Recherche
                 </Link>
                 <Link 
                   href="/shop/vip" 
-                  className="text-gray-500 hover:text-gray-700 pb-3 flex items-center"
+                  className="text-gray-300 hover:text-white pb-3 flex items-center"
                 >
-                  {config?.boutique?.logo && (
-                    <img src={config.boutique.logo} alt="Logo" className="h-4 w-4 mr-2 rounded object-cover" />
-                  )}
+                  <span className="mr-1">👑</span>
                   VIP
                 </Link>
               </div>
@@ -308,35 +282,22 @@ export default function ShopSearch() {
 
         {/* Section de recherche */}
         {config && (
-          <div className="bg-gray-800 py-12">
+          <div className="py-12">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <div className="text-center mb-8">
                 <div className="flex items-center justify-center mb-4">
-                  {config?.boutique?.logo ? (
-                    <img 
-                      src={config.boutique.logo} 
-                      alt="Logo" 
-                      className="h-12 w-12 rounded-lg object-cover mr-4"
-                    />
-                  ) : (
-                    <div className="h-12 w-12 bg-gray-700 rounded-lg flex items-center justify-center mr-4">
-                      <span className="text-white text-lg font-bold">
-                        {config?.boutique?.name ? config.boutique.name.charAt(0).toUpperCase() : 'B'}
-                      </span>
-                    </div>
-                  )}
                   <h2 className="text-3xl font-bold text-white">
-                    {config?.boutique?.name || ''}
+                    🔍 Recherche dans {config?.boutique?.name || 'la boutique'}
                   </h2>
                 </div>
               </div>
               
               {/* Filtres de recherche */}
-              <div className="bg-white rounded-xl shadow-lg p-6">
+              <div className="bg-black border border-gray-600 rounded-xl shadow-lg p-6">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                   {/* Recherche textuelle */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-white mb-2">
                       Nom ou description
                     </label>
                     <div className="relative">
@@ -347,7 +308,7 @@ export default function ShopSearch() {
                         type="text"
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
-                        className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="block w-full pl-10 pr-3 py-3 border border-gray-600 rounded-lg bg-black text-white focus:ring-2 focus:ring-white focus:border-transparent placeholder-gray-400"
                         placeholder="Rechercher une boutique..."
                       />
                     </div>
@@ -355,13 +316,13 @@ export default function ShopSearch() {
 
                   {/* Pays */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-white mb-2">
                       Pays
                     </label>
                     <select
                       value={selectedCountry}
                       onChange={(e) => setSelectedCountry(e.target.value)}
-                      className="block w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="block w-full px-3 py-3 border border-gray-600 rounded-lg bg-black text-white focus:ring-2 focus:ring-white focus:border-transparent"
                     >
                       <option value="">Tous les pays</option>
                       {getUniqueCountries().map(country => (
@@ -372,13 +333,13 @@ export default function ShopSearch() {
 
                   {/* Service */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-white mb-2">
                       Type de service
                     </label>
                     <select
                       value={selectedService}
                       onChange={(e) => setSelectedService(e.target.value)}
-                      className="block w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="block w-full px-3 py-3 border border-gray-600 rounded-lg bg-black text-white focus:ring-2 focus:ring-white focus:border-transparent"
                     >
                       <option value="">Tous les services</option>
                       <option value="delivery">🚚 Livraison rapide</option>
@@ -391,7 +352,7 @@ export default function ShopSearch() {
                   <div className="flex items-end">
                     <button
                       onClick={resetFilters}
-                      className="w-full px-4 py-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors font-medium"
+                      className="w-full px-4 py-3 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-colors font-medium"
                     >
                       🔄 Réinitialiser
                     </button>
@@ -406,27 +367,27 @@ export default function ShopSearch() {
         {config && (
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
             <div className="mb-8">
-              <h3 className="text-2xl font-bold text-gray-900 mb-2">
+              <h3 className="text-2xl font-bold text-white mb-2">
                 📋 Résultats de recherche
               </h3>
-              <p className="text-gray-600">
+              <p className="text-gray-300">
                 {loading ? 'Recherche en cours...' : `${plugs.length} boutique(s) trouvée(s)`}
               </p>
             </div>
 
             {loading ? (
               <div className="text-center py-12">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
-                <p className="mt-4 text-gray-500">Recherche en cours...</p>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto"></div>
+                <p className="mt-4 text-gray-300">Recherche en cours...</p>
               </div>
             ) : plugs.length === 0 ? (
               <div className="text-center py-12">
                 <div className="text-6xl mb-4">🔍</div>
-                <h3 className="text-xl font-medium text-gray-900 mb-2">Aucune boutique trouvée</h3>
-                <p className="text-gray-500 mb-6">Essayez de modifier vos critères de recherche.</p>
+                <h3 className="text-xl font-medium text-white mb-2">Aucune boutique trouvée</h3>
+                <p className="text-gray-300 mb-6">Essayez de modifier vos critères de recherche.</p>
                 <button
                   onClick={resetFilters}
-                  className="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition-colors"
+                  className="bg-gray-700 text-white px-6 py-3 rounded-lg hover:bg-gray-600 transition-colors"
                 >
                   🔄 Réinitialiser les filtres
                 </button>
@@ -435,7 +396,7 @@ export default function ShopSearch() {
               <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-2 gap-4">
                 {plugs.map((plug, index) => (
                   <Link key={plug._id} href={`/shop/${plug._id}`}>
-                    <div className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:border-gray-400 transition-colors duration-300 cursor-pointer">
+                    <div className="bg-black border border-gray-600 rounded-lg overflow-hidden hover:border-gray-400 transition-colors duration-300 cursor-pointer">
                       <div className="relative h-32 sm:h-40">
                         <img
                           src={plug.image || '/placeholder.jpg'}
@@ -462,11 +423,11 @@ export default function ShopSearch() {
                       </div>
 
                       <div className="p-3 sm:p-4">
-                        <h3 className="text-sm sm:text-base font-bold text-gray-900 mb-2 truncate">{plug.name}</h3>
-                        <p className="text-gray-600 mb-3 text-xs sm:text-sm line-clamp-2 h-8">{plug.description}</p>
+                        <h3 className="text-sm sm:text-base font-bold text-white mb-2 truncate">{plug.name}</h3>
+                        <p className="text-gray-300 mb-3 text-xs sm:text-sm line-clamp-2 h-8">{plug.description}</p>
 
                         {plug.countries && plug.countries.length > 0 && (
-                          <div className="flex items-center text-xs sm:text-sm text-gray-500 mb-2">
+                          <div className="flex items-center text-xs sm:text-sm text-gray-400 mb-2">
                             <MapPinIcon className="w-3 h-3 mr-1" />
                             <span className="truncate">{plug.countries.join(', ')}</span>
                           </div>
@@ -474,28 +435,28 @@ export default function ShopSearch() {
 
                         <div className="flex flex-wrap gap-1 mb-3">
                           {plug.services?.delivery?.enabled && (
-                            <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">
+                            <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-700 text-white">
                               <TruckIcon className="w-2.5 h-2.5 mr-1" />
                               Livraison
                             </span>
                           )}
                           {plug.services?.postal?.enabled && (
-                            <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">
+                            <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-700 text-white">
                               <GlobeAltIcon className="w-2.5 h-2.5 mr-1" />
                               Postal
                             </span>
                           )}
                           {plug.services?.meetup?.enabled && (
-                            <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">
+                            <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-700 text-white">
                               <HomeIcon className="w-2.5 h-2.5 mr-1" />
                               Meetup
                             </span>
                           )}
                         </div>
 
-                        <div className="flex items-center justify-between pt-2 border-t border-gray-100">
-                          <span className="text-gray-600 text-xs sm:text-sm">Voir détails</span>
-                          <div className="flex items-center text-red-500 text-xs sm:text-sm font-medium">
+                        <div className="flex items-center justify-between pt-2 border-t border-gray-700">
+                          <span className="text-gray-300 text-xs sm:text-sm">Voir détails</span>
+                          <div className="flex items-center text-red-400 text-xs sm:text-sm font-medium">
                             <span className="mr-1">❤️</span>
                             <span>{plug.likes || 0} like{(plug.likes || 0) !== 1 ? 's' : ''}</span>
                           </div>
@@ -511,22 +472,13 @@ export default function ShopSearch() {
 
         {/* Footer */}
         {config && (
-          <footer className="bg-gray-800 text-white">
+          <footer className="bg-black text-white border-t border-gray-700">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
               <div className="text-center">
-                <div className="flex items-center justify-center mb-2">
-                  {config?.boutique?.logo ? (
-                    <img 
-                      src={config.boutique.logo} 
-                      alt="Logo" 
-                      className="h-6 w-6 rounded object-cover mr-2"
-                    />
-                  ) : null}
-                  <h3 className="text-lg font-medium">
-                    {config?.boutique?.name || 'Boutique Premium'}
-                  </h3>
-                </div>
-                <p className="text-gray-400 mb-4">
+                <h3 className="text-lg font-medium mb-2">
+                  🔍 {config?.boutique?.name || 'Boutique Premium'}
+                </h3>
+                <p className="text-gray-400">
                   {config?.boutique?.subtitle || 'Votre destination shopping premium'}
                 </p>
               </div>

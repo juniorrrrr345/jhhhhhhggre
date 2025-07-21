@@ -35,34 +35,51 @@ const sendMessageWithImage = async (ctx, text, keyboard, config, options = {}) =
 };
 
 const editMessageWithImage = async (ctx, text, keyboard, config, options = {}) => {
+  // CORRECTION: Prioriser l'image du plug si disponible, sinon image de bienvenue
+  const plugImage = options.plugImage || null;
   const welcomeImage = config?.welcome?.image || null;
+  const imageToUse = plugImage || welcomeImage;
+  
+  console.log(`🖼️ Images disponibles: plug=${!!plugImage}, welcome=${!!welcomeImage}, using=${!!imageToUse}`);
+  if (imageToUse) {
+    console.log(`📸 URL image utilisée: ${imageToUse.substring(0, 50)}...`);
+  }
   
   try {
-    if (welcomeImage) {
-      // CORRECTION: Suppression et recréation rapide pour éviter le loading
+    if (imageToUse && imageToUse.trim() !== '') {
+      // Vérifier que l'URL est valide
+      if (!imageToUse.startsWith('http')) {
+        console.log('❌ URL d\'image invalide, fallback texte');
+        throw new Error('URL invalide');
+      }
+      
       try {
-        // Supprimer immédiatement l'ancien message
-        await ctx.deleteMessage();
+        // Essayer d'éditer avec une nouvelle image
+        await ctx.editMessageMedia({
+          type: 'photo',
+          media: imageToUse,
+          caption: text,
+          parse_mode: options.parse_mode || 'Markdown'
+        }, {
+          reply_markup: keyboard?.reply_markup || keyboard
+        });
+        console.log(`✅ Message édité avec image ${plugImage ? '(plug)' : '(welcome)'}`);
+      } catch (editError) {
+        console.log(`⚠️ Édition image échouée (${editError.message}), deletion + recreation...`);
         
-        // Recréer immédiatement avec l'image (pas de loading visible)
-        await ctx.replyWithPhoto(welcomeImage, {
+        // Supprimer et recréer avec l'image
+        await ctx.deleteMessage();
+        await ctx.replyWithPhoto(imageToUse, {
           caption: text,
           reply_markup: keyboard?.reply_markup || keyboard,
           parse_mode: options.parse_mode || 'Markdown',
           ...options
         });
-        console.log('✅ Message remplacé avec image (optimisé)');
-      } catch (deleteError) {
-        console.log('⚠️ Impossible de supprimer, édition du texte');
-        // Si impossible de supprimer, on édite le texte seulement
-        await ctx.editMessageText(text, {
-          reply_markup: keyboard?.reply_markup || keyboard,
-          parse_mode: options.parse_mode || 'Markdown',
-          ...options
-        });
+        console.log(`✅ Message recréé avec image ${plugImage ? '(plug)' : '(welcome)'}`);
       }
     } else {
       // Pas d'image, édition normale du texte
+      console.log('📝 Pas d\'image, édition texte seulement');
       await ctx.editMessageText(text, {
         reply_markup: keyboard?.reply_markup || keyboard,
         parse_mode: options.parse_mode || 'Markdown',
@@ -70,14 +87,19 @@ const editMessageWithImage = async (ctx, text, keyboard, config, options = {}) =
       });
     }
   } catch (error) {
-    console.error('❌ Erreur édition message:', error);
-    // Fallback amélioré
+    console.error('❌ Erreur édition message:', error.message);
+    // Fallback complet vers texte simple
     try {
-      await ctx.deleteMessage().catch(() => {}); // Supprimer si possible
-      await sendMessageWithImage(ctx, text, keyboard, config, options);
+      await ctx.editMessageText(text, {
+        reply_markup: keyboard?.reply_markup || keyboard,
+        parse_mode: options.parse_mode || 'Markdown',
+        ...options
+      });
+      console.log('✅ Fallback texte réussi');
     } catch (fallbackError) {
-      console.error('❌ Erreur fallback édition:', fallbackError);
-      // Dernier recours : message texte simple
+      console.error('❌ Fallback texte échoué:', fallbackError.message);
+      // Dernier recours
+      await ctx.deleteMessage().catch(() => {});
       await ctx.reply(text, {
         reply_markup: keyboard?.reply_markup || keyboard,
         parse_mode: options.parse_mode || 'Markdown',

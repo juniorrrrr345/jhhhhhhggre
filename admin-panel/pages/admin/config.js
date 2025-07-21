@@ -1,53 +1,42 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
-import Layout from '../../components/Layout'
-import toast from 'react-hot-toast'
-import {
-  ChatBubbleLeftRightIcon,
-  GlobeAltIcon,
-  DevicePhoneMobileIcon,
-  CheckIcon,
-  EyeIcon,
-  CogIcon
-} from '@heroicons/react/24/outline'
+import Head from 'next/head'
+import toast, { Toaster } from 'react-hot-toast'
 
-export default function Config() {
+export default function BotConfig() {
   const [config, setConfig] = useState({
-    welcome: { 
-      text: '🎉 Bienvenue sur notre bot premium !', 
-      image: 'https://via.placeholder.com/400x200/4F46E5/FFFFFF?text=Bot+Image' 
+    welcome: {
+      text: '',
+      image: ''
     },
     boutique: {
       name: '',
       subtitle: '',
-      logo: '',
-      vipTitle: '',
-      vipSubtitle: '',
-      searchTitle: '',
-      searchSubtitle: ''
+      backgroundImage: ''
+    },
+    buttons: {
+      topPlugs: { text: '🔌 Top Des Plugs' },
+      vipPlugs: { text: '👑 Boutiques VIP' },
+      contact: { text: '📞 Contact', content: '' },
+      info: { text: 'ℹ️ Info', content: '' }
+    },
+    supportMenu: {
+      enabled: false,
+      text: '',
+      image: ''
+    },
+    infoMenu: {
+      enabled: false,
+      text: '',
+      image: ''
     },
     messages: {
       welcome: '',
       noPlugsFound: '',
       error: ''
-    },
-    socialMedia: {
-      telegram: '',
-      whatsapp: '',
-      website: ''
-    },
-    buttons: {
-      topPlugs: { text: '🔌 Top Des Plugs' },
-      vipPlugs: { text: '⭐ Boutiques VIP' },
-      contact: { text: '📞 Contact', content: '' },
-      info: { text: 'ℹ️ Info', content: '' }
-    },
-    filters: {
-      all: 'Tous les plugs',
-      byService: 'Par service',
-      byCountry: 'Par pays'
     }
   })
+  
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const router = useRouter()
@@ -61,462 +50,586 @@ export default function Config() {
     fetchConfig(token)
   }, [])
 
-
-
   const fetchConfig = async (token) => {
     try {
       setLoading(true)
-      const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || process.env.API_BASE_URL
-      console.log('🔍 Fetching config from:', apiBaseUrl)
       
-      const response = await fetch(`${apiBaseUrl}/api/config`, {
-        headers: { 'Authorization': `Bearer ${token}` }
+      const response = await fetch('/api/proxy?endpoint=/api/config', {
+        headers: { 
+          'Authorization': token,
+          'Content-Type': 'application/json',
+          'Cache-Control': 'no-cache'
+        }
       })
-
-      console.log('⚙️ Config fetch response:', response.status)
 
       if (response.ok) {
         const data = await response.json()
-        console.log('✅ Config loaded:', data)
-        setConfig(data)
+        
+        const mergedConfig = {
+          welcome: {
+            text: data.welcome?.text || '🎉 Bienvenue sur notre bot premium !',
+            image: data.welcome?.image || ''
+          },
+          boutique: {
+            name: data.boutique?.name || '',
+            subtitle: data.boutique?.subtitle || '',
+            backgroundImage: data.boutique?.backgroundImage || ''
+          },
+          buttons: {
+            topPlugs: { text: data.buttons?.topPlugs?.text || '🔌 Top Des Plugs' },
+            vipPlugs: { text: data.buttons?.vipPlugs?.text || '👑 Boutiques VIP' },
+            contact: { 
+              text: data.buttons?.contact?.text || '📞 Contact',
+              content: data.buttons?.contact?.content || ''
+            },
+            info: { 
+              text: data.buttons?.info?.text || 'ℹ️ Info',
+              content: data.buttons?.info?.content || ''
+            }
+          },
+          supportMenu: {
+            enabled: data.supportMenu?.enabled || false,
+            text: data.supportMenu?.text || '',
+            image: data.supportMenu?.image || ''
+          },
+          infoMenu: {
+            enabled: data.infoMenu?.enabled || false,
+            text: data.infoMenu?.text || '',
+            image: data.infoMenu?.image || ''
+          },
+          messages: {
+            welcome: data.messages?.welcome || '',
+            noPlugsFound: data.messages?.noPlugsFound || '',
+            error: data.messages?.error || ''
+          }
+        }
+        
+        setConfig(mergedConfig)
+        toast.success('Configuration chargée avec succès !')
       } else {
-        console.error('❌ Config fetch error:', response.status, response.statusText)
-        toast.error('Erreur lors du chargement')
+        toast.error(`Erreur lors du chargement: ${response.status}`)
       }
     } catch (error) {
-      toast.error('Erreur de connexion')
+      console.error('Erreur chargement config:', error)
+      toast.error(`Erreur de connexion: ${error.message}`)
     } finally {
       setLoading(false)
     }
   }
 
-        const saveConfig = async () => {
-        const token = localStorage.getItem('adminToken')
-        setSaving(true)
+  const saveConfig = async (retryCount = 0) => {
+    const token = localStorage.getItem('adminToken')
+    setSaving(true)
 
-        try {
-          // Préparer les données sans la section boutique
-          const { boutique, ...botConfig } = config
-          
-          console.log('💾 Sauvegarde configuration bot uniquement...', botConfig)
-          
-          // Essayer l'API directe d'abord
-          const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://jhhhhhhggre.onrender.com'
-          
-          const response = await fetch(`${apiBaseUrl}/api/config`, {
-            method: 'PUT',
-            headers: {
-              'Authorization': `Bearer ${token}`,
-              'Content-Type': 'application/json',
-              'Cache-Control': 'no-cache',
-              'Pragma': 'no-cache'
-            },
-            body: JSON.stringify(botConfig)
-          })
+    try {
+      console.log('💾 Sauvegarde configuration...', retryCount + 1)
+      
+      if (!token) {
+        throw new Error('Token d\'authentification manquant')
+      }
+      
+      const response = await fetch('/api/proxy?endpoint=/api/config', {
+        method: 'POST',
+        headers: {
+          'Authorization': token,
+          'Content-Type': 'application/json',
+          'Cache-Control': 'no-cache'
+        },
+        body: JSON.stringify({
+          _method: 'PUT',
+          ...config
+        }),
+        signal: AbortSignal.timeout(30000)
+      })
 
-          if (response.ok) {
-            console.log('✅ Configuration bot sauvegardée')
-            toast.success('Configuration bot sauvegardée avec succès !')
-            
-            // Recharger le bot après sauvegarde
-            setTimeout(() => {
-              reloadBot();
-            }, 1000);
-            
-          } else {
-            // Fallback vers le proxy
-            console.log('🔄 Tentative via proxy...')
-            
-            const proxyResponse = await fetch('/api/proxy?endpoint=/api/config', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`,
-                'Cache-Control': 'no-cache'
-              },
-              body: JSON.stringify({
-                _method: 'PUT',
-                ...botConfig
-              })
-            })
-
-            if (proxyResponse.ok) {
-              console.log('✅ Configuration sauvegardée via proxy')
-              toast.success('Configuration sauvegardée via proxy !')
-              setTimeout(() => {
-                reloadBot();
-              }, 1000);
-            } else {
-              throw new Error(`Erreur API: ${response.status}`)
-            }
-          }
-        } catch (error) {
-          console.error('💥 Erreur sauvegarde config:', error)
-          toast.error('Erreur lors de la sauvegarde')
-        } finally {
-          setSaving(false)
-        }
+      if (response.ok) {
+        const savedConfig = await response.json()
+        console.log('✅ Configuration sauvegardée:', savedConfig)
+        toast.success('Configuration sauvegardée avec succès !')
+        
+        // Recharger le bot
+        setTimeout(() => {
+          reloadBot();
+        }, 1000);
+        
+      } else {
+        const errorText = await response.text()
+        console.error('❌ Erreur sauvegarde:', response.status, errorText)
+        throw new Error(`Erreur ${response.status}: ${errorText}`)
       }
 
-  // Fonction pour forcer la synchronisation avec la boutique
-  const forceBoutiqueSync = async () => {
-    try {
-      console.log('🔄 Forcer la synchronisation boutique...');
-      
-      // Envoyer un signal aux pages boutique via localStorage
-      const syncSignal = {
-        timestamp: Date.now(),
-        action: 'config_updated',
-        config: config
-      };
-      
-      localStorage.setItem('boutique_sync_signal', JSON.stringify(syncSignal));
-      
-      // Déclencher l'événement storage pour notifier les autres onglets
-      window.dispatchEvent(new StorageEvent('storage', {
-        key: 'boutique_sync_signal',
-        newValue: JSON.stringify(syncSignal)
-      }));
-      
-      console.log('✅ Signal de synchronisation envoyé');
-      toast.success('Synchronisation boutique déclenchée !');
-      
     } catch (error) {
-      console.error('❌ Erreur synchronisation boutique:', error);
-    }
-  };
-
-  // Fonction pour tester la configuration boutique
-  const testBoutiqueConfig = async () => {
-    try {
-      console.log('🧪 Test configuration boutique...');
+      console.error('💥 Erreur sauvegarde config:', error)
       
-      // Vérifier les éléments requis
-      const requiredFields = {
-        'Nom boutique': config?.boutique?.name,
-        'Logo': config?.boutique?.logo,
-        'Background': config?.boutique?.backgroundImage,
-        'Message accueil': config?.welcome?.text
-      };
-      
-      const missing = Object.entries(requiredFields)
-        .filter(([key, value]) => !value)
-        .map(([key]) => key);
-      
-      if (missing.length > 0) {
-        toast.error(`Éléments manquants: ${missing.join(', ')}`);
-        return false;
+      // Retry automatique pour les erreurs de réseau
+      if ((error.message.includes('Load failed') || error.message.includes('fetch') || error.name === 'AbortError') 
+          && retryCount < 2) {
+        console.log('🔄 Retry automatique dans 2 secondes...')
+        toast.info(`Retry ${retryCount + 1}/3 dans 2 secondes...`)
+        
+        setTimeout(() => {
+          saveConfig(retryCount + 1)
+        }, 2000)
+        return
       }
       
-      // Test de l'API publique
-      const response = await fetch('/api/proxy?endpoint=/api/public/config', {
-        headers: { 'Cache-Control': 'no-cache' }
-      });
+      // Messages d'erreur spécifiques
+      let errorMessage = 'Erreur lors de la sauvegarde'
+      if (error.name === 'AbortError' || error.message.includes('timeout')) {
+        errorMessage = 'Timeout: La sauvegarde a pris trop de temps'
+      } else if (error.message.includes('Load failed') || error.message.includes('fetch')) {
+        errorMessage = 'Erreur de connexion: Vérifiez votre réseau'
+      } else if (error.message.includes('401')) {
+        errorMessage = 'Erreur d\'authentification: Reconnectez-vous'
+      } else if (error.message.includes('400')) {
+        errorMessage = 'Données invalides: Vérifiez les champs'
+      }
+      
+      toast.error(errorMessage)
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const reloadBot = async () => {
+    try {
+      const token = localStorage.getItem('adminToken')
+      toast.info('🔄 Rechargement du bot en cours...')
+      
+      const response = await fetch('/api/proxy?endpoint=/api/bot/reload', {
+        method: 'POST',
+        headers: {
+          'Authorization': token,
+          'Content-Type': 'application/json'
+        }
+      })
       
       if (response.ok) {
-        const publicConfig = await response.json();
-        console.log('✅ Configuration publique accessible:', publicConfig);
-        toast.success('Configuration boutique testée avec succès !');
-        return true;
+        toast.success('✅ Bot rechargé avec succès !')
       } else {
-        throw new Error(`API publique: ${response.status}`);
-      }
-      
-    } catch (error) {
-      console.error('❌ Erreur test boutique:', error);
-      toast.error('Erreur lors du test de la configuration boutique');
-      return false;
-    }
-  };
-
-  const updateConfig = (section, field, value) => {
-    setConfig(prev => ({
-      ...prev,
-      [section]: {
-        ...prev[section],
-        [field]: value
-      }
-    }))
-  }
-
-  const updateNestedConfig = (section, subsection, field, value) => {
-    setConfig(prev => ({
-      ...prev,
-      [section]: {
-        ...prev[section],
-        [subsection]: {
-          ...prev[section]?.[subsection],
-          [field]: value
-        }
-      }
-    }))
-  }
-
-  // Fonctions pour l'édition visuelle
-  const editText = (section, field, currentValue, title) => {
-    const newText = prompt(`${title}:`, currentValue);
-    if (newText !== null && newText !== currentValue) {
-      setConfig(prev => ({
-        ...prev,
-        [section]: {
-          ...prev[section],
-          [field]: newText
-        }
-      }));
-      toast.success('Texte mis à jour ! N\'oubliez pas de sauvegarder.');
-    }
-  };
-
-  const editNestedText = (section, subsection, field, currentValue, title) => {
-    const newText = prompt(`${title}:`, currentValue);
-    if (newText !== null && newText !== currentValue) {
-      setConfig(prev => ({
-        ...prev,
-        [section]: {
-          ...prev[section],
-          [subsection]: {
-            ...prev[section][subsection],
-            [field]: newText
-          }
-        }
-      }));
-      toast.success('Texte mis à jour ! N\'oubliez pas de sauvegarder.');
-    }
-  };
-
-  const editImage = () => {
-    const newUrl = prompt("URL de l'image d'accueil:", config.welcome?.image || '');
-    if (newUrl !== null && newUrl !== (config.welcome?.image || '')) {
-      setConfig(prev => ({
-        ...prev,
-        welcome: {
-          ...prev.welcome,
-          image: newUrl
-        }
-      }));
-      toast.success('Image mise à jour ! N\'oubliez pas de sauvegarder.');
-    }
-  };
-
-  // Fonction pour recharger le bot
-  const reloadBot = async () => {
-    const token = localStorage.getItem('adminToken');
-
-    try {
-      console.log('🔄 Rechargement du bot...');
-      
-      // Essayer l'API directe d'abord
-      try {
-        const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://jhhhhhhggre.onrender.com';
-        const response = await fetch(`${apiBaseUrl}/api/bot/reload`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        });
-
-        if (response.ok) {
-          console.log('✅ Bot rechargé avec succès');
-        }
-      } catch (directError) {
-        console.log('❌ Rechargement direct échoué, tentative proxy...');
-        
-        // Fallback vers le proxy
-        await fetch('/api/reload-bot', {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        });
+        toast.error('⚠️ Erreur rechargement bot')
       }
     } catch (error) {
-      console.error('💥 Erreur rechargement bot:', error);
+      console.error('Erreur rechargement bot:', error)
+      toast.error('❌ Erreur rechargement bot')
     }
   }
+
+  const updateConfig = (path, value) => {
+    setConfig(prev => {
+      const newConfig = { ...prev }
+      const keys = path.split('.')
+      let current = newConfig
+      
+      for (let i = 0; i < keys.length - 1; i++) {
+        if (!current[keys[i]]) current[keys[i]] = {}
+        current = current[keys[i]]
+      }
+      
+      current[keys[keys.length - 1]] = value
+      return newConfig
+    })
+  }
+
+
 
   if (loading) {
     return (
-      <Layout title="Configuration Bot">
-        <div className="flex items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+          <p className="text-gray-600">Chargement de la configuration...</p>
         </div>
-      </Layout>
+      </div>
     )
   }
 
   return (
-    <Layout title="Configuration Bot">
-      <div className="space-y-8">
-        {/* Header avec sélecteur de mode */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">Configuration du Bot</h1>
-            <p className="text-gray-600">Personnalisez votre bot Telegram</p>
-            <div className="mt-2 p-3 bg-blue-50 border border-blue-200 rounded-lg max-w-md">
-              <p className="text-blue-800 text-sm">
-                ℹ️ <strong>Info :</strong> Cette page configure uniquement le bot. Pour la boutique, utilisez <a href="/admin/configuration" className="underline font-medium">Configuration</a> dans le menu.
-              </p>
+    <>
+      <Head>
+        <title>Configuration Bot - Admin</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+      </Head>
+
+      <div className="min-h-screen bg-gray-50">
+        <Toaster position="top-right" />
+        
+        {/* Header */}
+        <div className="bg-white shadow">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex justify-between items-center py-6">
+              <div>
+                <h1 className="text-3xl font-bold text-gray-900">Configuration Bot</h1>
+                <p className="mt-1 text-sm text-gray-500">Personnalisez votre bot Telegram</p>
+              </div>
+              <button
+                onClick={() => router.push('/admin')}
+                className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors"
+              >
+                ← Retour
+              </button>
             </div>
           </div>
         </div>
 
-        {/* Contenu du mode visuel */}
-        <div className="flex flex-col lg:flex-row gap-8">
-            {/* Instructions */}
-            <div className="lg:w-1/3 space-y-4">
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                <h3 className="text-lg font-medium text-blue-900 mb-3">💡 Comment ça marche ?</h3>
-                <ul className="space-y-2 text-sm text-blue-800">
-                  <li>• 🖼️ Cliquez sur l'image pour la changer</li>
-                  <li>• 📝 Cliquez sur le message pour l'éditer</li>
-                  <li>• 🔘 Cliquez sur les boutons pour modifier leur texte</li>
-                  <li>• 💾 N'oubliez pas de sauvegarder !</li>
-                </ul>
+        <div className="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+          <div className="space-y-8">
+            
+            {/* Message d'accueil */}
+            <div className="bg-white rounded-lg shadow p-6">
+              <h2 className="text-xl font-semibold text-gray-900 mb-4">🎉 Message d'Accueil</h2>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Texte du message d'accueil
+                  </label>
+                  <textarea
+                    value={config.welcome.text}
+                    onChange={(e) => updateConfig('welcome.text', e.target.value)}
+                    className="w-full border border-gray-300 rounded-lg p-3 h-24 resize-none"
+                    placeholder="🎉 Bienvenue sur notre bot..."
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Image d'accueil (URL)
+                  </label>
+                  <input
+                    type="url"
+                    value={config.welcome.image}
+                    onChange={(e) => updateConfig('welcome.image', e.target.value)}
+                    className="w-full border border-gray-300 rounded-lg p-3"
+                    placeholder="https://example.com/image.jpg"
+                  />
+                  {config.welcome.image && (
+                    <img 
+                      src={config.welcome.image} 
+                      alt="Aperçu"
+                      className="mt-2 w-48 h-24 object-cover rounded border"
+                      onError={(e) => {e.target.style.display = 'none'}}
+                    />
+                  )}
+                </div>
               </div>
+            </div>
 
+            {/* Configuration Boutique */}
+            <div className="bg-white rounded-lg shadow p-6">
+              <h2 className="text-xl font-semibold text-gray-900 mb-4">🏪 Configuration Boutique</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Nom de la boutique
+                  </label>
+                  <input
+                    type="text"
+                    value={config.boutique.name}
+                    onChange={(e) => updateConfig('boutique.name', e.target.value)}
+                    className="w-full border border-gray-300 rounded-lg p-3"
+                    placeholder="SwissQuality"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Sous-titre
+                  </label>
+                  <input
+                    type="text"
+                    value={config.boutique.subtitle}
+                    onChange={(e) => updateConfig('boutique.subtitle', e.target.value)}
+                    className="w-full border border-gray-300 rounded-lg p-3"
+                    placeholder="Votre boutique premium"
+                  />
+                </div>
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Image de fond (répétée) - URL
+                  </label>
+                  <input
+                    type="url"
+                    value={config.boutique.backgroundImage}
+                    onChange={(e) => updateConfig('boutique.backgroundImage', e.target.value)}
+                    className="w-full border border-gray-300 rounded-lg p-3"
+                    placeholder="https://example.com/pattern.jpg"
+                  />
+                  {config.boutique.backgroundImage && (
+                    <img 
+                      src={config.boutique.backgroundImage} 
+                      alt="Background"
+                      className="mt-2 w-32 h-32 object-cover rounded border"
+                      onError={(e) => {e.target.style.display = 'none'}}
+                    />
+                  )}
+                </div>
+              </div>
+            </div>
 
+            {/* Boutons du Bot */}
+            <div className="bg-white rounded-lg shadow p-6">
+              <h2 className="text-xl font-semibold text-gray-900 mb-4">🔘 Boutons du Bot</h2>
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Bouton Top Plugs
+                    </label>
+                    <input
+                      type="text"
+                      value={config.buttons.topPlugs.text}
+                      onChange={(e) => updateConfig('buttons.topPlugs.text', e.target.value)}
+                      className="w-full border border-gray-300 rounded-lg p-3"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Bouton VIP
+                    </label>
+                    <input
+                      type="text"
+                      value={config.buttons.vipPlugs.text}
+                      onChange={(e) => updateConfig('buttons.vipPlugs.text', e.target.value)}
+                      className="w-full border border-gray-300 rounded-lg p-3"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Bouton Contact
+                    </label>
+                    <input
+                      type="text"
+                      value={config.buttons.contact.text}
+                      onChange={(e) => updateConfig('buttons.contact.text', e.target.value)}
+                      className="w-full border border-gray-300 rounded-lg p-3"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Bouton Info
+                    </label>
+                    <input
+                      type="text"
+                      value={config.buttons.info.text}
+                      onChange={(e) => updateConfig('buttons.info.text', e.target.value)}
+                      className="w-full border border-gray-300 rounded-lg p-3"
+                    />
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Contenu page Contact
+                    </label>
+                    <textarea
+                      value={config.buttons.contact.content}
+                      onChange={(e) => updateConfig('buttons.contact.content', e.target.value)}
+                      className="w-full border border-gray-300 rounded-lg p-3 h-20 resize-none"
+                      placeholder="Contactez-nous pour..."
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Contenu page Info
+                    </label>
+                    <textarea
+                      value={config.buttons.info.content}
+                      onChange={(e) => updateConfig('buttons.info.content', e.target.value)}
+                      className="w-full border border-gray-300 rounded-lg p-3 h-20 resize-none"
+                      placeholder="Informations sur..."
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
 
-               {/* Gestion des réseaux sociaux du message d'accueil */}
-               <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
-                 <h3 className="text-lg font-medium text-purple-900 mb-3">📱 Réseaux Sociaux - Message d'Accueil</h3>
-                 <p className="text-sm text-purple-700 mb-3">
-                   Ajoutez des liens vers vos réseaux sociaux directement dans le message d'accueil du bot.
-                 </p>
-                 
-                 <div className="space-y-2">
-                   <a
-                     href="/admin/config/welcome-social"
-                     className="w-full bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg transition-colors text-sm font-medium inline-block text-center"
-                   >
-                     ⚙️ Gérer les réseaux sociaux d'accueil
-                   </a>
-                   
-                   <button
-                     onClick={() => editText('welcome', 'text', config.welcome?.text || '', 'Message d\'accueil du bot (/start)')}
-                     className="w-full text-left bg-white border border-purple-300 rounded-lg p-3 hover:bg-purple-50 transition-colors"
-                   >
-                     <div className="text-sm font-medium text-purple-800">Message d'accueil Bot :</div>
-                     <div className="text-purple-600 text-sm">{config.welcome?.text || '🌟 Bienvenue sur notre bot !'}</div>
-                     <div className="text-xs text-purple-500 mt-1">Affiché quand on tape /start sur le bot</div>
-                   </button>
+            {/* Support Menu */}
+            <div className="bg-white rounded-lg shadow p-6">
+              <h2 className="text-xl font-semibold text-gray-900 mb-4">🔧 Support Menu Personnalisé</h2>
+              
+              <div className="space-y-4">
+                <div className="flex items-center space-x-3">
+                  <input
+                    type="checkbox"
+                    id="supportEnabled"
+                    checked={config.supportMenu.enabled}
+                    onChange={(e) => updateConfig('supportMenu.enabled', e.target.checked)}
+                    className="h-4 w-4 text-blue-600 rounded border-gray-300"
+                  />
+                  <label htmlFor="supportEnabled" className="text-sm font-medium text-gray-700">
+                    Activer le sous-menu Support Swiss
+                  </label>
+                </div>
+
+                {config.supportMenu.enabled && (
+                  <>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Texte du Support
+                      </label>
+                      <textarea
+                        value={config.supportMenu.text}
+                        onChange={(e) => updateConfig('supportMenu.text', e.target.value)}
+                        className="w-full border border-gray-300 rounded-lg p-3 h-20 resize-none"
+                        placeholder="Contactez notre équipe Support..."
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Image du Support (URL)
+                      </label>
+                      <input
+                        type="url"
+                        value={config.supportMenu.image}
+                        onChange={(e) => updateConfig('supportMenu.image', e.target.value)}
+                        className="w-full border border-gray-300 rounded-lg p-3"
+                        placeholder="https://example.com/support.jpg"
+                      />
+                      {config.supportMenu.image && (
+                        <img 
+                          src={config.supportMenu.image} 
+                          alt="Support"
+                          className="mt-2 w-48 h-24 object-cover rounded border"
+                          onError={(e) => {e.target.style.display = 'none'}}
+                        />
+                      )}
+                                         </div>
+                  </>
+                )}
+                             </div>
+             </div>
+
+             {/* Info Menu */}
+             <div className="bg-white rounded-lg shadow p-6">
+               <h2 className="text-xl font-semibold text-gray-900 mb-4">ℹ️ Info Menu Personnalisé</h2>
+               
+               <div className="space-y-4">
+                 <div className="flex items-center space-x-3">
+                   <input
+                     type="checkbox"
+                     id="infoEnabled"
+                     checked={config.infoMenu.enabled}
+                     onChange={(e) => updateConfig('infoMenu.enabled', e.target.checked)}
+                     className="h-4 w-4 text-blue-600 rounded border-gray-300"
+                   />
+                   <label htmlFor="infoEnabled" className="text-sm font-medium text-gray-700">
+                     Activer le sous-menu Info personnalisé
+                   </label>
                  </div>
+
+                 {config.infoMenu.enabled && (
+                   <>
+                     <div>
+                       <label className="block text-sm font-medium text-gray-700 mb-2">
+                         Texte Info
+                       </label>
+                       <textarea
+                         value={config.infoMenu.text}
+                         onChange={(e) => updateConfig('infoMenu.text', e.target.value)}
+                         className="w-full border border-gray-300 rounded-lg p-3 h-20 resize-none"
+                         placeholder="Informations sur notre service..."
+                       />
+                     </div>
+
+                     <div>
+                       <label className="block text-sm font-medium text-gray-700 mb-2">
+                         Image Info (URL)
+                       </label>
+                       <input
+                         type="url"
+                         value={config.infoMenu.image}
+                         onChange={(e) => updateConfig('infoMenu.image', e.target.value)}
+                         className="w-full border border-gray-300 rounded-lg p-3"
+                         placeholder="https://example.com/info.jpg"
+                       />
+                       {config.infoMenu.image && (
+                         <img 
+                           src={config.infoMenu.image} 
+                           alt="Info"
+                           className="mt-2 w-48 h-24 object-cover rounded border"
+                           onError={(e) => {e.target.style.display = 'none'}}
+                         />
+                       )}
+                                            </div>
+                   </>
+                 )}
                </div>
              </div>
 
-            {/* Simulation du bot Telegram */}
-            <div className="lg:w-2/3">
-              <div className="bg-white rounded-lg shadow-lg overflow-hidden max-w-md mx-auto">
-                {/* Header du bot */}
-                <div className="bg-blue-500 text-white p-4 text-center">
-                  <h3 className="text-lg font-semibold">🤖 Aperçu Bot Telegram</h3>
-                  <p className="text-blue-100 text-sm">Cliquez pour modifier</p>
-                </div>
-                
-                {/* Image d'accueil */}
-                <div className="relative group">
-                  <img 
-                    src={config.welcome?.image || 'https://via.placeholder.com/400x200/4F46E5/FFFFFF?text=Bot+Image'} 
-                    alt="Accueil"
-                    className="w-full h-48 object-cover cursor-pointer transition-all group-hover:brightness-75"
-                    onClick={editImage}
+             {/* Messages */}
+             <div className="bg-white rounded-lg shadow p-6">
+              <h2 className="text-xl font-semibold text-gray-900 mb-4">💬 Messages du Bot</h2>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Message de bienvenue
+                  </label>
+                  <input
+                    type="text"
+                    value={config.messages.welcome}
+                    onChange={(e) => updateConfig('messages.welcome', e.target.value)}
+                    className="w-full border border-gray-300 rounded-lg p-3"
+                    placeholder="🎉 Bienvenue !"
                   />
-                  <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all flex items-center justify-center">
-                    <button 
-                      onClick={editImage}
-                      className="opacity-0 group-hover:opacity-100 bg-black bg-opacity-75 text-white px-3 py-1 rounded text-sm transition-all"
-                    >
-                      ✏️ Changer l'image
-                    </button>
-                  </div>
                 </div>
-
-                {/* Message d'accueil */}
-                <div className="p-4">
-                  <div 
-                    onClick={() => editText('welcome', 'text', config.welcome?.text || '', 'Message d\'accueil')}
-                    className="bg-gray-100 p-4 rounded-lg cursor-pointer hover:bg-gray-200 transition-colors group relative"
-                  >
-                    <p className="text-gray-800">{config.welcome?.text || 'Cliquez pour ajouter un message d\'accueil'}</p>
-                    <span className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 text-blue-500 transition-opacity">
-                      ✏️
-                    </span>
-                  </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Message aucun résultat
+                  </label>
+                  <input
+                    type="text"
+                    value={config.messages.noPlugsFound}
+                    onChange={(e) => updateConfig('messages.noPlugsFound', e.target.value)}
+                    className="w-full border border-gray-300 rounded-lg p-3"
+                    placeholder="😅 Aucun résultat trouvé"
+                  />
                 </div>
-
-                {/* Boutons éditables */}
-                <div className="p-4 space-y-3">
-                  {Object.entries(config.buttons || {}).map(([key, button]) => {
-                                         const buttonLabels = {
-                       topPlugs: 'Bouton "Top Des Plugs"',
-                       vipPlugs: 'Bouton "Boutiques VIP"',
-                       contact: 'Bouton "Contact"',
-                       info: 'Bouton "Informations"'
-                     };
-
-                     return (
-                       <div key={key} className="space-y-2">
-                         <button
-                           onClick={() => editNestedText('buttons', key, 'text', button?.text || '', buttonLabels[key] || `Bouton ${key}`)}
-                           className="w-full bg-blue-500 text-white p-3 rounded-lg hover:bg-blue-600 transition-colors relative group"
-                         >
-                           {button?.text || `Bouton ${key}`}
-                           <span className="opacity-0 group-hover:opacity-100 absolute right-3 top-1/2 transform -translate-y-1/2 transition-opacity">
-                             ✏️
-                           </span>
-                         </button>
-                         
-                         {/* Bouton pour éditer le contenu des pages Contact et Info */}
-                         {(key === 'contact' || key === 'info') && (
-                           <button
-                             onClick={() => editNestedText('buttons', key, 'content', button?.content || '', `Contenu page ${buttonLabels[key]}`)}
-                             className="w-full bg-gray-500 text-white p-2 text-sm rounded hover:bg-gray-600 transition-colors"
-                           >
-                             ✏️ Éditer le contenu de la page
-                           </button>
-                         )}
-                       </div>
-                     );
-                  })}
-                </div>
-
-                {/* Footer informatif */}
-                <div className="bg-gray-50 p-3 text-center">
-                  <p className="text-xs text-gray-500">
-                    👆 Cliquez sur n'importe quel élément pour le modifier
-                  </p>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Message d'erreur
+                  </label>
+                  <input
+                    type="text"
+                    value={config.messages.error}
+                    onChange={(e) => updateConfig('messages.error', e.target.value)}
+                    className="w-full border border-gray-300 rounded-lg p-3"
+                    placeholder="❌ Une erreur est survenue"
+                  />
                 </div>
               </div>
             </div>
-          </div>
 
-        {/* Section de sauvegarde */}
-        <div className="bg-white rounded-lg shadow p-4">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div>
-              <h3 className="text-base font-medium text-gray-900">💾 Sauvegarde</h3>
-              <p className="text-sm text-gray-500">Appliquez vos modifications</p>
+            {/* Actions */}
+            <div className="bg-white rounded-lg shadow p-6">
+              <div className="flex flex-col sm:flex-row gap-4">
+                <button
+                  onClick={reloadBot}
+                  disabled={saving}
+                  className="flex-1 bg-green-600 hover:bg-green-700 disabled:opacity-50 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+                >
+                  🔄 Recharger Bot
+                </button>
+                <button
+                  onClick={saveConfig}
+                  disabled={saving}
+                  className={`flex-1 ${saving ? 'bg-orange-500 animate-pulse' : 'bg-blue-600 hover:bg-blue-700'} disabled:opacity-50 text-white px-6 py-3 rounded-lg font-medium transition-colors`}
+                >
+                  {saving ? (
+                    <span className="flex items-center justify-center">
+                      <svg className="animate-spin -ml-1 mr-2 h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Sauvegarde...
+                    </span>
+                  ) : '💾 Sauvegarder Configuration'}
+                </button>
+              </div>
             </div>
-            <div className="flex flex-col sm:flex-row gap-2">
-              <button
-                onClick={reloadBot}
-                disabled={saving}
-                className="bg-green-500 hover:bg-green-600 disabled:opacity-50 text-white px-4 py-2 rounded text-sm font-medium transition-colors"
-              >
-                🔄 Recharger Bot
-              </button>
-              <button
-                onClick={saveConfig}
-                disabled={saving}
-                className="bg-blue-500 hover:bg-blue-600 disabled:opacity-50 text-white px-4 py-2 rounded text-sm font-medium transition-colors"
-              >
-                {saving ? 'Sauvegarde...' : '💾 Sauvegarder'}
-              </button>
-            </div>
+
           </div>
         </div>
       </div>
-    </Layout>
+    </>
   )
 }

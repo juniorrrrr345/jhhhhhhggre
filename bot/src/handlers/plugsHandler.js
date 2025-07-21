@@ -365,8 +365,11 @@ const handlePlugDetails = async (ctx, plugId, returnContext = 'top_plugs') => {
     // Utiliser la fonction createPlugKeyboard qui gère déjà tout
     const keyboard = createPlugKeyboard(plug, returnContext);
 
-    // Utiliser la fonction helper pour afficher avec image
-    await editMessageWithImage(ctx, message, keyboard, config, { parse_mode: 'Markdown' });
+    // Utiliser la fonction helper pour afficher avec image du plug
+    await editMessageWithImage(ctx, message, keyboard, config, { 
+      parse_mode: 'Markdown',
+      plugImage: plug.image  // Passer l'image du plug
+    });
     
     // Confirmer la callback pour éviter le loading
     await ctx.answerCbQuery();
@@ -380,6 +383,10 @@ const handlePlugDetails = async (ctx, plugId, returnContext = 'top_plugs') => {
 const handlePlugServiceDetails = async (ctx, plugId, serviceType) => {
   try {
     console.log(`🔧 handlePlugServiceDetails: plugId=${plugId}, serviceType=${serviceType}`);
+    
+    // CORRECTION: Confirmer immédiatement la callback pour éviter le loading
+    await ctx.answerCbQuery();
+    
     const plug = await Plug.findById(plugId);
     console.log(`📦 Plug found for service:`, plug ? `${plug.name} (active: ${plug.isActive})` : 'null');
     
@@ -390,7 +397,8 @@ const handlePlugServiceDetails = async (ctx, plugId, serviceType) => {
 
     const service = plug.services[serviceType];
     if (!service || !service.enabled) {
-      return;
+      console.log(`⚠️ Service ${serviceType} non disponible pour ${plug.name}`);
+      return ctx.answerCbQuery('❌ Service non disponible');
     }
 
     // Récupérer la config pour les textes et images
@@ -409,36 +417,49 @@ const handlePlugServiceDetails = async (ctx, plugId, serviceType) => {
       message += `📝 ${service.description}\n\n`;
     }
 
-    if (plug.countries.length > 0) {
+    if (plug.countries && plug.countries.length > 0) {
       message += `🌍 **Disponible en :** ${plug.countries.join(', ')}\n\n`;
     }
 
     message += '📱 **Contactez directement :**';
 
-    // Créer un clavier spécifique pour les services avec retour intelligent
+    // CORRECTION: Créer un clavier avec les réseaux sociaux du plug
     const buttons = [];
     
-    // Réseaux sociaux du plug
-    const socialButtons = [];
-    if (plug.socialMedia.telegram) {
-      socialButtons.push(Markup.button.url('📱 Telegram', plug.socialMedia.telegram));
-    }
-    if (plug.socialMedia.instagram) {
-      socialButtons.push(Markup.button.url('📸 Instagram', plug.socialMedia.instagram));
-    }
-    if (socialButtons.length > 0) {
-      buttons.push(socialButtons);
+    // Lien Telegram optionnel
+    if (plug.telegramLink) {
+      buttons.push([Markup.button.url('📱 Telegram', plug.telegramLink)]);
     }
     
-    const socialButtons2 = [];
-    if (plug.socialMedia.whatsapp) {
-      socialButtons2.push(Markup.button.url('💬 WhatsApp', plug.socialMedia.whatsapp));
-    }
-    if (plug.socialMedia.website) {
-      socialButtons2.push(Markup.button.url('🌐 Site', plug.socialMedia.website));
-    }
-    if (socialButtons2.length > 0) {
-      buttons.push(socialButtons2);
+    // Réseaux sociaux personnalisés du plug
+    console.log(`🔧 Réseaux sociaux du plug ${plug.name} pour service:`, plug.socialMedia);
+    if (plug.socialMedia && Array.isArray(plug.socialMedia) && plug.socialMedia.length > 0) {
+      const validSocialMedia = plug.socialMedia.filter(social => 
+        social && social.name && social.emoji && social.url && social.url.trim() !== ''
+      );
+      
+      console.log(`✅ Réseaux sociaux valides pour service ${serviceType}:`, validSocialMedia.length);
+      
+      // Grouper les réseaux sociaux par lignes de 2
+      for (let i = 0; i < validSocialMedia.length; i += 2) {
+        const socialRow = [];
+        const social1 = validSocialMedia[i];
+        
+        try {
+          socialRow.push(Markup.button.url(`${social1.emoji} ${social1.name}`, social1.url));
+          console.log(`📱 Bouton service créé: ${social1.emoji} ${social1.name} -> ${social1.url}`);
+          
+          if (validSocialMedia[i + 1]) {
+            const social2 = validSocialMedia[i + 1];
+            socialRow.push(Markup.button.url(`${social2.emoji} ${social2.name}`, social2.url));
+            console.log(`📱 Bouton service créé: ${social2.emoji} ${social2.name} -> ${social2.url}`);
+          }
+          
+          buttons.push(socialRow);
+        } catch (error) {
+          console.error(`❌ Erreur création bouton social pour service:`, error);
+        }
+      }
     }
     
     // Bouton like
@@ -449,8 +470,11 @@ const handlePlugServiceDetails = async (ctx, plugId, serviceType) => {
     
     const keyboard = Markup.inlineKeyboard(buttons);
 
-    // CORRECTION: Utiliser sendPlugWithImage pour afficher l'image du plug
-    await sendPlugWithImage(ctx, message, keyboard, plug, { parse_mode: 'Markdown' });
+    // CORRECTION: Utiliser editMessageWithImage avec l'image du plug
+    await editMessageWithImage(ctx, message, keyboard, config, { 
+      parse_mode: 'Markdown',
+      plugImage: plug.image  // Passer l'image du plug
+    });
 
   } catch (error) {
     console.error('Erreur dans handlePlugServiceDetails:', error);
