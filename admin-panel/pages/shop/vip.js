@@ -217,12 +217,9 @@ export default function ShopVIP() {
                   )}
                 </div>
                 <div className="ml-3">
-                              <h1 className="text-xl font-bold text-white">
-              {config?.boutique?.vipTitle || config?.boutique?.name || ''}
-            </h1>
-            <p className="text-gray-300 text-sm">
-              {config?.boutique?.vipSubtitle || ''}
-            </p>
+                                                <h1 className="text-xl font-bold text-white">
+                    {config?.boutique?.name || ''}
+                  </h1>
                 </div>
               </div>
             </div>
@@ -289,11 +286,11 @@ export default function ShopVIP() {
                 </div>
               )}
               <h3 className="text-3xl font-bold text-gray-900">
-                {config?.boutique?.vipTitle || config?.boutique?.name || ''}
+                {config?.boutique?.name || ''}
               </h3>
             </div>
             <p className="text-gray-600 max-w-2xl mx-auto">
-              {config?.boutique?.vipSubtitle || ''} • {loading ? 'Chargement...' : `${vipPlugs.length} produit(s) VIP disponible(s)`}
+              {loading ? 'Chargement...' : `${vipPlugs.length} produit(s) VIP disponible(s)`}
             </p>
           </div>
 

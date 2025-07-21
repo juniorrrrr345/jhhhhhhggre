@@ -156,7 +156,7 @@ export default function ShopHome() {
                 </div>
                 <div className="ml-3">
                   <h1 className="text-xl font-bold text-white">
-                    {config?.boutique?.name || 'Boutique'}
+                    {config?.boutique?.name || ''}
                   </h1>
                   <p className="text-gray-300 text-sm">
                     {config?.boutique?.subtitle || ''}
@@ -225,7 +225,7 @@ export default function ShopHome() {
                 </div>
               )}
               <h3 className="text-3xl font-bold text-gray-900">
-                {config?.boutique?.name || 'Boutique'}
+                {config?.boutique?.name || ''}
               </h3>
             </div>
             {config?.boutique?.subtitle && (

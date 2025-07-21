@@ -285,11 +285,8 @@ export default function ShopSearch() {
                 </div>
                 <div className="ml-3">
                   <h1 className="text-xl font-bold text-white">
-                    {config?.boutique?.searchTitle || config?.boutique?.name || ''}
+                    {config?.boutique?.name || ''}
                   </h1>
-                  <p className="text-gray-300 text-sm">
-                    {config?.boutique?.searchSubtitle || ''}
-                  </p>
                 </div>
               </div>
             </div>
@@ -355,12 +352,9 @@ export default function ShopSearch() {
                   </div>
                 )}
                 <h2 className="text-3xl font-bold text-white">
-                  {config?.boutique?.searchTitle || config?.boutique?.name || ''}
+                  {config?.boutique?.name || ''}
                 </h2>
               </div>
-              <p className="text-gray-300">
-                {config?.boutique?.searchSubtitle || ''}
-              </p>
             </div>
             
             {/* Filtres de recherche */}

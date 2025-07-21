@@ -40,11 +40,9 @@ export default function NewPlug() {
         description: ''
       }
     },
-    socialMedia: {
-      telegram: '',
-      whatsapp: '',
-      website: ''
-    }
+    socialMedia: [
+      // Chaque réseau social aura : name, emoji, url
+    ]
   })
   const [loading, setLoading] = useState(false)
   const router = useRouter()
