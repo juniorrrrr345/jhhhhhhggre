@@ -21,29 +21,7 @@ export default function ConfigurationSimple() {
       searchBlueText: '',
       searchFinalText: ''
     },
-    // Message d'accueil Bot
-    welcome: {
-      text: '',
-      image: ''
-    },
-    // Boutons du bot
-    buttons: {
-      contact: {
-        text: '📞 Contact',
-        content: 'Contactez-nous pour plus d\'informations.',
-        enabled: true
-      },
-      info: {
-        text: 'ℹ️ Info',
-        content: 'Informations sur notre plateforme.',
-        enabled: true
-      }
-    },
-    // Réseaux sociaux globaux
-    socialMedia: {
-      telegram: '',
-      whatsapp: ''
-    }
+
   })
   
   const [loading, setLoading] = useState(true)
@@ -91,26 +69,6 @@ export default function ConfigurationSimple() {
             searchSubtitle: data.boutique?.searchSubtitle || '',
             searchBlueText: data.boutique?.searchBlueText || '',
             searchFinalText: data.boutique?.searchFinalText || ''
-          },
-          welcome: {
-            text: data.welcome?.text || '',
-            image: data.welcome?.image || ''
-          },
-          buttons: {
-            contact: {
-              text: data.buttons?.contact?.text || '📞 Contact',
-              content: data.buttons?.contact?.content || 'Contactez-nous pour plus d\'informations.',
-              enabled: data.buttons?.contact?.enabled !== false
-            },
-            info: {
-              text: data.buttons?.info?.text || 'ℹ️ Info',
-              content: data.buttons?.info?.content || 'Informations sur notre plateforme.',
-              enabled: data.buttons?.info?.enabled !== false
-            }
-          },
-          socialMedia: {
-            telegram: data.socialMedia?.telegram || '',
-            whatsapp: data.socialMedia?.whatsapp || ''
           }
         })
         
@@ -145,10 +103,7 @@ export default function ConfigurationSimple() {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          boutique: config.boutique,
-          welcome: config.welcome,
-          buttons: config.buttons,
-          socialMedia: config.socialMedia
+          boutique: config.boutique
         })
       })
 
@@ -184,29 +139,7 @@ export default function ConfigurationSimple() {
     }))
   }
 
-  const updateWelcome = (field, value) => {
-    setConfig(prev => ({
-      ...prev,
-      welcome: { ...prev.welcome, [field]: value }
-    }))
-  }
 
-  const updateButton = (buttonType, field, value) => {
-    setConfig(prev => ({
-      ...prev,
-      buttons: {
-        ...prev.buttons,
-        [buttonType]: { ...prev.buttons[buttonType], [field]: value }
-      }
-    }))
-  }
-
-  const updateSocialMedia = (field, value) => {
-    setConfig(prev => ({
-      ...prev,
-      socialMedia: { ...prev.socialMedia, [field]: value }
-    }))
-  }
 
   if (loading) {
     return (
