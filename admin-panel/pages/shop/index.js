@@ -209,13 +209,6 @@ export default function ShopHome() {
         backgroundImage: !!data.interface?.backgroundImage,
         timestamp: timestamp
       })
-      
-      if (typeof toast !== 'undefined') {
-        toast.success(`✅ Configuration mise à jour ! (${data.interface?.title})`, {
-          duration: 3000,
-          icon: '✅'
-        })
-      }
     } catch (error) {
       console.error('❌ Erreur chargement config fresh:', error)
       // Fallback vers config normale
@@ -373,23 +366,8 @@ export default function ShopHome() {
         <div style={{ 
           backgroundColor: '#000000',
           padding: '20px',
-          textAlign: 'center',
-          position: 'relative'
+          textAlign: 'center'
         }}>
-          {config && (
-            <div style={{
-              position: 'absolute',
-              top: '5px',
-              right: '10px',
-              fontSize: '10px',
-              color: '#666',
-              backgroundColor: '#222',
-              padding: '2px 6px',
-              borderRadius: '8px'
-            }}>
-              ✅ Sync {new Date().toLocaleTimeString()}
-            </div>
-          )}
           <h2 style={{ 
             fontSize: '32px', 
             fontWeight: 'bold', 
