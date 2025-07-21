@@ -3,6 +3,7 @@ import { useRouter } from 'next/router'
 import Head from 'next/head'
 import Link from 'next/link'
 import { api } from '../../lib/api'
+import { getProxiedImageUrl } from '../../lib/imageUtils'
 import toast from 'react-hot-toast'
 import {
   StarIcon,
@@ -180,7 +181,7 @@ export default function ShopPlugDetail() {
       <>
         <Head>
           <title>Chargement...</title>
-          <meta name="viewport" content="width=device-width, initial-scale=1" />
+          <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
         </Head>
         <div className="min-h-screen bg-black flex items-center justify-center">
           <div className="text-center">
@@ -197,7 +198,7 @@ export default function ShopPlugDetail() {
       <>
         <Head>
           <title>Produit non trouvé</title>
-          <meta name="viewport" content="width=device-width, initial-scale=1" />
+          <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
         </Head>
         <div 
           className="min-h-screen flex items-center justify-center"
@@ -231,7 +232,7 @@ export default function ShopPlugDetail() {
       <Head>
         <title>{plug.name} - {config?.boutique?.name || 'Boutique'}</title>
         <meta name="description" content={plug.description} />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
       </Head>
 
       <div 
@@ -315,30 +316,28 @@ export default function ShopPlugDetail() {
 
             {/* Plug details */}
             <div className="bg-gray-800 border border-gray-700 rounded-xl shadow-lg overflow-hidden">
-              {/* Image */}
+              {/* Image simplifiée - comme dans le bot */}
               <div className="relative h-64 md:h-80 bg-gray-900">
-                {plug.image ? (
+                {plug.image && plug.image.trim() !== '' ? (
                   <img
-                    src={plug.image}
-                    alt={plug.name}
+                    src={getProxiedImageUrl(plug.image)}
+                    alt={plug.name || 'Boutique'}
                     className="w-full h-full object-cover"
-                    onError={(e) => {
-                      e.target.style.display = 'none'
-                      e.target.nextSibling.style.display = 'flex'
-                    }}
+                    loading="lazy"
                   />
-                ) : null}
-                <div 
-                  className={`absolute inset-0 flex items-center justify-center ${plug.image ? 'hidden' : 'flex'}`}
-                  style={{ display: plug.image ? 'none' : 'flex' }}
-                >
-                  <GlobeAltIcon className="w-20 h-20 text-gray-600" />
-                </div>
+                ) : (
+                  <div className="absolute inset-0 flex items-center justify-center bg-gray-900">
+                    <div className="text-center">
+                      <GlobeAltIcon className="w-20 h-20 text-gray-600 mx-auto mb-2" />
+                      <p className="text-gray-500">Aucune image</p>
+                    </div>
+                  </div>
+                )}
                 
-                {/* VIP Badge */}
+                {/* VIP Badge amélioré */}
                 {plug.isVip && (
                   <div className="absolute top-4 right-4">
-                    <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-bold bg-yellow-500" style={{ color: 'white' }}>
+                    <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-bold bg-yellow-500 text-white shadow-lg">
                       <StarIcon className="w-4 h-4 mr-2" />
                       VIP
                     </span>
@@ -422,24 +421,22 @@ export default function ShopPlugDetail() {
                   </div>
                 </div>
 
-                {/* Réseaux sociaux personnalisés */}
+                {/* Réseaux sociaux améliorés */}
                 {plug.socialMedia && plug.socialMedia.length > 0 && (
                   <div className="mb-6">
                     <h3 style={{ color: 'white' }} className="text-lg font-semibold mb-4">🌐 Réseaux sociaux</h3>
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="flex flex-wrap gap-3">
                       {plug.socialMedia.map((social, index) => (
                         <a
                           key={index}
                           href={social.url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex items-center p-4 bg-gray-800 border border-gray-600 rounded-lg hover:bg-gray-700 transition-colors duration-200"
+                          className="inline-flex items-center px-4 py-2 bg-gray-700 hover:bg-gray-600 border border-gray-600 rounded-lg transition-colors duration-200 text-white hover:text-white"
+                          style={{ textDecoration: 'none' }}
                         >
-                          <span className="text-2xl mr-3">{social.emoji}</span>
-                          <div>
-                            <h4 style={{ color: 'white' }} className="font-medium">{social.name}</h4>
-                            <p style={{ color: '#9ca3af' }} className="text-sm truncate">{social.url}</p>
-                          </div>
+                          <span className="text-lg mr-2">{social.emoji}</span>
+                          <span className="font-medium">{social.name}</span>
                         </a>
                       ))}
                     </div>

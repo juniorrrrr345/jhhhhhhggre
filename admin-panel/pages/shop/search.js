@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import Head from 'next/head'
 import Link from 'next/link'
 import { api } from '../../lib/api'
+import { getProxiedImageUrl } from '../../lib/imageUtils'
 import toast from 'react-hot-toast'
 import Pagination from '../../components/Pagination'
 import {
@@ -259,7 +260,7 @@ export default function ShopSearch() {
       <>
         <Head>
           <title>Chargement...</title>
-          <meta name="viewport" content="width=device-width, initial-scale=1" />
+          <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
         </Head>
         <div className="min-h-screen bg-black flex items-center justify-center">
           <div className="text-center">
@@ -276,7 +277,7 @@ export default function ShopSearch() {
       <Head>
         <title>Recherche - {config?.boutique?.name || 'Boutique'}</title>
         <meta name="description" content="Recherchez vos boutiques préférées par nom, pays ou service." />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
       </Head>
 
       <div 
@@ -473,11 +474,8 @@ export default function ShopSearch() {
               </div>
             ) : (
               <>
-                {/* Products Grid - 2 boutiques par ligne même sur mobile */}
-                <div className="grid grid-cols-2 gap-2 sm:gap-4 md:gap-6 mb-8" style={{ 
-                  gridTemplateColumns: '1fr 1fr',
-                  width: '100%'
-                }}>
+                {/* Products Grid - 2 colonnes adaptatif pour tous appareils */}
+                <div className="grid grid-cols-2 gap-2 sm:gap-3 md:gap-4 lg:gap-6 mb-8">
                   {currentPlugs.map((plug, index) => (
                     <Link 
                       key={plug._id || index} 
@@ -485,31 +483,29 @@ export default function ShopSearch() {
                       className="block group hover:scale-105 transition-transform duration-200"
                       style={{ textDecoration: 'none', color: 'inherit' }}
                     >
-                      <div className="shop-card bg-gray-800 border border-gray-700 rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-shadow duration-300 w-full max-w-none">
-                        {/* Image */}
-                        <div className="relative h-32 sm:h-40 md:h-48 bg-gray-900">
-                          {plug.image ? (
+                                              <div className="shop-card bg-gray-800 border border-gray-700 rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-shadow duration-300 w-full">
+                        {/* Image simplifiée - comme dans le bot */}
+                        <div className="relative h-32 sm:h-40 md:h-48 bg-gray-900 overflow-hidden">
+                          {plug.image && plug.image.trim() !== '' ? (
                             <img
-                              src={plug.image}
-                              alt={plug.name}
+                              src={getProxiedImageUrl(plug.image)}
+                              alt={plug.name || 'Boutique'}
                               className="w-full h-full object-cover"
-                              onError={(e) => {
-                                e.target.style.display = 'none'
-                                e.target.nextSibling.style.display = 'flex'
-                              }}
+                              loading="lazy"
                             />
-                          ) : null}
-                          <div 
-                            className={`absolute inset-0 flex items-center justify-center ${plug.image ? 'hidden' : 'flex'}`}
-                            style={{ display: plug.image ? 'none' : 'flex' }}
-                          >
-                            <GlobeAltIcon className="w-16 h-16 text-gray-600" />
-                          </div>
+                          ) : (
+                            <div className="absolute inset-0 flex items-center justify-center bg-gray-900">
+                              <div className="text-center">
+                                <GlobeAltIcon className="w-8 h-8 sm:w-12 sm:h-12 text-gray-600 mx-auto mb-1" />
+                                <p className="text-gray-500 text-xs">Aucune image</p>
+                              </div>
+                            </div>
+                          )}
                           
-                          {/* VIP Badge */}
+                          {/* VIP Badge amélioré */}
                           {plug.isVip && (
                             <div className="absolute top-2 right-2">
-                              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-bold bg-yellow-500" style={{ color: 'white' }}>
+                              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-bold bg-yellow-500 text-white shadow-lg">
                                 <StarIcon className="w-3 h-3 mr-1" />
                                 VIP
                               </span>
@@ -517,15 +513,15 @@ export default function ShopSearch() {
                           )}
                         </div>
 
-                        {/* Content */}
+                        {/* Content adaptatif */}
                         <div className="p-2 sm:p-3 md:p-4">
-                          <h3 style={{ color: 'white' }} className="text-sm sm:text-base font-bold mb-2 truncate">{plug.name}</h3>
-                          <p style={{ color: '#e5e7eb' }} className="mb-3 text-xs sm:text-sm line-clamp-2 h-8">{plug.description}</p>
+                          <h3 style={{ color: 'white' }} className="text-xs sm:text-sm md:text-base font-bold mb-1 sm:mb-2 line-clamp-1">{plug.name}</h3>
+                          <p style={{ color: '#e5e7eb' }} className="mb-2 sm:mb-3 text-xs sm:text-sm line-clamp-2 min-h-[24px] sm:min-h-[32px] md:min-h-[36px]">{plug.description}</p>
 
                           {/* Location */}
                           {plug.countries && plug.countries.length > 0 && (
-                            <div className="flex items-center text-xs sm:text-sm mb-2" style={{ color: 'white' }}>
-                              <MapPinIcon className="w-3 h-3 mr-1" />
+                            <div className="flex items-center text-xs mb-1 sm:mb-2" style={{ color: 'white' }}>
+                              <MapPinIcon className="w-2 h-2 sm:w-3 sm:h-3 mr-1 flex-shrink-0" />
                               <span className="truncate">{plug.countries.join(', ')}</span>
                             </div>
                           )}

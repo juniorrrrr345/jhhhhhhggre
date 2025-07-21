@@ -2,6 +2,10 @@
   "functions": {
     "pages/admin/messages.js": {
       "memory": 1024
+    },
+    "pages/api/image-proxy.js": {
+      "memory": 512,
+      "maxDuration": 15
     }
   },
   "headers": [
@@ -11,6 +15,23 @@
         {
           "key": "Cache-Control",
           "value": "no-cache, no-store, must-revalidate"
+        }
+      ]
+    },
+    {
+      "source": "/api/image-proxy",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=3600"
+        },
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
+          "key": "Access-Control-Allow-Methods",
+          "value": "GET, OPTIONS"
         }
       ]
     }
