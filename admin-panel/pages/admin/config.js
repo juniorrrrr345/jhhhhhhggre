@@ -3,6 +3,31 @@ import { useRouter } from 'next/router'
 import Head from 'next/head'
 import toast, { Toaster } from 'react-hot-toast'
 
+// Fonction wrapper pour toast avec gestion d'erreur
+const safeToast = {
+  success: (message, options = {}) => {
+    try {
+      return toast.success(message, options)
+    } catch (e) {
+      console.log('Toast success:', message)
+    }
+  },
+  error: (message, options = {}) => {
+    try {
+      return toast.error(message, options)
+    } catch (e) {
+      console.log('Toast error:', message)
+    }
+  },
+  info: (message, options = {}) => {
+    try {
+      return toast(message, { icon: '💾', ...options })
+    } catch (e) {
+      console.log('Toast info:', message)
+    }
+  }
+}
+
 export default function SimpleConfig() {
   const [config, setConfig] = useState({
     // Configuration Boutique
@@ -76,13 +101,13 @@ export default function SimpleConfig() {
           }
         })
         
-        toast.success('Configuration chargée !')
+        safeToast.success('Configuration chargée !')
       } else {
-        toast.error(`Erreur: ${response.status}`)
+        safeToast.error(`Erreur: ${response.status}`)
       }
     } catch (error) {
       console.error('Erreur:', error)
-      toast.error(`Erreur: ${error.message}`)
+      safeToast.error(`Erreur: ${error.message}`)
     } finally {
       setLoading(false)
     }
@@ -96,12 +121,12 @@ export default function SimpleConfig() {
     const globalTimeout = setTimeout(() => {
       console.error('⏰ Timeout global de sauvegarde')
       setSaving(false)
-      toast.error('⏰ Timeout: Sauvegarde trop longue')
+      safeToast.error('Timeout: Sauvegarde trop longue')
     }, 30000) // 30 secondes max
 
     try {
       console.log('💾 Début sauvegarde...')
-      toast.info('💾 Sauvegarde...')
+      safeToast.info('Sauvegarde...')
 
       // Sauvegarde de la configuration
       const response = await Promise.race([
@@ -123,7 +148,7 @@ export default function SimpleConfig() {
 
       if (response.ok) {
         console.log('✅ Configuration sauvée')
-        toast.success('✅ Configuration sauvée !')
+        safeToast.success('Configuration sauvée !')
         
         // Synchronisation immédiate avec la boutique
         syncWithShop()
@@ -145,26 +170,26 @@ export default function SimpleConfig() {
               )
             ])
             
-            if (reloadResponse.ok) {
-              console.log('✅ Bot rechargé')
-              toast.success('🔄 Bot rechargé !')
-            } else {
-              console.log('⚠️ Erreur rechargement bot')
-              toast.error('⚠️ Erreur rechargement bot')
-            }
-          } catch (reloadError) {
-            console.log('❌ Erreur rechargement:', reloadError.message)
-            toast.error('❌ Erreur rechargement: ' + reloadError.message)
+                         if (reloadResponse.ok) {
+               console.log('✅ Bot rechargé')
+               safeToast.success('Bot rechargé !')
+             } else {
+               console.log('⚠️ Erreur rechargement bot')
+               safeToast.error('Erreur rechargement bot')
+             }
+           } catch (reloadError) {
+             console.log('❌ Erreur rechargement:', reloadError.message)
+             safeToast.error('Erreur rechargement: ' + reloadError.message)
           }
         }, 500) // Délai réduit
         
       } else {
         console.error('❌ Erreur sauvegarde HTTP:', response.status)
-        toast.error(`❌ Erreur sauvegarde: ${response.status}`)
+        safeToast.error(`Erreur sauvegarde: ${response.status}`)
       }
     } catch (error) {
       console.error('❌ Erreur sauvegarde:', error)
-      toast.error('❌ Erreur: ' + error.message)
+      safeToast.error('Erreur: ' + error.message)
     } finally {
       // IMPORTANT: Toujours nettoyer l'état
       clearTimeout(globalTimeout)
@@ -203,7 +228,7 @@ export default function SimpleConfig() {
       
       // Notification de synchronisation
       setTimeout(() => {
-        toast.success('🔄 Boutique synchronisée !', { duration: 2000 })
+        safeToast.success('Boutique synchronisée !', { duration: 2000 })
       }, 1000)
       
     } catch (error) {
