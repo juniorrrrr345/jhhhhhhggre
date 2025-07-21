@@ -33,7 +33,7 @@ export default function Configuration() {
       
       const response = await fetch('/api/proxy?endpoint=/api/config', {
         headers: {
-          'Authorization': `Bearer ${token}`,
+          'Authorization': token, // Enlever le Bearer manuel, le proxy s'en charge
           'Cache-Control': 'no-cache'
         }
       })
@@ -80,7 +80,7 @@ export default function Configuration() {
       const response = await fetch('/api/proxy?endpoint=/api/config', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${token}`,
+          'Authorization': token, // Enlever le Bearer manuel, le proxy s'en charge
           'Content-Type': 'application/json',
           'Cache-Control': 'no-cache'
         },

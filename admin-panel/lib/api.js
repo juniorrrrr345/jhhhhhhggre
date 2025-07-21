@@ -17,7 +17,7 @@ const getApiConfig = (token = null) => {
   };
   
   if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
+    headers['Authorization'] = token; // Proxy gère Bearer automatiquement
   }
   
   return {

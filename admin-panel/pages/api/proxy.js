@@ -83,12 +83,21 @@ export default async function handler(req, res) {
     
     // Ajouter l'authorization si présente
     if (req.headers.authorization) {
-      // Assurer le format Bearer
-      const auth = req.headers.authorization.startsWith('Bearer ') 
-        ? req.headers.authorization 
-        : `Bearer ${req.headers.authorization}`;
-      fetchOptions.headers.Authorization = auth;
-      console.log('🔐 Auth header ajouté:', auth.substring(0, 20) + '...');
+      let auth = req.headers.authorization;
+      
+      // Nettoyer et formater correctement le token
+      if (auth.startsWith('Bearer ')) {
+        // Déjà au bon format
+        fetchOptions.headers.Authorization = auth;
+      } else if (auth.startsWith('bearer ')) {
+        // Corriger la casse
+        fetchOptions.headers.Authorization = 'Bearer ' + auth.substring(7);
+      } else {
+        // Ajouter Bearer si manquant
+        fetchOptions.headers.Authorization = 'Bearer ' + auth;
+      }
+      
+      console.log('🔐 Auth header ajouté:', fetchOptions.headers.Authorization.substring(0, 20) + '...');
     }
     
     console.log('📡 Fetch options:', {
@@ -160,16 +169,24 @@ export default async function handler(req, res) {
     // Différencier les types d'erreurs avec plus de précision
     let errorMessage = error.message;
     let statusCode = 500;
+    let errorDetails = {};
     
     if (error.name === 'AbortError' || error.message.includes('timeout')) {
-      errorMessage = 'Timeout: Le serveur bot ne répond pas (augmentez le timeout si nécessaire)';
+      errorMessage = 'Timeout: Le serveur bot ne répond pas dans les temps (60s). Le bot peut être surchargé.';
       statusCode = 504;
-    } else if (error.message.includes('fetch') || error.message.includes('ECONNREFUSED')) {
-      errorMessage = 'Impossible de contacter le serveur bot - Vérifiez que le bot est démarré';
+      errorDetails.suggestion = 'Réessayez dans quelques secondes ou vérifiez que le bot Render est actif';
+    } else if (error.message.includes('fetch') || error.message.includes('ECONNREFUSED') || error.message.includes('NetworkError')) {
+      errorMessage = 'Impossible de contacter le serveur bot - Connexion refusée';
       statusCode = 503;
-    } else if (error.message.includes('getaddrinfo')) {
-      errorMessage = 'Erreur de résolution DNS - Vérifiez l\'URL du serveur bot';
+      errorDetails.suggestion = 'Vérifiez que le bot est démarré sur Render et accessible';
+    } else if (error.message.includes('getaddrinfo') || error.message.includes('ENOTFOUND')) {
+      errorMessage = 'Erreur de résolution DNS - URL du serveur bot incorrecte';
       statusCode = 502;
+      errorDetails.suggestion = 'Vérifiez la variable d\'environnement API_BASE_URL';
+    } else if (error.message.includes('JSON') || error.message.includes('SyntaxError')) {
+      errorMessage = 'Réponse invalide du serveur bot - Format JSON attendu';
+      statusCode = 502;
+      errorDetails.suggestion = 'Le serveur bot renvoie une réponse corrompue';
     }
     
     res.status(statusCode).json({ 
@@ -177,7 +194,8 @@ export default async function handler(req, res) {
       message: errorMessage,
       originalError: error.message,
       errorType: error.name,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      ...errorDetails
     })
   }
 }

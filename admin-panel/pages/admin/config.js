@@ -162,7 +162,7 @@ export default function BotConfig() {
           _method: 'PUT',
           ...cleanedConfig
         }),
-        signal: AbortSignal.timeout(45000) // 45 secondes timeout
+        signal: AbortSignal.timeout(60000) // 60 secondes timeout
       })
 
       console.log('📡 Response status:', response.status, response.statusText)
@@ -235,8 +235,8 @@ export default function BotConfig() {
       if (error.name === 'AbortError' || error.message.includes('timeout')) {
         errorMessage = 'Timeout: La sauvegarde a pris trop de temps. Vérifiez votre connexion.'
         errorIcon = '⏱️'
-      } else if (error.message.includes('Load failed') || error.message.includes('fetch')) {
-        errorMessage = 'Erreur de connexion: Impossible de contacter le serveur. Vérifiez que le bot est démarré.'
+      } else if (error.message.includes('Load failed') || error.message.includes('fetch') || error.message.includes('NetworkError')) {
+        errorMessage = 'Erreur de connexion: Impossible de contacter le serveur bot. Vérifiez que le bot est démarré.'
         errorIcon = '🔌'
       } else if (error.message.includes('401')) {
         errorMessage = 'Erreur d\'authentification: Votre session a expiré. Reconnectez-vous.'

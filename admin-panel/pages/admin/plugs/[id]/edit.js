@@ -59,13 +59,13 @@ export default function EditPlug() {
       try {
         response = await fetch(`${apiBaseUrl}/api/plugs/${id}`, {
           headers: {
-            'Authorization': `Bearer ${token}`
+            'Authorization': token // Proxy gère Bearer automatiquement
           }
         })
       } catch (directError) {
         response = await fetch(`/api/proxy?endpoint=/api/plugs/${id}`, {
           headers: {
-            'Authorization': `Bearer ${token}`
+            'Authorization': token // Proxy gère Bearer automatiquement
           }
         })
       }
@@ -177,7 +177,7 @@ export default function EditPlug() {
         response = await fetch(`${apiBaseUrl}/api/plugs/${id}`, {
           method: 'PUT',
           headers: {
-            'Authorization': `Bearer ${token}`,
+            'Authorization': token // Proxy gère Bearer automatiquement,
             'Content-Type': 'application/json'
           },
           body: JSON.stringify(formData)
@@ -186,7 +186,7 @@ export default function EditPlug() {
         response = await fetch(`/api/proxy?endpoint=/api/plugs/${id}`, {
           method: 'POST',
           headers: {
-            'Authorization': `Bearer ${token}`,
+            'Authorization': token // Proxy gère Bearer automatiquement,
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
