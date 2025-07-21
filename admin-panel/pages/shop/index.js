@@ -194,7 +194,7 @@ export default function ShopHome() {
 
 
         {/* Contenu Principal */}
-        <div style={{ padding: '20px', paddingBottom: '80px' }}>
+        <div style={{ padding: '20px', paddingBottom: '90px' }}>
           {plugs.length === 0 ? (
             <div style={{ 
               textAlign: 'center', 
@@ -408,19 +408,19 @@ export default function ShopHome() {
               color: '#007AFF'
             }}>
               <div style={{ 
-                width: '40px', 
-                height: '40px', 
+                width: '45px', 
+                height: '45px', 
                 backgroundColor: '#007AFF', 
                 borderRadius: '12px',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                marginBottom: '4px',
-                fontSize: '18px'
+                marginBottom: '6px',
+                fontSize: '22px'
               }}>
                 🏠
               </div>
-              <span style={{ fontSize: '11px', color: '#ffffff', fontWeight: '500' }}>Accueil</span>
+              <span style={{ fontSize: '13px', color: '#ffffff', fontWeight: '500' }}>Accueil</span>
             </Link>
             <Link href="/shop/search" style={{ 
               display: 'flex', 
@@ -430,19 +430,19 @@ export default function ShopHome() {
               color: '#8e8e93'
             }}>
               <div style={{ 
-                width: '40px', 
-                height: '40px', 
+                width: '45px', 
+                height: '45px', 
                 backgroundColor: 'transparent', 
                 borderRadius: '12px',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                marginBottom: '4px',
-                fontSize: '18px'
+                marginBottom: '6px',
+                fontSize: '22px'
               }}>
                 🔍
               </div>
-              <span style={{ fontSize: '11px', color: '#8e8e93', fontWeight: '500' }}>Recherche</span>
+              <span style={{ fontSize: '13px', color: '#8e8e93', fontWeight: '500' }}>Recherche</span>
             </Link>
             <Link href="/shop/vip" style={{ 
               display: 'flex', 
@@ -452,19 +452,19 @@ export default function ShopHome() {
               color: '#8e8e93'
             }}>
               <div style={{ 
-                width: '40px', 
-                height: '40px', 
+                width: '45px', 
+                height: '45px', 
                 backgroundColor: 'transparent', 
                 borderRadius: '12px',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                marginBottom: '4px',
-                fontSize: '18px'
+                marginBottom: '6px',
+                fontSize: '22px'
               }}>
                 ⭐
               </div>
-              <span style={{ fontSize: '11px', color: '#8e8e93', fontWeight: '500' }}>VIP</span>
+              <span style={{ fontSize: '13px', color: '#8e8e93', fontWeight: '500' }}>VIP</span>
             </Link>
           </div>
         </nav>

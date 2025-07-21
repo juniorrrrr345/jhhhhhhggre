@@ -179,7 +179,7 @@ export default function ShopVIP() {
         minHeight: '100vh',
         color: '#ffffff',
         fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-        backgroundImage: config?.interface?.backgroundImage ? `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url("${config.interface.backgroundImage}")` : 'none',
+        backgroundImage: config?.boutique?.backgroundImage ? `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url("${config.boutique.backgroundImage}")` : 'none',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
@@ -220,7 +220,7 @@ export default function ShopVIP() {
 
 
         {/* Main Content */}
-        <main style={{ padding: '20px', paddingBottom: '80px' }}>
+        <main style={{ padding: '20px', paddingBottom: '90px' }}>
           {loading ? (
             <div style={{ textAlign: 'center', padding: '48px 0' }}>
               <div style={{ 
@@ -489,19 +489,19 @@ export default function ShopVIP() {
               color: '#8e8e93'
             }}>
               <div style={{ 
-                width: '40px', 
-                height: '40px', 
+                width: '45px', 
+                height: '45px', 
                 backgroundColor: 'transparent', 
                 borderRadius: '12px',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                marginBottom: '4px',
-                fontSize: '18px'
+                marginBottom: '6px',
+                fontSize: '22px'
               }}>
                 🏠
               </div>
-              <span style={{ fontSize: '11px', color: '#8e8e93', fontWeight: '500' }}>Accueil</span>
+              <span style={{ fontSize: '13px', color: '#8e8e93', fontWeight: '500' }}>Accueil</span>
             </Link>
             <Link href="/shop/search" style={{ 
               display: 'flex', 
@@ -511,19 +511,19 @@ export default function ShopVIP() {
               color: '#8e8e93'
             }}>
               <div style={{ 
-                width: '40px', 
-                height: '40px', 
+                width: '45px', 
+                height: '45px', 
                 backgroundColor: 'transparent', 
                 borderRadius: '12px',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                marginBottom: '4px',
-                fontSize: '18px'
+                marginBottom: '6px',
+                fontSize: '22px'
               }}>
                 🔍
               </div>
-              <span style={{ fontSize: '11px', color: '#8e8e93', fontWeight: '500' }}>Recherche</span>
+              <span style={{ fontSize: '13px', color: '#8e8e93', fontWeight: '500' }}>Recherche</span>
             </Link>
             <Link href="/shop/vip" style={{ 
               display: 'flex', 
@@ -533,19 +533,19 @@ export default function ShopVIP() {
               color: '#FFD700'
             }}>
               <div style={{ 
-                width: '40px', 
-                height: '40px', 
+                width: '45px', 
+                height: '45px', 
                 backgroundColor: '#FFD700', 
                 borderRadius: '12px',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                marginBottom: '4px',
-                fontSize: '18px'
+                marginBottom: '6px',
+                fontSize: '22px'
               }}>
                 ⭐
               </div>
-              <span style={{ fontSize: '11px', color: '#ffffff', fontWeight: '500' }}>VIP</span>
+              <span style={{ fontSize: '13px', color: '#ffffff', fontWeight: '500' }}>VIP</span>
             </Link>
           </div>
         </nav>
