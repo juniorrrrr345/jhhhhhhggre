@@ -14,10 +14,8 @@ import {
 const navigation = [
   { name: 'Dashboard', href: '/admin', icon: HomeIcon },
   { name: 'Boutiques/Plugs', href: '/admin/plugs', icon: UserGroupIcon },
-  { name: 'Configuration Bot', href: '/admin/config', icon: CogIcon },
-  { name: 'Configuration', href: '/admin/configuration', icon: CogIcon },
+  { name: 'Configuration', href: '/admin/config', icon: CogIcon },
   { name: 'Diagnostic', href: '/admin/diagnostic', icon: ChartBarIcon, badge: '🔍' },
-  { name: 'Statistiques', href: '/admin/stats', icon: ChartBarIcon },
 ]
 
 function classNames(...classes) {

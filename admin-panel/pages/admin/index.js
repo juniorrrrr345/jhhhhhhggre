@@ -111,24 +111,24 @@ export default function Dashboard() {
 
   const quickActions = [
     {
-      name: 'Ajouter une boutique',
-      description: 'Créer une nouvelle boutique/plug',
-      href: '/admin/plugs/new',
-      icon: PlusIcon,
+      name: 'Configuration',
+      description: 'Configurer le bot et la boutique',
+      href: '/admin/config',
+      icon: CogIcon,
       color: 'bg-blue-500'
     },
     {
-      name: '🎨 Configuration Bot',
-      description: 'Mode visuel et avancé pour configurer le bot',
-      href: '/admin/config',
-      icon: EyeIcon,
-      color: 'bg-indigo-500'
+      name: 'Boutiques/Plugs',
+      description: 'Gérer les boutiques et plugs',
+      href: '/admin/plugs',
+      icon: UserGroupIcon,
+      color: 'bg-green-500'
     },
     {
-      name: 'Configuration générale',
-      description: 'Paramètres du bot et réseaux sociaux',
-      href: '/admin/config',
-      icon: CogIcon,
+      name: 'Diagnostic',
+      description: 'Tester la connectivité',
+      href: '/admin/diagnostic',
+      icon: EyeIcon,
       color: 'bg-purple-500'
     }
   ]
