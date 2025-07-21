@@ -326,32 +326,77 @@ export default function BotConfig() {
   const testSync = async () => {
     try {
       const token = localStorage.getItem('adminToken')
-      toast.info('🧪 Test de synchronisation en cours...')
+      toast.info('🧪 Diagnostic en cours...', { duration: 2000 })
       
-      const response = await fetch('/api/proxy?endpoint=/api/sync/test', {
+      // D'abord faire un diagnostic complet
+      const diagResponse = await fetch('/api/diagnostic', {
         headers: {
           'Authorization': token,
           'Content-Type': 'application/json'
         }
       })
       
-      if (response.ok) {
-        const result = await response.json()
-        console.log('🧪 Résultat test sync:', result)
+      if (diagResponse.ok) {
+        const diagResult = await diagResponse.json()
+        console.log('🔍 Résultat diagnostic:', diagResult)
         
-        if (result.success) {
-          toast.success(`✅ Synchronisation OK\n${result.config.boutiqueName || 'Boutique non configurée'}`, {
-            duration: 4000
+        // Analyser les résultats du diagnostic
+        if (diagResult.overall === 'SUCCESS') {
+          toast.success('✅ Connexion bot OK - Test de sync...', { duration: 2000 })
+          
+          // Si la connexion de base fonctionne, tester la synchronisation
+          try {
+            const syncResponse = await fetch('/api/proxy?endpoint=/api/sync/test', {
+              headers: {
+                'Authorization': token,
+                'Content-Type': 'application/json'
+              }
+            })
+            
+            if (syncResponse.ok) {
+              const syncResult = await syncResponse.json()
+              console.log('🧪 Résultat test sync:', syncResult)
+              
+              if (syncResult.success) {
+                toast.success(`✅ Synchronisation complète OK!\n${syncResult.config.boutiqueName || 'Boutique non configurée'}`, {
+                  duration: 5000
+                })
+              } else {
+                toast.error('❌ Test synchronisation échoué')
+              }
+            } else {
+              toast.error('⚠️ Erreur API synchronisation')
+            }
+          } catch (syncError) {
+            console.error('Erreur test sync:', syncError)
+            toast.error('❌ Erreur test synchronisation')
+          }
+          
+        } else if (diagResult.overall === 'PARTIAL') {
+          toast.error(`⚠️ Connexion partielle\n${diagResult.recommendations?.[0] || 'Problème de connectivité'}`, {
+            duration: 6000
           })
         } else {
-          toast.error('❌ Test synchronisation échoué')
+          // Afficher les recommandations du diagnostic
+          const mainError = diagResult.recommendations?.[0] || 'Serveur bot inaccessible'
+          toast.error(`❌ ${mainError}`, {
+            duration: 8000
+          })
+          
+          // Log détaillé pour le debug
+          console.error('❌ Diagnostic échoué:', {
+            overall: diagResult.overall,
+            tests: diagResult.tests,
+            recommendations: diagResult.recommendations
+          })
         }
       } else {
-        toast.error('⚠️ Erreur test synchronisation')
+        toast.error('⚠️ Erreur diagnostic interne')
+        console.error('Erreur diagnostic response:', diagResponse.status)
       }
     } catch (error) {
-      console.error('Erreur test synchronisation:', error)
-      toast.error('❌ Erreur test synchronisation')
+      console.error('Erreur test complet:', error)
+      toast.error(`❌ Erreur: ${error.message}`)
     }
   }
 
@@ -744,12 +789,12 @@ export default function BotConfig() {
               <h2 className="text-xl font-semibold text-gray-900 mb-4">⚡ Actions</h2>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <button
-                  onClick={testSync}
+                  onClick={() => router.push('/admin/diagnostic')}
                   disabled={saving}
                   className="bg-purple-600 hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
                 >
                   <span className="flex items-center justify-center">
-                    🧪 Test Synchronisation
+                    🔍 Diagnostic Complet
                   </span>
                 </button>
                 <button
