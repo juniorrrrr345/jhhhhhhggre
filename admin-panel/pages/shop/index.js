@@ -32,18 +32,6 @@ export default function ShopHome() {
 
       if (response.ok) {
         const data = await response.json()
-        
-        // Créer la section interface si elle manque
-        if (!data.interface) {
-          data.interface = {
-            title: 'PLUGS FINDER',
-            tagline1: 'JUSTE UNE',
-            taglineHighlight: 'MINI-APP TELEGRAM',
-            tagline2: 'CHILL',
-            backgroundImage: ''
-          }
-        }
-
         setConfig(data)
       }
     } catch (error) {
@@ -144,7 +132,7 @@ export default function ShopHome() {
         minHeight: '100vh',
         color: '#ffffff',
         fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-        backgroundImage: config?.interface?.backgroundImage ? `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url("${config.interface.backgroundImage}")` : 'none',
+        backgroundImage: config?.boutique?.backgroundImage ? `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url("${config.boutique.backgroundImage}")` : 'none',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
@@ -163,24 +151,11 @@ export default function ShopHome() {
             color: '#ffffff',
             letterSpacing: '2px'
           }}>
-            {config?.interface?.title || 'PLUGS FINDER'}
+            {config?.boutique?.name || 'PlugsFinder Bot'}
           </h2>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
             <span style={{ color: '#ffffff', fontSize: '14px' }}>
-              {config?.interface?.tagline1 || 'JUSTE UNE'}
-            </span>
-            <span style={{ 
-              backgroundColor: '#007AFF', 
-              color: '#ffffff', 
-              padding: '4px 8px', 
-              borderRadius: '12px',
-              fontSize: '12px',
-              fontWeight: 'bold'
-            }}>
-              {config?.interface?.taglineHighlight || 'MINI-APP TELEGRAM'}
-            </span>
-            <span style={{ color: '#ffffff', fontSize: '14px' }}>
-              {config?.interface?.tagline2 || 'CHILL'}
+              {config?.boutique?.subtitle || ''}
             </span>
           </div>
         </div>

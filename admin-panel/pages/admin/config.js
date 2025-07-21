@@ -5,12 +5,10 @@ import toast, { Toaster } from 'react-hot-toast'
 
 export default function ConfigurationSimple() {
   const [config, setConfig] = useState({
-    // Configuration Interface Boutique
-    interface: {
-      title: 'PLUGS FINDER',
-      tagline1: 'JUSTE UNE',
-      taglineHighlight: 'MINI-APP TELEGRAM',
-      tagline2: 'CHILL',
+    // Configuration Boutique
+    boutique: {
+      name: 'PlugsFinder Bot',
+      subtitle: '',
       backgroundImage: ''
     },
     // Message d'accueil Bot
@@ -74,25 +72,11 @@ export default function ConfigurationSimple() {
         const data = await response.json()
         console.log('✅ Configuration chargée')
         
-        // ⚠️ CORRECTION: Créer la section interface si elle manque
-        if (!data.interface) {
-          console.log('⚠️ Section interface manquante, création automatique...')
-          data.interface = {
-            title: 'PLUGS FINDER',
-            tagline1: 'JUSTE UNE',
-            taglineHighlight: 'MINI-APP TELEGRAM',
-            tagline2: 'CHILL',
-            backgroundImage: ''
-          }
-        }
-        
         setConfig({
-          interface: {
-            title: data.interface?.title || 'PLUGS FINDER',
-            tagline1: data.interface?.tagline1 || 'JUSTE UNE',
-            taglineHighlight: data.interface?.taglineHighlight || 'MINI-APP TELEGRAM',
-            tagline2: data.interface?.tagline2 || 'CHILL',
-            backgroundImage: data.interface?.backgroundImage || ''
+          boutique: {
+            name: data.boutique?.name || 'PlugsFinder Bot',
+            subtitle: data.boutique?.subtitle || '',
+            backgroundImage: data.boutique?.backgroundImage || ''
           },
           welcome: {
             text: data.welcome?.text || '',
@@ -179,10 +163,10 @@ export default function ConfigurationSimple() {
     }
   }
 
-  const updateInterface = (field, value) => {
+  const updateBoutique = (field, value) => {
     setConfig(prev => ({
       ...prev,
-      interface: { ...prev.interface, [field]: value }
+      boutique: { ...prev.boutique, [field]: value }
     }))
   }
 
@@ -271,51 +255,29 @@ export default function ConfigurationSimple() {
             <div className="bg-white shadow rounded-lg">
               <div className="px-4 py-5 sm:p-6">
                 <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">
-                  🎨 Interface Boutique
+                  🎨 Configuration Boutique
                 </h3>
                 
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">Titre principal</label>
+                    <label className="block text-sm font-medium text-gray-700">Nom de la boutique</label>
                     <input
                       type="text"
-                      value={config.interface.title}
-                      onChange={(e) => updateInterface('title', e.target.value)}
+                      value={config.boutique.name}
+                      onChange={(e) => updateBoutique('name', e.target.value)}
                       className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                      placeholder="PLUGS FINDER"
+                      placeholder="Nom de votre boutique"
                     />
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">Première ligne</label>
+                    <label className="block text-sm font-medium text-gray-700">Sous-titre</label>
                     <input
                       type="text"
-                      value={config.interface.tagline1}
-                      onChange={(e) => updateInterface('tagline1', e.target.value)}
+                      value={config.boutique.subtitle}
+                      onChange={(e) => updateBoutique('subtitle', e.target.value)}
                       className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                      placeholder="JUSTE UNE"
-                    />
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">Texte en surbrillance</label>
-                    <input
-                      type="text"
-                      value={config.interface.taglineHighlight}
-                      onChange={(e) => updateInterface('taglineHighlight', e.target.value)}
-                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                      placeholder="MINI-APP TELEGRAM"
-                    />
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">Dernière ligne</label>
-                    <input
-                      type="text"
-                      value={config.interface.tagline2}
-                      onChange={(e) => updateInterface('tagline2', e.target.value)}
-                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                      placeholder="CHILL"
+                      placeholder="Description courte"
                     />
                   </div>
                   
@@ -323,8 +285,8 @@ export default function ConfigurationSimple() {
                     <label className="block text-sm font-medium text-gray-700">Image de fond (URL)</label>
                     <input
                       type="url"
-                      value={config.interface.backgroundImage}
-                      onChange={(e) => updateInterface('backgroundImage', e.target.value)}
+                      value={config.boutique.backgroundImage}
+                      onChange={(e) => updateBoutique('backgroundImage', e.target.value)}
                       className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                       placeholder="https://example.com/image.jpg"
                     />
@@ -538,23 +500,17 @@ export default function ConfigurationSimple() {
                 </h3>
                 
                 <div className="bg-black text-white p-6 rounded-lg" style={{
-                  backgroundImage: config.interface.backgroundImage ? `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url("${config.interface.backgroundImage}")` : 'none',
+                  backgroundImage: config.boutique.backgroundImage ? `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url("${config.boutique.backgroundImage}")` : 'none',
                   backgroundSize: 'cover',
                   backgroundPosition: 'center'
                 }}>
                   <div className="text-center">
                     <h2 className="text-2xl font-bold mb-2">
-                      {config.interface.title || 'PLUGS FINDER'}
+                      {config.boutique.name || 'PLUGS FINDER'}
                     </h2>
                     <div className="text-lg">
-                      <span className="text-white mr-2">
-                        {config.interface.tagline1 || 'JUSTE UNE'}
-                      </span>
-                      <span className="text-blue-400 font-bold mr-2">
-                        {config.interface.taglineHighlight || 'MINI-APP TELEGRAM'}
-                      </span>
                       <span className="text-white">
-                        {config.interface.tagline2 || 'CHILL'}
+                        {config.boutique.subtitle || 'Votre boutique'}
                       </span>
                     </div>
                   </div>
