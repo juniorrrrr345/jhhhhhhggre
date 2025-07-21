@@ -93,3 +93,135 @@
 🔄 Rafraîchissement du cache...
 ✅ Cache mis à jour - 2 plugs, config: OK
 🔄 Rafraîchissement du cache...
+⚠️ MongoDB déconnecté
+✅ MongoDB connecté avec succès
+✅ Cache mis à jour - 2 plugs, config: OK
+📡 GET /admin-panel - IP: ::1 - UserAgent: curl/8.12.1
+📋 Headers: [ 'host', 'user-agent', 'accept' ]
+🔄 Rafraîchissement du cache...
+✅ Cache mis à jour - 2 plugs, config: OK
+🔄 Rafraîchissement du cache...
+✅ Cache mis à jour - 2 plugs, config: OK
+🔄 Rafraîchissement du cache...
+✅ Cache mis à jour - 2 plugs, config: OK
+📡 PUT /api/config - IP: ::1 - UserAgent: curl/8.12.1
+📋 Headers: [
+  'host',
+  'user-agent',
+  'accept',
+  'authorization',
+  'content-type',
+  'content-length'
+]
+🔐 Tentative d'authentification: PUT /api/config
+📋 Headers reçus: [
+  'host',
+  'user-agent',
+  'accept',
+  'authorization',
+  'content-type',
+  'content-length'
+]
+🔑 Authorization header: Bearer ***n123
+🔍 Password fourni: ***n123
+🔍 Password attendu configuré: Oui
+✅ Authentification réussie
+🔧 Début mise à jour configuration...
+📊 Taille des données reçues: 184 caractères
+📋 Clés principales: [ 'interface' ]
+📝 Données après nettoyage: [ 'interface', 'updatedAt' ]
+💾 Mise à jour configuration existante...
+✅ Configuration mise à jour avec succès
+📊 ID du document: main
+🔄 Rechargement de la configuration du bot...
+✅ Configuration rechargée avec succès
+✅ Configuration du bot rechargée automatiquement
+📡 GET /api/public/config - IP: ::1 - UserAgent: curl/8.12.1
+📋 Headers: [ 'host', 'user-agent', 'accept' ]
+🔍 Récupération config publique pour la boutique
+📊 Config récupérée pour boutique: { boutique: 'Testee', logo: 'Non défini', background: 'Défini' }
+🔄 Rafraîchissement du cache...
+✅ Cache mis à jour - 2 plugs, config: OK
+📡 GET /api/proxy - IP: ::1 - UserAgent: curl/8.12.1
+📋 Headers: [ 'host', 'user-agent', 'accept', 'authorization' ]
+🔄 Rafraîchissement du cache...
+✅ Cache mis à jour - 2 plugs, config: OK
+🔄 Rafraîchissement du cache...
+✅ Cache mis à jour - 2 plugs, config: OK
+📡 GET /api/proxy - IP: ::1 - UserAgent: curl/8.12.1
+📋 Headers: [ 'host', 'user-agent', 'accept', 'authorization' ]
+📡 GET /api/config - IP: ::1 - UserAgent: curl/8.12.1
+📋 Headers: [ 'host', 'user-agent', 'accept', 'authorization' ]
+🔐 Tentative d'authentification: GET /api/config
+📋 Headers reçus: [ 'host', 'user-agent', 'accept', 'authorization' ]
+🔑 Authorization header: Bearer ***n123
+🔍 Password fourni: ***n123
+🔍 Password attendu configuré: Oui
+✅ Authentification réussie
+📡 GET / - IP: ::1 - UserAgent: curl/8.12.1
+📋 Headers: [ 'host', 'user-agent', 'accept' ]
+🔄 Rafraîchissement du cache...
+✅ Cache mis à jour - 2 plugs, config: OK
+📡 GET /api/config - IP: ::1 - UserAgent: curl/8.12.1
+📋 Headers: [ 'host', 'user-agent', 'accept', 'authorization' ]
+🔐 Tentative d'authentification: GET /api/config
+📋 Headers reçus: [ 'host', 'user-agent', 'accept', 'authorization' ]
+🔑 Authorization header: Bearer ***n123
+🔍 Password fourni: ***n123
+🔍 Password attendu configuré: Oui
+✅ Authentification réussie
+🔄 Rafraîchissement du cache...
+✅ Cache mis à jour - 2 plugs, config: OK
+📡 PUT /api/config - IP: ::1 - UserAgent: curl/8.12.1
+📋 Headers: [
+  'host',
+  'user-agent',
+  'accept',
+  'authorization',
+  'content-type',
+  'content-length'
+]
+🔐 Tentative d'authentification: PUT /api/config
+📋 Headers reçus: [
+  'host',
+  'user-agent',
+  'accept',
+  'authorization',
+  'content-type',
+  'content-length'
+]
+🔑 Authorization header: Bearer ***n123
+🔍 Password fourni: ***n123
+🔍 Password attendu configuré: Oui
+✅ Authentification réussie
+🔧 Début mise à jour configuration...
+📊 Taille des données reçues: 199 caractères
+📋 Clés principales: [ 'interface' ]
+📝 Données après nettoyage: [ 'interface', 'updatedAt' ]
+💾 Mise à jour configuration existante...
+✅ Configuration mise à jour avec succès
+📊 ID du document: main
+🔄 Rechargement de la configuration du bot...
+✅ Configuration rechargée avec succès
+✅ Configuration du bot rechargée automatiquement
+📡 GET /api/public/config - IP: ::1 - UserAgent: curl/8.12.1
+📋 Headers: [ 'host', 'user-agent', 'accept' ]
+🔍 Récupération config publique pour la boutique
+📊 Config récupérée pour boutique: { boutique: 'Testee', logo: 'Non défini', background: 'Défini' }
+🔄 Rafraîchissement du cache...
+✅ Cache mis à jour - 2 plugs, config: OK
+🔄 Rafraîchissement du cache...
+✅ Cache mis à jour - 2 plugs, config: OK
+🔄 Rafraîchissement du cache...
+✅ Cache mis à jour - 2 plugs, config: OK
+📡 POST /api/cache/refresh - IP: ::1 - UserAgent: curl/8.12.1
+📋 Headers: [ 'host', 'user-agent', 'accept', 'authorization' ]
+🔄 Demande de rafraîchissement manuel du cache
+🔄 Rafraîchissement du cache...
+✅ Cache mis à jour - 2 plugs, config: OK
+📡 GET /api/public/config - IP: ::1 - UserAgent: curl/8.12.1
+📋 Headers: [ 'host', 'user-agent', 'accept' ]
+🔍 Récupération config publique pour la boutique
+📊 Config récupérée pour boutique: { boutique: 'Testee', logo: 'Non défini', background: 'Défini' }
+🔄 Rafraîchissement du cache...
+✅ Cache mis à jour - 2 plugs, config: OK

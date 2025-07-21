@@ -84,9 +84,9 @@ export default function SimpleConfig() {
     try {
       setLoading(true)
       
-      const response = await fetch(`/api/proxy?endpoint=/api/config&t=${Date.now()}`, {
+      const response = await fetch(`http://localhost:3000/api/config?t=${Date.now()}`, {
         headers: { 
-          'Authorization': token,
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
           'Cache-Control': 'no-cache'
         }
@@ -174,16 +174,13 @@ export default function SimpleConfig() {
 
       // Sauvegarde de la configuration
       const response = await Promise.race([
-        fetch('/api/proxy?endpoint=/api/config', {
-          method: 'POST',
+        fetch('http://localhost:3000/api/config', {
+          method: 'PUT',
           headers: {
-            'Authorization': token,
+            'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify({
-            _method: 'PUT',
-            ...cleanData
-          })
+          body: JSON.stringify(cleanData)
         }),
         new Promise((_, reject) => 
           setTimeout(() => reject(new Error('Timeout sauvegarde')), 15000)

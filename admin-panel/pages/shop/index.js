@@ -67,7 +67,7 @@ export default function ShopHome() {
 
   const fetchConfig = async () => {
     try {
-      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
+      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
       const timestamp = new Date().getTime()
       
       let data
@@ -121,7 +121,7 @@ export default function ShopHome() {
 
   const fetchPlugs = async () => {
     try {
-      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
+      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
       const timestamp = new Date().getTime()
       
       let data

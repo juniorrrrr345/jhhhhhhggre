@@ -76,7 +76,7 @@ export default function ShopSearch() {
 
   const fetchConfig = async () => {
     try {
-      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
+      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
       const timestamp = new Date().getTime()
       
       let data
@@ -97,7 +97,7 @@ export default function ShopSearch() {
           throw new Error(`Direct config failed: HTTP ${directResponse.status}`)
         }
       } catch (directError) {
-        console.log('❌ Config recherche directe échouée:', directError.message)
+        console.log('❌ Config directe échouée:', directError.message)
         
         try {
           const proxyResponse = await fetch(`/api/proxy?endpoint=/api/public/config&t=${new Date().getTime()}`, {
@@ -114,14 +114,15 @@ export default function ShopSearch() {
           
           data = await proxyResponse.json()
         } catch (proxyError) {
-          console.log('❌ Config recherche proxy échouée:', proxyError.message)
+          console.log('❌ Config proxy échouée:', proxyError.message)
           throw proxyError
         }
       }
 
       setConfig(data)
     } catch (error) {
-      console.log('❌ Erreur chargement config recherche:', error)
+      console.error('❌ Erreur chargement config:', error)
+      toast.error('Erreur de connexion')
     } finally {
       setInitialLoading(false)
     }
@@ -129,7 +130,8 @@ export default function ShopSearch() {
 
   const fetchPlugs = async () => {
     try {
-      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
+      setLoading(true)
+      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
       const timestamp = new Date().getTime()
       
       let data

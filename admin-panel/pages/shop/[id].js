@@ -18,13 +18,13 @@ export default function ShopPlugDetail() {
   useEffect(() => {
     if (id) {
       fetchConfig()
-      fetchPlug()
+      fetchPlug(id)
     }
   }, [id])
 
   const fetchConfig = async () => {
     try {
-      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
+      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
       const timestamp = new Date().getTime()
       
       let data
@@ -75,9 +75,10 @@ export default function ShopPlugDetail() {
     }
   }
 
-  const fetchPlug = async () => {
+  const fetchPlug = async (id) => {
     try {
-      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
+      setLoading(true)
+      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
       const timestamp = new Date().getTime()
       
       let data
