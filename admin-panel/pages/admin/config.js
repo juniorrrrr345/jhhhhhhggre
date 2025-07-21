@@ -129,6 +129,16 @@ export default function BotConfig() {
     // Toast de début pour confirmer que la fonction est appelée
     toast.info('💾 Début de la sauvegarde...', { duration: 2000 })
 
+    // CORRECTION: Protection timeout globale
+    const globalTimeout = setTimeout(() => {
+      console.error('⏰ Timeout global de sauvegarde')
+      setSaving(false)
+      toast.error('Timeout: La sauvegarde a pris trop de temps', {
+        duration: 5000,
+        icon: '⏰'
+      })
+    }, 60000) // 60 secondes max
+
     try {
       console.log('💾 Sauvegarde configuration...', retryCount + 1)
       console.log('📊 Configuration actuelle:', config)
@@ -161,19 +171,26 @@ export default function BotConfig() {
       const cleanedConfig = cleanConfig(configToSave)
       console.log('🧹 Configuration nettoyée:', Object.keys(cleanedConfig))
       
-      const response = await fetch('/api/proxy?endpoint=/api/config', {
-        method: 'POST',
-        headers: {
-          'Authorization': token,
-          'Content-Type': 'application/json',
-          'Cache-Control': 'no-cache'
-        },
-        body: JSON.stringify({
-          _method: 'PUT',
-          ...cleanedConfig
-        }),
-        signal: AbortSignal.timeout(45000) // 45 secondes timeout
-      })
+      // CORRECTION: Timeout plus court et gestion d'erreur améliorée
+      let response
+      try {
+        response = await fetch('/api/proxy?endpoint=/api/config', {
+          method: 'POST',
+          headers: {
+            'Authorization': token,
+            'Content-Type': 'application/json',
+            'Cache-Control': 'no-cache'
+          },
+          body: JSON.stringify({
+            _method: 'PUT',
+            ...cleanedConfig
+          }),
+          signal: AbortSignal.timeout(30000) // 30 secondes timeout
+        })
+      } catch (fetchError) {
+        console.error('❌ Erreur fetch:', fetchError)
+        throw new Error(`Erreur de connexion: ${fetchError.message}`)
+      }
 
       console.log('📡 Response status:', response.status, response.statusText)
 
@@ -263,6 +280,10 @@ export default function BotConfig() {
           icon: '🔄'
         })
         
+        // CORRECTION: Remettre setSaving(false) avant le retry et nettoyer timeout
+        clearTimeout(globalTimeout)
+        setSaving(false)
+        
         setTimeout(() => {
           saveConfig(retryCount + 1)
         }, delay)
@@ -298,7 +319,10 @@ export default function BotConfig() {
         icon: errorIcon
       })
     } finally {
+      // CORRECTION: Nettoyer le timeout et s'assurer que saving est remis à false
+      clearTimeout(globalTimeout)
       setSaving(false)
+      console.log('🔄 Saving state reset to false')
     }
   }
 
