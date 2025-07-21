@@ -2,10 +2,14 @@ const Config = require('../models/Config');
 const Plug = require('../models/Plug');
 const { createMainKeyboard, createVIPKeyboard } = require('../utils/keyboards');
 const { sendMessageWithImage, editMessageWithImage } = require('../utils/messageHelper');
+const { ensureConnection } = require('../utils/database');
 
 const handleStart = async (ctx) => {
   try {
     console.log('🚀 Commande /start reçue de:', ctx.from.id);
+    
+    // Vérifier et s'assurer que MongoDB est connecté
+    await ensureConnection();
     
     // Récupérer la configuration avec fallback (toujours fresh)
     let config;

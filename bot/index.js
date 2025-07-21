@@ -1278,6 +1278,7 @@ const start = async () => {
     console.log('🔄 Migration automatique des réseaux sociaux...');
     try {
       await migrateSocialMedia();
+      console.log('✅ Migration terminée avec succès');
     } catch (migrationError) {
       console.error('⚠️ Erreur migration (continuons quand même):', migrationError.message);
     }

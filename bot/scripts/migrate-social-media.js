@@ -4,7 +4,11 @@ const Plug = require('../src/models/Plug');
 // Script de migration pour convertir socialMedia de l'ancien format vers le nouveau
 async function migrateSocialMedia() {
   try {
-    await mongoose.connect(process.env.MONGODB_URI);
+    // Utiliser la connexion existante au lieu d'en créer une nouvelle
+    if (mongoose.connection.readyState !== 1) {
+      throw new Error('MongoDB n\'est pas connecté. La migration nécessite une connexion active.');
+    }
+    
     console.log('🔗 Connexion à MongoDB réussie');
     
     const plugs = await Plug.find({});
@@ -53,10 +57,7 @@ async function migrateSocialMedia() {
           });
         }
         
-        needsUpdate = true;
-      }
-      
-      if (needsUpdate) {
+        // Mettre à jour le plug avec le nouveau format
         await Plug.findByIdAndUpdate(plug._id, { 
           socialMedia: newSocialMedia 
         });
@@ -69,15 +70,26 @@ async function migrateSocialMedia() {
     
   } catch (error) {
     console.error('❌ Erreur migration:', error);
-  } finally {
-    await mongoose.disconnect();
-    console.log('🔌 Déconnexion MongoDB');
+    throw error; // Relancer l'erreur pour que l'appelant puisse la gérer
   }
+  // NE PAS fermer la connexion MongoDB ici car elle est utilisée par l'application principale
 }
 
 // Exécuter la migration si le script est appelé directement
 if (require.main === module) {
-  migrateSocialMedia();
+  // Si exécuté directement, on doit établir notre propre connexion
+  mongoose.connect(process.env.MONGODB_URI)
+    .then(() => migrateSocialMedia())
+    .then(() => {
+      console.log('🔌 Fermeture de la connexion MongoDB');
+      return mongoose.disconnect();
+    })
+    .then(() => process.exit(0))
+    .catch((error) => {
+      console.error('❌ Erreur:', error);
+      process.exit(1);
+    });
+} else {
+  // Si importé comme module, utiliser la connexion existante
+  module.exports = migrateSocialMedia;
 }
-
-module.exports = migrateSocialMedia;
