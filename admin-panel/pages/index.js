@@ -204,11 +204,17 @@ export default function Login() {
             </button>
           </form>
 
-          {/* Lien vers la page de diagnostic */}
-          <div className="mt-6 text-center">
+          {/* Liens utiles */}
+          <div className="mt-6 text-center space-y-2">
+            <a 
+              href="/login-direct" 
+              className="block text-sm text-blue-500 hover:text-blue-700 underline font-medium"
+            >
+              🚀 Connexion directe automatique
+            </a>
             <a 
               href="/diagnostic" 
-              className="text-sm text-gray-500 hover:text-gray-700 underline"
+              className="block text-sm text-gray-500 hover:text-gray-700 underline"
             >
               🔧 Page de diagnostic de connexion
             </a>
