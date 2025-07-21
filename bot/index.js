@@ -239,7 +239,7 @@ bot.action(/^plug_service_([a-f\d]{24})_(.+)$/, async (ctx) => {
 });
 
 
-// Liker une boutique
+// Liker une boutique avec système de cooldown
 bot.action(/^like_([a-f\d]{24})$/, async (ctx) => {
   try {
     const plugId = ctx.match[1];
@@ -250,29 +250,71 @@ bot.action(/^like_([a-f\d]{24})$/, async (ctx) => {
     // Vérifier si la boutique existe
     const Plug = require('./src/models/Plug');
     const plug = await Plug.findById(plugId);
+    const Config = require('./src/models/Config');
     
     if (!plug) {
       return ctx.answerCbQuery('❌ Boutique non trouvée');
     }
     
     const hasLiked = plug.likedBy.includes(userId);
+    
+    // Vérifier le cooldown pour retirer un like (2 heures)
+    if (hasLiked) {
+      const userLikeData = plug.likeHistory?.find(entry => entry.userId === userId);
+      if (userLikeData) {
+        const timeSinceLastLike = Date.now() - userLikeData.timestamp;
+        const cooldownPeriod = 2 * 60 * 60 * 1000; // 2 heures en millisecondes
+        
+        if (timeSinceLastLike < cooldownPeriod) {
+          const remainingTime = Math.ceil((cooldownPeriod - timeSinceLastLike) / (60 * 1000)); // en minutes
+          const hours = Math.floor(remainingTime / 60);
+          const minutes = remainingTime % 60;
+          const timeDisplay = hours > 0 ? `${hours}h${minutes > 0 ? ` ${minutes}min` : ''}` : `${minutes}min`;
+          
+          return ctx.answerCbQuery(`⏰ Vous devez attendre encore ${timeDisplay} avant de pouvoir retirer votre like`);
+        }
+      }
+    }
+    
+    // Initialiser likeHistory si nécessaire
+    if (!plug.likeHistory) {
+      plug.likeHistory = [];
+    }
+    
     const action = hasLiked ? 'unlike' : 'like';
     
     // Mettre à jour les likes
     if (action === 'like') {
       plug.likedBy.push(userId);
       plug.likes += 1;
+      
+      // Ajouter à l'historique
+      plug.likeHistory.push({
+        userId: userId,
+        timestamp: Date.now(),
+        action: 'like'
+      });
+      
       await plug.save();
       await ctx.answerCbQuery(`❤️ Vous avez liké ${plug.name} ! (${plug.likes} likes)`);
+      
     } else {
       plug.likedBy = plug.likedBy.filter(id => id !== userId);
       plug.likes -= 1;
+      
+      // Mettre à jour l'historique
+      const userLikeIndex = plug.likeHistory.findIndex(entry => entry.userId === userId);
+      if (userLikeIndex !== -1) {
+        plug.likeHistory[userLikeIndex].timestamp = Date.now();
+        plug.likeHistory[userLikeIndex].action = 'unlike';
+      }
+      
       await plug.save();
       await ctx.answerCbQuery(`💔 Like retiré de ${plug.name} (${plug.likes} likes)`);
     }
     
-    // Mettre à jour le clavier avec le nouveau statut (et passer userId pour l'état du bouton)
-    const { createPlugKeyboard } = require('./src/utils/keyboards');
+    // Récupérer la configuration pour le contexte de retour
+    const config = await Config.findById('main');
     
     // Déterminer le bon contexte de retour
     let returnContext = 'top_plugs'; // valeur par défaut
@@ -280,14 +322,58 @@ bot.action(/^like_([a-f\d]{24})$/, async (ctx) => {
       returnContext = ctx.session.lastContext;
     }
     
+    // Mettre à jour le message complet avec les nouveaux likes
+    const { createPlugKeyboard } = require('./src/utils/keyboards');
+    const { editMessageWithImage } = require('./src/utils/messageHelper');
+    
+    // Reconstruire le message de détails du plug avec les nouveaux likes
+    let message = `${plug.isVip ? '⭐ ' : ''}**${plug.name}**\n\n`;
+    message += `📝 ${plug.description}\n\n`;
+
+    // Services disponibles
+    const services = [];
+    if (plug.services?.delivery?.enabled) {
+      services.push(`🚚 **Livraison**${plug.services.delivery.description ? `: ${plug.services.delivery.description}` : ''}`);
+    }
+    if (plug.services?.postal?.enabled) {
+      services.push(`✈️ **Envoi postal**${plug.services.postal.description ? `: ${plug.services.postal.description}` : ''}`);
+    }
+    if (plug.services?.meetup?.enabled) {
+      services.push(`🏠 **Meetup**${plug.services.meetup.description ? `: ${plug.services.meetup.description}` : ''}`);
+    }
+
+    if (services.length > 0) {
+      message += `🔧 **Services :**\n${services.join('\n')}\n\n`;
+    }
+
+    // Pays desservis
+    if (plug.countries && plug.countries.length > 0) {
+      message += `🌍 **Pays desservis :** ${plug.countries.join(', ')}\n\n`;
+    }
+
+    // Afficher les likes mis à jour en temps réel
+    const likesCount = plug.likes || 0;
+    message += `❤️ **${likesCount} like${likesCount !== 1 ? 's' : ''}**\n\n`;
+
     const newKeyboard = createPlugKeyboard(plug, returnContext, userId);
     
+    // Mettre à jour le message complet avec la nouvelle information de likes
     try {
-      await ctx.editMessageReplyMarkup(newKeyboard.reply_markup);
-      console.log('✅ Clavier mis à jour avec le nouvel état du like');
+      await editMessageWithImage(ctx, message, newKeyboard, config, { 
+        parse_mode: 'Markdown',
+        plugImage: plug.image,
+        isPlugDetails: true
+      });
+      console.log('✅ Message mis à jour avec les nouveaux likes en temps réel');
     } catch (error) {
-      // Ignore si le message n'a pas changé
-      console.log('⚠️ Mise à jour clavier échouée:', error.message);
+      console.log('⚠️ Mise à jour message échouée, mise à jour clavier seulement:', error.message);
+      // Fallback : mettre à jour seulement le clavier
+      try {
+        await ctx.editMessageReplyMarkup(newKeyboard.reply_markup);
+        console.log('✅ Clavier mis à jour avec le nouvel état du like');
+      } catch (keyboardError) {
+        console.log('⚠️ Mise à jour clavier échouée:', keyboardError.message);
+      }
     }
     
   } catch (error) {

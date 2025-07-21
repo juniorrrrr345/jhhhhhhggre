@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import Head from 'next/head'
 import Link from 'next/link'
+import Pagination from '../../components/Pagination'
 import {
   StarIcon,
   MapPinIcon,
@@ -174,10 +175,10 @@ export default function ShopVIP() {
       <div 
         className="min-h-screen bg-black"
         style={config?.boutique?.backgroundImage ? {
-          backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url(${config.boutique.backgroundImage})`,
-          backgroundSize: '300px 300px', // Taille fixe pour répétition
+          backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url(${config.boutique.backgroundImage})`,
+          backgroundSize: 'cover',
           backgroundPosition: 'center',
-          backgroundRepeat: 'repeat', // Répéter le background
+          backgroundRepeat: 'no-repeat',
           backgroundAttachment: 'fixed'
         } : {}}
       >

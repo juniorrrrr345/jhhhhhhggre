@@ -3,6 +3,7 @@ import Head from 'next/head'
 import Link from 'next/link'
 import { api } from '../../lib/api'
 import toast from 'react-hot-toast'
+import Pagination from '../../components/Pagination'
 import {
   StarIcon,
   MapPinIcon,
@@ -17,6 +18,8 @@ export default function ShopHome() {
   const [config, setConfig] = useState(null)
   const [loading, setLoading] = useState(true)
   const [initialLoading, setInitialLoading] = useState(true)
+  const [currentPage, setCurrentPage] = useState(1)
+  const itemsPerPage = 12
 
   useEffect(() => {
     fetchConfig()
@@ -227,10 +230,10 @@ export default function ShopHome() {
       <div 
         className="min-h-screen bg-black"
         style={config?.boutique?.backgroundImage ? {
-          backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url(${config.boutique.backgroundImage})`,
-          backgroundSize: '300px 300px', // Taille fixe pour répétition
+          backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url(${config.boutique.backgroundImage})`,
+          backgroundSize: 'cover',
           backgroundPosition: 'center',
-          backgroundRepeat: 'repeat', // Répéter le background
+          backgroundRepeat: 'no-repeat',
           backgroundAttachment: 'fixed'
         } : {}}
       >
@@ -312,8 +315,12 @@ export default function ShopHome() {
               <p className="text-gray-300">Revenez plus tard pour découvrir nos produits.</p>
             </div>
           ) : (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {plugs.map((plug, index) => (
+            <>
+              {/* Grille des produits */}
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {plugs
+                  .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+                  .map((plug, index) => (
                 <Link key={plug._id} href={`/shop/${plug._id}`}>
                   <div className="bg-black border border-gray-600 rounded-lg overflow-hidden hover:border-gray-400 transition-colors duration-300 cursor-pointer">
                     {/* Image */}
@@ -388,10 +395,23 @@ export default function ShopHome() {
                         </div>
                       </div>
                     </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+
+              {/* Pagination */}
+              {plugs.length > itemsPerPage && (
+                <div className="mt-12">
+                  <Pagination
+                    currentPage={currentPage}
+                    totalPages={Math.ceil(plugs.length / itemsPerPage)}
+                    onPageChange={setCurrentPage}
+                    className="mb-8"
+                  />
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>
