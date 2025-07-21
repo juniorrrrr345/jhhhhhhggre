@@ -239,7 +239,7 @@ bot.action(/^plug_service_([a-f\d]{24})_(.+)$/, async (ctx) => {
 });
 
 
-// Liker une boutique (système de likes permanent)
+// Liker une boutique (système permanent)
 bot.action(/^like_([a-f\d]{24})$/, async (ctx) => {
   try {
     const plugId = ctx.match[1];
@@ -257,10 +257,9 @@ bot.action(/^like_([a-f\d]{24})$/, async (ctx) => {
     
     const hasLiked = plug.likedBy.includes(userId);
     
-    // Si l'utilisateur a déjà liké, afficher SEULEMENT un message de confirmation
-    // SANS modifier le message ni le clavier
+    // Si l'utilisateur a déjà liké, afficher un message de confirmation
     if (hasLiked) {
-      console.log(`User ${userId} already liked plug ${plugId} - showing confirmation only`);
+      console.log(`User ${userId} already liked plug ${plugId} - showing confirmation`);
       return ctx.answerCbQuery(`❤️ Vous avez déjà liké ${plug.name} ! (${plug.likes} likes)`, { 
         show_alert: false 
       });
@@ -1428,11 +1427,11 @@ app.get('/api/cache/stats', (req, res) => {
   });
 });
 
-// Liker/disliker un plug (endpoint public)
+// Liker un plug (endpoint public - likes permanents)
 app.post('/api/public/plugs/:id/like', async (req, res) => {
   try {
     const { id } = req.params;
-    const { userId, action } = req.body; // action: 'like' ou 'unlike'
+    const { userId, action } = req.body; // action: 'like' seulement
     
     console.log(`${action} plug ${id} by user ${userId}`);
     
@@ -1444,33 +1443,61 @@ app.post('/api/public/plugs/:id/like', async (req, res) => {
     const hasLiked = plug.likedBy.includes(userId);
     
     if (action === 'like' && !hasLiked) {
+      // Ajouter le like
       plug.likedBy.push(userId);
       plug.likes += 1;
-    } else if (action === 'unlike' && hasLiked) {
-      plug.likedBy = plug.likedBy.filter(id => id !== userId);
-      plug.likes -= 1;
+      
+      // Ajouter à l'historique
+      if (!plug.likeHistory) {
+        plug.likeHistory = [];
+      }
+      plug.likeHistory.push({
+        userId: userId,
+        timestamp: Date.now(),
+        action: 'like'
+      });
+      
+      await plug.save();
+      await refreshCache();
+      
+      res.set({
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type',
+        'Cache-Control': 'no-cache'
+      });
+      
+      res.json({ 
+        likes: plug.likes,
+        liked: true,
+        message: 'Like ajouté'
+      });
+      
+    } else if (action === 'unlike') {
+      // Unlike non autorisé
+      return res.status(400).json({ 
+        error: 'Impossible de retirer un like',
+        message: 'Les likes sont permanents'
+      });
+      
+    } else {
+      // Déjà liké ou aucune action
+      res.set({
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type',
+        'Cache-Control': 'no-cache'
+      });
+      
+      res.json({ 
+        likes: plug.likes,
+        liked: hasLiked,
+        message: hasLiked ? 'Déjà liké' : 'Pas encore liké'
+      });
     }
     
-    await plug.save();
-    
-    // Forcer le rafraîchissement du cache après modification des likes
-    await refreshCache();
-    
-    res.set({
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type',
-      'Cache-Control': 'no-cache'
-    });
-    
-    res.json({ 
-      likes: plug.likes,
-      liked: plug.likedBy.includes(userId),
-      message: action === 'like' ? 'Like ajouté' : 'Like retiré'
-    });
-    
   } catch (error) {
-    console.error('Erreur like/unlike:', error);
+    console.error('Erreur like:', error);
     res.status(500).json({ error: 'Erreur serveur' });
   }
 });

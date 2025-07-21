@@ -293,7 +293,7 @@ const createPlugKeyboard = (plug, returnContext = 'top_plugs', userId = null) =>
     console.log(`⚠️ Aucun réseau social configuré pour ${plug.name}`);
   }
   
-  // Bouton like avec état dynamique (permanent)
+  // Bouton like avec état permanent
   let likeButtonText;
   
   // Vérifier si l'utilisateur a déjà liké
