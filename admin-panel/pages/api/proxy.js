@@ -41,12 +41,21 @@ export default async function handler(req, res) {
     let actualMethod = req.method
     let bodyData = req.body
     
-    // Si le body contient _method, l'utiliser (pour simuler PUT/DELETE via POST)
-    if (req.body && req.body._method) {
-      actualMethod = req.body._method
-      // Retirer _method du body
+    // CORRECTION: Meilleure gestion de _method pour simuler PUT/DELETE via POST
+    if (req.body && typeof req.body === 'object' && req.body._method) {
+      actualMethod = req.body._method.toUpperCase()
+      console.log(`🔄 Conversion méthode: ${req.method} → ${actualMethod} via _method`)
+      
+      // Retirer _method du body et créer une copie propre
       const { _method, ...rest } = req.body
       bodyData = rest
+      
+      // Log pour debug
+      console.log('📦 Body après nettoyage _method:', {
+        originalKeys: Object.keys(req.body),
+        cleanedKeys: Object.keys(bodyData),
+        size: JSON.stringify(bodyData).length
+      })
     }
     
     // Faire la requête vers Render avec timeout
@@ -55,15 +64,21 @@ export default async function handler(req, res) {
       headers: {
         'Content-Type': 'application/json',
         'User-Agent': 'Vercel-Proxy/1.0',
-        'Cache-Control': 'no-cache'
+        'Cache-Control': 'no-cache',
+        'Accept': 'application/json'
       },
-      // Ajouter un timeout de 30 secondes pour la configuration
-      signal: AbortSignal.timeout(endpoint.includes('/config') ? 30000 : 15000)
+      // Timeout adaptatif selon l'endpoint
+      signal: AbortSignal.timeout(endpoint.includes('/config') ? 45000 : 20000)
     }
     
-    // Ajouter le body pour POST/PUT
-    if (actualMethod === 'POST' || actualMethod === 'PUT') {
+    // Ajouter le body pour POST/PUT/PATCH
+    if (['POST', 'PUT', 'PATCH'].includes(actualMethod)) {
       fetchOptions.body = JSON.stringify(bodyData)
+      console.log('📦 Body envoyé:', {
+        method: actualMethod,
+        bodySize: fetchOptions.body.length,
+        contentType: fetchOptions.headers['Content-Type']
+      })
     }
     
     // Ajouter l'authorization si présente
@@ -73,18 +88,25 @@ export default async function handler(req, res) {
         ? req.headers.authorization 
         : `Bearer ${req.headers.authorization}`;
       fetchOptions.headers.Authorization = auth;
+      console.log('🔐 Auth header ajouté:', auth.substring(0, 20) + '...');
     }
     
     console.log('📡 Fetch options:', {
       url: targetUrl,
       method: actualMethod,
       hasAuth: !!fetchOptions.headers.Authorization,
-      hasBody: !!fetchOptions.body
+      hasBody: !!fetchOptions.body,
+      timeout: endpoint.includes('/config') ? '45s' : '20s'
     });
     
     const response = await fetch(targetUrl, fetchOptions)
     
-    console.log('✅ Proxy response:', response.status, response.statusText, response.headers.get('content-type'))
+    console.log('✅ Proxy response:', {
+      status: response.status,
+      statusText: response.statusText,
+      contentType: response.headers.get('content-type'),
+      contentLength: response.headers.get('content-length')
+    })
     
     // Vérifier le content-type de la réponse
     const contentType = response.headers.get('content-type')
@@ -92,7 +114,11 @@ export default async function handler(req, res) {
     if (!contentType || !contentType.includes('application/json')) {
       // Si ce n'est pas du JSON, récupérer le texte
       const text = await response.text()
-      console.error('❌ Réponse non-JSON reçue:', text.substring(0, 200))
+      console.error('❌ Réponse non-JSON reçue:', {
+        contentType,
+        textLength: text.length,
+        preview: text.substring(0, 200)
+      })
       
       return res.status(response.status).json({
         error: 'Réponse invalide du serveur',
@@ -105,30 +131,52 @@ export default async function handler(req, res) {
     }
     
     const data = await response.json()
-    console.log('📊 Proxy data received:', typeof data, Array.isArray(data) ? 'array' : 'object');
+    console.log('📊 Proxy data received:', {
+      type: typeof data,
+      isArray: Array.isArray(data),
+      keys: typeof data === 'object' && data ? Object.keys(data) : 'N/A',
+      size: JSON.stringify(data).length
+    });
+    
+    // CORRECTION: Transférer tous les headers importants
+    const importantHeaders = ['cache-control', 'last-modified', 'etag', 'expires']
+    importantHeaders.forEach(header => {
+      const value = response.headers.get(header)
+      if (value) {
+        res.setHeader(header, value)
+      }
+    })
     
     // Retourner la réponse
     res.status(response.status).json(data)
     
   } catch (error) {
-    console.error('❌ Proxy error:', error)
+    console.error('❌ Proxy error:', {
+      name: error.name,
+      message: error.message,
+      stack: error.stack
+    })
     
-    // Différencier les types d'erreurs
+    // Différencier les types d'erreurs avec plus de précision
     let errorMessage = error.message;
     let statusCode = 500;
     
     if (error.name === 'AbortError' || error.message.includes('timeout')) {
-      errorMessage = 'Timeout: Le serveur bot ne répond pas';
+      errorMessage = 'Timeout: Le serveur bot ne répond pas (augmentez le timeout si nécessaire)';
       statusCode = 504;
-    } else if (error.message.includes('fetch')) {
-      errorMessage = 'Impossible de contacter le serveur bot';
+    } else if (error.message.includes('fetch') || error.message.includes('ECONNREFUSED')) {
+      errorMessage = 'Impossible de contacter le serveur bot - Vérifiez que le bot est démarré';
       statusCode = 503;
+    } else if (error.message.includes('getaddrinfo')) {
+      errorMessage = 'Erreur de résolution DNS - Vérifiez l\'URL du serveur bot';
+      statusCode = 502;
     }
     
     res.status(statusCode).json({ 
       error: 'Erreur proxy', 
       message: errorMessage,
       originalError: error.message,
+      errorType: error.name,
       timestamp: new Date().toISOString()
     })
   }

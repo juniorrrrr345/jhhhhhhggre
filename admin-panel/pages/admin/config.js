@@ -128,6 +128,29 @@ export default function BotConfig() {
         throw new Error('Token d\'authentification manquant')
       }
       
+      // CORRECTION: Validation des données avant envoi
+      const configToSave = { ...config }
+      
+      // Nettoyer les données undefined
+      const cleanConfig = (obj) => {
+        if (Array.isArray(obj)) {
+          return obj.map(cleanConfig).filter(item => item !== null && item !== undefined);
+        } else if (obj !== null && typeof obj === 'object') {
+          const cleaned = {};
+          Object.keys(obj).forEach(key => {
+            const value = cleanConfig(obj[key]);
+            if (value !== undefined && value !== null && value !== '') {
+              cleaned[key] = value;
+            }
+          });
+          return cleaned;
+        }
+        return obj;
+      }
+      
+      const cleanedConfig = cleanConfig(configToSave)
+      console.log('🧹 Configuration nettoyée:', Object.keys(cleanedConfig))
+      
       const response = await fetch('/api/proxy?endpoint=/api/config', {
         method: 'POST',
         headers: {
@@ -137,55 +160,102 @@ export default function BotConfig() {
         },
         body: JSON.stringify({
           _method: 'PUT',
-          ...config
+          ...cleanedConfig
         }),
-        signal: AbortSignal.timeout(30000)
+        signal: AbortSignal.timeout(45000) // 45 secondes timeout
       })
+
+      console.log('📡 Response status:', response.status, response.statusText)
 
       if (response.ok) {
         const savedConfig = await response.json()
         console.log('✅ Configuration sauvegardée:', savedConfig)
-        toast.success('Configuration sauvegardée avec succès !')
+        toast.success('Configuration sauvegardée avec succès !', {
+          duration: 4000,
+          icon: '💾'
+        })
         
-        // Recharger le bot
+        // Mettre à jour l'état local avec les données sauvegardées
+        if (savedConfig && typeof savedConfig === 'object') {
+          setConfig(prevConfig => ({
+            ...prevConfig,
+            ...savedConfig
+          }))
+        }
+        
+        // Recharger le bot après un délai
         setTimeout(() => {
           reloadBot();
         }, 1000);
         
       } else {
-        const errorText = await response.text()
-        console.error('❌ Erreur sauvegarde:', response.status, errorText)
-        throw new Error(`Erreur ${response.status}: ${errorText}`)
+        // Lire la réponse d'erreur
+        let errorData;
+        try {
+          errorData = await response.json()
+        } catch {
+          errorData = { error: await response.text() }
+        }
+        
+        console.error('❌ Erreur sauvegarde:', response.status, errorData)
+        throw new Error(`Erreur ${response.status}: ${errorData.error || errorData.message || 'Erreur inconnue'}`)
       }
 
     } catch (error) {
       console.error('💥 Erreur sauvegarde config:', error)
       
-      // Retry automatique pour les erreurs de réseau
-      if ((error.message.includes('Load failed') || error.message.includes('fetch') || error.name === 'AbortError') 
-          && retryCount < 2) {
-        console.log('🔄 Retry automatique dans 2 secondes...')
-        toast.info(`Retry ${retryCount + 1}/3 dans 2 secondes...`)
+      // Retry automatique pour certaines erreurs
+      const shouldRetry = (
+        (error.message.includes('Load failed') || 
+         error.message.includes('fetch') || 
+         error.name === 'AbortError' ||
+         error.message.includes('timeout') ||
+         error.message.includes('Erreur 50')) // Erreurs serveur 5xx
+        && retryCount < 3
+      )
+      
+      if (shouldRetry) {
+        const delay = Math.min(2000 * Math.pow(2, retryCount), 8000) // Backoff exponentiel
+        console.log(`🔄 Retry automatique ${retryCount + 1}/3 dans ${delay}ms...`)
+        toast.info(`Nouvelle tentative ${retryCount + 1}/3 dans ${delay/1000}s...`, {
+          duration: delay,
+          icon: '🔄'
+        })
         
         setTimeout(() => {
           saveConfig(retryCount + 1)
-        }, 2000)
+        }, delay)
         return
       }
       
-      // Messages d'erreur spécifiques
+      // Messages d'erreur spécifiques et plus clairs
       let errorMessage = 'Erreur lors de la sauvegarde'
+      let errorIcon = '❌'
+      
       if (error.name === 'AbortError' || error.message.includes('timeout')) {
-        errorMessage = 'Timeout: La sauvegarde a pris trop de temps'
+        errorMessage = 'Timeout: La sauvegarde a pris trop de temps. Vérifiez votre connexion.'
+        errorIcon = '⏱️'
       } else if (error.message.includes('Load failed') || error.message.includes('fetch')) {
-        errorMessage = 'Erreur de connexion: Vérifiez votre réseau'
+        errorMessage = 'Erreur de connexion: Impossible de contacter le serveur. Vérifiez que le bot est démarré.'
+        errorIcon = '🔌'
       } else if (error.message.includes('401')) {
-        errorMessage = 'Erreur d\'authentification: Reconnectez-vous'
+        errorMessage = 'Erreur d\'authentification: Votre session a expiré. Reconnectez-vous.'
+        errorIcon = '🔐'
       } else if (error.message.includes('400')) {
-        errorMessage = 'Données invalides: Vérifiez les champs'
+        errorMessage = 'Données invalides: Vérifiez les champs remplis.'
+        errorIcon = '📝'
+      } else if (error.message.includes('413')) {
+        errorMessage = 'Données trop volumineuses: Réduisez la taille des images ou textes.'
+        errorIcon = '📏'
+      } else if (error.message.includes('50')) {
+        errorMessage = 'Erreur serveur: Le serveur bot rencontre un problème. Réessayez dans quelques instants.'
+        errorIcon = '🚨'
       }
       
-      toast.error(errorMessage)
+      toast.error(errorMessage, {
+        duration: 6000,
+        icon: errorIcon
+      })
     } finally {
       setSaving(false)
     }
@@ -280,32 +350,32 @@ export default function BotConfig() {
               <h2 className="text-xl font-semibold text-gray-900 mb-4">🎉 Message d'Accueil</h2>
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Texte du message d'accueil
+                  <label className="block text-sm font-semibold text-gray-800 mb-2">
+                    Texte de bienvenue
                   </label>
                   <textarea
                     value={config.welcome.text}
                     onChange={(e) => updateConfig('welcome.text', e.target.value)}
-                    className="w-full border border-gray-300 rounded-lg p-3 h-24 resize-none"
-                    placeholder="🎉 Bienvenue sur notre bot..."
+                    className="w-full border-2 border-gray-400 text-gray-900 rounded-lg p-3 h-24 resize-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+                    placeholder="Bienvenue sur notre plateforme !"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Image d'accueil (URL)
+                  <label className="block text-sm font-semibold text-gray-800 mb-2">
+                    Image de bienvenue (URL)
                   </label>
                   <input
                     type="url"
                     value={config.welcome.image}
                     onChange={(e) => updateConfig('welcome.image', e.target.value)}
-                    className="w-full border border-gray-300 rounded-lg p-3"
+                    className="w-full border-2 border-gray-400 text-gray-900 rounded-lg p-3 focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
                     placeholder="https://example.com/image.jpg"
                   />
                   {config.welcome.image && (
                     <img 
                       src={config.welcome.image} 
-                      alt="Aperçu"
-                      className="mt-2 w-48 h-24 object-cover rounded border"
+                      alt="Preview"
+                      className="mt-2 w-64 h-32 object-cover rounded border-2 border-gray-300"
                       onError={(e) => {e.target.style.display = 'none'}}
                     />
                   )}
@@ -318,26 +388,26 @@ export default function BotConfig() {
               <h2 className="text-xl font-semibold text-gray-900 mb-4">🏪 Configuration Boutique</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-semibold text-gray-800 mb-2">
                     Nom de la boutique
                   </label>
                   <input
                     type="text"
                     value={config.boutique.name}
                     onChange={(e) => updateConfig('boutique.name', e.target.value)}
-                    className="w-full border border-gray-300 rounded-lg p-3"
+                    className="w-full border-2 border-gray-400 text-gray-900 rounded-lg p-3 focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
                     placeholder="SwissQuality"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-semibold text-gray-800 mb-2">
                     Sous-titre
                   </label>
                   <input
                     type="text"
                     value={config.boutique.subtitle}
                     onChange={(e) => updateConfig('boutique.subtitle', e.target.value)}
-                    className="w-full border border-gray-300 rounded-lg p-3"
+                    className="w-full border-2 border-gray-400 text-gray-900 rounded-lg p-3 focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
                     placeholder="Votre boutique premium"
                   />
                 </div>
@@ -600,19 +670,22 @@ export default function BotConfig() {
             </div>
 
             {/* Actions */}
-            <div className="bg-white rounded-lg shadow p-6">
+            <div className="bg-white rounded-lg shadow-lg border border-gray-200 p-6">
+              <h2 className="text-xl font-semibold text-gray-900 mb-4">⚡ Actions</h2>
               <div className="flex flex-col sm:flex-row gap-4">
                 <button
                   onClick={reloadBot}
                   disabled={saving}
-                  className="flex-1 bg-green-600 hover:bg-green-700 disabled:opacity-50 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+                  className="flex-1 bg-green-600 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
                 >
-                  🔄 Recharger Bot
+                  <span className="flex items-center justify-center">
+                    🔄 Recharger Bot
+                  </span>
                 </button>
                 <button
                   onClick={saveConfig}
                   disabled={saving}
-                  className={`flex-1 ${saving ? 'bg-orange-500 animate-pulse' : 'bg-blue-600 hover:bg-blue-700'} disabled:opacity-50 text-white px-6 py-3 rounded-lg font-medium transition-colors`}
+                  className={`flex-1 ${saving ? 'bg-orange-500 animate-pulse' : 'bg-blue-600 hover:bg-blue-700'} disabled:opacity-50 disabled:cursor-not-allowed text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5`}
                 >
                   {saving ? (
                     <span className="flex items-center justify-center">
@@ -620,10 +693,13 @@ export default function BotConfig() {
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                       </svg>
-                      Sauvegarde...
+                      Sauvegarde en cours...
                     </span>
                   ) : '💾 Sauvegarder Configuration'}
                 </button>
+              </div>
+              <div className="mt-4 text-sm text-gray-600 bg-gray-50 p-3 rounded-lg border">
+                <p><strong>💡 Conseil :</strong> Pensez à sauvegarder après chaque modification importante. Le rechargement du bot prend effet automatiquement après la sauvegarde.</p>
               </div>
             </div>
 

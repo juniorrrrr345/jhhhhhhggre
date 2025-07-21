@@ -487,26 +487,56 @@ app.put('/api/config', authenticateAdmin, async (req, res) => {
     const finalData = cleanRecursive(cleanConfigData);
     console.log('📝 Données après nettoyage:', Object.keys(finalData));
     
-    // Vérifier si la configuration existe déjà
-    let config = await Config.findById('main');
+    // CORRECTION: Meilleure gestion de la création/mise à jour
+    let config;
     
-    if (config) {
-      // Mise à jour existante
-      console.log('💾 Mise à jour configuration existante...');
-      Object.assign(config, finalData);
-      await config.save();
-    } else {
-      // Création nouvelle
-      console.log('💾 Création nouvelle configuration...');
-      config = new Config({
-        _id: 'main',
-        ...finalData
-      });
-      await config.save();
-    }
-    
-    if (!config) {
-      throw new Error('Échec de la mise à jour - aucun document retourné');
+    try {
+      // Essayer de trouver la configuration existante
+      config = await Config.findById('main');
+      
+      if (config) {
+        // Mise à jour existante avec validation
+        console.log('💾 Mise à jour configuration existante...');
+        
+        // Fusionner les données de manière sécurisée
+        const updatedData = { ...config.toObject(), ...finalData };
+        delete updatedData._id; // Retirer l'_id pour éviter les conflits
+        delete updatedData.__v; // Retirer la version
+        
+        // Utiliser findByIdAndUpdate pour une mise à jour atomique
+        config = await Config.findByIdAndUpdate(
+          'main', 
+          updatedData, 
+          { 
+            new: true, 
+            runValidators: true,
+            upsert: false
+          }
+        );
+        
+      } else {
+        // Création nouvelle avec gestion des erreurs
+        console.log('💾 Création nouvelle configuration...');
+        
+        config = await Config.create({
+          _id: 'main',
+          ...finalData
+        });
+      }
+      
+      if (!config) {
+        throw new Error('Échec de la sauvegarde - aucune configuration retournée');
+      }
+      
+      // Vérification que la sauvegarde a bien eu lieu
+      const verifyConfig = await Config.findById('main');
+      if (!verifyConfig) {
+        throw new Error('Échec de la vérification - configuration non trouvée après sauvegarde');
+      }
+      
+    } catch (dbError) {
+      console.error('❌ Erreur base de données:', dbError);
+      throw new Error(`Erreur de base de données: ${dbError.message}`);
     }
     
     console.log('✅ Configuration mise à jour avec succès');
