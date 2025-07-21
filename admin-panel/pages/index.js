@@ -49,6 +49,7 @@ export default function Login() {
         } else {
           toast.error('Erreur de connexion. Vérifiez votre mot de passe.');
         }
+      }
     } catch (error) {
       console.error('💥 Login error final:', error);
       
