@@ -13,7 +13,7 @@ import {
 
 const navigation = [
   { name: 'Dashboard', href: '/admin', icon: HomeIcon },
-  { name: 'Boutiques/Plugs', href: '/admin/plugs', icon: UserGroupIcon },
+  { name: 'Accueil', href: '/admin/plugs', icon: HomeIcon },
   { name: 'Configuration', href: '/admin/config', icon: CogIcon },
   { name: 'Messages diffusion', href: '/admin/broadcast', icon: ChartBarIcon, badge: '📢' },
   { name: 'Diagnostic', href: '/admin/diagnostic', icon: ChartBarIcon, badge: '🔍' },

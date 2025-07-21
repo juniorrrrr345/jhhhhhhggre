@@ -8,11 +8,21 @@ import {
   EyeIcon,
   PencilIcon,
   TrashIcon,
-  StarIcon
+  StarIcon,
+  ChartBarIcon,
+  UserGroupIcon,
+  ShoppingBagIcon,
+  CogIcon
 } from '@heroicons/react/24/outline'
 
-export default function PlugsManagement() {
+export default function AccueilAdmin() {
   const [plugs, setPlugs] = useState([])
+  const [stats, setStats] = useState({
+    totalPlugs: 0,
+    activePlugs: 0,
+    vipPlugs: 0,
+    totalUsers: 0
+  })
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
   const [filter, setFilter] = useState('all')
@@ -26,338 +36,412 @@ export default function PlugsManagement() {
       router.push('/')
       return
     }
-    fetchPlugs(token)
+    fetchData(token)
   }, [search, filter, currentPage])
 
-  const fetchPlugs = async (token) => {
+  const fetchData = async (token) => {
     try {
       setLoading(true)
-      const params = new URLSearchParams({
-        page: currentPage,
-        limit: 10,
-        search,
-        filter
-      })
-
-      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || process.env.API_BASE_URL || 'https://jhhhhhhggre.onrender.com'
-      console.log('📋 Fetching admin plugs from:', apiBaseUrl)
-
-      const response = await fetch(`${apiBaseUrl}/api/plugs?${params}`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      })
-
-      console.log('📋 Admin plugs response:', response.status)
-
-      if (response.ok) {
-        const data = await response.json()
-        console.log('✅ Admin plugs loaded:', data.plugs?.length || 0)
-        setPlugs(data.plugs || [])
-        setTotalPages(Math.ceil((data.pagination?.total || data.total || 0) / 10))
-      } else {
-        console.error('❌ Admin plugs error:', response.status)
-        toast.error('Erreur lors du chargement')
-      }
+      
+      // Récupérer les statistiques en parallèle
+      const [plugsResponse, usersResponse] = await Promise.all([
+        fetchPlugs(token),
+        fetchUserStats(token)
+      ])
+      
     } catch (error) {
-      console.error('💥 Admin plugs error:', error)
-      toast.error('Erreur de connexion')
+      console.error('❌ Erreur chargement données:', error)
+      toast.error('Erreur de chargement')
     } finally {
       setLoading(false)
     }
   }
 
-  const togglePlugStatus = async (plugId, currentStatus) => {
-    const token = localStorage.getItem('adminToken')
+  const fetchPlugs = async (token) => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/plugs/${plugId}`, {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ isActive: !currentStatus })
+      const params = new URLSearchParams({
+        page: currentPage,
+        limit: 6, // Moins de plugs pour l'accueil
+        search,
+        filter
+      })
+
+      const response = await fetch(`http://localhost:3000/api/plugs?${params}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
       })
 
       if (response.ok) {
-        toast.success(`Boutique ${!currentStatus ? 'activée' : 'désactivée'}`)
-        fetchPlugs(token)
+        const data = await response.json()
+        setPlugs(data.plugs || [])
+        setTotalPages(data.totalPages || 1)
+        
+        // Calculer les stats
+        const totalPlugs = data.total || 0
+        const activePlugs = (data.plugs || []).filter(p => p.isActive).length
+        const vipPlugs = (data.plugs || []).filter(p => p.isVip).length
+        
+        setStats(prev => ({
+          ...prev,
+          totalPlugs,
+          activePlugs,
+          vipPlugs
+        }))
+        
+        return data
       } else {
-        toast.error('Erreur lors de la modification')
+        throw new Error(`HTTP ${response.status}`)
       }
     } catch (error) {
-      toast.error('Erreur de connexion')
+      console.error('❌ Erreur chargement plugs:', error)
+      throw error
     }
   }
 
-
-
-  const deletePlug = async (plugId, plugName) => {
-    if (!confirm(`Êtes-vous sûr de vouloir supprimer "${plugName}" ?`)) return
-
-    const token = localStorage.getItem('adminToken')
+  const fetchUserStats = async (token) => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/plugs/${plugId}`, {
+      const response = await fetch('http://localhost:3000/api/users/stats', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        setStats(prev => ({
+          ...prev,
+          totalUsers: data.totalUsers || 0
+        }))
+        return data
+      }
+    } catch (error) {
+      console.log('⚠️ Stats utilisateurs non disponibles:', error.message)
+    }
+  }
+
+  const deletePlug = async (id) => {
+    if (!confirm('Êtes-vous sûr de vouloir supprimer cette boutique ?')) {
+      return
+    }
+
+    try {
+      const token = localStorage.getItem('adminToken')
+      const response = await fetch(`http://localhost:3000/api/plugs/${id}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       })
 
       if (response.ok) {
         toast.success('Boutique supprimée')
-        fetchPlugs(token)
+        fetchData(token)
       } else {
-        toast.error('Erreur lors de la suppression')
+        throw new Error(`HTTP ${response.status}`)
       }
     } catch (error) {
-      toast.error('Erreur de connexion')
+      console.error('❌ Erreur suppression:', error)
+      toast.error('Erreur lors de la suppression')
     }
   }
 
-  const getStatusBadge = (isActive) => {
-    return isActive ? (
-      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-        Actif
-      </span>
-    ) : (
-      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-        Inactif
+  const StatusBadge = ({ isActive, isVip }) => {
+    if (isVip) {
+      return (
+        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+          <StarIcon className="w-3 h-3 mr-1" />
+          VIP
+        </span>
+      )
+    }
+    return (
+      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+        isActive 
+          ? 'bg-green-100 text-green-800' 
+          : 'bg-red-100 text-red-800'
+      }`}>
+        {isActive ? '✅ Actif' : '❌ Inactif'}
       </span>
     )
   }
 
-  const getVipBadge = (isVip) => {
-    if (!isVip) return null
+  if (loading) {
     return (
-      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-        <StarIcon className="w-3 h-3 mr-1" />
-        VIP
-      </span>
+      <Layout>
+        <div className="flex items-center justify-center h-64">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+        </div>
+      </Layout>
     )
   }
 
   return (
-    <Layout title="Gestion des Boutiques">
+    <Layout>
       <div className="space-y-6">
-        {/* Header avec actions */}
-        <div className="sm:flex sm:items-center sm:justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">Boutiques & Plugs</h1>
-            <p className="text-gray-600">Gérez vos boutiques et leurs informations</p>
+        {/* Header */}
+        <div className="md:flex md:items-center md:justify-between">
+          <div className="flex-1 min-w-0">
+            <h2 className="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">
+              🏠 Accueil Admin
+            </h2>
+            <p className="mt-1 text-sm text-gray-500">
+              Vue d'ensemble de votre plateforme
+            </p>
           </div>
-          <div className="mt-4 sm:mt-0">
+          <div className="mt-4 flex md:mt-0 md:ml-4">
             <button
               onClick={() => router.push('/admin/plugs/new')}
-              className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              className="ml-3 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
             >
-              <PlusIcon className="w-5 h-5 mr-2" />
+              <PlusIcon className="-ml-1 mr-2 h-5 w-5" />
               Nouvelle boutique
             </button>
           </div>
         </div>
 
-        {/* Filtres et recherche */}
-        <div className="bg-white shadow rounded-lg p-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {/* Recherche */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Rechercher
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <MagnifyingGlassIcon className="h-5 w-5 text-gray-400" />
+        {/* Statistiques */}
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="bg-white overflow-hidden shadow rounded-lg">
+            <div className="p-5">
+              <div className="flex items-center">
+                <div className="flex-shrink-0">
+                  <ShoppingBagIcon className="h-6 w-6 text-gray-400" />
                 </div>
-                <input
-                  type="text"
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="Nom ou description..."
-                />
+                <div className="ml-5 w-0 flex-1">
+                  <dl>
+                    <dt className="text-sm font-medium text-gray-500 truncate">
+                      Total Boutiques
+                    </dt>
+                    <dd className="text-lg font-medium text-gray-900">
+                      {stats.totalPlugs}
+                    </dd>
+                  </dl>
+                </div>
               </div>
             </div>
+          </div>
 
-            {/* Filtre statut */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Statut
-              </label>
-              <select
-                value={filter}
-                onChange={(e) => setFilter(e.target.value)}
-                className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-              >
-                <option value="all">Tous</option>
-                <option value="active">Actifs seulement</option>
-                <option value="inactive">Inactifs seulement</option>
-                <option value="vip">VIP seulement</option>
-              </select>
+          <div className="bg-white overflow-hidden shadow rounded-lg">
+            <div className="p-5">
+              <div className="flex items-center">
+                <div className="flex-shrink-0">
+                  <div className="h-6 w-6 text-green-400">✅</div>
+                </div>
+                <div className="ml-5 w-0 flex-1">
+                  <dl>
+                    <dt className="text-sm font-medium text-gray-500 truncate">
+                      Boutiques Actives
+                    </dt>
+                    <dd className="text-lg font-medium text-gray-900">
+                      {stats.activePlugs}
+                    </dd>
+                  </dl>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white overflow-hidden shadow rounded-lg">
+            <div className="p-5">
+              <div className="flex items-center">
+                <div className="flex-shrink-0">
+                  <StarIcon className="h-6 w-6 text-yellow-400" />
+                </div>
+                <div className="ml-5 w-0 flex-1">
+                  <dl>
+                    <dt className="text-sm font-medium text-gray-500 truncate">
+                      Boutiques VIP
+                    </dt>
+                    <dd className="text-lg font-medium text-gray-900">
+                      {stats.vipPlugs}
+                    </dd>
+                  </dl>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white overflow-hidden shadow rounded-lg">
+            <div className="p-5">
+              <div className="flex items-center">
+                <div className="flex-shrink-0">
+                  <UserGroupIcon className="h-6 w-6 text-blue-400" />
+                </div>
+                <div className="ml-5 w-0 flex-1">
+                  <dl>
+                    <dt className="text-sm font-medium text-gray-500 truncate">
+                      Utilisateurs Bot
+                    </dt>
+                    <dd className="text-lg font-medium text-gray-900">
+                      {stats.totalUsers}
+                    </dd>
+                  </dl>
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Liste des boutiques */}
-        <div className="bg-white shadow rounded-lg overflow-hidden">
-          {loading ? (
-            <div className="p-6 text-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto"></div>
-              <p className="mt-2 text-gray-500">Chargement...</p>
+        {/* Actions rapides */}
+        <div className="bg-white shadow rounded-lg">
+          <div className="px-4 py-5 sm:p-6">
+            <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">
+              🚀 Actions rapides
+            </h3>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              <button
+                onClick={() => router.push('/admin/config')}
+                className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+              >
+                <CogIcon className="-ml-1 mr-2 h-5 w-5 text-gray-400" />
+                Configuration
+              </button>
+              
+              <button
+                onClick={() => router.push('/admin/broadcast')}
+                className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+              >
+                📢
+                <span className="ml-2">Diffusion</span>
+              </button>
+              
+              <button
+                onClick={() => window.open('/shop', '_blank')}
+                className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+              >
+                <EyeIcon className="-ml-1 mr-2 h-5 w-5 text-gray-400" />
+                Voir Boutique
+              </button>
+              
+              <button
+                onClick={() => router.push('/admin/diagnostic')}
+                className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+              >
+                <ChartBarIcon className="-ml-1 mr-2 h-5 w-5 text-gray-400" />
+                Diagnostic
+              </button>
             </div>
-          ) : plugs.length === 0 ? (
-            <div className="p-6 text-center">
-              <p className="text-gray-500">Aucune boutique trouvée</p>
-            </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Boutique
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Services
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Pays
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Statut
-                    </th>
-                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {plugs.map((plug) => (
-                    <tr key={plug._id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center">
-                          <div className="flex-shrink-0 h-10 w-10">
-                            <img
-                              className="h-10 w-10 rounded-full object-cover"
-                              src={plug.image || '/placeholder.jpg'}
-                              alt={plug.name}
-                            />
-                          </div>
-                          <div className="ml-4">
-                            <div className="flex items-center">
-                              <div className="text-sm font-medium text-gray-900">
-                                {plug.name}
-                              </div>
-                              {getVipBadge(plug.isVip)}
-                            </div>
-                            <div className="text-sm text-gray-500 max-w-xs truncate">
-                              {plug.description}
-                            </div>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        <div className="space-y-1">
-                          {plug.services?.delivery?.enabled && (
-                            <span className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">
-                              🚚 Livraison
-                            </span>
-                          )}
-                          {plug.services?.postal?.enabled && (
-                            <span className="inline-block bg-green-100 text-green-800 text-xs px-2 py-1 rounded">
-                              ✈️ Postal
-                            </span>
-                          )}
-                          {plug.services?.meetup?.enabled && (
-                            <span className="inline-block bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded">
-                              🏠 Meetup
-                            </span>
-                          )}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {plug.countries?.join(', ') || 'Non défini'}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        {getStatusBadge(plug.isActive)}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <div className="flex items-center justify-end space-x-2">
-                          <button
-                            onClick={() => router.push(`/admin/plugs/${plug._id}`)}
-                            className="text-blue-600 hover:text-blue-900"
-                          >
-                            <EyeIcon className="w-5 h-5" />
-                          </button>
-                          <button
-                            onClick={() => router.push(`/admin/plugs/${plug._id}/edit`)}
-                            className="text-indigo-600 hover:text-indigo-900"
-                          >
-                            <PencilIcon className="w-5 h-5" />
-                          </button>
-                          <button
-                            onClick={() => togglePlugStatus(plug._id, plug.isActive)}
-                            className={`${plug.isActive ? 'text-red-600 hover:text-red-900' : 'text-green-600 hover:text-green-900'}`}
-                          >
-                            {plug.isActive ? '⏸️' : '▶️'}
-                          </button>
-                          <button
-                            onClick={() => deletePlug(plug._id, plug.name)}
-                            className="text-red-600 hover:text-red-900"
-                          >
-                            <TrashIcon className="w-5 h-5" />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
+          </div>
+        </div>
 
-          {/* Pagination */}
-          {totalPages > 1 && (
-            <div className="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
-              <div className="flex-1 flex justify-between sm:hidden">
-                <button
-                  onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-                  disabled={currentPage === 1}
-                  className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
-                >
-                  Précédent
-                </button>
-                <button
-                  onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
-                  disabled={currentPage === totalPages}
-                  className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
-                >
-                  Suivant
-                </button>
-              </div>
-              <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-                <div>
-                  <p className="text-sm text-gray-700">
-                    Page <span className="font-medium">{currentPage}</span> sur{' '}
-                    <span className="font-medium">{totalPages}</span>
-                  </p>
-                </div>
-                <div>
-                  <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
-                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                      <button
-                        key={page}
-                        onClick={() => setCurrentPage(page)}
-                        className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
-                          page === currentPage
-                            ? 'z-10 bg-blue-50 border-blue-500 text-blue-600'
-                            : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
-                        }`}
-                      >
-                        {page}
-                      </button>
-                    ))}
-                  </nav>
+        {/* Recherche et filtres */}
+        <div className="bg-white shadow rounded-lg">
+          <div className="px-4 py-5 sm:p-6">
+            <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">
+              🏪 Dernières boutiques
+            </h3>
+            
+            <div className="flex flex-col sm:flex-row gap-4 mb-6">
+              <div className="flex-1">
+                <div className="relative rounded-md shadow-sm">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <MagnifyingGlassIcon className="h-5 w-5 text-gray-400" />
+                  </div>
+                  <input
+                    type="text"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    className="focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-md"
+                    placeholder="Rechercher une boutique..."
+                  />
                 </div>
               </div>
+              
+              <select
+                value={filter}
+                onChange={(e) => setFilter(e.target.value)}
+                className="block w-full sm:w-48 pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
+              >
+                <option value="all">Toutes</option>
+                <option value="active">Actives</option>
+                <option value="inactive">Inactives</option>
+                <option value="vip">VIP</option>
+              </select>
             </div>
-          )}
+
+            {/* Liste des boutiques */}
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {plugs.map((plug) => (
+                <div key={plug._id} className="bg-gray-50 rounded-lg p-4">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1 min-w-0">
+                      <h4 className="text-sm font-medium text-gray-900 truncate">
+                        {plug.name}
+                      </h4>
+                      <p className="text-xs text-gray-500 mt-1 truncate">
+                        {plug.description}
+                      </p>
+                      <div className="mt-2">
+                        <StatusBadge isActive={plug.isActive} isVip={plug.isVip} />
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="mt-3 flex justify-end space-x-2">
+                    <button
+                      onClick={() => router.push(`/admin/plugs/${plug._id}`)}
+                      className="text-blue-600 hover:text-blue-800 text-sm"
+                    >
+                      <EyeIcon className="h-4 w-4" />
+                    </button>
+                    <button
+                      onClick={() => router.push(`/admin/plugs/${plug._id}/edit`)}
+                      className="text-yellow-600 hover:text-yellow-800 text-sm"
+                    >
+                      <PencilIcon className="h-4 w-4" />
+                    </button>
+                    <button
+                      onClick={() => deletePlug(plug._id)}
+                      className="text-red-600 hover:text-red-800 text-sm"
+                    >
+                      <TrashIcon className="h-4 w-4" />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {plugs.length === 0 && (
+              <div className="text-center py-12">
+                <ShoppingBagIcon className="mx-auto h-12 w-12 text-gray-400" />
+                <h3 className="mt-2 text-sm font-medium text-gray-900">Aucune boutique</h3>
+                <p className="mt-1 text-sm text-gray-500">
+                  Commencez par créer votre première boutique.
+                </p>
+                <div className="mt-6">
+                  <button
+                    onClick={() => router.push('/admin/plugs/new')}
+                    className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
+                  >
+                    <PlusIcon className="-ml-1 mr-2 h-5 w-5" />
+                    Nouvelle boutique
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="mt-6 flex justify-center">
+                <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
+                  <button
+                    onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                    disabled={currentPage === 1}
+                    className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
+                  >
+                    ←
+                  </button>
+                  
+                  <span className="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">
+                    {currentPage} / {totalPages}
+                  </span>
+                  
+                  <button
+                    onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                    disabled={currentPage === totalPages}
+                    className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
+                  >
+                    →
+                  </button>
+                </nav>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </Layout>
