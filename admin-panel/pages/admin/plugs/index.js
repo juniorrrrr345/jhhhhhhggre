@@ -137,11 +137,12 @@ export default function PlugsManagement() {
     return 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCA4MCA4MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjgwIiBoZWlnaHQ9IjgwIiByeD0iMTYiIGZpbGw9IiM0Qjc2ODgiLz4KPHN2ZyB4PSIyMCIgeT0iMjAiIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIj4KPHBhdGggZD0iTTEyIDJMMTMuMDkgOC4yNkwyMSA5TDEzLjA5IDE1Ljc0TDEyIDIyTDEwLjkxIDE1Ljc0TDMgOUwxMC45MSA4LjI2TDEyIDJaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4KPC9zdmc+'
   }
 
+  // Style exact du screenshot
   const renderPlugCard = (plug) => (
-    <div key={plug._id} className="bg-gray-800 rounded-3xl p-5 mb-4 relative">
-      {/* Actions admin cachées */}
-      <div className="absolute top-3 right-3 opacity-20 hover:opacity-100 transition-opacity">
-        <div className="flex space-x-1">
+    <div key={plug._id} className="bg-gray-800 rounded-2xl mx-4 mb-3 relative overflow-hidden">
+      {/* Actions admin cachées - coin supérieur droit */}
+      <div className="absolute top-2 right-2 opacity-0 hover:opacity-100 transition-opacity z-10">
+        <div className="flex space-x-1 bg-black bg-opacity-50 rounded-lg p-1">
           <button
             onClick={() => router.push(`/admin/plugs/${plug._id}`)}
             className="text-blue-400 hover:text-blue-300 p-1"
@@ -173,60 +174,59 @@ export default function PlugsManagement() {
         </div>
       </div>
 
-      <div className="flex items-center justify-between">
-        {/* Partie gauche avec image et infos */}
-        <div className="flex items-center space-x-4">
-          {/* Image */}
-          <div className="flex-shrink-0">
-            <img
-              src={plug.image || getPlaceholderImage()}
-              alt={plug.name}
-              className="w-20 h-20 rounded-2xl object-cover"
-              onError={(e) => {
-                e.target.src = getPlaceholderImage()
-              }}
-            />
+      {/* Contenu principal de la carte */}
+      <div className="flex items-center p-4">
+        {/* Image à gauche */}
+        <div className="flex-shrink-0 mr-4">
+          <img
+            src={plug.image || getPlaceholderImage()}
+            alt={plug.name}
+            className="w-16 h-16 rounded-2xl object-cover"
+            onError={(e) => {
+              e.target.src = getPlaceholderImage()
+            }}
+          />
+        </div>
+
+        {/* Section centrale avec flag, nom et icônes */}
+        <div className="flex-1">
+          {/* Première ligne: Flag + Nom */}
+          <div className="flex items-center mb-2">
+            <span className="text-xl mr-2">🇫🇷</span>
+            <h3 className="text-white text-base font-bold uppercase tracking-wider flex-1">
+              {plug.name}
+            </h3>
+            {/* Badge VIP à droite du nom */}
+            {plug.isVip && (
+              <div className="bg-yellow-400 text-black rounded-full w-6 h-6 flex items-center justify-center ml-2">
+                <span className="text-xs font-bold">⚠️</span>
+              </div>
+            )}
           </div>
 
-          {/* Infos */}
-          <div className="flex-1">
-            <div className="flex items-center space-x-2 mb-2">
-              <span className="text-2xl">🇫🇷</span>
-              <h3 className="text-white text-lg font-bold uppercase tracking-wider">
-                {plug.name}
-              </h3>
-              {!plug.isActive && (
-                <span className="text-xs bg-red-500 text-white px-2 py-0.5 rounded-full">
-                  OFF
-                </span>
-              )}
-            </div>
-            
-            <div className="flex items-center space-x-3">
-              {/* Icônes services - toujours affichées comme sur le screenshot */}
-              <span className="text-xl" title="Livraison">📦</span>
-              <span className="text-xl" title="Point de rencontre">📍</span>
-              <span className="text-xl" title="Service express">🚲</span>
-            </div>
+          {/* Deuxième ligne: Icônes services */}
+          <div className="flex items-center space-x-3">
+            <span className="text-lg">📦</span>
+            <span className="text-lg">📍</span>
+            <span className="text-lg">🚲</span>
           </div>
         </div>
 
-        {/* Partie droite avec badge et likes */}
-        <div className="flex flex-col items-end space-y-2">
-          {/* Badge warning pour VIP */}
-          {plug.isVip && (
-            <div className="bg-yellow-500 text-black rounded-full p-1" title="Boutique VIP">
-              <span className="text-sm font-bold">⚠️</span>
-            </div>
-          )}
-          
-          {/* Likes */}
-          <div className="flex items-center space-x-1">
-            <span className="text-yellow-400 text-xl">👍</span>
+        {/* Section droite avec likes */}
+        <div className="flex flex-col items-center ml-4">
+          <div className="flex items-center">
+            <span className="text-yellow-400 text-lg mr-1">👍</span>
             <span className="text-white font-bold text-lg">{getRandomLikes()}</span>
           </div>
         </div>
       </div>
+
+      {/* Badge "OFF" pour les boutiques inactives */}
+      {!plug.isActive && (
+        <div className="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full font-bold">
+          OFF
+        </div>
+      )}
     </div>
   )
 
@@ -254,7 +254,7 @@ export default function PlugsManagement() {
 
   return (
     <div className="min-h-screen bg-black">
-      {/* Header mobile style */}
+      {/* Header identique au screenshot */}
       <div className="bg-gray-800 px-4 py-6 relative">
         {/* Bouton admin caché */}
         <button
@@ -299,18 +299,8 @@ export default function PlugsManagement() {
         </div>
       )}
 
-      {/* Indicateur de section */}
-      <div className="px-4 py-2 bg-gray-900 border-b border-gray-700">
-        <h2 className="text-gray-300 text-sm font-medium">{getPageTitle()}</h2>
-        {plugs.length > 0 && !loading && (
-          <p className="text-gray-500 text-xs mt-1">
-            {plugs.length} boutique{plugs.length > 1 ? 's' : ''} trouvée{plugs.length > 1 ? 's' : ''}
-          </p>
-        )}
-      </div>
-
-      {/* Liste des plugs */}
-      <div className="px-4 py-4 pb-24">
+      {/* Liste des plugs avec le style exact du screenshot */}
+      <div className="py-4 pb-24">
         {loading ? (
           <div className="text-center py-12">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
@@ -332,7 +322,7 @@ export default function PlugsManagement() {
             
             {/* Pagination */}
             {totalPages > 1 && (
-              <div className="flex justify-center mt-8 space-x-3">
+              <div className="flex justify-center mt-8 space-x-3 px-4">
                 <button
                   onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                   disabled={currentPage === 1}
@@ -356,7 +346,7 @@ export default function PlugsManagement() {
         )}
       </div>
 
-      {/* Navigation bottom */}
+      {/* Navigation bottom exactement comme sur le screenshot */}
       <div className="fixed bottom-0 left-0 right-0 bg-gray-900 border-t border-gray-700">
         <div className="flex justify-around items-center py-3">
           {/* Plugs - Page d'accueil */}
