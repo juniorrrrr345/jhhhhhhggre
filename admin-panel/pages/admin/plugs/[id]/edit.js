@@ -63,7 +63,6 @@ export default function EditPlug() {
   
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
-  const [serverEndpointsAvailable, setServerEndpointsAvailable] = useState(false)
   const [originalData, setOriginalData] = useState(null)
   const router = useRouter()
   const { id } = router.query
@@ -77,36 +76,9 @@ export default function EditPlug() {
     }
     
     if (id) {
-      testServerEndpoints(token)
       fetchPlug(token)
     }
   }, [id])
-
-  const testServerEndpoints = async (token) => {
-    try {
-      console.log('🧪 Test des endpoints serveur...')
-      
-      // Test direct du endpoint PUT
-      const testResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://jhhhhhhggre.onrender.com'}/api/plugs/${id}`, {
-        method: 'HEAD', // Test sans body
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      })
-      
-      if (testResponse.status !== 404) {
-        console.log('✅ Endpoints serveur disponibles')
-        setServerEndpointsAvailable(true)
-      } else {
-        console.log('❌ Endpoints serveur non déployés')
-        setServerEndpointsAvailable(false)
-      }
-    } catch (error) {
-      console.log('❌ Test endpoints échoué:', error.message)
-      setServerEndpointsAvailable(false)
-    }
-  }
 
   const fetchPlug = async (token) => {
     try {
@@ -170,23 +142,6 @@ export default function EditPlug() {
           }
         } catch (error) {
           console.log('❌ Liste des plugs erreur:', error.message)
-        }
-      }
-      
-      // Méthode 3: Vérifier sauvegarde locale temporaire
-      if (!success) {
-        try {
-          console.log('💾 Vérification sauvegarde locale...')
-          const localSave = localStorage.getItem(`temp_plug_${id}`)
-          if (localSave) {
-            const saveData = JSON.parse(localSave)
-            data = saveData.data
-            success = true
-            console.log('✅ Données récupérées depuis sauvegarde locale')
-            safeToast.info('Données chargées depuis sauvegarde locale')
-          }
-        } catch (error) {
-          console.log('❌ Sauvegarde locale erreur:', error.message)
         }
       }
 
@@ -288,120 +243,73 @@ export default function EditPlug() {
       
       console.log('📦 Données à sauvegarder:', cleanData)
 
-      let success = false
-      let result = null
+      // Sauvegarde via proxy avec timeout
+      const response = await Promise.race([
+        fetch(`/api/proxy?endpoint=/api/plugs/${id}`, {
+          method: 'POST',
+          headers: {
+            'Authorization': token,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            _method: 'PUT',
+            ...cleanData
+          })
+        }),
+        new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Timeout sauvegarde')), 15000)
+        )
+      ])
+
+      console.log('📊 Response:', response.status)
       
-      // Méthode 1: Tentative via proxy (méthode recommandée)
-      if (!success) {
-        try {
-          console.log('📡 Tentative sauvegarde via proxy...')
-          const response = await fetch(`/api/proxy?endpoint=/api/plugs/${id}`, {
-            method: 'POST',
-            headers: {
-              'Authorization': token,
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              _method: 'PUT',
-              ...cleanData
-            })
-          })
-
-          console.log('📊 Response proxy:', response.status)
-          
-          if (response.ok) {
-            result = await response.json()
-            success = true
-            console.log('✅ Sauvegarde proxy réussie')
-          } else {
-            const errorText = await response.text()
-            console.log('❌ Erreur proxy:', response.status, errorText)
+      if (response.ok) {
+        const result = await response.json()
+        console.log('✅ Sauvegarde réussie:', result)
+        
+        clearTimeout(globalTimeout)
+        setSaving(false)
+        
+        safeToast.success('✅ Plug modifié avec succès ! Synchronisation boutique/bot effectuée', {
+          duration: 4000,
+          style: {
+            background: '#10B981',
+            color: 'white',
           }
-        } catch (error) {
-          console.log('❌ Proxy erreur:', error.message)
-        }
-      }
-      
-      // Méthode 2: Tentative directe (si serveur redéployé)
-      if (!success && serverEndpointsAvailable) {
-        try {
-          console.log('📡 Tentative sauvegarde directe...')
-          const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://jhhhhhhggre.onrender.com'}/api/plugs/${id}`, {
-            method: 'PUT',
-            headers: {
-              'Authorization': `Bearer ${token}`,
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(cleanData)
-          })
-
-          if (response.ok) {
-            result = await response.json()
-            success = true
-            console.log('✅ Sauvegarde directe réussie')
-          } else {
-            console.log('❌ Sauvegarde directe échouée:', response.status)
-          }
-        } catch (error) {
-          console.log('❌ Sauvegarde directe erreur:', error.message)
-        }
-      }
-      
-      // Méthode 3: Sauvegarde locale de secours
-      if (!success) {
-        console.log('💾 Sauvegarde locale de secours...')
-        try {
-          const tempSave = {
-            id,
-            data: cleanData,
-            timestamp: new Date().toISOString(),
-            needsSync: true
-          }
-          localStorage.setItem(`temp_plug_${id}`, JSON.stringify(tempSave))
-          
-          // Aussi mettre à jour le cache local pour affichage immédiat
-          localStorage.setItem(`plug_cache_${id}`, JSON.stringify(cleanData))
-          
-          success = true
-          result = { ...cleanData, _id: id, _localSave: true }
-          console.log('✅ Sauvegarde locale réussie')
-        } catch (localError) {
-          console.error('❌ Sauvegarde locale échouée:', localError)
-        }
-      }
-
-      clearTimeout(globalTimeout)
-      setSaving(false)
-
-      if (success) {
-        if (result && result._localSave) {
-          safeToast.success('💾 Sauvegardé localement - Redéployez le serveur pour synchroniser', {
-            duration: 4000
-          })
-        } else {
-          safeToast.success('✅ Plug modifié avec succès !', {
-            duration: 3000,
-            style: {
-              background: '#10B981',
-              color: 'white',
-            }
-          })
-        }
+        })
+        
+        // Mettre à jour les données originales pour détecter les nouveaux changements
+        setOriginalData(formData)
         
         // Redirection après succès
         setTimeout(() => {
           router.push('/admin/plugs')
-        }, 1000)
+        }, 2000)
         
       } else {
-        safeToast.error('❌ Impossible de sauvegarder le plug')
+        const errorText = await response.text()
+        console.error('❌ Erreur sauvegarde:', response.status, errorText)
+        
+        clearTimeout(globalTimeout)
+        setSaving(false)
+        
+        if (response.status === 404) {
+          safeToast.error('❌ Endpoint non trouvé. Le serveur bot doit être redéployé avec les nouveaux endpoints.')
+        } else {
+          safeToast.error(`❌ Erreur ${response.status}: ${response.statusText}`)
+        }
       }
       
     } catch (error) {
       console.error('💥 Erreur sauvegarde:', error)
       clearTimeout(globalTimeout)
       setSaving(false)
-      safeToast.error(`Erreur: ${error.message}`)
+      
+      if (error.message.includes('Timeout')) {
+        safeToast.error('⏰ Timeout: La sauvegarde a pris trop de temps')
+      } else {
+        safeToast.error(`❌ Erreur: ${error.message}`)
+      }
     }
   }
 
@@ -469,7 +377,7 @@ export default function EditPlug() {
       <div className="min-h-screen bg-gray-50">
         <Toaster position="top-right" />
         
-        {/* Header avec statut */}
+        {/* Header */}
         <div className="bg-white shadow border-b border-gray-200">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center h-16">
@@ -483,20 +391,13 @@ export default function EditPlug() {
                 </button>
                 <div>
                   <h1 className="text-xl font-semibold text-gray-900">Modifier la boutique</h1>
-                  <div className="flex items-center space-x-2 mt-1">
-                    <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                      serverEndpointsAvailable 
-                        ? 'bg-green-100 text-green-800' 
-                        : 'bg-yellow-100 text-yellow-800'
-                    }`}>
-                      {serverEndpointsAvailable ? '🟢 Serveur synchronisé' : '🟡 Mode local'}
-                    </span>
-                    {hasChanges() && (
+                  {hasChanges() && (
+                    <div className="flex items-center space-x-2 mt-1">
                       <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                         📝 Modifications en cours
                       </span>
-                    )}
-                  </div>
+                    </div>
+                  )}
                 </div>
               </div>
               <div className="flex space-x-3">
@@ -517,20 +418,6 @@ export default function EditPlug() {
             </div>
           </div>
         </div>
-
-        {/* Alerte mode local */}
-        {!serverEndpointsAvailable && (
-          <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4">
-            <div className="flex">
-              <div className="ml-3">
-                <p className="text-sm text-yellow-700">
-                  <strong>Mode local activé :</strong> Le serveur bot n'a pas encore été redéployé avec les nouveaux endpoints. 
-                  Les modifications seront sauvegardées localement et synchronisées automatiquement après redéploiement.
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
 
         {/* Main Content */}
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
