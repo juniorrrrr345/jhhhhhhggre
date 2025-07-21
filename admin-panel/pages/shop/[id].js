@@ -35,8 +35,12 @@ const ImageWithFallback = ({ src, alt, className, fallbackIcon: FallbackIcon = G
     setImageLoading(false)
   }
 
-  // Si pas d'image source ou erreur, afficher le fallback
-  if (!src || imageError) {
+  // Vérifier si l'URL est valide
+  const isValidUrl = src && typeof src === 'string' && src.trim() !== '' && 
+                     (src.startsWith('http://') || src.startsWith('https://'))
+
+  // Si pas d'image source valide ou erreur, afficher le fallback
+  if (!isValidUrl || imageError) {
     return (
       <div className="absolute inset-0 flex items-center justify-center bg-gray-900">
         <FallbackIcon className="w-20 h-20 text-gray-600" />

@@ -25,18 +25,20 @@ const ImageWithFallback = ({ src, alt, className, fallbackIcon: FallbackIcon = G
   }, [src])
 
   const handleImageLoad = () => {
-    console.log('✅ Image VIP chargée:', src)
     setImageLoading(false)
   }
 
   const handleImageError = () => {
-    console.log('❌ Erreur chargement image VIP:', src)
     setImageError(true)
     setImageLoading(false)
   }
 
-  // Si pas d'image source ou erreur, afficher le fallback
-  if (!src || imageError) {
+  // Vérifier si l'URL est valide
+  const isValidUrl = src && typeof src === 'string' && src.trim() !== '' && 
+                     (src.startsWith('http://') || src.startsWith('https://'))
+
+  // Si pas d'image source valide ou erreur, afficher le fallback
+  if (!isValidUrl || imageError) {
     return (
       <div className="absolute inset-0 flex items-center justify-center bg-gray-900">
         <FallbackIcon className="w-16 h-16 text-gray-600" />
@@ -248,7 +250,6 @@ export default function ShopVIP() {
 
       const sortedPlugs = plugsArray.sort((a, b) => (b.likes || 0) - (a.likes || 0))
       console.log('👑 Plugs VIP chargés:', sortedPlugs.length, 'boutiques VIP')
-      console.log('🖼️ Images VIP:', sortedPlugs.slice(0, 3).map(p => ({ name: p.name, hasImage: !!p.image, imageUrl: p.image?.substring(0, 50) })))
       setVipPlugs(sortedPlugs)
     } catch (error) {
       console.error('💥 VIP fetch error:', error)

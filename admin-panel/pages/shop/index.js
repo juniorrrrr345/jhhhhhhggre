@@ -25,18 +25,20 @@ const ImageWithFallback = ({ src, alt, className, fallbackIcon: FallbackIcon = G
   }, [src])
 
   const handleImageLoad = () => {
-    console.log('✅ Image accueil chargée:', src)
     setImageLoading(false)
   }
 
   const handleImageError = () => {
-    console.log('❌ Erreur chargement image accueil:', src)
     setImageError(true)
     setImageLoading(false)
   }
 
-  // Si pas d'image source ou erreur, afficher le fallback
-  if (!src || imageError) {
+  // Vérifier si l'URL est valide
+  const isValidUrl = src && typeof src === 'string' && src.trim() !== '' && 
+                     (src.startsWith('http://') || src.startsWith('https://'))
+
+  // Si pas d'image source valide ou erreur, afficher le fallback
+  if (!isValidUrl || imageError) {
     return (
       <div className="absolute inset-0 flex items-center justify-center bg-gray-900">
         <FallbackIcon className="w-16 h-16 text-gray-600" />
@@ -58,7 +60,7 @@ const ImageWithFallback = ({ src, alt, className, fallbackIcon: FallbackIcon = G
       {/* Image */}
       <img
         src={src}
-        alt={alt}
+        alt={alt || 'Image'}
         className={className}
         onLoad={handleImageLoad}
         onError={handleImageError}
@@ -385,28 +387,15 @@ export default function ShopHome() {
           <div className="max-w-7xl mx-auto responsive-container">
             {/* Hero Section */}
             {config && (
-              <div className="text-center mb-8">
+              <div className="text-center mb-12">
                 <div className="flex items-center justify-center mb-4">
                   <h2 style={{ color: 'white' }} className="text-3xl font-bold">
                     🔌 {config?.boutique?.name || 'Boutique Premium'}
                   </h2>
                 </div>
-                <p style={{ color: 'white' }} className="max-w-2xl mx-auto mb-6">
+                <p style={{ color: 'white' }} className="max-w-2xl mx-auto">
                   {loading ? 'Chargement...' : `${plugs.length} produit(s) disponible(s)`}
                 </p>
-                
-                {/* Barre de recherche rapide */}
-                <div className="max-w-md mx-auto">
-                  <Link 
-                    href="/shop/search"
-                    className="flex items-center justify-center w-full px-4 py-3 border border-gray-600 rounded-lg bg-gray-800 hover:bg-gray-700 transition-colors group"
-                  >
-                    <MagnifyingGlassIcon className="w-5 h-5 mr-3 text-gray-400 group-hover:text-white" />
-                    <span style={{ color: 'white' }} className="text-gray-400 group-hover:text-white">
-                      🔍 Rechercher une boutique...
-                    </span>
-                  </Link>
-                </div>
               </div>
             )}
 
