@@ -19,18 +19,6 @@ const plugSchema = new mongoose.Schema({
     trim: true,
     default: ''
   },
-  price: {
-    type: String, // Gamme de prix en texte libre
-    default: ''
-  },
-  contact: {
-    type: String,
-    default: ''
-  },
-  tags: [{
-    type: String,
-    trim: true
-  }],
   location: {
     type: String,
     trim: true,

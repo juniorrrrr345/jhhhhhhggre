@@ -115,69 +115,61 @@ export default function Config() {
         setSaving(true)
 
         try {
-          // Essayer d'abord l'API directe
-          let success = false
-          try {
-            const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://jhhhhhhggre.onrender.com'
-            console.log('💾 Admin config tentative directe:', apiBaseUrl)
-            
-            const response = await fetch(`${apiBaseUrl}/api/config`, {
-              method: 'PUT',
-              headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify(config)
-            })
+          console.log('💾 Sauvegarde configuration...', config)
+          
+          // Essayer l'API directe d'abord
+          const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://jhhhhhhggre.onrender.com'
+          
+          const response = await fetch(`${apiBaseUrl}/api/config`, {
+            method: 'PUT',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json',
+              'Cache-Control': 'no-cache',
+              'Pragma': 'no-cache'
+            },
+            body: JSON.stringify(config)
+          })
 
-            if (response.ok) {
-              console.log('✅ Admin config direct réussi')
-              success = true
-              toast.success('Configuration sauvegardée !')
-              
-              // Recharger automatiquement le bot après sauvegarde
-              setTimeout(() => {
-                reloadBot();
-              }, 1000);
-
-              // Forcer la synchronisation avec la boutique
-              await forceBoutiqueSync();
-              
-            } else {
-              throw new Error(`HTTP ${response.status}`)
-            }
-          } catch (directError) {
-            console.log('❌ Admin config direct échoué:', directError.message)
-            console.log('🔄 Admin config tentative via proxy...')
+          if (response.ok) {
+            console.log('✅ Configuration sauvegardée')
+            toast.success('Configuration sauvegardée avec succès !')
             
+            // Recharger le bot après sauvegarde
+            setTimeout(() => {
+              reloadBot();
+            }, 1000);
+            
+          } else {
             // Fallback vers le proxy
+            console.log('🔄 Tentative via proxy...')
+            
             const proxyResponse = await fetch('/api/proxy?endpoint=/api/config', {
-              method: 'PUT',
+              method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
-                'Authorization': token
+                'Authorization': `Bearer ${token}`,
+                'Cache-Control': 'no-cache'
               },
-              body: JSON.stringify(config)
+              body: JSON.stringify({
+                _method: 'PUT',
+                ...config
+              })
             })
 
             if (proxyResponse.ok) {
-              console.log('✅ Admin config proxy réussi')
-              success = true
+              console.log('✅ Configuration sauvegardée via proxy')
               toast.success('Configuration sauvegardée via proxy !')
-              
-              // Forcer la synchronisation avec la boutique même en mode proxy
-              await forceBoutiqueSync();
+              setTimeout(() => {
+                reloadBot();
+              }, 1000);
             } else {
-              throw new Error(`Proxy failed: HTTP ${proxyResponse.status}`)
+              throw new Error(`Erreur API: ${response.status}`)
             }
           }
-
-          if (!success) {
-            toast.error('Erreur lors de la sauvegarde')
-          }
         } catch (error) {
-          console.error('💥 Admin config error final:', error)
-          toast.error('Erreur de connexion')
+          console.error('💥 Erreur sauvegarde config:', error)
+          toast.error('Erreur lors de la sauvegarde')
         } finally {
           setSaving(false)
         }
@@ -893,28 +885,14 @@ export default function Config() {
           </div>
         )}
 
-        {/* Section de sauvegarde commune */}
+        {/* Section de sauvegarde */}
         <div className="bg-white rounded-lg shadow p-4">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <h3 className="text-base font-medium text-gray-900">💾 Sauvegarde & Tests</h3>
-              <p className="text-sm text-gray-500">Appliquez et testez vos modifications</p>
+              <h3 className="text-base font-medium text-gray-900">💾 Sauvegarde</h3>
+              <p className="text-sm text-gray-500">Appliquez vos modifications</p>
             </div>
             <div className="flex flex-col sm:flex-row gap-2">
-              <button
-                onClick={testBoutiqueConfig}
-                disabled={saving}
-                className="bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-white px-4 py-2 rounded text-sm font-medium transition-colors"
-              >
-                🧪 Test Boutique
-              </button>
-              <button
-                onClick={forceBoutiqueSync}
-                disabled={saving}
-                className="bg-purple-500 hover:bg-purple-600 disabled:opacity-50 text-white px-4 py-2 rounded text-sm font-medium transition-colors"
-              >
-                🔄 Sync Boutique
-              </button>
               <button
                 onClick={reloadBot}
                 disabled={saving}

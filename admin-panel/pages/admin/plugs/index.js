@@ -88,36 +88,7 @@ export default function PlugsManagement() {
     }
   }
 
-  const syncPlugs = async () => {
-    const token = localStorage.getItem('adminToken')
-    try {
-      toast.loading('Synchronisation en cours...')
-      
-      // Appel via proxy pour la synchronisation
-      const response = await fetch('/api/proxy?endpoint=/api/plugs/sync', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ _method: 'POST' })
-      })
 
-      if (response.ok) {
-        const result = await response.json()
-        console.log('🔄 Synchronisation:', result)
-        toast.dismiss()
-        toast.success(`Synchronisation réussie ! ${result.stats?.total || 0} plugs`)
-        fetchPlugs(token)
-      } else {
-        toast.dismiss()
-        toast.error('Erreur lors de la synchronisation')
-      }
-    } catch (error) {
-      toast.dismiss()
-      toast.error('Erreur de connexion pour la synchronisation')
-    }
-  }
 
   const deletePlug = async (plugId, plugName) => {
     if (!confirm(`Êtes-vous sûr de vouloir supprimer "${plugName}" ?`)) return
@@ -171,13 +142,7 @@ export default function PlugsManagement() {
             <h1 className="text-2xl font-bold text-gray-900">Boutiques & Plugs</h1>
             <p className="text-gray-600">Gérez vos boutiques et leurs informations</p>
           </div>
-          <div className="mt-4 sm:mt-0 flex space-x-3">
-            <button
-              onClick={syncPlugs}
-              className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
-            >
-              🔄 Synchroniser
-            </button>
+          <div className="mt-4 sm:mt-0">
             <button
               onClick={() => router.push('/admin/plugs/new')}
               className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"

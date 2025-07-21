@@ -47,10 +47,7 @@ export default function EditPlug() {
     telegramLink: '',
     vip: false,
     category: '',
-    price: '',
     location: '',
-    contact: '',
-    tags: '',
     featured: false,
     active: true
   });
@@ -90,10 +87,7 @@ export default function EditPlug() {
             telegramLink: data.telegramLink || '',
             vip: Boolean(data.vip),
             category: data.category || '',
-            price: data.price || '',
             location: data.location || '',
-            contact: data.contact || '',
-            tags: Array.isArray(data.tags) ? data.tags.join(', ') : (data.tags || ''),
             featured: Boolean(data.featured),
             active: data.active !== false
           });
@@ -138,8 +132,7 @@ export default function EditPlug() {
       }
 
       const submitData = {
-        ...formData,
-        tags: formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag)
+        ...formData
       };
 
       const response = await apiCall(`/api/plugs/${id}`, {
@@ -331,21 +324,6 @@ export default function EditPlug() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Prix */}
-            <div>
-              <label className="block text-sm font-medium mb-2">
-                Prix / Gamme de prix
-              </label>
-              <input
-                type="text"
-                name="price"
-                value={formData.price}
-                onChange={handleInputChange}
-                className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Ex: 10-50€, Gratuit, Sur devis..."
-              />
-            </div>
-
             {/* Localisation */}
             <div>
               <label className="block text-sm font-medium mb-2">
@@ -358,38 +336,6 @@ export default function EditPlug() {
                 onChange={handleInputChange}
                 className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="Ex: Paris, France, Online..."
-              />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Contact */}
-            <div>
-              <label className="block text-sm font-medium mb-2">
-                Contact
-              </label>
-              <input
-                type="text"
-                name="contact"
-                value={formData.contact}
-                onChange={handleInputChange}
-                className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Email, téléphone, etc."
-              />
-            </div>
-
-            {/* Tags */}
-            <div>
-              <label className="block text-sm font-medium mb-2">
-                Tags (séparés par des virgules)
-              </label>
-              <input
-                type="text"
-                name="tags"
-                value={formData.tags}
-                onChange={handleInputChange}
-                className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="tag1, tag2, tag3"
               />
             </div>
           </div>
