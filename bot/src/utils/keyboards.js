@@ -48,8 +48,14 @@ const cleanUrl = (url) => {
 const createMainKeyboard = (config) => {
   const buttons = [];
   
+  console.log('🎮 DEBUG: createMainKeyboard appelé');
+  console.log('🎮 DEBUG: config.socialMedia =', JSON.stringify(config?.socialMedia));
+  console.log('🎮 DEBUG: Array.isArray(config.socialMedia) =', Array.isArray(config?.socialMedia));
+  console.log('🎮 DEBUG: config.socialMedia.length =', config?.socialMedia?.length);
+  
   // Réseaux sociaux personnalisés en haut du menu
   if (config?.socialMedia && Array.isArray(config.socialMedia) && config.socialMedia.length > 0) {
+    console.log('✅ Condition socialMedia remplie !');
     console.log('🔄 Création des boutons réseaux sociaux personnalisés...');
     
     // Filtrer et valider les réseaux sociaux
@@ -94,7 +100,14 @@ const createMainKeyboard = (config) => {
         console.error(`❌ Erreur création bouton social:`, error);
       }
     }
+  } else {
+    console.log('❌ DEBUG: Condition socialMedia NON remplie');
+    console.log('❌ DEBUG: config?.socialMedia exists =', !!config?.socialMedia);
+    console.log('❌ DEBUG: Array.isArray =', Array.isArray(config?.socialMedia));
+    console.log('❌ DEBUG: length > 0 =', config?.socialMedia?.length > 0);
   }
+  
+  console.log('🎯 DEBUG: Nombre de lignes de boutons avant autres boutons =', buttons.length);
   
   // Bouton Top Des Plugs
   const topPlugsText = config?.buttons?.topPlugs?.text || '🔌 Top Des Plugs';
