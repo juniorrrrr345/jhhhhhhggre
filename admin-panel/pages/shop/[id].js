@@ -187,7 +187,6 @@ export default function ShopDetail() {
               >
                 <ArrowLeftIcon className="w-4 h-4 mr-2" />
                 <span className="mr-1">🏠</span>
-                )}
                 Retour à la liste
               </Link>
               <Link 
