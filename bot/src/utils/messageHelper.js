@@ -87,7 +87,45 @@ const editMessageWithImage = async (ctx, text, keyboard, config, options = {}) =
   }
 };
 
+// Fonction pour envoyer un message avec l'image du plug
+const sendPlugWithImage = async (ctx, text, keyboard, plug, options = {}) => {
+  const plugImage = plug?.image || null;
+  
+  try {
+    if (plugImage) {
+      console.log('📸 Envoi détails plug avec image:', plugImage);
+      await ctx.replyWithPhoto(plugImage, {
+        caption: text,
+        reply_markup: keyboard?.reply_markup || keyboard,
+        parse_mode: options.parse_mode || 'Markdown',
+        ...options
+      });
+      console.log('✅ Détails plug avec image envoyés');
+    } else {
+      console.log('📝 Envoi détails plug sans image');
+      await ctx.reply(text, {
+        reply_markup: keyboard?.reply_markup || keyboard,
+        parse_mode: options.parse_mode || 'Markdown',
+        ...options
+      });
+    }
+  } catch (error) {
+    console.error('❌ Erreur envoi plug avec image:', error);
+    // Fallback vers texte simple
+    try {
+      await ctx.reply(text, {
+        reply_markup: keyboard?.reply_markup || keyboard,
+        parse_mode: options.parse_mode || 'Markdown',
+        ...options
+      });
+    } catch (fallbackError) {
+      console.error('❌ Erreur fallback plug:', fallbackError);
+    }
+  }
+};
+
 module.exports = {
   sendMessageWithImage,
-  editMessageWithImage
+  editMessageWithImage,
+  sendPlugWithImage
 };

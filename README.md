@@ -1,109 +1,103 @@
-# 🤖 Bot Telegram VIP System
+# 🤖 Bot Boutique VIP - Telegram & Vercel
 
-Système complet de bot Telegram avec panel admin et gestion VIP.
+## 📋 Description
 
-## 📋 Architecture
+Système complet de bot Telegram avec boutique web pour la gestion de "plugs" (boutiques/services). 
 
-- **Bot Telegram** (Node.js) → Render
-- **Panel Admin** (Next.js) → Vercel
-- **Base de données** MongoDB Atlas
+### 🔧 Composants
 
-## 🚀 Installation
+- **🤖 Bot Telegram** - Interface utilisateur avec navigation, filtres et détails
+- **🏪 Boutique Web (Vercel)** - Site vitrine avec recherche et catalogue
+- **⚙️ Panel Admin** - Interface d'administration pour gérer le contenu
 
-### 1. Cloner et installer
-```bash
-git clone <votre-repo>
-cd telegram-bot-vip-system
-npm run install:all
-```
+## ✨ Fonctionnalités Principales
 
-### 2. Configuration
+### 🤖 Bot Telegram
+- **Navigation intuitive** avec menus et boutons
+- **Détails des plugs** avec images personnalisées
+- **Filtres avancés** par service et pays
+- **Section VIP** pour les plugs premium
+- **Système de likes** pour les boutiques
+- **Messages personnalisables** via l'admin
 
-#### Bot Telegram
-Créez `bot/.env` :
-```env
-TELEGRAM_BOT_TOKEN=votre_token_bot
-MONGODB_URI=mongodb+srv://...
-ADMIN_PASSWORD=votre_mot_de_passe_admin
-WEBHOOK_URL=https://votre-app.onrender.com
-PORT=3000
-```
+### 🏪 Boutique Web
+- **Catalogue complet** avec filtres
+- **Page de recherche** avancée
+- **Design responsive** et moderne
+- **Synchronisation temps réel** avec le bot
 
-#### Panel Admin
-Créez `admin/.env.local` :
-```env
-MONGODB_URI=mongodb+srv://...
-ADMIN_PASSWORD=votre_mot_de_passe_admin
-NEXTAUTH_SECRET=votre_secret_nextauth
-NEXTAUTH_URL=https://votre-app.vercel.app
-API_BASE_URL=https://votre-bot.onrender.com
-```
+### ⚙️ Panel Admin
+- **Configuration séparée** Bot et Boutique
+- **Gestion des plugs** (CRUD complet)
+- **Upload d'images** et gestion médias
+- **Statistiques** et analytics
+- **Diagnostic** et outils de debug
 
-### 3. Développement local
+## 🔄 Améliorations Récentes
 
-**Démarrage rapide :**
-```bash
-# Script automatique
-chmod +x scripts/quick-start.sh
-./scripts/quick-start.sh
-```
+### ✅ Images des Plugs
+- **Images personnalisées** dans les détails des plugs
+- **Plus d'image d'accueil générique** dans les détails
+- **Synchronisation** admin panel → bot telegram
 
-**Démarrage manuel :**
-```bash
-# Bot Telegram
-cd bot && npm run dev
+### ✅ Configuration Séparée
+- **Configuration Bot** (`/admin/config`) - Messages, textes, bienvenue
+- **Configuration Boutique** (`/admin/configuration`) - Apparence, nom, logo
+- **Plus de conflits** entre les paramètres
+- **Stabilité améliorée** des sauvegardes
 
-# Panel Admin (nouveau terminal)
-cd admin && npm run dev
+### ✅ Navigation Bot Améliorée
+- **Pas de loading** lors des navigations
+- **Nouveaux messages** pour les détails (au lieu de remplacer)
+- **Retours fluides** vers les menus précédents
 
-# Initialiser les données de test
-cd bot && npm run seed
-```
+### ✅ Nettoyage Codebase
+- **Fichiers inutiles supprimés** (tests, debug, docs temporaires)
+- **Structure simplifiée** et plus maintenable
+- **Performance optimisée**
 
-## 🌐 Déploiement
+## 🚀 Technologies
 
-### Render (Bot)
-1. Connectez votre repo à Render
-2. Choisissez "Web Service"
-3. Root Directory: `bot`
-4. Build Command: `npm install`
-5. Start Command: `npm start`
-6. Ajoutez les variables d'environnement
+- **Backend:** Node.js, Express, MongoDB, Mongoose
+- **Bot:** Telegraf (Telegram Bot Framework)
+- **Frontend:** Next.js, React, Tailwind CSS
+- **Hosting:** Render (Bot), Vercel (Admin + Boutique)
+- **Database:** MongoDB Atlas
 
-### Vercel (Admin)
-1. Connectez votre repo à Vercel
-2. Root Directory: `admin`
-3. Framework: Next.js
-4. Ajoutez les variables d'environnement
+## 📱 Utilisation
 
-## 📱 Fonctionnalités
+### 🤖 Configuration Bot
+1. Admin Panel → **Configuration Bot**
+2. Modifier messages, textes, bienvenue
+3. Sauvegarder → Recharge automatique du bot
 
-### Bot Telegram
-- ✅ Page d'accueil avec section VIP
-- ✅ Liste des plugs avec filtres
-- ✅ Système de sous-menus
-- ✅ Recherche par service et pays
+### 🏪 Configuration Boutique
+1. Admin Panel → **Configuration**
+2. Modifier nom, logo, apparence
+3. Sauvegarder → Synchronisation automatique
 
-### Panel Admin
-- ✅ Interface responsive
-- ✅ Gestion des plugs
-- ✅ Configuration section VIP
-- ✅ Upload d'images
-- ✅ Modification des textes
+### 📦 Gestion Plugs
+1. Admin Panel → **Boutiques/Plugs**
+2. Ajouter/Modifier avec images
+3. Synchronisation automatique bot ↔ boutique
 
-## 🔧 Structure
+## 🔧 API Endpoints
 
-```
-├── bot/                 # Bot Telegram (Render)
-│   ├── src/
-│   │   ├── handlers/    # Gestionnaires des commandes
-│   │   ├── models/      # Modèles MongoDB
-│   │   └── utils/       # Utilitaires
-│   └── package.json
-├── admin/               # Panel Admin (Vercel)
-│   ├── pages/           # Pages Next.js
-│   ├── components/      # Composants React
-│   └── package.json
-└── shared/              # Code partagé
-    └── models/          # Modèles de données
-```
+### 🔐 Authentifiés (Admin)
+- `GET/PUT /api/config` - Configuration du système
+- `GET/POST/PUT/DELETE /api/plugs` - Gestion des plugs
+- `POST /api/config/clean-boutique` - Nettoyage configuration
+
+### 🌐 Publics (Boutique)
+- `GET /api/public/config` - Configuration publique
+- `GET /api/public/plugs` - Liste des plugs actifs
+
+## 📈 Monitoring
+
+- **Logs détaillés** pour debugging
+- **Diagnostic en temps réel** pour la boutique
+- **Synchronisation vérifiée** admin ↔ bot ↔ boutique
+
+---
+
+*Dernière mise à jour: Décembre 2024*

@@ -8,7 +8,7 @@ const {
   createPlugListKeyboard,
   createPlugKeyboard 
 } = require('../utils/keyboards');
-const { sendMessageWithImage, editMessageWithImage } = require('../utils/messageHelper');
+const { sendMessageWithImage, editMessageWithImage, sendPlugWithImage } = require('../utils/messageHelper');
 
 // Afficher le menu des plugs
 const handleTopPlugs = async (ctx) => {
@@ -370,8 +370,8 @@ const handlePlugDetails = async (ctx, plugId, returnContext = 'top_plugs') => {
 
     const keyboard = createPlugKeyboard(plug, returnContext);
 
-    // CORRECTION: Utiliser sendMessageWithImage au lieu d'editMessageWithImage pour avoir un nouveau message
-    await sendMessageWithImage(ctx, message, keyboard, config, { parse_mode: 'Markdown' });
+    // CORRECTION: Utiliser sendPlugWithImage pour afficher l'image du plug au lieu de l'image d'accueil
+    await sendPlugWithImage(ctx, message, keyboard, plug, { parse_mode: 'Markdown' });
     
   } catch (error) {
     console.error('Erreur dans handlePlugDetails:', error);
@@ -456,8 +456,8 @@ const handlePlugServiceDetails = async (ctx, plugId, serviceType) => {
     
     const keyboard = Markup.inlineKeyboard(buttons);
 
-    // CORRECTION: Utiliser sendMessageWithImage au lieu d'editMessageWithImage pour avoir un nouveau message
-    await sendMessageWithImage(ctx, message, keyboard, config, { parse_mode: 'Markdown' });
+    // CORRECTION: Utiliser sendPlugWithImage pour afficher l'image du plug
+    await sendPlugWithImage(ctx, message, keyboard, plug, { parse_mode: 'Markdown' });
 
   } catch (error) {
     console.error('Erreur dans handlePlugServiceDetails:', error);
