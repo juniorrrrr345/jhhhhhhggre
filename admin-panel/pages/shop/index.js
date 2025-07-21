@@ -13,6 +13,20 @@ import {
   MagnifyingGlassIcon
 } from '@heroicons/react/24/outline'
 
+// Fonction pour convertir PostImg URLs
+function convertPostImgUrl(imageUrl) {
+  if (!imageUrl) return imageUrl
+  
+  // Convertir https://postimg.cc/QVDv03cY vers https://i.postimg.cc/QVDv03cY.jpg
+  const postimgMatch = imageUrl.match(/postimg\.cc\/([a-zA-Z0-9]+)/)
+  if (postimgMatch) {
+    const imageId = postimgMatch[1]
+    return `https://i.postimg.cc/${imageId}.jpg`
+  }
+  
+  return imageUrl
+}
+
 // Composant pour gérer l'affichage des images avec fallback
 const ImageWithFallback = ({ src, alt, className, fallbackIcon: FallbackIcon = GlobeAltIcon }) => {
   const [imageError, setImageError] = useState(false)
@@ -429,7 +443,7 @@ export default function ShopHome() {
                         <div className="relative h-32 sm:h-40 md:h-48 bg-gray-900">
                           {plug.image ? (
                             <ImageWithFallback
-                              src={plug.image}
+                              src={convertPostImgUrl(plug.image)}
                               alt={plug.name}
                               className="w-full h-full object-cover"
                             />
