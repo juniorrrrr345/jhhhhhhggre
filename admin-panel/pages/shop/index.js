@@ -27,7 +27,8 @@ export default function ShopHome() {
       console.log('📊 Config reçue:', {
         boutique: config.boutique,
         hasName: !!config.boutique?.name,
-        hasSubtitle: !!config.boutique?.subtitle
+        hasSubtitle: !!config.boutique?.subtitle,
+        socialMedia: config.socialMedia
       })
     }
   }, [config])
@@ -48,7 +49,8 @@ export default function ShopHome() {
         const data = await response.json()
         console.log('✅ Config boutique chargée:', {
           name: data.boutique?.name,
-          subtitle: data.boutique?.subtitle
+          subtitle: data.boutique?.subtitle,
+          socialMedia: data.socialMedia
         })
         setConfig(data)
       } else {
@@ -191,86 +193,76 @@ export default function ShopHome() {
           </div>
         </div>
 
-        {/* Navigation */}
-        <nav style={{ 
-          backgroundColor: '#000000',
-          padding: '0 20px',
-          borderBottom: '1px solid #2a2a2a'
-        }}>
+        {/* Réseaux Sociaux */}
+        {(config?.socialMedia?.telegram || config?.socialMedia?.whatsapp) && (
           <div style={{ 
-            display: 'flex', 
-            justifyContent: 'center', 
-            gap: '40px',
-            paddingBottom: '16px'
+            backgroundColor: '#1a1a1a',
+            padding: '16px 20px',
+            textAlign: 'center',
+            borderBottom: '1px solid #2a2a2a'
           }}>
-            <Link href="/shop" style={{ 
-              display: 'flex', 
-              flexDirection: 'column', 
-              alignItems: 'center', 
-              textDecoration: 'none',
-              color: '#007AFF'
+            <h3 style={{ 
+              fontSize: '16px', 
+              fontWeight: 'bold', 
+              margin: '0 0 12px 0',
+              color: '#ffffff'
             }}>
-              <div style={{ 
-                width: '40px', 
-                height: '40px', 
-                backgroundColor: '#007AFF', 
-                borderRadius: '12px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                marginBottom: '4px'
-              }}>
-                🏠
-              </div>
-              <span style={{ fontSize: '12px', color: '#ffffff' }}>Plugs</span>
-            </Link>
-            <Link href="/shop/search" style={{ 
+              📱 Suivez-nous
+            </h3>
+            <div style={{ 
               display: 'flex', 
-              flexDirection: 'column', 
-              alignItems: 'center', 
-              textDecoration: 'none',
-              color: '#8e8e93'
+              justifyContent: 'center', 
+              gap: '16px',
+              flexWrap: 'wrap'
             }}>
-              <div style={{ 
-                width: '40px', 
-                height: '40px', 
-                backgroundColor: 'transparent', 
-                borderRadius: '12px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                marginBottom: '4px'
-              }}>
-                🔍
-              </div>
-              <span style={{ fontSize: '12px', color: '#8e8e93' }}>Recherche</span>
-            </Link>
-            <Link href="/shop/vip" style={{ 
-              display: 'flex', 
-              flexDirection: 'column', 
-              alignItems: 'center', 
-              textDecoration: 'none',
-              color: '#8e8e93'
-            }}>
-              <div style={{ 
-                width: '40px', 
-                height: '40px', 
-                backgroundColor: 'transparent', 
-                borderRadius: '12px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                marginBottom: '4px'
-              }}>
-                ⭐
-              </div>
-              <span style={{ fontSize: '12px', color: '#8e8e93' }}>VIP</span>
-            </Link>
+              {config.socialMedia.telegram && (
+                <a 
+                  href={config.socialMedia.telegram.startsWith('http') ? config.socialMedia.telegram : `https://t.me/${config.socialMedia.telegram.replace('@', '')}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    backgroundColor: '#007AFF',
+                    color: '#ffffff',
+                    padding: '8px 16px',
+                    borderRadius: '20px',
+                    textDecoration: 'none',
+                    fontSize: '14px',
+                    fontWeight: '500'
+                  }}
+                >
+                  ✈️ Telegram
+                </a>
+              )}
+              {config.socialMedia.whatsapp && (
+                <a 
+                  href={config.socialMedia.whatsapp.startsWith('http') ? config.socialMedia.whatsapp : `https://wa.me/${config.socialMedia.whatsapp.replace(/[^0-9]/g, '')}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    backgroundColor: '#25D366',
+                    color: '#ffffff',
+                    padding: '8px 16px',
+                    borderRadius: '20px',
+                    textDecoration: 'none',
+                    fontSize: '14px',
+                    fontWeight: '500'
+                  }}
+                >
+                  💬 WhatsApp
+                </a>
+              )}
+            </div>
           </div>
-        </nav>
+        )}
 
         {/* Contenu Principal */}
-        <div style={{ padding: '20px' }}>
+        <div style={{ padding: '20px', paddingBottom: '100px' }}>
           {plugs.length === 0 ? (
             <div style={{ 
               textAlign: 'center', 
@@ -459,6 +451,88 @@ export default function ShopHome() {
             </>
           )}
         </div>
+
+        {/* Navigation en bas */}
+        <nav style={{ 
+          position: 'fixed',
+          bottom: '0',
+          left: '0',
+          right: '0',
+          backgroundColor: '#000000',
+          padding: '16px 20px',
+          borderTop: '1px solid #2a2a2a',
+          zIndex: 1000
+        }}>
+          <div style={{ 
+            display: 'flex', 
+            justifyContent: 'center', 
+            gap: '40px'
+          }}>
+            <Link href="/shop" style={{ 
+              display: 'flex', 
+              flexDirection: 'column', 
+              alignItems: 'center', 
+              textDecoration: 'none',
+              color: '#007AFF'
+            }}>
+              <div style={{ 
+                width: '40px', 
+                height: '40px', 
+                backgroundColor: '#007AFF', 
+                borderRadius: '12px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginBottom: '4px'
+              }}>
+                🏠
+              </div>
+              <span style={{ fontSize: '12px', color: '#ffffff' }}>Accueil</span>
+            </Link>
+            <Link href="/shop/search" style={{ 
+              display: 'flex', 
+              flexDirection: 'column', 
+              alignItems: 'center', 
+              textDecoration: 'none',
+              color: '#8e8e93'
+            }}>
+              <div style={{ 
+                width: '40px', 
+                height: '40px', 
+                backgroundColor: 'transparent', 
+                borderRadius: '12px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginBottom: '4px'
+              }}>
+                🔍
+              </div>
+              <span style={{ fontSize: '12px', color: '#8e8e93' }}>Recherche</span>
+            </Link>
+            <Link href="/shop/vip" style={{ 
+              display: 'flex', 
+              flexDirection: 'column', 
+              alignItems: 'center', 
+              textDecoration: 'none',
+              color: '#8e8e93'
+            }}>
+              <div style={{ 
+                width: '40px', 
+                height: '40px', 
+                backgroundColor: 'transparent', 
+                borderRadius: '12px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginBottom: '4px'
+              }}>
+                ⭐
+              </div>
+              <span style={{ fontSize: '12px', color: '#8e8e93' }}>VIP</span>
+            </Link>
+          </div>
+        </nav>
       </div>
 
       <style jsx>{`
