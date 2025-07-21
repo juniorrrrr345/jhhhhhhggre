@@ -239,13 +239,13 @@ bot.action(/^plug_service_([a-f\d]{24})_(.+)$/, async (ctx) => {
 });
 
 
-// Liker/disliker une boutique (système avec cooldown de 2h)
+// Liker une boutique (système permanent)
 bot.action(/^like_([a-f\d]{24})$/, async (ctx) => {
   try {
     const plugId = ctx.match[1];
     const userId = ctx.from.id;
     
-    console.log(`User ${userId} wants to like/unlike plug ${plugId}`);
+    console.log(`User ${userId} wants to like plug ${plugId}`);
     
     // Vérifier si la boutique existe
     const Plug = require('./src/models/Plug');
@@ -257,121 +257,12 @@ bot.action(/^like_([a-f\d]{24})$/, async (ctx) => {
     
     const hasLiked = plug.likedBy.includes(userId);
     
-    // Si l'utilisateur a déjà liké, vérifier le cooldown pour permettre unlike
+    // Si l'utilisateur a déjà liké, afficher un message de confirmation
     if (hasLiked) {
-      console.log(`User ${userId} already liked plug ${plugId} - checking cooldown for unlike`);
-      
-      // Trouver le dernier like de cet utilisateur
-      const userLikeData = plug.likeHistory?.find(entry => 
-        entry.userId === userId && entry.action === 'like'
-      );
-      
-      if (userLikeData) {
-        const timeSinceLastLike = Date.now() - userLikeData.timestamp;
-        const cooldownPeriod = 2 * 60 * 60 * 1000; // 2 heures en millisecondes
-        const remainingCooldown = cooldownPeriod - timeSinceLastLike;
-        
-        if (remainingCooldown > 0) {
-          // Cooldown encore actif
-          const remainingMinutes = Math.ceil(remainingCooldown / (60 * 1000));
-          const hours = Math.floor(remainingMinutes / 60);
-          const minutes = remainingMinutes % 60;
-          const timeDisplay = hours > 0 ? `${hours}h${minutes > 0 ? ` ${minutes}min` : ''}` : `${minutes}min`;
-          
-          return ctx.answerCbQuery(`⏰ Vous pourrez retirer votre like dans ${timeDisplay}`, { 
-            show_alert: true 
-          });
-        } else {
-          // Cooldown expiré, permettre unlike
-          console.log(`User ${userId} is removing like from plug ${plugId}`);
-          
-          // Retirer le like
-          plug.likedBy = plug.likedBy.filter(id => id !== userId);
-          plug.likes = Math.max(0, plug.likes - 1);
-          
-          // Ajouter à l'historique
-          if (!plug.likeHistory) {
-            plug.likeHistory = [];
-          }
-          plug.likeHistory.push({
-            userId: userId,
-            timestamp: Date.now(),
-            action: 'unlike'
-          });
-          
-          await plug.save();
-          console.log(`✅ User ${userId} unliked plug ${plugId}. New likes count: ${plug.likes}`);
-          
-          // Notification du like retiré
-          await ctx.answerCbQuery(`💔 Vous avez retiré votre like de ${plug.name} ! (${plug.likes} likes)`);
-          
-          // Mettre à jour l'affichage (code de mise à jour existant)
-          const Config = require('./src/models/Config');
-          const config = await Config.findById('main');
-          
-          let returnContext = 'top_plugs';
-          if (ctx.session && ctx.session.lastContext) {
-            returnContext = ctx.session.lastContext;
-          }
-          
-          const { createPlugKeyboard } = require('./src/utils/keyboards');
-          const { editMessageWithImage } = require('./src/utils/messageHelper');
-          
-          // Reconstruire le message
-          let message = `${plug.isVip ? '⭐ ' : ''}**${plug.name}**\n\n`;
-          message += `📝 ${plug.description}\n\n`;
-
-          // Services disponibles
-          const services = [];
-          if (plug.services?.delivery?.enabled) {
-            services.push(`🚚 **Livraison**${plug.services.delivery.description ? `: ${plug.services.delivery.description}` : ''}`);
-          }
-          if (plug.services?.postal?.enabled) {
-            services.push(`✈️ **Envoi postal**${plug.services.postal.description ? `: ${plug.services.postal.description}` : ''}`);
-          }
-          if (plug.services?.meetup?.enabled) {
-            services.push(`🏠 **Meetup**${plug.services.meetup.description ? `: ${plug.services.meetup.description}` : ''}`);
-          }
-
-          if (services.length > 0) {
-            message += `🔧 **Services :**\n${services.join('\n')}\n\n`;
-          }
-
-          // Pays desservis
-          if (plug.countries && plug.countries.length > 0) {
-            message += `🌍 **Pays desservis :** ${plug.countries.join(', ')}\n\n`;
-          }
-
-          // Afficher les likes mis à jour
-          const likesCount = plug.likes || 0;
-          message += `❤️ **${likesCount} like${likesCount !== 1 ? 's' : ''}**\n\n`;
-
-          const newKeyboard = createPlugKeyboard(plug, returnContext, userId);
-          
-          try {
-            await editMessageWithImage(ctx, message, newKeyboard, config, { 
-              parse_mode: 'Markdown',
-              plugImage: plug.image,
-              isPlugDetails: true
-            });
-            console.log('✅ Message mis à jour après unlike');
-          } catch (error) {
-            console.log('⚠️ Mise à jour message échouée, mise à jour clavier seulement:', error.message);
-            try {
-              await ctx.editMessageReplyMarkup(newKeyboard.reply_markup);
-              console.log('✅ Clavier mis à jour après unlike');
-            } catch (keyboardError) {
-              console.log('⚠️ Mise à jour clavier échouée:', keyboardError.message);
-            }
-          }
-          
-          return;
-        }
-      } else {
-        return ctx.answerCbQuery(`❤️ Vous avez déjà liké ${plug.name} ! (${plug.likes} likes)`, { 
-          show_alert: false 
-        });
-      }
+      console.log(`User ${userId} already liked plug ${plugId} - showing confirmation`);
+      return ctx.answerCbQuery(`❤️ Vous avez déjà liké ${plug.name} ! (${plug.likes} likes)`, { 
+        show_alert: false 
+      });
     }
     
     // ========== NOUVEAU LIKE ==========
@@ -1536,11 +1427,11 @@ app.get('/api/cache/stats', (req, res) => {
   });
 });
 
-// Liker/disliker un plug (endpoint public avec cooldown de 2h)
+// Liker un plug (endpoint public - likes permanents)
 app.post('/api/public/plugs/:id/like', async (req, res) => {
   try {
     const { id } = req.params;
-    const { userId, action } = req.body; // action: 'like' ou 'unlike'
+    const { userId, action } = req.body; // action: 'like' seulement
     
     console.log(`${action} plug ${id} by user ${userId}`);
     
@@ -1579,89 +1470,18 @@ app.post('/api/public/plugs/:id/like', async (req, res) => {
       res.json({ 
         likes: plug.likes,
         liked: true,
-        message: 'Like ajouté',
-        canUnlike: false, // Pas possible immédiatement
-        cooldownEnds: Date.now() + (2 * 60 * 60 * 1000) // Dans 2 heures
+        message: 'Like ajouté'
       });
       
-    } else if (action === 'unlike' && hasLiked) {
-      // Vérifier le cooldown
-      const userLikeData = plug.likeHistory?.find(entry => 
-        entry.userId === userId && entry.action === 'like'
-      );
-      
-      if (userLikeData) {
-        const timeSinceLastLike = Date.now() - userLikeData.timestamp;
-        const cooldownPeriod = 2 * 60 * 60 * 1000; // 2 heures
-        const remainingCooldown = cooldownPeriod - timeSinceLastLike;
-        
-        if (remainingCooldown > 0) {
-          // Cooldown encore actif
-          const remainingMinutes = Math.ceil(remainingCooldown / (60 * 1000));
-          const hours = Math.floor(remainingMinutes / 60);
-          const minutes = remainingMinutes % 60;
-          const timeDisplay = hours > 0 ? `${hours}h${minutes > 0 ? ` ${minutes}min` : ''}` : `${minutes}min`;
-          
-          return res.status(400).json({ 
-            error: `Vous pourrez retirer votre like dans ${timeDisplay}`,
-            cooldownActive: true,
-            remainingTime: remainingCooldown,
-            cooldownEnds: userLikeData.timestamp + cooldownPeriod
-          });
-        }
-      }
-      
-      // Retirer le like (cooldown expiré ou pas d'historique)
-      plug.likedBy = plug.likedBy.filter(id => id !== userId);
-      plug.likes = Math.max(0, plug.likes - 1);
-      
-      // Ajouter à l'historique
-      if (!plug.likeHistory) {
-        plug.likeHistory = [];
-      }
-      plug.likeHistory.push({
-        userId: userId,
-        timestamp: Date.now(),
-        action: 'unlike'
-      });
-      
-      await plug.save();
-      await refreshCache();
-      
-      res.set({
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'POST, OPTIONS',
-        'Access-Control-Allow-Headers': 'Content-Type',
-        'Cache-Control': 'no-cache'
-      });
-      
-      res.json({ 
-        likes: plug.likes,
-        liked: false,
-        message: 'Like retiré',
-        canUnlike: false
+    } else if (action === 'unlike') {
+      // Unlike non autorisé
+      return res.status(400).json({ 
+        error: 'Impossible de retirer un like',
+        message: 'Les likes sont permanents'
       });
       
     } else {
-      // Aucune action nécessaire
-      const userLikeData = hasLiked ? plug.likeHistory?.find(entry => 
-        entry.userId === userId && entry.action === 'like'
-      ) : null;
-      
-      let canUnlike = false;
-      let cooldownEnds = null;
-      
-      if (hasLiked && userLikeData) {
-        const timeSinceLastLike = Date.now() - userLikeData.timestamp;
-        const cooldownPeriod = 2 * 60 * 60 * 1000;
-        const remainingCooldown = cooldownPeriod - timeSinceLastLike;
-        
-        canUnlike = remainingCooldown <= 0;
-        if (!canUnlike) {
-          cooldownEnds = userLikeData.timestamp + cooldownPeriod;
-        }
-      }
-      
+      // Déjà liké ou aucune action
       res.set({
         'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Methods': 'POST, OPTIONS',
@@ -1672,14 +1492,12 @@ app.post('/api/public/plugs/:id/like', async (req, res) => {
       res.json({ 
         likes: plug.likes,
         liked: hasLiked,
-        message: hasLiked ? 'Déjà liké' : 'Pas encore liké',
-        canUnlike: canUnlike,
-        cooldownEnds: cooldownEnds
+        message: hasLiked ? 'Déjà liké' : 'Pas encore liké'
       });
     }
     
   } catch (error) {
-    console.error('Erreur like/unlike:', error);
+    console.error('Erreur like:', error);
     res.status(500).json({ error: 'Erreur serveur' });
   }
 });
