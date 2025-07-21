@@ -158,6 +158,14 @@ export default function ShopHome() {
         <title>{config?.boutique?.name || 'Boutique'}</title>
         <meta name="description" content="Découvrez notre sélection de produits premium avec livraison, envoi postal et meetup disponibles." />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <style jsx global>{`
+          a {
+            text-decoration: none !important;
+          }
+          .no-underline {
+            text-decoration: none !important;
+          }
+        `}</style>
       </Head>
 
       <div 

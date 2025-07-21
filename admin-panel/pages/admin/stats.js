@@ -30,7 +30,7 @@ export default function StatsPage() {
         
         const response = await fetch(`${apiBaseUrl}/api/stats`, {
           headers: {
-            'Authorization': token // Proxy gère Bearer automatiquement,
+            'Authorization': token, // Proxy gère Bearer automatiquement
             'Cache-Control': 'no-cache'
           }
         });

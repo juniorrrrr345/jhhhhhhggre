@@ -161,6 +161,14 @@ export default function ShopVIP() {
         <title>{config?.boutique?.vipTitle || config?.boutique?.name || 'VIP'}</title>
         <meta name="description" content="Découvrez notre sélection exclusive de boutiques VIP premium avec services garantis." />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <style jsx global>{`
+          a {
+            text-decoration: none !important;
+          }
+          .no-underline {
+            text-decoration: none !important;
+          }
+        `}</style>
       </Head>
 
       <div 
@@ -254,7 +262,7 @@ export default function ShopVIP() {
               <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-2 gap-4">
                 {vipPlugs.map((plug, index) => (
                   <Link key={plug._id} href={`/shop/${plug._id}`}>
-                    <div className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:border-gray-400 transition-colors duration-300 cursor-pointer">
+                    <div className="bg-black border border-gray-600 rounded-lg overflow-hidden hover:border-gray-400 transition-colors duration-300 cursor-pointer">
                       <div className="relative h-32 sm:h-40">
                         <img
                           src={plug.image || '/placeholder.jpg'}
@@ -279,11 +287,11 @@ export default function ShopVIP() {
                       </div>
 
                       <div className="p-3 sm:p-4">
-                        <h3 className="text-sm sm:text-base font-bold text-gray-900 mb-2 truncate">{plug.name}</h3>
-                        <p className="text-gray-600 mb-3 text-xs sm:text-sm line-clamp-2 h-8">{plug.description}</p>
+                        <h3 className="text-sm sm:text-base font-bold text-white mb-2 truncate no-underline">{plug.name}</h3>
+                        <p className="text-white mb-3 text-xs sm:text-sm line-clamp-2 h-8 no-underline">{plug.description}</p>
 
                         {plug.countries && plug.countries.length > 0 && (
-                          <div className="flex items-center text-xs sm:text-sm text-gray-500 mb-2">
+                          <div className="flex items-center text-xs sm:text-sm text-white mb-2 no-underline">
                             <MapPinIcon className="w-3 h-3 mr-1" />
                             <span className="truncate">{plug.countries.join(', ')}</span>
                           </div>
@@ -291,28 +299,28 @@ export default function ShopVIP() {
 
                         <div className="flex flex-wrap gap-1 mb-3">
                           {plug.services?.delivery?.enabled && (
-                            <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">
+                            <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-700 text-white">
                               <TruckIcon className="w-2.5 h-2.5 mr-1" />
                               Livraison
                             </span>
                           )}
                           {plug.services?.postal?.enabled && (
-                            <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">
+                            <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-700 text-white">
                               <GlobeAltIcon className="w-2.5 h-2.5 mr-1" />
                               Postal
                             </span>
                           )}
                           {plug.services?.meetup?.enabled && (
-                            <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">
+                            <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-700 text-white">
                               <HomeIcon className="w-2.5 h-2.5 mr-1" />
                               Meetup
                             </span>
                           )}
                         </div>
 
-                        <div className="flex items-center justify-between pt-2 border-t border-gray-100">
-                          <span className="text-gray-600 text-xs sm:text-sm">Voir détails</span>
-                          <div className="flex items-center text-red-500 text-xs sm:text-sm font-medium">
+                        <div className="flex items-center justify-between pt-2 border-t border-gray-700">
+                          <span className="text-white text-xs sm:text-sm no-underline">Voir détails</span>
+                          <div className="flex items-center text-red-400 text-xs sm:text-sm font-medium no-underline">
                             <span className="mr-1">❤️</span>
                             <span>{plug.likes || 0} like{(plug.likes || 0) !== 1 ? 's' : ''}</span>
                           </div>

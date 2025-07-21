@@ -357,10 +357,9 @@ const handlePlugDetails = async (ctx, plugId, returnContext = 'top_plugs') => {
       message += `🌍 **Pays desservis :** ${plug.countries.join(', ')}\n\n`;
     }
 
-    // Afficher les likes si disponibles
-    if (plug.likes > 0) {
-      message += `❤️ **${plug.likes} like${plug.likes > 1 ? 's' : ''}**\n\n`;
-    }
+    // Afficher les likes (même à 0 pour montrer la fonctionnalité)
+    const likesCount = plug.likes || 0;
+    message += `❤️ **${likesCount} like${likesCount !== 1 ? 's' : ''}**\n\n`;
 
     // Utiliser la fonction createPlugKeyboard qui gère déjà tout (avec userId pour l'état du bouton like)
     const keyboard = createPlugKeyboard(plug, returnContext, ctx.from?.id);
