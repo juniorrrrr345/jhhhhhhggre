@@ -13,7 +13,7 @@ const { sendMessageWithImage, editMessageWithImage } = require('../utils/message
 // Afficher le menu des plugs
 const handleTopPlugs = async (ctx) => {
   try {
-    // Confirmer immédiatement la callback pour éviter le loading
+    // CORRECTION: Confirmer immédiatement la callback pour éviter le loading
     await ctx.answerCbQuery();
     
     // Toujours récupérer la config fraîche
@@ -27,6 +27,7 @@ const handleTopPlugs = async (ctx) => {
     
   } catch (error) {
     console.error('Erreur dans handleTopPlugs:', error);
+    // Fallback: essayer de répondre si pas déjà fait
     await ctx.answerCbQuery('❌ Erreur lors du chargement').catch(() => {});
   }
 };
@@ -34,7 +35,7 @@ const handleTopPlugs = async (ctx) => {
 // Afficher les boutiques VIP
 const handleVipPlugs = async (ctx, page = 0) => {
   try {
-    // Confirmer immédiatement la callback pour éviter le loading
+    // CORRECTION: Confirmer immédiatement la callback pour éviter le loading
     await ctx.answerCbQuery();
     
     // Toujours récupérer la config fraîche
@@ -111,7 +112,7 @@ const handleVipPlugs = async (ctx, page = 0) => {
 // Afficher tous les plugs
 const handleAllPlugs = async (ctx, page = 0) => {
   try {
-    // Confirmer immédiatement la callback pour éviter le loading
+    // CORRECTION: Confirmer immédiatement la callback pour éviter le loading
     await ctx.answerCbQuery();
     
     const config = await Config.findById('main');
@@ -160,10 +161,10 @@ const handleAllPlugs = async (ctx, page = 0) => {
 // Afficher le menu des services
 const handleFilterService = async (ctx) => {
   try {
-    console.log('🔍 Affichage du menu des services');
-    
-    // Confirmer immédiatement la callback pour éviter le loading
+    // CORRECTION: Confirmer immédiatement la callback pour éviter le loading
     await ctx.answerCbQuery();
+    
+    console.log('🔍 Affichage du menu des services');
     
     const config = await Config.findById('main');
     const keyboard = createServicesKeyboard(config);
@@ -322,10 +323,10 @@ const handleCountryFilter = async (ctx, country, page = 0) => {
 // Afficher un plug spécifique avec contexte de retour
 const handlePlugDetails = async (ctx, plugId, returnContext = 'top_plugs') => {
   try {
-    console.log(`🔍 handlePlugDetails: plugId=${plugId}, returnContext=${returnContext}`);
-    
-    // Confirmer immédiatement la callback pour éviter le loading
+    // CORRECTION: Confirmer immédiatement la callback pour éviter le loading
     await ctx.answerCbQuery();
+    
+    console.log(`🔍 handlePlugDetails: plugId=${plugId}, returnContext=${returnContext}`);
     
     const plug = await Plug.findById(plugId);
     console.log(`📦 Plug found:`, plug ? `${plug.name} (active: ${plug.isActive})` : 'null');
@@ -369,8 +370,8 @@ const handlePlugDetails = async (ctx, plugId, returnContext = 'top_plugs') => {
 
     const keyboard = createPlugKeyboard(plug, returnContext);
 
-    // Utiliser la fonction helper pour afficher avec image
-    await editMessageWithImage(ctx, message, keyboard, config, { parse_mode: 'Markdown' });
+    // CORRECTION: Utiliser sendMessageWithImage au lieu d'editMessageWithImage pour avoir un nouveau message
+    await sendMessageWithImage(ctx, message, keyboard, config, { parse_mode: 'Markdown' });
     
   } catch (error) {
     console.error('Erreur dans handlePlugDetails:', error);
@@ -381,10 +382,10 @@ const handlePlugDetails = async (ctx, plugId, returnContext = 'top_plugs') => {
 // Afficher les détails d'un service d'un plug
 const handlePlugServiceDetails = async (ctx, plugId, serviceType) => {
   try {
-    console.log(`🔧 handlePlugServiceDetails: plugId=${plugId}, serviceType=${serviceType}`);
-    
-    // Confirmer immédiatement la callback pour éviter le loading
+    // CORRECTION: Confirmer immédiatement la callback pour éviter le loading
     await ctx.answerCbQuery();
+    
+    console.log(`🔧 handlePlugServiceDetails: plugId=${plugId}, serviceType=${serviceType}`);
     
     const plug = await Plug.findById(plugId);
     console.log(`📦 Plug found for service:`, plug ? `${plug.name} (active: ${plug.isActive})` : 'null');
@@ -455,7 +456,8 @@ const handlePlugServiceDetails = async (ctx, plugId, serviceType) => {
     
     const keyboard = Markup.inlineKeyboard(buttons);
 
-    await editMessageWithImage(ctx, message, keyboard, config, { parse_mode: 'Markdown' });
+    // CORRECTION: Utiliser sendMessageWithImage au lieu d'editMessageWithImage pour avoir un nouveau message
+    await sendMessageWithImage(ctx, message, keyboard, config, { parse_mode: 'Markdown' });
 
   } catch (error) {
     console.error('Erreur dans handlePlugServiceDetails:', error);

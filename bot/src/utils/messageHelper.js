@@ -39,18 +39,22 @@ const editMessageWithImage = async (ctx, text, keyboard, config, options = {}) =
   
   try {
     if (welcomeImage) {
-      // Si le message actuel n'a pas d'image, on supprime et renvoie avec image
+      // CORRECTION: Suppression et recréation rapide pour éviter le loading
       try {
+        // Supprimer immédiatement l'ancien message
         await ctx.deleteMessage();
+        
+        // Recréer immédiatement avec l'image (pas de loading visible)
         await ctx.replyWithPhoto(welcomeImage, {
           caption: text,
           reply_markup: keyboard?.reply_markup || keyboard,
           parse_mode: options.parse_mode || 'Markdown',
           ...options
         });
-        console.log('✅ Message remplacé avec image');
+        console.log('✅ Message remplacé avec image (optimisé)');
       } catch (deleteError) {
-        // Si impossible de supprimer, on édite le texte
+        console.log('⚠️ Impossible de supprimer, édition du texte');
+        // Si impossible de supprimer, on édite le texte seulement
         await ctx.editMessageText(text, {
           reply_markup: keyboard?.reply_markup || keyboard,
           parse_mode: options.parse_mode || 'Markdown',
@@ -58,7 +62,7 @@ const editMessageWithImage = async (ctx, text, keyboard, config, options = {}) =
         });
       }
     } else {
-      // Pas d'image, édition normale
+      // Pas d'image, édition normale du texte
       await ctx.editMessageText(text, {
         reply_markup: keyboard?.reply_markup || keyboard,
         parse_mode: options.parse_mode || 'Markdown',
@@ -67,12 +71,18 @@ const editMessageWithImage = async (ctx, text, keyboard, config, options = {}) =
     }
   } catch (error) {
     console.error('❌ Erreur édition message:', error);
-    // Fallback : supprimer et renvoyer nouveau message
+    // Fallback amélioré
     try {
-      await ctx.deleteMessage();
+      await ctx.deleteMessage().catch(() => {}); // Supprimer si possible
       await sendMessageWithImage(ctx, text, keyboard, config, options);
     } catch (fallbackError) {
       console.error('❌ Erreur fallback édition:', fallbackError);
+      // Dernier recours : message texte simple
+      await ctx.reply(text, {
+        reply_markup: keyboard?.reply_markup || keyboard,
+        parse_mode: options.parse_mode || 'Markdown',
+        ...options
+      }).catch(() => {});
     }
   }
 };
