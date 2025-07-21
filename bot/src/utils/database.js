@@ -17,11 +17,12 @@ const connectDB = async (retryAttempt = 0) => {
     console.log(`🔄 Tentative de connexion MongoDB #${connectionAttempts}...`);
     
     const connection = await mongoose.connect(process.env.MONGODB_URI, {
-      serverSelectionTimeoutMS: 5000, // 5 secondes timeout
+      serverSelectionTimeoutMS: 10000, // 10 secondes timeout
+      socketTimeoutMS: 45000, // 45 secondes socket timeout
       heartbeatFrequencyMS: 2000, // Ping toutes les 2 secondes
       maxPoolSize: 10, // Maximum 10 connexions
-      minPoolSize: 1,  // Minimum 1 connexion
-      maxIdleTimeMS: 30000, // Fermer les connexions inactives après 30s
+      minPoolSize: 2,  // Minimum 2 connexions pour éviter les déconnexions
+      maxIdleTimeMS: 300000, // 5 minutes avant fermeture des connexions inactives
     });
 
     isConnected = true;
@@ -30,12 +31,25 @@ const connectDB = async (retryAttempt = 0) => {
 
     // Initialiser la configuration par défaut si elle n'existe pas
     const Config = require('../models/Config');
-    const existingConfig = await Config.findById('main');
+    const existingConfig = await Config.findById('main').catch(() => null);
     
     if (!existingConfig) {
-      const defaultConfig = new Config({ _id: 'main' });
+      console.log('📝 Création de la configuration par défaut...');
+      const defaultConfig = new Config({ 
+        _id: 'main',
+        welcome: {
+          text: '🌟 Bienvenue sur notre bot !\n\nDécouvrez nos meilleurs plugs sélectionnés avec soin.'
+        },
+        buttons: {
+          topPlugs: { text: '🔌 Top Des Plugs', enabled: true },
+          contact: { text: '📞 Contact', content: 'Contactez-nous pour plus d\'informations.', enabled: true },
+          info: { text: 'ℹ️ Info', content: 'Informations sur notre plateforme.', enabled: true }
+        }
+      });
       await defaultConfig.save();
       console.log('✅ Configuration par défaut créée');
+    } else {
+      console.log('ℹ️ Configuration existante trouvée');
     }
 
   } catch (error) {
@@ -43,8 +57,8 @@ const connectDB = async (retryAttempt = 0) => {
     console.error(`❌ Erreur de connexion MongoDB (tentative #${connectionAttempts}):`, error.message);
     
     if (retryAttempt < MAX_RETRY_ATTEMPTS) {
-      console.log(`🔄 Nouvelle tentative dans 3 secondes... (${retryAttempt + 1}/${MAX_RETRY_ATTEMPTS})`);
-      await new Promise(resolve => setTimeout(resolve, 3000));
+      console.log(`🔄 Nouvelle tentative dans 5 secondes... (${retryAttempt + 1}/${MAX_RETRY_ATTEMPTS})`);
+      await new Promise(resolve => setTimeout(resolve, 5000));
       return connectDB(retryAttempt + 1);
     } else {
       console.error('❌ Impossible de se connecter à MongoDB après plusieurs tentatives');
@@ -63,15 +77,26 @@ const ensureConnection = async () => {
   return true;
 };
 
-// Gérer les déconnexions avec tentative de reconnexion
+// Améliorer la gestion des événements de connexion
+mongoose.connection.on('connected', () => {
+  console.log('✅ MongoDB connecté avec succès');
+  isConnected = true;
+});
+
+mongoose.connection.on('error', (error) => {
+  console.error('❌ Erreur MongoDB:', error.message);
+  isConnected = false;
+});
+
 mongoose.connection.on('disconnected', () => {
-  console.log('⚠️ MongoDB déconnecté - tentative de reconnexion...');
+  console.log('⚠️ MongoDB déconnecté');
   isConnected = false;
   
-  // Tentative de reconnexion après 5 secondes
+  // Tentative de reconnexion après 5 secondes (plus conservateur)
   setTimeout(async () => {
     try {
       if (mongoose.connection.readyState === 0) { // Disconnected
+        console.log('🔄 Tentative de reconnexion automatique...');
         await connectDB();
       }
     } catch (error) {
@@ -80,14 +105,10 @@ mongoose.connection.on('disconnected', () => {
   }, 5000);
 });
 
-mongoose.connection.on('error', (error) => {
-  console.error('❌ Erreur MongoDB:', error.message);
+// Empêcher la fermeture prématurée de la connexion
+mongoose.connection.on('close', () => {
+  console.log('🔌 Connexion MongoDB fermée');
   isConnected = false;
-});
-
-mongoose.connection.on('connected', () => {
-  console.log('✅ MongoDB reconnecté avec succès');
-  isConnected = true;
 });
 
 module.exports = { connectDB, ensureConnection };

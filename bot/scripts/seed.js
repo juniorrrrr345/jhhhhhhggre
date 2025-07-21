@@ -23,11 +23,23 @@ const samplePlugs = [
         description: "Rendez-vous possible dans les lieux publics"
       }
     },
-    socialMedia: {
-      telegram: "https://t.me/plugparis",
-      instagram: "https://instagram.com/plugparis",
-      whatsapp: "https://wa.me/33123456789"
-    },
+    socialMedia: [
+      {
+        name: "Telegram",
+        emoji: "📱",
+        url: "https://t.me/plugparis"
+      },
+      {
+        name: "Instagram", 
+        emoji: "📸",
+        url: "https://instagram.com/plugparis"
+      },
+      {
+        name: "WhatsApp",
+        emoji: "💬", 
+        url: "https://wa.me/33123456789"
+      }
+    ],
     isVip: true,
     vipOrder: 1,
     isActive: true
@@ -51,10 +63,18 @@ const samplePlugs = [
         description: "Meetup dans le centre-ville uniquement"
       }
     },
-    socialMedia: {
-      telegram: "https://t.me/lyonconnect",
-      website: "https://lyonconnect.fr"
-    },
+    socialMedia: [
+      {
+        name: "Telegram",
+        emoji: "📱",
+        url: "https://t.me/lyonconnect"
+      },
+      {
+        name: "Site Web",
+        emoji: "🌐",
+        url: "https://lyonconnect.fr"
+      }
+    ],
     isVip: true,
     vipOrder: 2,
     isActive: true
@@ -78,10 +98,18 @@ const samplePlugs = [
         description: "Rencontres possibles à Bruxelles et Anvers"
       }
     },
-    socialMedia: {
-      telegram: "https://t.me/belgiumsupplier",
-      whatsapp: "https://wa.me/32987654321"
-    },
+    socialMedia: [
+      {
+        name: "Telegram",
+        emoji: "📱",
+        url: "https://t.me/belgiumsupplier"
+      },
+      {
+        name: "WhatsApp",
+        emoji: "💬",
+        url: "https://wa.me/32987654321"
+      }
+    ],
     isVip: false,
     isActive: true
   },
@@ -104,10 +132,18 @@ const samplePlugs = [
         description: ""
       }
     },
-    socialMedia: {
-      telegram: "https://t.me/swissquality",
-      website: "https://swissquality.ch"
-    },
+    socialMedia: [
+      {
+        name: "Telegram",
+        emoji: "📱",
+        url: "https://t.me/swissquality"
+      },
+      {
+        name: "Site Web",
+        emoji: "🌐",
+        url: "https://swissquality.ch"
+      }
+    ],
     isVip: true,
     vipOrder: 3,
     isActive: true
@@ -131,10 +167,18 @@ const samplePlugs = [
         description: "Rencontres port de Marseille"
       }
     },
-    socialMedia: {
-      telegram: "https://t.me/marseilleport",
-      instagram: "https://instagram.com/marseilleport"
-    },
+    socialMedia: [
+      {
+        name: "Telegram",
+        emoji: "📱",
+        url: "https://t.me/marseilleport"
+      },
+      {
+        name: "Instagram",
+        emoji: "📸",
+        url: "https://instagram.com/marseilleport"
+      }
+    ],
     isVip: false,
     isActive: true
   }
