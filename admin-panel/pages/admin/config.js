@@ -3,6 +3,7 @@ import { useRouter } from 'next/router'
 import Head from 'next/head'
 import toast, { Toaster } from 'react-hot-toast'
 import { simpleApi } from '../../lib/api-simple'
+import Layout from '../../components/Layout'
 
 export default function ConfigurationSimple() {
   const [config, setConfig] = useState({
@@ -22,7 +23,29 @@ export default function ConfigurationSimple() {
       searchBlueText: '',
       searchFinalText: ''
     },
-
+    // Configuration Messages d'accueil
+    welcome: {
+      text: 'Bienvenue sur notre bot !',
+      image: ''
+    },
+    // Configuration Boutons
+    buttons: {
+      contact: {
+        enabled: true,
+        text: 'Contact',
+        content: 'Contactez-nous pour plus d\'informations'
+      },
+      info: {
+        enabled: true,
+        text: 'Informations',
+        content: 'Voici les informations importantes'
+      }
+    },
+    // Configuration Réseaux Sociaux
+    socialMedia: {
+      telegram: '',
+      whatsapp: ''
+    }
   })
   
   const [loading, setLoading] = useState(true)
@@ -62,6 +85,26 @@ export default function ConfigurationSimple() {
             searchSubtitle: data.boutique?.searchSubtitle || '',
             searchBlueText: data.boutique?.searchBlueText || '',
             searchFinalText: data.boutique?.searchFinalText || ''
+          },
+          welcome: {
+            text: data.welcome?.text || 'Bienvenue sur notre bot !',
+            image: data.welcome?.image || ''
+          },
+          buttons: {
+            contact: {
+              enabled: data.buttons?.contact?.enabled ?? true,
+              text: data.buttons?.contact?.text || 'Contact',
+              content: data.buttons?.contact?.content || 'Contactez-nous pour plus d\'informations'
+            },
+            info: {
+              enabled: data.buttons?.info?.enabled ?? true,
+              text: data.buttons?.info?.text || 'Informations',
+              content: data.buttons?.info?.content || 'Voici les informations importantes'
+            }
+          },
+          socialMedia: {
+            telegram: data.socialMedia?.telegram || '',
+            whatsapp: data.socialMedia?.whatsapp || ''
           }
         })
         
@@ -112,56 +155,68 @@ export default function ConfigurationSimple() {
     }))
   }
 
+  const updateWelcome = (field, value) => {
+    setConfig(prev => ({
+      ...prev,
+      welcome: { ...prev.welcome, [field]: value }
+    }))
+  }
+
+  const updateButton = (buttonType, field, value) => {
+    setConfig(prev => ({
+      ...prev,
+      buttons: {
+        ...prev.buttons,
+        [buttonType]: { ...prev.buttons[buttonType], [field]: value }
+      }
+    }))
+  }
+
+  const updateSocialMedia = (field, value) => {
+    setConfig(prev => ({
+      ...prev,
+      socialMedia: { ...prev.socialMedia, [field]: value }
+    }))
+  }
+
 
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Chargement...</p>
+      <Layout title="Configuration">
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
+            <p className="mt-4 text-gray-600">Chargement...</p>
+          </div>
         </div>
-      </div>
+      </Layout>
     )
   }
 
   return (
-    <>
+    <Layout title="Configuration">
       <Head>
         <title>Configuration - Admin Panel</title>
       </Head>
       
-      <div className="min-h-screen bg-gray-50 py-6">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Header */}
-          <div className="mb-8">
-            <button
-              onClick={() => router.back()}
-              className="mb-4 inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
-            >
-              ← Retour
-            </button>
-            
-            <div className="md:flex md:items-center md:justify-between">
-              <div className="flex-1 min-w-0">
-                <h2 className="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl">
-                  ⚙️ Configuration
-                </h2>
-                <p className="mt-1 text-sm text-gray-500">
-                  Configurez votre boutique et votre bot Telegram
-                </p>
-              </div>
-              <div className="mt-4 flex md:mt-0 md:ml-4">
-                <button
-                  onClick={saveConfig}
-                  disabled={saving}
-                  className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50"
-                >
-                  {saving ? 'Sauvegarde...' : '💾 Sauvegarder'}
-                </button>
-              </div>
-            </div>
+      <div className="space-y-6">
+        {/* Header */}
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">⚙️ Configuration</h1>
+            <p className="mt-1 text-sm text-gray-500">
+              Configurez votre boutique et votre bot Telegram
+            </p>
           </div>
+          <button
+            onClick={saveConfig}
+            disabled={saving}
+            className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50"
+          >
+            {saving ? 'Sauvegarde...' : '💾 Sauvegarder'}
+          </button>
+        </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Configuration Interface */}
@@ -515,11 +570,10 @@ export default function ConfigurationSimple() {
                 </div>
               </div>
             </div>
-          </div>
         </div>
       </div>
       
       <Toaster position="top-right" />
-    </>
+    </Layout>
   )
 }
