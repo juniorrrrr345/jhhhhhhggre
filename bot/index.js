@@ -253,15 +253,37 @@ bot.catch((err, ctx) => {
 // API REST POUR LE PANEL ADMIN
 // ============================================
 
-// Middleware d'authentification
+// Middleware d'authentification avec logs détaillés
 const authenticateAdmin = (req, res, next) => {
-  const password = req.headers.authorization?.replace('Bearer ', '');
-  
-  if (password !== process.env.ADMIN_PASSWORD) {
-    return res.status(401).json({ error: 'Non autorisé' });
+  try {
+    console.log(`🔐 Tentative d'authentification: ${req.method} ${req.path}`);
+    console.log(`📋 Headers reçus:`, Object.keys(req.headers));
+    
+    const authHeader = req.headers.authorization;
+    console.log(`🔑 Authorization header:`, authHeader ? `Bearer ***${authHeader.slice(-4)}` : 'Absent');
+    
+    const password = authHeader?.replace('Bearer ', '');
+    const expectedPassword = process.env.ADMIN_PASSWORD;
+    
+    console.log(`🔍 Password fourni:`, password ? `***${password.slice(-4)}` : 'Absent');
+    console.log(`🔍 Password attendu:`, expectedPassword ? `***${expectedPassword.slice(-4)}` : 'Non configuré');
+    
+    if (!password) {
+      console.log('❌ Aucun password fourni');
+      return res.status(401).json({ error: 'Token d\'authentification manquant' });
+    }
+    
+    if (password !== expectedPassword) {
+      console.log('❌ Password incorrect');
+      return res.status(401).json({ error: 'Token d\'authentification invalide' });
+    }
+    
+    console.log('✅ Authentification réussie');
+    next();
+  } catch (error) {
+    console.error('❌ Erreur dans l\'authentification:', error);
+    return res.status(500).json({ error: 'Erreur serveur lors de l\'authentification' });
   }
-  
-  next();
 };
 
 // ===== ROUTES CONFIGURATION =====
@@ -375,25 +397,61 @@ app.get('/api/config', authenticateAdmin, async (req, res) => {
 // Mettre à jour la configuration
 app.put('/api/config', authenticateAdmin, async (req, res) => {
   try {
-    console.log('🔧 Mise à jour configuration...', req.body);
+    console.log('🔧 Début mise à jour configuration...');
+    console.log('📊 Taille des données reçues:', JSON.stringify(req.body).length, 'caractères');
+    console.log('📋 Clés principales:', Object.keys(req.body));
+    
+    // Vérifier la connexion à la base de données
+    if (!Config) {
+      throw new Error('Modèle Config non disponible');
+    }
     
     // Nettoyer les données avant la mise à jour
     const cleanConfigData = { ...req.body };
     
-    // Nettoyer les données undefined/null
-    Object.keys(cleanConfigData).forEach(key => {
-      if (cleanConfigData[key] === undefined || cleanConfigData[key] === null) {
-        delete cleanConfigData[key];
+    // Nettoyer les données undefined/null de manière récursive
+    const cleanRecursive = (obj) => {
+      if (Array.isArray(obj)) {
+        return obj.map(cleanRecursive).filter(item => item !== null && item !== undefined);
+      } else if (obj !== null && typeof obj === 'object') {
+        const cleanedObj = {};
+        Object.keys(obj).forEach(key => {
+          const value = cleanRecursive(obj[key]);
+          if (value !== undefined && value !== null) {
+            cleanedObj[key] = value;
+          }
+        });
+        return cleanedObj;
       }
-    });
+      return obj;
+    };
     
-    const config = await Config.findByIdAndUpdate('main', cleanConfigData, { 
+    const finalData = cleanRecursive(cleanConfigData);
+    console.log('📝 Données après nettoyage:', Object.keys(finalData));
+    
+    // Tentative de mise à jour avec gestion d'erreur détaillée
+    console.log('💾 Tentative de sauvegarde en base...');
+    const config = await Config.findByIdAndUpdate('main', finalData, { 
       new: true, 
       upsert: true,
-      runValidators: false
+      runValidators: false,
+      strict: false  // Permet les champs non définis dans le schéma
     });
     
-    console.log('✅ Configuration mise à jour:', config);
+    if (!config) {
+      throw new Error('Échec de la mise à jour - aucun document retourné');
+    }
+    
+    console.log('✅ Configuration mise à jour avec succès');
+    console.log('📊 ID du document:', config._id);
+    
+    // Recharger la configuration en cache
+    try {
+      await reloadBotConfig();
+      console.log('🔄 Cache de configuration rechargé');
+    } catch (cacheError) {
+      console.error('⚠️ Erreur rechargement cache (non critique):', cacheError.message);
+    }
     
     // Headers anti-cache pour forcer la synchronisation
     res.set({
@@ -408,8 +466,24 @@ app.put('/api/config', authenticateAdmin, async (req, res) => {
     
     res.json(config);
   } catch (error) {
-    console.error('❌ Erreur mise à jour config:', error);
-    res.status(500).json({ error: 'Erreur serveur', details: error.message });
+    console.error('❌ Erreur détaillée mise à jour config:', {
+      message: error.message,
+      stack: error.stack,
+      name: error.name
+    });
+    
+    // Headers CORS même en cas d'erreur
+    res.set({
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'PUT, GET, POST, DELETE, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+    });
+    
+    res.status(500).json({ 
+      error: 'Erreur serveur lors de la mise à jour', 
+      details: error.message,
+      timestamp: new Date().toISOString()
+    });
   }
 });
 
@@ -779,7 +853,22 @@ app.put('/api/plugs/:id', authenticateAdmin, async (req, res) => {
     const plugId = req.params.id;
     const updateData = req.body;
     
-    console.log(`🔄 Mise à jour plug ${plugId}:`, updateData);
+    console.log(`🔄 Début mise à jour plug ${plugId}`);
+    console.log(`📊 Taille des données plug:`, JSON.stringify(updateData).length, 'caractères');
+    console.log(`📋 Clés principales plug:`, Object.keys(updateData));
+    
+    // Vérifier que l'ID est valide
+    if (!plugId || plugId.length !== 24) {
+      throw new Error('ID de plug invalide');
+    }
+    
+    // Vérifier que le plug existe
+    const existingPlug = await Plug.findById(plugId);
+    if (!existingPlug) {
+      return res.status(404).json({ error: 'Plug non trouvé' });
+    }
+    
+    console.log(`📦 Plug existant trouvé: ${existingPlug.name}`);
     
     // Nettoyer les données avant la mise à jour
     const cleanData = { ...updateData };
@@ -821,31 +910,56 @@ app.put('/api/plugs/:id', authenticateAdmin, async (req, res) => {
       }
     });
     
-    console.log(`📝 Données nettoyées:`, cleanData);
+    console.log(`📝 Données nettoyées:`, Object.keys(cleanData));
     
+    // Tentative de mise à jour avec gestion d'erreur détaillée
+    console.log('💾 Tentative de sauvegarde plug en base...');
     const plug = await Plug.findByIdAndUpdate(plugId, cleanData, { 
       new: true,
-      runValidators: false  // Désactiver temporairement les validateurs pour éviter les erreurs
+      runValidators: false,  // Désactiver temporairement les validateurs pour éviter les erreurs
+      strict: false  // Permet les champs non définis dans le schéma
     });
     
     if (!plug) {
-      return res.status(404).json({ error: 'Plug non trouvé' });
+      throw new Error('Échec de la mise à jour plug - aucun document retourné');
     }
     
-    console.log(`✅ Plug mis à jour:`, plug.name);
+    console.log(`✅ Plug mis à jour avec succès: ${plug.name}`);
+    console.log(`📊 ID du plug: ${plug._id}`);
+    console.log(`📱 Réseaux sociaux finaux: ${plug.socialMedia?.length || 0} éléments`);
     
     // Headers pour éviter le cache
     res.set({
       'Cache-Control': 'no-cache, no-store, must-revalidate',
       'Pragma': 'no-cache',
       'Expires': '0',
-      'Last-Modified': new Date().toUTCString()
+      'Last-Modified': new Date().toUTCString(),
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'PUT, GET, POST, DELETE, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization'
     });
     
     res.json(plug);
   } catch (error) {
-    console.error('❌ Erreur mise à jour plug:', error);
-    res.status(500).json({ error: 'Erreur serveur', details: error.message });
+    console.error('❌ Erreur détaillée mise à jour plug:', {
+      message: error.message,
+      stack: error.stack,
+      name: error.name,
+      plugId: req.params.id
+    });
+    
+    // Headers CORS même en cas d'erreur
+    res.set({
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'PUT, GET, POST, DELETE, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+    });
+    
+    res.status(500).json({ 
+      error: 'Erreur serveur lors de la mise à jour du plug', 
+      details: error.message,
+      timestamp: new Date().toISOString()
+    });
   }
 });
 
