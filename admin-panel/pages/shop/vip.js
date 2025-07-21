@@ -327,11 +327,8 @@ export default function ShopVIP() {
               </div>
             ) : (
               <>
-                {/* Products Grid - 2 boutiques par ligne même sur mobile */}
-                <div className="grid grid-cols-2 gap-2 sm:gap-4 md:gap-6 mb-8" style={{ 
-                  gridTemplateColumns: '1fr 1fr',
-                  width: '100%'
-                }}>
+                {/* Products Grid - 2 colonnes adaptatif pour tous appareils */}
+                <div className="grid grid-cols-2 gap-2 sm:gap-3 md:gap-4 lg:gap-6 mb-8">
                   {currentPlugs.map((plug, index) => (
                     <Link 
                       key={plug._id || index} 

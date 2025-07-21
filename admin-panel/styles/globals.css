@@ -42,7 +42,7 @@ html, body {
   margin: 0 auto;
 }
 
-/* Grid responsive pour mobile */
+/* Grid responsive pour 2 colonnes adaptatif */
 @media (max-width: 640px) {
   .grid {
     margin: 0;
@@ -53,20 +53,38 @@ html, body {
     min-width: 0;
     max-width: 100%;
   }
+  
+  /* Améliorer l'affichage des cartes en 2 colonnes sur mobile */
+  .grid-cols-2 {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
 }
 
-/* Améliorer l'affichage des cartes boutiques sur mobile */
+/* Améliorer l'affichage des cartes boutiques - 2 colonnes adaptatif */
 .shop-card {
-  min-height: 280px;
+  min-height: 240px;
   display: flex;
   flex-direction: column;
+}
+
+@media (min-width: 640px) {
+  .shop-card {
+    min-height: 280px;
+  }
+}
+
+@media (min-width: 768px) {
+  .shop-card {
+    min-height: 320px;
+  }
 }
 
 .shop-card .relative {
   flex-shrink: 0;
 }
 
-.shop-card .p-3 {
+.shop-card .p-2 {
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -77,15 +95,27 @@ html, body {
   object-fit: cover;
   object-position: center;
   transition: all 0.3s ease;
+  background-color: #1f2937;
 }
 
 .shop-card img:hover {
   transform: scale(1.05);
 }
 
-/* Fallback pour les images cassées */
-.shop-card .absolute.inset-0 {
+/* Fallback pour les images cassées - simplifié */
+.shop-card .fallback-placeholder {
   background: linear-gradient(135deg, #374151 0%, #1f2937 100%);
+}
+
+/* Améliorer l'affichage du fallback sur mobile */
+@media (max-width: 640px) {
+  .shop-card .fallback-placeholder .text-center {
+    padding: 8px;
+  }
+  
+  .shop-card .fallback-placeholder p {
+    font-size: 10px;
+  }
 }
 
 /* Text truncation utilities */
@@ -103,18 +133,44 @@ html, body {
   overflow: hidden;
 }
 
-/* Améliorer les badges de services sur mobile */
+/* Améliorer les badges de services sur mobile - 2 colonnes */
 @media (max-width: 640px) {
   .shop-card .flex.flex-wrap {
     justify-content: flex-start;
     align-items: center;
-    gap: 4px;
+    gap: 2px;
+    flex-wrap: wrap;
   }
   
   .shop-card .rounded-full {
-    font-size: 10px;
-    padding: 2px 6px;
+    font-size: 9px;
+    padding: 1px 4px;
     white-space: nowrap;
+    line-height: 1.2;
+  }
+  
+  /* Assurer que les badges restent lisibles */
+  .shop-card .rounded-full span {
+    font-weight: 600;
+  }
+}
+
+/* Optimiser l'espacement pour 2 colonnes */
+@media (max-width: 640px) {
+  .grid-cols-2 .shop-card {
+    font-size: 12px;
+  }
+  
+  .grid-cols-2 .shop-card h3 {
+    font-size: 11px;
+    line-height: 1.3;
+    margin-bottom: 4px;
+  }
+  
+  .grid-cols-2 .shop-card p {
+    font-size: 10px;
+    line-height: 1.2;
+    margin-bottom: 6px;
   }
 }
 
