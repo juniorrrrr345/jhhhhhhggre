@@ -65,10 +65,8 @@ export default function ConfigurationSimple() {
           }
         })
         
+        console.log('✅ Configuration chargée')
         toast.success('Configuration chargée')
-      } else {
-        throw new Error('Erreur de chargement')
-      }
     } catch (error) {
       console.error('❌ Erreur:', error)
       toast.error('Erreur de chargement')
