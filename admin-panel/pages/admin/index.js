@@ -38,7 +38,7 @@ export default function Dashboard() {
       
       // Récupérer les stats des plugs
       const plugsResponse = await fetch(`${apiBaseUrl}/api/plugs?limit=1000`, {
-        headers: { 'Authorization': token } // Proxy gère Bearer automatiquement
+        headers: { 'Authorization': `Bearer ${token}` }
       })
       
       console.log('📊 Plugs response status:', plugsResponse.status)
@@ -58,7 +58,7 @@ export default function Dashboard() {
 
       // Récupérer la config
       const configResponse = await fetch(`${apiBaseUrl}/api/config`, {
-        headers: { 'Authorization': token } // Proxy gère Bearer automatiquement
+        headers: { 'Authorization': `Bearer ${token}` }
       })
       
       console.log('⚙️ Config response status:', configResponse.status)

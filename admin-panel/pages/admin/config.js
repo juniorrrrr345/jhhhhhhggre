@@ -56,7 +56,7 @@ export default function BotConfig() {
       
       const response = await fetch('/api/proxy?endpoint=/api/config', {
         headers: { 
-          'Authorization': token,
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
           'Cache-Control': 'no-cache'
         }
@@ -154,7 +154,7 @@ export default function BotConfig() {
       const response = await fetch('/api/proxy?endpoint=/api/config', {
         method: 'POST',
         headers: {
-          'Authorization': token,
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
           'Cache-Control': 'no-cache'
         },

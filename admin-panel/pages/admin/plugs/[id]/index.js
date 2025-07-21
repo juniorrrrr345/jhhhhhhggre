@@ -60,7 +60,7 @@ export default function PlugDetails() {
 
         const response = await apiCall(`/api/plugs/${id}`, {
           headers: {
-            'Authorization': token, // Proxy gère Bearer automatiquement
+            'Authorization': `Bearer ${token}`
             'Content-Type': 'application/json',
           },
         });
@@ -93,7 +93,7 @@ export default function PlugDetails() {
       const response = await apiCall(`/api/plugs/${id}/like`, {
         method: 'POST',
         headers: {
-          'Authorization': token, // Proxy gère Bearer automatiquement
+          'Authorization': `Bearer ${token}`
           'Content-Type': 'application/json',
         },
       });

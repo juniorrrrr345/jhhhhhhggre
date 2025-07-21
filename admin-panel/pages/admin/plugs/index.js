@@ -43,7 +43,7 @@ export default function PlugsManagement() {
       console.log('📋 Fetching admin plugs from:', apiBaseUrl)
 
       const response = await fetch(`${apiBaseUrl}/api/plugs?${params}`, {
-        headers: { 'Authorization': token } // Proxy gère Bearer automatiquement
+        headers: { 'Authorization': `Bearer ${token}` }
       })
 
       console.log('📋 Admin plugs response:', response.status)
@@ -71,7 +71,7 @@ export default function PlugsManagement() {
       const response = await fetch(`${process.env.API_BASE_URL}/api/plugs/${plugId}`, {
         method: 'PUT',
         headers: {
-          'Authorization': token, // Proxy gère Bearer automatiquement
+          'Authorization': `Bearer ${token}`
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({ isActive: !currentStatus })
@@ -97,7 +97,7 @@ export default function PlugsManagement() {
     try {
       const response = await fetch(`${process.env.API_BASE_URL}/api/plugs/${plugId}`, {
         method: 'DELETE',
-        headers: { 'Authorization': token } // Proxy gère Bearer automatiquement
+        headers: { 'Authorization': `Bearer ${token}` }
       })
 
       if (response.ok) {
