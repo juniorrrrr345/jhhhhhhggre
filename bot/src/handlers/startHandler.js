@@ -12,13 +12,22 @@ const handleStart = async (ctx) => {
     try {
       config = await Config.findById('main');
       console.log('📋 Config trouvée:', !!config);
+      
+      // Vérifier que la config a bien les bonnes propriétés
+      if (config && !config.welcome) {
+        config.welcome = { text: '🌟 Bienvenue sur notre bot !' };
+      }
+      if (config && !config.buttons) {
+        config.buttons = {};
+      }
     } catch (error) {
       console.error('❌ Erreur récupération config:', error);
+      config = null;
     }
     
     if (!config) {
       console.log('⚠️ Pas de config, utilisation des valeurs par défaut');
-      return ctx.reply('🌟 Bienvenue sur notre bot !\n\nConfiguration en cours...');
+      return ctx.reply('🌟 Bienvenue sur notre bot !\n\nConfiguration en cours...\n\nVeuillez réessayer dans quelques instants.');
     }
 
     // Vérifications de sécurité

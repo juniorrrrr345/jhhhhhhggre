@@ -88,6 +88,12 @@ bot.on('callback_query', (ctx, next) => {
   console.log(`🔄 Callback reçu: ${ctx.callbackQuery.data}`);
   console.log(`👤 User ID: ${ctx.from.id}, Chat ID: ${ctx.chat.id}`);
   console.log(`📝 Message ID: ${ctx.callbackQuery.message?.message_id}`);
+  
+  // S'assurer que le callback est traité même en cas d'erreur
+  ctx.answerCbQuery().catch((error) => {
+    console.error('Erreur answerCbQuery:', error.message);
+  });
+  
   return next();
 });
 
@@ -255,9 +261,27 @@ bot.action(/^like_([a-f\d]{24})$/, async (ctx) => {
 bot.action('current_page', handleIgnoredCallback);
 
 // Gestion des erreurs du bot
-bot.catch((err, ctx) => {
-  console.error('Erreur bot:', err);
-  ctx.reply('❌ Une erreur est survenue, veuillez réessayer.').catch(() => {});
+bot.catch(async (err, ctx) => {
+  console.error('❌ Erreur bot détaillée:', {
+    error: err.message,
+    stack: err.stack,
+    userId: ctx?.from?.id,
+    chatId: ctx?.chat?.id,
+    updateType: ctx?.updateType,
+    data: ctx?.callbackQuery?.data || ctx?.message?.text
+  });
+  
+  try {
+    // Répondre à la callback query si c'est le cas
+    if (ctx?.callbackQuery) {
+      await ctx.answerCbQuery('❌ Erreur temporaire, réessayez');
+    }
+    
+    // Envoyer un message d'erreur
+    await ctx.reply('❌ Une erreur temporaire est survenue. Veuillez réessayer dans quelques instants.');
+  } catch (replyError) {
+    console.error('❌ Impossible de répondre à l\'erreur:', replyError.message);
+  }
 });
 
 // ============================================
@@ -359,15 +383,30 @@ app.get('/api/public/config', async (req, res) => {
 // Endpoint pour recharger la configuration du bot
 app.post('/api/bot/reload', authenticateAdmin, async (req, res) => {
   try {
+    console.log('🔄 Demande de rechargement de la configuration du bot...');
+    
+    // Invalider le cache
+    configCache = null;
+    lastConfigUpdate = 0;
+    
+    // Recharger la configuration
     await reloadBotConfig();
+    
+    console.log('✅ Configuration du bot rechargée avec succès');
+    
     res.json({ 
       success: true, 
       message: 'Configuration du bot rechargée avec succès',
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      cacheCleared: true
     });
   } catch (error) {
-    console.error('Erreur reload config:', error);
-    res.status(500).json({ error: 'Erreur lors du rechargement de la configuration' });
+    console.error('❌ Erreur reload config:', error);
+    res.status(500).json({ 
+      error: 'Erreur lors du rechargement de la configuration',
+      details: error.message,
+      timestamp: new Date().toISOString()
+    });
   }
 });
 
@@ -420,6 +459,14 @@ app.put('/api/config', authenticateAdmin, async (req, res) => {
     // Nettoyer les données avant la mise à jour
     const cleanConfigData = { ...req.body };
     
+    // Retirer les champs système pour éviter les conflits
+    delete cleanConfigData._id;
+    delete cleanConfigData.__v;
+    delete cleanConfigData.createdAt;
+    
+    // Forcer une nouvelle date de mise à jour
+    cleanConfigData.updatedAt = new Date();
+    
     // Nettoyer les données undefined/null de manière récursive
     const cleanRecursive = (obj) => {
       if (Array.isArray(obj)) {
@@ -440,14 +487,23 @@ app.put('/api/config', authenticateAdmin, async (req, res) => {
     const finalData = cleanRecursive(cleanConfigData);
     console.log('📝 Données après nettoyage:', Object.keys(finalData));
     
-    // Tentative de mise à jour avec gestion d'erreur détaillée
-    console.log('💾 Tentative de sauvegarde en base...');
-    const config = await Config.findByIdAndUpdate('main', finalData, { 
-      new: true, 
-      upsert: true,
-      runValidators: false,
-      strict: false  // Permet les champs non définis dans le schéma
-    });
+    // Vérifier si la configuration existe déjà
+    let config = await Config.findById('main');
+    
+    if (config) {
+      // Mise à jour existante
+      console.log('💾 Mise à jour configuration existante...');
+      Object.assign(config, finalData);
+      await config.save();
+    } else {
+      // Création nouvelle
+      console.log('💾 Création nouvelle configuration...');
+      config = new Config({
+        _id: 'main',
+        ...finalData
+      });
+      await config.save();
+    }
     
     if (!config) {
       throw new Error('Échec de la mise à jour - aucun document retourné');
@@ -456,13 +512,8 @@ app.put('/api/config', authenticateAdmin, async (req, res) => {
     console.log('✅ Configuration mise à jour avec succès');
     console.log('📊 ID du document:', config._id);
     
-    // Recharger la configuration en cache
-    try {
-      await reloadBotConfig();
-      console.log('🔄 Cache de configuration rechargé');
-    } catch (cacheError) {
-      console.error('⚠️ Erreur rechargement cache (non critique):', cacheError.message);
-    }
+    // Invalider le cache et forcer un rechargement
+    configCache = null;
     
     // Headers anti-cache pour forcer la synchronisation
     res.set({
@@ -1123,6 +1174,56 @@ app.get('/health', (req, res) => {
     uptime: process.uptime(),
     environment: process.env.NODE_ENV || 'development'
   });
+});
+
+// Diagnostic du bot
+app.get('/api/bot/diagnostic', async (req, res) => {
+  try {
+    res.set({
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type',
+      'Cache-Control': 'no-cache'
+    });
+    
+    // Vérifier l'état du bot
+    const botInfo = await bot.telegram.getMe().catch(e => ({ error: e.message }));
+    
+    // Vérifier la configuration
+    const config = await Config.findById('main').catch(e => ({ error: e.message }));
+    
+    // Vérifier la base de données
+    const dbStatus = await Plug.countDocuments().then(() => 'connected').catch(e => e.message);
+    
+    res.json({
+      status: 'diagnostic',
+      timestamp: new Date().toISOString(),
+      bot: {
+        connected: !botInfo.error,
+        info: botInfo.error ? { error: botInfo.error } : { username: botInfo.username, id: botInfo.id },
+        webhookSet: process.env.NODE_ENV === 'production'
+      },
+      database: {
+        status: dbStatus,
+        configExists: !!config && !config.error
+      },
+      cache: {
+        configCached: !!configCache,
+        lastUpdate: lastConfigUpdate ? new Date(lastConfigUpdate).toISOString() : 'never'
+      },
+      environment: {
+        nodeEnv: process.env.NODE_ENV || 'development',
+        uptime: process.uptime(),
+        memoryUsage: process.memoryUsage()
+      }
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: 'error',
+      error: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
 });
 
 // Test simple pour Vercel
