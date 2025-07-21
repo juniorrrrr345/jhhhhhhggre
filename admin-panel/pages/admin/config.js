@@ -25,6 +25,12 @@ export default function BotConfig() {
       text: '',
       image: ''
     },
+    socialMedia: {
+      telegram: '',
+      whatsapp: '',
+      instagram: '',
+      twitter: ''
+    },
     messages: {
       welcome: '',
       noPlugsFound: '',
@@ -90,6 +96,12 @@ export default function BotConfig() {
             text: data.infoMenu?.text || '',
             image: data.infoMenu?.image || ''
           },
+          socialMedia: {
+            telegram: data.socialMedia?.telegram || '',
+            whatsapp: data.socialMedia?.whatsapp || '',
+            instagram: data.socialMedia?.instagram || '',
+            twitter: data.socialMedia?.twitter || ''
+          },
           messages: {
             welcome: data.messages?.welcome || '',
             noPlugsFound: data.messages?.noPlugsFound || '',
@@ -114,8 +126,12 @@ export default function BotConfig() {
     const token = localStorage.getItem('adminToken')
     setSaving(true)
 
+    // Toast de début pour confirmer que la fonction est appelée
+    toast.info('💾 Début de la sauvegarde...', { duration: 2000 })
+
     try {
       console.log('💾 Sauvegarde configuration...', retryCount + 1)
+      console.log('📊 Configuration actuelle:', config)
       
       if (!token) {
         throw new Error('Token d\'authentification manquant')
@@ -124,7 +140,7 @@ export default function BotConfig() {
       // CORRECTION: Validation des données avant envoi
       const configToSave = { ...config }
       
-      // Nettoyer les données undefined
+      // CORRECTION: Nettoyage plus conservateur des données
       const cleanConfig = (obj) => {
         if (Array.isArray(obj)) {
           return obj.map(cleanConfig).filter(item => item !== null && item !== undefined);
@@ -132,7 +148,8 @@ export default function BotConfig() {
           const cleaned = {};
           Object.keys(obj).forEach(key => {
             const value = cleanConfig(obj[key]);
-            if (value !== undefined && value !== null && value !== '') {
+            // Garder les valeurs même si elles sont vides (chaînes vides sont valides)
+            if (value !== undefined && value !== null) {
               cleaned[key] = value;
             }
           });
@@ -685,6 +702,66 @@ export default function BotConfig() {
                                             </div>
                    </>
                  )}
+               </div>
+             </div>
+
+             {/* Réseaux Sociaux */}
+             <div className="bg-white rounded-lg shadow p-6">
+               <h2 className="text-xl font-semibold text-gray-900 mb-4">📱 Réseaux Sociaux</h2>
+               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                 <div>
+                   <label className="block text-sm font-medium text-gray-700 mb-2">
+                     Telegram
+                   </label>
+                   <input
+                     type="text"
+                     value={config.socialMedia.telegram}
+                     onChange={(e) => updateConfig('socialMedia.telegram', e.target.value)}
+                     className="w-full border border-gray-300 rounded-lg p-3"
+                     placeholder="@votre_canal_telegram"
+                   />
+                 </div>
+                 <div>
+                   <label className="block text-sm font-medium text-gray-700 mb-2">
+                     WhatsApp
+                   </label>
+                   <input
+                     type="text"
+                     value={config.socialMedia.whatsapp}
+                     onChange={(e) => updateConfig('socialMedia.whatsapp', e.target.value)}
+                     className="w-full border border-gray-300 rounded-lg p-3"
+                     placeholder="+33123456789"
+                   />
+                 </div>
+                 <div>
+                   <label className="block text-sm font-medium text-gray-700 mb-2">
+                     Instagram
+                   </label>
+                   <input
+                     type="text"
+                     value={config.socialMedia.instagram}
+                     onChange={(e) => updateConfig('socialMedia.instagram', e.target.value)}
+                     className="w-full border border-gray-300 rounded-lg p-3"
+                     placeholder="@votre_instagram"
+                   />
+                 </div>
+                 <div>
+                   <label className="block text-sm font-medium text-gray-700 mb-2">
+                     Twitter
+                   </label>
+                   <input
+                     type="text"
+                     value={config.socialMedia.twitter}
+                     onChange={(e) => updateConfig('socialMedia.twitter', e.target.value)}
+                     className="w-full border border-gray-300 rounded-lg p-3"
+                     placeholder="@votre_twitter"
+                   />
+                 </div>
+               </div>
+               <div className="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                 <p className="text-sm text-blue-800">
+                   <strong>💡 Conseil :</strong> Ces informations apparaîtront dans le message d'accueil du bot pour que les utilisateurs puissent vous contacter.
+                 </p>
                </div>
              </div>
 
