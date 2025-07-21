@@ -239,7 +239,7 @@ bot.action(/^plug_service_([a-f\d]{24})_(.+)$/, async (ctx) => {
 });
 
 
-// Liker une boutique avec système de cooldown
+// Liker une boutique (système de likes permanent)
 bot.action(/^like_([a-f\d]{24})$/, async (ctx) => {
   try {
     const plugId = ctx.match[1];
@@ -258,22 +258,9 @@ bot.action(/^like_([a-f\d]{24})$/, async (ctx) => {
     
     const hasLiked = plug.likedBy.includes(userId);
     
-    // Vérifier le cooldown pour retirer un like (2 heures)
+    // Si l'utilisateur a déjà liké, afficher un message de confirmation
     if (hasLiked) {
-      const userLikeData = plug.likeHistory?.find(entry => entry.userId === userId);
-      if (userLikeData) {
-        const timeSinceLastLike = Date.now() - userLikeData.timestamp;
-        const cooldownPeriod = 2 * 60 * 60 * 1000; // 2 heures en millisecondes
-        
-        if (timeSinceLastLike < cooldownPeriod) {
-          const remainingTime = Math.ceil((cooldownPeriod - timeSinceLastLike) / (60 * 1000)); // en minutes
-          const hours = Math.floor(remainingTime / 60);
-          const minutes = remainingTime % 60;
-          const timeDisplay = hours > 0 ? `${hours}h${minutes > 0 ? ` ${minutes}min` : ''}` : `${minutes}min`;
-          
-          return ctx.answerCbQuery(`⏰ Vous devez attendre encore ${timeDisplay} avant de pouvoir retirer votre like`);
-        }
-      }
+      return ctx.answerCbQuery(`❤️ Vous avez déjà liké ${plug.name} ! (${plug.likes} likes)`);
     }
     
     // Initialiser likeHistory si nécessaire
@@ -281,37 +268,21 @@ bot.action(/^like_([a-f\d]{24})$/, async (ctx) => {
       plug.likeHistory = [];
     }
     
-    const action = hasLiked ? 'unlike' : 'like';
+    // Ajouter le like (permanent)
+    plug.likedBy.push(userId);
+    plug.likes += 1;
     
-    // Mettre à jour les likes
-    if (action === 'like') {
-      plug.likedBy.push(userId);
-      plug.likes += 1;
-      
-      // Ajouter à l'historique
-      plug.likeHistory.push({
-        userId: userId,
-        timestamp: Date.now(),
-        action: 'like'
-      });
-      
-      await plug.save();
-      await ctx.answerCbQuery(`❤️ Vous avez liké ${plug.name} ! (${plug.likes} likes)`);
-      
-    } else {
-      plug.likedBy = plug.likedBy.filter(id => id !== userId);
-      plug.likes -= 1;
-      
-      // Mettre à jour l'historique
-      const userLikeIndex = plug.likeHistory.findIndex(entry => entry.userId === userId);
-      if (userLikeIndex !== -1) {
-        plug.likeHistory[userLikeIndex].timestamp = Date.now();
-        plug.likeHistory[userLikeIndex].action = 'unlike';
-      }
-      
-      await plug.save();
-      await ctx.answerCbQuery(`💔 Like retiré de ${plug.name} (${plug.likes} likes)`);
-    }
+    // Ajouter à l'historique
+    plug.likeHistory.push({
+      userId: userId,
+      timestamp: Date.now(),
+      action: 'like'
+    });
+    
+    await plug.save();
+    await ctx.answerCbQuery(`❤️ Vous avez liké ${plug.name} ! (${plug.likes} likes)`);
+    
+    console.log(`✅ User ${userId} liked plug ${plugId}. New likes count: ${plug.likes}`);
     
     // Récupérer la configuration pour le contexte de retour
     const config = await Config.findById('main');

@@ -243,30 +243,30 @@ export default function ShopDetail() {
                 <h3 className="text-lg font-semibold text-white mb-3">🔧 Services disponibles</h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   {plug.services?.delivery?.enabled && (
-                    <div className="bg-blue-900 border border-blue-700 p-4 rounded-lg">
-                      <h4 className="font-medium text-blue-100 mb-2 flex items-center">
+                    <div className="bg-white bg-opacity-10 border border-white border-opacity-30 p-4 rounded-lg backdrop-blur-sm">
+                      <h4 className="font-medium text-white mb-2 flex items-center">
                         <TruckIcon className="w-5 h-5 mr-2" />
                         Livraison
                       </h4>
-                      <p className="text-sm text-blue-200">{plug.services.delivery.description}</p>
+                      <p className="text-sm text-gray-200">{plug.services.delivery.description}</p>
                     </div>
                   )}
                   {plug.services?.postal?.enabled && (
-                    <div className="bg-green-900 border border-green-700 p-4 rounded-lg">
-                      <h4 className="font-medium text-green-100 mb-2 flex items-center">
+                    <div className="bg-white bg-opacity-10 border border-white border-opacity-30 p-4 rounded-lg backdrop-blur-sm">
+                      <h4 className="font-medium text-white mb-2 flex items-center">
                         <GlobeAltIcon className="w-5 h-5 mr-2" />
                         Envoi postal
                       </h4>
-                      <p className="text-sm text-green-200">{plug.services.postal.description}</p>
+                      <p className="text-sm text-gray-200">{plug.services.postal.description}</p>
                     </div>
                   )}
                   {plug.services?.meetup?.enabled && (
-                    <div className="bg-purple-900 border border-purple-700 p-4 rounded-lg">
-                      <h4 className="font-medium text-purple-100 mb-2 flex items-center">
+                    <div className="bg-white bg-opacity-10 border border-white border-opacity-30 p-4 rounded-lg backdrop-blur-sm">
+                      <h4 className="font-medium text-white mb-2 flex items-center">
                         <MapPinIcon className="w-5 h-5 mr-2" />
                         Meetup
                       </h4>
-                      <p className="text-sm text-purple-200">{plug.services.meetup.description}</p>
+                      <p className="text-sm text-gray-200">{plug.services.meetup.description}</p>
                     </div>
                   )}
                 </div>
