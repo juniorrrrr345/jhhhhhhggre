@@ -32,7 +32,7 @@ export default function WelcomeSocialMedia() {
       try {
         const response = await fetch(`${apiBaseUrl}/api/config/welcome/social-media`, {
           headers: {
-            'Authorization': `Bearer ${token}`
+            'Authorization': `Bearer ${token}`,
             'Cache-Control': 'no-cache'
           }
         })
@@ -50,7 +50,7 @@ export default function WelcomeSocialMedia() {
         // Fallback vers le proxy
         const response = await fetch('/api/proxy?endpoint=/api/config/welcome/social-media', {
           headers: {
-            'Authorization': `Bearer ${token}`
+            'Authorization': `Bearer ${token}`,
             'Cache-Control': 'no-cache'
           }
         })
@@ -111,7 +111,7 @@ export default function WelcomeSocialMedia() {
         const response = await fetch(`${apiBaseUrl}${endpoint}`, {
           method: method,
           headers: {
-            'Authorization': `Bearer ${token}`
+            'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
           },
           body: JSON.stringify(formData)
@@ -132,7 +132,7 @@ export default function WelcomeSocialMedia() {
         const response = await fetch(`/api/proxy?endpoint=${endpoint}`, {
           method: 'POST', // Le proxy utilise toujours POST
           headers: {
-            'Authorization': `Bearer ${token}`
+            'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
@@ -170,7 +170,7 @@ export default function WelcomeSocialMedia() {
         const response = await fetch(`${apiBaseUrl}/api/config/welcome/social-media/${id}`, {
           method: 'DELETE',
           headers: {
-            'Authorization': `Bearer ${token}`
+            'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
           }
         })
@@ -189,7 +189,7 @@ export default function WelcomeSocialMedia() {
         const response = await fetch(`/api/proxy?endpoint=/api/config/welcome/social-media/${id}`, {
           method: 'POST',
           headers: {
-            'Authorization': `Bearer ${token}`
+            'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({ _method: 'DELETE' })

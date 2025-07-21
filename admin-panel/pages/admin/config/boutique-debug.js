@@ -38,7 +38,7 @@ export default function BoutiqueDebug() {
       try {
         const adminResponse = await fetch('/api/proxy?endpoint=/api/config', {
                   headers: {
-          'Authorization': `Bearer ${token}`
+          'Authorization': `Bearer ${token}`,
           'Cache-Control': 'no-cache'
         }
         })

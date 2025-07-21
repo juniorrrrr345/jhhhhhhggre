@@ -71,7 +71,7 @@ export default function PlugsManagement() {
       const response = await fetch(`${process.env.API_BASE_URL}/api/plugs/${plugId}`, {
         method: 'PUT',
         headers: {
-          'Authorization': `Bearer ${token}`
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({ isActive: !currentStatus })
