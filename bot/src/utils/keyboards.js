@@ -146,8 +146,7 @@ const createMainKeyboard = (config) => {
     socialRows.forEach(row => {
       buttons.push(row);
     });
-    
-
+  }
   
   return Markup.inlineKeyboard(buttons);
 };
