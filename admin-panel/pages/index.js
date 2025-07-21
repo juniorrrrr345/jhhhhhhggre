@@ -42,13 +42,17 @@ export default function Login() {
 
         console.log('🏥 Health check:', healthResponse.status);
         
-        const response = await fetch(`${apiBaseUrl}/api/config`, {
-          method: 'GET',
+        // Utiliser le proxy pour éviter les problèmes CORS
+        const response = await fetch('/api/cors-proxy', {
+          method: 'POST',
           headers: {
-            'Authorization': `Bearer ${password}`,
-            'Cache-Control': 'no-cache',
-            'Content-Type': 'application/json'
-          }
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${password}`
+          },
+          body: JSON.stringify({
+            endpoint: '/api/config',
+            method: 'GET'
+          })
         });
 
         console.log('📡 Response status:', response.status);
