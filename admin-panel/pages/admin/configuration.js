@@ -262,8 +262,16 @@ export default function Configuration() {
         {/* En-tête */}
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Configuration</h1>
-            <p className="text-gray-600 mt-1">Configuration de votre boutique et de son apparence</p>
+            <h1 className="text-2xl font-bold text-gray-900">🏪 Configuration Boutique</h1>
+            <p className="text-gray-600 mt-1">
+              Configuration de votre boutique et de son apparence • 
+              <button 
+                onClick={() => router.push('/admin/config')}
+                className="text-blue-600 hover:text-blue-800 ml-1"
+              >
+                ← Config Bot
+              </button>
+            </p>
           </div>
           <div className="space-x-3">
             <button

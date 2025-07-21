@@ -9,11 +9,6 @@ export default function BotConfig() {
       text: '',
       image: ''
     },
-    boutique: {
-      name: '',
-      subtitle: '',
-      backgroundImage: ''
-    },
     buttons: {
       topPlugs: { text: '🔌 Top Des Plugs' },
       vipPlugs: { text: '👑 Boutiques VIP' },
@@ -72,11 +67,6 @@ export default function BotConfig() {
           welcome: {
             text: data.welcome?.text || '🎉 Bienvenue sur notre bot premium !',
             image: data.welcome?.image || ''
-          },
-          boutique: {
-            name: data.boutique?.name || '',
-            subtitle: data.boutique?.subtitle || '',
-            backgroundImage: data.boutique?.backgroundImage || ''
           },
           buttons: {
             topPlugs: { text: data.buttons?.topPlugs?.text || '🔌 Top Des Plugs' },
@@ -445,7 +435,15 @@ export default function BotConfig() {
             <div className="flex justify-between items-center py-6">
               <div>
                 <h1 className="text-3xl font-bold text-gray-900">Configuration Bot</h1>
-                <p className="mt-1 text-sm text-gray-500">Personnalisez votre bot Telegram</p>
+                <p className="mt-1 text-sm text-gray-500">
+                  Personnalisez votre bot Telegram • 
+                  <button 
+                    onClick={() => router.push('/admin/configuration')}
+                    className="text-blue-600 hover:text-blue-800 ml-1"
+                  >
+                    Config Boutique →
+                  </button>
+                </p>
               </div>
               <button
                 onClick={() => router.push('/admin')}
@@ -491,57 +489,6 @@ export default function BotConfig() {
                       src={config.welcome.image} 
                       alt="Preview"
                       className="mt-2 w-64 h-32 object-cover rounded border-2 border-gray-300"
-                      onError={(e) => {e.target.style.display = 'none'}}
-                    />
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {/* Configuration Boutique */}
-            <div className="bg-white rounded-lg shadow p-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">🏪 Configuration Boutique</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-semibold text-gray-800 mb-2">
-                    Nom de la boutique
-                  </label>
-                  <input
-                    type="text"
-                    value={config.boutique.name}
-                    onChange={(e) => updateConfig('boutique.name', e.target.value)}
-                    className="w-full border-2 border-gray-400 text-gray-900 rounded-lg p-3 focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
-                    placeholder="SwissQuality"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-gray-800 mb-2">
-                    Sous-titre
-                  </label>
-                  <input
-                    type="text"
-                    value={config.boutique.subtitle}
-                    onChange={(e) => updateConfig('boutique.subtitle', e.target.value)}
-                    className="w-full border-2 border-gray-400 text-gray-900 rounded-lg p-3 focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
-                    placeholder="Votre boutique premium"
-                  />
-                </div>
-                <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Image de fond (répétée) - URL
-                  </label>
-                  <input
-                    type="url"
-                    value={config.boutique.backgroundImage}
-                    onChange={(e) => updateConfig('boutique.backgroundImage', e.target.value)}
-                    className="w-full border border-gray-300 rounded-lg p-3"
-                    placeholder="https://example.com/pattern.jpg"
-                  />
-                  {config.boutique.backgroundImage && (
-                    <img 
-                      src={config.boutique.backgroundImage} 
-                      alt="Background"
-                      className="mt-2 w-32 h-32 object-cover rounded border"
                       onError={(e) => {e.target.style.display = 'none'}}
                     />
                   )}
