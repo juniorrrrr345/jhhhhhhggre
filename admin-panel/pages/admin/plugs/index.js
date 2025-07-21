@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
-import Layout from '../../../components/Layout'
 import toast from 'react-hot-toast'
 import {
   PlusIcon,
@@ -8,7 +7,8 @@ import {
   EyeIcon,
   PencilIcon,
   TrashIcon,
-  StarIcon
+  StarIcon,
+  HomeIcon
 } from '@heroicons/react/24/outline'
 
 export default function PlugsManagement() {
@@ -18,6 +18,7 @@ export default function PlugsManagement() {
   const [filter, setFilter] = useState('all')
   const [currentPage, setCurrentPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
+  const [activeTab, setActiveTab] = useState('plugs') // 'plugs', 'search', 'vip'
   const router = useRouter()
 
   useEffect(() => {
@@ -34,9 +35,9 @@ export default function PlugsManagement() {
       setLoading(true)
       const params = new URLSearchParams({
         page: currentPage,
-        limit: 10,
+        limit: 20,
         search,
-        filter
+        filter: activeTab === 'vip' ? 'vip' : filter
       })
 
       const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || process.env.API_BASE_URL || 'https://jhhhhhhggre.onrender.com'
@@ -52,7 +53,7 @@ export default function PlugsManagement() {
         const data = await response.json()
         console.log('✅ Admin plugs loaded:', data.plugs?.length || 0)
         setPlugs(data.plugs || [])
-        setTotalPages(Math.ceil((data.pagination?.total || data.total || 0) / 10))
+        setTotalPages(Math.ceil((data.pagination?.total || data.total || 0) / 20))
       } else {
         console.error('❌ Admin plugs error:', response.status)
         toast.error('Erreur lors du chargement')
@@ -79,7 +80,7 @@ export default function PlugsManagement() {
 
       if (response.ok) {
         toast.success(`Boutique ${!currentStatus ? 'activée' : 'désactivée'}`)
-        fetchPlugs(token)
+        fetchPlugs(localStorage.getItem('adminToken'))
       } else {
         toast.error('Erreur lors de la modification')
       }
@@ -87,8 +88,6 @@ export default function PlugsManagement() {
       toast.error('Erreur de connexion')
     }
   }
-
-
 
   const deletePlug = async (plugId, plugName) => {
     if (!confirm(`Êtes-vous sûr de vouloir supprimer "${plugName}" ?`)) return
@@ -111,255 +110,223 @@ export default function PlugsManagement() {
     }
   }
 
-  const getStatusBadge = (isActive) => {
-    return isActive ? (
-      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-        Actif
-      </span>
-    ) : (
-      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-        Inactif
-      </span>
-    )
+  const getRandomLikes = () => {
+    return Math.floor(Math.random() * 1000) + 100
   }
 
-  const getVipBadge = (isVip) => {
-    if (!isVip) return null
-    return (
-      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-        <StarIcon className="w-3 h-3 mr-1" />
-        VIP
-      </span>
-    )
+  const handleTabChange = (tab) => {
+    setActiveTab(tab)
+    if (tab === 'vip') {
+      setFilter('vip')
+    } else {
+      setFilter('all')
+    }
+    setCurrentPage(1)
   }
 
-  return (
-    <Layout title="Gestion des Boutiques">
-      <div className="space-y-6">
-        {/* Header avec actions */}
-        <div className="sm:flex sm:items-center sm:justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">Boutiques & Plugs</h1>
-            <p className="text-gray-600">Gérez vos boutiques et leurs informations</p>
+  const renderPlugCard = (plug) => (
+    <div key={plug._id} className="bg-gray-800 rounded-2xl p-4 mb-4 relative">
+      {/* Header avec actions admin cachées */}
+      <div className="absolute top-2 right-2 opacity-30 hover:opacity-100 transition-opacity">
+        <div className="flex space-x-1">
+          <button
+            onClick={() => router.push(`/admin/plugs/${plug._id}`)}
+            className="text-blue-400 hover:text-blue-300 text-xs"
+          >
+            <EyeIcon className="w-4 h-4" />
+          </button>
+          <button
+            onClick={() => router.push(`/admin/plugs/${plug._id}/edit`)}
+            className="text-yellow-400 hover:text-yellow-300 text-xs"
+          >
+            <PencilIcon className="w-4 h-4" />
+          </button>
+          <button
+            onClick={() => togglePlugStatus(plug._id, plug.isActive)}
+            className={`${plug.isActive ? 'text-red-400 hover:text-red-300' : 'text-green-400 hover:text-green-300'} text-xs`}
+          >
+            {plug.isActive ? '⏸️' : '▶️'}
+          </button>
+          <button
+            onClick={() => deletePlug(plug._id, plug.name)}
+            className="text-red-400 hover:text-red-300 text-xs"
+          >
+            <TrashIcon className="w-4 h-4" />
+          </button>
+        </div>
+      </div>
+
+      <div className="flex items-center space-x-4">
+        {/* Image du plug */}
+        <div className="flex-shrink-0">
+          <img
+            src={plug.image || '/placeholder.jpg'}
+            alt={plug.name}
+            className="w-16 h-16 rounded-2xl object-cover"
+          />
+        </div>
+
+        {/* Informations du plug */}
+        <div className="flex-1">
+          <div className="flex items-center space-x-2">
+            <span className="text-white text-lg font-bold">🇫🇷</span>
+            <h3 className="text-white text-lg font-bold uppercase tracking-wide">
+              {plug.name}
+            </h3>
+            {!plug.isActive && (
+              <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-full">
+                INACTIF
+              </span>
+            )}
           </div>
-          <div className="mt-4 sm:mt-0">
-            <button
-              onClick={() => router.push('/admin/plugs/new')}
-              className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-            >
-              <PlusIcon className="w-5 h-5 mr-2" />
-              Nouvelle boutique
-            </button>
+          
+          <div className="flex items-center space-x-3 mt-2">
+            {/* Services */}
+            {plug.services?.delivery?.enabled && (
+              <span className="text-orange-400" title="Livraison">📦</span>
+            )}
+            {plug.services?.postal?.enabled && (
+              <span className="text-red-400" title="Postal">📍</span>
+            )}
+            {plug.services?.meetup?.enabled && (
+              <span className="text-yellow-400" title="Meetup">🚲</span>
+            )}
           </div>
         </div>
 
-        {/* Filtres et recherche */}
-        <div className="bg-white shadow rounded-lg p-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {/* Recherche */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Rechercher
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <MagnifyingGlassIcon className="h-5 w-5 text-gray-400" />
-                </div>
-                <input
-                  type="text"
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="Nom ou description..."
-                />
-              </div>
-            </div>
-
-            {/* Filtre statut */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Statut
-              </label>
-              <select
-                value={filter}
-                onChange={(e) => setFilter(e.target.value)}
-                className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-              >
-                <option value="all">Tous</option>
-                <option value="active">Actifs seulement</option>
-                <option value="inactive">Inactifs seulement</option>
-                <option value="vip">VIP seulement</option>
-              </select>
-            </div>
-          </div>
-        </div>
-
-        {/* Liste des boutiques */}
-        <div className="bg-white shadow rounded-lg overflow-hidden">
-          {loading ? (
-            <div className="p-6 text-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto"></div>
-              <p className="mt-2 text-gray-500">Chargement...</p>
-            </div>
-          ) : plugs.length === 0 ? (
-            <div className="p-6 text-center">
-              <p className="text-gray-500">Aucune boutique trouvée</p>
-            </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Boutique
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Services
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Pays
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Statut
-                    </th>
-                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {plugs.map((plug) => (
-                    <tr key={plug._id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center">
-                          <div className="flex-shrink-0 h-10 w-10">
-                            <img
-                              className="h-10 w-10 rounded-full object-cover"
-                              src={plug.image || '/placeholder.jpg'}
-                              alt={plug.name}
-                            />
-                          </div>
-                          <div className="ml-4">
-                            <div className="flex items-center">
-                              <div className="text-sm font-medium text-gray-900">
-                                {plug.name}
-                              </div>
-                              {getVipBadge(plug.isVip)}
-                            </div>
-                            <div className="text-sm text-gray-500 max-w-xs truncate">
-                              {plug.description}
-                            </div>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        <div className="space-y-1">
-                          {plug.services?.delivery?.enabled && (
-                            <span className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">
-                              🚚 Livraison
-                            </span>
-                          )}
-                          {plug.services?.postal?.enabled && (
-                            <span className="inline-block bg-green-100 text-green-800 text-xs px-2 py-1 rounded">
-                              ✈️ Postal
-                            </span>
-                          )}
-                          {plug.services?.meetup?.enabled && (
-                            <span className="inline-block bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded">
-                              🏠 Meetup
-                            </span>
-                          )}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {plug.countries?.join(', ') || 'Non défini'}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        {getStatusBadge(plug.isActive)}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <div className="flex items-center justify-end space-x-2">
-                          <button
-                            onClick={() => router.push(`/admin/plugs/${plug._id}`)}
-                            className="text-blue-600 hover:text-blue-900"
-                          >
-                            <EyeIcon className="w-5 h-5" />
-                          </button>
-                          <button
-                            onClick={() => router.push(`/admin/plugs/${plug._id}/edit`)}
-                            className="text-indigo-600 hover:text-indigo-900"
-                          >
-                            <PencilIcon className="w-5 h-5" />
-                          </button>
-                          <button
-                            onClick={() => togglePlugStatus(plug._id, plug.isActive)}
-                            className={`${plug.isActive ? 'text-red-600 hover:text-red-900' : 'text-green-600 hover:text-green-900'}`}
-                          >
-                            {plug.isActive ? '⏸️' : '▶️'}
-                          </button>
-                          <button
-                            onClick={() => deletePlug(plug._id, plug.name)}
-                            className="text-red-600 hover:text-red-900"
-                          >
-                            <TrashIcon className="w-5 h-5" />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+        {/* Badge VIP et likes */}
+        <div className="flex flex-col items-end">
+          {plug.isVip && (
+            <div className="bg-yellow-500 text-black text-xs font-bold px-2 py-1 rounded-full mb-2 flex items-center">
+              <span className="text-sm">⚠️</span>
             </div>
           )}
+          <div className="flex items-center space-x-1">
+            <span className="text-yellow-400">👍</span>
+            <span className="text-white font-bold">{getRandomLikes()}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
 
-          {/* Pagination */}
-          {totalPages > 1 && (
-            <div className="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
-              <div className="flex-1 flex justify-between sm:hidden">
+  return (
+    <div className="min-h-screen bg-black text-white">
+      {/* Header */}
+      <div className="bg-gray-900 px-4 py-6 text-center">
+        <h1 className="text-3xl font-bold text-white mb-2">PLUGS FINDER</h1>
+        <div className="flex items-center justify-center space-x-2">
+          <span className="text-sm text-gray-300">JUSTE UNE</span>
+          <span className="bg-blue-500 text-white text-sm px-2 py-1 rounded">MINI-APP TELEGRAM</span>
+          <span className="text-sm text-gray-300">CHILL</span>
+        </div>
+        
+        {/* Bouton admin caché */}
+        <button
+          onClick={() => router.push('/admin/plugs/new')}
+          className="absolute top-4 left-4 bg-blue-600 text-white p-2 rounded-full opacity-30 hover:opacity-100 transition-opacity"
+        >
+          <PlusIcon className="w-5 h-5" />
+        </button>
+      </div>
+
+      {/* Barre de recherche (affichée seulement sur l'onglet recherche) */}
+      {activeTab === 'search' && (
+        <div className="px-4 py-4 bg-gray-900">
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <MagnifyingGlassIcon className="h-5 w-5 text-gray-400" />
+            </div>
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="block w-full pl-10 pr-3 py-3 border border-gray-600 rounded-lg bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              placeholder="Rechercher un plug..."
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Liste des plugs */}
+      <div className="px-4 py-4 pb-20">
+        {loading ? (
+          <div className="text-center py-8">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white mx-auto mb-4"></div>
+            <p className="text-gray-400">Chargement...</p>
+          </div>
+        ) : plugs.length === 0 ? (
+          <div className="text-center py-8">
+            <p className="text-gray-400">
+              {activeTab === 'vip' ? 'Aucun plug VIP trouvé' : 
+               activeTab === 'search' ? 'Aucun résultat pour votre recherche' : 
+               'Aucun plug trouvé'}
+            </p>
+          </div>
+        ) : (
+          <>
+            {plugs.map(renderPlugCard)}
+            
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="flex justify-center mt-6 space-x-2">
                 <button
                   onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                   disabled={currentPage === 1}
-                  className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
+                  className="px-4 py-2 bg-gray-800 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Précédent
                 </button>
+                <span className="px-4 py-2 text-gray-400">
+                  Page {currentPage} / {totalPages}
+                </span>
                 <button
                   onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
                   disabled={currentPage === totalPages}
-                  className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
+                  className="px-4 py-2 bg-gray-800 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Suivant
                 </button>
               </div>
-              <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-                <div>
-                  <p className="text-sm text-gray-700">
-                    Page <span className="font-medium">{currentPage}</span> sur{' '}
-                    <span className="font-medium">{totalPages}</span>
-                  </p>
-                </div>
-                <div>
-                  <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
-                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                      <button
-                        key={page}
-                        onClick={() => setCurrentPage(page)}
-                        className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
-                          page === currentPage
-                            ? 'z-10 bg-blue-50 border-blue-500 text-blue-600'
-                            : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
-                        }`}
-                      >
-                        {page}
-                      </button>
-                    ))}
-                  </nav>
-                </div>
-              </div>
-            </div>
-          )}
+            )}
+          </>
+        )}
+      </div>
+
+      {/* Navigation du bas */}
+      <div className="fixed bottom-0 left-0 right-0 bg-gray-900 border-t border-gray-700">
+        <div className="flex justify-around py-2">
+          <button
+            onClick={() => handleTabChange('plugs')}
+            className={`flex flex-col items-center py-2 px-4 ${
+              activeTab === 'plugs' ? 'text-white' : 'text-gray-400'
+            }`}
+          >
+            <HomeIcon className="w-6 h-6 mb-1" />
+            <span className="text-xs">Plugs</span>
+          </button>
+          
+          <button
+            onClick={() => handleTabChange('search')}
+            className={`flex flex-col items-center py-2 px-4 ${
+              activeTab === 'search' ? 'text-white' : 'text-gray-400'
+            }`}
+          >
+            <MagnifyingGlassIcon className="w-6 h-6 mb-1" />
+            <span className="text-xs">Rechercher</span>
+          </button>
+          
+          <button
+            onClick={() => handleTabChange('vip')}
+            className={`flex flex-col items-center py-2 px-4 ${
+              activeTab === 'vip' ? 'text-white' : 'text-gray-400'
+            }`}
+          >
+            <StarIcon className="w-6 h-6 mb-1" />
+            <span className="text-xs">VIP</span>
+          </button>
         </div>
       </div>
-    </Layout>
+    </div>
   )
 }
