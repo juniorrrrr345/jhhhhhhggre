@@ -397,121 +397,76 @@ export default function ShopSearch() {
         )}
 
         {/* Section de recherche */}
-        {config && (
-          <div className="py-12">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <div className="text-center mb-8">
-                <div className="flex items-center justify-center mb-4">
-                  <h2 style={{ color: 'white' }} className="text-3xl font-bold">
-                    🔍 Recherche dans {config?.boutique?.name || 'la boutique'}
-                  </h2>
+        {/* Barre de recherche simple */}
+        <div className="py-6">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex flex-col sm:flex-row gap-3 items-center">
+              {/* Recherche principale */}
+              <div className="relative flex-1">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <MagnifyingGlassIcon style={{ color: 'white' }} className="h-5 w-5" />
                 </div>
+                <input
+                  type="text"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="block w-full pl-10 pr-3 py-3 border border-gray-600 rounded-lg bg-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  style={{ color: 'white' }}
+                  placeholder="🔍 Rechercher une boutique..."
+                />
               </div>
-              
-              {/* Filtres de recherche */}
-              <div className="bg-black border border-gray-600 rounded-xl shadow-lg p-6">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                  {/* Recherche textuelle */}
-                  <div>
-                    <label style={{ color: 'white' }} className="block text-sm font-medium mb-2">
-                      Rechercher
-                    </label>
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <MagnifyingGlassIcon style={{ color: 'white' }} className="h-5 w-5" />
-                      </div>
-                      <input
-                        type="text"
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                        className="block w-full pl-10 pr-3 py-2 border border-gray-600 rounded-md bg-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white focus:border-white"
-                        style={{ color: 'white' }}
-                        placeholder="Rechercher une boutique..."
-                      />
-                    </div>
-                  </div>
 
-                  {/* Filtre par pays */}
-                  <div>
-                    <label style={{ color: 'white' }} className="block text-sm font-medium mb-2">
-                      Pays
-                    </label>
-                    <select
-                      value={countryFilter}
-                      onChange={(e) => setCountryFilter(e.target.value)}
-                      className="block w-full px-3 py-2 border border-gray-600 rounded-md bg-gray-800 focus:outline-none focus:ring-2 focus:ring-white focus:border-white"
-                      style={{ color: 'white' }}
-                    >
-                      <option value="">Tous les pays</option>
-                      {uniqueCountries.map(country => (
-                        <option key={country} value={country}>{country}</option>
-                      ))}
-                    </select>
-                  </div>
+              {/* Filtres rapides */}
+              <div className="flex gap-2">
+                <select
+                  value={serviceFilter}
+                  onChange={(e) => setServiceFilter(e.target.value)}
+                  className="px-3 py-3 border border-gray-600 rounded-lg bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                  style={{ color: 'white' }}
+                >
+                  <option value="">Tous</option>
+                  <option value="delivery">🚚 Livraison</option>
+                  <option value="postal">✈️ Postal</option>
+                  <option value="meetup">🏠 Meetup</option>
+                </select>
 
-                  {/* Filtre par service */}
-                  <div>
-                    <label style={{ color: 'white' }} className="block text-sm font-medium mb-2">
-                      Service
-                    </label>
-                    <select
-                      value={serviceFilter}
-                      onChange={(e) => setServiceFilter(e.target.value)}
-                      className="block w-full px-3 py-2 border border-gray-600 rounded-md bg-gray-800 focus:outline-none focus:ring-2 focus:ring-white focus:border-white"
-                      style={{ color: 'white' }}
-                    >
-                      <option value="">Tous les services</option>
-                      <option value="delivery">Livraison</option>
-                      <option value="postal">Postal</option>
-                      <option value="meetup">Meetup</option>
-                    </select>
-                  </div>
+                <select
+                  value={vipFilter}
+                  onChange={(e) => setVipFilter(e.target.value)}
+                  className="px-3 py-3 border border-gray-600 rounded-lg bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                  style={{ color: 'white' }}
+                >
+                  <option value="">Tous</option>
+                  <option value="vip">👑 VIP</option>
+                  <option value="standard">🔌 Standard</option>
+                </select>
 
-                  {/* Filtre VIP */}
-                  <div>
-                    <label style={{ color: 'white' }} className="block text-sm font-medium mb-2">
-                      Type
-                    </label>
-                    <select
-                      value={vipFilter}
-                      onChange={(e) => setVipFilter(e.target.value)}
-                      className="block w-full px-3 py-2 border border-gray-600 rounded-md bg-gray-800 focus:outline-none focus:ring-2 focus:ring-white focus:border-white"
-                      style={{ color: 'white' }}
-                    >
-                      <option value="">Tous</option>
-                      <option value="vip">VIP uniquement</option>
-                      <option value="standard">Standard uniquement</option>
-                    </select>
-                  </div>
-                </div>
-
-                {/* Bouton reset */}
-                <div className="mt-4 text-center">
+                {(search || serviceFilter || vipFilter || countryFilter) && (
                   <button
                     onClick={resetFilters}
-                    className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-md transition-colors"
+                    className="px-4 py-3 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors text-sm"
                     style={{ color: 'white' }}
+                    title="Réinitialiser"
                   >
-                    Réinitialiser les filtres
+                    ✕
                   </button>
-                </div>
+                )}
               </div>
             </div>
           </div>
-        )}
+        </div>
 
         {/* Résultats */}
         <main className="pb-12">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            {/* Titre des résultats */}
-            <div className="text-center mb-8">
-              <h3 style={{ color: 'white' }} className="text-2xl font-bold mb-2">
-                📋 Résultats de recherche
-              </h3>
-              <p style={{ color: 'white' }}>
-                {loading ? 'Recherche en cours...' : `${plugs.length} boutique(s) trouvée(s)`}
-              </p>
-            </div>
+            {/* Compteur de résultats compact */}
+            {!loading && (
+              <div className="text-center mb-6">
+                <p style={{ color: 'white' }} className="text-sm">
+                  {plugs.length} boutique(s) trouvée(s)
+                </p>
+              </div>
+            )}
 
             {/* Loading */}
             {loading ? (
