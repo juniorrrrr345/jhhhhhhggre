@@ -353,7 +353,7 @@ export default function ShopSearch() {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <div className="flex items-center justify-center h-20">
                 <div className="text-center">
-                  <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent drop-shadow-lg">
+                  <h1 className="text-responsive-title font-bold text-white text-shadow-3d">
                     🔍 {config?.boutique?.name || 'Recherche'}
                   </h1>
                 </div>
@@ -530,10 +530,7 @@ export default function ShopSearch() {
             ) : (
               <>
                 {/* Products Grid - 2 boutiques par ligne même sur mobile */}
-                <div className="grid grid-cols-2 gap-2 sm:gap-4 md:gap-6 mb-8" style={{ 
-                  gridTemplateColumns: '1fr 1fr',
-                  width: '100%'
-                }}>
+                                <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 mb-8 px-2 sm:px-0">
                   {currentPlugs.map((plug, index) => (
                     <Link 
                       key={plug._id || index} 

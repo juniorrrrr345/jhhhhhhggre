@@ -333,7 +333,7 @@ export default function ShopHome() {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <div className="flex items-center justify-center h-20">
                 <div className="text-center">
-                  <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent drop-shadow-lg">
+                  <h1 className="text-responsive-title font-bold text-white text-shadow-3d">
                     🔌 {config?.boutique?.name || 'Boutique'}
                   </h1>
                   {config?.boutique?.subtitle && (
@@ -380,8 +380,8 @@ export default function ShopHome() {
         )}
 
         {/* Main Content */}
-        <main className="py-12">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <main className="py-6 sm:py-8 lg:py-12">
+          <div className="max-w-7xl mx-auto responsive-container">
             {/* Hero Section */}
             {config && (
               <div className="text-center mb-12">
@@ -412,11 +412,8 @@ export default function ShopHome() {
               </div>
             ) : (
               <>
-                {/* Products Grid - 2 boutiques par ligne même sur mobile */}
-                <div className="grid grid-cols-2 gap-2 sm:gap-4 md:gap-6 mb-8" style={{ 
-                  gridTemplateColumns: '1fr 1fr',
-                  width: '100%'
-                }}>
+                {/* Products Grid - Responsive */}
+                <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 mb-8 px-2 sm:px-0">
                   {currentPlugs.map((plug, index) => (
                     <Link 
                       key={plug._id || index} 
@@ -424,9 +421,9 @@ export default function ShopHome() {
                       className="block group hover:scale-105 transition-transform duration-200"
                       style={{ textDecoration: 'none', color: 'inherit' }}
                     >
-                      <div className="shop-card bg-gray-800 border border-gray-700 rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-shadow duration-300 w-full max-w-none">
+                      <div className="shop-card bg-gray-800 border border-gray-700 rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-shadow duration-300 w-full h-full flex flex-col">
                         {/* Image */}
-                        <div className="relative h-32 sm:h-40 md:h-48 bg-gray-900">
+                        <div className="relative h-32 sm:h-36 md:h-40 lg:h-48 bg-gray-900 flex-shrink-0">
                           {plug.image ? (
                             <ImageWithFallback
                               src={plug.image}
@@ -452,43 +449,41 @@ export default function ShopHome() {
                         </div>
 
                         {/* Content */}
-                        <div className="p-2 sm:p-3 md:p-4">
-                          <h3 style={{ color: 'white' }} className="text-sm sm:text-base font-bold mb-2 truncate">{plug.name}</h3>
-                          <p style={{ color: '#e5e7eb' }} className="mb-3 text-xs sm:text-sm line-clamp-2 h-8">{plug.description}</p>
+                        <div className="p-3 sm:p-4 flex-1 flex flex-col">
+                          <h3 style={{ color: 'white' }} className="text-sm sm:text-base font-bold mb-2 line-clamp-1">{plug.name}</h3>
+                          <p style={{ color: '#e5e7eb' }} className="mb-3 text-xs sm:text-sm line-clamp-2 flex-1">{plug.description}</p>
 
                           {/* Location */}
                           {plug.countries && plug.countries.length > 0 && (
-                            <div className="flex items-center text-xs sm:text-sm mb-2" style={{ color: 'white' }}>
-                              <MapPinIcon className="w-3 h-3 mr-1" />
-                              <span className="truncate">{plug.countries.join(', ')}</span>
+                            <div className="flex items-center text-xs mb-2" style={{ color: 'white' }}>
+                              <MapPinIcon className="w-3 h-3 mr-1 flex-shrink-0" />
+                              <span className="truncate">{plug.countries.slice(0, 2).join(', ')}{plug.countries.length > 2 ? '...' : ''}</span>
                             </div>
                           )}
 
                           {/* Services */}
                           <div className="flex flex-wrap gap-1 mb-3">
                             {plug.services?.delivery?.enabled && (
-                              <span className="px-2 py-1 bg-green-600 text-white text-xs rounded-full flex items-center">
-                                <TruckIcon className="w-3 h-3 mr-1" />
-                                Livraison
+                              <span className="px-1.5 py-0.5 bg-green-600 text-white text-xs rounded flex items-center">
+                                🚚
                               </span>
                             )}
                             {plug.services?.postal?.enabled && (
-                              <span className="px-2 py-1 bg-gray-800 text-white text-xs rounded-full border border-gray-600">
-                                📮 Postal
+                              <span className="px-1.5 py-0.5 bg-blue-600 text-white text-xs rounded">
+                                ✈️
                               </span>
                             )}
                             {plug.services?.meetup?.enabled && (
-                              <span className="px-2 py-1 bg-purple-600 text-white text-xs rounded-full flex items-center">
-                                <HomeIcon className="w-3 h-3 mr-1" />
-                                Meetup
+                              <span className="px-1.5 py-0.5 bg-purple-600 text-white text-xs rounded">
+                                🏠
                               </span>
                             )}
                           </div>
 
                           {/* Likes */}
-                          <div className="flex items-center text-xs sm:text-sm font-medium" style={{ color: 'white' }}>
+                          <div className="flex items-center text-xs font-medium mt-auto" style={{ color: 'white' }}>
                             <span className="mr-1">❤️</span>
-                            <span>{plug.likes || 0} like{(plug.likes || 0) !== 1 ? 's' : ''}</span>
+                            <span>{plug.likes || 0}</span>
                           </div>
                         </div>
                       </div>

@@ -308,7 +308,7 @@ export default function ShopPlugDetail() {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <div className="flex items-center justify-center h-20">
                 <div className="text-center">
-                  <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent drop-shadow-lg">
+                  <h1 className="text-responsive-title font-bold text-white text-shadow-3d">
                     🔌 {config?.boutique?.name || 'Boutique'}
                   </h1>
                   {plug && (
