@@ -239,172 +239,52 @@ bot.action(/^plug_service_([a-f\d]{24})_(.+)$/, async (ctx) => {
 });
 
 
-// Gestionnaire de likes SIMPLIFIÉ ET ROBUSTE
+// Liker une boutique
 bot.action(/^like_([a-f\d]{24})$/, async (ctx) => {
-  const plugId = ctx.match[1];
-  const userId = ctx.from.id;
-  
-  console.log(`👤 Like action: User ${userId} -> Plug ${plugId}`);
-  
   try {
-    // 1. Répondre immédiatement pour éviter les timeouts
-    await ctx.answerCbQuery('⏳ Traitement...').catch(() => {});
+    const plugId = ctx.match[1];
+    const userId = ctx.from.id;
     
-    // 2. Récupérer le plug
+    console.log(`User ${userId} wants to like plug ${plugId}`);
+    
+    // Vérifier si la boutique existe
     const Plug = require('./src/models/Plug');
     const plug = await Plug.findById(plugId);
     
     if (!plug) {
-      console.log(`❌ Plug non trouvé: ${plugId}`);
-      return await ctx.answerCbQuery('❌ Boutique introuvable').catch(() => {});
-    }
-    
-    // 3. Initialiser les champs si nécessaire
-    if (!plug.likedBy) plug.likedBy = [];
-    if (!plug.likes) plug.likes = 0;
-    
-    // 4. Vérifier si l'utilisateur a déjà liké
-    const userIndex = plug.likedBy.indexOf(userId);
-    const hasLiked = userIndex !== -1;
-    
-    let message;
-    
-    if (hasLiked) {
-      // Retirer le like
-      plug.likedBy.splice(userIndex, 1);
-      plug.likes = plug.likedBy.length;
-      message = `💔 Like retiré (${plug.likes} like${plug.likes !== 1 ? 's' : ''})`;
-      console.log(`💔 Like retiré de ${plug.name}: ${plug.likes} total`);
-    } else {
-      // Ajouter le like
-      plug.likedBy.push(userId);
-      plug.likes = plug.likedBy.length;
-      message = `❤️ Merci ! (${plug.likes} like${plug.likes !== 1 ? 's' : ''})`;
-      console.log(`❤️ Like ajouté à ${plug.name}: ${plug.likes} total`);
-    }
-    
-    // 5. Sauvegarder en base
-    await plug.save();
-    
-    // 6. Notifier l'utilisateur
-    await ctx.answerCbQuery(message).catch(() => {});
-    
-    // 7. Mettre à jour le clavier (optionnel, peut échouer silencieusement)
-    try {
-      const { createPlugKeyboard } = require('./src/utils/keyboards');
-      const keyboard = createPlugKeyboard(plug, ctx.session?.lastContext || 'top_plugs');
-      await ctx.editMessageReplyMarkup(keyboard.reply_markup);
-      console.log(`✅ Clavier mis à jour avec succès`);
-    } catch (keyboardError) {
-      console.log(`⚠️ Mise à jour clavier échouée (pas grave): ${keyboardError.message}`);
-      // On ignore cette erreur car le like a été enregistré
-    }
-    
-  } catch (error) {
-    console.error(`❌ Erreur système like:`, {
-      error: error.message,
-      plugId,
-      userId
-    });
-    
-    // Notifier l'utilisateur de l'erreur
-    await ctx.answerCbQuery('❌ Erreur technique, réessayez').catch(() => {});
-  }
-});
-
-// Vérifier si la boutique existe
-    const Plug = require('./src/models/Plug');
-    const plug = await Plug.findById(plugId);
-    
-    if (!plug) {
-      console.log(`❌ Plug ${plugId} not found`);
-      return ctx.answerCbQuery('❌ Boutique non trouvée').catch(() => {});
-    }
-    
-    // Vérifier et initialiser les champs si nécessaire
-    if (!Array.isArray(plug.likedBy)) {
-      plug.likedBy = [];
-    }
-    if (typeof plug.likes !== 'number' || isNaN(plug.likes)) {
-      plug.likes = 0;
+      return ctx.answerCbQuery('❌ Boutique non trouvée');
     }
     
     const hasLiked = plug.likedBy.includes(userId);
     const action = hasLiked ? 'unlike' : 'like';
     
-    console.log(`🎯 Action: ${action}, hasLiked: ${hasLiked}, current likes: ${plug.likes}`);
-    
-    // Mettre à jour les likes avec vérifications
-    if (action === 'like' && !hasLiked) {
+    // Mettre à jour les likes
+    if (action === 'like') {
       plug.likedBy.push(userId);
-      plug.likes = plug.likedBy.length; // Synchroniser avec la longueur du tableau
+      plug.likes += 1;
       await plug.save();
-      console.log(`❤️ Like added: ${plug.likes} total likes`);
-      
-      // Notification utilisateur
-      setTimeout(() => {
-        ctx.answerCbQuery(`❤️ Vous avez liké ${plug.name} ! (${plug.likes} like${plug.likes > 1 ? 's' : ''})`).catch(() => {});
-      }, 100);
-      
-    } else if (action === 'unlike' && hasLiked) {
-      plug.likedBy = plug.likedBy.filter(id => id !== userId);
-      plug.likes = plug.likedBy.length; // Synchroniser avec la longueur du tableau
-      await plug.save();
-      console.log(`💔 Like removed: ${plug.likes} total likes`);
-      
-      // Notification utilisateur
-      setTimeout(() => {
-        ctx.answerCbQuery(`💔 Like retiré de ${plug.name} (${plug.likes} like${plug.likes > 1 ? 's' : ''})`).catch(() => {});
-      }, 100);
+      await ctx.answerCbQuery(`❤️ Vous avez liké ${plug.name} ! (${plug.likes} likes)`);
     } else {
-      console.log(`⚠️ No action needed: ${action}, hasLiked: ${hasLiked}`);
-      return;
-    }
-    
-    // Détecter le contexte de retour depuis le message ou l'historique
-    let context = 'top_plugs'; // valeur par défaut
-    
-    // Essayer de détecter le contexte depuis l'historique des callbacks
-    if (ctx.session && ctx.session.lastContext) {
-      context = ctx.session.lastContext;
+      plug.likedBy = plug.likedBy.filter(id => id !== userId);
+      plug.likes -= 1;
+      await plug.save();
+      await ctx.answerCbQuery(`💔 Like retiré de ${plug.name} (${plug.likes} likes)`);
     }
     
     // Mettre à jour le clavier avec le nouveau statut
+    const { createPlugKeyboard } = require('./src/utils/keyboards');
+    const newKeyboard = createPlugKeyboard(plug, 'top_plugs');
+    
     try {
-      const { createPlugKeyboard } = require('./src/utils/keyboards');
-      const newKeyboard = createPlugKeyboard(plug, context);
-      
       await ctx.editMessageReplyMarkup(newKeyboard.reply_markup);
-      console.log(`✅ Keyboard updated successfully for context: ${context}`);
-      
-    } catch (keyboardError) {
-      console.log(`⚠️ Keyboard update failed: ${keyboardError.message}`);
-      
-      // Tentative de mise à jour avec un contexte différent
-      try {
-        const { createPlugKeyboard } = require('./src/utils/keyboards');
-        const fallbackKeyboard = createPlugKeyboard(plug, 'top_plugs');
-        await ctx.editMessageReplyMarkup(fallbackKeyboard.reply_markup);
-        console.log(`✅ Fallback keyboard updated`);
-      } catch (fallbackError) {
-        console.log(`❌ Fallback keyboard update also failed: ${fallbackError.message}`);
-      }
+    } catch (error) {
+      // Ignore si le message n'a pas changé
+      console.log('Keyboard update skipped');
     }
     
   } catch (error) {
-    console.error('❌ Erreur like boutique:', {
-      error: error.message,
-      stack: error.stack,
-      plugId: ctx.match ? ctx.match[1] : 'unknown',
-      userId: ctx.from ? ctx.from.id : 'unknown'
-    });
-    
-    // Notification d'erreur à l'utilisateur
-    try {
-      await ctx.answerCbQuery('❌ Erreur lors du like, veuillez réessayer');
-    } catch (notificationError) {
-      console.error('❌ Could not send error notification to user');
-    }
+    console.error('Erreur like boutique:', error);
+    await ctx.answerCbQuery('❌ Erreur lors du like');
   }
 });
 
