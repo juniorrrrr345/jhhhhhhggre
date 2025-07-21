@@ -207,73 +207,7 @@ export default function ShopVIP() {
           </div>
         </div>
 
-        {/* Réseaux Sociaux */}
-        {(config?.socialMedia?.telegram || config?.socialMedia?.whatsapp) && (
-          <div style={{ 
-            backgroundColor: '#1a1a1a',
-            padding: '16px 20px',
-            textAlign: 'center',
-            borderBottom: '1px solid #2a2a2a'
-          }}>
-            <h3 style={{ 
-              fontSize: '16px', 
-              fontWeight: 'bold', 
-              margin: '0 0 12px 0',
-              color: '#ffffff'
-            }}>
-              📱 Suivez-nous
-            </h3>
-            <div style={{ 
-              display: 'flex', 
-              justifyContent: 'center', 
-              gap: '16px',
-              flexWrap: 'wrap'
-            }}>
-              {config.socialMedia.telegram && (
-                <a 
-                  href={config.socialMedia.telegram.startsWith('http') ? config.socialMedia.telegram : `https://t.me/${config.socialMedia.telegram.replace('@', '')}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    backgroundColor: '#007AFF',
-                    color: '#ffffff',
-                    padding: '8px 16px',
-                    borderRadius: '20px',
-                    textDecoration: 'none',
-                    fontSize: '14px',
-                    fontWeight: '500'
-                  }}
-                >
-                  ✈️ Telegram
-                </a>
-              )}
-              {config.socialMedia.whatsapp && (
-                <a 
-                  href={config.socialMedia.whatsapp.startsWith('http') ? config.socialMedia.whatsapp : `https://wa.me/${config.socialMedia.whatsapp.replace(/[^0-9]/g, '')}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    backgroundColor: '#25D366',
-                    color: '#ffffff',
-                    padding: '8px 16px',
-                    borderRadius: '20px',
-                    textDecoration: 'none',
-                    fontSize: '14px',
-                    fontWeight: '500'
-                  }}
-                >
-                  💬 WhatsApp
-                </a>
-              )}
-            </div>
-          </div>
-        )}
+
 
         {/* Main Content */}
         <main style={{ padding: '20px', paddingBottom: '100px' }}>

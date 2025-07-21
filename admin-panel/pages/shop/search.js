@@ -333,73 +333,7 @@ export default function ShopSearch() {
           </div>
         </div>
 
-        {/* Réseaux Sociaux */}
-        {(config?.socialMedia?.telegram || config?.socialMedia?.whatsapp) && (
-          <div style={{ 
-            backgroundColor: '#1a1a1a',
-            padding: '16px 20px',
-            textAlign: 'center',
-            borderBottom: '1px solid #2a2a2a'
-          }}>
-            <h3 style={{ 
-              fontSize: '16px', 
-              fontWeight: 'bold', 
-              margin: '0 0 12px 0',
-              color: '#ffffff'
-            }}>
-              📱 Suivez-nous
-            </h3>
-            <div style={{ 
-              display: 'flex', 
-              justifyContent: 'center', 
-              gap: '16px',
-              flexWrap: 'wrap'
-            }}>
-              {config.socialMedia.telegram && (
-                <a 
-                  href={config.socialMedia.telegram.startsWith('http') ? config.socialMedia.telegram : `https://t.me/${config.socialMedia.telegram.replace('@', '')}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    backgroundColor: '#007AFF',
-                    color: '#ffffff',
-                    padding: '8px 16px',
-                    borderRadius: '20px',
-                    textDecoration: 'none',
-                    fontSize: '14px',
-                    fontWeight: '500'
-                  }}
-                >
-                  ✈️ Telegram
-                </a>
-              )}
-              {config.socialMedia.whatsapp && (
-                <a 
-                  href={config.socialMedia.whatsapp.startsWith('http') ? config.socialMedia.whatsapp : `https://wa.me/${config.socialMedia.whatsapp.replace(/[^0-9]/g, '')}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    backgroundColor: '#25D366',
-                    color: '#ffffff',
-                    padding: '8px 16px',
-                    borderRadius: '20px',
-                    textDecoration: 'none',
-                    fontSize: '14px',
-                    fontWeight: '500'
-                  }}
-                >
-                  💬 WhatsApp
-                </a>
-              )}
-            </div>
-          </div>
-        )}
+
 
         {/* Section Filtres de recherche */}
         <div style={{ 
@@ -448,9 +382,9 @@ export default function ShopSearch() {
                 fontSize: '14px'
               }}
             >
-              <option value="">🌍 Tous pays</option>
+              <option value="" style={{ color: '#ffffff', backgroundColor: '#2a2a2a' }}>🌍 Tous pays</option>
               {uniqueCountries.map(country => (
-                <option key={country} value={country}>{country}</option>
+                <option key={country} value={country} style={{ color: '#ffffff', backgroundColor: '#2a2a2a' }}>{country}</option>
               ))}
             </select>
 
@@ -466,10 +400,10 @@ export default function ShopSearch() {
                 fontSize: '14px'
               }}
             >
-              <option value="">🚀 Tous services</option>
-              <option value="delivery">📦 Livraison</option>
-              <option value="postal">📍 Postal</option>
-              <option value="meetup">💰 Meetup</option>
+              <option value="" style={{ color: '#ffffff', backgroundColor: '#2a2a2a' }}>🚀 Tous services</option>
+              <option value="delivery" style={{ color: '#ffffff', backgroundColor: '#2a2a2a' }}>📦 Livraison</option>
+              <option value="postal" style={{ color: '#ffffff', backgroundColor: '#2a2a2a' }}>📍 Postal</option>
+              <option value="meetup" style={{ color: '#ffffff', backgroundColor: '#2a2a2a' }}>💰 Meetup</option>
             </select>
 
             <select
@@ -484,9 +418,9 @@ export default function ShopSearch() {
                 fontSize: '14px'
               }}
             >
-              <option value="">⭐ Tous types</option>
-              <option value="vip">👑 VIP uniquement</option>
-              <option value="standard">🔹 Standard uniquement</option>
+              <option value="" style={{ color: '#ffffff', backgroundColor: '#2a2a2a' }}>⭐ Tous types</option>
+              <option value="vip" style={{ color: '#ffffff', backgroundColor: '#2a2a2a' }}>👑 VIP uniquement</option>
+              <option value="standard" style={{ color: '#ffffff', backgroundColor: '#2a2a2a' }}>🔹 Standard uniquement</option>
             </select>
           </div>
 
