@@ -48,6 +48,44 @@ const cleanUrl = (url) => {
 const createMainKeyboard = (config) => {
   const buttons = [];
   
+  console.log('🔍 DEBUG: socialMedia reçu =', JSON.stringify(config?.socialMedia));
+  console.log('🔍 DEBUG: type =', typeof config?.socialMedia);
+  console.log('🔍 DEBUG: isArray =', Array.isArray(config?.socialMedia));
+  
+  // Migration automatique si socialMedia est un objet (ancienne structure)
+  if (config?.socialMedia && typeof config.socialMedia === 'object' && !Array.isArray(config.socialMedia)) {
+    console.log('🔄 MIGRATION: Conversion objet vers array...');
+    const socialMediaArray = [];
+    
+    // Si c'est un objet vide, le remplacer par un array vide
+    if (Object.keys(config.socialMedia).length === 0) {
+      config.socialMedia = [];
+      console.log('✅ MIGRATION: Objet vide converti en array vide');
+    } else {
+      // Convertir les propriétés de l'objet en array
+      for (const [key, value] of Object.entries(config.socialMedia)) {
+        if (value && typeof value === 'string' && value.trim()) {
+          const mapping = {
+            telegram: { name: 'Telegram', emoji: '📱' },
+            instagram: { name: 'Instagram', emoji: '📷' },
+            whatsapp: { name: 'WhatsApp', emoji: '💬' },
+            website: { name: 'Site Web', emoji: '🌐' }
+          };
+          
+          const info = mapping[key] || { name: key, emoji: '🌐' };
+          socialMediaArray.push({
+            name: info.name,
+            emoji: info.emoji,
+            url: value.trim()
+          });
+          console.log(`✅ MIGRATION: ${key} -> ${info.name}`);
+        }
+      }
+      config.socialMedia = socialMediaArray;
+      console.log(`✅ MIGRATION: ${socialMediaArray.length} réseaux convertis`);
+    }
+  }
+  
   // Réseaux sociaux personnalisés en haut du menu
   if (config?.socialMedia && Array.isArray(config.socialMedia) && config.socialMedia.length > 0) {
     console.log('🔄 Création des boutons réseaux sociaux personnalisés...');
