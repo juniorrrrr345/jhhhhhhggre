@@ -138,14 +138,29 @@ export default async function handler(req, res) {
       size: JSON.stringify(data).length
     });
     
-    // CORRECTION: Transférer tous les headers importants
-    const importantHeaders = ['cache-control', 'last-modified', 'etag', 'expires']
+    // CORRECTION: Transférer tous les headers importants y compris ceux de synchronisation
+    const importantHeaders = [
+      'cache-control', 
+      'last-modified', 
+      'etag', 
+      'expires',
+      'x-config-updated',
+      'x-public-config-updated'
+    ]
     importantHeaders.forEach(header => {
       const value = response.headers.get(header)
       if (value) {
         res.setHeader(header, value)
       }
     })
+    
+    // Headers anti-cache forcés pour tous les endpoints de configuration
+    if (endpoint.includes('/config')) {
+      res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0')
+      res.setHeader('Pragma', 'no-cache')
+      res.setHeader('Expires', '0')
+      res.setHeader('X-Proxy-Timestamp', new Date().toISOString())
+    }
     
     // Retourner la réponse
     res.status(response.status).json(data)

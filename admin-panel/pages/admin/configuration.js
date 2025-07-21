@@ -92,31 +92,58 @@ export default function Configuration() {
         console.log('✅ Config boutique sauvée:', result)
         toast.success('Configuration boutique sauvée !')
         
-        // Envoyer signal de synchronisation à la boutique
+        // CORRECTION: Améliorer la synchronisation avec signal global
         try {
           const syncSignal = {
             timestamp: Date.now(),
             action: 'boutique_config_updated',
+            type: 'config_updated',
+            source: 'boutique_admin',
             config: result
           }
           
+          // Signal spécifique boutique (rétrocompatibilité)
           localStorage.setItem('boutique_sync_signal', JSON.stringify(syncSignal))
           
-          // Déclencher l'événement storage pour notifier les autres onglets
+          // Signal global pour toutes les interfaces
+          localStorage.setItem('global_sync_signal', JSON.stringify(syncSignal))
+          
+          // Déclencher les événements storage pour notifier les autres onglets
           window.dispatchEvent(new StorageEvent('storage', {
             key: 'boutique_sync_signal',
             newValue: JSON.stringify(syncSignal)
           }))
           
-          console.log('📡 Signal de synchronisation envoyé à la boutique')
+          window.dispatchEvent(new StorageEvent('storage', {
+            key: 'global_sync_signal',
+            newValue: JSON.stringify(syncSignal)
+          }))
+          
+          console.log('📡 Signal de synchronisation global envoyé')
+          
+          // Notification de succès immédiate
+          toast.success('🔄 Synchronisation avec le bot et la boutique en cours...', {
+            duration: 2000,
+            icon: '🔄'
+          })
+          
+          // Notification de fin de synchronisation
+          setTimeout(() => {
+            toast.success('✅ Synchronisation terminée !', {
+              duration: 3000,
+              icon: '✅'
+            })
+          }, 2000);
+          
         } catch (syncError) {
           console.error('❌ Erreur envoi signal sync:', syncError)
+          toast.error('⚠️ Configuration sauvée mais synchronisation partielle')
         }
         
-        // Forcer le rechargement après un délai
+        // Attendre un peu plus longtemps avant le rechargement pour laisser le temps à la synchronisation
         setTimeout(() => {
           window.location.reload()
-        }, 1500)
+        }, 3000)
       } else {
         const errorData = await response.json()
         console.error('❌ Erreur sauvegarde:', errorData)

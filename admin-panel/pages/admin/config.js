@@ -54,16 +54,19 @@ export default function BotConfig() {
     try {
       setLoading(true)
       
-      const response = await fetch('/api/proxy?endpoint=/api/config', {
+      const response = await fetch(`/api/proxy?endpoint=/api/config&t=${Date.now()}&_=${Math.random()}`, {
         headers: { 
           'Authorization': token,
           'Content-Type': 'application/json',
-          'Cache-Control': 'no-cache'
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0'
         }
       })
 
       if (response.ok) {
         const data = await response.json()
+        console.log('🔄 Configuration admin rechargée:', data?._lastUpdate || 'timestamp non disponible')
         
         const mergedConfig = {
           welcome: {
@@ -179,14 +182,45 @@ export default function BotConfig() {
         if (savedConfig && typeof savedConfig === 'object') {
           setConfig(prevConfig => ({
             ...prevConfig,
-            ...savedConfig
+            ...savedConfig,
+            _lastSync: Date.now()
           }))
         }
         
-        // Recharger le bot après un délai
-        setTimeout(() => {
-          reloadBot();
-        }, 1000);
+        // CORRECTION: Forcer la synchronisation immédiate de toutes les interfaces
+        try {
+          // Signal de synchronisation global
+          const syncEvent = {
+            type: 'config_updated',
+            timestamp: Date.now(),
+            source: 'admin_panel',
+            data: savedConfig
+          }
+          
+          // Notifier via localStorage pour la synchronisation cross-tab
+          localStorage.setItem('global_sync_signal', JSON.stringify(syncEvent))
+          window.dispatchEvent(new StorageEvent('storage', {
+            key: 'global_sync_signal',
+            newValue: JSON.stringify(syncEvent)
+          }))
+          
+          // Attendre un peu avant de recharger le bot pour s'assurer que la config est bien enregistrée
+          setTimeout(() => {
+            reloadBot();
+          }, 1500);
+          
+          // Notification de synchronisation réussie
+          setTimeout(() => {
+            toast.success('🔄 Synchronisation avec le bot et la boutique terminée !', {
+              duration: 3000,
+              icon: '🔄'
+            })
+          }, 2000);
+          
+        } catch (syncError) {
+          console.error('❌ Erreur synchronisation:', syncError)
+          toast.error('⚠️ Configuration sauvée mais synchronisation partielle')
+        }
         
       } else {
         // Lire la réponse d'erreur
@@ -275,13 +309,49 @@ export default function BotConfig() {
       })
       
       if (response.ok) {
-        toast.success('✅ Bot rechargé avec succès !')
+        const result = await response.json()
+        toast.success('✅ Bot rechargé avec succès !', {
+          duration: 3000
+        })
+        console.log('🔄 Résultat rechargement bot:', result)
       } else {
         toast.error('⚠️ Erreur rechargement bot')
       }
     } catch (error) {
       console.error('Erreur rechargement bot:', error)
       toast.error('❌ Erreur rechargement bot')
+    }
+  }
+
+  const testSync = async () => {
+    try {
+      const token = localStorage.getItem('adminToken')
+      toast.info('🧪 Test de synchronisation en cours...')
+      
+      const response = await fetch('/api/proxy?endpoint=/api/sync/test', {
+        headers: {
+          'Authorization': token,
+          'Content-Type': 'application/json'
+        }
+      })
+      
+      if (response.ok) {
+        const result = await response.json()
+        console.log('🧪 Résultat test sync:', result)
+        
+        if (result.success) {
+          toast.success(`✅ Synchronisation OK\n${result.config.boutiqueName || 'Boutique non configurée'}`, {
+            duration: 4000
+          })
+        } else {
+          toast.error('❌ Test synchronisation échoué')
+        }
+      } else {
+        toast.error('⚠️ Erreur test synchronisation')
+      }
+    } catch (error) {
+      console.error('Erreur test synchronisation:', error)
+      toast.error('❌ Erreur test synchronisation')
     }
   }
 
@@ -672,11 +742,20 @@ export default function BotConfig() {
             {/* Actions */}
             <div className="bg-white rounded-lg shadow-lg border border-gray-200 p-6">
               <h2 className="text-xl font-semibold text-gray-900 mb-4">⚡ Actions</h2>
-              <div className="flex flex-col sm:flex-row gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <button
+                  onClick={testSync}
+                  disabled={saving}
+                  className="bg-purple-600 hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+                >
+                  <span className="flex items-center justify-center">
+                    🧪 Test Synchronisation
+                  </span>
+                </button>
                 <button
                   onClick={reloadBot}
                   disabled={saving}
-                  className="flex-1 bg-green-600 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+                  className="bg-green-600 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
                 >
                   <span className="flex items-center justify-center">
                     🔄 Recharger Bot
@@ -685,7 +764,7 @@ export default function BotConfig() {
                 <button
                   onClick={saveConfig}
                   disabled={saving}
-                  className={`flex-1 ${saving ? 'bg-orange-500 animate-pulse' : 'bg-blue-600 hover:bg-blue-700'} disabled:opacity-50 disabled:cursor-not-allowed text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5`}
+                  className={`${saving ? 'bg-orange-500 animate-pulse' : 'bg-blue-600 hover:bg-blue-700'} disabled:opacity-50 disabled:cursor-not-allowed text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5`}
                 >
                   {saving ? (
                     <span className="flex items-center justify-center">

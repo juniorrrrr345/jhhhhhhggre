@@ -1,11 +1,13 @@
 import '../styles/globals.css'
 import { Toaster } from 'react-hot-toast'
 import ErrorBoundary from '../components/ErrorBoundary'
+import SyncStatus from '../components/SyncStatus'
 
 export default function App({ Component, pageProps }) {
   return (
     <ErrorBoundary>
       <Component {...pageProps} />
+      <SyncStatus />
       <Toaster 
         position="top-right"
         toastOptions={{
