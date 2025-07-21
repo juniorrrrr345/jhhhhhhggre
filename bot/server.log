@@ -291,3 +291,17 @@
 ✅ Cache mis à jour - 2 plugs, config: OK
 🔄 Rafraîchissement du cache...
 ✅ Cache mis à jour - 2 plugs, config: OK
+📡 GET /api/config - IP: ::1 - UserAgent: curl/8.12.1
+📋 Headers: [ 'host', 'user-agent', 'accept', 'authorization' ]
+🔐 Tentative d'authentification: GET /api/config
+📋 Headers reçus: [ 'host', 'user-agent', 'accept', 'authorization' ]
+🔑 Authorization header: Bearer ***n123
+🔍 Password fourni: ***n123
+🔍 Password attendu configuré: Oui
+✅ Authentification réussie
+🔄 Rafraîchissement du cache...
+✅ Cache mis à jour - 2 plugs, config: OK
+🔄 Rafraîchissement du cache...
+✅ Cache mis à jour - 2 plugs, config: OK
+🔄 Rafraîchissement du cache...
+✅ Cache mis à jour - 2 plugs, config: OK

@@ -3,7 +3,7 @@ import { useRouter } from 'next/router'
 import Head from 'next/head'
 import toast, { Toaster } from 'react-hot-toast'
 
-export default function ShopConfig() {
+export default function CompleteConfig() {
   const [config, setConfig] = useState({
     // Configuration Interface Boutique
     interface: {
@@ -12,6 +12,36 @@ export default function ShopConfig() {
       taglineHighlight: 'MINI-APP TELEGRAM',
       tagline2: 'CHILL',
       backgroundImage: ''
+    },
+    // Message d'accueil Bot
+    welcome: {
+      text: '',
+      image: '',
+      socialMedia: []
+    },
+    // Boutons du bot
+    buttons: {
+      contact: {
+        text: '📞 Contact',
+        content: 'Contactez-nous pour plus d\'informations.',
+        enabled: true
+      },
+      info: {
+        text: 'ℹ️ Info',
+        content: 'Informations sur notre plateforme.',
+        enabled: true
+      }
+    },
+    // Réseaux sociaux globaux
+    socialMedia: {
+      telegram: '',
+      whatsapp: ''
+    },
+    // Messages du bot
+    messages: {
+      welcome: '',
+      noPlugsFound: '',
+      error: ''
     }
   })
   
@@ -31,8 +61,9 @@ export default function ShopConfig() {
   const fetchConfig = async (token) => {
     try {
       setLoading(true)
+      console.log('🔄 Chargement configuration...')
       
-      const response = await fetch(`http://localhost:3000/api/config?t=${Date.now()}`, {
+      const response = await fetch(`http://localhost:3000/api/config`, {
         headers: { 
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -42,6 +73,7 @@ export default function ShopConfig() {
 
       if (response.ok) {
         const data = await response.json()
+        console.log('✅ Données reçues:', Object.keys(data))
         
         setConfig({
           interface: {
@@ -50,16 +82,42 @@ export default function ShopConfig() {
             taglineHighlight: data.interface?.taglineHighlight || 'MINI-APP TELEGRAM',
             tagline2: data.interface?.tagline2 || 'CHILL',
             backgroundImage: data.interface?.backgroundImage || ''
+          },
+          welcome: {
+            text: data.welcome?.text || '',
+            image: data.welcome?.image || '',
+            socialMedia: data.welcome?.socialMedia || []
+          },
+          buttons: {
+            contact: {
+              text: data.buttons?.contact?.text || '📞 Contact',
+              content: data.buttons?.contact?.content || 'Contactez-nous pour plus d\'informations.',
+              enabled: data.buttons?.contact?.enabled !== false
+            },
+            info: {
+              text: data.buttons?.info?.text || 'ℹ️ Info',
+              content: data.buttons?.info?.content || 'Informations sur notre plateforme.',
+              enabled: data.buttons?.info?.enabled !== false
+            }
+          },
+          socialMedia: {
+            telegram: data.socialMedia?.telegram || '',
+            whatsapp: data.socialMedia?.whatsapp || ''
+          },
+          messages: {
+            welcome: data.messages?.welcome || '',
+            noPlugsFound: data.messages?.noPlugsFound || '',
+            error: data.messages?.error || ''
           }
         })
         
-        toast.success('Configuration chargée !')
+        toast.success('Configuration chargée avec succès !')
       } else {
         throw new Error(`HTTP ${response.status}`)
       }
     } catch (error) {
       console.error('❌ Erreur chargement config:', error)
-      toast.error('Erreur de chargement')
+      toast.error('Erreur de chargement: ' + error.message)
     } finally {
       setLoading(false)
     }
@@ -75,14 +133,18 @@ export default function ShopConfig() {
     setSaving(true)
 
     try {
-      console.log('💾 Sauvegarde configuration boutique...')
+      console.log('💾 Sauvegarde configuration complète...')
       
-      // Nettoyer les données
+      // Préparer toutes les données
       const cleanData = {
-        interface: config.interface
+        interface: config.interface,
+        welcome: config.welcome,
+        buttons: config.buttons,
+        socialMedia: config.socialMedia,
+        messages: config.messages
       }
       
-      console.log('📦 Données à sauvegarder:', cleanData)
+      console.log('📦 Données à sauvegarder:', Object.keys(cleanData))
 
       const response = await fetch('http://localhost:3000/api/config', {
         method: 'PUT',
@@ -111,12 +173,12 @@ export default function ShopConfig() {
         }
         
       } else {
-        const errorData = await response.json()
+        const errorData = await response.json().catch(() => ({ error: 'Erreur inconnue' }))
         throw new Error(errorData.error || `HTTP ${response.status}`)
       }
     } catch (error) {
       console.error('❌ Erreur sauvegarde:', error)
-      toast.error('Erreur: ' + error.message)
+      toast.error('Erreur de sauvegarde: ' + error.message)
     } finally {
       setSaving(false)
     }
@@ -134,6 +196,7 @@ export default function ShopConfig() {
       }
       
       current[keys[keys.length - 1]] = value
+      console.log(`📝 Mis à jour: ${path} = ${value}`)
       return newConfig
     })
   }
@@ -152,7 +215,7 @@ export default function ShopConfig() {
   return (
     <>
       <Head>
-        <title>Configuration Boutique - Admin</title>
+        <title>Configuration Complète - Admin</title>
       </Head>
 
       <div className="min-h-screen bg-gray-50">
@@ -163,9 +226,9 @@ export default function ShopConfig() {
           <div className="max-w-4xl mx-auto px-4 py-6">
             <div className="flex justify-between items-center">
               <div>
-                <h1 className="text-3xl font-bold text-gray-900">🎨 Configuration Boutique</h1>
+                <h1 className="text-3xl font-bold text-gray-900">⚙️ Configuration Complète</h1>
                 <p className="mt-1 text-sm text-gray-500">
-                  Personnalisez l'apparence de votre boutique
+                  Boutique et Bot Telegram
                 </p>
               </div>
               <button
@@ -182,9 +245,9 @@ export default function ShopConfig() {
         <div className="max-w-4xl mx-auto py-8 px-4">
           <div className="space-y-6">
             
-            {/* Aperçu */}
+            {/* Aperçu Boutique */}
             <div className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg p-6 text-white">
-              <h2 className="text-lg font-semibold mb-4">📱 Aperçu de votre boutique</h2>
+              <h2 className="text-lg font-semibold mb-4">🏪 Aperçu Boutique</h2>
               <div className="bg-black bg-opacity-30 rounded-lg p-4">
                 <div className="text-center">
                   <h3 className="text-2xl font-bold mb-2">
@@ -198,17 +261,15 @@ export default function ShopConfig() {
                     <span>{config.interface.tagline2}</span>
                   </div>
                   {config.interface.backgroundImage && (
-                    <p className="text-xs mt-2 opacity-75">
-                      🖼️ Image de fond configurée
-                    </p>
+                    <p className="text-xs mt-2 opacity-75">🖼️ Image de fond configurée</p>
                   )}
                 </div>
               </div>
             </div>
 
-            {/* Configuration Interface */}
+            {/* Configuration Interface Boutique */}
             <div className="bg-white rounded-lg shadow p-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">🎨 Personnalisation</h2>
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">🎨 Interface Boutique</h2>
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -221,9 +282,6 @@ export default function ShopConfig() {
                     className="w-full border border-gray-300 rounded-lg p-3 text-lg font-bold"
                     placeholder="PLUGS FINDER"
                   />
-                  <p className="text-xs text-gray-500 mt-1">
-                    Le titre principal affiché en haut de votre boutique
-                  </p>
                 </div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -276,9 +334,205 @@ export default function ShopConfig() {
                     className="w-full border border-gray-300 rounded-lg p-3"
                     placeholder="https://example.com/background.jpg"
                   />
-                  <p className="text-xs text-gray-500 mt-1">
-                    URL d'une image qui sera utilisée comme arrière-plan de votre boutique
-                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Message d'Accueil Bot */}
+            <div className="bg-white rounded-lg shadow p-6">
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">🤖 Message d'Accueil Bot</h2>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Image d'accueil (URL)
+                  </label>
+                  <input
+                    type="url"
+                    value={config.welcome.image}
+                    onChange={(e) => updateConfig('welcome.image', e.target.value)}
+                    className="w-full border border-gray-300 rounded-lg p-3"
+                    placeholder="https://example.com/welcome-image.jpg"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Texte de bienvenue
+                  </label>
+                  <textarea
+                    value={config.welcome.text}
+                    onChange={(e) => updateConfig('welcome.text', e.target.value)}
+                    className="w-full border border-gray-300 rounded-lg p-3 h-20"
+                    placeholder="🎉 Bienvenue sur notre bot premium !"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Boutons du Bot */}
+            <div className="bg-white rounded-lg shadow p-6">
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">🔘 Boutons du Bot</h2>
+              <div className="space-y-6">
+                
+                {/* Bouton Contact */}
+                <div className="border border-gray-200 rounded-lg p-4">
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="text-md font-medium text-gray-900">📞 Bouton Contact</h3>
+                    <label className="flex items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={config.buttons.contact.enabled}
+                        onChange={(e) => updateConfig('buttons.contact.enabled', e.target.checked)}
+                        className="sr-only"
+                      />
+                      <div className={`relative inline-flex h-6 w-11 rounded-full transition-colors duration-200 ${config.buttons.contact.enabled ? 'bg-blue-600' : 'bg-gray-300'}`}>
+                        <div className={`inline-block h-5 w-5 transform rounded-full bg-white transition-transform duration-200 ${config.buttons.contact.enabled ? 'translate-x-5' : 'translate-x-0'} translate-y-0.5`}></div>
+                      </div>
+                      <span className="ml-2 text-sm text-gray-600">Activé</span>
+                    </label>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Texte du bouton
+                      </label>
+                      <input
+                        type="text"
+                        value={config.buttons.contact.text}
+                        onChange={(e) => updateConfig('buttons.contact.text', e.target.value)}
+                        className="w-full border border-gray-300 rounded-lg p-3"
+                        placeholder="📞 Contact"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Message affiché
+                      </label>
+                      <textarea
+                        value={config.buttons.contact.content}
+                        onChange={(e) => updateConfig('buttons.contact.content', e.target.value)}
+                        className="w-full border border-gray-300 rounded-lg p-3 h-20"
+                        placeholder="Contactez-nous pour plus d'informations."
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Bouton Info */}
+                <div className="border border-gray-200 rounded-lg p-4">
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="text-md font-medium text-gray-900">ℹ️ Bouton Info</h3>
+                    <label className="flex items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={config.buttons.info.enabled}
+                        onChange={(e) => updateConfig('buttons.info.enabled', e.target.checked)}
+                        className="sr-only"
+                      />
+                      <div className={`relative inline-flex h-6 w-11 rounded-full transition-colors duration-200 ${config.buttons.info.enabled ? 'bg-blue-600' : 'bg-gray-300'}`}>
+                        <div className={`inline-block h-5 w-5 transform rounded-full bg-white transition-transform duration-200 ${config.buttons.info.enabled ? 'translate-x-5' : 'translate-x-0'} translate-y-0.5`}></div>
+                      </div>
+                      <span className="ml-2 text-sm text-gray-600">Activé</span>
+                    </label>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Texte du bouton
+                      </label>
+                      <input
+                        type="text"
+                        value={config.buttons.info.text}
+                        onChange={(e) => updateConfig('buttons.info.text', e.target.value)}
+                        className="w-full border border-gray-300 rounded-lg p-3"
+                        placeholder="ℹ️ Info"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Message affiché
+                      </label>
+                      <textarea
+                        value={config.buttons.info.content}
+                        onChange={(e) => updateConfig('buttons.info.content', e.target.value)}
+                        className="w-full border border-gray-300 rounded-lg p-3 h-20"
+                        placeholder="Informations sur notre plateforme."
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Réseaux Sociaux */}
+            <div className="bg-white rounded-lg shadow p-6">
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">📱 Réseaux Sociaux</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Telegram
+                  </label>
+                  <input
+                    type="text"
+                    value={config.socialMedia.telegram}
+                    onChange={(e) => updateConfig('socialMedia.telegram', e.target.value)}
+                    className="w-full border border-gray-300 rounded-lg p-3"
+                    placeholder="@votre_canal"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    WhatsApp
+                  </label>
+                  <input
+                    type="text"
+                    value={config.socialMedia.whatsapp}
+                    onChange={(e) => updateConfig('socialMedia.whatsapp', e.target.value)}
+                    className="w-full border border-gray-300 rounded-lg p-3"
+                    placeholder="+33123456789"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Messages du Bot */}
+            <div className="bg-white rounded-lg shadow p-6">
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">💬 Messages du Bot</h2>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Message de bienvenue
+                  </label>
+                  <input
+                    type="text"
+                    value={config.messages.welcome}
+                    onChange={(e) => updateConfig('messages.welcome', e.target.value)}
+                    className="w-full border border-gray-300 rounded-lg p-3"
+                    placeholder="Bienvenue !"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Message "aucun résultat"
+                  </label>
+                  <input
+                    type="text"
+                    value={config.messages.noPlugsFound}
+                    onChange={(e) => updateConfig('messages.noPlugsFound', e.target.value)}
+                    className="w-full border border-gray-300 rounded-lg p-3"
+                    placeholder="Aucun résultat trouvé"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Message d'erreur
+                  </label>
+                  <input
+                    type="text"
+                    value={config.messages.error}
+                    onChange={(e) => updateConfig('messages.error', e.target.value)}
+                    className="w-full border border-gray-300 rounded-lg p-3"
+                    placeholder="Une erreur est survenue"
+                  />
                 </div>
               </div>
             </div>
@@ -301,7 +555,7 @@ export default function ShopConfig() {
                       Sauvegarde en cours...
                     </div>
                   ) : (
-                    '💾 Sauvegarder les modifications'
+                    '💾 Sauvegarder la configuration'
                   )}
                 </button>
                 
@@ -311,28 +565,16 @@ export default function ShopConfig() {
                 >
                   👁️ Voir la boutique
                 </button>
+                
+                <button
+                  onClick={() => router.push('/admin/broadcast')}
+                  className="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 font-medium transition-colors"
+                >
+                  📢 Messages diffusion
+                </button>
               </div>
             </div>
 
-            {/* Aide */}
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <div className="flex">
-                <div className="flex-shrink-0">
-                  <span className="text-blue-400 text-xl">💡</span>
-                </div>
-                <div className="ml-3">
-                  <h3 className="text-sm font-medium text-blue-800">
-                    Conseil
-                  </h3>
-                  <div className="mt-2 text-sm text-blue-700">
-                    <p>
-                      Après avoir sauvegardé, cliquez sur "Voir la boutique" pour vérifier que vos modifications apparaissent correctement. 
-                      Les changements sont appliqués immédiatement sur toutes les pages de votre boutique.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </div>
