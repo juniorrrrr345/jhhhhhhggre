@@ -204,18 +204,16 @@ export default function ShopVIP() {
             <span style={{ color: '#ffffff', fontSize: '14px' }}>
               {config?.boutique?.vipSubtitle || ''}
             </span>
-            {config?.boutique?.vipBlueText && (
-              <span style={{ 
-                backgroundColor: '#007AFF', 
-                color: '#ffffff', 
-                padding: '4px 8px', 
-                borderRadius: '12px',
-                fontSize: '12px',
-                fontWeight: 'bold'
-              }}>
-                {config.boutique.vipBlueText}
-              </span>
-            )}
+            <span style={{ 
+              backgroundColor: '#007AFF', 
+              color: '#ffffff', 
+              padding: '4px 8px', 
+              borderRadius: '12px',
+              fontSize: '12px',
+              fontWeight: 'bold'
+            }}>
+              {config?.boutique?.vipBlueText || 'VIP'}
+            </span>
           </div>
         </div>
 

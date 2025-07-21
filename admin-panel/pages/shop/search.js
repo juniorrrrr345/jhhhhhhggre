@@ -330,18 +330,16 @@ export default function ShopSearch() {
             <span style={{ color: '#ffffff', fontSize: '14px' }}>
               {config?.boutique?.searchSubtitle || ''}
             </span>
-            {config?.boutique?.searchBlueText && (
-              <span style={{ 
-                backgroundColor: '#007AFF', 
-                color: '#ffffff', 
-                padding: '4px 8px', 
-                borderRadius: '12px',
-                fontSize: '12px',
-                fontWeight: 'bold'
-              }}>
-                {config.boutique.searchBlueText}
-              </span>
-            )}
+            <span style={{ 
+              backgroundColor: '#007AFF', 
+              color: '#ffffff', 
+              padding: '4px 8px', 
+              borderRadius: '12px',
+              fontSize: '12px',
+              fontWeight: 'bold'
+            }}>
+              {config?.boutique?.searchBlueText || 'RECHERCHE'}
+            </span>
           </div>
         </div>
 
