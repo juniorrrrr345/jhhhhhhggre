@@ -226,13 +226,13 @@ export default function Dashboard() {
               <div>
                 <h3 className="text-sm font-medium text-gray-700 mb-2">Réseaux sociaux</h3>
                 <div className="space-y-1">
-                  {config.socialMedia?.telegram && (
-                    <p className="text-sm text-gray-600">📱 Telegram: {config.socialMedia.telegram}</p>
-                  )}
-                  {config.socialMedia?.whatsapp && (
-                    <p className="text-sm text-gray-600">💬 WhatsApp: {config.socialMedia.whatsapp}</p>
-                  )}
-                  {!config.socialMedia?.telegram && !config.socialMedia?.whatsapp && (
+                  {config.socialMedia && Array.isArray(config.socialMedia) && config.socialMedia.length > 0 ? (
+                    config.socialMedia.map((social, index) => (
+                      <p key={index} className="text-sm text-gray-600">
+                        {social.emoji} {social.name}: {social.url}
+                      </p>
+                    ))
+                  ) : (
                     <p className="text-sm text-gray-500">Aucun réseau configuré</p>
                   )}
                 </div>

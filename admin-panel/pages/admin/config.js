@@ -6,6 +6,7 @@ import { simpleApi } from '../../lib/api-simple'
 import Layout from '../../components/Layout'
 
 export default function ConfigurationSimple() {
+  const [error, setError] = useState(null)
   const [config, setConfig] = useState({
     // Configuration Boutique
     boutique: {
@@ -101,13 +102,25 @@ export default function ConfigurationSimple() {
               content: data.buttons?.info?.content || 'Voici les informations importantes'
             }
           },
-          socialMedia: data.socialMedia || []
+          socialMedia: Array.isArray(data.socialMedia) 
+            ? data.socialMedia 
+            : data.socialMedia && typeof data.socialMedia === 'object'
+              ? Object.entries(data.socialMedia)
+                  .filter(([key, value]) => value && value.trim())
+                  .map(([key, value]) => ({
+                    name: key === 'telegram' ? 'Telegram' : key === 'whatsapp' ? 'WhatsApp' : key,
+                    emoji: key === 'telegram' ? '📱' : key === 'whatsapp' ? '💬' : '🌐',
+                    url: value
+                  }))
+              : []
         })
         
         console.log('✅ Configuration chargée')
         toast.success('Configuration chargée')
+        setError(null) // Réinitialiser l'erreur en cas de succès
     } catch (error) {
       console.error('❌ Erreur:', error)
+      setError('Erreur lors du chargement de la configuration')
       toast.error('Erreur de chargement')
     } finally {
       setLoading(false)
@@ -178,16 +191,20 @@ export default function ConfigurationSimple() {
   const updateSocialMedia = (index, field, value) => {
     setConfig(prev => ({
       ...prev,
-      socialMedia: prev.socialMedia.map((item, i) => 
-        i === index ? { ...item, [field]: value } : item
-      )
+      socialMedia: Array.isArray(prev.socialMedia) 
+        ? prev.socialMedia.map((item, i) => 
+            i === index ? { ...item, [field]: value } : item
+          )
+        : []
     }))
   }
 
   const removeSocialMedia = (index) => {
     setConfig(prev => ({
       ...prev,
-      socialMedia: prev.socialMedia.filter((_, i) => i !== index)
+      socialMedia: Array.isArray(prev.socialMedia) 
+        ? prev.socialMedia.filter((_, i) => i !== index)
+        : []
     }))
   }
 
@@ -200,6 +217,29 @@ export default function ConfigurationSimple() {
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
             <p className="mt-4 text-gray-600">Chargement...</p>
+          </div>
+        </div>
+      </Layout>
+    )
+  }
+
+  if (error) {
+    return (
+      <Layout title="Configuration">
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <div className="text-red-500 text-xl mb-4">⚠️</div>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">Erreur</h3>
+            <p className="text-gray-600 mb-4">{error}</p>
+            <button
+              onClick={() => {
+                setError(null)
+                fetchConfig()
+              }}
+              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
+            >
+              Réessayer
+            </button>
           </div>
         </div>
       </Layout>
@@ -525,7 +565,7 @@ export default function ConfigurationSimple() {
                 </div>
                 
                 <div className="space-y-4">
-                  {config.socialMedia.length === 0 ? (
+                  {!Array.isArray(config.socialMedia) || config.socialMedia.length === 0 ? (
                     <p className="text-sm text-gray-500 italic">
                       Aucun réseau social configuré. Cliquez sur "Ajouter" pour en créer un.
                     </p>
