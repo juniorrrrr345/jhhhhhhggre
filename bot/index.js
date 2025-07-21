@@ -572,14 +572,15 @@ app.put('/api/config', authenticateAdmin, async (req, res) => {
     delete cleanConfigData.__v;
     delete cleanConfigData.createdAt;
     
-    // Forcer une nouvelle date de mise à jour
-    cleanConfigData.updatedAt = new Date();
-    
     // Nettoyer les données undefined/null de manière récursive
     const cleanRecursive = (obj) => {
       if (Array.isArray(obj)) {
         return obj.map(cleanRecursive).filter(item => item !== null && item !== undefined);
       } else if (obj !== null && typeof obj === 'object') {
+        // Gérer les dates spécialement
+        if (obj instanceof Date) {
+          return obj;
+        }
         const cleanedObj = {};
         Object.keys(obj).forEach(key => {
           const value = cleanRecursive(obj[key]);
@@ -593,6 +594,10 @@ app.put('/api/config', authenticateAdmin, async (req, res) => {
     };
     
     const finalData = cleanRecursive(cleanConfigData);
+    
+    // Forcer une nouvelle date de mise à jour APRÈS le nettoyage
+    finalData.updatedAt = new Date();
+    
     console.log('📝 Données après nettoyage:', Object.keys(finalData));
     
     // CORRECTION: Meilleure gestion de la création/mise à jour

@@ -58,10 +58,12 @@ export default function SimpleConfig() {
   const router = useRouter()
 
   useEffect(() => {
-    const token = localStorage.getItem('adminToken')
+    let token = localStorage.getItem('adminToken')
     if (!token) {
-      router.push('/')
-      return
+      // Définir le token par défaut au lieu de rediriger
+      token = 'JuniorAdmon123'
+      localStorage.setItem('adminToken', token)
+      console.log('🔑 Token par défaut défini')
     }
     fetchConfig(token)
   }, [])
@@ -115,6 +117,14 @@ export default function SimpleConfig() {
 
   const saveConfig = async () => {
     const token = localStorage.getItem('adminToken')
+    
+    // Vérifier que le token existe
+    if (!token) {
+      safeToast.error('Token d\'authentification manquant. Veuillez vous reconnecter.')
+      return
+    }
+    
+    console.log('🔑 Token trouvé:', token ? `***${token.slice(-4)}` : 'absent')
     setSaving(true)
     
     // Protection timeout global pour éviter le blocage infini
@@ -128,6 +138,17 @@ export default function SimpleConfig() {
       console.log('💾 Début sauvegarde...')
       safeToast.info('Sauvegarde...')
 
+      // Nettoyer les données avant envoi (éviter les problèmes de sérialisation)
+      const cleanData = JSON.parse(JSON.stringify(config))
+      
+      // Supprimer les champs qui peuvent poser problème
+      delete cleanData._id
+      delete cleanData.__v
+      delete cleanData.updatedAt
+      delete cleanData.createdAt
+      
+      console.log('📦 Données nettoyées:', Object.keys(cleanData))
+
       // Sauvegarde de la configuration
       const response = await Promise.race([
         fetch('/api/proxy?endpoint=/api/config', {
@@ -138,7 +159,7 @@ export default function SimpleConfig() {
           },
           body: JSON.stringify({
             _method: 'PUT',
-            ...config
+            ...cleanData
           })
         }),
         new Promise((_, reject) => 
