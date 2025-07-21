@@ -7,7 +7,7 @@
 
 require('dotenv').config();
 const mongoose = require('mongoose');
-const Plug = require('./src/models/Plug');
+const Plug = require('../src/models/Plug');
 
 async function fixLikesSystem() {
   console.log('🔧 Correction du système de likes...\n');
