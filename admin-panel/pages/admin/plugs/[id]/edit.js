@@ -46,6 +46,7 @@ export default function EditPlug() {
       return
     }
     if (id) {
+      console.log('🚀 Démarrage chargement avec ID:', id, 'Type:', typeof id)
       loadPlug()
     }
   }, [id])
@@ -55,53 +56,154 @@ export default function EditPlug() {
       const token = localStorage.getItem('adminToken')
       const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://jhhhhhhggre.onrender.com'
       
+      console.log('🔍 Chargement du plug ID:', id)
+      console.log('🔗 API URL:', apiBaseUrl)
+      console.log('🔑 Token présent:', !!token)
+      
+      if (!token) {
+        console.error('❌ Aucun token d\'authentification')
+        toast.error('Authentification requise')
+        router.push('/')
+        return
+      }
+      
+      if (!id || id === 'undefined' || id === 'null') {
+        console.error('❌ ID invalide:', id)
+        toast.error('ID de plug invalide')
+        return
+      }
+      
       let response
+      let data
+      
+      // Test de connectivité d'abord
       try {
+        console.log('🏥 Test de connectivité...')
+        const healthResponse = await fetch(`${apiBaseUrl}/health`, {
+          method: 'GET',
+          headers: { 'Cache-Control': 'no-cache' }
+        })
+        console.log('🏥 Health check:', healthResponse.status)
+      } catch (healthError) {
+        console.log('❌ Health check échoué:', healthError.message)
+      }
+      
+      // Essai direct d'abord
+      try {
+        console.log('📡 Tentative appel direct...')
         response = await fetch(`${apiBaseUrl}/api/plugs/${id}`, {
+          method: 'GET',
           headers: {
-            'Authorization': `Bearer ${token}`
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+            'Cache-Control': 'no-cache'
           }
         })
+        
+        console.log('📊 Response directe status:', response.status)
+        
+        if (response.ok) {
+          data = await response.json()
+          console.log('✅ Plug chargé directement:', data.name)
+        } else {
+          const errorText = await response.text()
+          console.error('❌ Erreur directe:', response.status, errorText)
+          throw new Error(`Direct call failed: ${response.status}`)
+        }
       } catch (directError) {
-        response = await fetch(`/api/proxy?endpoint=/api/plugs/${id}`, {
-          headers: {
-            'Authorization': `Bearer ${token}`
+        console.log('❌ Appel direct échoué:', directError.message)
+        
+        // Fallback vers proxy
+        try {
+          console.log('📡 Tentative via proxy...')
+          response = await fetch(`/api/proxy?endpoint=/api/plugs/${id}`, {
+            method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            }
+          })
+          
+          console.log('📊 Response proxy status:', response.status)
+          
+          if (response.ok) {
+            data = await response.json()
+            console.log('✅ Plug chargé via proxy:', data.name)
+          } else {
+            const errorText = await response.text()
+            console.error('❌ Erreur proxy:', response.status, errorText)
+            throw new Error(`Proxy call failed: ${response.status}`)
           }
-        })
+        } catch (proxyError) {
+          console.error('❌ Proxy échoué aussi:', proxyError.message)
+          
+          // Dernière tentative : récupérer via la liste des plugs
+          console.log('🔄 Tentative de récupération via liste des plugs...')
+          try {
+            const listResponse = await fetch(`${apiBaseUrl}/api/plugs`, {
+              headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+              }
+            })
+            
+            if (listResponse.ok) {
+              const listData = await listResponse.json()
+              console.log('📋 Liste récupérée, recherche du plug:', id)
+              
+              // Chercher le plug dans la liste
+              const plugs = listData.plugs || listData
+              const foundPlug = plugs.find(p => p._id === id || p.id === id)
+              
+              if (foundPlug) {
+                console.log('✅ Plug trouvé dans la liste:', foundPlug.name)
+                data = foundPlug
+              } else {
+                console.error('❌ Plug non trouvé dans la liste')
+                throw new Error('Plug non trouvé dans la liste')
+              }
+            } else {
+              throw new Error(`Liste failed: ${listResponse.status}`)
+            }
+          } catch (listError) {
+            console.error('❌ Récupération par liste échouée:', listError.message)
+            throw listError
+          }
+        }
       }
 
-      if (response.ok) {
-        const plug = await response.json()
+      if (data) {
+        console.log('🔧 Configuration du formulaire avec:', data)
         setFormData({
-          name: plug.name || '',
-          description: plug.description || '',
-          image: plug.image || '',
-          telegramLink: plug.telegramLink || '',
-          isVip: plug.isVip || false,
-          countries: plug.countries || [],
+          name: data.name || '',
+          description: data.description || '',
+          image: data.image || '',
+          telegramLink: data.telegramLink || '',
+          isVip: data.isVip || false,
+          countries: data.countries || [],
           services: {
             delivery: {
-              enabled: plug.services?.delivery?.enabled || false,
-              description: plug.services?.delivery?.description || ''
+              enabled: data.services?.delivery?.enabled || false,
+              description: data.services?.delivery?.description || ''
             },
             postal: {
-              enabled: plug.services?.postal?.enabled || false,
-              description: plug.services?.postal?.description || ''
+              enabled: data.services?.postal?.enabled || false,
+              description: data.services?.postal?.description || ''
             },
             meetup: {
-              enabled: plug.services?.meetup?.enabled || false,
-              description: plug.services?.meetup?.description || ''
+              enabled: data.services?.meetup?.enabled || false,
+              description: data.services?.meetup?.description || ''
             }
           },
-          socialMedia: Array.isArray(plug.socialMedia) ? plug.socialMedia : []
+          socialMedia: Array.isArray(data.socialMedia) ? data.socialMedia : []
         })
+        console.log('✅ Formulaire configuré avec succès')
       } else {
-        const errorText = await response.text()
-        console.error('Erreur response:', response.status, errorText)
-        toast.error(`Erreur lors du chargement du plug: ${response.status}`)
+        console.error('❌ Aucune donnée reçue')
+        toast.error('Aucune donnée reçue du serveur')
       }
     } catch (error) {
-      console.error('Erreur:', error)
+      console.error('💥 Erreur finale:', error)
       toast.error(`Erreur lors du chargement: ${error.message}`)
     } finally {
       setLoading(false)
