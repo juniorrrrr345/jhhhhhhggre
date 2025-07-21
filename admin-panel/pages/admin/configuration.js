@@ -92,6 +92,27 @@ export default function Configuration() {
         console.log('✅ Config boutique sauvée:', result)
         toast.success('Configuration boutique sauvée !')
         
+        // Envoyer signal de synchronisation à la boutique
+        try {
+          const syncSignal = {
+            timestamp: Date.now(),
+            action: 'boutique_config_updated',
+            config: result
+          }
+          
+          localStorage.setItem('boutique_sync_signal', JSON.stringify(syncSignal))
+          
+          // Déclencher l'événement storage pour notifier les autres onglets
+          window.dispatchEvent(new StorageEvent('storage', {
+            key: 'boutique_sync_signal',
+            newValue: JSON.stringify(syncSignal)
+          }))
+          
+          console.log('📡 Signal de synchronisation envoyé à la boutique')
+        } catch (syncError) {
+          console.error('❌ Erreur envoi signal sync:', syncError)
+        }
+        
         // Forcer le rechargement après un délai
         setTimeout(() => {
           window.location.reload()
@@ -121,6 +142,37 @@ export default function Configuration() {
 
   const testBoutique = () => {
     window.open('/shop', '_blank')
+  }
+
+  const testSynchronisation = async () => {
+    try {
+      // Test de l'API publique
+      const response = await fetch('/api/proxy?endpoint=/api/public/config', {
+        headers: {
+          'Cache-Control': 'no-cache'
+        }
+      })
+      
+      if (response.ok) {
+        const publicConfig = await response.json()
+        console.log('🔍 Config publique récupérée:', publicConfig.boutique)
+        
+        // Comparer avec la config locale
+        const localName = config?.boutique?.name
+        const publicName = publicConfig?.boutique?.name
+        
+        if (localName === publicName) {
+          toast.success('✅ Synchronisation OK ! Nom: ' + localName)
+        } else {
+          toast.error(`❌ Désynchronisé ! Local: "${localName}" vs Public: "${publicName}"`)
+        }
+      } else {
+        toast.error('❌ Erreur test synchronisation')
+      }
+    } catch (error) {
+      console.error('❌ Erreur test sync:', error)
+      toast.error('❌ Erreur de connexion')
+    }
   }
 
   if (loading) {
@@ -169,6 +221,12 @@ export default function Configuration() {
               className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded"
             >
               🏪 Tester Boutique
+            </button>
+            <button
+              onClick={testSynchronisation}
+              className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded"
+            >
+              🔄 Test Sync
             </button>
             <a
               href="/admin/config/boutique-debug"

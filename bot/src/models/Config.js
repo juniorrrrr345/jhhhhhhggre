@@ -148,6 +148,42 @@ const configSchema = new mongoose.Schema({
     }
   },
   
+  // Configuration de la boutique Vercel
+  boutique: {
+    name: {
+      type: String,
+      default: ''
+    },
+    logo: {
+      type: String,
+      default: ''
+    },
+    subtitle: {
+      type: String,
+      default: ''
+    },
+    backgroundImage: {
+      type: String,
+      default: ''
+    },
+    vipTitle: {
+      type: String,
+      default: ''
+    },
+    vipSubtitle: {
+      type: String,
+      default: ''
+    },
+    searchTitle: {
+      type: String,
+      default: ''
+    },
+    searchSubtitle: {
+      type: String,
+      default: ''
+    }
+  },
+  
   updatedAt: {
     type: Date,
     default: Date.now

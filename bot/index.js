@@ -262,6 +262,12 @@ app.get('/api/public/config', async (req, res) => {
     console.log('🔍 Récupération config publique pour la boutique');
     const config = await Config.findById('main');
     
+    console.log('📊 Config récupérée pour boutique:', {
+      boutique: config?.boutique?.name || 'Non défini',
+      logo: config?.boutique?.logo ? 'Défini' : 'Non défini',
+      background: config?.boutique?.backgroundImage ? 'Défini' : 'Non défini'
+    });
+    
     // Ne retourner que les données publiques nécessaires pour la boutique
     const publicConfig = {
       boutique: config?.boutique || {},
@@ -271,7 +277,7 @@ app.get('/api/public/config', async (req, res) => {
       buttons: config?.buttons || {}
     };
     
-    // Headers pour CORS et cache
+    // Headers pour CORS et cache forcé
     res.set({
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Methods': 'GET, OPTIONS',
@@ -341,10 +347,23 @@ app.get('/api/config', authenticateAdmin, async (req, res) => {
 // Mettre à jour la configuration
 app.put('/api/config', authenticateAdmin, async (req, res) => {
   try {
+    console.log('🔧 Mise à jour configuration...', req.body);
+    
     const config = await Config.findByIdAndUpdate('main', req.body, { 
       new: true, 
       upsert: true 
     });
+    
+    console.log('✅ Configuration mise à jour:', config);
+    
+    // Headers anti-cache pour forcer la synchronisation
+    res.set({
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      'Pragma': 'no-cache',
+      'Expires': '0',
+      'Last-Modified': new Date().toUTCString()
+    });
+    
     res.json(config);
   } catch (error) {
     console.error('Erreur mise à jour config:', error);
