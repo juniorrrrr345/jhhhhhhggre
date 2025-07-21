@@ -1,15 +1,144 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import Layout from '../../../components/Layout'
+import Pagination from '../../../components/Pagination'
 import toast from 'react-hot-toast'
 import {
-  PlusIcon,
-  MagnifyingGlassIcon,
   EyeIcon,
   PencilIcon,
+  PlusIcon,
   TrashIcon,
+  FunnelIcon,
+  MagnifyingGlassIcon,
   StarIcon
 } from '@heroicons/react/24/outline'
+
+// Composant card responsive pour mobile
+const PlugCard = ({ plug, onView, onEdit, onToggleStatus, onToggleVip, onDelete }) => (
+  <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 space-y-3">
+    {/* En-tête avec image et nom */}
+    <div className="flex items-start space-x-3">
+      <div className="flex-shrink-0">
+        {plug.image ? (
+          <img
+            src={plug.image}
+            alt={plug.name}
+            className="w-12 h-12 rounded-lg object-cover"
+            onError={(e) => {
+              e.target.style.display = 'none'
+              e.target.nextSibling.style.display = 'block'
+            }}
+          />
+        ) : null}
+        <div className={`w-12 h-12 rounded-lg bg-gray-100 flex items-center justify-center ${plug.image ? 'hidden' : 'block'}`}>
+          <span className="text-xs text-gray-400">IMG</span>
+        </div>
+      </div>
+      
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center space-x-2">
+          <h3 className="text-sm font-semibold text-gray-900 truncate">{plug.name}</h3>
+          {plug.isVip && (
+            <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800">
+              <StarIcon className="w-3 h-3 mr-1" />
+              VIP
+            </span>
+          )}
+        </div>
+        <p className="text-xs text-gray-500 mt-1 line-clamp-2">{plug.description}</p>
+      </div>
+    </div>
+
+    {/* Services et pays */}
+    <div className="space-y-2">
+      {/* Services */}
+      <div className="flex flex-wrap gap-1">
+        {plug.services?.delivery?.enabled && (
+          <span className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">
+            🚚 Livraison
+          </span>
+        )}
+        {plug.services?.postal?.enabled && (
+          <span className="inline-block bg-green-100 text-green-800 text-xs px-2 py-1 rounded">
+            ✈️ Postal
+          </span>
+        )}
+        {plug.services?.meetup?.enabled && (
+          <span className="inline-block bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded">
+            🏠 Meetup
+          </span>
+        )}
+      </div>
+
+      {/* Pays */}
+      {plug.countries && plug.countries.length > 0 && (
+        <div className="text-xs text-gray-500">
+          📍 {plug.countries.slice(0, 2).join(', ')}
+          {plug.countries.length > 2 && ` +${plug.countries.length - 2}`}
+        </div>
+      )}
+    </div>
+
+    {/* Statut et actions */}
+    <div className="flex items-center justify-between pt-2 border-t border-gray-100">
+      <div className="flex items-center space-x-2">
+        <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+          plug.isActive 
+            ? 'bg-green-100 text-green-800' 
+            : 'bg-red-100 text-red-800'
+        }`}>
+          {plug.isActive ? '🟢 Actif' : '🔴 Inactif'}
+        </span>
+      </div>
+
+      <div className="flex items-center space-x-1">
+        <button
+          onClick={() => onView(plug._id)}
+          className="p-1.5 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded"
+          title="Voir"
+        >
+          <EyeIcon className="w-4 h-4" />
+        </button>
+        <button
+          onClick={() => onEdit(plug._id)}
+          className="p-1.5 text-indigo-600 hover:text-indigo-800 hover:bg-indigo-50 rounded"
+          title="Modifier"
+        >
+          <PencilIcon className="w-4 h-4" />
+        </button>
+        <button
+          onClick={() => onToggleStatus(plug._id, plug.isActive)}
+          className={`p-1.5 rounded ${
+            plug.isActive 
+              ? 'text-red-600 hover:text-red-800 hover:bg-red-50' 
+              : 'text-green-600 hover:text-green-800 hover:bg-green-50'
+          }`}
+          title={plug.isActive ? 'Désactiver' : 'Activer'}
+        >
+          {plug.isActive ? '⏸️' : '▶️'}
+        </button>
+        <button
+          onClick={() => onToggleVip(plug._id, plug.isVip)}
+          className={`p-1.5 rounded ${
+            plug.isVip 
+              ? 'text-yellow-600 hover:text-yellow-800 hover:bg-yellow-50' 
+              : 'text-gray-400 hover:text-yellow-600 hover:bg-yellow-50'
+          }`}
+          title={plug.isVip ? 'Retirer VIP' : 'Marquer VIP'}
+        >
+          <StarIcon className="w-4 h-4" />
+        </button>
+        <button
+          onClick={() => onDelete(plug)}
+          className="p-1.5 text-red-600 hover:text-red-800 hover:bg-red-50 rounded"
+          title="Supprimer"
+        >
+          <TrashIcon className="w-4 h-4" />
+        </button>
+      </div>
+    </div>
+  </div>
+)
 
 export default function PlugsManagement() {
   const [plugs, setPlugs] = useState([])
