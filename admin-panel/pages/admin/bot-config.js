@@ -55,11 +55,17 @@ export default function BotConfiguration() {
       console.log('🔄 Chargement configuration bot...')
       
       const token = localStorage.getItem('adminToken')
-      const response = await fetch('/api/proxy?endpoint=/api/config', {
+      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || process.env.API_BASE_URL
+      const response = await fetch(`${apiBaseUrl}/api/proxy`, {
+        method: 'POST',
         headers: { 
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
-        }
+        },
+        body: JSON.stringify({
+          endpoint: '/admin/config',
+          method: 'GET'
+        })
       })
 
       if (response.ok) {
@@ -107,16 +113,21 @@ export default function BotConfiguration() {
       console.log('💾 Sauvegarde configuration bot...')
       
       const token = localStorage.getItem('adminToken')
-      const response = await fetch('/api/proxy?endpoint=/api/config', {
-        method: 'PUT',
+      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || process.env.API_BASE_URL
+      const response = await fetch(`${apiBaseUrl}/api/proxy`, {
+        method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          welcome: config.welcome,
-          buttons: config.buttons,
-          socialMedia: config.socialMedia
+          endpoint: '/admin/config',
+          method: 'PUT',
+          data: {
+            welcome: config.welcome,
+            buttons: config.buttons,
+            socialMedia: config.socialMedia
+          }
         })
       })
 
@@ -183,15 +194,20 @@ export default function BotConfiguration() {
     setStats({ sent: 0, failed: 0, total: 0 })
 
     try {
-      const response = await fetch('/api/proxy?endpoint=/api/broadcast', {
+      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || process.env.API_BASE_URL
+      const response = await fetch(`${apiBaseUrl}/api/proxy`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          message: message.trim(),
-          image: image.trim() || null
+          endpoint: '/admin/broadcast',
+          method: 'POST',
+          data: {
+            message: message.trim(),
+            image: image.trim() || null
+          }
         })
       })
 

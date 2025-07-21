@@ -26,15 +26,20 @@ export default function BroadcastMessages() {
     setStats({ sent: 0, failed: 0, total: 0 })
 
     try {
-      const response = await fetch('/api/proxy?endpoint=/api/broadcast', {
+      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || process.env.API_BASE_URL
+      const response = await fetch(`${apiBaseUrl}/api/proxy`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          message: message.trim(),
-          image: image.trim() || null
+          endpoint: '/admin/broadcast',
+          method: 'POST',
+          data: {
+            message: message.trim(),
+            image: image.trim() || null
+          }
         })
       })
 

@@ -61,11 +61,17 @@ export default function ShopHome() {
 
   const fetchPlugs = async () => {
     try {
-      const response = await fetch('/api/proxy?endpoint=/api/public/plugs&limit=50', {
-        method: 'GET',
+      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || process.env.API_BASE_URL
+      const response = await fetch(`${apiBaseUrl}/api/proxy`, {
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json'
-        }
+        },
+        body: JSON.stringify({
+          endpoint: '/api/public/plugs',
+          method: 'GET',
+          params: { limit: 50 }
+        })
       })
       
       if (response.ok) {

@@ -669,23 +669,7 @@ export default function ShopPlugDetail() {
             </div>
           )}
 
-          {/* Bouton retour */}
-          <div style={{ textAlign: 'center', marginTop: '32px' }}>
-            <Link 
-              href="/shop" 
-              style={{ 
-                display: 'inline-block',
-                padding: '12px 24px',
-                backgroundColor: '#007AFF',
-                color: '#ffffff',
-                textDecoration: 'none',
-                borderRadius: '8px',
-                fontWeight: '500'
-              }}
-            >
-              ← Retour aux boutiques
-            </Link>
-          </div>
+
         </main>
 
         {/* Navigation en bas */}
