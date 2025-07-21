@@ -270,46 +270,90 @@ export default function EditPlug() {
       return
     }
 
+    console.log('💾 Début de la sauvegarde...')
+    console.log('📝 Données à sauvegarder:', formData)
+    
     setSaving(true)
     
     try {
       const token = localStorage.getItem('adminToken')
       const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://jhhhhhhggre.onrender.com'
       
+      console.log('🔑 Token présent:', !!token)
+      console.log('🔗 API URL:', apiBaseUrl)
+      console.log('🆔 ID du plug:', id)
+      
       let response
+      let data
+      
+      // Tentative directe d'abord
       try {
+        console.log('📡 Tentative sauvegarde directe...')
         response = await fetch(`${apiBaseUrl}/api/plugs/${id}`, {
           method: 'PUT',
           headers: {
             'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Cache-Control': 'no-cache'
           },
           body: JSON.stringify(formData)
         })
+        
+        console.log('📊 Response directe status:', response.status)
+        
+        if (response.ok) {
+          data = await response.json()
+          console.log('✅ Sauvegarde directe réussie:', data)
+        } else {
+          const errorText = await response.text()
+          console.error('❌ Erreur directe:', response.status, errorText)
+          throw new Error(`Direct save failed: ${response.status}`)
+        }
       } catch (directError) {
-        response = await fetch(`/api/proxy?endpoint=/api/plugs/${id}`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            _method: 'PUT',
-            ...formData
+        console.log('❌ Sauvegarde directe échouée:', directError.message)
+        
+        // Fallback vers proxy avec méthode POST et _method
+        try {
+          console.log('📡 Tentative sauvegarde via proxy...')
+          response = await fetch(`/api/proxy?endpoint=/api/plugs/${id}`, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              _method: 'PUT',
+              ...formData
+            })
           })
-        })
+          
+          console.log('📊 Response proxy status:', response.status)
+          
+          if (response.ok) {
+            data = await response.json()
+            console.log('✅ Sauvegarde proxy réussie:', data)
+          } else {
+            const errorText = await response.text()
+            console.error('❌ Erreur proxy:', response.status, errorText)
+            throw new Error(`Proxy save failed: ${response.status}`)
+          }
+        } catch (proxyError) {
+          console.error('❌ Sauvegarde proxy échouée:', proxyError.message)
+          throw proxyError
+        }
       }
 
-      if (response.ok) {
+      if (data || response.ok) {
+        console.log('✅ Sauvegarde réussie!')
         toast.success('Plug modifié avec succès !')
         router.push('/admin/plugs')
       } else {
-        const error = await response.json()
-        toast.error(error.error || 'Erreur lors de la modification')
+        console.error('❌ Aucune confirmation de sauvegarde')
+        toast.error('Erreur: Aucune confirmation de sauvegarde')
       }
     } catch (error) {
-      console.error('Erreur:', error)
-      toast.error('Erreur lors de la modification')
+      console.error('💥 Erreur finale sauvegarde:', error)
+      toast.error(`Erreur lors de la modification: ${error.message}`)
     } finally {
       setSaving(false)
     }
