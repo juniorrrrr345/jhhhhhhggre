@@ -60,9 +60,17 @@ export default function Debug() {
     // Test 4: Proxy - Health check
     try {
       console.log('🔄 Test Proxy - Health check')
-      const proxyHealthResponse = await fetch('/api/proxy?endpoint=/health', {
-        method: 'GET',
-        headers: { 'Cache-Control': 'no-cache' }
+      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || process.env.API_BASE_URL
+      const proxyHealthResponse = await fetch(`${apiBaseUrl}/api/proxy`, {
+        method: 'POST',
+        headers: { 
+          'Cache-Control': 'no-cache',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          endpoint: '/health',
+          method: 'GET'
+        })
       })
       
       testResults.healthProxy = {
@@ -79,9 +87,16 @@ export default function Debug() {
     // Test 5: Proxy - Config (sans auth)
     try {
       console.log('🔄 Test Proxy - Config (sans auth)')
-      const proxyConfigResponse = await fetch('/api/proxy?endpoint=/api/public/config', {
-        method: 'GET',
-        headers: { 'Cache-Control': 'no-cache' }
+      const proxyConfigResponse = await fetch(`${apiBaseUrl}/api/proxy`, {
+        method: 'POST',
+        headers: { 
+          'Cache-Control': 'no-cache',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          endpoint: '/api/public/config',
+          method: 'GET'
+        })
       })
       
       testResults.configProxy = {

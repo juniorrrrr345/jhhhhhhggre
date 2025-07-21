@@ -37,8 +37,17 @@ export default function Dashboard() {
       console.log('🔍 Fetching dashboard data from:', apiBaseUrl)
       
       // Récupérer les stats des plugs
-      const plugsResponse = await fetch(`${apiBaseUrl}/api/plugs?limit=1000`, {
-        headers: { 'Authorization': `Bearer ${token}` }
+      const plugsResponse = await fetch(`${apiBaseUrl}/api/proxy`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          endpoint: '/admin/plugs',
+          method: 'GET',
+          params: { limit: 1000 }
+        })
       })
       
       console.log('📊 Plugs response status:', plugsResponse.status)
@@ -57,8 +66,16 @@ export default function Dashboard() {
       }
 
       // Récupérer la config
-      const configResponse = await fetch(`${apiBaseUrl}/api/config`, {
-        headers: { 'Authorization': `Bearer ${token}` }
+      const configResponse = await fetch(`${apiBaseUrl}/api/proxy`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          endpoint: '/admin/config',
+          method: 'GET'
+        })
       })
       
       console.log('⚙️ Config response status:', configResponse.status)

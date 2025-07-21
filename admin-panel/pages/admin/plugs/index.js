@@ -54,15 +54,24 @@ export default function AccueilAdmin() {
 
   const fetchPlugs = async (token) => {
     try {
-      const params = new URLSearchParams({
-        page: currentPage,
-        limit: 6, // Moins de plugs pour l'accueil
-        search,
-        filter
-      })
+      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || process.env.API_BASE_URL
 
-      const response = await fetch(`/api/proxy?endpoint=/api/plugs&${params}`, {
-        headers: { 'Authorization': `Bearer ${token}` }
+      const response = await fetch(`${apiBaseUrl}/api/proxy`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          endpoint: '/admin/plugs',
+          method: 'GET',
+          params: {
+            page: currentPage,
+            limit: 6,
+            search,
+            filter
+          }
+        })
       })
 
       if (response.ok) {
@@ -99,9 +108,18 @@ export default function AccueilAdmin() {
 
     try {
       const token = localStorage.getItem('adminToken')
-      const response = await fetch(`/api/proxy?endpoint=/api/plugs/${id}`, {
-        method: 'DELETE',
-        headers: { 'Authorization': `Bearer ${token}` }
+      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || process.env.API_BASE_URL
+      
+      const response = await fetch(`${apiBaseUrl}/api/proxy`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          endpoint: `/admin/plugs/${id}`,
+          method: 'DELETE'
+        })
       })
 
       if (response.ok) {

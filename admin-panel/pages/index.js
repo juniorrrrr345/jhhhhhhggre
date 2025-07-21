@@ -76,13 +76,18 @@ export default function Login() {
         
         // Fallback vers le proxy
         try {
-          const proxyResponse = await fetch('/api/proxy?endpoint=/api/config', {
-            method: 'GET',
+          const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || process.env.API_BASE_URL
+          const proxyResponse = await fetch(`${apiBaseUrl}/api/proxy`, {
+            method: 'POST',
             headers: {
               'Authorization': `Bearer ${password}`,
               'Cache-Control': 'no-cache',
               'Content-Type': 'application/json'
-            }
+            },
+            body: JSON.stringify({
+              endpoint: '/admin/config',
+              method: 'GET'
+            })
           });
 
           console.log('📡 Proxy response status:', proxyResponse.status);
