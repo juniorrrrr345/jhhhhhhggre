@@ -333,10 +333,10 @@ export default function ShopPlugDetail() {
                   </div>
                 )}
                 
-                {/* VIP Badge */}
+                {/* VIP Badge amélioré */}
                 {plug.isVip && (
                   <div className="absolute top-4 right-4">
-                    <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-bold bg-yellow-500" style={{ color: 'white' }}>
+                    <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-bold bg-yellow-500 text-white shadow-lg">
                       <StarIcon className="w-4 h-4 mr-2" />
                       VIP
                     </span>

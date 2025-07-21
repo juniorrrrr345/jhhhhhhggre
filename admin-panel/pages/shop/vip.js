@@ -355,9 +355,9 @@ export default function ShopVIP() {
                             </div>
                           )}
                           
-                          {/* VIP Badge - Always shown for VIP page */}
+                          {/* VIP Badge amélioré - Always shown for VIP page */}
                           <div className="absolute top-2 right-2">
-                            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-bold bg-yellow-500" style={{ color: 'white' }}>
+                            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-bold bg-yellow-500 text-white shadow-lg">
                               <StarIcon className="w-3 h-3 mr-1" />
                               VIP
                             </span>

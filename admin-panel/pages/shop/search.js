@@ -501,13 +501,12 @@ export default function ShopSearch() {
                             </div>
                           )}
                           
-                          {/* VIP Badge */}
+                          {/* VIP Badge amélioré */}
                           {plug.isVip && (
-                            <div className="absolute top-1 right-1 sm:top-2 sm:right-2">
-                              <span className="inline-flex items-center px-1 py-0.5 sm:px-2 sm:py-1 rounded-full text-xs font-bold bg-yellow-500" style={{ color: 'white' }}>
-                                <StarIcon className="w-2 h-2 sm:w-3 sm:h-3 mr-0.5 sm:mr-1" />
-                                <span className="hidden sm:inline">VIP</span>
-                                <span className="sm:hidden text-xs">V</span>
+                            <div className="absolute top-2 right-2">
+                              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-bold bg-yellow-500 text-white shadow-lg">
+                                <StarIcon className="w-3 h-3 mr-1" />
+                                VIP
                               </span>
                             </div>
                           )}

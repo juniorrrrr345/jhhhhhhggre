@@ -195,6 +195,16 @@ export default function ShopHome() {
       })
 
       console.log('🔌 Plugs chargés:', sortedPlugs.length, 'boutiques')
+      
+      // Diagnostic des images
+      sortedPlugs.forEach((plug, index) => {
+        if (plug.image) {
+          console.log(`📸 Plug ${index} "${plug.name}": ${plug.image}`)
+        } else {
+          console.log(`❌ Plug ${index} "${plug.name}": PAS D'IMAGE`)
+        }
+      })
+      
       setPlugs(sortedPlugs)
     } catch (error) {
       console.error('❌ Erreur chargement plugs:', error)
@@ -341,15 +351,34 @@ export default function ShopHome() {
                       style={{ textDecoration: 'none', color: 'inherit' }}
                     >
                       <div className="shop-card bg-gray-800 border border-gray-700 rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-shadow duration-300 w-full">
-                        {/* Image simplifiée - comme dans le bot */}
+                        {/* Image avec gestion d'erreur simple */}
                         <div className="relative h-32 sm:h-40 md:h-48 bg-gray-900 overflow-hidden">
                           {plug.image && plug.image.trim() !== '' ? (
-                            <img
-                              src={plug.image}
-                              alt={plug.name || 'Boutique'}
-                              className="w-full h-full object-cover"
-                              loading="lazy"
-                            />
+                            <>
+                              <img
+                                src={plug.image}
+                                alt={plug.name || 'Boutique'}
+                                className="w-full h-full object-cover"
+                                loading="lazy"
+                                onError={(e) => {
+                                  console.log('❌ Erreur chargement image:', plug.image);
+                                  e.target.style.display = 'none';
+                                  e.target.nextElementSibling.style.display = 'flex';
+                                }}
+                                onLoad={() => {
+                                  console.log('✅ Image chargée:', plug.image);
+                                }}
+                              />
+                              <div 
+                                className="hidden absolute inset-0 items-center justify-center bg-gray-900"
+                                style={{ display: 'none' }}
+                              >
+                                <div className="text-center">
+                                  <GlobeAltIcon className="w-8 h-8 sm:w-12 sm:h-12 text-gray-600 mx-auto mb-1" />
+                                  <p className="text-gray-500 text-xs">Image non disponible</p>
+                                </div>
+                              </div>
+                            </>
                           ) : (
                             <div className="absolute inset-0 flex items-center justify-center bg-gray-900">
                               <div className="text-center">
@@ -359,13 +388,12 @@ export default function ShopHome() {
                             </div>
                           )}
                           
-                          {/* VIP Badge */}
+                          {/* VIP Badge amélioré */}
                           {plug.isVip && (
-                            <div className="absolute top-1 right-1 sm:top-2 sm:right-2">
-                              <span className="inline-flex items-center px-1 py-0.5 sm:px-2 sm:py-1 rounded-full text-xs font-bold bg-yellow-500" style={{ color: 'white' }}>
-                                <StarIcon className="w-2 h-2 sm:w-3 sm:h-3 mr-0.5 sm:mr-1" />
-                                <span className="hidden sm:inline">VIP</span>
-                                <span className="sm:hidden text-xs">V</span>
+                            <div className="absolute top-2 right-2">
+                              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-bold bg-yellow-500 text-white shadow-lg">
+                                <StarIcon className="w-3 h-3 mr-1" />
+                                VIP
                               </span>
                             </div>
                           )}
