@@ -151,8 +151,44 @@ export default function ConfigurationSimple() {
             method: 'POST',
             headers: { 'Authorization': `Bearer ${token}` }
           })
+          console.log('✅ Cache rafraîchi')
         } catch (e) {
           console.log('Cache refresh ignoré')
+        }
+
+        // Signal de synchronisation pour la boutique
+        try {
+          localStorage.setItem('global_sync_signal', Date.now().toString())
+          localStorage.setItem('boutique_sync_signal', Date.now().toString())
+          
+          // Déclencher les événements storage pour les autres onglets
+          window.dispatchEvent(new StorageEvent('storage', {
+            key: 'global_sync_signal',
+            newValue: Date.now().toString()
+          }))
+          
+          console.log('🔄 Signal de synchronisation envoyé')
+          
+          // Forcer la mise à jour de la boutique via l'API
+          const refreshUrl = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/refresh-shop-cache`
+          fetch(refreshUrl, { 
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+          }).catch(() => console.log('⚠️ Refresh shop cache ignored'))
+
+          // Délai pour laisser le temps au serveur de se mettre à jour
+          setTimeout(() => {
+            // Ouvrir la boutique dans un nouvel onglet pour vérifier
+            const shopWindow = window.open('/shop', 'shop_window')
+            if (shopWindow) {
+              setTimeout(() => {
+                shopWindow.location.reload(true) // Force reload
+              }, 1000)
+            }
+          }, 2000)
+          
+        } catch (syncError) {
+          console.log('⚠️ Erreur sync signal:', syncError)
         }
         
       } else {
@@ -549,16 +585,33 @@ export default function ConfigurationSimple() {
 
                 <div className="mt-4 flex justify-center space-x-4">
                   <button
-                    onClick={() => window.open('/shop', '_blank')}
+                    onClick={() => {
+                      // Forcer la synchronisation avant d'ouvrir
+                      localStorage.setItem('global_sync_signal', Date.now().toString())
+                      setTimeout(() => {
+                        window.open('/shop', '_blank')
+                      }, 500)
+                    }}
                     className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
                   >
-                    🔗 Ouvrir la boutique
+                    🔗 Tester la boutique
                   </button>
                   <button
                     onClick={() => router.push('/admin/broadcast')}
                     className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
                   >
                     📢 Messages diffusion
+                  </button>
+                  <button
+                    onClick={() => {
+                      // Tester la synchronisation
+                      localStorage.setItem('global_sync_signal', Date.now().toString())
+                      toast.success('🔄 Signal de sync envoyé !')
+                      console.log('🧪 Test synchronisation déclenché')
+                    }}
+                    className="inline-flex items-center px-4 py-2 border border-blue-300 shadow-sm text-sm font-medium rounded-md text-blue-700 bg-blue-50 hover:bg-blue-100"
+                  >
+                    🧪 Tester sync
                   </button>
                 </div>
               </div>

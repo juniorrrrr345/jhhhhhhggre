@@ -878,6 +878,84 @@ app.put('/api/config', authenticateAdmin, async (req, res) => {
   }
 });
 
+// 🔄 Endpoint pour forcer le refresh du cache boutique
+app.post('/api/refresh-shop-cache', async (req, res) => {
+  try {
+    console.log('🔄 Demande de refresh cache boutique reçue');
+    
+    // Invalider tous les caches
+    configCache = null;
+    lastConfigUpdate = 0;
+    
+    // Forcer le rechargement de la configuration
+    await reloadBotConfig();
+    
+    // Répondre avec un timestamp de mise à jour
+    res.json({
+      success: true,
+      timestamp: Date.now(),
+      message: 'Cache boutique rafraîchi avec succès'
+    });
+    
+    console.log('✅ Cache boutique rafraîchi');
+  } catch (error) {
+    console.error('❌ Erreur refresh cache:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+// 🔄 Endpoint public pour vérifier la configuration avec timestamp
+app.get('/api/public/config/fresh', async (req, res) => {
+  try {
+    // Forcer rechargement sans cache
+    configCache = null;
+    
+    let config = await Config.findById('main');
+    
+    if (!config) {
+      config = await Config.create({
+        _id: 'main',
+        boutique: { name: 'PlugsFinder Bot' },
+        interface: {
+          title: 'PLUGS FINDER',
+          tagline1: 'JUSTE UNE',
+          taglineHighlight: 'MINI-APP TELEGRAM',
+          tagline2: 'CHILL',
+          backgroundImage: ''
+        }
+      });
+    }
+
+    const publicConfig = {
+      boutique: config?.boutique || {},
+      interface: config?.interface || {},
+      welcome: config?.welcome || {},
+      socialMedia: config?.socialMedia || {},
+      messages: config?.messages || {},
+      buttons: config?.buttons || {},
+      _timestamp: Date.now(),
+      _fresh: true
+    };
+
+    // Headers anti-cache
+    res.set({
+      'Cache-Control': 'no-cache, no-store, must-revalidate, max-age=0',
+      'Pragma': 'no-cache',
+      'Expires': '0',
+      'X-Fresh-Config': 'true',
+      'X-Timestamp': Date.now().toString()
+    });
+
+    res.json(publicConfig);
+  } catch (error) {
+    console.error('❌ Erreur config fresh:', error);
+    res.status(500).json({ error: 'Erreur serveur' });
+  }
+});
+
 // ===== ROUTES RÉSEAUX SOCIAUX DU MESSAGE D'ACCUEIL =====
 
 // Récupérer les réseaux sociaux du message d'accueil

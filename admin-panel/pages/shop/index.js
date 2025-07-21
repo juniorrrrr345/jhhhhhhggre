@@ -27,7 +27,7 @@ export default function ShopHome() {
       if (event?.key === 'boutique_sync_signal' || event?.key === 'global_sync_signal') {
         console.log('🔄 Signal de synchronisation reçu:', event.key)
         setTimeout(() => {
-          fetchConfig()
+          fetchConfigFresh()
           fetchPlugs()
         }, 500)
         if (typeof toast !== 'undefined') {
@@ -41,14 +41,14 @@ export default function ShopHome() {
 
     const handleFocus = () => {
       console.log('👁️ Fenêtre focus - rafraîchissement des données')
-      fetchConfig()
+      fetchConfigFresh()
       fetchPlugs()
     }
 
     const handleVisibilityChange = () => {
       if (!document.hidden) {
         console.log('👁️ Page visible - vérification des mises à jour')
-        fetchConfig()
+        fetchConfigFresh()
         fetchPlugs()
       }
     }
@@ -56,6 +56,11 @@ export default function ShopHome() {
     window.addEventListener('storage', handleStorageChange)
     window.addEventListener('focus', handleFocus)
     document.addEventListener('visibilitychange', handleVisibilityChange)
+    
+    // Force reload initial après un court délai
+    setTimeout(() => {
+      fetchConfigFresh()
+    }, 1000)
     
     return () => {
       clearInterval(interval)
@@ -72,7 +77,7 @@ export default function ShopHome() {
       
       let data
       try {
-        const directResponse = await fetch(`${apiBaseUrl}/api/public/config?t=${timestamp}`, {
+        const directResponse = await fetch(`${apiBaseUrl}/api/public/config?t=${timestamp}&force=true`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -84,6 +89,10 @@ export default function ShopHome() {
         
         if (directResponse.ok) {
           data = await directResponse.json()
+          console.log('✅ Config direct:', {
+            interface: !!data.interface,
+            title: data.interface?.title
+          })
         } else {
           throw new Error(`Direct config failed: HTTP ${directResponse.status}`)
         }
@@ -91,7 +100,7 @@ export default function ShopHome() {
         console.log('❌ Config directe échouée:', directError.message)
         
         try {
-          const proxyResponse = await fetch(`/api/proxy?endpoint=/api/public/config&t=${new Date().getTime()}`, {
+          const proxyResponse = await fetch(`/api/proxy?endpoint=/api/public/config&t=${timestamp}&force=true`, {
             method: 'GET',
             headers: {
               'Content-Type': 'application/json',
@@ -104,6 +113,10 @@ export default function ShopHome() {
           }
           
           data = await proxyResponse.json()
+          console.log('✅ Config proxy:', {
+            interface: !!data.interface,
+            title: data.interface?.title
+          })
         } catch (proxyError) {
           console.log('❌ Config proxy échouée:', proxyError.message)
           throw proxyError
@@ -111,11 +124,102 @@ export default function ShopHome() {
       }
 
       setConfig(data)
+      console.log('🎨 Configuration interface mise à jour:', {
+        title: data.interface?.title,
+        tagline1: data.interface?.tagline1,
+        backgroundImage: !!data.interface?.backgroundImage
+      })
     } catch (error) {
       console.error('❌ Erreur chargement config:', error)
       toast.error('Erreur de connexion')
     } finally {
       setInitialLoading(false)
+    }
+  }
+
+  const fetchConfigFresh = async () => {
+    try {
+      console.log('🔄 Rechargement forcé de la configuration...')
+      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
+      const timestamp = Date.now()
+      
+      let data
+      try {
+        // Force un reload total avec headers anti-cache
+        const directResponse = await fetch(`${apiBaseUrl}/api/public/config?t=${timestamp}&bust=${Math.random()}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Cache-Control': 'no-cache, no-store, must-revalidate, max-age=0',
+            'Pragma': 'no-cache',
+            'Expires': '0',
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-Force-Refresh': 'true'
+          },
+          cache: 'no-store'
+        })
+        
+        if (directResponse.ok) {
+          data = await directResponse.json()
+          console.log('✅ Config fresh direct:', {
+            interface: !!data.interface,
+            title: data.interface?.title,
+            timestamp: timestamp
+          })
+        } else {
+          throw new Error(`Fresh config failed: HTTP ${directResponse.status}`)
+        }
+      } catch (directError) {
+        console.log('❌ Config fresh directe échouée:', directError.message)
+        
+        try {
+          const proxyResponse = await fetch(`/api/proxy?endpoint=/api/public/config&t=${timestamp}&bust=${Math.random()}`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              'Cache-Control': 'no-cache, no-store, must-revalidate',
+              'X-Force-Refresh': 'true'
+            },
+            cache: 'no-store'
+          })
+          
+          if (!proxyResponse.ok) {
+            throw new Error(`Fresh config proxy failed: HTTP ${proxyResponse.status}`)
+          }
+          
+          data = await proxyResponse.json()
+          console.log('✅ Config fresh proxy:', {
+            interface: !!data.interface,
+            title: data.interface?.title,
+            timestamp: timestamp
+          })
+        } catch (proxyError) {
+          console.log('❌ Config fresh proxy échouée, fallback vers config normale')
+          await fetchConfig()
+          return
+        }
+      }
+
+      setConfig(data)
+      console.log('🎨 Configuration interface FRESH mise à jour:', {
+        title: data.interface?.title,
+        tagline1: data.interface?.tagline1,
+        taglineHighlight: data.interface?.taglineHighlight,
+        tagline2: data.interface?.tagline2,
+        backgroundImage: !!data.interface?.backgroundImage,
+        timestamp: timestamp
+      })
+      
+      if (typeof toast !== 'undefined') {
+        toast.success(`✅ Configuration mise à jour ! (${data.interface?.title})`, {
+          duration: 3000,
+          icon: '✅'
+        })
+      }
+    } catch (error) {
+      console.error('❌ Erreur chargement config fresh:', error)
+      // Fallback vers config normale
+      await fetchConfig()
     }
   }
 
@@ -269,8 +373,23 @@ export default function ShopHome() {
         <div style={{ 
           backgroundColor: '#000000',
           padding: '20px',
-          textAlign: 'center'
+          textAlign: 'center',
+          position: 'relative'
         }}>
+          {config && (
+            <div style={{
+              position: 'absolute',
+              top: '5px',
+              right: '10px',
+              fontSize: '10px',
+              color: '#666',
+              backgroundColor: '#222',
+              padding: '2px 6px',
+              borderRadius: '8px'
+            }}>
+              ✅ Sync {new Date().toLocaleTimeString()}
+            </div>
+          )}
           <h2 style={{ 
             fontSize: '32px', 
             fontWeight: 'bold', 
