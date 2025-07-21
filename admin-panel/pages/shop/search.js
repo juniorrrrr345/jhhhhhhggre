@@ -28,6 +28,55 @@ export default function ShopSearch() {
   useEffect(() => {
     fetchConfig()
     fetchPlugs()
+    
+    // Synchronisation plus fréquente pour une meilleure réactivité
+    const interval = setInterval(() => {
+      fetchConfig()
+      fetchPlugs()
+    }, 15000) // Réduit à 15 secondes
+    
+    const handleStorageChange = (event) => {
+      if (event?.key === 'boutique_sync_signal' || event?.key === 'global_sync_signal') {
+        console.log('🔄 Signal de synchronisation reçu:', event.key)
+        setTimeout(() => {
+          fetchConfig()
+          fetchPlugs()
+        }, 500)
+        if (typeof toast !== 'undefined') {
+          toast.success('🔄 Données synchronisées!', {
+            duration: 2000,
+            icon: '🔄'
+          })
+        }
+      }
+    }
+
+    // Écouteur pour le focus de la fenêtre (rafraîchir quand l'utilisateur revient)
+    const handleFocus = () => {
+      console.log('👁️ Fenêtre focus - rafraîchissement des données recherche')
+      fetchConfig()
+      fetchPlugs()
+    }
+
+    // Écouteur pour détecter les changements de données en temps réel
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        console.log('👁️ Page recherche visible - vérification des mises à jour')
+        fetchConfig()
+        fetchPlugs()
+      }
+    }
+
+    window.addEventListener('storage', handleStorageChange)
+    window.addEventListener('focus', handleFocus)
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    
+    return () => {
+      clearInterval(interval)
+      window.removeEventListener('storage', handleStorageChange)
+      window.removeEventListener('focus', handleFocus)
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
+    }
   }, [])
 
   useEffect(() => {
@@ -245,15 +294,15 @@ export default function ShopSearch() {
                 <Link 
                   href="/shop" 
                   style={{ color: 'white' }}
-                  className="pb-3 flex items-center hover:opacity-75"
+                  className="pb-3 flex items-center hover:opacity-75 border-b-2 border-transparent hover:border-white transition-all"
                 >
                   <span className="mr-1">🏠</span>
                   <span style={{ color: 'white' }}>Accueil</span>
                 </Link>
                 <Link 
                   href="/shop/search" 
-                  style={{ color: 'white', borderColor: 'white' }}
-                  className="font-medium border-b-2 pb-3 flex items-center"
+                  style={{ color: 'white' }}
+                  className="font-medium pb-3 flex items-center hover:opacity-75 border-b-2 border-transparent hover:border-white transition-all"
                 >
                   <span className="mr-1">🔍</span>
                   <span style={{ color: 'white' }}>Recherche</span>
@@ -261,7 +310,7 @@ export default function ShopSearch() {
                 <Link 
                   href="/shop/vip" 
                   style={{ color: 'white' }}
-                  className="pb-3 flex items-center hover:opacity-75"
+                  className="pb-3 flex items-center hover:opacity-75 border-b-2 border-transparent hover:border-white transition-all"
                 >
                   <span className="mr-1">👑</span>
                   <span style={{ color: 'white' }}>VIP</span>
@@ -404,8 +453,8 @@ export default function ShopSearch() {
               </div>
             ) : (
               <>
-                {/* Grille des résultats */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
+                {/* Products Grid - 2 boutiques par ligne */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
                   {currentPlugs.map((plug, index) => (
                     <Link 
                       key={plug._id || index} 

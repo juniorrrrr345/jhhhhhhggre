@@ -22,33 +22,55 @@ export default function ShopVIP() {
 
   useEffect(() => {
     fetchConfig()
-    fetchVipPlugs()
+    fetchPlugs()
     
+    // Synchronisation plus fréquente pour une meilleure réactivité
     const interval = setInterval(() => {
       fetchConfig()
-      fetchVipPlugs()
-    }, 30000)
+      fetchPlugs()
+    }, 15000) // Réduit à 15 secondes
     
     const handleStorageChange = (event) => {
       if (event?.key === 'boutique_sync_signal' || event?.key === 'global_sync_signal') {
-        console.log('🔄 Signal de synchronisation VIP reçu:', event.key)
+        console.log('🔄 Signal de synchronisation reçu:', event.key)
         setTimeout(() => {
           fetchConfig()
-          fetchVipPlugs()
+          fetchPlugs()
         }, 500)
         if (typeof toast !== 'undefined') {
-          toast.success('🔄 Synchronisation VIP...', {
+          toast.success('🔄 Données synchronisées!', {
             duration: 2000,
-            icon: '👑'
+            icon: '🔄'
           })
         }
       }
     }
 
+    // Écouteur pour le focus de la fenêtre (rafraîchir quand l'utilisateur revient)
+    const handleFocus = () => {
+      console.log('👁️ Fenêtre focus - rafraîchissement des données VIP')
+      fetchConfig()
+      fetchPlugs()
+    }
+
+    // Écouteur pour détecter les changements de données en temps réel
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        console.log('👁️ Page VIP visible - vérification des mises à jour')
+        fetchConfig()
+        fetchPlugs()
+      }
+    }
+
     window.addEventListener('storage', handleStorageChange)
+    window.addEventListener('focus', handleFocus)
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    
     return () => {
       clearInterval(interval)
       window.removeEventListener('storage', handleStorageChange)
+      window.removeEventListener('focus', handleFocus)
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
     }
   }, [])
 
@@ -103,7 +125,7 @@ export default function ShopVIP() {
     }
   }
 
-  const fetchVipPlugs = async () => {
+  const fetchPlugs = async () => {
     try {
       const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
       const timestamp = new Date().getTime()
@@ -240,7 +262,7 @@ export default function ShopVIP() {
                 <Link 
                   href="/shop" 
                   style={{ color: 'white' }}
-                  className="pb-3 flex items-center hover:opacity-75"
+                  className="pb-3 flex items-center hover:opacity-75 border-b-2 border-transparent hover:border-white transition-all"
                 >
                   <span className="mr-1">🏠</span>
                   <span style={{ color: 'white' }}>Accueil</span>
@@ -248,15 +270,15 @@ export default function ShopVIP() {
                 <Link 
                   href="/shop/search" 
                   style={{ color: 'white' }}
-                  className="pb-3 flex items-center hover:opacity-75"
+                  className="pb-3 flex items-center hover:opacity-75 border-b-2 border-transparent hover:border-white transition-all"
                 >
                   <span className="mr-1">🔍</span>
                   <span style={{ color: 'white' }}>Recherche</span>
                 </Link>
                 <Link 
                   href="/shop/vip" 
-                  style={{ color: 'white', borderColor: 'white' }}
-                  className="font-medium border-b-2 pb-3 flex items-center"
+                  style={{ color: 'white' }}
+                  className="font-medium pb-3 flex items-center hover:opacity-75 border-b-2 border-transparent hover:border-white transition-all"
                 >
                   <span className="mr-1">👑</span>
                   <span style={{ color: 'white' }}>VIP</span>
@@ -302,8 +324,8 @@ export default function ShopVIP() {
               </div>
             ) : (
               <>
-                {/* Products Grid */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
+                {/* Products Grid - 2 boutiques par ligne */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
                   {currentPlugs.map((plug, index) => (
                     <Link 
                       key={plug._id || index} 
