@@ -167,41 +167,6 @@ export default function ConfigurationSimple() {
         } catch (e) {
           console.log('Cache refresh ignoré')
         }
-
-        // Signal de synchronisation pour la boutique
-        try {
-          localStorage.setItem('global_sync_signal', Date.now().toString())
-          localStorage.setItem('boutique_sync_signal', Date.now().toString())
-          
-          // Déclencher les événements storage pour les autres onglets
-          window.dispatchEvent(new StorageEvent('storage', {
-            key: 'global_sync_signal',
-            newValue: Date.now().toString()
-          }))
-          
-          console.log('🔄 Signal de synchronisation envoyé')
-          
-          // Forcer la mise à jour de la boutique via l'API
-          const refreshUrl = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/refresh-shop-cache`
-          fetch(refreshUrl, { 
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' }
-          }).catch(() => console.log('⚠️ Refresh shop cache ignored'))
-
-          // Délai pour laisser le temps au serveur de se mettre à jour
-          setTimeout(() => {
-            // Ouvrir la boutique dans un nouvel onglet pour vérifier
-            const shopWindow = window.open('/shop', 'shop_window')
-            if (shopWindow) {
-              setTimeout(() => {
-                shopWindow.location.reload(true) // Force reload
-              }, 1000)
-            }
-          }, 2000)
-          
-        } catch (syncError) {
-          console.log('⚠️ Erreur sync signal:', syncError)
-        }
         
       } else {
         throw new Error('Erreur de sauvegarde')
@@ -296,46 +261,6 @@ export default function ConfigurationSimple() {
                   className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50"
                 >
                   {saving ? 'Sauvegarde...' : '💾 Sauvegarder'}
-                </button>
-                <button
-                  onClick={async () => {
-                    const token = localStorage.getItem('adminToken')
-                    if (!token) return
-                    
-                    try {
-                      // Forcer la création de la section interface
-                      const repairConfig = {
-                        ...config,
-                        interface: {
-                          title: config.interface.title || 'PLUGS FINDER',
-                          tagline1: config.interface.tagline1 || 'JUSTE UNE',
-                          taglineHighlight: config.interface.taglineHighlight || 'MINI-APP TELEGRAM',
-                          tagline2: config.interface.tagline2 || 'CHILL',
-                          backgroundImage: config.interface.backgroundImage || ''
-                        }
-                      }
-                      
-                      const response = await fetch('/api/proxy?endpoint=/api/config', {
-                        method: 'PUT',
-                        headers: {
-                          'Authorization': `Bearer ${token}`,
-                          'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(repairConfig)
-                      })
-                      
-                      if (response.ok) {
-                        toast.success('🔧 Configuration réparée !')
-                      } else {
-                        toast.error('Erreur de réparation')
-                      }
-                    } catch (error) {
-                      toast.error('Erreur de réparation')
-                    }
-                  }}
-                  className="ml-2 inline-flex items-center px-4 py-2 border border-orange-300 rounded-md shadow-sm text-sm font-medium text-orange-700 bg-orange-50 hover:bg-orange-100"
-                >
-                  🔧 Réparer
                 </button>
               </div>
             </div>
@@ -637,33 +562,16 @@ export default function ConfigurationSimple() {
 
                 <div className="mt-4 flex justify-center space-x-4">
                   <button
-                    onClick={() => {
-                      // Forcer la synchronisation avant d'ouvrir
-                      localStorage.setItem('global_sync_signal', Date.now().toString())
-                      setTimeout(() => {
-                        window.open('/shop', '_blank')
-                      }, 500)
-                    }}
+                    onClick={() => window.open('/shop', '_blank')}
                     className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
                   >
-                    🔗 Tester la boutique
+                    🔗 Ouvrir la boutique
                   </button>
                   <button
                     onClick={() => router.push('/admin/broadcast')}
                     className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
                   >
                     📢 Messages diffusion
-                  </button>
-                  <button
-                    onClick={() => {
-                      // Tester la synchronisation
-                      localStorage.setItem('global_sync_signal', Date.now().toString())
-                      toast.success('🔄 Signal de sync envoyé !')
-                      console.log('🧪 Test synchronisation déclenché')
-                    }}
-                    className="inline-flex items-center px-4 py-2 border border-blue-300 shadow-sm text-sm font-medium rounded-md text-blue-700 bg-blue-50 hover:bg-blue-100"
-                  >
-                    🧪 Tester sync
                   </button>
                 </div>
               </div>
