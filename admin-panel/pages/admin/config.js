@@ -74,6 +74,18 @@ export default function ConfigurationSimple() {
         const data = await response.json()
         console.log('✅ Configuration chargée')
         
+        // ⚠️ CORRECTION: Créer la section interface si elle manque
+        if (!data.interface) {
+          console.log('⚠️ Section interface manquante, création automatique...')
+          data.interface = {
+            title: 'PLUGS FINDER',
+            tagline1: 'JUSTE UNE',
+            taglineHighlight: 'MINI-APP TELEGRAM',
+            tagline2: 'CHILL',
+            backgroundImage: ''
+          }
+        }
+        
         setConfig({
           interface: {
             title: data.interface?.title || 'PLUGS FINDER',
@@ -284,6 +296,46 @@ export default function ConfigurationSimple() {
                   className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50"
                 >
                   {saving ? 'Sauvegarde...' : '💾 Sauvegarder'}
+                </button>
+                <button
+                  onClick={async () => {
+                    const token = localStorage.getItem('adminToken')
+                    if (!token) return
+                    
+                    try {
+                      // Forcer la création de la section interface
+                      const repairConfig = {
+                        ...config,
+                        interface: {
+                          title: config.interface.title || 'PLUGS FINDER',
+                          tagline1: config.interface.tagline1 || 'JUSTE UNE',
+                          taglineHighlight: config.interface.taglineHighlight || 'MINI-APP TELEGRAM',
+                          tagline2: config.interface.tagline2 || 'CHILL',
+                          backgroundImage: config.interface.backgroundImage || ''
+                        }
+                      }
+                      
+                      const response = await fetch('/api/proxy?endpoint=/api/config', {
+                        method: 'PUT',
+                        headers: {
+                          'Authorization': `Bearer ${token}`,
+                          'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(repairConfig)
+                      })
+                      
+                      if (response.ok) {
+                        toast.success('🔧 Configuration réparée !')
+                      } else {
+                        toast.error('Erreur de réparation')
+                      }
+                    } catch (error) {
+                      toast.error('Erreur de réparation')
+                    }
+                  }}
+                  className="ml-2 inline-flex items-center px-4 py-2 border border-orange-300 rounded-md shadow-sm text-sm font-medium text-orange-700 bg-orange-50 hover:bg-orange-100"
+                >
+                  🔧 Réparer
                 </button>
               </div>
             </div>

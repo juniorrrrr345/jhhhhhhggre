@@ -93,6 +93,18 @@ export default function ShopHome() {
             interface: !!data.interface,
             title: data.interface?.title
           })
+          
+          // ⚠️ CORRECTION: Créer la section interface si elle manque
+          if (!data.interface) {
+            console.log('⚠️ Section interface manquante sur serveur distant')
+            data.interface = {
+              title: 'PLUGS FINDER',
+              tagline1: 'JUSTE UNE',
+              taglineHighlight: 'MINI-APP TELEGRAM',
+              tagline2: 'CHILL',
+              backgroundImage: ''
+            }
+          }
         } else {
           throw new Error(`Direct config failed: HTTP ${directResponse.status}`)
         }
@@ -117,6 +129,18 @@ export default function ShopHome() {
             interface: !!data.interface,
             title: data.interface?.title
           })
+          
+          // ⚠️ CORRECTION: Créer la section interface si elle manque (proxy)
+          if (!data.interface) {
+            console.log('⚠️ Section interface manquante via proxy - création fallback')
+            data.interface = {
+              title: 'PLUGS FINDER',
+              tagline1: 'JUSTE UNE',
+              taglineHighlight: 'MINI-APP TELEGRAM',
+              tagline2: 'CHILL',
+              backgroundImage: ''
+            }
+          }
         } catch (proxyError) {
           console.log('❌ Config proxy échouée:', proxyError.message)
           throw proxyError
@@ -166,6 +190,18 @@ export default function ShopHome() {
             title: data.interface?.title,
             timestamp: timestamp
           })
+          
+          // ⚠️ CORRECTION: Créer la section interface si elle manque
+          if (!data.interface) {
+            console.log('⚠️ Section interface manquante sur serveur distant - création fallback')
+            data.interface = {
+              title: 'PLUGS FINDER',
+              tagline1: 'JUSTE UNE',
+              taglineHighlight: 'MINI-APP TELEGRAM',
+              tagline2: 'CHILL',
+              backgroundImage: ''
+            }
+          }
         } else {
           throw new Error(`Fresh config failed: HTTP ${directResponse.status}`)
         }
@@ -193,6 +229,18 @@ export default function ShopHome() {
             title: data.interface?.title,
             timestamp: timestamp
           })
+          
+          // ⚠️ CORRECTION: Créer la section interface si elle manque (proxy fresh)
+          if (!data.interface) {
+            console.log('⚠️ Section interface manquante via proxy fresh - création fallback')
+            data.interface = {
+              title: 'PLUGS FINDER',
+              tagline1: 'JUSTE UNE',
+              taglineHighlight: 'MINI-APP TELEGRAM',
+              tagline2: 'CHILL',
+              backgroundImage: ''
+            }
+          }
         } catch (proxyError) {
           console.log('❌ Config fresh proxy échouée, fallback vers config normale')
           await fetchConfig()
