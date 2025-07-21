@@ -91,48 +91,123 @@ export default function SimpleConfig() {
   const saveConfig = async () => {
     const token = localStorage.getItem('adminToken')
     setSaving(true)
-    toast.info('💾 Sauvegarde...')
+    
+    // Protection timeout global pour éviter le blocage infini
+    const globalTimeout = setTimeout(() => {
+      console.error('⏰ Timeout global de sauvegarde')
+      setSaving(false)
+      toast.error('⏰ Timeout: Sauvegarde trop longue')
+    }, 30000) // 30 secondes max
 
     try {
-      const response = await fetch('/api/proxy?endpoint=/api/config', {
-        method: 'POST',
-        headers: {
-          'Authorization': token,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          _method: 'PUT',
-          ...config
-        })
-      })
+      console.log('💾 Début sauvegarde...')
+      toast.info('💾 Sauvegarde...')
+
+      // Sauvegarde de la configuration
+      const response = await Promise.race([
+        fetch('/api/proxy?endpoint=/api/config', {
+          method: 'POST',
+          headers: {
+            'Authorization': token,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            _method: 'PUT',
+            ...config
+          })
+        }),
+        new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Timeout sauvegarde')), 15000)
+        )
+      ])
 
       if (response.ok) {
+        console.log('✅ Configuration sauvée')
         toast.success('✅ Configuration sauvée !')
         
-        // Recharger le bot
+        // Synchronisation immédiate avec la boutique
+        syncWithShop()
+        
+        // Rechargement du bot (non-bloquant)
         setTimeout(async () => {
           try {
-            await fetch('/api/proxy?endpoint=/api/bot/reload', {
-              method: 'POST',
-              headers: {
-                'Authorization': token,
-                'Content-Type': 'application/json'
-              }
-            })
-            toast.success('🔄 Bot rechargé !')
-          } catch (e) {
-            console.log('Erreur rechargement:', e)
+            console.log('🔄 Rechargement bot...')
+            const reloadResponse = await Promise.race([
+              fetch('/api/proxy?endpoint=/api/bot/reload', {
+                method: 'POST',
+                headers: {
+                  'Authorization': token,
+                  'Content-Type': 'application/json'
+                }
+              }),
+              new Promise((_, reject) => 
+                setTimeout(() => reject(new Error('Timeout reload')), 10000)
+              )
+            ])
+            
+            if (reloadResponse.ok) {
+              console.log('✅ Bot rechargé')
+              toast.success('🔄 Bot rechargé !')
+            } else {
+              console.log('⚠️ Erreur rechargement bot')
+              toast.error('⚠️ Erreur rechargement bot')
+            }
+          } catch (reloadError) {
+            console.log('❌ Erreur rechargement:', reloadError.message)
+            toast.error('❌ Erreur rechargement: ' + reloadError.message)
           }
-        }, 1000)
+        }, 500) // Délai réduit
         
       } else {
-        toast.error('❌ Erreur sauvegarde')
+        console.error('❌ Erreur sauvegarde HTTP:', response.status)
+        toast.error(`❌ Erreur sauvegarde: ${response.status}`)
       }
     } catch (error) {
-      console.error('Erreur:', error)
+      console.error('❌ Erreur sauvegarde:', error)
       toast.error('❌ Erreur: ' + error.message)
     } finally {
+      // IMPORTANT: Toujours nettoyer l'état
+      clearTimeout(globalTimeout)
       setSaving(false)
+      console.log('🔄 État saving remis à false')
+    }
+  }
+
+  // Fonction pour synchroniser avec la boutique
+  const syncWithShop = () => {
+    try {
+      // Signal de synchronisation pour la boutique
+      const syncEvent = {
+        type: 'config_updated',
+        timestamp: Date.now(),
+        source: 'admin_simple',
+        data: config
+      }
+      
+      // Signaux pour la synchronisation cross-tab
+      localStorage.setItem('global_sync_signal', JSON.stringify(syncEvent))
+      localStorage.setItem('boutique_sync_signal', JSON.stringify(syncEvent))
+      
+      // Déclencher les événements
+      window.dispatchEvent(new StorageEvent('storage', {
+        key: 'global_sync_signal',
+        newValue: JSON.stringify(syncEvent)
+      }))
+      
+      window.dispatchEvent(new StorageEvent('storage', {
+        key: 'boutique_sync_signal',
+        newValue: JSON.stringify(syncEvent)
+      }))
+      
+      console.log('📡 Signal de synchronisation boutique envoyé')
+      
+      // Notification de synchronisation
+      setTimeout(() => {
+        toast.success('🔄 Boutique synchronisée !', { duration: 2000 })
+      }, 1000)
+      
+    } catch (error) {
+      console.error('❌ Erreur sync boutique:', error)
     }
   }
 
@@ -346,9 +421,17 @@ export default function SimpleConfig() {
                 <button
                   onClick={saveConfig}
                   disabled={saving}
-                  className={`flex-1 ${saving ? 'bg-orange-500' : 'bg-blue-600 hover:bg-blue-700'} disabled:opacity-50 text-white px-6 py-3 rounded-lg font-semibold`}
+                  className={`flex-1 ${saving ? 'bg-orange-500 animate-pulse' : 'bg-blue-600 hover:bg-blue-700'} disabled:opacity-50 disabled:cursor-not-allowed text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200`}
                 >
-                  {saving ? '💾 Sauvegarde...' : '💾 Sauvegarder'}
+                  {saving ? (
+                    <span className="flex items-center justify-center">
+                      <svg className="animate-spin -ml-1 mr-2 h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Sauvegarde...
+                    </span>
+                  ) : '💾 Sauvegarder'}
                 </button>
               </div>
             </div>
