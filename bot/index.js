@@ -582,64 +582,7 @@ app.get('/api/sync/test', authenticateAdmin, async (req, res) => {
   }
 });
 
-// NOUVEL ENDPOINT: Diagnostic de synchronisation
-app.get('/api/diagnostic/sync', async (req, res) => {
-  try {
-    console.log('🔍 Diagnostic de synchronisation demandé');
-    
-    // Vérifier la connexion à la DB
-    const dbStatus = await Plug.db.readyState;
-    
-    // Compter les plugs directement en DB
-    const totalPlugsInDb = await Plug.countDocuments();
-    const activePlugsInDb = await Plug.countDocuments({ isActive: true });
-    const vipPlugsInDb = await Plug.countDocuments({ isVip: true, isActive: true });
-    
-    // Vérifier la config
-    const configInDb = await Config.findById('main');
-    
-    res.set({
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type',
-      'Cache-Control': 'no-cache'
-    });
-    
-    res.json({
-      status: 'success',
-      timestamp: new Date().toISOString(),
-      database: {
-        status: dbStatus === 1 ? 'connected' : 'disconnected',
-        totalPlugs: totalPlugsInDb,
-        activePlugs: activePlugsInDb,
-        vipPlugs: vipPlugsInDb,
-        configExists: !!configInDb
-      },
-      cache: {
-        plugsCount: cache.plugs?.length || 0,
-        configExists: !!cache.config,
-        lastUpdate: cache.lastUpdate,
-        updateInterval: cache.updateInterval,
-        isStale: cache.lastUpdate && (new Date() - cache.lastUpdate) > cache.updateInterval
-      },
-      environment: {
-        nodeEnv: process.env.NODE_ENV,
-        port: PORT,
-        webhookUrl: process.env.WEBHOOK_URL || process.env.RENDER_URL || 'non configuré',
-        botToken: process.env.TELEGRAM_BOT_TOKEN ? 'configuré' : 'manquant'
-      }
-    });
-    
-  } catch (error) {
-    console.error('❌ Erreur diagnostic synchronisation:', error);
-    res.status(500).json({ 
-      status: 'error',
-      error: 'Erreur diagnostic synchronisation',
-      message: error.message,
-      timestamp: new Date().toISOString()
-    });
-  }
-});
+
 
 // Endpoint pour les statistiques
 app.get('/api/stats', authenticateAdmin, async (req, res) => {

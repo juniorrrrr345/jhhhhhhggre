@@ -603,12 +603,7 @@ export default function SimpleConfig() {
             {/* Actions */}
             <div className="bg-white rounded-lg shadow p-6">
               <div className="flex flex-col sm:flex-row gap-4">
-                <button
-                  onClick={() => router.push('/admin/diagnostic')}
-                  className="flex-1 bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-semibold"
-                >
-                  🔍 Diagnostic
-                </button>
+
                 <button
                   onClick={() => window.open('/shop', '_blank')}
                   className="flex-1 bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold"

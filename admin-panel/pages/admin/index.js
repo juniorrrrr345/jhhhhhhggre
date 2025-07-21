@@ -124,13 +124,7 @@ export default function Dashboard() {
       icon: UserGroupIcon,
       color: 'bg-green-500'
     },
-    {
-      name: 'Diagnostic',
-      description: 'Tester la connectivité',
-      href: '/admin/diagnostic',
-      icon: EyeIcon,
-      color: 'bg-purple-500'
-    }
+
   ]
 
   if (loading) {

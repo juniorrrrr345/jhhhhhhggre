@@ -15,7 +15,7 @@ const navigation = [
   { name: 'Dashboard', href: '/admin', icon: HomeIcon },
   { name: 'Boutiques/Plugs', href: '/admin/plugs', icon: UserGroupIcon },
   { name: 'Configuration', href: '/admin/config', icon: CogIcon },
-  { name: 'Diagnostic', href: '/admin/diagnostic', icon: ChartBarIcon, badge: '🔍' },
+
 ]
 
 function classNames(...classes) {
