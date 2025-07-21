@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import Layout from '../../../components/Layout'
 import toast from 'react-hot-toast'
+import { simpleApi } from '../../../lib/api-simple'
 import {
   PlusIcon,
   MagnifyingGlassIcon,
@@ -54,47 +55,32 @@ export default function AccueilAdmin() {
 
   const fetchPlugs = async (token) => {
     try {
-      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || process.env.API_BASE_URL
-
-      const response = await fetch(`${apiBaseUrl}/api/proxy`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          endpoint: '/admin/plugs',
-          method: 'GET',
-          params: {
-            page: currentPage,
-            limit: 6,
-            search,
-            filter
-          }
-        })
+      console.log('🔄 Chargement des boutiques...')
+      
+      const data = await simpleApi.getPlugs(token, {
+        page: currentPage,
+        limit: 6,
+        search,
+        filter
       })
-
-      if (response.ok) {
-        const data = await response.json()
-        setPlugs(data.plugs || [])
-        setTotalPages(data.totalPages || 1)
-        
-        // Calculer les stats
-        const totalPlugs = data.total || 0
-        const activePlugs = (data.plugs || []).filter(p => p.isActive).length
-        const vipPlugs = (data.plugs || []).filter(p => p.isVip).length
-        
-        setStats(prev => ({
-          ...prev,
-          totalPlugs,
-          activePlugs,
-          vipPlugs
-        }))
-        
-        return data
-      } else {
-        throw new Error(`HTTP ${response.status}`)
-      }
+      
+      setPlugs(data.plugs || [])
+      setTotalPages(data.totalPages || 1)
+      
+      // Calculer les stats
+      const totalPlugs = data.total || 0
+      const activePlugs = (data.plugs || []).filter(p => p.isActive).length
+      const vipPlugs = (data.plugs || []).filter(p => p.isVip).length
+      
+      setStats(prev => ({
+        ...prev,
+        totalPlugs,
+        activePlugs,
+        vipPlugs
+      }))
+      
+      console.log('✅ Boutiques chargées')
+      return data
     } catch (error) {
       console.error('❌ Erreur chargement plugs:', error)
       throw error
@@ -108,26 +94,13 @@ export default function AccueilAdmin() {
 
     try {
       const token = localStorage.getItem('adminToken')
-      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || process.env.API_BASE_URL
+      console.log('🗑️ Suppression de la boutique...')
       
-      const response = await fetch(`${apiBaseUrl}/api/proxy`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          endpoint: `/admin/plugs/${id}`,
-          method: 'DELETE'
-        })
-      })
-
-      if (response.ok) {
-        toast.success('Boutique supprimée')
-        fetchData(token)
-      } else {
-        throw new Error(`HTTP ${response.status}`)
-      }
+      await simpleApi.deletePlug(token, id)
+      
+      toast.success('Boutique supprimée')
+      fetchData(token)
+      console.log('✅ Boutique supprimée')
     } catch (error) {
       console.error('❌ Erreur suppression:', error)
       toast.error('Erreur lors de la suppression')

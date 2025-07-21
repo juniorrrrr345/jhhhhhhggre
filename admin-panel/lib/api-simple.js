@@ -59,6 +59,18 @@ export const simpleApi = {
     return await makeProxyCall(endpoint, 'GET', token);
   },
   
+  createPlug: async (token, data) => {
+    return await makeProxyCall('/api/plugs', 'POST', token, data);
+  },
+  
+  updatePlug: async (token, id, data) => {
+    return await makeProxyCall(`/api/plugs/${id}`, 'PUT', token, data);
+  },
+  
+  deletePlug: async (token, id) => {
+    return await makeProxyCall(`/api/plugs/${id}`, 'DELETE', token);
+  },
+  
   reloadBot: async (token) => {
     return await makeProxyCall('/api/bot/reload', 'POST', token);
   }

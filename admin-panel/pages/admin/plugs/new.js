@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import Layout from '../../../components/Layout'
 import toast from 'react-hot-toast'
+import { simpleApi } from '../../../lib/api-simple'
 import {
   PlusIcon,
   PhotoIcon,
@@ -138,24 +139,16 @@ export default function NewPlug() {
     setLoading(true)
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/plugs`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(formData)
-      })
-
-      if (response.ok) {
-        toast.success('Boutique créée avec succès !')
-        router.push('/admin/plugs')
-      } else {
-        const error = await response.json()
-        toast.error(error.message || 'Erreur lors de la création')
-      }
+      console.log('💾 Création de la boutique...')
+      
+      await simpleApi.createPlug(token, formData)
+      
+      toast.success('Boutique créée avec succès !')
+      console.log('✅ Boutique créée')
+      router.push('/admin/plugs')
     } catch (error) {
-      toast.error('Erreur de connexion')
+      console.error('❌ Erreur création boutique:', error)
+      toast.error('Erreur lors de la création')
     } finally {
       setLoading(false)
     }
