@@ -148,7 +148,7 @@ export default function ShopVIP() {
           }}
         >
           <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-400 mx-auto mb-4"></div>
+                          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
             <p className="text-white font-medium">Chargement de la boutique VIP...</p>
           </div>
         </div>
@@ -219,7 +219,7 @@ export default function ShopVIP() {
                 </Link>
                 <Link 
                   href="/shop/vip" 
-                  className="text-yellow-400 font-medium border-b-2 border-yellow-400 pb-3 flex items-center"
+                  className="text-white font-medium border-b-2 border-white pb-3 flex items-center"
                 >
                   <span className="mr-1">👑</span>
                   VIP
@@ -245,7 +245,7 @@ export default function ShopVIP() {
 
             {loading ? (
               <div className="text-center py-12">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-400 mx-auto"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto"></div>
                 <p className="mt-4 text-white">Chargement des produits VIP...</p>
               </div>
             ) : vipPlugs.length === 0 ? (
@@ -322,10 +322,10 @@ export default function ShopVIP() {
 
                         <div className="flex items-center justify-between pt-2 border-t border-gray-700">
                           <span className="text-white text-xs sm:text-sm no-underline">Voir détails</span>
-                          <div className="flex items-center text-red-400 text-xs sm:text-sm font-medium no-underline">
-                            <span className="mr-1">❤️</span>
-                            <span>{plug.likes || 0} like{(plug.likes || 0) !== 1 ? 's' : ''}</span>
-                          </div>
+                                                  <div className="flex items-center text-white text-xs sm:text-sm font-medium no-underline">
+                          <span className="mr-1">❤️</span>
+                          <span>{plug.likes || 0} like{(plug.likes || 0) !== 1 ? 's' : ''}</span>
+                        </div>
                         </div>
                       </div>
                     </div>

@@ -457,10 +457,10 @@ export default function ShopSearch() {
 
                         <div className="flex items-center justify-between pt-2 border-t border-gray-700">
                           <span className="text-white text-xs sm:text-sm">Voir détails</span>
-                          <div className="flex items-center text-red-400 text-xs sm:text-sm font-medium">
-                            <span className="mr-1">❤️</span>
-                            <span>{plug.likes || 0} like{(plug.likes || 0) !== 1 ? 's' : ''}</span>
-                          </div>
+                                                      <div className="flex items-center text-white text-xs sm:text-sm font-medium">
+                              <span className="mr-1">❤️</span>
+                              <span>{plug.likes || 0} like{(plug.likes || 0) !== 1 ? 's' : ''}</span>
+                            </div>
                         </div>
                       </div>
                     </div>
