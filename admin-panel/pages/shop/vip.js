@@ -137,10 +137,18 @@ export default function ShopVIP() {
           <title>Chargement...</title>
           <meta name="viewport" content="width=device-width, initial-scale=1" />
         </Head>
-        <div className="min-h-screen bg-white flex items-center justify-center">
+        <div 
+          className="min-h-screen bg-black flex items-center justify-center"
+          style={{
+            backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7))',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat'
+          }}
+        >
           <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-500 mx-auto mb-4"></div>
-            <p className="text-gray-600">Chargement de la boutique VIP...</p>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-400 mx-auto mb-4"></div>
+            <p className="text-white font-medium">Chargement de la boutique VIP...</p>
           </div>
         </div>
       </>

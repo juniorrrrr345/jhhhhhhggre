@@ -1,558 +1,494 @@
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
-import Head from 'next/head';
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/router'
+import Layout from '../../../../components/Layout'
+import toast from 'react-hot-toast'
+import { TrashIcon, PlusIcon } from '@heroicons/react/24/outline'
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
-
-// Fonction utilitaire pour appeler l'API avec fallback proxy
-const apiCall = async (endpoint, options = {}) => {
-  try {
-    // Essai direct
-    const directResponse = await fetch(`${API_BASE_URL}${endpoint}`, options);
-    if (directResponse.ok) {
-      return directResponse;
-    }
-  } catch (error) {
-    console.log('API directe échouée, tentative avec proxy...');
-  }
-
-  // Fallback avec proxy
-  try {
-    const proxyResponse = await fetch(`/api/proxy?endpoint=${encodeURIComponent(endpoint)}`, {
-      ...options,
-      headers: {
-        ...options.headers,
-        'X-Proxy-Method': options.method || 'GET',
-      },
-    });
-    return proxyResponse;
-  } catch (error) {
-    console.error('Échec API et proxy:', error);
-    throw error;
-  }
-};
+const countries = [
+  'France', 'Belgique', 'Suisse', 'Canada', 'Maroc', 'Tunisie', 'Algérie',
+  'Sénégal', 'Côte d\'Ivoire', 'Cameroun', 'Madagascar', 'Allemagne', 
+  'Espagne', 'Italie', 'Portugal', 'Royaume-Uni', 'États-Unis', 'Autre'
+]
 
 export default function EditPlug() {
-  const router = useRouter();
-  const { id } = router.query;
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
-  
   const [formData, setFormData] = useState({
     name: '',
     description: '',
     image: '',
-    telegramLink: '',
-    vip: false,
-    category: '',
-    location: '',
-    featured: false,
-    active: true
-  });
-
-  // Charger les données de la boutique
-  useEffect(() => {
-    if (!id) return;
-    
-    const loadPlug = async () => {
-      try {
-        setLoading(true);
-        setError('');
-        
-        const token = localStorage.getItem('adminToken') || localStorage.getItem('token');
-        if (!token) {
-          router.push('/');
-          return;
-        }
-
-        const response = await apiCall(`/api/plugs/${id}`, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error(`Erreur ${response.status}: ${response.statusText}`);
-        }
-
-        const data = await response.json();
-        if (data && typeof data === 'object') {
-          setFormData({
-            name: data.name || '',
-            description: data.description || '',
-            image: data.image || '',
-            telegramLink: data.telegramLink || '',
-            vip: Boolean(data.vip),
-            category: data.category || '',
-            location: data.location || '',
-            featured: Boolean(data.featured),
-            active: data.active !== false
-          });
-        } else {
-          throw new Error('Données invalides reçues du serveur');
-        }
-      } catch (err) {
-        console.error('Erreur chargement boutique:', err);
-        setError(`Erreur lors du chargement: ${err.message}`);
-      } finally {
-        setLoading(false);
+    telegramLink: '', // Optionnel maintenant
+    isVip: false,
+    countries: [],
+    services: {
+      delivery: {
+        enabled: false,
+        description: ''
+      },
+      postal: {
+        enabled: false,
+        description: ''
+      },
+      meetup: {
+        enabled: false,
+        description: ''
       }
-    };
+    },
+    socialMedia: [] // Format tableau avec name, emoji, url
+  })
+  const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
+  const router = useRouter()
+  const { id } = router.query
 
-    loadPlug();
-  }, [id, router]);
-
-  const handleInputChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    
-    try {
-      setFormData(prev => ({
-        ...prev,
-        [name]: type === 'checkbox' ? checked : value
-      }));
-    } catch (error) {
-      console.error('Erreur lors de la mise à jour du formulaire:', error);
+  useEffect(() => {
+    const token = localStorage.getItem('adminToken')
+    if (!token) {
+      router.push('/')
+      return
     }
-  };
+    if (id) {
+      loadPlug()
+    }
+  }, [id])
+
+  const loadPlug = async () => {
+    try {
+      const token = localStorage.getItem('adminToken')
+      const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://jhhhhhhggre.onrender.com'
+      
+      let response
+      try {
+        response = await fetch(`${apiBaseUrl}/api/plugs/${id}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        })
+      } catch (directError) {
+        response = await fetch(`/api/proxy?endpoint=/api/plugs/${id}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        })
+      }
+
+      if (response.ok) {
+        const plug = await response.json()
+        setFormData({
+          name: plug.name || '',
+          description: plug.description || '',
+          image: plug.image || '',
+          telegramLink: plug.telegramLink || '',
+          isVip: plug.isVip || false,
+          countries: plug.countries || [],
+          services: {
+            delivery: {
+              enabled: plug.services?.delivery?.enabled || false,
+              description: plug.services?.delivery?.description || ''
+            },
+            postal: {
+              enabled: plug.services?.postal?.enabled || false,
+              description: plug.services?.postal?.description || ''
+            },
+            meetup: {
+              enabled: plug.services?.meetup?.enabled || false,
+              description: plug.services?.meetup?.description || ''
+            }
+          },
+          socialMedia: Array.isArray(plug.socialMedia) ? plug.socialMedia : []
+        })
+      } else {
+        toast.error('Erreur lors du chargement du plug')
+      }
+    } catch (error) {
+      console.error('Erreur:', error)
+      toast.error('Erreur lors du chargement')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleInputChange = (field, value) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }))
+  }
+
+  const handleServiceChange = (service, field, value) => {
+    setFormData(prev => ({
+      ...prev,
+      services: {
+        ...prev.services,
+        [service]: {
+          ...prev.services[service],
+          [field]: value
+        }
+      }
+    }))
+  }
+
+  const toggleCountry = (country) => {
+    setFormData(prev => ({
+      ...prev,
+      countries: prev.countries.includes(country)
+        ? prev.countries.filter(c => c !== country)
+        : [...prev.countries, country]
+    }))
+  }
+
+  const addSocialMedia = () => {
+    setFormData(prev => ({
+      ...prev,
+      socialMedia: [...prev.socialMedia, { name: '', emoji: '', url: '' }]
+    }))
+  }
+
+  const removeSocialMedia = (index) => {
+    setFormData(prev => ({
+      ...prev,
+      socialMedia: prev.socialMedia.filter((_, i) => i !== index)
+    }))
+  }
+
+  const updateSocialMedia = (index, field, value) => {
+    setFormData(prev => ({
+      ...prev,
+      socialMedia: prev.socialMedia.map((social, i) => 
+        i === index ? { ...social, [field]: value } : social
+      )
+    }))
+  }
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setSaving(true);
-    setError('');
-    setSuccess('');
-
-    try {
-      const token = localStorage.getItem('adminToken') || localStorage.getItem('token');
-      if (!token) {
-        router.push('/');
-        return;
-      }
-
-      const submitData = {
-        ...formData
-      };
-
-      const response = await apiCall(`/api/plugs/${id}`, {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(submitData),
-      });
-
-      if (!response.ok) {
-        throw new Error(`Erreur ${response.status}: ${response.statusText}`);
-      }
-
-      setSuccess('Boutique modifiée avec succès !');
-      setTimeout(() => {
-        router.push(`/admin/plugs/${id}`);
-      }, 2000);
-    } catch (err) {
-      console.error('Erreur sauvegarde:', err);
-      setError(`Erreur lors de la sauvegarde: ${err.message}`);
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const handleDelete = async () => {
-    if (!confirm('Êtes-vous sûr de vouloir supprimer cette boutique ?')) {
-      return;
+    e.preventDefault()
+    
+    if (!formData.name.trim()) {
+      toast.error('Le nom est requis')
+      return
     }
 
+    setSaving(true)
+    
     try {
-      setSaving(true);
-      const token = localStorage.getItem('adminToken') || localStorage.getItem('token');
+      const token = localStorage.getItem('adminToken')
+      const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://jhhhhhhggre.onrender.com'
       
-      const response = await apiCall(`/api/plugs/${id}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error(`Erreur ${response.status}: ${response.statusText}`);
+      let response
+      try {
+        response = await fetch(`${apiBaseUrl}/api/plugs/${id}`, {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(formData)
+        })
+      } catch (directError) {
+        response = await fetch(`/api/proxy?endpoint=/api/plugs/${id}`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            _method: 'PUT',
+            ...formData
+          })
+        })
       }
 
-      setSuccess('Boutique supprimée avec succès !');
-      setTimeout(() => {
-        router.push('/admin/plugs');
-      }, 1500);
-    } catch (err) {
-      console.error('Erreur suppression:', err);
-      setError(`Erreur lors de la suppression: ${err.message}`);
+      if (response.ok) {
+        toast.success('Plug modifié avec succès !')
+        router.push('/admin/plugs')
+      } else {
+        const error = await response.json()
+        toast.error(error.error || 'Erreur lors de la modification')
+      }
+    } catch (error) {
+      console.error('Erreur:', error)
+      toast.error('Erreur lors de la modification')
     } finally {
-      setSaving(false);
+      setSaving(false)
     }
-  };
+  }
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-black text-white p-8">
-        <Head>
-          <title>Modification boutique - Admin</title>
-        </Head>
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto"></div>
-            <p className="mt-4">Chargement...</p>
-          </div>
+      <Layout>
+        <div className="flex justify-center items-center h-64">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
         </div>
-      </div>
-    );
+      </Layout>
+    )
   }
 
   return (
-    <div className="min-h-screen bg-black text-white p-8">
-      <Head>
-        <title>Modifier boutique - Admin</title>
-      </Head>
-      
-      <div className="max-w-4xl mx-auto">
-        {/* Header */}
-        <div className="mb-8">
-          <button
-            onClick={() => router.push('/admin/plugs')}
-            className="text-gray-400 hover:text-white mb-4 flex items-center"
-          >
-            ← Retour aux boutiques
-          </button>
-          <h1 className="text-3xl font-bold">Modifier la boutique</h1>
+    <Layout>
+      <div className="space-y-6">
+        {/* En-tête */}
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Modifier le Plug</h1>
+          <p className="text-gray-600 mt-1">Modifiez les informations du plug</p>
         </div>
 
-        {/* Messages */}
-        {error && (
-          <div className="bg-red-900/50 border border-red-500 text-red-200 p-4 rounded-lg mb-6">
-            {error}
-          </div>
-        )}
-        
-        {success && (
-          <div className="bg-green-900/50 border border-green-500 text-green-200 p-4 rounded-lg mb-6">
-            {success}
-          </div>
-        )}
-
-        {/* Formulaire */}
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Nom */}
+          {/* Informations de base */}
+          <div className="bg-white rounded-lg shadow p-6 space-y-4">
+            <h2 className="text-lg font-semibold text-gray-900">Informations de base</h2>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Nom de la boutique *
+                </label>
+                <input
+                  type="text"
+                  value={formData.name}
+                  onChange={(e) => handleInputChange('name', e.target.value)}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="Ex: Ma Boutique Premium"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Image de la boutique
+                </label>
+                <input
+                  type="url"
+                  value={formData.image}
+                  onChange={(e) => handleInputChange('image', e.target.value)}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="https://example.com/image.jpg"
+                />
+              </div>
+            </div>
+
             <div>
-              <label className="block text-sm font-medium mb-2">
-                Nom de la boutique *
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Description
               </label>
-              <input
-                type="text"
-                name="name"
-                value={formData.name}
-                onChange={handleInputChange}
-                required
-                className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Nom de la boutique"
+              <textarea
+                value={formData.description}
+                onChange={(e) => handleInputChange('description', e.target.value)}
+                rows={3}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="Décrivez votre boutique et vos produits..."
               />
             </div>
 
-
-          </div>
-
-          {/* Description */}
-          <div>
-            <label className="block text-sm font-medium mb-2">
-              Description *
-            </label>
-            <textarea
-              name="description"
-              value={formData.description}
-              onChange={handleInputChange}
-              required
-              rows={4}
-              className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="Description de la boutique"
-            />
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Image */}
             <div>
-              <label className="block text-sm font-medium mb-2">
-                URL de l'image
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Lien Telegram (optionnel)
               </label>
               <input
                 type="url"
-                name="image"
-                value={formData.image}
-                onChange={handleInputChange}
-                className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="https://example.com/image.jpg"
-              />
-            </div>
-
-            {/* Lien Telegram */}
-            <div>
-              <label className="block text-sm font-medium mb-2">
-                Lien Telegram *
-              </label>
-              <input
-                type="url"
-                name="telegramLink"
                 value={formData.telegramLink}
-                onChange={handleInputChange}
-                required
-                className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="https://t.me/boutique"
+                onChange={(e) => handleInputChange('telegramLink', e.target.value)}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="https://t.me/votre_boutique"
               />
+              <p className="text-xs text-gray-500 mt-1">Lien vers votre canal ou groupe Telegram</p>
             </div>
-          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Localisation */}
             <div>
-              <label className="block text-sm font-medium mb-2">
-                Localisation
+              <label className="flex items-center">
+                <input
+                  type="checkbox"
+                  checked={formData.isVip}
+                  onChange={(e) => handleInputChange('isVip', e.target.checked)}
+                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                />
+                <span className="ml-2 text-sm font-medium text-gray-700">Boutique VIP</span>
               </label>
-              <input
-                type="text"
-                name="location"
-                value={formData.location}
-                onChange={handleInputChange}
-                className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Ex: Paris, France, Online..."
-              />
             </div>
           </div>
 
-          {/* Options */}
-          <div className="flex flex-wrap gap-6">
-            <label className="flex items-center">
-              <input
-                type="checkbox"
-                name="vip"
-                checked={formData.vip}
-                onChange={handleInputChange}
-                className="mr-2 rounded"
-              />
-              Boutique VIP
-            </label>
-            
-            <label className="flex items-center">
-              <input
-                type="checkbox"
-                name="featured"
-                checked={formData.featured}
-                onChange={handleInputChange}
-                className="mr-2 rounded"
-              />
-              Boutique mise en avant
-            </label>
-            
-            <label className="flex items-center">
-              <input
-                type="checkbox"
-                name="active"
-                checked={formData.active}
-                onChange={handleInputChange}
-                className="mr-2 rounded"
-              />
-              Boutique active
-            </label>
+          {/* Pays de livraison */}
+          <div className="bg-white rounded-lg shadow p-6">
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">Pays de livraison</h2>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+              {countries.map(country => (
+                <label key={country} className="flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={formData.countries.includes(country)}
+                    onChange={() => toggleCountry(country)}
+                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  />
+                  <span className="ml-2 text-sm text-gray-700">{country}</span>
+                </label>
+              ))}
+            </div>
           </div>
 
           {/* Services */}
-          <div className="space-y-6">
-            <h3 className="text-lg font-semibold border-b border-gray-600 pb-2">Services disponibles</h3>
+          <div className="bg-white rounded-lg shadow p-6 space-y-6">
+            <h2 className="text-lg font-semibold text-gray-900">Services disponibles</h2>
             
             {/* Livraison */}
-            <div className="bg-gray-800 p-4 rounded-lg">
+            <div className="border border-gray-200 rounded-lg p-4">
               <div className="flex items-center mb-3">
                 <input
                   type="checkbox"
-                  id="delivery-enabled"
-                  checked={formData.services?.delivery?.enabled || false}
-                  onChange={(e) => {
-                    setFormData(prev => ({
-                      ...prev,
-                      services: {
-                        ...prev.services,
-                        delivery: {
-                          ...prev.services?.delivery,
-                          enabled: e.target.checked
-                        }
-                      }
-                    }))
-                  }}
-                  className="mr-3 rounded"
+                  checked={formData.services.delivery.enabled}
+                  onChange={(e) => handleServiceChange('delivery', 'enabled', e.target.checked)}
+                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                 />
-                <label htmlFor="delivery-enabled" className="text-lg font-medium">
-                  🚚 Livraison
-                </label>
+                <span className="ml-2 text-lg font-medium">🚚 Livraison</span>
               </div>
-              {formData.services?.delivery?.enabled && (
-                <div>
-                  <label className="block text-sm font-medium mb-2">
-                    Description du service de livraison
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.services?.delivery?.description || ''}
-                    onChange={(e) => {
-                      setFormData(prev => ({
-                        ...prev,
-                        services: {
-                          ...prev.services,
-                          delivery: {
-                            ...prev.services?.delivery,
-                            description: e.target.value
-                          }
-                        }
-                      }))
-                    }}
-                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="Ex: Livraison rapide en moins de 2h dans Paris"
-                  />
-                </div>
+              {formData.services.delivery.enabled && (
+                <input
+                  type="text"
+                  value={formData.services.delivery.description}
+                  onChange={(e) => handleServiceChange('delivery', 'description', e.target.value)}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="Ex: Livraison rapide en moins de 2h dans Paris"
+                />
               )}
             </div>
 
             {/* Envoi postal */}
-            <div className="bg-gray-800 p-4 rounded-lg">
+            <div className="border border-gray-200 rounded-lg p-4">
               <div className="flex items-center mb-3">
                 <input
                   type="checkbox"
-                  id="postal-enabled"
-                  checked={formData.services?.postal?.enabled || false}
-                  onChange={(e) => {
-                    setFormData(prev => ({
-                      ...prev,
-                      services: {
-                        ...prev.services,
-                        postal: {
-                          ...prev.services?.postal,
-                          enabled: e.target.checked
-                        }
-                      }
-                    }))
-                  }}
-                  className="mr-3 rounded"
+                  checked={formData.services.postal.enabled}
+                  onChange={(e) => handleServiceChange('postal', 'enabled', e.target.checked)}
+                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                 />
-                <label htmlFor="postal-enabled" className="text-lg font-medium">
-                  ✈️ Envoi postal
-                </label>
+                <span className="ml-2 text-lg font-medium">✈️ Envoi postal</span>
               </div>
-              {formData.services?.postal?.enabled && (
-                <div>
-                  <label className="block text-sm font-medium mb-2">
-                    Description du service d'envoi postal
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.services?.postal?.description || ''}
-                    onChange={(e) => {
-                      setFormData(prev => ({
-                        ...prev,
-                        services: {
-                          ...prev.services,
-                          postal: {
-                            ...prev.services?.postal,
-                            description: e.target.value
-                          }
-                        }
-                      }))
-                    }}
-                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="Ex: Envoi postal sécurisé dans toute la France"
-                  />
-                </div>
+              {formData.services.postal.enabled && (
+                <input
+                  type="text"
+                  value={formData.services.postal.description}
+                  onChange={(e) => handleServiceChange('postal', 'description', e.target.value)}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="Ex: Envoi postal sécurisé partout en Europe"
+                />
               )}
             </div>
 
             {/* Meetup */}
-            <div className="bg-gray-800 p-4 rounded-lg">
+            <div className="border border-gray-200 rounded-lg p-4">
               <div className="flex items-center mb-3">
                 <input
                   type="checkbox"
-                  id="meetup-enabled"
-                  checked={formData.services?.meetup?.enabled || false}
-                  onChange={(e) => {
-                    setFormData(prev => ({
-                      ...prev,
-                      services: {
-                        ...prev.services,
-                        meetup: {
-                          ...prev.services?.meetup,
-                          enabled: e.target.checked
-                        }
-                      }
-                    }))
-                  }}
-                  className="mr-3 rounded"
+                  checked={formData.services.meetup.enabled}
+                  onChange={(e) => handleServiceChange('meetup', 'enabled', e.target.checked)}
+                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                 />
-                <label htmlFor="meetup-enabled" className="text-lg font-medium">
-                  🏠 Meetup
-                </label>
+                <span className="ml-2 text-lg font-medium">🏠 Meetup local</span>
               </div>
-              {formData.services?.meetup?.enabled && (
-                <div>
-                  <label className="block text-sm font-medium mb-2">
-                    Description du service de meetup
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.services?.meetup?.description || ''}
-                    onChange={(e) => {
-                      setFormData(prev => ({
-                        ...prev,
-                        services: {
-                          ...prev.services,
-                          meetup: {
-                            ...prev.services?.meetup,
-                            description: e.target.value
-                          }
-                        }
-                      }))
-                    }}
-                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="Ex: Rendez-vous possible dans les lieux publics"
-                  />
-                </div>
+              {formData.services.meetup.enabled && (
+                <input
+                  type="text"
+                  value={formData.services.meetup.description}
+                  onChange={(e) => handleServiceChange('meetup', 'description', e.target.value)}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="Ex: Rencontre possible sur Paris 15ème"
+                />
               )}
             </div>
           </div>
 
+          {/* Réseaux sociaux personnalisés */}
+          <div className="bg-white rounded-lg shadow p-6">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-lg font-semibold text-gray-900">Réseaux sociaux personnalisés</h2>
+              <button
+                type="button"
+                onClick={addSocialMedia}
+                className="bg-blue-500 text-white px-3 py-1 rounded-lg hover:bg-blue-600 flex items-center space-x-1"
+              >
+                <PlusIcon className="w-4 h-4" />
+                <span>Ajouter</span>
+              </button>
+            </div>
+            
+            {formData.socialMedia.length === 0 ? (
+              <p className="text-gray-500 text-center py-4">Aucun réseau social ajouté</p>
+            ) : (
+              <div className="space-y-4">
+                {formData.socialMedia.map((social, index) => (
+                  <div key={index} className="border border-gray-200 rounded-lg p-4">
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-3 items-end">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Nom
+                        </label>
+                        <input
+                          type="text"
+                          value={social.name}
+                          onChange={(e) => updateSocialMedia(index, 'name', e.target.value)}
+                          className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          placeholder="Instagram"
+                        />
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Emoji
+                        </label>
+                        <input
+                          type="text"
+                          value={social.emoji}
+                          onChange={(e) => updateSocialMedia(index, 'emoji', e.target.value)}
+                          className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          placeholder="📸"
+                        />
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          URL
+                        </label>
+                        <input
+                          type="url"
+                          value={social.url}
+                          onChange={(e) => updateSocialMedia(index, 'url', e.target.value)}
+                          className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          placeholder="https://instagram.com/..."
+                        />
+                      </div>
+                      
+                      <div>
+                        <button
+                          type="button"
+                          onClick={() => removeSocialMedia(index)}
+                          className="bg-red-500 text-white px-3 py-2 rounded-lg hover:bg-red-600 flex items-center space-x-1"
+                        >
+                          <TrashIcon className="w-4 h-4" />
+                          <span>Supprimer</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
           {/* Boutons */}
-          <div className="flex flex-col sm:flex-row gap-4 pt-6">
+          <div className="flex space-x-4">
             <button
               type="submit"
               disabled={saving}
-              className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed px-6 py-3 rounded-lg font-medium transition-colors"
+              className="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {saving ? 'Sauvegarde...' : 'Sauvegarder les modifications'}
+              {saving ? 'Modification...' : 'Modifier le plug'}
             </button>
-            
             <button
               type="button"
               onClick={() => router.push('/admin/plugs')}
-              className="flex-1 bg-gray-600 hover:bg-gray-700 px-6 py-3 rounded-lg font-medium transition-colors"
+              className="bg-gray-300 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-400"
             >
               Annuler
-            </button>
-            
-            <button
-              type="button"
-              onClick={handleDelete}
-              disabled={saving}
-              className="bg-red-600 hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed px-6 py-3 rounded-lg font-medium transition-colors"
-            >
-              {saving ? 'Suppression...' : 'Supprimer'}
             </button>
           </div>
         </form>
       </div>
-    </div>
-  );
+    </Layout>
+  )
 }

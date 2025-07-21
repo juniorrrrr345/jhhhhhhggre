@@ -26,18 +26,41 @@ export default function WelcomeSocialMedia() {
         return
       }
 
-      const response = await fetch('/api/proxy?endpoint=/api/config/welcome/social-media', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Cache-Control': 'no-cache'
-        }
-      })
+      // Essayer d'abord l'API directe
+      const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://jhhhhhhggre.onrender.com'
+      
+      try {
+        const response = await fetch(`${apiBaseUrl}/api/config/welcome/social-media`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Cache-Control': 'no-cache'
+          }
+        })
 
-      if (response.ok) {
-        const data = await response.json()
-        setSocialMedia(data)
-      } else {
-        throw new Error('Erreur lors du chargement')
+        if (response.ok) {
+          const data = await response.json()
+          setSocialMedia(data)
+          return
+        } else {
+          throw new Error(`HTTP ${response.status}`)
+        }
+      } catch (directError) {
+        console.log('API directe échouée, tentative proxy...', directError.message)
+        
+        // Fallback vers le proxy
+        const response = await fetch('/api/proxy?endpoint=/api/config/welcome/social-media', {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Cache-Control': 'no-cache'
+          }
+        })
+
+        if (response.ok) {
+          const data = await response.json()
+          setSocialMedia(data)
+        } else {
+          throw new Error('Erreur lors du chargement')
+        }
       }
     } catch (error) {
       console.error('Erreur:', error)
@@ -81,25 +104,51 @@ export default function WelcomeSocialMedia() {
         ? `/api/config/welcome/social-media/${editingItem._id}`
         : '/api/config/welcome/social-media'
 
-      const response = await fetch(`/api/proxy?endpoint=${endpoint}`, {
-        method: 'POST', // Le proxy utilise toujours POST
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          _method: method, // Indiquer la vraie méthode
-          ...formData
+      // Essayer d'abord l'API directe
+      const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://jhhhhhhggre.onrender.com'
+      
+      try {
+        const response = await fetch(`${apiBaseUrl}${endpoint}`, {
+          method: method,
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(formData)
         })
-      })
 
-      if (response.ok) {
-        toast.success(editingItem ? 'Réseau social modifié !' : 'Réseau social ajouté !')
-        resetForm()
-        loadSocialMedia()
-      } else {
-        const error = await response.json()
-        throw new Error(error.error || 'Erreur lors de la sauvegarde')
+        if (response.ok) {
+          toast.success(editingItem ? 'Réseau social modifié !' : 'Réseau social ajouté !')
+          resetForm()
+          loadSocialMedia()
+          return
+        } else {
+          throw new Error(`HTTP ${response.status}`)
+        }
+      } catch (directError) {
+        console.log('API directe échouée, tentative proxy...', directError.message)
+        
+        // Fallback vers le proxy
+        const response = await fetch(`/api/proxy?endpoint=${endpoint}`, {
+          method: 'POST', // Le proxy utilise toujours POST
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            _method: method, // Indiquer la vraie méthode
+            ...formData
+          })
+        })
+
+        if (response.ok) {
+          toast.success(editingItem ? 'Réseau social modifié !' : 'Réseau social ajouté !')
+          resetForm()
+          loadSocialMedia()
+        } else {
+          const error = await response.json()
+          throw new Error(error.error || 'Erreur lors de la sauvegarde')
+        }
       }
     } catch (error) {
       console.error('Erreur:', error)
@@ -115,21 +164,43 @@ export default function WelcomeSocialMedia() {
 
     try {
       const token = localStorage.getItem('adminToken')
+      const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://jhhhhhhggre.onrender.com'
       
-      const response = await fetch(`/api/proxy?endpoint=/api/config/welcome/social-media/${id}`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ _method: 'DELETE' })
-      })
+      try {
+        const response = await fetch(`${apiBaseUrl}/api/config/welcome/social-media/${id}`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        })
 
-      if (response.ok) {
-        toast.success('Réseau social supprimé !')
-        loadSocialMedia()
-      } else {
-        throw new Error('Erreur lors de la suppression')
+        if (response.ok) {
+          toast.success('Réseau social supprimé !')
+          loadSocialMedia()
+          return
+        } else {
+          throw new Error(`HTTP ${response.status}`)
+        }
+      } catch (directError) {
+        console.log('API directe échouée, tentative proxy...', directError.message)
+        
+        // Fallback vers le proxy
+        const response = await fetch(`/api/proxy?endpoint=/api/config/welcome/social-media/${id}`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ _method: 'DELETE' })
+        })
+
+        if (response.ok) {
+          toast.success('Réseau social supprimé !')
+          loadSocialMedia()
+        } else {
+          throw new Error('Erreur lors de la suppression')
+        }
       }
     } catch (error) {
       console.error('Erreur:', error)
