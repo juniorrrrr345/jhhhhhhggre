@@ -14,6 +14,7 @@ import {
 const navigation = [
   { name: 'Dashboard', href: '/admin', icon: HomeIcon },
   { name: 'Accueil', href: '/admin/plugs', icon: HomeIcon },
+  { name: 'Messages', href: '/admin/messages', icon: ChartBarIcon },
   { name: 'Configuration', href: '/admin/config', icon: CogIcon }
 ]
 

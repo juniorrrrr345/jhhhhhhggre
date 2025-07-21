@@ -126,10 +126,17 @@ export default function Dashboard() {
     },
     {
       name: 'Configuration Bot',
-      description: 'Configurer le bot et envoyer des messages',
+      description: 'Configurer le bot Telegram',
       href: '/admin/bot-config',
-      icon: ChatBubbleLeftRightIcon,
+      icon: CogIcon,
       color: 'bg-orange-500'
+    },
+    {
+      name: 'Messages',
+      description: 'Envoyer des messages à tous les utilisateurs',
+      href: '/admin/messages',
+      icon: ChatBubbleLeftRightIcon,
+      color: 'bg-indigo-500'
     },
     {
       name: 'Diagnostic',
