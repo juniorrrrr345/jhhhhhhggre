@@ -260,7 +260,7 @@ export default function ShopPlugDetail() {
         color: '#ffffff',
         fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
       }}>
-        {/* Header Style Telegram */}
+        {/* Header avec bouton retour */}
         <header style={{ 
           backgroundColor: '#1a1a1a',
           padding: '16px 20px',

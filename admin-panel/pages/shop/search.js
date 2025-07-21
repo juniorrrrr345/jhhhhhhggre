@@ -243,9 +243,8 @@ export default function ShopSearch() {
 
   const getPositionBadge = (index) => {
     if (index === 0) return '🥇'
-    if (index === 1) return '⚠️'
+    if (index === 1) return '🥈'
     if (index === 2) return '🥉'
-    if (index === 3) return '3️⃣'
     return null
   }
 
@@ -305,31 +304,6 @@ export default function ShopSearch() {
         color: '#ffffff',
         fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
       }}>
-        {/* Header Style Telegram */}
-        <header style={{ 
-          backgroundColor: '#1a1a1a',
-          padding: '16px 20px',
-          borderBottom: '1px solid #2a2a2a'
-        }}>
-          <div style={{ textAlign: 'center' }}>
-            <h1 style={{ 
-              fontSize: '20px', 
-              fontWeight: 'bold', 
-              margin: '0',
-              color: '#ffffff'
-            }}>
-              PlugsFinder Bot
-            </h1>
-            <p style={{ 
-              fontSize: '14px', 
-              margin: '4px 0 0 0',
-              color: '#8e8e93'
-            }}>
-              mini-application
-            </p>
-          </div>
-        </header>
-
         {/* Header Titre Principal Recherche */}
         <div style={{ 
           backgroundColor: '#000000',
@@ -688,9 +662,42 @@ export default function ShopSearch() {
                           gap: '8px',
                           marginBottom: '4px'
                         }}>
-                          {plug.services?.delivery?.enabled && <span>📦</span>}
-                          {plug.services?.postal?.enabled && <span>📍</span>}
-                          {plug.services?.meetup?.enabled && <span>💰</span>}
+                          {plug.services?.delivery?.enabled && (
+                            <div style={{ 
+                              display: 'flex', 
+                              alignItems: 'center', 
+                              gap: '4px',
+                              fontSize: '12px',
+                              color: '#ffffff'
+                            }}>
+                              <span>📦</span>
+                              <span>Livraison</span>
+                            </div>
+                          )}
+                          {plug.services?.postal?.enabled && (
+                            <div style={{ 
+                              display: 'flex', 
+                              alignItems: 'center', 
+                              gap: '4px',
+                              fontSize: '12px',
+                              color: '#ffffff'
+                            }}>
+                              <span>📍</span>
+                              <span>Postal</span>
+                            </div>
+                          )}
+                          {plug.services?.meetup?.enabled && (
+                            <div style={{ 
+                              display: 'flex', 
+                              alignItems: 'center', 
+                              gap: '4px',
+                              fontSize: '12px',
+                              color: '#ffffff'
+                            }}>
+                              <span>💰</span>
+                              <span>Meetup</span>
+                            </div>
+                          )}
                         </div>
                       </div>
 
