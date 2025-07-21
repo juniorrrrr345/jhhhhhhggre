@@ -544,7 +544,55 @@ app.get('/api/stats', authenticateAdmin, async (req, res) => {
 // Récupérer la configuration
 app.get('/api/config', authenticateAdmin, async (req, res) => {
   try {
-    const config = await Config.findById('main');
+    let config = await Config.findById('main');
+    
+    // Si la configuration n'existe pas, essayer de la créer
+    if (!config) {
+      console.log('⚠️ Configuration manquante, création automatique...');
+      try {
+        config = await Config.create({
+          _id: 'main',
+          welcome: {
+            text: '🌟 Bienvenue sur notre bot !\n\nDécouvrez nos meilleurs plugs sélectionnés avec soin.',
+            socialMedia: []
+          },
+          boutique: {
+            name: '',
+            logo: '',
+            subtitle: '',
+            backgroundImage: '',
+            vipTitle: '',
+            vipSubtitle: '',
+            searchTitle: '',
+            searchSubtitle: ''
+          },
+          socialMedia: {
+            telegram: '',
+            instagram: '',
+            whatsapp: '',
+            website: ''
+          },
+          messages: {
+            welcome: '',
+            noPlugsFound: 'Aucun plug trouvé pour ces critères.',
+            errorOccurred: 'Une erreur est survenue, veuillez réessayer.'
+          },
+          buttons: {
+            topPlugs: { text: '🔌 Top Des Plugs', enabled: true },
+            contact: { text: '📞 Contact', content: 'Contactez-nous pour plus d\'informations.', enabled: true },
+            info: { text: 'ℹ️ Info', content: 'Informations sur notre plateforme.', enabled: true }
+          }
+        });
+        console.log('✅ Configuration automatiquement créée');
+      } catch (createError) {
+        console.error('❌ Impossible de créer la configuration:', createError);
+        return res.status(500).json({ 
+          error: 'Configuration manquante et impossible à créer automatiquement',
+          details: createError.message
+        });
+      }
+    }
+    
     res.json(config || {});
   } catch (error) {
     console.error('Erreur récupération config:', error);
