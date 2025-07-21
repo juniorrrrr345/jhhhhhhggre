@@ -173,14 +173,15 @@ export default function ShopVIP() {
       </Head>
 
       <div 
-        className="min-h-screen bg-black"
-        style={config?.boutique?.backgroundImage ? {
-          backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url(${config.boutique.backgroundImage})`,
+        className="min-h-screen"
+        style={{
+          backgroundColor: '#000000',
+          backgroundImage: config?.boutique?.backgroundImage ? `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url("${config.boutique.backgroundImage}")` : 'none',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',
           backgroundAttachment: 'fixed'
-        } : {}}
+        }}
       >
         {/* Header */}
         {config && (
@@ -204,14 +205,14 @@ export default function ShopVIP() {
               <div className="flex justify-center space-x-8 h-12 items-center">
                 <Link 
                   href="/shop" 
-                  className="text-gray-300 hover:text-white pb-3 flex items-center"
+                  className="text-white hover:text-gray-200 pb-3 flex items-center"
                 >
                   <span className="mr-1">🏠</span>
                   Accueil
                 </Link>
                 <Link 
                   href="/shop/search" 
-                  className="text-gray-300 hover:text-white pb-3 flex items-center"
+                  className="text-white hover:text-gray-200 pb-3 flex items-center"
                 >
                   <span className="mr-1">🔍</span>
                   Recherche
@@ -237,7 +238,7 @@ export default function ShopVIP() {
                   👑 VIP - {config?.boutique?.name || 'Boutique Premium'}
                 </h3>
               </div>
-              <p className="text-gray-300 max-w-2xl mx-auto">
+              <p className="text-white max-w-2xl mx-auto">
                 {loading ? 'Chargement...' : `${vipPlugs.length} produit(s) VIP disponible(s)`}
               </p>
             </div>
@@ -245,7 +246,7 @@ export default function ShopVIP() {
             {loading ? (
               <div className="text-center py-12">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-400 mx-auto"></div>
-                <p className="mt-4 text-gray-300">Chargement des produits VIP...</p>
+                <p className="mt-4 text-white">Chargement des produits VIP...</p>
               </div>
             ) : vipPlugs.length === 0 ? (
               <div className="text-center py-12">

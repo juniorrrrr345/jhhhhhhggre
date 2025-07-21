@@ -225,14 +225,15 @@ export default function ShopSearch() {
       </Head>
 
       <div 
-        className="min-h-screen bg-black"
-        style={config?.boutique?.backgroundImage ? {
-          backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url(${config.boutique.backgroundImage})`,
+        className="min-h-screen"
+        style={{
+          backgroundColor: '#000000',
+          backgroundImage: config?.boutique?.backgroundImage ? `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url("${config.boutique.backgroundImage}")` : 'none',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',
           backgroundAttachment: 'fixed'
-        } : {}}
+        }}
       >
         {/* Header */}
         {config && (
@@ -256,7 +257,7 @@ export default function ShopSearch() {
               <div className="flex justify-center space-x-8 h-12 items-center">
                 <Link 
                   href="/shop" 
-                  className="text-gray-300 hover:text-white pb-3 flex items-center"
+                  className="text-white hover:text-gray-200 pb-3 flex items-center"
                 >
                   <span className="mr-1">🏠</span>
                   Accueil
@@ -270,7 +271,7 @@ export default function ShopSearch() {
                 </Link>
                 <Link 
                   href="/shop/vip" 
-                  className="text-gray-300 hover:text-white pb-3 flex items-center"
+                  className="text-white hover:text-gray-200 pb-3 flex items-center"
                 >
                   <span className="mr-1">👑</span>
                   VIP
@@ -370,7 +371,7 @@ export default function ShopSearch() {
               <h3 className="text-2xl font-bold text-white mb-2">
                 📋 Résultats de recherche
               </h3>
-              <p className="text-gray-300">
+              <p className="text-white">
                 {loading ? 'Recherche en cours...' : `${plugs.length} boutique(s) trouvée(s)`}
               </p>
             </div>
@@ -378,13 +379,13 @@ export default function ShopSearch() {
             {loading ? (
               <div className="text-center py-12">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto"></div>
-                <p className="mt-4 text-gray-300">Recherche en cours...</p>
+                <p className="mt-4 text-white">Recherche en cours...</p>
               </div>
             ) : plugs.length === 0 ? (
               <div className="text-center py-12">
                 <div className="text-6xl mb-4">🔍</div>
                 <h3 className="text-xl font-medium text-white mb-2">Aucune boutique trouvée</h3>
-                <p className="text-gray-300 mb-6">Essayez de modifier vos critères de recherche.</p>
+                <p className="text-white mb-6">Essayez de modifier vos critères de recherche.</p>
                 <button
                   onClick={resetFilters}
                   className="bg-gray-700 text-white px-6 py-3 rounded-lg hover:bg-gray-600 transition-colors"
@@ -424,7 +425,7 @@ export default function ShopSearch() {
 
                       <div className="p-3 sm:p-4">
                         <h3 className="text-sm sm:text-base font-bold text-white mb-2 truncate">{plug.name}</h3>
-                        <p className="text-gray-300 mb-3 text-xs sm:text-sm line-clamp-2 h-8">{plug.description}</p>
+                        <p className="text-gray-200 mb-3 text-xs sm:text-sm line-clamp-2 h-8">{plug.description}</p>
 
                         {plug.countries && plug.countries.length > 0 && (
                           <div className="flex items-center text-xs sm:text-sm text-gray-400 mb-2">
@@ -455,7 +456,7 @@ export default function ShopSearch() {
                         </div>
 
                         <div className="flex items-center justify-between pt-2 border-t border-gray-700">
-                          <span className="text-gray-300 text-xs sm:text-sm">Voir détails</span>
+                          <span className="text-white text-xs sm:text-sm">Voir détails</span>
                           <div className="flex items-center text-red-400 text-xs sm:text-sm font-medium">
                             <span className="mr-1">❤️</span>
                             <span>{plug.likes || 0} like{(plug.likes || 0) !== 1 ? 's' : ''}</span>

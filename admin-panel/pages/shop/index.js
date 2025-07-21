@@ -228,14 +228,15 @@ export default function ShopHome() {
       </Head>
 
       <div 
-        className="min-h-screen bg-black"
-        style={config?.boutique?.backgroundImage ? {
-          backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url(${config.boutique.backgroundImage})`,
+        className="min-h-screen"
+        style={{
+          backgroundColor: '#000000',
+          backgroundImage: config?.boutique?.backgroundImage ? `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url("${config.boutique.backgroundImage}")` : 'none',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',
           backgroundAttachment: 'fixed'
-        } : {}}
+        }}
       >
         {/* Header */}
         {config && (
@@ -247,7 +248,7 @@ export default function ShopHome() {
                   🔌 {config?.boutique?.name || 'Boutique'}
                 </h1>
                   {config?.boutique?.subtitle && (
-                    <p className="text-gray-300 text-sm">
+                    <p className="text-white text-sm">
                       {config.boutique.subtitle}
                     </p>
                   )}
@@ -271,14 +272,14 @@ export default function ShopHome() {
                 </Link>
                 <Link 
                   href="/shop/search" 
-                  className="text-gray-300 hover:text-white pb-3 flex items-center"
+                  className="text-white hover:text-gray-200 pb-3 flex items-center"
                 >
                   <span className="mr-1">🔍</span>
                   Recherche
                 </Link>
                 <Link 
                   href="/shop/vip" 
-                  className="text-gray-300 hover:text-white pb-3 flex items-center"
+                  className="text-white hover:text-gray-200 pb-3 flex items-center"
                 >
                   <span className="mr-1">👑</span>
                   VIP
@@ -297,7 +298,7 @@ export default function ShopHome() {
                 </h3>
               </div>
               {config?.boutique?.subtitle && (
-                <p className="text-gray-300 max-w-2xl mx-auto">
+                <p className="text-white max-w-2xl mx-auto">
                   {config.boutique.subtitle}
                 </p>
               )}
@@ -306,13 +307,13 @@ export default function ShopHome() {
           {loading ? (
             <div className="text-center py-12">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto"></div>
-              <p className="mt-4 text-gray-300">Chargement des produits...</p>
+              <p className="mt-4 text-white">Chargement des produits...</p>
             </div>
           ) : plugs.length === 0 ? (
             <div className="text-center py-12">
               <div className="text-6xl mb-4">🔌</div>
               <h3 className="text-xl font-medium text-white mb-2">Aucun produit disponible</h3>
-              <p className="text-gray-300">Revenez plus tard pour découvrir nos produits.</p>
+              <p className="text-white">Revenez plus tard pour découvrir nos produits.</p>
             </div>
           ) : (
             <>
@@ -354,7 +355,7 @@ export default function ShopHome() {
                     {/* Contenu */}
                     <div className="p-3 sm:p-4">
                       <h3 className="text-sm sm:text-base font-bold text-white mb-2 truncate no-underline">{plug.name}</h3>
-                      <p className="text-white mb-3 text-xs sm:text-sm line-clamp-2 h-8 no-underline">{plug.description}</p>
+                      <p className="text-gray-200 mb-3 text-xs sm:text-sm line-clamp-2 h-8 no-underline">{plug.description}</p>
 
                       {/* Localisation */}
                       {plug.countries && plug.countries.length > 0 && (
