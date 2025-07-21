@@ -22,14 +22,24 @@ const handleContact = async (ctx) => {
     let message = `📞 **Contact**\n\n${config?.buttons?.contact?.content || 'Contactez-nous pour plus d\'informations !'}`;
 
     // Ajouter les réseaux sociaux globaux
-    if (config?.socialMedia?.telegram || config?.socialMedia?.whatsapp) {
+    if (config?.socialMedia && Array.isArray(config.socialMedia) && config.socialMedia.length > 0) {
+      message += '\n\n📱 **Nous contacter :**\n';
+      
+      config.socialMedia.forEach(social => {
+        if (social.name && social.url) {
+          const emoji = social.emoji || '🌐';
+          message += `• ${emoji} ${social.name} : ${social.url}\n`;
+        }
+      });
+    } else if (config?.socialMedia?.telegram || config?.socialMedia?.whatsapp) {
+      // Compatibilité avec l'ancienne structure
       message += '\n\n📱 **Nous contacter :**\n';
       
       if (config.socialMedia.telegram) {
-        message += `• Telegram : ${config.socialMedia.telegram}\n`;
+        message += `• 📱 Telegram : ${config.socialMedia.telegram}\n`;
       }
       if (config.socialMedia.whatsapp) {
-        message += `• WhatsApp : ${config.socialMedia.whatsapp}\n`;
+        message += `• 💬 WhatsApp : ${config.socialMedia.whatsapp}\n`;
       }
     }
 
