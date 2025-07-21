@@ -138,8 +138,8 @@ export default function BoutiqueConfig() {
         {/* En-tête */}
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Configuration Boutique</h1>
-            <p className="text-gray-600 mt-1">Personnalisez l'apparence de votre boutique Vercel</p>
+            <h1 className="text-2xl font-bold text-gray-900">Configuration</h1>
+            <p className="text-gray-600 mt-1">Configuration de votre boutique et de son apparence</p>
           </div>
           <div className="space-x-3">
             <button

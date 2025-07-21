@@ -62,26 +62,7 @@ export default function Config() {
     fetchConfig(token)
   }, [])
 
-  // Fonction pour appliquer la configuration boutique fournie par l'utilisateur
-  const applyUserBoutiqueConfig = () => {
-    setConfig(prev => ({
-      ...prev,
-      welcome: {
-        ...prev.welcome,
-        text: '🌟 Bienvenue sur SafePlugs !\n\n🔌 Découvrez nos boutiques de confiance\n🎯 Services vérifiés et sécurisés\n⭐ Section VIP premium\n\nChoisissez une option ci-dessous :'
-      },
-      boutique: {
-        ...prev.boutique,
-        name: 'SafePlugs Store',
-        subtitle: 'Boutique de confiance',
-        logo: 'https://via.placeholder.com/100x100/4F46E5/FFFFFF?text=SP',
-        backgroundImage: 'https://images.unsplash.com/photo-1557804506-669a67965ba0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
-        searchTitle: 'Recherche',
-        vipTitle: 'Section VIP'
-      }
-    }));
-    toast.success('Configuration complète appliquée ! N\'oubliez pas de sauvegarder.');
-  };
+
 
   const fetchConfig = async (token) => {
     try {
@@ -115,7 +96,10 @@ export default function Config() {
         setSaving(true)
 
         try {
-          console.log('💾 Sauvegarde configuration...', config)
+          // Préparer les données sans la section boutique
+          const { boutique, ...botConfig } = config
+          
+          console.log('💾 Sauvegarde configuration bot uniquement...', botConfig)
           
           // Essayer l'API directe d'abord
           const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://jhhhhhhggre.onrender.com'
@@ -128,12 +112,12 @@ export default function Config() {
               'Cache-Control': 'no-cache',
               'Pragma': 'no-cache'
             },
-            body: JSON.stringify(config)
+            body: JSON.stringify(botConfig)
           })
 
           if (response.ok) {
-            console.log('✅ Configuration sauvegardée')
-            toast.success('Configuration sauvegardée avec succès !')
+            console.log('✅ Configuration bot sauvegardée')
+            toast.success('Configuration bot sauvegardée avec succès !')
             
             // Recharger le bot après sauvegarde
             setTimeout(() => {
@@ -153,7 +137,7 @@ export default function Config() {
               },
               body: JSON.stringify({
                 _method: 'PUT',
-                ...config
+                ...botConfig
               })
             })
 
@@ -370,7 +354,12 @@ export default function Config() {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h1 className="text-2xl font-bold text-gray-900">Configuration du Bot</h1>
-            <p className="text-gray-600">Personnalisez votre bot Telegram</p>
+            <p className="text-gray-600">Personnalisez uniquement votre bot Telegram</p>
+            <div className="mt-2 p-3 bg-blue-50 border border-blue-200 rounded-lg max-w-md">
+              <p className="text-blue-800 text-sm">
+                ℹ️ <strong>Info :</strong> Cette page configure uniquement le bot. Pour la boutique, utilisez <a href="/admin/configuration" className="underline font-medium">Configuration</a> dans le menu.
+              </p>
+            </div>
           </div>
           <div className="mt-4 sm:mt-0">
             <div className="flex rounded-lg bg-gray-100 p-1">
@@ -416,43 +405,7 @@ export default function Config() {
                 </ul>
               </div>
 
-              {/* Configuration rapide boutique */}
-              <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                <h3 className="text-lg font-medium text-green-900 mb-3">🏪 Configuration Boutique</h3>
-                
-                {/* Statut de la configuration */}
-                <div className="text-xs text-green-600 mb-3 p-2 bg-green-50 rounded border">
-                  <strong>Configuration actuelle :</strong><br/>
-                  • Nom boutique: {config?.boutique?.name || 'Non défini'}<br/>
-                  • Logo: {config?.boutique?.logo ? '✅ Défini' : '❌ Non défini'}<br/>
-                  • Background: {config?.boutique?.backgroundImage ? '✅ Défini' : '❌ Non défini'}<br/>
-                  • Message bot: {config?.welcome?.text ? '✅ Défini' : '❌ Non défini'}
-                </div>
-                
-                {/* Boutons d'action */}
-                <div className="space-y-2">
-                  <button
-                    onClick={applyUserBoutiqueConfig}
-                    className="w-full bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors text-sm font-medium"
-                  >
-                    ⚡ Appliquer la configuration de test
-                  </button>
-                  
-                                    <button
-                    onClick={() => setViewMode('advanced')}
-                    className="w-full bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg transition-colors text-sm font-medium"
-                  >
-                    ⚙️ Modifier la configuration boutique
-                  </button>
-                  
-                  <a
-                    href="/admin/config/boutique-debug"
-                    className="w-full bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors text-sm font-medium inline-block text-center"
-                  >
-                    🔍 Diagnostic Boutique
-                  </a>
-                 </div>
-               </div>
+
 
                {/* Gestion des réseaux sociaux du message d'accueil */}
                <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
@@ -611,54 +564,7 @@ export default function Config() {
           </div>
         </div>
 
-        {/* Navigation vers pages de configuration séparées */}
-        <div className="bg-white shadow rounded-lg">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-lg font-medium text-gray-900">⚡ Configuration Séparée</h2>
-          </div>
-          <div className="p-6">
-            <div className="text-center space-y-4">
-              <p className="text-gray-600 text-sm mb-6">
-                Configuration séparée pour éviter les conflits et améliorer la stabilité
-              </p>
-              
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <a
-                  href="/admin/bot"
-                  className="block bg-green-500 hover:bg-green-600 text-white px-6 py-4 rounded-lg transition-colors text-center"
-                >
-                  <div className="text-2xl mb-2">🤖</div>
-                  <div className="font-medium">Configuration Bot</div>
-                  <div className="text-sm opacity-90 mt-1">Messages, textes, bienvenue</div>
-                </a>
-                
-                <a
-                  href="/admin/boutique"
-                  className="block bg-blue-500 hover:bg-blue-600 text-white px-6 py-4 rounded-lg transition-colors text-center"
-                >
-                  <div className="text-2xl mb-2">🏪</div>
-                  <div className="font-medium">Configuration Boutique</div>
-                  <div className="text-sm opacity-90 mt-1">Nom, logo, apparence, textes</div>
-                </a>
-                
-                <a
-                  href="/admin/config/boutique-debug"
-                  className="block bg-red-500 hover:bg-red-600 text-white px-6 py-4 rounded-lg transition-colors text-center"
-                >
-                  <div className="text-2xl mb-2">🔍</div>
-                  <div className="font-medium">Diagnostic</div>
-                  <div className="text-sm opacity-90 mt-1">Vérifier la synchronisation</div>
-                </a>
-              </div>
-              
-              <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-                <p className="text-yellow-800 text-sm">
-                  💡 <strong>Nouveau :</strong> Configurations séparées pour Bot et Boutique pour éviter les erreurs de proxy et améliorer la stabilité.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
+
 
 
 
