@@ -294,7 +294,7 @@ export default function ShopSearch() {
                 <Link 
                   href="/shop" 
                   style={{ color: 'white' }}
-                  className="pb-3 flex items-center hover:opacity-75 border-b-2 border-transparent hover:border-white transition-all"
+                  className="pb-3 flex items-center hover:opacity-75 transition-opacity"
                 >
                   <span className="mr-1">🏠</span>
                   <span style={{ color: 'white' }}>Accueil</span>
@@ -302,7 +302,7 @@ export default function ShopSearch() {
                 <Link 
                   href="/shop/search" 
                   style={{ color: 'white' }}
-                  className="font-medium pb-3 flex items-center hover:opacity-75 border-b-2 border-transparent hover:border-white transition-all"
+                  className="font-medium pb-3 flex items-center hover:opacity-75 transition-opacity"
                 >
                   <span className="mr-1">🔍</span>
                   <span style={{ color: 'white' }}>Recherche</span>
@@ -310,7 +310,7 @@ export default function ShopSearch() {
                 <Link 
                   href="/shop/vip" 
                   style={{ color: 'white' }}
-                  className="pb-3 flex items-center hover:opacity-75 border-b-2 border-transparent hover:border-white transition-all"
+                  className="pb-3 flex items-center hover:opacity-75 transition-opacity"
                 >
                   <span className="mr-1">👑</span>
                   <span style={{ color: 'white' }}>VIP</span>
