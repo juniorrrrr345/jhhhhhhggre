@@ -139,6 +139,13 @@ export default function Dashboard() {
       color: 'bg-indigo-500'
     },
     {
+      name: 'Réseaux',
+      description: 'Configurer les réseaux sociaux du bot',
+      href: '/admin/reseaux',
+      icon: UserGroupIcon,
+      color: 'bg-pink-500'
+    },
+    {
       name: 'Diagnostic',
       description: 'Tester la connectivité',
       href: '/admin/diagnostic',

@@ -15,6 +15,7 @@ const navigation = [
   { name: 'Dashboard', href: '/admin', icon: HomeIcon },
   { name: 'Accueil', href: '/admin/plugs', icon: HomeIcon },
   { name: 'Messages', href: '/admin/messages', icon: ChartBarIcon },
+  { name: 'Réseaux', href: '/admin/reseaux', icon: UserGroupIcon },
   { name: 'Configuration', href: '/admin/config', icon: CogIcon }
 ]
 
