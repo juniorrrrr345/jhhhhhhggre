@@ -412,8 +412,8 @@ export default function ShopHome() {
               </div>
             ) : (
               <>
-                {/* Products Grid - Responsive */}
-                <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 mb-8 px-2 sm:px-0">
+                {/* Products Grid - 2 colonnes */}
+                <div className="grid grid-cols-2 gap-3 sm:gap-4 md:gap-6 mb-8 px-2 sm:px-0">
                   {currentPlugs.map((plug, index) => (
                     <Link 
                       key={plug._id || index} 
@@ -423,7 +423,7 @@ export default function ShopHome() {
                     >
                       <div className="shop-card bg-gray-800 border border-gray-700 rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-shadow duration-300 w-full h-full flex flex-col">
                         {/* Image */}
-                        <div className="relative h-32 sm:h-36 md:h-40 lg:h-48 bg-gray-900 flex-shrink-0">
+                        <div className="relative h-32 sm:h-40 md:h-48 bg-gray-900 flex-shrink-0">
                           {plug.image ? (
                             <ImageWithFallback
                               src={plug.image}

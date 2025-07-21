@@ -530,7 +530,7 @@ export default function ShopSearch() {
             ) : (
               <>
                 {/* Products Grid - 2 boutiques par ligne même sur mobile */}
-                                <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 mb-8 px-2 sm:px-0">
+                                <div className="grid grid-cols-2 gap-3 sm:gap-4 md:gap-6 mb-8 px-2 sm:px-0">
                   {currentPlugs.map((plug, index) => (
                     <Link 
                       key={plug._id || index} 
