@@ -44,10 +44,7 @@ const handleStart = async (ctx) => {
     let welcomeMessage = welcomeText;
 
     // Créer le clavier principal
-    console.log('🎮 DEBUG STARTHANDLER: Avant appel createMainKeyboard');
-    console.log('🎮 DEBUG STARTHANDLER: config.socialMedia =', JSON.stringify(config.socialMedia));
     const keyboard = createMainKeyboard(config);
-    console.log('🎮 DEBUG STARTHANDLER: Après appel createMainKeyboard, keyboard =', keyboard);
 
     // Envoyer le message avec image si disponible
     if (welcomeImage) {
@@ -98,9 +95,7 @@ const handleBackMain = async (ctx) => {
     // Utiliser le même message d'accueil que dans handleStart (les réseaux sociaux sont en boutons)
     let welcomeMessage = config.welcome?.text || '🌟 Bienvenue sur notre bot !';
     
-    console.log('🎮 DEBUG BACKMAIN: Avant appel createMainKeyboard');
     const keyboard = createMainKeyboard(config);
-    console.log('🎮 DEBUG BACKMAIN: Après appel createMainKeyboard');
     
     console.log('📝 Message d\'accueil préparé pour le retour');
     

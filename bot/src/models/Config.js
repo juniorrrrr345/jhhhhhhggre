@@ -79,26 +79,6 @@ const configSchema = new mongoose.Schema({
     }
   },
   
-  // Réseaux sociaux globaux
-  socialMedia: {
-    telegram: {
-      type: String,
-      default: ''
-    },
-    instagram: {
-      type: String,
-      default: ''
-    },
-    whatsapp: {
-      type: String,
-      default: ''
-    },
-    website: {
-      type: String,
-      default: ''
-    }
-  },
-  
   // Configuration VIP
   vip: {
     enabled: {
