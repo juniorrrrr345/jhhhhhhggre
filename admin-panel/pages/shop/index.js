@@ -282,12 +282,12 @@ export default function ShopHome() {
 
                     {/* Contenu */}
                     <div className="p-3 sm:p-4">
-                      <h3 className="text-sm sm:text-base font-bold text-white mb-2 truncate">{plug.name}</h3>
-                      <p className="text-gray-300 mb-3 text-xs sm:text-sm line-clamp-2 h-8">{plug.description}</p>
+                      <h3 className="text-sm sm:text-base font-bold text-white mb-2 truncate no-underline">{plug.name}</h3>
+                      <p className="text-white mb-3 text-xs sm:text-sm line-clamp-2 h-8 no-underline">{plug.description}</p>
 
                       {/* Localisation */}
                       {plug.countries && plug.countries.length > 0 && (
-                        <div className="flex items-center text-xs sm:text-sm text-gray-400 mb-2">
+                        <div className="flex items-center text-xs sm:text-sm text-white mb-2 no-underline">
                           <MapPinIcon className="w-3 h-3 mr-1" />
                           <span className="truncate">{plug.countries.join(', ')}</span>
                         </div>
@@ -317,8 +317,8 @@ export default function ShopHome() {
 
                       {/* Likes */}
                       <div className="flex items-center justify-between pt-2 border-t border-gray-700">
-                        <span className="text-gray-300 text-xs sm:text-sm">Voir détails</span>
-                        <div className="flex items-center text-red-400 text-xs sm:text-sm font-medium">
+                        <span className="text-white text-xs sm:text-sm no-underline">Voir détails</span>
+                        <div className="flex items-center text-red-400 text-xs sm:text-sm font-medium no-underline">
                           <span className="mr-1">❤️</span>
                           <span>{plug.likes || 0} like{(plug.likes || 0) !== 1 ? 's' : ''}</span>
                         </div>
