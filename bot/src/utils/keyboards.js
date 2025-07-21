@@ -4,6 +4,25 @@ const { Markup } = require('telegraf');
 const createMainKeyboard = (config) => {
   const buttons = [];
   
+  // Réseaux sociaux personnalisés du message d'accueil en premier
+  if (config?.welcome?.socialMedia && config.welcome.socialMedia.length > 0) {
+    const sortedSocialMedia = config.welcome.socialMedia.sort((a, b) => a.order - b.order);
+    
+    // Grouper les réseaux sociaux par lignes de 2
+    for (let i = 0; i < sortedSocialMedia.length; i += 2) {
+      const socialRow = [];
+      const social1 = sortedSocialMedia[i];
+      socialRow.push(Markup.button.url(`${social1.emoji} ${social1.name}`, social1.url));
+      
+      if (sortedSocialMedia[i + 1]) {
+        const social2 = sortedSocialMedia[i + 1];
+        socialRow.push(Markup.button.url(`${social2.emoji} ${social2.name}`, social2.url));
+      }
+      
+      buttons.push(socialRow);
+    }
+  }
+  
   // Bouton Top Des Plugs
   const topPlugsText = config?.buttons?.topPlugs?.text || '🔌 Top Des Plugs';
   buttons.push([Markup.button.callback(topPlugsText, 'top_plugs')]);
@@ -21,12 +40,12 @@ const createMainKeyboard = (config) => {
   secondRow.push(Markup.button.callback(infoText, 'info'));
   buttons.push(secondRow);
   
-  // Réseaux sociaux
+  // Réseaux sociaux globaux (gardés pour compatibilité)
   const socialRow = [];
-  if (config.socialMedia.telegram) {
+  if (config?.socialMedia?.telegram) {
     socialRow.push(Markup.button.url('📱 Telegram', config.socialMedia.telegram));
   }
-  if (config.socialMedia.instagram) {
+  if (config?.socialMedia?.instagram) {
     socialRow.push(Markup.button.url('📸 Instagram', config.socialMedia.instagram));
   }
   if (socialRow.length > 0) {
@@ -34,10 +53,10 @@ const createMainKeyboard = (config) => {
   }
   
   const socialRow2 = [];
-  if (config.socialMedia.whatsapp) {
+  if (config?.socialMedia?.whatsapp) {
     socialRow2.push(Markup.button.url('💬 WhatsApp', config.socialMedia.whatsapp));
   }
-  if (config.socialMedia.website) {
+  if (config?.socialMedia?.website) {
     socialRow2.push(Markup.button.url('🌐 Site Web', config.socialMedia.website));
   }
   if (socialRow2.length > 0) {
@@ -121,27 +140,26 @@ const createPlugKeyboard = (plug, returnContext = 'top_plugs') => {
     buttons.push(row);
   }
   
-  // Réseaux sociaux du plug
-  const socialButtons = [];
-  if (plug.socialMedia.telegram) {
-    socialButtons.push(Markup.button.url('📱 Telegram', plug.socialMedia.telegram));
-  }
-  if (plug.socialMedia.instagram) {
-    socialButtons.push(Markup.button.url('📸 Instagram', plug.socialMedia.instagram));
-  }
-  if (socialButtons.length > 0) {
-    buttons.push(socialButtons);
+  // Lien Telegram optionnel
+  if (plug.telegramLink) {
+    buttons.push([Markup.button.url('📱 Telegram', plug.telegramLink)]);
   }
   
-  const socialButtons2 = [];
-  if (plug.socialMedia.whatsapp) {
-    socialButtons2.push(Markup.button.url('💬 WhatsApp', plug.socialMedia.whatsapp));
-  }
-  if (plug.socialMedia.website) {
-    socialButtons2.push(Markup.button.url('🌐 Site', plug.socialMedia.website));
-  }
-  if (socialButtons2.length > 0) {
-    buttons.push(socialButtons2);
+  // Réseaux sociaux personnalisés du plug
+  if (plug.socialMedia && plug.socialMedia.length > 0) {
+    // Grouper les réseaux sociaux par lignes de 2
+    for (let i = 0; i < plug.socialMedia.length; i += 2) {
+      const socialRow = [];
+      const social1 = plug.socialMedia[i];
+      socialRow.push(Markup.button.url(`${social1.emoji} ${social1.name}`, social1.url));
+      
+      if (plug.socialMedia[i + 1]) {
+        const social2 = plug.socialMedia[i + 1];
+        socialRow.push(Markup.button.url(`${social2.emoji} ${social2.name}`, social2.url));
+      }
+      
+      buttons.push(socialRow);
+    }
   }
   
   // Bouton like

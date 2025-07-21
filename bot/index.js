@@ -24,6 +24,9 @@ const { handleContact, handleInfo, handleIgnoredCallback } = require('./src/hand
 const Plug = require('./src/models/Plug');
 const Config = require('./src/models/Config');
 
+// Migration automatique
+const migrateSocialMedia = require('./scripts/migrate-social-media');
+
 // Initialisation
 const app = express();
 const bot = new Telegraf(process.env.TELEGRAM_BOT_TOKEN);
@@ -689,10 +692,9 @@ app.post('/api/plugs', authenticateAdmin, async (req, res) => {
     if (cleanData.vip !== undefined) cleanData.isVip = cleanData.vip;
     if (cleanData.active !== undefined) cleanData.isActive = cleanData.active;
     
-    // Synchroniser telegramLink avec socialMedia.telegram si fourni
-    if (cleanData.telegramLink && !cleanData.socialMedia?.telegram) {
-      if (!cleanData.socialMedia) cleanData.socialMedia = {};
-      cleanData.socialMedia.telegram = cleanData.telegramLink;
+    // S'assurer que socialMedia est un tableau pour le nouveau format
+    if (!Array.isArray(cleanData.socialMedia)) {
+      cleanData.socialMedia = [];
     }
     
     console.log(`📝 Données nettoyées pour création:`, cleanData);
@@ -729,10 +731,9 @@ app.put('/api/plugs/:id', authenticateAdmin, async (req, res) => {
     if (cleanData.vip !== undefined) cleanData.isVip = cleanData.vip;
     if (cleanData.active !== undefined) cleanData.isActive = cleanData.active;
     
-    // Synchroniser telegramLink avec socialMedia.telegram si fourni
-    if (cleanData.telegramLink && !cleanData.socialMedia?.telegram) {
-      if (!cleanData.socialMedia) cleanData.socialMedia = {};
-      cleanData.socialMedia.telegram = cleanData.telegramLink;
+    // S'assurer que socialMedia est un tableau pour le nouveau format
+    if (!Array.isArray(cleanData.socialMedia)) {
+      cleanData.socialMedia = [];
     }
     
     console.log(`📝 Données nettoyées:`, cleanData);
@@ -961,6 +962,14 @@ const start = async () => {
   try {
     // Connexion à la base de données
     await connectDB();
+    
+    // Migration automatique des réseaux sociaux
+    console.log('🔄 Migration automatique des réseaux sociaux...');
+    try {
+      await migrateSocialMedia();
+    } catch (migrationError) {
+      console.error('⚠️ Erreur migration (continuons quand même):', migrationError.message);
+    }
     
     // Configuration du webhook pour la production
     if (process.env.NODE_ENV === 'production') {

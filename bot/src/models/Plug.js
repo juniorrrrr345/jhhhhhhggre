@@ -65,18 +65,23 @@ const plugSchema = new mongoose.Schema({
     }
   },
   telegramLink: {
-    type: String, // Pour compatibilité avec l'admin panel
+    type: String, // Lien Telegram optionnel
     default: ''
   },
-  socialMedia: {
-    type: mongoose.Schema.Types.Mixed, // Permet objet ou array
-    default: {
-      telegram: '',
-      instagram: '',
-      whatsapp: '',
-      website: ''
+  socialMedia: [{
+    name: {
+      type: String,
+      required: true
+    },
+    emoji: {
+      type: String,
+      required: true
+    },
+    url: {
+      type: String,
+      required: true
     }
-  },
+  }],
   isVip: {
     type: Boolean,
     default: false
