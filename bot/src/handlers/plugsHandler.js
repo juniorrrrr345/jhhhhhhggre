@@ -129,9 +129,7 @@ const handleAllPlugs = async (ctx, page = 0) => {
 
     const itemsPerPage = 5;
     const totalPages = Math.ceil(plugs.length / itemsPerPage);
-    
-    // Utiliser le contexte 'plugs_all' pour que le retour fonctionne correctement
-    const keyboard = createPlugListKeyboard(plugs, page, totalPages, 'plugs_all');
+    const keyboard = createPlugListKeyboard(plugs, page, totalPages, 'all');
 
     let message = `${config.botTexts?.allPlugsTitle || 'Tous Nos Plugs Certifié 🔌'}\n`;
     
@@ -323,17 +321,13 @@ const handleCountryFilter = async (ctx, country, page = 0) => {
 // Afficher un plug spécifique avec contexte de retour
 const handlePlugDetails = async (ctx, plugId, returnContext = 'top_plugs') => {
   try {
-    // CORRECTION: Confirmer immédiatement la callback pour éviter le loading
-    await ctx.answerCbQuery();
-    
     console.log(`🔍 handlePlugDetails: plugId=${plugId}, returnContext=${returnContext}`);
-    
     const plug = await Plug.findById(plugId);
     console.log(`📦 Plug found:`, plug ? `${plug.name} (active: ${plug.isActive})` : 'null');
     
     if (!plug || !plug.isActive) {
       console.log('❌ Plug non trouvé ou inactif');
-      return;
+      return ctx.answerCbQuery('❌ Plug non trouvé ou inactif');
     }
 
     // Récupérer la config pour les textes personnalisés
@@ -424,17 +418,13 @@ const handlePlugDetails = async (ctx, plugId, returnContext = 'top_plugs') => {
 // Afficher les détails d'un service d'un plug
 const handlePlugServiceDetails = async (ctx, plugId, serviceType) => {
   try {
-    // CORRECTION: Confirmer immédiatement la callback pour éviter le loading
-    await ctx.answerCbQuery();
-    
     console.log(`🔧 handlePlugServiceDetails: plugId=${plugId}, serviceType=${serviceType}`);
-    
     const plug = await Plug.findById(plugId);
     console.log(`📦 Plug found for service:`, plug ? `${plug.name} (active: ${plug.isActive})` : 'null');
     
     if (!plug || !plug.isActive) {
       console.log('❌ Plug non trouvé pour service');
-      return;
+      return ctx.answerCbQuery('❌ Plug non trouvé');
     }
 
     const service = plug.services[serviceType];
