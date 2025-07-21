@@ -31,18 +31,13 @@ const safeToast = {
 
 export default function SimpleConfig() {
   const [config, setConfig] = useState({
-    // Configuration Boutique
-    boutique: {
-      name: '',
-      subtitle: '',
-      backgroundImage: ''
-    },
     // Configuration Interface
     interface: {
       title: 'PLUGS FINDER',
       tagline1: 'JUSTE UNE',
       taglineHighlight: 'MINI-APP TELEGRAM',
-      tagline2: 'CHILL'
+      tagline2: 'CHILL',
+      backgroundImage: ''
     },
     // Message d'accueil Bot
     welcome: {
@@ -67,16 +62,6 @@ export default function SimpleConfig() {
     socialMedia: {
       telegram: '',
       whatsapp: ''
-    },
-    // Messages du bot
-    messages: {
-      welcome: '',
-      noPlugsFound: '',
-      error: ''
-    },
-    // Messages de diffusion
-    broadcast: {
-      enabled: true
     }
   })
   
@@ -111,16 +96,12 @@ export default function SimpleConfig() {
         const data = await response.json()
         
         setConfig({
-          boutique: {
-            name: data.boutique?.name || '',
-            subtitle: data.boutique?.subtitle || '',
-            backgroundImage: data.boutique?.backgroundImage || ''
-          },
           interface: {
             title: data.interface?.title || 'PLUGS FINDER',
             tagline1: data.interface?.tagline1 || 'JUSTE UNE',
             taglineHighlight: data.interface?.taglineHighlight || 'MINI-APP TELEGRAM',
-            tagline2: data.interface?.tagline2 || 'CHILL'
+            tagline2: data.interface?.tagline2 || 'CHILL',
+            backgroundImage: data.interface?.backgroundImage || ''
           },
           welcome: {
             text: data.welcome?.text || '',
@@ -142,14 +123,6 @@ export default function SimpleConfig() {
           socialMedia: {
             telegram: data.socialMedia?.telegram || '',
             whatsapp: data.socialMedia?.whatsapp || ''
-          },
-          messages: {
-            welcome: data.messages?.welcome || '',
-            noPlugsFound: data.messages?.noPlugsFound || '',
-            error: data.messages?.error || ''
-          },
-          broadcast: {
-            enabled: data.broadcast?.enabled !== false
           }
         })
         
@@ -364,51 +337,6 @@ export default function SimpleConfig() {
         <div className="max-w-4xl mx-auto py-8 px-4">
           <div className="space-y-6">
             
-            {/* Configuration Boutique */}
-            <div className="bg-white rounded-lg shadow p-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">🏪 Boutique</h2>
-              <div className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Nom de la boutique
-                    </label>
-                    <input
-                      type="text"
-                      value={config.boutique.name}
-                      onChange={(e) => updateConfig('boutique.name', e.target.value)}
-                      className="w-full border border-gray-300 rounded-lg p-3"
-                      placeholder="SwissQuality"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Sous-titre
-                    </label>
-                    <input
-                      type="text"
-                      value={config.boutique.subtitle}
-                      onChange={(e) => updateConfig('boutique.subtitle', e.target.value)}
-                      className="w-full border border-gray-300 rounded-lg p-3"
-                      placeholder="Votre boutique premium"
-                    />
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Image de fond (URL)
-                  </label>
-                  <input
-                    type="url"
-                    value={config.boutique.backgroundImage}
-                    onChange={(e) => updateConfig('boutique.backgroundImage', e.target.value)}
-                    className="w-full border border-gray-300 rounded-lg p-3"
-                    placeholder="https://example.com/background.jpg"
-                  />
-                </div>
-              </div>
-            </div>
-
             {/* Configuration Interface */}
             <div className="bg-white rounded-lg shadow p-6">
               <h2 className="text-lg font-semibold text-gray-900 mb-4">🎨 Interface</h2>
@@ -459,6 +387,18 @@ export default function SimpleConfig() {
                     onChange={(e) => updateConfig('interface.tagline2', e.target.value)}
                     className="w-full border border-gray-300 rounded-lg p-3"
                     placeholder="CHILL"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Image de fond (URL)
+                  </label>
+                  <input
+                    type="url"
+                    value={config.interface.backgroundImage}
+                    onChange={(e) => updateConfig('interface.backgroundImage', e.target.value)}
+                    className="w-full border border-gray-300 rounded-lg p-3"
+                    placeholder="https://example.com/background.jpg"
                   />
                 </div>
               </div>
@@ -632,73 +572,6 @@ export default function SimpleConfig() {
               </div>
             </div>
 
-            {/* Messages du Bot */}
-            <div className="bg-white rounded-lg shadow p-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">💬 Messages Bot</h2>
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Message de bienvenue
-                  </label>
-                  <input
-                    type="text"
-                    value={config.messages.welcome}
-                    onChange={(e) => updateConfig('messages.welcome', e.target.value)}
-                    className="w-full border border-gray-300 rounded-lg p-3"
-                    placeholder="Bienvenue !"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Message "aucun résultat"
-                  </label>
-                  <input
-                    type="text"
-                    value={config.messages.noPlugsFound}
-                    onChange={(e) => updateConfig('messages.noPlugsFound', e.target.value)}
-                    className="w-full border border-gray-300 rounded-lg p-3"
-                    placeholder="Aucun résultat trouvé"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Message d'erreur
-                  </label>
-                  <input
-                    type="text"
-                    value={config.messages.error}
-                    onChange={(e) => updateConfig('messages.error', e.target.value)}
-                    className="w-full border border-gray-300 rounded-lg p-3"
-                    placeholder="Une erreur est survenue"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Messages de diffusion */}
-            <div className="bg-white rounded-lg shadow p-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">📢 Messages de diffusion</h2>
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Activer la diffusion
-                  </label>
-                  <label className="flex items-center cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={config.broadcast.enabled}
-                      onChange={(e) => updateConfig('broadcast.enabled', e.target.checked)}
-                      className="sr-only"
-                    />
-                    <div className={`relative inline-flex h-6 w-11 rounded-full transition-colors duration-200 ${config.broadcast.enabled ? 'bg-blue-600' : 'bg-gray-300'}`}>
-                      <div className={`inline-block h-5 w-5 transform rounded-full bg-white transition-transform duration-200 ${config.broadcast.enabled ? 'translate-x-5' : 'translate-x-0'} translate-y-0.5`}></div>
-                    </div>
-                    <span className="ml-2 text-sm text-gray-600">Activé</span>
-                  </label>
-                </div>
-              </div>
-            </div>
-
             {/* Actions */}
             <div className="bg-white rounded-lg shadow p-6">
               <div className="flex flex-col sm:flex-row gap-4">
@@ -709,25 +582,31 @@ export default function SimpleConfig() {
                   🔍 Diagnostic
                 </button>
                 <button
+                  onClick={saveConfig}
+                  disabled={saving}
+                  className={`flex-1 px-6 py-3 rounded-lg font-medium transition-colors ${
+                    saving
+                      ? 'bg-gray-400 text-white cursor-not-allowed'
+                      : 'bg-blue-600 text-white hover:bg-blue-700'
+                  }`}
+                >
+                  {saving ? (
+                    <div className="flex items-center justify-center">
+                      <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Sauvegarde en cours...
+                    </div>
+                  ) : (
+                    '💾 Sauvegarder la configuration'
+                  )}
+                </button>
+                <button
                   onClick={() => window.open('/shop', '_blank')}
                   className="flex-1 bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold"
                 >
                   🏪 Voir Boutique
-                </button>
-                <button
-                  onClick={saveConfig}
-                  disabled={saving}
-                  className={`flex-1 ${saving ? 'bg-orange-500 animate-pulse' : 'bg-blue-600 hover:bg-blue-700'} disabled:opacity-50 disabled:cursor-not-allowed text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200`}
-                >
-                  {saving ? (
-                    <span className="flex items-center justify-center">
-                      <svg className="animate-spin -ml-1 mr-2 h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                      </svg>
-                      Sauvegarde...
-                    </span>
-                  ) : '💾 Sauvegarder'}
                 </button>
               </div>
             </div>

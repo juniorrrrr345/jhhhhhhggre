@@ -183,6 +183,30 @@ const configSchema = new mongoose.Schema({
       default: ''
     }
   },
+
+  // Configuration de l'interface
+  interface: {
+    title: {
+      type: String,
+      default: 'PLUGS FINDER'
+    },
+    tagline1: {
+      type: String,
+      default: 'JUSTE UNE'
+    },
+    taglineHighlight: {
+      type: String,
+      default: 'MINI-APP TELEGRAM'
+    },
+    tagline2: {
+      type: String,
+      default: 'CHILL'
+    },
+    backgroundImage: {
+      type: String,
+      default: ''
+    }
+  },
   
   updatedAt: {
     type: Date,

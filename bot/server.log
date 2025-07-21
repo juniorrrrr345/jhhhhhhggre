@@ -1,0 +1,32 @@
+🔄 Tentative de connexion MongoDB #1...
+✅ MongoDB connecté avec succès
+✅ MongoDB connecté: ac-rxln3be-shard-00-00.oghzx2v.mongodb.net
+ℹ️ Configuration existante trouvée
+🔄 Migration automatique des réseaux sociaux...
+🔗 Connexion à MongoDB réussie
+📋 2 plugs trouvés
+🎉 Migration terminée: 0 plugs migrés
+✅ Migration terminée avec succès
+🔄 Initialisation du cache...
+🔄 Rafraîchissement du cache...
+✅ Cache mis à jour - 2 plugs, config: OK
+✅ Cache initialisé et programmé pour se rafraîchir toutes les 30s
+✅ Bot en mode polling (développement)
+✅ Serveur démarré sur le port 3000
+📱 Bot Telegram connecté
+🌐 API disponible sur http://localhost:3000
+📊 Cache: 2 plugs, config: OK
+📡 GET /api/public/config - IP: ::1 - UserAgent: curl/8.12.1
+📋 Headers: [ 'host', 'user-agent', 'accept' ]
+🔍 Récupération config publique pour la boutique
+📊 Config récupérée pour boutique: { boutique: 'Testee', logo: 'Non défini', background: 'Défini' }
+📡 GET /api/users/stats - IP: ::1 - UserAgent: curl/8.12.1
+📋 Headers: [ 'host', 'user-agent', 'accept', 'authorization' ]
+🔐 Tentative d'authentification: GET /api/users/stats
+📋 Headers reçus: [ 'host', 'user-agent', 'accept', 'authorization' ]
+🔑 Authorization header: Bearer ***n123
+🔍 Password fourni: ***n123
+🔍 Password attendu configuré: Oui
+✅ Authentification réussie
+🔄 Rafraîchissement du cache...
+✅ Cache mis à jour - 2 plugs, config: OK

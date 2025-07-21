@@ -459,6 +459,7 @@ app.get('/api/public/config', async (req, res) => {
     // Ne retourner que les données publiques nécessaires pour la boutique
     const publicConfig = {
       boutique: config?.boutique || {},
+      interface: config?.interface || {},
       welcome: config?.welcome || {},
       socialMedia: config?.socialMedia || {},
       messages: config?.messages || {},
@@ -1513,7 +1514,7 @@ bot.use((ctx, next) => {
 });
 
 // Route pour les statistiques utilisateurs
-app.get('/api/users/stats', requireAuth, async (req, res) => {
+app.get('/api/users/stats', authenticateAdmin, async (req, res) => {
   try {
     res.json({
       totalUsers: userStorage.size,
@@ -1526,7 +1527,7 @@ app.get('/api/users/stats', requireAuth, async (req, res) => {
 });
 
 // Route pour la diffusion de messages
-app.post('/api/broadcast', requireAuth, async (req, res) => {
+app.post('/api/broadcast', authenticateAdmin, async (req, res) => {
   try {
     const { message, image } = req.body;
     
@@ -1586,7 +1587,7 @@ app.post('/api/broadcast', requireAuth, async (req, res) => {
 });
 
 // Route pour l'upload d'images (pour la diffusion)
-app.post('/api/upload-image', requireAuth, upload.single('image'), async (req, res) => {
+app.post('/api/upload-image', authenticateAdmin, upload.single('image'), async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ error: 'Aucune image fournie' });
