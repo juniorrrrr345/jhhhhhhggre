@@ -129,7 +129,7 @@ export default function AccueilAdmin() {
 
   if (loading) {
     return (
-      <Layout>
+      <Layout title="Accueil">
         <div className="flex items-center justify-center h-64">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
         </div>
@@ -138,7 +138,7 @@ export default function AccueilAdmin() {
   }
 
   return (
-    <Layout>
+    <Layout title="Accueil">
       <div className="space-y-6">
         {/* Header */}
         <div className="md:flex md:items-center md:justify-between">
