@@ -269,132 +269,75 @@ export default function ShopPlugDetail() {
         minHeight: '100vh',
         color: '#ffffff',
         fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-        backgroundImage: config?.interface?.backgroundImage ? `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url("${config.interface.backgroundImage}")` : 'none',
+        backgroundImage: config?.boutique?.backgroundImage ? `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url("${config.boutique.backgroundImage}")` : 'none',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
         backgroundAttachment: 'fixed'
       }}>
-        {/* Header avec bouton retour */}
-        <header style={{ 
-          backgroundColor: '#1a1a1a',
-          padding: '16px 20px',
-          borderBottom: '1px solid #2a2a2a'
+        {/* Header Titre Principal */}
+        <div style={{ 
+          backgroundColor: '#000000',
+          padding: '20px',
+          textAlign: 'center'
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'space-between',
+            marginBottom: '16px'
+          }}>
             <button 
               onClick={() => router.back()} 
               style={{
                 background: 'none',
                 border: 'none',
-                color: '#007AFF',
-                fontSize: '18px',
+                color: '#ffffff',
+                fontSize: '16px',
                 cursor: 'pointer',
-                padding: '0'
+                padding: '8px',
+                borderRadius: '6px',
+                backgroundColor: '#333333'
               }}
             >
-              ←
+              ← Retour
             </button>
-            <div style={{ textAlign: 'center', flex: 1 }}>
-              <h1 style={{ 
-                fontSize: '18px', 
-                fontWeight: 'bold', 
-                margin: '0',
-                color: '#ffffff'
+            {plug.isVip && (
+              <div style={{
+                backgroundColor: '#FFD700',
+                color: '#000000',
+                padding: '4px 12px',
+                borderRadius: '12px',
+                fontSize: '10px',
+                fontWeight: 'bold',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px'
               }}>
-                {plug.name}
-              </h1>
-              <p style={{ 
-                fontSize: '13px', 
-                margin: '2px 0 0 0',
-                color: '#8e8e93'
-              }}>
-                {plug.isVip ? 'Boutique VIP' : 'Boutique'} • {getCountryFlag(plug.countries)}
-              </p>
-            </div>
+                ⭐ VIP
+              </div>
+            )}
           </div>
-        </header>
-
-        {/* Navigation */}
-        <nav style={{ 
-          backgroundColor: '#000000',
-          padding: '0 20px',
-          borderBottom: '1px solid #2a2a2a'
-        }}>
-          <div style={{ 
-            display: 'flex', 
-            justifyContent: 'center', 
-            gap: '40px',
-            paddingBottom: '16px'
+          <h2 style={{ 
+            fontSize: '32px', 
+            fontWeight: 'bold', 
+            margin: '0 0 8px 0',
+            color: '#ffffff',
+            letterSpacing: '2px'
           }}>
-            <Link href="/shop" style={{ 
-              display: 'flex', 
-              flexDirection: 'column', 
-              alignItems: 'center', 
-              textDecoration: 'none',
-              color: '#8e8e93'
-            }}>
-              <div style={{ 
-                width: '40px', 
-                height: '40px', 
-                backgroundColor: 'transparent', 
-                borderRadius: '12px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                marginBottom: '4px'
-              }}>
-                🏠
-              </div>
-              <span style={{ fontSize: '12px', color: '#8e8e93' }}>Plugs</span>
-            </Link>
-            <Link href="/shop/search" style={{ 
-              display: 'flex', 
-              flexDirection: 'column', 
-              alignItems: 'center', 
-              textDecoration: 'none',
-              color: '#8e8e93'
-            }}>
-              <div style={{ 
-                width: '40px', 
-                height: '40px', 
-                backgroundColor: 'transparent', 
-                borderRadius: '12px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                marginBottom: '4px'
-              }}>
-                🔍
-              </div>
-              <span style={{ fontSize: '12px', color: '#8e8e93' }}>Rechercher</span>
-            </Link>
-            <Link href="/shop/vip" style={{ 
-              display: 'flex', 
-              flexDirection: 'column', 
-              alignItems: 'center', 
-              textDecoration: 'none',
-              color: '#8e8e93'
-            }}>
-              <div style={{ 
-                width: '40px', 
-                height: '40px', 
-                backgroundColor: 'transparent', 
-                borderRadius: '12px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                marginBottom: '4px'
-              }}>
-                🎁
-              </div>
-              <span style={{ fontSize: '12px', color: '#8e8e93' }}>VIP</span>
-            </Link>
+            {plug.name}
+          </h2>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+            <span style={{ color: '#ffffff', fontSize: '14px' }}>
+              Boutique détaillée
+            </span>
           </div>
-        </nav>
+        </div>
+
+
 
         {/* Main Content */}
-        <main style={{ padding: '20px' }}>
+        <main style={{ padding: '20px', paddingBottom: '90px' }}>
           {/* Image principale */}
           <div style={{ 
             width: '100%', 
@@ -748,6 +691,91 @@ export default function ShopPlugDetail() {
             </Link>
           </div>
         </main>
+
+        {/* Navigation en bas */}
+        <nav style={{ 
+          position: 'fixed',
+          bottom: '0',
+          left: '0',
+          right: '0',
+          backgroundColor: '#000000',
+          padding: '12px 20px',
+          borderTop: '1px solid #2a2a2a',
+          zIndex: 1000
+        }}>
+          <div style={{ 
+            display: 'flex', 
+            justifyContent: 'center', 
+            gap: '40px'
+          }}>
+            <Link href="/shop" style={{ 
+              display: 'flex', 
+              flexDirection: 'column', 
+              alignItems: 'center', 
+              textDecoration: 'none',
+              color: '#8e8e93'
+            }}>
+              <div style={{ 
+                width: '45px', 
+                height: '45px', 
+                backgroundColor: 'transparent', 
+                borderRadius: '12px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginBottom: '6px',
+                fontSize: '22px'
+              }}>
+                🏠
+              </div>
+              <span style={{ fontSize: '13px', color: '#8e8e93', fontWeight: '500' }}>Accueil</span>
+            </Link>
+            <Link href="/shop/search" style={{ 
+              display: 'flex', 
+              flexDirection: 'column', 
+              alignItems: 'center', 
+              textDecoration: 'none',
+              color: '#8e8e93'
+            }}>
+              <div style={{ 
+                width: '45px', 
+                height: '45px', 
+                backgroundColor: 'transparent', 
+                borderRadius: '12px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginBottom: '6px',
+                fontSize: '22px'
+              }}>
+                🔍
+              </div>
+              <span style={{ fontSize: '13px', color: '#8e8e93', fontWeight: '500' }}>Recherche</span>
+            </Link>
+            <Link href="/shop/vip" style={{ 
+              display: 'flex', 
+              flexDirection: 'column', 
+              alignItems: 'center', 
+              textDecoration: 'none',
+              color: '#8e8e93'
+            }}>
+              <div style={{ 
+                width: '45px', 
+                height: '45px', 
+                backgroundColor: 'transparent', 
+                borderRadius: '12px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginBottom: '6px',
+                fontSize: '22px'
+              }}>
+                ⭐
+              </div>
+              <span style={{ fontSize: '13px', color: '#8e8e93', fontWeight: '500' }}>VIP</span>
+            </Link>
+          </div>
+        </nav>
       </div>
 
       <style jsx>{`
