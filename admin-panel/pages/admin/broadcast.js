@@ -1,95 +1,14 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useRouter } from 'next/router'
 import Head from 'next/head'
 import toast, { Toaster } from 'react-hot-toast'
-import Layout from '../../components/Layout'
 
-export default function BroadcastPage() {
+export default function BroadcastMessages() {
   const [message, setMessage] = useState('')
   const [image, setImage] = useState('')
-  const [imageFile, setImageFile] = useState(null)
-  const [preview, setPreview] = useState('')
   const [sending, setSending] = useState(false)
-  const [stats, setStats] = useState({
-    totalUsers: 0,
-    sent: 0,
-    failed: 0
-  })
+  const [stats, setStats] = useState({ sent: 0, failed: 0, total: 0 })
   const router = useRouter()
-
-  useEffect(() => {
-    const token = localStorage.getItem('adminToken')
-    if (!token) {
-      router.push('/')
-      return
-    }
-    fetchUserStats()
-  }, [])
-
-  const fetchUserStats = async () => {
-    try {
-      const token = localStorage.getItem('adminToken')
-      const response = await fetch('/api/proxy?endpoint=/api/users/stats', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      })
-
-      if (response.ok) {
-        const data = await response.json()
-        setStats(prev => ({ ...prev, totalUsers: data.totalUsers || 0 }))
-      }
-    } catch (error) {
-      console.error('Erreur lors de la récupération des stats:', error)
-    }
-  }
-
-  const handleImageUpload = (e) => {
-    const file = e.target.files[0]
-    if (file) {
-      if (file.size > 5 * 1024 * 1024) {
-        toast.error('L\'image doit faire moins de 5MB')
-        return
-      }
-
-      setImageFile(file)
-      const reader = new FileReader()
-      reader.onload = (e) => {
-        setPreview(e.target.result)
-      }
-      reader.readAsDataURL(file)
-    }
-  }
-
-  const uploadImage = async () => {
-    if (!imageFile) return null
-
-    try {
-      const formData = new FormData()
-      formData.append('image', imageFile)
-
-      const token = localStorage.getItem('adminToken')
-      const response = await fetch('/api/proxy?endpoint=/api/upload-image', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        },
-        body: formData
-      })
-
-      if (response.ok) {
-        const data = await response.json()
-        return data.imageUrl
-      } else {
-        throw new Error('Erreur lors de l\'upload')
-      }
-    } catch (error) {
-      console.error('Erreur upload image:', error)
-      toast.error('Erreur lors de l\'upload de l\'image')
-      return null
-    }
-  }
 
   const sendBroadcast = async () => {
     if (!message.trim()) {
@@ -97,22 +16,16 @@ export default function BroadcastPage() {
       return
     }
 
+    const token = localStorage.getItem('adminToken')
+    if (!token) {
+      toast.error('Non authentifié')
+      return
+    }
+
     setSending(true)
-    setStats(prev => ({ ...prev, sent: 0, failed: 0 }))
+    setStats({ sent: 0, failed: 0, total: 0 })
 
     try {
-      let imageUrl = image
-      
-      // Upload de l'image si nécessaire
-      if (imageFile) {
-        imageUrl = await uploadImage()
-        if (!imageUrl) {
-          setSending(false)
-          return
-        }
-      }
-
-      const token = localStorage.getItem('adminToken')
       const response = await fetch('/api/proxy?endpoint=/api/broadcast', {
         method: 'POST',
         headers: {
@@ -121,32 +34,27 @@ export default function BroadcastPage() {
         },
         body: JSON.stringify({
           message: message.trim(),
-          image: imageUrl
+          image: image.trim() || null
         })
       })
 
       if (response.ok) {
         const data = await response.json()
-        setStats(prev => ({
-          ...prev,
+        setStats({
           sent: data.sent || 0,
-          failed: data.failed || 0
-        }))
-        
-        toast.success(`Message envoyé à ${data.sent} utilisateur(s)`)
-        
-        // Réinitialiser le formulaire
+          failed: data.failed || 0,
+          total: data.total || 0
+        })
+        toast.success(`Message envoyé à ${data.sent} utilisateurs !`)
         setMessage('')
         setImage('')
-        setImageFile(null)
-        setPreview('')
       } else {
-        const errorData = await response.json()
-        throw new Error(errorData.error || 'Erreur lors de l\'envoi')
+        const errorData = await response.json().catch(() => ({ error: 'Erreur inconnue' }))
+        throw new Error(errorData.error || 'Erreur d\'envoi')
       }
     } catch (error) {
-      console.error('Erreur broadcast:', error)
-      toast.error('Erreur lors de l\'envoi du message')
+      console.error('❌ Erreur broadcast:', error)
+      toast.error('Erreur : ' + error.message)
     } finally {
       setSending(false)
     }
@@ -155,178 +63,181 @@ export default function BroadcastPage() {
   return (
     <>
       <Head>
-        <title>Messages de diffusion - Admin</title>
+        <title>Messages aux utilisateurs - Admin Panel</title>
       </Head>
-      <Layout>
-        <div className="space-y-6">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">📢 Messages de diffusion</h1>
-            <p className="mt-1 text-sm text-gray-500">
-              Envoyez un message à tous les utilisateurs du bot
-            </p>
+      
+      <div className="min-h-screen bg-gray-50 py-6">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Header */}
+          <div className="mb-8">
+            <button
+              onClick={() => router.back()}
+              className="mb-4 inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+            >
+              ← Retour
+            </button>
+            
+            <div className="md:flex md:items-center md:justify-between">
+              <div className="flex-1 min-w-0">
+                <h2 className="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl">
+                  📢 Messages aux utilisateurs
+                </h2>
+                <p className="mt-1 text-sm text-gray-500">
+                  Envoyer un message à tous les utilisateurs du bot Telegram
+                </p>
+              </div>
+            </div>
           </div>
 
           {/* Statistiques */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-white rounded-lg shadow p-6">
-              <div className="flex items-center">
-                <div className="flex-shrink-0">
-                  <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-                    <span className="text-blue-600 text-lg">👥</span>
+          {(stats.sent > 0 || stats.failed > 0) && (
+            <div className="bg-white shadow rounded-lg mb-6">
+              <div className="px-4 py-5 sm:p-6">
+                <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">
+                  📊 Dernier envoi
+                </h3>
+                <div className="grid grid-cols-1 gap-5 sm:grid-cols-3">
+                  <div className="bg-blue-50 overflow-hidden shadow rounded-lg">
+                    <div className="p-5">
+                      <div className="flex items-center">
+                        <div className="flex-shrink-0">
+                          <div className="text-blue-400 text-lg">👥</div>
+                        </div>
+                        <div className="ml-5 w-0 flex-1">
+                          <dl>
+                            <dt className="text-sm font-medium text-gray-500 truncate">
+                              Total utilisateurs
+                            </dt>
+                            <dd className="text-lg font-medium text-gray-900">
+                              {stats.total}
+                            </dd>
+                          </dl>
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                </div>
-                <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-500">Utilisateurs totaux</p>
-                  <p className="text-2xl font-semibold text-gray-900">{stats.totalUsers}</p>
+                  
+                  <div className="bg-green-50 overflow-hidden shadow rounded-lg">
+                    <div className="p-5">
+                      <div className="flex items-center">
+                        <div className="flex-shrink-0">
+                          <div className="text-green-400 text-lg">✅</div>
+                        </div>
+                        <div className="ml-5 w-0 flex-1">
+                          <dl>
+                            <dt className="text-sm font-medium text-gray-500 truncate">
+                              Messages envoyés
+                            </dt>
+                            <dd className="text-lg font-medium text-gray-900">
+                              {stats.sent}
+                            </dd>
+                          </dl>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="bg-red-50 overflow-hidden shadow rounded-lg">
+                    <div className="p-5">
+                      <div className="flex items-center">
+                        <div className="flex-shrink-0">
+                          <div className="text-red-400 text-lg">❌</div>
+                        </div>
+                        <div className="ml-5 w-0 flex-1">
+                          <dl>
+                            <dt className="text-sm font-medium text-gray-500 truncate">
+                              Échecs
+                            </dt>
+                            <dd className="text-lg font-medium text-gray-900">
+                              {stats.failed}
+                            </dd>
+                          </dl>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
+          )}
 
-            <div className="bg-white rounded-lg shadow p-6">
-              <div className="flex items-center">
-                <div className="flex-shrink-0">
-                  <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
-                    <span className="text-green-600 text-lg">✅</span>
-                  </div>
-                </div>
-                <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-500">Messages envoyés</p>
-                  <p className="text-2xl font-semibold text-gray-900">{stats.sent}</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-white rounded-lg shadow p-6">
-              <div className="flex items-center">
-                <div className="flex-shrink-0">
-                  <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
-                    <span className="text-red-600 text-lg">❌</span>
-                  </div>
-                </div>
-                <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-500">Échecs</p>
-                  <p className="text-2xl font-semibold text-gray-900">{stats.failed}</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Formulaire de diffusion */}
-          <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Nouveau message</h2>
-            
-            <div className="space-y-4">
-              {/* Message */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Message *
-                </label>
-                <textarea
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                  rows={6}
-                  className="w-full border border-gray-300 rounded-lg p-3"
-                  placeholder="Saisissez votre message..."
-                  disabled={sending}
-                />
-                <p className="mt-1 text-xs text-gray-500">
-                  {message.length} caractères
-                </p>
-              </div>
-
-              {/* Image par URL */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Image (URL)
-                </label>
-                <input
-                  type="url"
-                  value={image}
-                  onChange={(e) => setImage(e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg p-3"
-                  placeholder="https://exemple.com/image.jpg"
-                  disabled={sending}
-                />
-              </div>
-
-              {/* Upload d'image */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Ou upload une image
-                </label>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageUpload}
-                  className="w-full border border-gray-300 rounded-lg p-3"
-                  disabled={sending}
-                />
-                <p className="mt-1 text-xs text-gray-500">
-                  Maximum 5MB - JPG, PNG, GIF
-                </p>
-              </div>
-
-              {/* Prévisualisation */}
-              {(preview || image) && (
+          {/* Formulaire */}
+          <div className="bg-white shadow rounded-lg">
+            <div className="px-4 py-5 sm:p-6">
+              <div className="space-y-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Aperçu de l'image
+                  <label htmlFor="message" className="block text-sm font-medium text-gray-700">
+                    Message *
                   </label>
-                  <div className="border border-gray-300 rounded-lg p-3">
-                    <img
-                      src={preview || image}
-                      alt="Aperçu"
-                      className="max-w-xs max-h-48 object-contain"
-                      onError={(e) => {
-                        e.target.style.display = 'none'
-                      }}
+                  <div className="mt-1">
+                    <textarea
+                      id="message"
+                      name="message"
+                      rows={6}
+                      value={message}
+                      onChange={(e) => setMessage(e.target.value)}
+                      className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                      placeholder="Saisissez votre message à envoyer à tous les utilisateurs..."
+                      disabled={sending}
                     />
                   </div>
+                  <p className="mt-2 text-sm text-gray-500">
+                    Ce message sera envoyé à tous les utilisateurs qui ont interagi avec le bot.
+                  </p>
                 </div>
-              )}
 
-              {/* Boutons */}
-              <div className="flex flex-col sm:flex-row gap-4 pt-4">
-                <button
-                  onClick={sendBroadcast}
-                  disabled={sending || !message.trim()}
-                  className={`flex-1 px-6 py-3 rounded-lg font-medium ${
-                    sending || !message.trim()
-                      ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                      : 'bg-red-600 text-white hover:bg-red-700'
-                  }`}
-                >
-                  {sending ? (
-                    <div className="flex items-center justify-center">
-                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                      Envoi en cours...
-                    </div>
-                  ) : (
-                    `📢 Envoyer à ${stats.totalUsers} utilisateur(s)`
-                  )}
-                </button>
-                
-                <button
-                  onClick={() => {
-                    setMessage('')
-                    setImage('')
-                    setImageFile(null)
-                    setPreview('')
-                  }}
-                  disabled={sending}
-                  className="px-6 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 font-medium"
-                >
-                  🗑️ Effacer
-                </button>
+                <div>
+                  <label htmlFor="image" className="block text-sm font-medium text-gray-700">
+                    Image (optionnel)
+                  </label>
+                  <div className="mt-1">
+                    <input
+                      type="url"
+                      id="image"
+                      name="image"
+                      value={image}
+                      onChange={(e) => setImage(e.target.value)}
+                      className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                      placeholder="https://example.com/image.jpg"
+                      disabled={sending}
+                    />
+                  </div>
+                  <p className="mt-2 text-sm text-gray-500">
+                    URL d'une image à joindre au message (optionnel).
+                  </p>
+                </div>
+
+                <div className="flex justify-end">
+                  <button
+                    type="button"
+                    onClick={sendBroadcast}
+                    disabled={sending || !message.trim()}
+                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {sending ? (
+                      <>
+                        <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Envoi en cours...
+                      </>
+                    ) : (
+                      <>
+                        📢 Envoyer le message
+                      </>
+                    )}
+                  </button>
+                </div>
               </div>
             </div>
           </div>
 
           {/* Avertissement */}
-          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+          <div className="mt-6 bg-yellow-50 border border-yellow-200 rounded-md p-4">
             <div className="flex">
               <div className="flex-shrink-0">
-                <span className="text-yellow-400 text-xl">⚠️</span>
+                <div className="text-yellow-400 text-lg">⚠️</div>
               </div>
               <div className="ml-3">
                 <h3 className="text-sm font-medium text-yellow-800">
@@ -334,17 +245,17 @@ export default function BroadcastPage() {
                 </h3>
                 <div className="mt-2 text-sm text-yellow-700">
                   <p>
-                    Ce message sera envoyé à <strong>tous</strong> les utilisateurs du bot.
-                    Vérifiez bien votre message avant l'envoi.
+                    Cette action enverra le message à tous les utilisateurs du bot. 
+                    Assurez-vous que le contenu est approprié et respecte les conditions d'utilisation de Telegram.
                   </p>
                 </div>
               </div>
             </div>
           </div>
         </div>
-
-        <Toaster position="top-right" />
-      </Layout>
+      </div>
+      
+      <Toaster position="top-right" />
     </>
   )
 }

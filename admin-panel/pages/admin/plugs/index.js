@@ -61,7 +61,7 @@ export default function AccueilAdmin() {
         filter
       })
 
-      const response = await fetch(`http://localhost:3000/api/plugs?${params}`, {
+      const response = await fetch(`/api/proxy?endpoint=/api/plugs&${params}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       })
 
@@ -99,7 +99,7 @@ export default function AccueilAdmin() {
 
     try {
       const token = localStorage.getItem('adminToken')
-      const response = await fetch(`http://localhost:3000/api/plugs/${id}`, {
+      const response = await fetch(`/api/proxy?endpoint=/api/plugs/${id}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       })
