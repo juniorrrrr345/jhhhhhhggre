@@ -53,13 +53,28 @@ const createMainKeyboard = (config) => {
   console.log('🎮 DEBUG: Array.isArray(config.socialMedia) =', Array.isArray(config?.socialMedia));
   console.log('🎮 DEBUG: config.socialMedia.length =', config?.socialMedia?.length);
   
+  // Convertir socialMedia en array s'il ne l'est pas déjà (problème Mongoose)
+  let socialMediaArray = [];
+  if (config?.socialMedia) {
+    if (Array.isArray(config.socialMedia)) {
+      socialMediaArray = config.socialMedia;
+    } else if (config.socialMedia.length > 0 && typeof config.socialMedia[0] === 'object') {
+      // C'est un objet array-like (Mongoose), convertir en vrai array
+      socialMediaArray = Array.from(config.socialMedia);
+      console.log('🔄 Conversion objet array-like vers array:', socialMediaArray.length, 'éléments');
+    }
+  }
+  
+  console.log('🎮 DEBUG: socialMediaArray final =', JSON.stringify(socialMediaArray));
+  console.log('🎮 DEBUG: socialMediaArray.length =', socialMediaArray.length);
+  
   // Réseaux sociaux personnalisés en haut du menu
-  if (config?.socialMedia && Array.isArray(config.socialMedia) && config.socialMedia.length > 0) {
+  if (socialMediaArray && socialMediaArray.length > 0) {
     console.log('✅ Condition socialMedia remplie !');
     console.log('🔄 Création des boutons réseaux sociaux personnalisés...');
     
     // Filtrer et valider les réseaux sociaux
-    const validSocialMedia = config.socialMedia.filter(social => {
+    const validSocialMedia = socialMediaArray.filter(social => {
       if (!social || !social.name || !social.url) {
         console.warn('🚫 Réseau social incomplet détecté:', social);
         return false;
@@ -76,7 +91,7 @@ const createMainKeyboard = (config) => {
       return true;
     });
     
-    console.log(`✅ ${validSocialMedia.length}/${config.socialMedia.length} réseaux sociaux valides`);
+    console.log(`✅ ${validSocialMedia.length}/${socialMediaArray.length} réseaux sociaux valides`);
     
     // Grouper les réseaux sociaux par lignes de 2
     for (let i = 0; i < validSocialMedia.length; i += 2) {
@@ -104,7 +119,8 @@ const createMainKeyboard = (config) => {
     console.log('❌ DEBUG: Condition socialMedia NON remplie');
     console.log('❌ DEBUG: config?.socialMedia exists =', !!config?.socialMedia);
     console.log('❌ DEBUG: Array.isArray =', Array.isArray(config?.socialMedia));
-    console.log('❌ DEBUG: length > 0 =', config?.socialMedia?.length > 0);
+    console.log('    ❌ DEBUG: length > 0 =', config?.socialMedia?.length > 0);
+    console.log('❌ DEBUG: socialMediaArray.length =', socialMediaArray.length);
   }
   
   console.log('🎯 DEBUG: Nombre de lignes de boutons avant autres boutons =', buttons.length);
