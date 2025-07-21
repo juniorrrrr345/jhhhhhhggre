@@ -3,25 +3,34 @@ import { useRouter } from 'next/router'
 import Layout from '../../components/Layout'
 import toast from 'react-hot-toast'
 
-export default function BoutiqueConfig() {
+export default function Configuration() {
+  console.log('🚀 Configuration component loading...')
+  
   const [config, setConfig] = useState(null)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const router = useRouter()
 
   useEffect(() => {
+    console.log('🔧 Configuration useEffect triggered')
     const token = localStorage.getItem('adminToken')
+    console.log('🔑 Token exists:', !!token)
+    
     if (!token) {
+      console.log('❌ No token, redirecting to login')
       router.push('/')
       return
     }
     
+    console.log('✅ Token found, loading config')
     loadConfig()
   }, [])
 
   const loadConfig = async () => {
     try {
       const token = localStorage.getItem('adminToken')
+      console.log('🔄 Chargement configuration...')
+      
       const response = await fetch('/api/proxy?endpoint=/api/config', {
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -29,18 +38,25 @@ export default function BoutiqueConfig() {
         }
       })
       
+      console.log('📡 Réponse API:', response.status)
+      
       if (response.ok) {
         const data = await response.json()
         setConfig(data)
         console.log('✅ Config boutique chargée:', data.boutique)
       } else {
-        const errorData = await response.json()
-        console.error('❌ Erreur chargement config:', errorData)
-        toast.error('Erreur lors du chargement')
+        console.error('❌ Erreur HTTP:', response.status)
+        try {
+          const errorData = await response.json()
+          console.error('❌ Détails erreur:', errorData)
+        } catch (parseError) {
+          console.error('❌ Impossible de parser l\'erreur')
+        }
+        toast.error(`Erreur lors du chargement (${response.status})`)
       }
     } catch (error) {
-      console.error('❌ Erreur:', error)
-      toast.error('Erreur de connexion')
+      console.error('❌ Erreur connexion:', error)
+      toast.error('Erreur de connexion: ' + error.message)
     } finally {
       setLoading(false)
     }
@@ -53,12 +69,13 @@ export default function BoutiqueConfig() {
     try {
       const token = localStorage.getItem('adminToken')
       
+      // Envoyer la configuration complète avec seulement la section boutique modifiée
       const payload = {
         _method: 'PUT',
-        boutique: config.boutique
+        ...config  // Inclure toute la config existante
       }
       
-      console.log('💾 Sauvegarde config boutique:', payload)
+      console.log('💾 Sauvegarde config boutique:', payload.boutique)
       
       const response = await fetch('/api/proxy?endpoint=/api/config', {
         method: 'POST',
@@ -107,10 +124,15 @@ export default function BoutiqueConfig() {
   }
 
   if (loading) {
+    console.log('⏳ Configuration is loading...')
     return (
       <Layout>
         <div className="flex justify-center items-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+            <p className="text-gray-600">Chargement de la configuration...</p>
+            <p className="text-sm text-gray-500 mt-2">Si cela prend trop de temps, vérifiez la console</p>
+          </div>
         </div>
       </Layout>
     )
