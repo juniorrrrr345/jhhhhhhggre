@@ -1,220 +1,191 @@
 import { useState, useEffect } from 'react'
 import Head from 'next/head'
 import Link from 'next/link'
+import { api } from '../../lib/api'
+import toast from 'react-hot-toast'
+import Pagination from '../../components/Pagination'
 import {
-  MagnifyingGlassIcon,
   StarIcon,
   MapPinIcon,
   TruckIcon,
   GlobeAltIcon,
-  HomeIcon
+  HomeIcon,
+  MagnifyingGlassIcon
 } from '@heroicons/react/24/outline'
 
 export default function ShopSearch() {
   const [plugs, setPlugs] = useState([])
-  const [config, setConfig] = useState(null)
-  const [loading, setLoading] = useState(false)
-  const [initialLoading, setInitialLoading] = useState(true)
-  const [search, setSearch] = useState('')
-  const [selectedCountry, setSelectedCountry] = useState('')
-  const [selectedService, setSelectedService] = useState('')
   const [allPlugs, setAllPlugs] = useState([])
+  const [config, setConfig] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [search, setSearch] = useState('')
+  const [countryFilter, setCountryFilter] = useState('')
+  const [serviceFilter, setServiceFilter] = useState('')
+  const [vipFilter, setVipFilter] = useState('')
+  const [currentPage, setCurrentPage] = useState(1)
+  const itemsPerPage = 12
 
   useEffect(() => {
     fetchConfig()
-    fetchAllPlugs()
-    
-    const interval = setInterval(() => {
-      fetchConfig()
-      if (allPlugs.length === 0) {
-        fetchAllPlugs()
-      }
-    }, 15000)
-    
-    const handleStorageChange = (event) => {
-      if (event?.key === 'boutique_sync_signal') {
-        fetchConfig()
-        if (search || selectedService || selectedCountry) {
-          filterPlugs()
-        }
-      }
-    }
-    
-    window.addEventListener('storage', handleStorageChange)
-    
-    return () => {
-      clearInterval(interval)
-      window.removeEventListener('storage', handleStorageChange)
-    }
+    fetchPlugs()
   }, [])
 
   useEffect(() => {
-    if (allPlugs.length > 0) {
-      filterPlugs()
-    }
-  }, [search, selectedCountry, selectedService, allPlugs])
+    filterPlugs()
+  }, [search, countryFilter, serviceFilter, vipFilter, allPlugs])
 
   const fetchConfig = async () => {
     try {
+      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
       const timestamp = new Date().getTime()
-      const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://jhhhhhhggre.onrender.com'
-      
-      try {
-        const response = await fetch(`${apiBaseUrl}/api/public/config?t=${timestamp}`, {
-          cache: 'no-cache',
-          headers: { 
-            'Cache-Control': 'no-cache, no-store, must-revalidate',
-            'Pragma': 'no-cache'
-          }
-        })
-        
-        if (response.ok) {
-          const data = await response.json()
-          setConfig(data)
-          return
-        }
-      } catch (directError) {
-        console.log('❌ Config recherche directe échouée:', directError.message)
-      }
-      
-      try {
-        const response = await fetch(`/api/proxy?endpoint=/api/public/config&t=${timestamp}`, {
-          cache: 'no-cache',
-          headers: { 'Cache-Control': 'no-cache' }
-        })
-        
-        if (response.ok) {
-          const data = await response.json()
-          setConfig(data)
-        }
-      } catch (proxyError) {
-        console.log('❌ Config recherche proxy échouée:', proxyError.message)
-      }
-      
-    } catch (error) {
-      console.log('❌ Erreur chargement config recherche:', error)
-    } finally {
-      setInitialLoading(false)
-    }
-  }
-
-  const fetchAllPlugs = async () => {
-    try {
-      setLoading(true)
       
       let data
       try {
-        const timestamp = new Date().getTime()
-        const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://jhhhhhhggre.onrender.com'
-        const url = `${apiBaseUrl}/api/public/plugs?filter=active&limit=100&t=${timestamp}`
-        
-        const response = await fetch(url, {
-          cache: 'no-cache',
-          headers: { 'Cache-Control': 'no-cache' }
+        const directResponse = await fetch(`${apiBaseUrl}/api/public/config?t=${timestamp}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache',
+            'Expires': '0'
+          }
         })
         
-        if (response.ok) {
-          data = await response.json()
+        if (directResponse.ok) {
+          data = await directResponse.json()
         } else {
-          throw new Error(`HTTP ${response.status}`)
+          throw new Error(`Direct config failed: HTTP ${directResponse.status}`)
         }
       } catch (directError) {
-        const proxyUrl = `/api/proxy?endpoint=/api/public/plugs&filter=active&limit=100&t=${new Date().getTime()}`
-        const proxyResponse = await fetch(proxyUrl, {
-          cache: 'no-cache',
-          headers: { 'Cache-Control': 'no-cache' }
-        })
+        console.log('❌ Config recherche directe échouée:', directError.message)
         
-        if (proxyResponse.ok) {
+        try {
+          const proxyResponse = await fetch(`/api/proxy?endpoint=/api/public/config&t=${new Date().getTime()}`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              'Cache-Control': 'no-cache'
+            }
+          })
+          
+          if (!proxyResponse.ok) {
+            throw new Error(`Config proxy failed: HTTP ${proxyResponse.status}`)
+          }
+          
           data = await proxyResponse.json()
-        } else {
-          throw new Error(`Search proxy failed: HTTP ${proxyResponse.status}`)
+        } catch (proxyError) {
+          console.log('❌ Config recherche proxy échouée:', proxyError.message)
+          throw proxyError
         }
       }
+
+      setConfig(data)
+    } catch (error) {
+      console.log('❌ Erreur chargement config recherche:', error)
+    }
+  }
+
+  const fetchPlugs = async () => {
+    try {
+      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
+      const timestamp = new Date().getTime()
       
-      if (data && Array.isArray(data.plugs)) {
-        setAllPlugs(data.plugs)
-        setPlugs(data.plugs)
-      } else {
-        setAllPlugs([])
-        setPlugs([])
+      let data
+      try {
+        const directResponse = await fetch(`${apiBaseUrl}/api/public/plugs?limit=100&t=${timestamp}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache',
+            'Expires': '0'
+          }
+        })
+        
+        if (directResponse.ok) {
+          data = await directResponse.json()
+        } else {
+          throw new Error(`Direct plugs failed: HTTP ${directResponse.status}`)
+        }
+      } catch (directError) {
+        console.log('❌ Plugs recherche directs échoués:', directError.message)
+        
+        try {
+          const proxyResponse = await fetch(`/api/proxy?endpoint=/api/public/plugs&limit=100&t=${new Date().getTime()}`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              'Cache-Control': 'no-cache'
+            }
+          })
+          
+          if (!proxyResponse.ok) {
+            throw new Error(`Plugs proxy failed: HTTP ${proxyResponse.status}`)
+          }
+          
+          data = await proxyResponse.json()
+        } catch (proxyError) {
+          console.log('❌ Plugs recherche proxy échoués:', proxyError.message)
+          throw proxyError
+        }
       }
-     } catch (error) {
-      console.error('💥 Search fetch error:', error)
+
+      setAllPlugs(data)
+    } catch (error) {
+      console.error('❌ Erreur chargement plugs recherche:', error)
+      setAllPlugs([])
     } finally {
       setLoading(false)
     }
   }
 
   const filterPlugs = () => {
-    let filteredPlugs = [...allPlugs]
-
-    if (search) {
-      filteredPlugs = filteredPlugs.filter(plug => 
+    let filtered = allPlugs.filter(plug => {
+      const matchesSearch = search === '' || 
         plug.name.toLowerCase().includes(search.toLowerCase()) ||
         plug.description.toLowerCase().includes(search.toLowerCase())
-      )
-    }
+      
+      const matchesCountry = countryFilter === '' || 
+        (plug.countries && plug.countries.some(country => 
+          country.toLowerCase().includes(countryFilter.toLowerCase())
+        ))
+      
+      const matchesService = serviceFilter === '' || 
+        (serviceFilter === 'delivery' && plug.services?.delivery?.enabled) ||
+        (serviceFilter === 'postal' && plug.services?.postal?.enabled) ||
+        (serviceFilter === 'meetup' && plug.services?.meetup?.enabled)
+      
+      const matchesVip = vipFilter === '' || 
+        (vipFilter === 'vip' && plug.isVip) ||
+        (vipFilter === 'standard' && !plug.isVip)
+      
+      return matchesSearch && matchesCountry && matchesService && matchesVip
+    })
 
-    if (selectedCountry) {
-      filteredPlugs = filteredPlugs.filter(plug => 
-        plug.countries?.includes(selectedCountry)
-      )
-    }
-
-    if (selectedService) {
-      filteredPlugs = filteredPlugs.filter(plug => 
-        plug.services?.[selectedService]?.enabled
-      )
-    }
-
-    filteredPlugs.sort((a, b) => {
+    // Trier par VIP en premier
+    filtered = filtered.sort((a, b) => {
       if (a.isVip && !b.isVip) return -1
       if (!a.isVip && b.isVip) return 1
-      return (b.likes || 0) - (a.likes || 0)
+      return 0
     })
 
-    setPlugs(filteredPlugs)
-  }
-
-  const getUniqueCountries = () => {
-    const countries = new Set()
-    allPlugs.forEach(plug => {
-      plug.countries?.forEach(country => countries.add(country))
-    })
-    return Array.from(countries).sort()
+    setPlugs(filtered)
+    setCurrentPage(1)
   }
 
   const resetFilters = () => {
     setSearch('')
-    setSelectedCountry('')
-    setSelectedService('')
+    setCountryFilter('')
+    setServiceFilter('')
+    setVipFilter('')
   }
 
-  if (initialLoading) {
-    return (
-      <>
-        <Head>
-          <title>Chargement...</title>
-          <meta name="viewport" content="width=device-width, initial-scale=1" />
-        </Head>
-        <div 
-          className="min-h-screen bg-black flex items-center justify-center"
-          style={{
-            backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7))',
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            backgroundRepeat: 'no-repeat'
-          }}
-        >
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
-            <p className="text-white font-medium">Chargement de la boutique...</p>
-          </div>
-        </div>
-      </>
-    )
-  }
+  const uniqueCountries = [...new Set(allPlugs.flatMap(plug => plug.countries || []))].sort()
+
+  const currentPlugs = plugs.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  )
 
   return (
     <>
@@ -222,30 +193,6 @@ export default function ShopSearch() {
         <title>Recherche - {config?.boutique?.name || 'Boutique'}</title>
         <meta name="description" content="Recherchez vos boutiques préférées par nom, pays ou service." />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <style jsx global>{`
-          a {
-            text-decoration: none !important;
-          }
-          .no-underline {
-            text-decoration: none !important;
-          }
-          /* Force tous les liens et textes à être blancs */
-          nav a, nav a *, h1, h2, h3, h4, h5, h6, 
-          .text-white, .text-gray-200, .text-gray-300 {
-            color: white !important;
-          }
-          /* Liens de navigation spécifiquement */
-          nav a {
-            color: white !important;
-          }
-          nav a:hover {
-            color: #e5e7eb !important;
-          }
-          /* Titres des plugs */
-          h3 {
-            color: white !important;
-          }
-        `}</style>
       </Head>
 
       <div 
@@ -256,7 +203,8 @@ export default function ShopSearch() {
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',
-          backgroundAttachment: 'fixed'
+          backgroundAttachment: 'fixed',
+          color: 'white'
         }}
       >
         {/* Header */}
@@ -265,8 +213,8 @@ export default function ShopSearch() {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <div className="flex items-center justify-center h-16">
                 <div className="text-center">
-                  <h1 className="text-xl font-bold text-white">
-                    🔍 {config?.boutique?.name || 'Boutique'}
+                  <h1 style={{ color: 'white' }} className="text-xl font-bold">
+                    🔍 {config?.boutique?.name || 'Recherche'}
                   </h1>
                 </div>
               </div>
@@ -281,24 +229,27 @@ export default function ShopSearch() {
               <div className="flex justify-center space-x-8 h-12 items-center">
                 <Link 
                   href="/shop" 
-                  className="text-white hover:text-gray-200 pb-3 flex items-center"
+                  style={{ color: 'white' }}
+                  className="pb-3 flex items-center hover:opacity-75"
                 >
                   <span className="mr-1">🏠</span>
-                  Accueil
+                  <span style={{ color: 'white' }}>Accueil</span>
                 </Link>
                 <Link 
                   href="/shop/search" 
-                  className="text-white font-medium border-b-2 border-white pb-3 flex items-center"
+                  style={{ color: 'white', borderColor: 'white' }}
+                  className="font-medium border-b-2 pb-3 flex items-center"
                 >
                   <span className="mr-1">🔍</span>
-                  Recherche
+                  <span style={{ color: 'white' }}>Recherche</span>
                 </Link>
                 <Link 
                   href="/shop/vip" 
-                  className="text-white hover:text-gray-200 pb-3 flex items-center"
+                  style={{ color: 'white' }}
+                  className="pb-3 flex items-center hover:opacity-75"
                 >
                   <span className="mr-1">👑</span>
-                  VIP
+                  <span style={{ color: 'white' }}>VIP</span>
                 </Link>
               </div>
             </div>
@@ -311,7 +262,7 @@ export default function ShopSearch() {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <div className="text-center mb-8">
                 <div className="flex items-center justify-center mb-4">
-                  <h2 className="text-3xl font-bold text-white">
+                  <h2 style={{ color: 'white' }} className="text-3xl font-bold">
                     🔍 Recherche dans {config?.boutique?.name || 'la boutique'}
                   </h2>
                 </div>
@@ -322,66 +273,87 @@ export default function ShopSearch() {
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                   {/* Recherche textuelle */}
                   <div>
-                    <label className="block text-sm font-medium text-white mb-2">
-                      Nom ou description
+                    <label style={{ color: 'white' }} className="block text-sm font-medium mb-2">
+                      Rechercher
                     </label>
                     <div className="relative">
                       <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <MagnifyingGlassIcon className="h-5 w-5 text-white" />
+                        <MagnifyingGlassIcon style={{ color: 'white' }} className="h-5 w-5" />
                       </div>
                       <input
                         type="text"
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
-                        className="block w-full pl-10 pr-3 py-3 border border-gray-600 rounded-lg bg-black text-white focus:ring-2 focus:ring-white focus:border-transparent placeholder-gray-400"
+                        className="block w-full pl-10 pr-3 py-2 border border-gray-600 rounded-md bg-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        style={{ color: 'white' }}
                         placeholder="Rechercher une boutique..."
                       />
                     </div>
                   </div>
 
-                  {/* Pays */}
+                  {/* Filtre par pays */}
                   <div>
-                    <label className="block text-sm font-medium text-white mb-2">
+                    <label style={{ color: 'white' }} className="block text-sm font-medium mb-2">
                       Pays
                     </label>
                     <select
-                      value={selectedCountry}
-                      onChange={(e) => setSelectedCountry(e.target.value)}
-                      className="block w-full px-3 py-3 border border-gray-600 rounded-lg bg-black text-white focus:ring-2 focus:ring-white focus:border-transparent"
+                      value={countryFilter}
+                      onChange={(e) => setCountryFilter(e.target.value)}
+                      className="block w-full px-3 py-2 border border-gray-600 rounded-md bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      style={{ color: 'white' }}
                     >
                       <option value="">Tous les pays</option>
-                      {getUniqueCountries().map(country => (
-                        <option key={country} value={country}>🌍 {country}</option>
+                      {uniqueCountries.map(country => (
+                        <option key={country} value={country}>{country}</option>
                       ))}
                     </select>
                   </div>
 
-                  {/* Service */}
+                  {/* Filtre par service */}
                   <div>
-                    <label className="block text-sm font-medium text-white mb-2">
-                      Type de service
+                    <label style={{ color: 'white' }} className="block text-sm font-medium mb-2">
+                      Service
                     </label>
                     <select
-                      value={selectedService}
-                      onChange={(e) => setSelectedService(e.target.value)}
-                      className="block w-full px-3 py-3 border border-gray-600 rounded-lg bg-black text-white focus:ring-2 focus:ring-white focus:border-transparent"
+                      value={serviceFilter}
+                      onChange={(e) => setServiceFilter(e.target.value)}
+                      className="block w-full px-3 py-2 border border-gray-600 rounded-md bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      style={{ color: 'white' }}
                     >
                       <option value="">Tous les services</option>
-                      <option value="delivery">🚚 Livraison rapide</option>
-                      <option value="postal">✈️ Envoi postal</option>
-                      <option value="meetup">🏠 Meetup local</option>
+                      <option value="delivery">Livraison</option>
+                      <option value="postal">Postal</option>
+                      <option value="meetup">Meetup</option>
                     </select>
                   </div>
 
-                  {/* Bouton reset */}
-                  <div className="flex items-end">
-                    <button
-                      onClick={resetFilters}
-                      className="w-full px-4 py-3 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-colors font-medium"
+                  {/* Filtre VIP */}
+                  <div>
+                    <label style={{ color: 'white' }} className="block text-sm font-medium mb-2">
+                      Type
+                    </label>
+                    <select
+                      value={vipFilter}
+                      onChange={(e) => setVipFilter(e.target.value)}
+                      className="block w-full px-3 py-2 border border-gray-600 rounded-md bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      style={{ color: 'white' }}
                     >
-                      🔄 Réinitialiser
-                    </button>
+                      <option value="">Tous</option>
+                      <option value="vip">VIP uniquement</option>
+                      <option value="standard">Standard uniquement</option>
+                    </select>
                   </div>
+                </div>
+
+                {/* Bouton reset */}
+                <div className="mt-4 text-center">
+                  <button
+                    onClick={resetFilters}
+                    className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-md transition-colors"
+                    style={{ color: 'white' }}
+                  >
+                    Réinitialiser les filtres
+                  </button>
                 </div>
               </div>
             </div>
@@ -389,113 +361,135 @@ export default function ShopSearch() {
         )}
 
         {/* Résultats */}
-        {config && (
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-            <div className="mb-8">
-              <h3 className="text-2xl font-bold text-white mb-2">
+        <main className="pb-12">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            {/* Titre des résultats */}
+            <div className="text-center mb-8">
+              <h3 style={{ color: 'white' }} className="text-2xl font-bold mb-2">
                 📋 Résultats de recherche
               </h3>
-              <p className="text-white">
+              <p style={{ color: 'white' }}>
                 {loading ? 'Recherche en cours...' : `${plugs.length} boutique(s) trouvée(s)`}
               </p>
             </div>
 
+            {/* Loading */}
             {loading ? (
               <div className="text-center py-12">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto"></div>
-                <p className="mt-4 text-white">Recherche en cours...</p>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
+                <p style={{ color: 'white' }}>Recherche en cours...</p>
               </div>
             ) : plugs.length === 0 ? (
               <div className="text-center py-12">
-                <div className="text-6xl mb-4">🔍</div>
-                <h3 className="text-xl font-medium text-white mb-2">Aucune boutique trouvée</h3>
-                <p className="text-white mb-6">Essayez de modifier vos critères de recherche.</p>
-                <button
-                  onClick={resetFilters}
-                  className="bg-gray-700 text-white px-6 py-3 rounded-lg hover:bg-gray-600 transition-colors"
-                >
-                  🔄 Réinitialiser les filtres
-                </button>
+                <div className="mx-auto h-12 w-12 text-white mb-4 flex items-center justify-center">
+                  <MagnifyingGlassIcon className="h-8 w-8" />
+                </div>
+                <h3 style={{ color: 'white' }} className="text-xl font-medium mb-2">Aucune boutique trouvée</h3>
+                <p style={{ color: 'white' }} className="mb-6">Essayez de modifier vos critères de recherche.</p>
               </div>
             ) : (
-              <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-2 gap-4">
-                {plugs.map((plug, index) => (
-                  <Link key={plug._id} href={`/shop/${plug._id}`}>
-                    <div className="bg-black border border-gray-600 rounded-lg overflow-hidden hover:border-gray-400 transition-colors duration-300 cursor-pointer">
-                      <div className="relative h-32 sm:h-40">
-                        <img
-                          src={plug.image || '/placeholder.jpg'}
-                          alt={plug.name}
-                          className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
-                        />
-                        <div className="absolute top-2 right-2 space-y-1">
+              <>
+                {/* Grille des résultats */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
+                  {currentPlugs.map((plug, index) => (
+                    <Link 
+                      key={plug._id || index} 
+                      href={`/shop/${plug._id}`} 
+                      className="block group hover:scale-105 transition-transform duration-200"
+                      style={{ textDecoration: 'none' }}
+                    >
+                      <div className="bg-gray-800 border border-gray-700 rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-shadow duration-300">
+                        {/* Image */}
+                        <div className="relative aspect-square bg-gray-900">
+                          {plug.image ? (
+                            <img
+                              src={plug.image}
+                              alt={plug.name}
+                              className="w-full h-full object-cover"
+                              onError={(e) => {
+                                e.target.style.display = 'none'
+                                e.target.nextSibling.style.display = 'flex'
+                              }}
+                            />
+                          ) : null}
+                          <div 
+                            className={`absolute inset-0 flex items-center justify-center ${plug.image ? 'hidden' : 'flex'}`}
+                            style={{ display: plug.image ? 'none' : 'flex' }}
+                          >
+                            <GlobeAltIcon className="w-16 h-16 text-gray-600" />
+                          </div>
+                          
+                          {/* VIP Badge */}
                           {plug.isVip && (
-                            <div>
-                              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-900 text-white">
+                            <div className="absolute top-2 right-2">
+                              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-bold bg-yellow-500" style={{ color: 'white' }}>
                                 <StarIcon className="w-3 h-3 mr-1" />
                                 VIP
                               </span>
                             </div>
                           )}
-                          {index < 3 && plug.likes > 0 && (
-                            <div>
-                              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-500 text-white">
-                                {index === 0 ? '🥇' : index === 1 ? '🥈' : '🥉'}
-                              </span>
-                            </div>
-                          )}
                         </div>
-                      </div>
 
-                      <div className="p-3 sm:p-4">
-                        <h3 className="text-sm sm:text-base font-bold text-white mb-2 truncate">{plug.name}</h3>
-                        <p className="text-gray-200 mb-3 text-xs sm:text-sm line-clamp-2 h-8">{plug.description}</p>
+                        {/* Content */}
+                        <div className="p-3 sm:p-4">
+                          <h3 style={{ color: 'white' }} className="text-sm sm:text-base font-bold mb-2 truncate">{plug.name}</h3>
+                          <p style={{ color: '#e5e7eb' }} className="mb-3 text-xs sm:text-sm line-clamp-2 h-8">{plug.description}</p>
 
-                                                  {plug.countries && plug.countries.length > 0 && (
-                            <div className="flex items-center text-xs sm:text-sm text-white mb-2">
+                          {/* Location */}
+                          {plug.countries && plug.countries.length > 0 && (
+                            <div className="flex items-center text-xs sm:text-sm mb-2" style={{ color: 'white' }}>
                               <MapPinIcon className="w-3 h-3 mr-1" />
                               <span className="truncate">{plug.countries.join(', ')}</span>
                             </div>
                           )}
 
-                        <div className="flex flex-wrap gap-1 mb-3">
-                          {plug.services?.delivery?.enabled && (
-                            <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-700 text-white">
-                              <TruckIcon className="w-2.5 h-2.5 mr-1" />
-                              Livraison
-                            </span>
-                          )}
-                          {plug.services?.postal?.enabled && (
-                            <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-700 text-white">
-                              <GlobeAltIcon className="w-2.5 h-2.5 mr-1" />
-                              Postal
-                            </span>
-                          )}
-                          {plug.services?.meetup?.enabled && (
-                            <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-700 text-white">
-                              <HomeIcon className="w-2.5 h-2.5 mr-1" />
-                              Meetup
-                            </span>
-                          )}
-                        </div>
+                          {/* Services */}
+                          <div className="flex flex-wrap gap-1 mb-3">
+                            {plug.services?.delivery?.enabled && (
+                              <span className="px-2 py-1 bg-green-600 text-white text-xs rounded-full flex items-center">
+                                <TruckIcon className="w-3 h-3 mr-1" />
+                                Livraison
+                              </span>
+                            )}
+                            {plug.services?.postal?.enabled && (
+                              <span className="px-2 py-1 bg-blue-600 text-white text-xs rounded-full">
+                                📮 Postal
+                              </span>
+                            )}
+                            {plug.services?.meetup?.enabled && (
+                              <span className="px-2 py-1 bg-purple-600 text-white text-xs rounded-full flex items-center">
+                                <HomeIcon className="w-3 h-3 mr-1" />
+                                Meetup
+                              </span>
+                            )}
+                          </div>
 
-                        <div className="flex items-center justify-between pt-2 border-t border-gray-700">
-                          <span className="text-white text-xs sm:text-sm">Voir détails</span>
-                                                      <div className="flex items-center text-white text-xs sm:text-sm font-medium">
-                              <span className="mr-1">❤️</span>
-                              <span>{plug.likes || 0} like{(plug.likes || 0) !== 1 ? 's' : ''}</span>
-                            </div>
+                          {/* Likes */}
+                          <div className="flex items-center text-xs sm:text-sm font-medium" style={{ color: 'white' }}>
+                            <span className="mr-1">❤️</span>
+                            <span>{plug.likes || 0} like{(plug.likes || 0) !== 1 ? 's' : ''}</span>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </Link>
-                ))}
-              </div>
+                    </Link>
+                  ))}
+                </div>
+
+                {/* Pagination */}
+                {plugs.length > itemsPerPage && (
+                  <div className="flex justify-center">
+                    <Pagination
+                      currentPage={currentPage}
+                      totalItems={plugs.length}
+                      itemsPerPage={itemsPerPage}
+                      onPageChange={setCurrentPage}
+                    />
+                  </div>
+                )}
+              </>
             )}
           </div>
-        )}
-
-
+        </main>
       </div>
     </>
   )
