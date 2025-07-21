@@ -210,7 +210,7 @@ export default function ShopVIP() {
       <>
         <Head>
           <title>Chargement...</title>
-          <meta name="viewport" content="width=device-width, initial-scale=1" />
+          <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
         </Head>
         <div className="min-h-screen bg-black flex items-center justify-center">
           <div className="text-center">
@@ -227,7 +227,7 @@ export default function ShopVIP() {
       <Head>
         <title>{config?.boutique?.vipTitle || config?.boutique?.name || 'VIP'}</title>
         <meta name="description" content="Découvrez notre sélection exclusive de boutiques VIP premium avec services garantis." />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
       </Head>
 
       <div 

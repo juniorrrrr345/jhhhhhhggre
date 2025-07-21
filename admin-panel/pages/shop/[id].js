@@ -180,7 +180,7 @@ export default function ShopPlugDetail() {
       <>
         <Head>
           <title>Chargement...</title>
-          <meta name="viewport" content="width=device-width, initial-scale=1" />
+          <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
         </Head>
         <div className="min-h-screen bg-black flex items-center justify-center">
           <div className="text-center">
@@ -197,7 +197,7 @@ export default function ShopPlugDetail() {
       <>
         <Head>
           <title>Produit non trouvé</title>
-          <meta name="viewport" content="width=device-width, initial-scale=1" />
+          <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
         </Head>
         <div 
           className="min-h-screen flex items-center justify-center"
@@ -231,7 +231,7 @@ export default function ShopPlugDetail() {
       <Head>
         <title>{plug.name} - {config?.boutique?.name || 'Boutique'}</title>
         <meta name="description" content={plug.description} />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
       </Head>
 
       <div 

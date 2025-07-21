@@ -214,7 +214,7 @@ export default function ShopHome() {
       <>
         <Head>
           <title>Chargement...</title>
-          <meta name="viewport" content="width=device-width, initial-scale=1" />
+          <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
         </Head>
         <div className="min-h-screen bg-black flex items-center justify-center">
           <div className="text-center">
@@ -231,7 +231,7 @@ export default function ShopHome() {
       <Head>
         <title>{config?.boutique?.name || 'Boutique'}</title>
         <meta name="description" content="Découvrez notre sélection de produits premium avec livraison, envoi postal et meetup disponibles." />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
       </Head>
 
       <div 
@@ -249,14 +249,14 @@ export default function ShopHome() {
         {/* Header */}
         {config && (
           <header className="bg-gray-900 shadow-lg">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <div className="flex items-center justify-center h-16">
+            <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
+              <div className="flex items-center justify-center h-14 sm:h-16">
                 <div className="text-center">
-                  <h1 style={{ color: 'white' }} className="text-xl font-bold">
+                  <h1 style={{ color: 'white' }} className="text-lg sm:text-xl font-bold">
                     🔌 {config?.boutique?.name || 'Boutique'}
                   </h1>
                   {config?.boutique?.subtitle && (
-                    <p style={{ color: 'white' }} className="text-sm">{config.boutique.subtitle}</p>
+                    <p style={{ color: 'white' }} className="text-xs sm:text-sm">{config.boutique.subtitle}</p>
                   )}
                 </div>
               </div>
@@ -267,31 +267,31 @@ export default function ShopHome() {
         {/* Navigation */}
         {config && (
           <nav className="bg-black shadow-sm border-b border-gray-700">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <div className="flex justify-center space-x-8 h-12 items-center">
+            <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
+              <div className="flex justify-center space-x-4 sm:space-x-8 h-10 sm:h-12 items-center">
                 <Link 
                   href="/shop" 
                   style={{ color: 'white' }}
-                  className="font-medium pb-3 flex items-center hover:opacity-75 transition-opacity"
+                  className="font-medium pb-2 sm:pb-3 flex items-center hover:opacity-75 transition-opacity"
                 >
-                  <span className="mr-1">🏠</span>
-                  <span style={{ color: 'white' }}>Accueil</span>
+                  <span className="mr-1 text-sm sm:text-base">🏠</span>
+                  <span style={{ color: 'white' }} className="text-xs sm:text-sm">Accueil</span>
                 </Link>
                 <Link 
                   href="/shop/search" 
                   style={{ color: 'white' }}
-                  className="pb-3 flex items-center hover:opacity-75 transition-opacity"
+                  className="pb-2 sm:pb-3 flex items-center hover:opacity-75 transition-opacity"
                 >
-                  <span className="mr-1">🔍</span>
-                  <span style={{ color: 'white' }}>Recherche</span>
+                  <span className="mr-1 text-sm sm:text-base">🔍</span>
+                  <span style={{ color: 'white' }} className="text-xs sm:text-sm">Recherche</span>
                 </Link>
                 <Link 
                   href="/shop/vip" 
                   style={{ color: 'white' }}
-                  className="pb-3 flex items-center hover:opacity-75 transition-opacity"
+                  className="pb-2 sm:pb-3 flex items-center hover:opacity-75 transition-opacity"
                 >
-                  <span className="mr-1">👑</span>
-                  <span style={{ color: 'white' }}>VIP</span>
+                  <span className="mr-1 text-sm sm:text-base">👑</span>
+                  <span style={{ color: 'white' }} className="text-xs sm:text-sm">VIP</span>
                 </Link>
               </div>
             </div>
@@ -299,17 +299,17 @@ export default function ShopHome() {
         )}
 
         {/* Main Content */}
-        <main className="py-12">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <main className="py-6 sm:py-12">
+          <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
             {/* Hero Section */}
             {config && (
-              <div className="text-center mb-12">
-                <div className="flex items-center justify-center mb-4">
-                  <h2 style={{ color: 'white' }} className="text-3xl font-bold">
+              <div className="text-center mb-6 sm:mb-12">
+                <div className="flex items-center justify-center mb-2 sm:mb-4">
+                  <h2 style={{ color: 'white' }} className="text-xl sm:text-3xl font-bold">
                     🔌 {config?.boutique?.name || 'Boutique Premium'}
                   </h2>
                 </div>
-                <p style={{ color: 'white' }} className="max-w-2xl mx-auto">
+                <p style={{ color: 'white' }} className="max-w-2xl mx-auto text-sm sm:text-base">
                   {loading ? 'Chargement...' : `${plugs.length} produit(s) disponible(s)`}
                 </p>
               </div>
@@ -331,11 +331,8 @@ export default function ShopHome() {
               </div>
             ) : (
               <>
-                {/* Products Grid - 2 boutiques par ligne même sur mobile */}
-                <div className="grid grid-cols-2 gap-2 sm:gap-4 md:gap-6 mb-8" style={{ 
-                  gridTemplateColumns: '1fr 1fr',
-                  width: '100%'
-                }}>
+                {/* Products Grid - Responsive optimisé pour mobile */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6 mb-8">
                   {currentPlugs.map((plug, index) => (
                     <Link 
                       key={plug._id || index} 
@@ -343,25 +340,36 @@ export default function ShopHome() {
                       className="block group hover:scale-105 transition-transform duration-200"
                       style={{ textDecoration: 'none', color: 'inherit' }}
                     >
-                      <div className="shop-card bg-gray-800 border border-gray-700 rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-shadow duration-300 w-full max-w-none">
-                        {/* Image */}
-                        <div className="relative h-32 sm:h-40 md:h-48 bg-gray-900">
+                      <div className="shop-card bg-gray-800 border border-gray-700 rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-shadow duration-300 w-full">
+                        {/* Image avec fallback amélioré */}
+                        <div className="relative h-40 sm:h-48 bg-gray-900 overflow-hidden">
                           {plug.image ? (
                             <img
                               src={plug.image}
-                              alt={plug.name}
-                              className="w-full h-full object-cover"
+                              alt={plug.name || 'Boutique'}
+                              className="w-full h-full object-cover transition-opacity duration-300"
+                              loading="lazy"
+                              onLoad={(e) => {
+                                e.target.style.opacity = '1'
+                                e.target.nextElementSibling?.style.setProperty('display', 'none')
+                              }}
                               onError={(e) => {
                                 e.target.style.display = 'none'
-                                e.target.nextSibling.style.display = 'flex'
+                                e.target.nextElementSibling?.style.setProperty('display', 'flex')
                               }}
+                              style={{ opacity: '0' }}
                             />
                           ) : null}
                           <div 
-                            className={`absolute inset-0 flex items-center justify-center ${plug.image ? 'hidden' : 'flex'}`}
-                            style={{ display: plug.image ? 'none' : 'flex' }}
+                            className="absolute inset-0 flex items-center justify-center bg-gray-900 transition-opacity duration-300"
+                            style={{ 
+                              display: plug.image ? 'flex' : 'flex'
+                            }}
                           >
-                            <GlobeAltIcon className="w-16 h-16 text-gray-600" />
+                            <div className="text-center">
+                              <GlobeAltIcon className="w-12 h-12 sm:w-16 sm:h-16 text-gray-600 mx-auto mb-2" />
+                              <p className="text-gray-500 text-xs">Image non disponible</p>
+                            </div>
                           </div>
                           
                           {/* VIP Badge */}
@@ -376,14 +384,14 @@ export default function ShopHome() {
                         </div>
 
                         {/* Content */}
-                        <div className="p-2 sm:p-3 md:p-4">
-                          <h3 style={{ color: 'white' }} className="text-sm sm:text-base font-bold mb-2 truncate">{plug.name}</h3>
-                          <p style={{ color: '#e5e7eb' }} className="mb-3 text-xs sm:text-sm line-clamp-2 h-8">{plug.description}</p>
+                        <div className="p-3 sm:p-4">
+                          <h3 style={{ color: 'white' }} className="text-sm sm:text-base font-bold mb-2 line-clamp-1">{plug.name}</h3>
+                          <p style={{ color: '#e5e7eb' }} className="mb-3 text-xs sm:text-sm line-clamp-2 min-h-[32px] sm:min-h-[36px]">{plug.description}</p>
 
                           {/* Location */}
                           {plug.countries && plug.countries.length > 0 && (
                             <div className="flex items-center text-xs sm:text-sm mb-2" style={{ color: 'white' }}>
-                              <MapPinIcon className="w-3 h-3 mr-1" />
+                              <MapPinIcon className="w-3 h-3 mr-1 flex-shrink-0" />
                               <span className="truncate">{plug.countries.join(', ')}</span>
                             </div>
                           )}
@@ -393,18 +401,21 @@ export default function ShopHome() {
                             {plug.services?.delivery?.enabled && (
                               <span className="px-2 py-1 bg-green-600 text-white text-xs rounded-full flex items-center">
                                 <TruckIcon className="w-3 h-3 mr-1" />
-                                Livraison
+                                <span className="hidden sm:inline">Livraison</span>
+                                <span className="sm:hidden">📦</span>
                               </span>
                             )}
                             {plug.services?.postal?.enabled && (
-                              <span className="px-2 py-1 bg-gray-800 text-white text-xs rounded-full border border-gray-600">
-                                📮 Postal
+                              <span className="px-2 py-1 bg-gray-800 text-white text-xs rounded-full border border-gray-600 flex items-center">
+                                <span>📮</span>
+                                <span className="hidden sm:inline ml-1">Postal</span>
                               </span>
                             )}
                             {plug.services?.meetup?.enabled && (
                               <span className="px-2 py-1 bg-purple-600 text-white text-xs rounded-full flex items-center">
                                 <HomeIcon className="w-3 h-3 mr-1" />
-                                Meetup
+                                <span className="hidden sm:inline">Meetup</span>
+                                <span className="sm:hidden">🤝</span>
                               </span>
                             )}
                           </div>

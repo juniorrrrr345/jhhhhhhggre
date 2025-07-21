@@ -259,7 +259,7 @@ export default function ShopSearch() {
       <>
         <Head>
           <title>Chargement...</title>
-          <meta name="viewport" content="width=device-width, initial-scale=1" />
+          <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
         </Head>
         <div className="min-h-screen bg-black flex items-center justify-center">
           <div className="text-center">
@@ -276,7 +276,7 @@ export default function ShopSearch() {
       <Head>
         <title>Recherche - {config?.boutique?.name || 'Boutique'}</title>
         <meta name="description" content="Recherchez vos boutiques préférées par nom, pays ou service." />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
       </Head>
 
       <div 
