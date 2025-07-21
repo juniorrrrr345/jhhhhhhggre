@@ -319,3 +319,47 @@
 ✅ Cache mis à jour - 2 plugs, config: OK
 🔄 Rafraîchissement du cache...
 ✅ Cache mis à jour - 2 plugs, config: OK
+🔄 Rafraîchissement du cache...
+✅ Cache mis à jour - 2 plugs, config: OK
+🔄 Rafraîchissement du cache...
+✅ Cache mis à jour - 2 plugs, config: OK
+🔄 Rafraîchissement du cache...
+✅ Cache mis à jour - 2 plugs, config: OK
+🔄 Rafraîchissement du cache...
+✅ Cache mis à jour - 2 plugs, config: OK
+📡 GET /api/public/config - IP: ::1 - UserAgent: curl/8.12.1
+📋 Headers: [ 'host', 'user-agent', 'accept' ]
+🔍 Récupération config publique pour la boutique
+📊 Config récupérée pour boutique: { boutique: 'Testee', logo: 'Non défini', background: 'Défini' }
+🔄 Rafraîchissement du cache...
+✅ Cache mis à jour - 2 plugs, config: OK
+📡 GET /api/config - IP: ::1 - UserAgent: Vercel-Proxy/1.0
+📋 Headers: [
+  'host',
+  'connection',
+  'content-type',
+  'user-agent',
+  'cache-control',
+  'accept',
+  'authorization',
+  'accept-language',
+  'sec-fetch-mode',
+  'accept-encoding'
+]
+🔐 Tentative d'authentification: GET /api/config
+📋 Headers reçus: [
+  'host',
+  'connection',
+  'content-type',
+  'user-agent',
+  'cache-control',
+  'accept',
+  'authorization',
+  'accept-language',
+  'sec-fetch-mode',
+  'accept-encoding'
+]
+🔑 Authorization header: Bearer ***oken
+🔍 Password fourni: ***oken
+🔍 Password attendu configuré: Oui
+❌ Password incorrect
