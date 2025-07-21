@@ -1012,33 +1012,91 @@ app.get('/api/plugs', authenticateAdmin, async (req, res) => {
   }
 });
 
-// Récupérer les plugs publics (pour la boutique Vercel)
+// ============================================
+// SYSTÈME DE CACHE ET SYNCHRONISATION
+// ============================================
+
+// Cache pour les données fréquemment utilisées
+const cache = {
+  plugs: null,
+  config: null,
+  lastUpdate: null,
+  updateInterval: 30000 // 30 secondes
+};
+
+// Fonction pour rafraîchir le cache
+const refreshCache = async () => {
+  try {
+    console.log('🔄 Rafraîchissement du cache...');
+    
+    // Récupérer les plugs actifs
+    const plugs = await Plug.find({ isActive: true })
+      .sort({ likes: -1, isVip: -1, vipOrder: 1, createdAt: -1 });
+    
+    // Récupérer la config
+    const config = await Config.findById('main');
+    
+    // Mettre à jour le cache
+    cache.plugs = plugs;
+    cache.config = config;
+    cache.lastUpdate = new Date();
+    
+    console.log(`✅ Cache mis à jour - ${plugs.length} plugs, config: ${config ? 'OK' : 'KO'}`);
+    
+    return { plugs, config };
+  } catch (error) {
+    console.error('❌ Erreur refresh cache:', error);
+    return null;
+  }
+};
+
+// Obtenir les données depuis le cache ou la DB
+const getCachedData = async (forceRefresh = false) => {
+  const now = new Date();
+  const shouldRefresh = forceRefresh || 
+    !cache.lastUpdate || 
+    (now - cache.lastUpdate) > cache.updateInterval;
+  
+  if (shouldRefresh) {
+    const data = await refreshCache();
+    return data || { plugs: cache.plugs || [], config: cache.config };
+  }
+  
+  return { plugs: cache.plugs || [], config: cache.config };
+};
+
+// ============================================
+// ROUTES API AMÉLIORÉES AVEC CACHE
+// ============================================
+
+// Récupérer les plugs publics (pour la boutique Vercel) - VERSION OPTIMISÉE
 app.get('/api/public/plugs', async (req, res) => {
   try {
     const { page = 1, limit = 100, search = '', filter = 'active' } = req.query;
     const skip = (page - 1) * limit;
     
-    let query = { isActive: true }; // Seulement les plugs actifs pour le public
+    // Utiliser le cache pour de meilleures performances
+    const { plugs: cachedPlugs } = await getCachedData();
+    
+    let filteredPlugs = cachedPlugs.filter(plug => plug.isActive);
     
     // Filtre de recherche
     if (search) {
-      query.$or = [
-        { name: { $regex: search, $options: 'i' } },
-        { description: { $regex: search, $options: 'i' } }
-      ];
+      const searchLower = search.toLowerCase();
+      filteredPlugs = filteredPlugs.filter(plug => 
+        plug.name.toLowerCase().includes(searchLower) ||
+        plug.description.toLowerCase().includes(searchLower)
+      );
     }
     
     // Filtre par type
     if (filter === 'vip') {
-      query.isVip = true;
+      filteredPlugs = filteredPlugs.filter(plug => plug.isVip);
     }
     
-    const plugs = await Plug.find(query)
-      .sort({ likes: -1, isVip: -1, vipOrder: 1, createdAt: -1 })
-      .skip(skip)
-      .limit(parseInt(limit));
-      
-    const total = await Plug.countDocuments(query);
+    // Pagination
+    const total = filteredPlugs.length;
+    const paginatedPlugs = filteredPlugs.slice(skip, skip + parseInt(limit));
     
     // Headers pour éviter le cache et CORS
     res.set({
@@ -1048,22 +1106,73 @@ app.get('/api/public/plugs', async (req, res) => {
       'Cache-Control': 'no-cache, no-store, must-revalidate',
       'Pragma': 'no-cache',
       'Expires': '0',
-      'Last-Modified': new Date().toUTCString()
+      'Last-Modified': new Date().toUTCString(),
+      'X-Cache-Updated': cache.lastUpdate?.toISOString() || 'never'
     });
     
     res.json({
-      plugs,
+      plugs: paginatedPlugs,
       pagination: {
         page: parseInt(page),
-        pages: Math.ceil(total / limit),
+        pages: Math.ceil(total / parseInt(limit)),
         total
       },
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      cacheInfo: {
+        lastUpdate: cache.lastUpdate,
+        totalCached: cachedPlugs.length
+      }
     });
   } catch (error) {
     console.error('Erreur récupération plugs publics:', error);
     res.status(500).json({ error: 'Erreur serveur' });
   }
+});
+
+// Route pour forcer le rafraîchissement du cache
+app.post('/api/cache/refresh', async (req, res) => {
+  try {
+    console.log('🔄 Demande de rafraîchissement manuel du cache');
+    const data = await refreshCache();
+    
+    if (data) {
+      res.json({
+        success: true,
+        message: 'Cache rafraîchi avec succès',
+        data: {
+          plugsCount: data.plugs.length,
+          configAvailable: !!data.config,
+          lastUpdate: cache.lastUpdate
+        }
+      });
+    } else {
+      res.status(500).json({
+        success: false,
+        message: 'Erreur lors du rafraîchissement du cache'
+      });
+    }
+  } catch (error) {
+    console.error('❌ Erreur refresh manuel:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Erreur serveur'
+    });
+  }
+});
+
+// Route pour obtenir les statistiques du cache
+app.get('/api/cache/stats', (req, res) => {
+  res.json({
+    cache: {
+      plugsCount: cache.plugs?.length || 0,
+      configAvailable: !!cache.config,
+      lastUpdate: cache.lastUpdate,
+      updateInterval: cache.updateInterval,
+      nextUpdate: cache.lastUpdate ? 
+        new Date(cache.lastUpdate.getTime() + cache.updateInterval) : null
+    },
+    timestamp: new Date().toISOString()
+  });
 });
 
 // Liker/disliker un plug (endpoint public)
@@ -1091,6 +1200,9 @@ app.post('/api/public/plugs/:id/like', async (req, res) => {
     
     await plug.save();
     
+    // Forcer le rafraîchissement du cache après modification des likes
+    await refreshCache();
+    
     res.set({
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Methods': 'POST, OPTIONS',
@@ -1110,331 +1222,6 @@ app.post('/api/public/plugs/:id/like', async (req, res) => {
   }
 });
 
-// Récupérer un plug par ID
-app.get('/api/plugs/:id', authenticateAdmin, async (req, res) => {
-  try {
-    const plug = await Plug.findById(req.params.id);
-    if (!plug) {
-      return res.status(404).json({ error: 'Plug non trouvé' });
-    }
-    res.json(plug);
-  } catch (error) {
-    console.error('Erreur récupération plug:', error);
-    res.status(500).json({ error: 'Erreur serveur' });
-  }
-});
-
-// Créer un nouveau plug
-app.post('/api/plugs', authenticateAdmin, async (req, res) => {
-  try {
-    const createData = req.body;
-    
-    console.log(`🆕 Création nouveau plug:`, createData);
-    
-    // Nettoyer les données avant la création
-    const cleanData = { ...createData };
-    
-    // Convertir les tags en tableau si c'est une chaîne
-    if (typeof cleanData.tags === 'string') {
-      cleanData.tags = cleanData.tags.split(',').map(tag => tag.trim()).filter(tag => tag);
-    }
-    
-    // S'assurer que les booléens sont corrects
-    if (cleanData.vip !== undefined) cleanData.isVip = cleanData.vip;
-    if (cleanData.active !== undefined) cleanData.isActive = cleanData.active;
-    
-    // CORRECTION: Synchronisation des images et réseaux sociaux
-    // S'assurer que l'image est bien synchronisée
-    if (cleanData.image) {
-      console.log(`📸 Image synchronisée: ${cleanData.image}`);
-    }
-    
-    // S'assurer que socialMedia est un tableau et bien formaté
-    if (!Array.isArray(cleanData.socialMedia)) {
-      cleanData.socialMedia = [];
-    } else {
-      // Valider et nettoyer chaque réseau social
-      cleanData.socialMedia = cleanData.socialMedia.filter(social => 
-        social && social.name && social.emoji && social.url
-      ).map(social => ({
-        name: social.name.trim(),
-        emoji: social.emoji.trim(),
-        url: social.url.trim()
-      }));
-      console.log(`📱 Réseaux sociaux synchronisés: ${cleanData.socialMedia.length} éléments`);
-    }
-    
-    // Nettoyer les données undefined pour éviter les erreurs
-    Object.keys(cleanData).forEach(key => {
-      if (cleanData[key] === undefined || cleanData[key] === null) {
-        delete cleanData[key];
-      }
-    });
-    
-    console.log(`📝 Données nettoyées pour création:`, cleanData);
-    
-    const plug = new Plug(cleanData);
-    await plug.save();
-    
-    console.log(`✅ Nouveau plug créé:`, plug.name);
-    
-    res.status(201).json(plug);
-  } catch (error) {
-    console.error('❌ Erreur création plug:', error);
-    res.status(500).json({ error: 'Erreur serveur', details: error.message });
-  }
-});
-
-// Mettre à jour un plug
-app.put('/api/plugs/:id', authenticateAdmin, async (req, res) => {
-  try {
-    const plugId = req.params.id;
-    const updateData = req.body;
-    
-    console.log(`🔄 Début mise à jour plug ${plugId}`);
-    console.log(`📊 Taille des données plug:`, JSON.stringify(updateData).length, 'caractères');
-    console.log(`📋 Clés principales plug:`, Object.keys(updateData));
-    
-    // Vérifier que l'ID est valide
-    if (!plugId || plugId.length !== 24) {
-      throw new Error('ID de plug invalide');
-    }
-    
-    // Vérifier que le plug existe
-    const existingPlug = await Plug.findById(plugId);
-    if (!existingPlug) {
-      return res.status(404).json({ error: 'Plug non trouvé' });
-    }
-    
-    console.log(`📦 Plug existant trouvé: ${existingPlug.name}`);
-    
-    // Nettoyer les données avant la mise à jour
-    const cleanData = { ...updateData };
-    
-    // Convertir les tags en tableau si c'est une chaîne
-    if (typeof cleanData.tags === 'string') {
-      cleanData.tags = cleanData.tags.split(',').map(tag => tag.trim()).filter(tag => tag);
-    }
-    
-    // S'assurer que les booléens sont corrects
-    if (cleanData.vip !== undefined) cleanData.isVip = cleanData.vip;
-    if (cleanData.active !== undefined) cleanData.isActive = cleanData.active;
-    
-    // CORRECTION: Synchronisation des images et réseaux sociaux pour la mise à jour
-    // S'assurer que l'image est bien synchronisée
-    if (cleanData.image) {
-      console.log(`📸 Image mise à jour: ${cleanData.image}`);
-    }
-    
-    // S'assurer que socialMedia est un tableau et bien formaté
-    if (!Array.isArray(cleanData.socialMedia)) {
-      cleanData.socialMedia = [];
-    } else {
-      // Valider et nettoyer chaque réseau social
-      cleanData.socialMedia = cleanData.socialMedia.filter(social => 
-        social && social.name && social.emoji && social.url
-      ).map(social => ({
-        name: social.name.trim(),
-        emoji: social.emoji.trim(),
-        url: social.url.trim()
-      }));
-      console.log(`📱 Réseaux sociaux mis à jour: ${cleanData.socialMedia.length} éléments`);
-    }
-    
-    // Nettoyer les données undefined pour éviter les erreurs de validation
-    Object.keys(cleanData).forEach(key => {
-      if (cleanData[key] === undefined || cleanData[key] === null) {
-        delete cleanData[key];
-      }
-    });
-    
-    console.log(`📝 Données nettoyées:`, Object.keys(cleanData));
-    
-    // Tentative de mise à jour avec gestion d'erreur détaillée
-    console.log('💾 Tentative de sauvegarde plug en base...');
-    const plug = await Plug.findByIdAndUpdate(plugId, cleanData, { 
-      new: true,
-      runValidators: false,  // Désactiver temporairement les validateurs pour éviter les erreurs
-      strict: false  // Permet les champs non définis dans le schéma
-    });
-    
-    if (!plug) {
-      throw new Error('Échec de la mise à jour plug - aucun document retourné');
-    }
-    
-    console.log(`✅ Plug mis à jour avec succès: ${plug.name}`);
-    console.log(`📊 ID du plug: ${plug._id}`);
-    console.log(`📱 Réseaux sociaux finaux: ${plug.socialMedia?.length || 0} éléments`);
-    
-    // Headers pour éviter le cache
-    res.set({
-      'Cache-Control': 'no-cache, no-store, must-revalidate',
-      'Pragma': 'no-cache',
-      'Expires': '0',
-      'Last-Modified': new Date().toUTCString(),
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'PUT, GET, POST, DELETE, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type, Authorization'
-    });
-    
-    res.json(plug);
-  } catch (error) {
-    console.error('❌ Erreur détaillée mise à jour plug:', {
-      message: error.message,
-      stack: error.stack,
-      name: error.name,
-      plugId: req.params.id
-    });
-    
-    // Headers CORS même en cas d'erreur
-    res.set({
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'PUT, GET, POST, DELETE, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type, Authorization'
-    });
-    
-    res.status(500).json({ 
-      error: 'Erreur serveur lors de la mise à jour du plug', 
-      details: error.message,
-      timestamp: new Date().toISOString()
-    });
-  }
-});
-
-// Supprimer un plug
-app.delete('/api/plugs/:id', authenticateAdmin, async (req, res) => {
-  try {
-    const plugId = req.params.id;
-    console.log(`🗑️ Suppression plug ${plugId}`);
-    
-    const plug = await Plug.findByIdAndDelete(plugId);
-    if (!plug) {
-      return res.status(404).json({ error: 'Plug non trouvé' });
-    }
-    
-    console.log(`✅ Plug supprimé:`, plug.name);
-    
-    // Headers pour éviter le cache
-    res.set({
-      'Cache-Control': 'no-cache, no-store, must-revalidate',
-      'Pragma': 'no-cache',
-      'Expires': '0'
-    });
-    
-    res.json({ message: 'Plug supprimé' });
-  } catch (error) {
-    console.error('❌ Erreur suppression plug:', error);
-    res.status(500).json({ error: 'Erreur serveur', details: error.message });
-  }
-});
-
-// Route pour nettoyer la configuration boutique
-app.post('/api/config/clean-boutique', authenticateAdmin, async (req, res) => {
-  try {
-    console.log('🧹 Nettoyage configuration boutique...');
-    
-    const config = await Config.findById('main');
-    if (!config) {
-      return res.status(404).json({ error: 'Configuration non trouvée' });
-    }
-    
-    // Nettoyer la configuration boutique avec des valeurs vides par défaut
-    config.boutique = {
-      name: config.boutique?.name || "",
-      logo: config.boutique?.logo || "",
-      subtitle: config.boutique?.subtitle || "",
-      backgroundImage: config.boutique?.backgroundImage || "",
-      vipTitle: config.boutique?.vipTitle || "",
-      vipSubtitle: config.boutique?.vipSubtitle || "",
-      searchTitle: config.boutique?.searchTitle || "",
-      searchSubtitle: config.boutique?.searchSubtitle || ""
-    };
-    
-    // Forcer la mise à jour du timestamp
-    config.updatedAt = new Date();
-    
-    await config.save();
-    
-    console.log('✅ Configuration boutique nettoyée:', config.boutique);
-    
-    res.set({
-      'Cache-Control': 'no-cache, no-store, must-revalidate',
-      'Pragma': 'no-cache',
-      'Expires': '0',
-      'Last-Modified': new Date().toUTCString()
-    });
-    
-    res.json({
-      message: 'Configuration boutique nettoyée',
-      boutique: config.boutique,
-      timestamp: new Date().toISOString()
-    });
-  } catch (error) {
-    console.error('❌ Erreur nettoyage boutique:', error);
-    res.status(500).json({ error: 'Erreur serveur', details: error.message });
-  }
-});
-
-// ===== ROUTES UPLOADS =====
-
-// Upload d'image
-app.post('/api/upload', authenticateAdmin, upload.single('image'), (req, res) => {
-  try {
-    if (!req.file) {
-      return res.status(400).json({ error: 'Aucun fichier fourni' });
-    }
-    
-    // Pour le moment, retourner l'URL temporaire
-    // En production, utiliser Cloudinary ou un service de stockage
-    res.json({ 
-      url: `data:${req.file.mimetype};base64,${req.file.buffer.toString('base64')}` 
-    });
-  } catch (error) {
-    console.error('Erreur upload:', error);
-    res.status(500).json({ error: 'Erreur lors de l\'upload' });
-  }
-});
-
-// ===== ROUTES STATISTIQUES =====
-
-// Statistiques du dashboard
-app.get('/api/stats', authenticateAdmin, async (req, res) => {
-  try {
-    const totalPlugs = await Plug.countDocuments({ isActive: true });
-    const vipPlugs = await Plug.countDocuments({ isActive: true, isVip: true });
-    const inactivePlugs = await Plug.countDocuments({ isActive: false });
-    const countries = await Plug.distinct('countries', { isActive: true });
-    
-    const services = {
-      delivery: await Plug.countDocuments({ 
-        isActive: true, 
-        'services.delivery.enabled': true 
-      }),
-      postal: await Plug.countDocuments({ 
-        isActive: true, 
-        'services.postal.enabled': true 
-      }),
-      meetup: await Plug.countDocuments({ 
-        isActive: true, 
-        'services.meetup.enabled': true 
-      })
-    };
-    
-    res.json({
-      totalPlugs,
-      vipPlugs,
-      inactivePlugs,
-      countries: countries.length,
-      services
-    });
-  } catch (error) {
-    console.error('Erreur récupération stats:', error);
-    res.status(500).json({ error: 'Erreur serveur' });
-  }
-});
-
-// ===== ROUTES SYSTÈME =====
-
 // Santé de l'API
 app.get('/health', (req, res) => {
   res.set({
@@ -1448,95 +1235,38 @@ app.get('/health', (req, res) => {
     status: 'OK', 
     timestamp: new Date().toISOString(),
     uptime: process.uptime(),
-    environment: process.env.NODE_ENV || 'development'
+    environment: process.env.NODE_ENV || 'development',
+    cache: {
+      plugsCount: cache.plugs?.length || 0,
+      lastUpdate: cache.lastUpdate
+    }
   });
 });
 
-// Diagnostic du bot
-app.get('/api/bot/diagnostic', async (req, res) => {
-  try {
-    res.set({
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type',
-      'Cache-Control': 'no-cache'
-    });
-    
-    // Vérifier l'état du bot
-    const botInfo = await bot.telegram.getMe().catch(e => ({ error: e.message }));
-    
-    // Vérifier la configuration
-    const config = await Config.findById('main').catch(e => ({ error: e.message }));
-    
-    // Vérifier la base de données
-    const dbStatus = await Plug.countDocuments().then(() => 'connected').catch(e => e.message);
-    
-    res.json({
-      status: 'diagnostic',
-      timestamp: new Date().toISOString(),
-      bot: {
-        connected: !botInfo.error,
-        info: botInfo.error ? { error: botInfo.error } : { username: botInfo.username, id: botInfo.id },
-        webhookSet: process.env.NODE_ENV === 'production'
-      },
-      database: {
-        status: dbStatus,
-        configExists: !!config && !config.error
-      },
-      cache: {
-        configCached: !!configCache,
-        lastUpdate: lastConfigUpdate ? new Date(lastConfigUpdate).toISOString() : 'never'
-      },
-      environment: {
-        nodeEnv: process.env.NODE_ENV || 'development',
-        uptime: process.uptime(),
-        memoryUsage: process.memoryUsage()
-      }
-    });
-  } catch (error) {
-    res.status(500).json({
-      status: 'error',
-      error: error.message,
-      timestamp: new Date().toISOString()
-    });
-  }
-});
-
-// Test simple pour Vercel
-app.get('/test', (req, res) => {
-  try {
-    res.set({
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type',
-      'Cache-Control': 'no-cache'
-    });
-    
-    res.json({ 
-      message: 'Test endpoint OK',
-      timestamp: new Date().toISOString(),
-      source: 'render-api',
-      method: req.method
-    });
-  } catch (error) {
-    console.error('Test endpoint error:', error);
-    res.status(500).json({ error: 'Test endpoint failed', message: error.message });
-  }
-});
-
-// Route par défaut
+// Route par défaut avec informations sur le cache
 app.get('/', (req, res) => {
   res.json({ 
-    message: 'Bot Telegram VIP System API',
-    version: '1.0.0',
+    message: 'Bot Telegram VIP System API - Version Optimisée',
+    version: '2.0.0',
+    cache: {
+      enabled: true,
+      plugsCount: cache.plugs?.length || 0,
+      lastUpdate: cache.lastUpdate,
+      updateInterval: `${cache.updateInterval/1000}s`
+    },
     endpoints: [
-      'GET /health',
-      'GET /api/config',
-      'PUT /api/config',
+      'GET /health (santé API)',
+      'GET /api/cache/stats (statistiques cache)',
+      'POST /api/cache/refresh (forcer rafraîchissement)',
+      'GET /api/public/config (config publique)',
+      'GET /api/public/plugs (plugs publics)',
+      'POST /api/public/plugs/:id/like (liker un plug)',
+      'GET /api/config (admin)',
+      'PUT /api/config (admin)',
       'GET /api/plugs (admin)',
-      'GET /api/public/plugs (public)',
-      'POST /api/plugs',
-      'GET /api/stats'
+      'POST /api/plugs (admin)',
+      'PUT /api/plugs/:id (admin)',
+      'DELETE /api/plugs/:id (admin)'
     ]
   });
 });
@@ -1558,6 +1288,21 @@ const start = async () => {
     } catch (migrationError) {
       console.error('⚠️ Erreur migration (continuons quand même):', migrationError.message);
     }
+    
+    // Initialiser le cache au démarrage
+    console.log('🔄 Initialisation du cache...');
+    await refreshCache();
+    
+    // Programmer le rafraîchissement automatique du cache
+    setInterval(async () => {
+      try {
+        await refreshCache();
+      } catch (error) {
+        console.error('❌ Erreur rafraîchissement automatique cache:', error);
+      }
+    }, cache.updateInterval);
+    
+    console.log(`✅ Cache initialisé et programmé pour se rafraîchir toutes les ${cache.updateInterval/1000}s`);
     
     // Configuration du webhook pour la production
     if (process.env.NODE_ENV === 'production') {
@@ -1583,6 +1328,7 @@ const start = async () => {
       console.log(`✅ Serveur démarré sur le port ${PORT}`);
       console.log(`📱 Bot Telegram connecté`);
       console.log(`🌐 API disponible sur http://localhost:${PORT}`);
+      console.log(`📊 Cache: ${cache.plugs?.length || 0} plugs, config: ${cache.config ? 'OK' : 'KO'}`);
     });
     
   } catch (error) {
