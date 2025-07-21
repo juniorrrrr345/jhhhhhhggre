@@ -250,7 +250,6 @@ bot.action(/^like_([a-f\d]{24})$/, async (ctx) => {
     // Vérifier si la boutique existe
     const Plug = require('./src/models/Plug');
     const plug = await Plug.findById(plugId);
-    const Config = require('./src/models/Config');
     
     if (!plug) {
       return ctx.answerCbQuery('❌ Boutique non trouvée');
@@ -258,10 +257,17 @@ bot.action(/^like_([a-f\d]{24})$/, async (ctx) => {
     
     const hasLiked = plug.likedBy.includes(userId);
     
-    // Si l'utilisateur a déjà liké, afficher un message de confirmation
+    // Si l'utilisateur a déjà liké, afficher SEULEMENT un message de confirmation
+    // SANS modifier le message ni le clavier
     if (hasLiked) {
-      return ctx.answerCbQuery(`❤️ Vous avez déjà liké ${plug.name} ! (${plug.likes} likes)`);
+      console.log(`User ${userId} already liked plug ${plugId} - showing confirmation only`);
+      return ctx.answerCbQuery(`❤️ Vous avez déjà liké ${plug.name} ! (${plug.likes} likes)`, { 
+        show_alert: false 
+      });
     }
+    
+    // ========== NOUVEAU LIKE ==========
+    console.log(`User ${userId} is adding a new like to plug ${plugId}`);
     
     // Initialiser likeHistory si nécessaire
     if (!plug.likeHistory) {
@@ -280,15 +286,17 @@ bot.action(/^like_([a-f\d]{24})$/, async (ctx) => {
     });
     
     await plug.save();
-    await ctx.answerCbQuery(`❤️ Vous avez liké ${plug.name} ! (${plug.likes} likes)`);
-    
     console.log(`✅ User ${userId} liked plug ${plugId}. New likes count: ${plug.likes}`);
     
-    // Récupérer la configuration pour le contexte de retour
+    // Notification du like ajouté
+    await ctx.answerCbQuery(`❤️ Vous avez liké ${plug.name} ! (${plug.likes} likes)`);
+    
+    // ========== MISE À JOUR TEMPS RÉEL ==========
+    const Config = require('./src/models/Config');
     const config = await Config.findById('main');
     
     // Déterminer le bon contexte de retour
-    let returnContext = 'top_plugs'; // valeur par défaut
+    let returnContext = 'top_plugs';
     if (ctx.session && ctx.session.lastContext) {
       returnContext = ctx.session.lastContext;
     }
