@@ -342,6 +342,10 @@ const authenticateAdmin = (req, res, next) => {
     console.log(`🔍 Password fourni:`, password ? `***${password.slice(-4)}` : 'Absent');
     console.log(`🔍 Password attendu:`, expectedPassword ? `***${expectedPassword.slice(-4)}` : 'Non configuré');
     
+    // DEBUG TEMPORAIRE: Afficher le mot de passe complet pour diagnostic
+    console.log(`🚨 DEBUG - Password complet attendu: "${expectedPassword}"`);
+    console.log(`🚨 DEBUG - Password complet fourni: "${password}"`);
+    
     if (!password) {
       console.log('❌ Aucun password fourni');
       return res.status(401).json({ error: 'Token d\'authentification manquant' });
