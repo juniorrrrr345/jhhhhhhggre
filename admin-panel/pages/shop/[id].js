@@ -5,15 +5,6 @@ import Link from 'next/link'
 import { api } from '../../lib/api'
 import { getProxiedImageUrl } from '../../lib/imageUtils'
 import toast from 'react-hot-toast'
-import {
-  StarIcon,
-  MapPinIcon,
-  TruckIcon,
-  GlobeAltIcon,
-  HomeIcon,
-  ArrowLeftIcon,
-  HeartIcon
-} from '@heroicons/react/24/outline'
 
 export default function ShopPlugDetail() {
   const router = useRouter()
@@ -91,7 +82,6 @@ export default function ShopPlugDetail() {
       
       let data
       try {
-        // D'abord essayer de récupérer le plug spécifique
         const directResponse = await fetch(`${apiBaseUrl}/api/public/plugs?limit=1000&t=${timestamp}`, {
           method: 'GET',
           headers: {
@@ -136,12 +126,10 @@ export default function ShopPlugDetail() {
         }
       }
 
-      // Traiter la structure de réponse et trouver le plug spécifique
       let plugsArray = []
       if (data && Array.isArray(data.plugs)) {
         plugsArray = data.plugs
       } else if (Array.isArray(data)) {
-        // Fallback si la réponse est directement un tableau
         plugsArray = data
       } else {
         console.error('❌ Structure de données détail inattendue:', data)
@@ -149,7 +137,6 @@ export default function ShopPlugDetail() {
         return
       }
 
-      // Trouver le plug avec l'ID correspondant
       const foundPlug = plugsArray.find(p => p._id === id)
       if (foundPlug) {
         console.log('✅ Plug trouvé:', foundPlug.name)
@@ -176,6 +163,23 @@ export default function ShopPlugDetail() {
     ))
   }
 
+  const getCountryFlag = (countries) => {
+    if (!countries || countries.length === 0) return '🌍'
+    const countryFlagMap = {
+      'France': '🇫🇷',
+      'Belgique': '🇧🇪',
+      'Suisse': '🇨🇭',
+      'Canada': '🇨🇦',
+      'Allemagne': '🇩🇪',
+      'Espagne': '🇪🇸',
+      'Italie': '🇮🇹',
+      'Portugal': '🇵🇹',
+      'Royaume-Uni': '🇬🇧',
+      'Pays-Bas': '🇳🇱'
+    }
+    return countryFlagMap[countries[0]] || '🌍'
+  }
+
   if (initialLoading) {
     return (
       <>
@@ -183,10 +187,18 @@ export default function ShopPlugDetail() {
           <title>Chargement...</title>
           <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
         </Head>
-        <div className="min-h-screen bg-black flex items-center justify-center">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
-            <p style={{ color: 'white' }} className="font-medium">Chargement du produit...</p>
+        <div style={{ backgroundColor: '#000000', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ 
+              width: '48px', 
+              height: '48px', 
+              border: '2px solid transparent',
+              borderTop: '2px solid #ffffff',
+              borderRadius: '50%',
+              animation: 'spin 1s linear infinite',
+              margin: '0 auto 16px'
+            }}></div>
+            <p style={{ color: '#ffffff', fontWeight: '500' }}>Chargement de la boutique...</p>
           </div>
         </div>
       </>
@@ -197,29 +209,36 @@ export default function ShopPlugDetail() {
     return (
       <>
         <Head>
-          <title>Produit non trouvé</title>
+          <title>Boutique non trouvée</title>
           <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
         </Head>
-        <div 
-          className="min-h-screen flex items-center justify-center"
-          style={{
-            backgroundColor: '#000000',
-            backgroundImage: config?.boutique?.backgroundImage ? `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url("${config.boutique.backgroundImage}")` : 'none',
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            backgroundRepeat: 'no-repeat',
-            backgroundAttachment: 'fixed',
-            color: 'white'
-          }}
-        >
-          <div className="text-center">
-            <div className="mx-auto h-12 w-12 text-white mb-4 flex items-center justify-center">
-              <GlobeAltIcon className="h-8 w-8" />
-            </div>
-            <h3 style={{ color: 'white' }} className="text-xl font-medium mb-2">Boutique non trouvée</h3>
-            <p style={{ color: 'white' }} className="mb-6">Cette boutique n'existe pas ou a été supprimée.</p>
-            <Link href="/shop" style={{ color: 'white', textDecoration: 'none' }} className="hover:opacity-75">
-              Retour aux boutiques
+        <div style={{ 
+          backgroundColor: '#000000', 
+          minHeight: '100vh',
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'center',
+          color: '#ffffff',
+          fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+        }}>
+          <div style={{ textAlign: 'center', padding: '20px' }}>
+            <div style={{ fontSize: '64px', marginBottom: '20px' }}>🏪</div>
+            <h3 style={{ fontSize: '24px', fontWeight: '600', marginBottom: '12px', color: '#ffffff' }}>
+              Boutique non trouvée
+            </h3>
+            <p style={{ color: '#8e8e93', marginBottom: '32px', fontSize: '16px' }}>
+              Cette boutique n'existe pas ou a été supprimée.
+            </p>
+            <Link href="/shop" style={{ 
+              display: 'inline-block',
+              padding: '12px 24px',
+              backgroundColor: '#007AFF',
+              color: '#ffffff',
+              textDecoration: 'none',
+              borderRadius: '8px',
+              fontWeight: '500'
+            }}>
+              ← Retour aux boutiques
             </Link>
           </div>
         </div>
@@ -230,248 +249,498 @@ export default function ShopPlugDetail() {
   return (
     <>
       <Head>
-        <title>{plug.name} - {config?.boutique?.name || 'Boutique'}</title>
+        <title>{plug.name} - {config?.boutique?.name || 'PlugsFinder Bot'}</title>
         <meta name="description" content={plug.description} />
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
       </Head>
 
-      <div 
-        className="min-h-screen"
-        style={{
-          backgroundColor: '#000000',
-          backgroundImage: config?.boutique?.backgroundImage ? `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url("${config.boutique.backgroundImage}")` : 'none',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat',
-          backgroundAttachment: 'fixed',
-          color: 'white'
-        }}
-      >
-        {/* Header */}
-        {config && (
-          <header className="bg-gray-900 shadow-lg">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <div className="flex items-center justify-center h-16">
-                <div className="text-center">
-                  <h1 style={{ color: 'white' }} className="text-xl font-bold">
-                    🔌 {config?.boutique?.name || 'Boutique'}
-                  </h1>
-                  {plug && (
-                    <p style={{ color: 'white' }} className="text-sm">{plug.name}</p>
-                  )}
-                </div>
-              </div>
+      <div style={{ 
+        backgroundColor: '#000000', 
+        minHeight: '100vh',
+        color: '#ffffff',
+        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+      }}>
+        {/* Header Style Telegram */}
+        <header style={{ 
+          backgroundColor: '#1a1a1a',
+          padding: '16px 20px',
+          borderBottom: '1px solid #2a2a2a'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <button 
+              onClick={() => router.back()} 
+              style={{
+                background: 'none',
+                border: 'none',
+                color: '#007AFF',
+                fontSize: '18px',
+                cursor: 'pointer',
+                padding: '0'
+              }}
+            >
+              ←
+            </button>
+            <div style={{ textAlign: 'center', flex: 1 }}>
+              <h1 style={{ 
+                fontSize: '18px', 
+                fontWeight: 'bold', 
+                margin: '0',
+                color: '#ffffff'
+              }}>
+                {plug.name}
+              </h1>
+              <p style={{ 
+                fontSize: '13px', 
+                margin: '2px 0 0 0',
+                color: '#8e8e93'
+              }}>
+                {plug.isVip ? 'Boutique VIP' : 'Boutique'} • {getCountryFlag(plug.countries)}
+              </p>
             </div>
-          </header>
-        )}
+          </div>
+        </header>
 
         {/* Navigation */}
-        {config && (
-          <nav className="bg-black shadow-sm border-b border-gray-700">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <div className="flex justify-center space-x-8 h-12 items-center">
-                <Link 
-                  href="/shop" 
-                  style={{ color: 'white' }}
-                  className="pb-3 flex items-center hover:opacity-75"
-                >
-                  <span className="mr-1">🏠</span>
-                  <span style={{ color: 'white' }}>Accueil</span>
-                </Link>
-                <Link 
-                  href="/shop/search" 
-                  style={{ color: 'white' }}
-                  className="pb-3 flex items-center hover:opacity-75"
-                >
-                  <span className="mr-1">🔍</span>
-                  <span style={{ color: 'white' }}>Recherche</span>
-                </Link>
-                <Link 
-                  href="/shop/vip" 
-                  style={{ color: 'white' }}
-                  className="pb-3 flex items-center hover:opacity-75"
-                >
-                  <span className="mr-1">👑</span>
-                  <span style={{ color: 'white' }}>VIP</span>
-                </Link>
+        <nav style={{ 
+          backgroundColor: '#000000',
+          padding: '0 20px',
+          borderBottom: '1px solid #2a2a2a'
+        }}>
+          <div style={{ 
+            display: 'flex', 
+            justifyContent: 'center', 
+            gap: '40px',
+            paddingBottom: '16px'
+          }}>
+            <Link href="/shop" style={{ 
+              display: 'flex', 
+              flexDirection: 'column', 
+              alignItems: 'center', 
+              textDecoration: 'none',
+              color: '#8e8e93'
+            }}>
+              <div style={{ 
+                width: '40px', 
+                height: '40px', 
+                backgroundColor: 'transparent', 
+                borderRadius: '12px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginBottom: '4px'
+              }}>
+                🏠
               </div>
-            </div>
-          </nav>
-        )}
+              <span style={{ fontSize: '12px', color: '#8e8e93' }}>Plugs</span>
+            </Link>
+            <Link href="/shop/search" style={{ 
+              display: 'flex', 
+              flexDirection: 'column', 
+              alignItems: 'center', 
+              textDecoration: 'none',
+              color: '#8e8e93'
+            }}>
+              <div style={{ 
+                width: '40px', 
+                height: '40px', 
+                backgroundColor: 'transparent', 
+                borderRadius: '12px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginBottom: '4px'
+              }}>
+                🔍
+              </div>
+              <span style={{ fontSize: '12px', color: '#8e8e93' }}>Rechercher</span>
+            </Link>
+            <Link href="/shop/vip" style={{ 
+              display: 'flex', 
+              flexDirection: 'column', 
+              alignItems: 'center', 
+              textDecoration: 'none',
+              color: '#8e8e93'
+            }}>
+              <div style={{ 
+                width: '40px', 
+                height: '40px', 
+                backgroundColor: 'transparent', 
+                borderRadius: '12px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginBottom: '4px'
+              }}>
+                🎁
+              </div>
+              <span style={{ fontSize: '12px', color: '#8e8e93' }}>VIP</span>
+            </Link>
+          </div>
+        </nav>
 
         {/* Main Content */}
-        <main className="py-12">
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            {/* Back button */}
-            <div className="mb-6">
-              <button 
-                onClick={() => router.back()} 
-                className="flex items-center hover:opacity-75 transition-opacity"
-                style={{ color: 'white' }}
-              >
-                <ArrowLeftIcon className="w-5 h-5 mr-2" />
-                <span style={{ color: 'white' }}>Retour</span>
-              </button>
+        <main style={{ padding: '20px' }}>
+          {/* Image principale */}
+          <div style={{ 
+            width: '100%', 
+            height: '240px', 
+            borderRadius: '12px',
+            overflow: 'hidden',
+            backgroundColor: '#2a2a2a',
+            marginBottom: '20px',
+            position: 'relative'
+          }}>
+            {plug.image && plug.image.trim() !== '' ? (
+              <img
+                src={getProxiedImageUrl(plug.image)}
+                alt={plug.name || 'Boutique'}
+                style={{ 
+                  width: '100%', 
+                  height: '100%', 
+                  objectFit: 'cover'
+                }}
+              />
+            ) : (
+              <div style={{ 
+                width: '100%', 
+                height: '100%', 
+                display: 'flex',
+                alignItems: 'center', 
+                justifyContent: 'center',
+                fontSize: '48px'
+              }}>
+                {plug.isVip ? '👑' : '🏪'}
+              </div>
+            )}
+            
+            {/* Badge VIP overlay */}
+            {plug.isVip && (
+              <div style={{
+                position: 'absolute',
+                top: '12px',
+                right: '12px',
+                backgroundColor: '#FFD700',
+                color: '#000000',
+                fontSize: '14px',
+                fontWeight: 'bold',
+                padding: '6px 12px',
+                borderRadius: '20px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px'
+              }}>
+                👑 VIP
+              </div>
+            )}
+          </div>
+
+          {/* Informations principales */}
+          <div style={{ 
+            backgroundColor: '#1a1a1a',
+            borderRadius: '12px',
+            padding: '20px',
+            marginBottom: '16px'
+          }}>
+            {/* Nom et localisation */}
+            <div style={{ marginBottom: '16px' }}>
+              <div style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '8px',
+                marginBottom: '8px'
+              }}>
+                <span style={{ fontSize: '20px' }}>{getCountryFlag(plug.countries)}</span>
+                <h2 style={{ 
+                  fontSize: '24px',
+                  fontWeight: 'bold',
+                  margin: '0',
+                  color: plug.isVip ? '#FFD700' : '#ffffff'
+                }}>
+                  {plug.name}
+                </h2>
+              </div>
+              <p style={{ 
+                color: '#8e8e93', 
+                fontSize: '16px',
+                margin: '0',
+                lineHeight: '1.4'
+              }}>
+                {plug.description}
+              </p>
             </div>
 
-            {/* Plug details */}
-            <div className="bg-gray-800 border border-gray-700 rounded-xl shadow-lg overflow-hidden">
-              {/* Image simplifiée - comme dans le bot */}
-              <div className="relative h-64 md:h-80 bg-gray-900">
-                {plug.image && plug.image.trim() !== '' ? (
-                  <img
-                    src={getProxiedImageUrl(plug.image)}
-                    alt={plug.name || 'Boutique'}
-                    className="w-full h-full object-cover"
-                    loading="lazy"
-                  />
-                ) : (
-                  <div className="absolute inset-0 flex items-center justify-center bg-gray-900">
-                    <div className="text-center">
-                      <GlobeAltIcon className="w-20 h-20 text-gray-600 mx-auto mb-2" />
-                      <p className="text-gray-500">Aucune image</p>
-                    </div>
-                  </div>
-                )}
-                
-                {/* VIP Badge amélioré */}
-                {plug.isVip && (
-                  <div className="absolute top-4 right-4">
-                    <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-bold bg-yellow-500 text-white shadow-lg">
-                      <StarIcon className="w-4 h-4 mr-2" />
-                      VIP
-                    </span>
-                  </div>
-                )}
+            {/* Statistiques */}
+            <div style={{ 
+              display: 'flex', 
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              padding: '12px 0',
+              borderTop: '1px solid #2a2a2a',
+              borderBottom: '1px solid #2a2a2a'
+            }}>
+              <div style={{ textAlign: 'center' }}>
+                <div style={{ fontSize: '20px', marginBottom: '4px' }}>👍</div>
+                <div style={{ 
+                  fontSize: '18px', 
+                  fontWeight: 'bold', 
+                  color: plug.isVip ? '#FFD700' : '#ffffff'
+                }}>
+                  {plug.likes || 0}
+                </div>
+                <div style={{ fontSize: '12px', color: '#8e8e93' }}>Likes</div>
+              </div>
+              
+              <div style={{ textAlign: 'center' }}>
+                <div style={{ fontSize: '20px', marginBottom: '4px' }}>📍</div>
+                <div style={{ 
+                  fontSize: '18px', 
+                  fontWeight: 'bold', 
+                  color: '#ffffff'
+                }}>
+                  {plug.countries ? plug.countries.length : 0}
+                </div>
+                <div style={{ fontSize: '12px', color: '#8e8e93' }}>Pays</div>
               </div>
 
-              {/* Content */}
-              <div className="p-6">
-                <h2 style={{ color: 'white' }} className="text-2xl font-bold mb-4">{plug.name}</h2>
-                <p style={{ color: '#e5e7eb' }} className="mb-6">{plug.description}</p>
+              <div style={{ textAlign: 'center' }}>
+                <div style={{ fontSize: '20px', marginBottom: '4px' }}>⭐</div>
+                <div style={{ 
+                  fontSize: '18px', 
+                  fontWeight: 'bold', 
+                  color: plug.isVip ? '#FFD700' : '#ffffff'
+                }}>
+                  {plug.isVip ? 'VIP' : 'STD'}
+                </div>
+                <div style={{ fontSize: '12px', color: '#8e8e93' }}>Type</div>
+              </div>
+            </div>
 
-                {/* Location */}
-                {plug.countries && plug.countries.length > 0 && (
-                  <div className="mb-6">
-                    <h3 style={{ color: 'white' }} className="text-lg font-semibold mb-2">📍 Localisation</h3>
-                    <div className="flex items-center" style={{ color: 'white' }}>
-                      <MapPinIcon className="w-5 h-5 mr-2" />
-                      <span>{plug.countries.join(', ')}</span>
-                    </div>
-                  </div>
-                )}
+            {/* Localisation */}
+            {plug.countries && plug.countries.length > 0 && (
+              <div style={{ marginTop: '16px' }}>
+                <h3 style={{ 
+                  fontSize: '16px', 
+                  fontWeight: '600', 
+                  marginBottom: '8px',
+                  color: '#ffffff'
+                }}>
+                  📍 Localisation
+                </h3>
+                <p style={{ color: '#8e8e93', fontSize: '15px', margin: '0' }}>
+                  {plug.countries.join(', ')}
+                </p>
+              </div>
+            )}
+          </div>
 
-                {/* Services */}
-                <div className="mb-6">
-                  <h3 style={{ color: 'white' }} className="text-lg font-semibold mb-3">🚀 Services disponibles</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    {/* Delivery */}
-                    <div className={`p-4 rounded-lg border ${plug.services?.delivery?.enabled ? 'bg-green-900 border-green-600' : 'bg-gray-800 border-gray-600'}`}>
-                      <div className="flex items-center mb-2">
-                        <TruckIcon className="w-5 h-5 mr-2 text-green-400" />
-                        <h4 style={{ color: 'white' }} className="font-semibold">Livraison</h4>
+          {/* Services */}
+          <div style={{ 
+            backgroundColor: '#1a1a1a',
+            borderRadius: '12px',
+            padding: '20px',
+            marginBottom: '16px'
+          }}>
+            <h3 style={{ 
+              fontSize: '18px', 
+              fontWeight: '600', 
+              marginBottom: '16px',
+              color: '#ffffff'
+            }}>
+              🚀 Services disponibles
+            </h3>
+            
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              {/* Livraison */}
+              <div style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'space-between',
+                padding: '12px',
+                backgroundColor: plug.services?.delivery?.enabled ? '#0a4a2a' : '#2a2a2a',
+                borderRadius: '8px',
+                border: plug.services?.delivery?.enabled ? '1px solid #22c55e' : '1px solid #3a3a3a'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <span style={{ fontSize: '20px' }}>📦</span>
+                  <div>
+                    <div style={{ fontWeight: '500', color: '#ffffff' }}>Livraison</div>
+                    {plug.services?.delivery?.price && (
+                      <div style={{ fontSize: '13px', color: '#8e8e93' }}>
+                        {plug.services.delivery.price}
                       </div>
-                      {plug.services?.delivery?.enabled ? (
-                        <>
-                          <p style={{ color: '#e5e7eb' }} className="text-sm mb-2">Service disponible</p>
-                          {plug.services.delivery.price && (
-                            <p style={{ color: 'white' }} className="text-sm font-semibold">{plug.services.delivery.price}</p>
-                          )}
-                        </>
-                      ) : (
-                        <p style={{ color: '#9ca3af' }} className="text-sm">Non disponible</p>
-                      )}
-                    </div>
-
-                    {/* Postal */}
-                    <div className={`p-4 rounded-lg border ${plug.services?.postal?.enabled ? 'bg-gray-800 border-gray-600' : 'bg-gray-800 border-gray-600'}`}>
-                      <div className="flex items-center mb-2">
-                        <GlobeAltIcon className="w-5 h-5 mr-2 text-white" />
-                        <h4 style={{ color: 'white' }} className="font-semibold">Postal</h4>
-                      </div>
-                      {plug.services?.postal?.enabled ? (
-                        <>
-                          <p style={{ color: '#e5e7eb' }} className="text-sm mb-2">Service disponible</p>
-                          {plug.services.postal.price && (
-                            <p style={{ color: 'white' }} className="text-sm font-semibold">{plug.services.postal.price}</p>
-                          )}
-                        </>
-                      ) : (
-                        <p style={{ color: '#9ca3af' }} className="text-sm">Non disponible</p>
-                      )}
-                    </div>
-
-                    {/* Meetup */}
-                    <div className={`p-4 rounded-lg border ${plug.services?.meetup?.enabled ? 'bg-gray-800 border-gray-600' : 'bg-gray-800 border-gray-600'}`}>
-                      <div className="flex items-center mb-2">
-                        <HomeIcon className="w-5 h-5 mr-2 text-white" />
-                        <h4 style={{ color: 'white' }} className="font-semibold">Meetup</h4>
-                      </div>
-                      {plug.services?.meetup?.enabled ? (
-                        <>
-                          <p style={{ color: '#e5e7eb' }} className="text-sm mb-2">Service disponible</p>
-                          {plug.services.meetup.price && (
-                            <p style={{ color: 'white' }} className="text-sm font-semibold">{plug.services.meetup.price}</p>
-                          )}
-                        </>
-                      ) : (
-                        <p style={{ color: '#9ca3af' }} className="text-sm">Non disponible</p>
-                      )}
-                    </div>
+                    )}
                   </div>
                 </div>
+                <div style={{ 
+                  color: plug.services?.delivery?.enabled ? '#22c55e' : '#ef4444',
+                  fontWeight: '500',
+                  fontSize: '14px'
+                }}>
+                  {plug.services?.delivery?.enabled ? '✓ Disponible' : '✗ Non disponible'}
+                </div>
+              </div>
 
-                {/* Réseaux sociaux améliorés */}
-                {plug.socialMedia && plug.socialMedia.length > 0 && (
-                  <div className="mb-6">
-                    <h3 style={{ color: 'white' }} className="text-lg font-semibold mb-4">🌐 Réseaux sociaux</h3>
-                    <div className="flex flex-wrap gap-3">
-                      {plug.socialMedia.map((social, index) => (
-                        <a
-                          key={index}
-                          href={social.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center px-4 py-2 bg-gray-700 hover:bg-gray-600 border border-gray-600 rounded-lg transition-colors duration-200 text-white hover:text-white"
-                          style={{ textDecoration: 'none' }}
-                        >
-                          <span className="text-lg mr-2">{social.emoji}</span>
-                          <span className="font-medium">{social.name}</span>
-                        </a>
-                      ))}
-                    </div>
+              {/* Postal */}
+              <div style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'space-between',
+                padding: '12px',
+                backgroundColor: plug.services?.postal?.enabled ? '#1a3a4a' : '#2a2a2a',
+                borderRadius: '8px',
+                border: plug.services?.postal?.enabled ? '1px solid #3b82f6' : '1px solid #3a3a3a'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <span style={{ fontSize: '20px' }}>📍</span>
+                  <div>
+                    <div style={{ fontWeight: '500', color: '#ffffff' }}>Postal</div>
+                    {plug.services?.postal?.price && (
+                      <div style={{ fontSize: '13px', color: '#8e8e93' }}>
+                        {plug.services.postal.price}
+                      </div>
+                    )}
                   </div>
-                )}
+                </div>
+                <div style={{ 
+                  color: plug.services?.postal?.enabled ? '#3b82f6' : '#ef4444',
+                  fontWeight: '500',
+                  fontSize: '14px'
+                }}>
+                  {plug.services?.postal?.enabled ? '✓ Disponible' : '✗ Non disponible'}
+                </div>
+              </div>
 
-                {/* Additional info */}
-                {plug.additionalInfo && (
-                  <div className="mb-6">
-                    <h3 style={{ color: 'white' }} className="text-lg font-semibold mb-3">ℹ️ Informations complémentaires</h3>
-                    <div style={{ color: '#e5e7eb' }} className="prose prose-invert max-w-none">
-                      {formatText(plug.additionalInfo)}
-                    </div>
+              {/* Meetup */}
+              <div style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'space-between',
+                padding: '12px',
+                backgroundColor: plug.services?.meetup?.enabled ? '#4a2a1a' : '#2a2a2a',
+                borderRadius: '8px',
+                border: plug.services?.meetup?.enabled ? '1px solid #f59e0b' : '1px solid #3a3a3a'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <span style={{ fontSize: '20px' }}>💰</span>
+                  <div>
+                    <div style={{ fontWeight: '500', color: '#ffffff' }}>Meetup</div>
+                    {plug.services?.meetup?.price && (
+                      <div style={{ fontSize: '13px', color: '#8e8e93' }}>
+                        {plug.services.meetup.price}
+                      </div>
+                    )}
                   </div>
-                )}
-
-                {/* Likes */}
-                <div className="flex items-center justify-between pt-6 border-t border-gray-700">
-                  <div className="flex items-center" style={{ color: 'white' }}>
-                    <HeartIcon className="w-6 h-6 mr-2 text-red-500" />
-                    <span className="text-lg font-semibold">{plug.likes || 0} like{(plug.likes || 0) !== 1 ? 's' : ''}</span>
-                  </div>
-                  <Link 
-                    href="/shop" 
-                    style={{ color: 'white', textDecoration: 'none' }}
-                    className="hover:opacity-75"
-                  >
-                    Retour aux boutiques
-                  </Link>
+                </div>
+                <div style={{ 
+                  color: plug.services?.meetup?.enabled ? '#f59e0b' : '#ef4444',
+                  fontWeight: '500',
+                  fontSize: '14px'
+                }}>
+                  {plug.services?.meetup?.enabled ? '✓ Disponible' : '✗ Non disponible'}
                 </div>
               </div>
             </div>
           </div>
+
+          {/* Réseaux sociaux */}
+          {plug.socialMedia && plug.socialMedia.length > 0 && (
+            <div style={{ 
+              backgroundColor: '#1a1a1a',
+              borderRadius: '12px',
+              padding: '20px',
+              marginBottom: '16px'
+            }}>
+              <h3 style={{ 
+                fontSize: '18px', 
+                fontWeight: '600', 
+                marginBottom: '16px',
+                color: '#ffffff'
+              }}>
+                🌐 Réseaux sociaux
+              </h3>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                {plug.socialMedia.map((social, index) => (
+                  <a
+                    key={index}
+                    href={social.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '12px',
+                      padding: '12px',
+                      backgroundColor: '#2a2a2a',
+                      borderRadius: '8px',
+                      textDecoration: 'none',
+                      color: '#ffffff',
+                      border: '1px solid #3a3a3a',
+                      transition: 'background-color 0.2s ease'
+                    }}
+                    onMouseEnter={(e) => e.target.style.backgroundColor = '#3a3a3a'}
+                    onMouseLeave={(e) => e.target.style.backgroundColor = '#2a2a2a'}
+                  >
+                    <span style={{ fontSize: '20px' }}>{social.emoji}</span>
+                    <span style={{ fontWeight: '500' }}>{social.name}</span>
+                    <span style={{ marginLeft: 'auto', color: '#8e8e93' }}>→</span>
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Informations complémentaires */}
+          {plug.additionalInfo && (
+            <div style={{ 
+              backgroundColor: '#1a1a1a',
+              borderRadius: '12px',
+              padding: '20px',
+              marginBottom: '16px'
+            }}>
+              <h3 style={{ 
+                fontSize: '18px', 
+                fontWeight: '600', 
+                marginBottom: '12px',
+                color: '#ffffff'
+              }}>
+                ℹ️ Informations complémentaires
+              </h3>
+              <div style={{ 
+                color: '#8e8e93', 
+                fontSize: '15px',
+                lineHeight: '1.5'
+              }}>
+                {formatText(plug.additionalInfo)}
+              </div>
+            </div>
+          )}
+
+          {/* Bouton retour */}
+          <div style={{ textAlign: 'center', marginTop: '32px' }}>
+            <Link 
+              href="/shop" 
+              style={{ 
+                display: 'inline-block',
+                padding: '12px 24px',
+                backgroundColor: '#007AFF',
+                color: '#ffffff',
+                textDecoration: 'none',
+                borderRadius: '8px',
+                fontWeight: '500'
+              }}
+            >
+              ← Retour aux boutiques
+            </Link>
+          </div>
         </main>
       </div>
+
+      <style jsx>{`
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+      `}</style>
     </>
   )
 }

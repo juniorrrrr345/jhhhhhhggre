@@ -5,14 +5,6 @@ import { api } from '../../lib/api'
 import { getProxiedImageUrl } from '../../lib/imageUtils'
 import toast from 'react-hot-toast'
 import Pagination from '../../components/Pagination'
-import {
-  StarIcon,
-  MapPinIcon,
-  TruckIcon,
-  GlobeAltIcon,
-  HomeIcon,
-  MagnifyingGlassIcon
-} from '@heroicons/react/24/outline'
 
 export default function ShopHome() {
   const [plugs, setPlugs] = useState([])
@@ -20,17 +12,16 @@ export default function ShopHome() {
   const [loading, setLoading] = useState(true)
   const [initialLoading, setInitialLoading] = useState(true)
   const [currentPage, setCurrentPage] = useState(1)
-  const itemsPerPage = 12
+  const itemsPerPage = 20
 
   useEffect(() => {
     fetchConfig()
     fetchPlugs()
     
-    // Synchronisation plus fréquente pour une meilleure réactivité
     const interval = setInterval(() => {
       fetchConfig()
       fetchPlugs()
-    }, 15000) // Réduit à 15 secondes
+    }, 15000)
     
     const handleStorageChange = (event) => {
       if (event?.key === 'boutique_sync_signal' || event?.key === 'global_sync_signal') {
@@ -48,14 +39,12 @@ export default function ShopHome() {
       }
     }
 
-    // Écouteur pour le focus de la fenêtre (rafraîchir quand l'utilisateur revient)
     const handleFocus = () => {
       console.log('👁️ Fenêtre focus - rafraîchissement des données')
       fetchConfig()
       fetchPlugs()
     }
 
-    // Écouteur pour détecter les changements de données en temps réel
     const handleVisibilityChange = () => {
       if (!document.hidden) {
         console.log('👁️ Page visible - vérification des mises à jour')
@@ -177,12 +166,10 @@ export default function ShopHome() {
         }
       }
 
-      // Traiter la structure de réponse correcte { plugs: [...] }
       let plugsArray = []
       if (data && Array.isArray(data.plugs)) {
         plugsArray = data.plugs
       } else if (Array.isArray(data)) {
-        // Fallback si la réponse est directement un tableau
         plugsArray = data
       } else {
         console.error('❌ Structure de données inattendue:', data)
@@ -192,25 +179,10 @@ export default function ShopHome() {
       const sortedPlugs = plugsArray.sort((a, b) => {
         if (a.isVip && !b.isVip) return -1
         if (!a.isVip && b.isVip) return 1
-        return 0
+        return (b.likes || 0) - (a.likes || 0)
       })
 
       console.log('🔌 Plugs chargés:', sortedPlugs.length, 'boutiques')
-      
-      // Diagnostic des images
-      sortedPlugs.forEach((plug, index) => {
-        if (plug.image) {
-          const originalUrl = plug.image
-          const proxiedUrl = getProxiedImageUrl(plug.image)
-          console.log(`📸 Plug ${index} "${plug.name}":`)
-          console.log(`   Original: ${originalUrl}`)
-          console.log(`   Proxified: ${proxiedUrl}`)
-          console.log(`   Needs proxy: ${originalUrl !== proxiedUrl}`)
-        } else {
-          console.log(`❌ Plug ${index} "${plug.name}": PAS D'IMAGE`)
-        }
-      })
-      
       setPlugs(sortedPlugs)
     } catch (error) {
       console.error('❌ Erreur chargement plugs:', error)
@@ -225,6 +197,31 @@ export default function ShopHome() {
     currentPage * itemsPerPage
   )
 
+  const getPositionBadge = (index) => {
+    if (index === 0) return '🥇'
+    if (index === 1) return '⚠️'
+    if (index === 2) return '🥉'
+    if (index === 3) return '3️⃣'
+    return null
+  }
+
+  const getCountryFlag = (countries) => {
+    if (!countries || countries.length === 0) return '🌍'
+    const countryFlagMap = {
+      'France': '🇫🇷',
+      'Belgique': '🇧🇪',
+      'Suisse': '🇨🇭',
+      'Canada': '🇨🇦',
+      'Allemagne': '🇩🇪',
+      'Espagne': '🇪🇸',
+      'Italie': '🇮🇹',
+      'Portugal': '🇵🇹',
+      'Royaume-Uni': '🇬🇧',
+      'Pays-Bas': '🇳🇱'
+    }
+    return countryFlagMap[countries[0]] || '🌍'
+  }
+
   if (initialLoading) {
     return (
       <>
@@ -232,10 +229,18 @@ export default function ShopHome() {
           <title>Chargement...</title>
           <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
         </Head>
-        <div className="min-h-screen bg-black flex items-center justify-center">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
-            <p style={{ color: 'white' }} className="font-medium">Chargement de la boutique...</p>
+        <div style={{ backgroundColor: '#000000', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ 
+              width: '48px', 
+              height: '48px', 
+              border: '2px solid transparent',
+              borderTop: '2px solid #ffffff',
+              borderRadius: '50%',
+              animation: 'spin 1s linear infinite',
+              margin: '0 auto 16px'
+            }}></div>
+            <p style={{ color: '#ffffff', fontWeight: '500' }}>Chargement de la boutique...</p>
           </div>
         </div>
       </>
@@ -245,230 +250,324 @@ export default function ShopHome() {
   return (
     <>
       <Head>
-        <title>{config?.boutique?.name || 'Boutique'}</title>
-        <meta name="description" content="Découvrez notre sélection de produits premium avec livraison, envoi postal et meetup disponibles." />
+        <title>{config?.boutique?.name || 'PlugsFinder Bot'}</title>
+        <meta name="description" content="Découvrez notre sélection de boutiques premium avec livraison et services disponibles." />
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
       </Head>
 
-      <div 
-        className="min-h-screen"
-        style={{
+      <div style={{ 
+        backgroundColor: '#000000', 
+        minHeight: '100vh',
+        color: '#ffffff',
+        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+      }}>
+        {/* Header Style Telegram */}
+        <header style={{ 
+          backgroundColor: '#1a1a1a',
+          padding: '16px 20px',
+          borderBottom: '1px solid #2a2a2a'
+        }}>
+          <div style={{ textAlign: 'center' }}>
+            <h1 style={{ 
+              fontSize: '20px', 
+              fontWeight: 'bold', 
+              margin: '0',
+              color: '#ffffff'
+            }}>
+              PlugsFinder Bot
+            </h1>
+            <p style={{ 
+              fontSize: '14px', 
+              margin: '4px 0 0 0',
+              color: '#8e8e93'
+            }}>
+              mini-application
+            </p>
+          </div>
+        </header>
+
+        {/* Header Titre Principal */}
+        <div style={{ 
           backgroundColor: '#000000',
-          backgroundImage: config?.boutique?.backgroundImage ? `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url("${config.boutique.backgroundImage}")` : 'none',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat',
-          backgroundAttachment: 'fixed',
-          color: 'white'
-        }}
-      >
-        {/* Header */}
-        {config && (
-          <header className="bg-gray-900 shadow-lg">
-            <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
-              <div className="flex items-center justify-center h-14 sm:h-16">
-                <div className="text-center">
-                  <h1 style={{ color: 'white' }} className="text-lg sm:text-xl font-bold">
-                    🔌 {config?.boutique?.name || 'Boutique'}
-                  </h1>
-                  {config?.boutique?.subtitle && (
-                    <p style={{ color: 'white' }} className="text-xs sm:text-sm">{config.boutique.subtitle}</p>
-                  )}
-                </div>
-              </div>
-            </div>
-          </header>
-        )}
+          padding: '20px',
+          textAlign: 'center'
+        }}>
+          <h2 style={{ 
+            fontSize: '32px', 
+            fontWeight: 'bold', 
+            margin: '0 0 8px 0',
+            color: '#ffffff',
+            letterSpacing: '2px'
+          }}>
+            PLUGS FINDER
+          </h2>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+            <span style={{ color: '#ffffff', fontSize: '14px' }}>JUSTE UNE</span>
+            <span style={{ 
+              backgroundColor: '#007AFF', 
+              color: '#ffffff', 
+              padding: '4px 8px', 
+              borderRadius: '12px',
+              fontSize: '12px',
+              fontWeight: 'bold'
+            }}>
+              MINI-APP TELEGRAM
+            </span>
+            <span style={{ color: '#ffffff', fontSize: '14px' }}>CHILL</span>
+          </div>
+        </div>
 
         {/* Navigation */}
-        {config && (
-          <nav className="bg-black shadow-sm border-b border-gray-700">
-            <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
-              <div className="flex justify-center space-x-4 sm:space-x-8 h-10 sm:h-12 items-center">
-                <Link 
-                  href="/shop" 
-                  style={{ color: 'white' }}
-                  className="font-medium pb-2 sm:pb-3 flex items-center hover:opacity-75 transition-opacity"
-                >
-                  <span className="mr-1 text-sm sm:text-base">🏠</span>
-                  <span style={{ color: 'white' }} className="text-xs sm:text-sm">Accueil</span>
-                </Link>
-                <Link 
-                  href="/shop/search" 
-                  style={{ color: 'white' }}
-                  className="pb-2 sm:pb-3 flex items-center hover:opacity-75 transition-opacity"
-                >
-                  <span className="mr-1 text-sm sm:text-base">🔍</span>
-                  <span style={{ color: 'white' }} className="text-xs sm:text-sm">Recherche</span>
-                </Link>
-                <Link 
-                  href="/shop/vip" 
-                  style={{ color: 'white' }}
-                  className="pb-2 sm:pb-3 flex items-center hover:opacity-75 transition-opacity"
-                >
-                  <span className="mr-1 text-sm sm:text-base">👑</span>
-                  <span style={{ color: 'white' }} className="text-xs sm:text-sm">VIP</span>
-                </Link>
+        <nav style={{ 
+          backgroundColor: '#000000',
+          padding: '0 20px',
+          borderBottom: '1px solid #2a2a2a'
+        }}>
+          <div style={{ 
+            display: 'flex', 
+            justifyContent: 'center', 
+            gap: '40px',
+            paddingBottom: '16px'
+          }}>
+            <Link href="/shop" style={{ 
+              display: 'flex', 
+              flexDirection: 'column', 
+              alignItems: 'center', 
+              textDecoration: 'none',
+              color: '#007AFF'
+            }}>
+              <div style={{ 
+                width: '40px', 
+                height: '40px', 
+                backgroundColor: '#007AFF', 
+                borderRadius: '12px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginBottom: '4px'
+              }}>
+                🏠
               </div>
-            </div>
-          </nav>
-        )}
+              <span style={{ fontSize: '12px', color: '#ffffff' }}>Plugs</span>
+            </Link>
+            <Link href="/shop/search" style={{ 
+              display: 'flex', 
+              flexDirection: 'column', 
+              alignItems: 'center', 
+              textDecoration: 'none',
+              color: '#8e8e93'
+            }}>
+              <div style={{ 
+                width: '40px', 
+                height: '40px', 
+                backgroundColor: 'transparent', 
+                borderRadius: '12px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginBottom: '4px'
+              }}>
+                🔍
+              </div>
+              <span style={{ fontSize: '12px', color: '#8e8e93' }}>Rechercher</span>
+            </Link>
+            <Link href="/shop/vip" style={{ 
+              display: 'flex', 
+              flexDirection: 'column', 
+              alignItems: 'center', 
+              textDecoration: 'none',
+              color: '#8e8e93'
+            }}>
+              <div style={{ 
+                width: '40px', 
+                height: '40px', 
+                backgroundColor: 'transparent', 
+                borderRadius: '12px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginBottom: '4px'
+              }}>
+                🎁
+              </div>
+              <span style={{ fontSize: '12px', color: '#8e8e93' }}>VIP</span>
+            </Link>
+          </div>
+        </nav>
 
         {/* Main Content */}
-        <main className="py-6 sm:py-12">
-          <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
-            {/* Hero Section */}
-            {config && (
-              <div className="text-center mb-6 sm:mb-12">
-                <div className="flex items-center justify-center mb-2 sm:mb-4">
-                  <h2 style={{ color: 'white' }} className="text-xl sm:text-3xl font-bold">
-                    🔌 {config?.boutique?.name || 'Boutique Premium'}
-                  </h2>
-                </div>
-                <p style={{ color: 'white' }} className="max-w-2xl mx-auto text-sm sm:text-base">
-                  {loading ? 'Chargement...' : `${plugs.length} produit(s) disponible(s)`}
-                </p>
-              </div>
-            )}
-
-            {/* Loading */}
-            {loading ? (
-              <div className="text-center py-12">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
-                <p style={{ color: 'white' }}>Chargement des produits...</p>
-              </div>
-            ) : plugs.length === 0 ? (
-              <div className="text-center py-12">
-                <div className="mx-auto h-12 w-12 text-white mb-4 flex items-center justify-center">
-                  <GlobeAltIcon className="h-8 w-8" />
-                </div>
-                <h3 style={{ color: 'white' }} className="text-xl font-medium mb-2">Aucun produit disponible</h3>
-                <p style={{ color: 'white' }}>Revenez plus tard pour découvrir nos produits.</p>
-              </div>
-            ) : (
-              <>
-                {/* Products Grid - 2 colonnes adaptatif pour tous appareils */}
-                <div className="grid grid-cols-2 gap-2 sm:gap-3 md:gap-4 lg:gap-6 mb-8">
-                  {currentPlugs.map((plug, index) => (
-                    <Link 
-                      key={plug._id || index} 
-                      href={`/shop/${plug._id}`} 
-                      className="block group hover:scale-105 transition-transform duration-200"
-                      style={{ textDecoration: 'none', color: 'inherit' }}
+        <main style={{ padding: '20px' }}>
+          {loading ? (
+            <div style={{ textAlign: 'center', padding: '48px 0' }}>
+              <div style={{ 
+                width: '48px', 
+                height: '48px', 
+                border: '2px solid transparent',
+                borderTop: '2px solid #ffffff',
+                borderRadius: '50%',
+                animation: 'spin 1s linear infinite',
+                margin: '0 auto 16px'
+              }}></div>
+              <p style={{ color: '#ffffff' }}>Chargement des boutiques...</p>
+            </div>
+          ) : plugs.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '48px 0' }}>
+              <div style={{ fontSize: '48px', marginBottom: '16px' }}>🌍</div>
+              <h3 style={{ color: '#ffffff', fontSize: '20px', fontWeight: '500', marginBottom: '8px' }}>
+                Aucune boutique disponible
+              </h3>
+              <p style={{ color: '#8e8e93' }}>Revenez plus tard pour découvrir nos boutiques.</p>
+            </div>
+          ) : (
+            <>
+              {/* Liste des boutiques */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
+                {currentPlugs.map((plug, index) => (
+                  <Link 
+                    key={plug._id || index} 
+                    href={`/shop/${plug._id}`}
+                    style={{ textDecoration: 'none', color: 'inherit' }}
+                  >
+                    <div style={{ 
+                      backgroundColor: '#1a1a1a',
+                      padding: '16px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '12px',
+                      cursor: 'pointer',
+                      transition: 'background-color 0.2s ease'
+                    }}
+                    onMouseEnter={(e) => e.target.style.backgroundColor = '#2a2a2a'}
+                    onMouseLeave={(e) => e.target.style.backgroundColor = '#1a1a1a'}
                     >
-                      <div className="shop-card bg-gray-800 border border-gray-700 rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-shadow duration-300 w-full">
-                        {/* Image avec gestion d'erreur simple */}
-                        <div className="relative h-32 sm:h-40 md:h-48 bg-gray-900 overflow-hidden">
-                          {plug.image && plug.image.trim() !== '' ? (
-                            <>
-                              <img
-                                src={getProxiedImageUrl(plug.image)}
-                                alt={plug.name || 'Boutique'}
-                                className="w-full h-full object-cover"
-                                loading="lazy"
-                                onError={(e) => {
-                                  console.log('❌ Erreur chargement image:', plug.image);
-                                  e.target.style.display = 'none';
-                                  e.target.nextElementSibling.style.display = 'flex';
-                                }}
-                                onLoad={() => {
-                                  console.log('✅ Image chargée:', plug.image);
-                                }}
-                              />
-                              <div 
-                                className="hidden absolute inset-0 items-center justify-center bg-gray-900"
-                                style={{ display: 'none' }}
-                              >
-                                <div className="text-center">
-                                  <GlobeAltIcon className="w-8 h-8 sm:w-12 sm:h-12 text-gray-600 mx-auto mb-1" />
-                                  <p className="text-gray-500 text-xs">Image non disponible</p>
-                                </div>
-                              </div>
-                            </>
-                          ) : (
-                            <div className="absolute inset-0 flex items-center justify-center bg-gray-900">
-                              <div className="text-center">
-                                <GlobeAltIcon className="w-8 h-8 sm:w-12 sm:h-12 text-gray-600 mx-auto mb-1" />
-                                <p className="text-gray-500 text-xs">Aucune image</p>
-                              </div>
-                            </div>
-                          )}
-                          
-                          {/* VIP Badge amélioré */}
-                          {plug.isVip && (
-                            <div className="absolute top-2 right-2">
-                              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-bold bg-yellow-500 text-white shadow-lg">
-                                <StarIcon className="w-3 h-3 mr-1" />
-                                VIP
-                              </span>
-                            </div>
-                          )}
-                        </div>
-
-                        {/* Content adaptatif */}
-                        <div className="p-2 sm:p-3 md:p-4">
-                          <h3 style={{ color: 'white' }} className="text-xs sm:text-sm md:text-base font-bold mb-1 sm:mb-2 line-clamp-1">{plug.name}</h3>
-                          <p style={{ color: '#e5e7eb' }} className="mb-2 sm:mb-3 text-xs sm:text-sm line-clamp-2 min-h-[24px] sm:min-h-[32px] md:min-h-[36px]">{plug.description}</p>
-
-                          {/* Location */}
-                          {plug.countries && plug.countries.length > 0 && (
-                            <div className="flex items-center text-xs mb-1 sm:mb-2" style={{ color: 'white' }}>
-                              <MapPinIcon className="w-2 h-2 sm:w-3 sm:h-3 mr-1 flex-shrink-0" />
-                              <span className="truncate">{plug.countries.join(', ')}</span>
-                            </div>
-                          )}
-
-                          {/* Services - Adaptés mobile */}
-                          <div className="flex flex-wrap gap-1 mb-2 sm:mb-3">
-                            {plug.services?.delivery?.enabled && (
-                              <span className="px-1 py-0.5 sm:px-2 sm:py-1 bg-green-600 text-white text-xs rounded-full flex items-center">
-                                <TruckIcon className="w-2 h-2 sm:w-3 sm:h-3 mr-0.5 sm:mr-1" />
-                                <span className="hidden sm:inline">Livraison</span>
-                                <span className="sm:hidden">L</span>
-                              </span>
-                            )}
-                            {plug.services?.postal?.enabled && (
-                              <span className="px-1 py-0.5 sm:px-2 sm:py-1 bg-gray-800 text-white text-xs rounded-full border border-gray-600 flex items-center">
-                                <span className="text-xs">📮</span>
-                                <span className="hidden sm:inline ml-1">Postal</span>
-                              </span>
-                            )}
-                            {plug.services?.meetup?.enabled && (
-                              <span className="px-1 py-0.5 sm:px-2 sm:py-1 bg-purple-600 text-white text-xs rounded-full flex items-center">
-                                <HomeIcon className="w-2 h-2 sm:w-3 sm:h-3 mr-0.5 sm:mr-1" />
-                                <span className="hidden sm:inline">Meetup</span>
-                                <span className="sm:hidden">M</span>
-                              </span>
-                            )}
-                          </div>
-
-                          {/* Likes */}
-                          <div className="flex items-center text-xs font-medium" style={{ color: 'white' }}>
-                            <span className="mr-1">❤️</span>
-                            <span>{plug.likes || 0} like{(plug.likes || 0) !== 1 ? 's' : ''}</span>
-                          </div>
+                      {/* Image/Logo */}
+                      <div style={{ 
+                        width: '64px', 
+                        height: '64px', 
+                        borderRadius: '12px',
+                        overflow: 'hidden',
+                        backgroundColor: '#2a2a2a',
+                        flexShrink: 0
+                      }}>
+                        {plug.image && plug.image.trim() !== '' ? (
+                          <img
+                            src={getProxiedImageUrl(plug.image)}
+                            alt={plug.name || 'Boutique'}
+                            style={{ 
+                              width: '100%', 
+                              height: '100%', 
+                              objectFit: 'cover'
+                            }}
+                            onError={(e) => {
+                              e.target.style.display = 'none'
+                              e.target.nextElementSibling.style.display = 'flex'
+                            }}
+                          />
+                        ) : null}
+                        <div style={{ 
+                          width: '100%', 
+                          height: '100%', 
+                          display: plug.image ? 'none' : 'flex',
+                          alignItems: 'center', 
+                          justifyContent: 'center',
+                          fontSize: '24px'
+                        }}>
+                          🏪
                         </div>
                       </div>
-                    </Link>
-                  ))}
-                </div>
 
-                {/* Pagination */}
-                {plugs.length > itemsPerPage && (
-                  <div className="flex justify-center">
-                    <Pagination
-                      currentPage={currentPage}
-                      totalItems={plugs.length}
-                      itemsPerPage={itemsPerPage}
-                      onPageChange={setCurrentPage}
-                    />
-                  </div>
-                )}
-              </>
-            )}
-          </div>
+                      {/* Contenu principal */}
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        {/* Nom et drapeau */}
+                        <div style={{ 
+                          display: 'flex', 
+                          alignItems: 'center', 
+                          gap: '8px',
+                          marginBottom: '4px'
+                        }}>
+                          <span style={{ fontSize: '16px' }}>{getCountryFlag(plug.countries)}</span>
+                          <h3 style={{ 
+                            fontSize: '16px',
+                            fontWeight: '600',
+                            margin: '0',
+                            color: '#ffffff',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            whiteSpace: 'nowrap'
+                          }}>
+                            {plug.name}
+                          </h3>
+                        </div>
+
+                        {/* Services */}
+                        <div style={{ 
+                          display: 'flex', 
+                          alignItems: 'center', 
+                          gap: '8px',
+                          marginBottom: '4px'
+                        }}>
+                          {plug.services?.delivery?.enabled && <span>📦</span>}
+                          {plug.services?.postal?.enabled && <span>📍</span>}
+                          {plug.services?.meetup?.enabled && <span>💰</span>}
+                        </div>
+                      </div>
+
+                      {/* Likes et badge position */}
+                      <div style={{ 
+                        display: 'flex', 
+                        flexDirection: 'column', 
+                        alignItems: 'flex-end',
+                        gap: '4px'
+                      }}>
+                        {getPositionBadge(index) && (
+                          <span style={{ fontSize: '20px' }}>{getPositionBadge(index)}</span>
+                        )}
+                        <div style={{ 
+                          display: 'flex', 
+                          alignItems: 'center', 
+                          gap: '4px'
+                        }}>
+                          <span style={{ fontSize: '16px' }}>👍</span>
+                          <span style={{ 
+                            fontSize: '16px',
+                            fontWeight: '600',
+                            color: '#ffffff'
+                          }}>
+                            {plug.likes || 0}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+
+              {/* Pagination */}
+              {plugs.length > itemsPerPage && (
+                <div style={{ 
+                  display: 'flex', 
+                  justifyContent: 'center',
+                  marginTop: '32px'
+                }}>
+                  <Pagination
+                    currentPage={currentPage}
+                    totalItems={plugs.length}
+                    itemsPerPage={itemsPerPage}
+                    onPageChange={setCurrentPage}
+                  />
+                </div>
+              )}
+            </>
+          )}
         </main>
       </div>
+
+      <style jsx>{`
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+      `}</style>
     </>
   )
 }
