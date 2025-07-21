@@ -176,28 +176,11 @@ export default function ShopVIP() {
         {config && (
           <header className="bg-gray-900 shadow-lg">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <div className="flex items-center justify-between h-16">
-                <div className="flex items-center">
-                  <div className="flex-shrink-0">
-                    {config?.boutique?.logo ? (
-                      <img 
-                        src={config.boutique.logo} 
-                        alt="Logo" 
-                        className="h-8 w-8 rounded-lg object-cover"
-                      />
-                    ) : (
-                      <div className="h-8 w-8 bg-gray-700 rounded-lg flex items-center justify-center">
-                        <span className="text-white text-xs font-bold">
-                          {config?.boutique?.name ? config.boutique.name.charAt(0).toUpperCase() : 'B'}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                  <div className="ml-3">
-                    <h1 className="text-xl font-bold text-white">
-                      {config?.boutique?.name || ''}
-                    </h1>
-                  </div>
+              <div className="flex items-center justify-center h-16">
+                <div className="text-center">
+                  <h1 className="text-xl font-bold text-white">
+                    👑 {config?.boutique?.name || 'Boutique VIP'}
+                  </h1>
                 </div>
               </div>
             </div>
@@ -208,36 +191,26 @@ export default function ShopVIP() {
         {config && (
           <nav className="bg-black shadow-sm border-b border-gray-700">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <div className="flex space-x-8 h-12 items-center">
+              <div className="flex justify-center space-x-8 h-12 items-center">
                 <Link 
                   href="/shop" 
                   className="text-gray-300 hover:text-white pb-3 flex items-center"
                 >
-                  {config?.boutique?.logo ? (
-                    <img src={config.boutique.logo} alt="Logo" className="h-4 w-4 mr-2 rounded object-cover" />
-                  ) : (
-                    <span className="mr-1">🏠</span>
-                  )}
+                  <span className="mr-1">🏠</span>
                   Accueil
                 </Link>
                 <Link 
                   href="/shop/search" 
                   className="text-gray-300 hover:text-white pb-3 flex items-center"
                 >
-                  {config?.boutique?.logo ? (
-                    <img src={config.boutique.logo} alt="Logo" className="h-4 w-4 mr-2 rounded object-cover" />
-                  ) : (
-                    <span className="mr-1">🔍</span>
-                  )}
+                  <span className="mr-1">🔍</span>
                   Recherche
                 </Link>
                 <Link 
                   href="/shop/vip" 
                   className="text-yellow-400 font-medium border-b-2 border-yellow-400 pb-3 flex items-center"
                 >
-                  {config?.boutique?.logo && (
-                    <img src={config.boutique.logo} alt="Logo" className="h-4 w-4 mr-2 rounded object-cover" />
-                  )}
+                  <span className="mr-1">👑</span>
                   VIP
                 </Link>
               </div>
@@ -250,21 +223,8 @@ export default function ShopVIP() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
             <div className="text-center mb-12">
               <div className="flex items-center justify-center mb-4">
-                {config?.boutique?.logo ? (
-                  <img 
-                    src={config.boutique.logo} 
-                    alt="Logo" 
-                    className="h-12 w-12 rounded-lg object-cover mr-4"
-                  />
-                ) : (
-                  <div className="h-12 w-12 bg-gray-700 rounded-lg flex items-center justify-center mr-4">
-                    <span className="text-white text-lg font-bold">
-                      {config?.boutique?.name ? config.boutique.name.charAt(0).toUpperCase() : 'B'}
-                    </span>
-                  </div>
-                )}
                 <h3 className="text-3xl font-bold text-white">
-                  {config?.boutique?.name || ''}
+                  👑 VIP - {config?.boutique?.name || 'Boutique Premium'}
                 </h3>
               </div>
               <p className="text-gray-300 max-w-2xl mx-auto">
