@@ -373,18 +373,12 @@ export default function ShopPlugDetail() {
             <div className="bg-gray-800 border border-gray-700 rounded-xl shadow-lg overflow-hidden">
               {/* Image */}
               <div className="relative h-64 md:h-80 bg-gray-900">
-                {plug.image ? (
-                  <ImageWithFallback
-                    src={plug.image}
-                    alt={plug.name}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <ImageWithFallback
-                    fallbackIcon={GlobeAltIcon}
-                    className="w-full h-full object-cover"
-                  />
-                )}
+                <ImageWithFallback
+                  src={plug.image}
+                  alt={plug.name}
+                  className="w-full h-full object-cover"
+                  fallbackIcon={GlobeAltIcon}
+                />
                 
                 {/* VIP Badge */}
                 {plug.isVip && (

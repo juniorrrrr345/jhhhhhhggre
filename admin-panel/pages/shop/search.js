@@ -25,6 +25,7 @@ const ImageWithFallback = ({ src, alt, className, fallbackIcon: FallbackIcon = G
   }, [src])
 
   const handleImageLoad = () => {
+    console.log('✅ Image chargée avec succès:', src)
     setImageLoading(false)
   }
 
@@ -292,6 +293,8 @@ export default function ShopSearch() {
       return 0
     })
 
+    console.log('🔍 Plugs filtrés:', filtered.length, 'boutiques')
+    console.log('🖼️ Images des plugs:', filtered.slice(0, 3).map(p => ({ name: p.name, hasImage: !!p.image, imageUrl: p.image?.substring(0, 50) })))
     setPlugs(filtered)
     setCurrentPage(1)
   }
@@ -496,18 +499,12 @@ export default function ShopSearch() {
                       <div className="shop-card bg-gray-800 border border-gray-700 rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-shadow duration-300 w-full h-full flex flex-col">
                         {/* Image */}
                         <div className="relative h-32 sm:h-40 md:h-48 bg-gray-900 flex-shrink-0">
-                          {plug.image ? (
-                            <ImageWithFallback
-                              src={plug.image}
-                              alt={plug.name}
-                              className="w-full h-full object-cover"
-                            />
-                          ) : (
-                            <ImageWithFallback
-                              fallbackIcon={GlobeAltIcon}
-                              className="w-full h-full object-cover"
-                            />
-                          )}
+                          <ImageWithFallback
+                            src={plug.image}
+                            alt={plug.name}
+                            className="w-full h-full object-cover"
+                            fallbackIcon={GlobeAltIcon}
+                          />
                           
                           {/* VIP Badge */}
                           {plug.isVip && (

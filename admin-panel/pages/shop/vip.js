@@ -25,11 +25,12 @@ const ImageWithFallback = ({ src, alt, className, fallbackIcon: FallbackIcon = G
   }, [src])
 
   const handleImageLoad = () => {
+    console.log('✅ Image VIP chargée:', src)
     setImageLoading(false)
   }
 
   const handleImageError = () => {
-    console.log('❌ Erreur chargement image:', src)
+    console.log('❌ Erreur chargement image VIP:', src)
     setImageError(true)
     setImageLoading(false)
   }
@@ -247,6 +248,7 @@ export default function ShopVIP() {
 
       const sortedPlugs = plugsArray.sort((a, b) => (b.likes || 0) - (a.likes || 0))
       console.log('👑 Plugs VIP chargés:', sortedPlugs.length, 'boutiques VIP')
+      console.log('🖼️ Images VIP:', sortedPlugs.slice(0, 3).map(p => ({ name: p.name, hasImage: !!p.image, imageUrl: p.image?.substring(0, 50) })))
       setVipPlugs(sortedPlugs)
     } catch (error) {
       console.error('💥 VIP fetch error:', error)
@@ -395,18 +397,12 @@ export default function ShopVIP() {
                       <div className="shop-card bg-gray-800 border border-yellow-500 rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-shadow duration-300 w-full h-full flex flex-col">
                         {/* Image */}
                         <div className="relative h-32 sm:h-40 md:h-48 bg-gray-900 flex-shrink-0">
-                          {plug.image ? (
-                            <ImageWithFallback
-                              src={plug.image}
-                              alt={plug.name}
-                              className="w-full h-full object-cover"
-                            />
-                          ) : (
-                            <ImageWithFallback
-                              fallbackIcon={GlobeAltIcon}
-                              className="w-full h-full object-cover"
-                            />
-                          )}
+                          <ImageWithFallback
+                            src={plug.image}
+                            alt={plug.name}
+                            className="w-full h-full object-cover"
+                            fallbackIcon={GlobeAltIcon}
+                          />
                           
                           {/* VIP Badge - Always shown for VIP page */}
                           <div className="absolute top-2 right-2">

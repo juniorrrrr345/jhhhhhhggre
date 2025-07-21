@@ -25,11 +25,12 @@ const ImageWithFallback = ({ src, alt, className, fallbackIcon: FallbackIcon = G
   }, [src])
 
   const handleImageLoad = () => {
+    console.log('✅ Image accueil chargée:', src)
     setImageLoading(false)
   }
 
   const handleImageError = () => {
-    console.log('❌ Erreur chargement image:', src)
+    console.log('❌ Erreur chargement image accueil:', src)
     setImageError(true)
     setImageLoading(false)
   }
@@ -437,18 +438,12 @@ export default function ShopHome() {
                       <div className="shop-card bg-gray-800 border border-gray-700 rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-shadow duration-300 w-full h-full flex flex-col">
                         {/* Image */}
                         <div className="relative h-32 sm:h-40 md:h-48 bg-gray-900 flex-shrink-0">
-                          {plug.image ? (
-                            <ImageWithFallback
-                              src={plug.image}
-                              alt={plug.name}
-                              className="w-full h-full object-cover"
-                            />
-                          ) : (
-                            <ImageWithFallback
-                              fallbackIcon={GlobeAltIcon}
-                              className="w-full h-full object-cover"
-                            />
-                          )}
+                          <ImageWithFallback
+                            src={plug.image}
+                            alt={plug.name}
+                            className="w-full h-full object-cover"
+                            fallbackIcon={GlobeAltIcon}
+                          />
                           
                           {/* VIP Badge */}
                           {plug.isVip && (
