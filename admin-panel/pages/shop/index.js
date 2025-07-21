@@ -152,7 +152,15 @@ export default function ShopHome() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
 
-      <div className="min-h-screen bg-white">
+      <div 
+        className="min-h-screen bg-white"
+        style={config?.boutique?.backgroundImage ? {
+          backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9)), url(${config.boutique.backgroundImage})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat'
+        } : {}}
+      >
         {/* Header */}
         {config && (
           <header className="bg-gray-900 shadow-lg">
@@ -194,44 +202,46 @@ export default function ShopHome() {
         )}
 
         {/* Navigation */}
-        <nav className="bg-white shadow-sm border-b">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex space-x-8 h-12 items-center">
-              <Link 
-                href="/shop" 
-                className="text-gray-900 font-medium border-b-2 border-gray-900 pb-3 flex items-center"
-              >
-                {config?.boutique?.logo ? (
-                  <img src={config.boutique.logo} alt="Logo" className="h-4 w-4 mr-2 rounded object-cover" />
-                ) : (
-                  <span className="mr-1">🏠</span>
-                )}
-                Accueil
-              </Link>
-              <Link 
-                href="/shop/search" 
-                className="text-gray-500 hover:text-gray-700 pb-3 flex items-center"
-              >
-                {config?.boutique?.logo ? (
-                  <img src={config.boutique.logo} alt="Logo" className="h-4 w-4 mr-2 rounded object-cover" />
-                ) : (
-                  <span className="mr-1">🔍</span>
-                )}
-                Recherche
-              </Link>
-              <Link 
-                href="/shop/vip" 
-                className="text-gray-500 hover:text-gray-700 pb-3 flex items-center"
-              >
-                {config?.boutique?.logo && (
-                  <img src={config.boutique.logo} alt="Logo" className="h-4 w-4 mr-2 rounded object-cover" />
-                )}
-                VIP
-              </Link>
+        {config && (
+          <nav className="bg-white shadow-sm border-b">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="flex space-x-8 h-12 items-center">
+                <Link 
+                  href="/shop" 
+                  className="text-gray-900 font-medium border-b-2 border-gray-900 pb-3 flex items-center"
+                >
+                  {config?.boutique?.logo ? (
+                    <img src={config.boutique.logo} alt="Logo" className="h-4 w-4 mr-2 rounded object-cover" />
+                  ) : (
+                    <span className="mr-1">🏠</span>
+                  )}
+                  Accueil
+                </Link>
+                <Link 
+                  href="/shop/search" 
+                  className="text-gray-500 hover:text-gray-700 pb-3 flex items-center"
+                >
+                  {config?.boutique?.logo ? (
+                    <img src={config.boutique.logo} alt="Logo" className="h-4 w-4 mr-2 rounded object-cover" />
+                  ) : (
+                    <span className="mr-1">🔍</span>
+                  )}
+                  Recherche
+                </Link>
+                <Link 
+                  href="/shop/vip" 
+                  className="text-gray-500 hover:text-gray-700 pb-3 flex items-center"
+                >
+                  {config?.boutique?.logo && (
+                    <img src={config.boutique.logo} alt="Logo" className="h-4 w-4 mr-2 rounded object-cover" />
+                  )}
+                  VIP
+                </Link>
 
+              </div>
             </div>
-          </div>
-        </nav>
+          </nav>
+        )}
 
         {/* Toutes les boutiques */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
