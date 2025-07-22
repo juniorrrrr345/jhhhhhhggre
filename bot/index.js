@@ -19,6 +19,7 @@ const {
   handlePlugServiceDetails 
 } = require('./src/handlers/plugsHandler');
 const { handleContact, handleInfo, handleIgnoredCallback } = require('./src/handlers/menuHandler');
+const { handleSocialMedia } = require('./src/handlers/socialMediaHandler');
 
 // Modèles
 const Plug = require('./src/models/Plug');
@@ -167,6 +168,7 @@ bot.action('filter_service', handleFilterService);
 bot.action('filter_country', handleFilterCountry);
 bot.action('contact', handleContact);
 bot.action('info', handleInfo);
+bot.action('social_media', handleSocialMedia);
 
 // Filtres par service
 bot.action('service_delivery', (ctx) => handleServiceFilter(ctx, 'delivery', 0));

@@ -48,14 +48,9 @@ const cleanUrl = (url) => {
 const createMainKeyboard = (config) => {
   const buttons = [];
   
-  console.log('🔍 DEBUG: socialMedia reçu =', JSON.stringify(config?.socialMedia));
-  console.log('🔍 DEBUG: type =', typeof config?.socialMedia);
-  console.log('🔍 DEBUG: isArray =', Array.isArray(config?.socialMedia));
-  
   // Migration automatique si socialMedia est un objet (ancienne structure)
   if (config?.socialMedia && typeof config.socialMedia === 'object' && !Array.isArray(config.socialMedia)) {
     console.log('🔄 MIGRATION: Conversion objet vers array...');
-    const socialMediaArray = [];
     
     // Si c'est un objet vide, le remplacer par un array vide
     if (Object.keys(config.socialMedia).length === 0) {
@@ -63,6 +58,7 @@ const createMainKeyboard = (config) => {
       console.log('✅ MIGRATION: Objet vide converti en array vide');
     } else {
       // Convertir les propriétés de l'objet en array
+      const socialMediaArray = [];
       for (const [key, value] of Object.entries(config.socialMedia)) {
         if (value && typeof value === 'string' && value.trim()) {
           const mapping = {
@@ -86,54 +82,6 @@ const createMainKeyboard = (config) => {
     }
   }
   
-  // Réseaux sociaux personnalisés en haut du menu
-  if (config?.socialMedia && Array.isArray(config.socialMedia) && config.socialMedia.length > 0) {
-    console.log('🔄 Création des boutons réseaux sociaux personnalisés...');
-    
-    // Filtrer et valider les réseaux sociaux
-    const validSocialMedia = config.socialMedia.filter(social => {
-      if (!social || !social.name || !social.url) {
-        console.warn('🚫 Réseau social incomplet détecté:', social);
-        return false;
-      }
-      
-      const cleanedUrl = cleanUrl(social.url);
-      if (!cleanedUrl) {
-        console.warn('🚫 URL invalide pour le réseau social:', social.name, social.url);
-        return false;
-      }
-      
-      // Mettre à jour l'URL nettoyée
-      social.url = cleanedUrl;
-      return true;
-    });
-    
-    console.log(`✅ ${validSocialMedia.length}/${config.socialMedia.length} réseaux sociaux valides`);
-    
-    // Grouper les réseaux sociaux par lignes de 2
-    for (let i = 0; i < validSocialMedia.length; i += 2) {
-      const socialRow = [];
-      const social1 = validSocialMedia[i];
-      
-      try {
-        const emoji1 = social1.emoji || '🌐';
-        socialRow.push(Markup.button.url(`${emoji1} ${social1.name}`, social1.url));
-        console.log(`📱 Bouton créé: ${emoji1} ${social1.name} -> ${social1.url}`);
-        
-        if (validSocialMedia[i + 1]) {
-          const social2 = validSocialMedia[i + 1];
-          const emoji2 = social2.emoji || '🌐';
-          socialRow.push(Markup.button.url(`${emoji2} ${social2.name}`, social2.url));
-          console.log(`📱 Bouton créé: ${emoji2} ${social2.name} -> ${social2.url}`);
-        }
-        
-        buttons.push(socialRow);
-      } catch (error) {
-        console.error(`❌ Erreur création bouton social:`, error);
-      }
-    }
-  }
-  
   // Bouton Top Des Plugs
   const topPlugsText = config?.buttons?.topPlugs?.text || '🔌 Top Des Plugs';
   buttons.push([Markup.button.callback(topPlugsText, 'top_plugs')]);
@@ -151,8 +99,9 @@ const createMainKeyboard = (config) => {
   secondRow.push(Markup.button.callback(infoText, 'info'));
   buttons.push(secondRow);
 
-  // Bouton Réseaux sociaux si des réseaux sont configurés
-  if (config?.socialMedia && Array.isArray(config.socialMedia) && config.socialMedia.length > 0) {
+  // Bouton Réseaux sociaux si activé et des réseaux sont configurés
+  if (config?.buttons?.socialMedia?.enabled && 
+      config?.socialMedia && Array.isArray(config.socialMedia) && config.socialMedia.length > 0) {
     const socialText = config?.buttons?.socialMedia?.text || '📱 Réseaux sociaux';
     buttons.push([Markup.button.callback(socialText, 'social_media')]);
   }

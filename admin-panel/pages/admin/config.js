@@ -100,6 +100,11 @@ export default function ConfigurationSimple() {
               enabled: data.buttons?.info?.enabled ?? true,
               text: data.buttons?.info?.text || 'Informations',
               content: data.buttons?.info?.content || 'Voici les informations importantes'
+            },
+            socialMedia: {
+              enabled: data.buttons?.socialMedia?.enabled ?? true,
+              text: data.buttons?.socialMedia?.text || '📱 Réseaux sociaux',
+              content: data.buttons?.socialMedia?.content || 'Suivez-nous sur nos réseaux sociaux !'
             }
           },
           socialMedia: Array.isArray(data.socialMedia) 
@@ -541,6 +546,46 @@ export default function ConfigurationSimple() {
                           onChange={(e) => updateButton('info', 'content', e.target.value)}
                           rows={2}
                           className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Bouton Réseaux Sociaux */}
+                  <div className="border border-gray-200 rounded-lg p-4">
+                    <div className="flex items-center justify-between mb-3">
+                      <h4 className="text-sm font-medium text-gray-900">Bouton Réseaux Sociaux</h4>
+                      <label className="flex items-center">
+                        <input
+                          type="checkbox"
+                          checked={config.buttons.socialMedia.enabled}
+                          onChange={(e) => updateButton('socialMedia', 'enabled', e.target.checked)}
+                          className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                        />
+                        <span className="ml-2 text-sm text-gray-700">Activé</span>
+                      </label>
+                    </div>
+                    
+                    <div className="space-y-3">
+                      <div>
+                        <label className="block text-xs font-medium text-gray-700">Texte du bouton</label>
+                        <input
+                          type="text"
+                          value={config.buttons.socialMedia.text}
+                          onChange={(e) => updateButton('socialMedia', 'text', e.target.value)}
+                          className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm"
+                          placeholder="📱 Réseaux sociaux"
+                        />
+                      </div>
+                      
+                      <div>
+                        <label className="block text-xs font-medium text-gray-700">Message d'introduction</label>
+                        <textarea
+                          value={config.buttons.socialMedia.content}
+                          onChange={(e) => updateButton('socialMedia', 'content', e.target.value)}
+                          rows={2}
+                          className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm"
+                          placeholder="Suivez-nous sur nos réseaux sociaux !"
                         />
                       </div>
                     </div>
