@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import Layout from '../../components/Layout'
 import toast from 'react-hot-toast'
+import { simpleApi } from '../../lib/api-simple'
 import {
   UsersIcon,
   LinkIcon,
@@ -35,28 +36,19 @@ export default function ReferralsPage() {
     try {
       setLoading(true)
       
-      // Charger toutes les boutiques avec leurs données de parrainage
-      const response = await fetch('/api/cors-proxy', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          endpoint: '/api/plugs',
-          method: 'GET',
-          token: token
-        })
-      })
-
-      if (response.ok) {
-        const data = await response.json()
+      // Charger toutes les boutiques via l'API simple
+      const plugsData = await simpleApi.getPlugs(token)
+      console.log('📊 Boutiques chargées:', plugsData?.length || 0)
+      
+      if (plugsData && Array.isArray(plugsData)) {
         const plugsWithReferrals = []
         let totalReferred = 0
 
         // Pour chaque boutique, récupérer ses données de parrainage
-        for (const plug of data) {
+        for (const plug of plugsData) {
           try {
-            const referralResponse = await fetch('/api/cors-proxy', {
+            // Essayer de récupérer les données de parrainage
+            const response = await fetch('/api/cors-proxy', {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json'
@@ -68,32 +60,76 @@ export default function ReferralsPage() {
               })
             })
 
-            if (referralResponse.ok) {
-              const referralData = await referralResponse.json()
+            if (response.ok) {
+              const referralData = await response.json()
               plugsWithReferrals.push({
                 ...plug,
                 ...referralData
               })
               totalReferred += referralData.totalReferred || 0
             } else {
-              plugsWithReferrals.push(plug)
+              // Si pas de données de parrainage, ajouter la boutique sans ces données
+              plugsWithReferrals.push({
+                ...plug,
+                referralLink: null,
+                referralCode: null,
+                totalReferred: 0,
+                referredUsers: []
+              })
             }
           } catch (error) {
             console.error(`Erreur parrainage pour ${plug.name}:`, error)
-            plugsWithReferrals.push(plug)
+            // Ajouter la boutique même en cas d'erreur
+            plugsWithReferrals.push({
+              ...plug,
+              referralLink: null,
+              referralCode: null,
+              totalReferred: 0,
+              referredUsers: []
+            })
           }
         }
 
         setPlugs(plugsWithReferrals)
         setTotalStats({
-          totalPlugs: data.length,
+          totalPlugs: plugsData.length,
           totalReferred: totalReferred,
           totalUsers: 0 // À implémenter si nécessaire
         })
+        
+        console.log('✅ Données de parrainage chargées:', {
+          boutiques: plugsWithReferrals.length,
+          totalParrainage: totalReferred
+        })
+      } else {
+        console.warn('⚠️ Aucune boutique trouvée ou format incorrect')
+        setPlugs([])
+        setTotalStats({ totalPlugs: 0, totalReferred: 0, totalUsers: 0 })
       }
     } catch (error) {
-      console.error('Erreur chargement parrainage:', error)
-      toast.error('Erreur lors du chargement')
+      console.error('❌ Erreur chargement parrainage:', error)
+      toast.error(`Erreur lors du chargement: ${error.message}`)
+      // En cas d'erreur, au moins afficher les boutiques sans parrainage
+      try {
+        const plugsData = await simpleApi.getPlugs(token)
+        if (plugsData && Array.isArray(plugsData)) {
+          const plugsWithoutReferrals = plugsData.map(plug => ({
+            ...plug,
+            referralLink: null,
+            referralCode: null,
+            totalReferred: 0,
+            referredUsers: []
+          }))
+          setPlugs(plugsWithoutReferrals)
+          setTotalStats({
+            totalPlugs: plugsData.length,
+            totalReferred: 0,
+            totalUsers: 0
+          })
+        }
+      } catch (fallbackError) {
+        console.error('❌ Erreur fallback:', fallbackError)
+      }
     } finally {
       setLoading(false)
     }
@@ -101,16 +137,54 @@ export default function ReferralsPage() {
 
   const copyReferralLink = async (plug) => {
     try {
-      if (plug.referralLink) {
-        await navigator.clipboard.writeText(plug.referralLink)
+      let referralLink = plug.referralLink
+
+      // Si le lien n'existe pas, essayer de le générer
+      if (!referralLink) {
+        console.log('🔄 Génération du lien de parrainage pour:', plug.name)
+        try {
+          const token = localStorage.getItem('adminToken')
+          const response = await fetch('/api/cors-proxy', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              endpoint: `/api/plugs/${plug._id}/referral`,
+              method: 'GET',
+              token: token
+            })
+          })
+
+          if (response.ok) {
+            const referralData = await response.json()
+            referralLink = referralData.referralLink
+            
+            // Mettre à jour la boutique dans l'état local
+            setPlugs(prevPlugs => 
+              prevPlugs.map(p => 
+                p._id === plug._id 
+                  ? { ...p, ...referralData }
+                  : p
+              )
+            )
+            console.log('✅ Lien généré:', referralLink)
+          }
+        } catch (linkError) {
+          console.error('❌ Erreur génération lien:', linkError)
+        }
+      }
+
+      if (referralLink) {
+        await navigator.clipboard.writeText(referralLink)
         setCopiedLink(plug._id)
         setTimeout(() => setCopiedLink(null), 2000)
         toast.success(`🔗 Lien de ${plug.name} copié !`)
       } else {
-        toast.error('Lien non disponible')
+        toast.error('Impossible de générer le lien de parrainage')
       }
     } catch (error) {
-      console.error('Erreur copie:', error)
+      console.error('❌ Erreur copie:', error)
       toast.error('Erreur lors de la copie')
     }
   }
@@ -284,9 +358,17 @@ export default function ReferralsPage() {
                         </div>
                       ) : (
                         <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-3">
-                          <p className="text-sm text-yellow-800">
-                            🔄 Lien en cours de génération...
-                          </p>
+                          <div className="flex items-center justify-between">
+                            <p className="text-sm text-yellow-800">
+                              🔄 Lien non généré
+                            </p>
+                            <button
+                              onClick={() => copyReferralLink(plug)}
+                              className="px-3 py-1 bg-yellow-600 text-white rounded text-xs font-medium hover:bg-yellow-700 transition-colors"
+                            >
+                              🔗 Générer & Copier
+                            </button>
+                          </div>
                         </div>
                       )}
 
