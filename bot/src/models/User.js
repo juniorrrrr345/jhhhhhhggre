@@ -23,7 +23,8 @@ const userSchema = new mongoose.Schema({
   },
   // Système de parrainage
   invitedBy: {
-    type: Number, // Telegram ID du parrain
+    type: mongoose.Schema.Types.ObjectId, // ID de la boutique qui a parrainé
+    ref: 'Plug',
     default: null
   },
   invitedAt: {
