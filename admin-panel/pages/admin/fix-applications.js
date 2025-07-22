@@ -11,7 +11,7 @@ export default function FixApplications() {
     
     try {
       // Test 1: Vérifier le token
-      const token = localStorage.getItem('adminToken') || 'JuniorAdmon123';
+      const token = localStorage.getItem('adminToken') || 'ADMIN_TOKEN_F3F3FC574B8A95875449DBD68128C434CE3D7FB3F054567B0D3EAD3D9F1B01B1';
       setResult(prev => prev + `✅ Token: ${token.substring(0, 10)}...\n`);
       
       // Test 2: API via proxy
@@ -45,7 +45,7 @@ export default function FixApplications() {
   };
 
   const fixToken = () => {
-    localStorage.setItem('adminToken', 'JuniorAdmon123');
+    localStorage.setItem('adminToken', 'ADMIN_TOKEN_F3F3FC574B8A95875449DBD68128C434CE3D7FB3F054567B0D3EAD3D9F1B01B1');
     setResult('🔧 Token fixé dans localStorage\n');
   };
 
