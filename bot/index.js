@@ -401,9 +401,9 @@ bot.action(/^like_([a-f\d]{24})$/, async (ctx) => {
     // Notification du like ajouté
     await ctx.answerCbQuery(`❤️ Vous avez liké ${plug.name} ! (${plug.likes} likes)`);
     
-    // ========== MISE À JOUR TEMPS RÉEL ==========
-    const Config = require('./src/models/Config');
-    const config = await Config.findById('main');
+    // ========== MISE À JOUR CLAVIER SEULEMENT ==========
+    // Ne pas changer le message, juste mettre à jour le clavier avec le nouveau bouton like
+    const { createPlugKeyboard } = require('./src/utils/keyboards');
     
     // Déterminer le bon contexte de retour
     let returnContext = 'top_plugs';
@@ -411,40 +411,16 @@ bot.action(/^like_([a-f\d]{24})$/, async (ctx) => {
       returnContext = ctx.session.lastContext;
     }
     
-    // Mettre à jour le message complet avec les nouveaux likes
-    const { createPlugKeyboard } = require('./src/utils/keyboards');
-    const { editMessageWithImage } = require('./src/utils/messageHelper');
-    
-    // Reconstruire le message de détails du plug avec les nouveaux likes
-    let message = `${plug.isVip ? '⭐ ' : ''}**${plug.name}**\n\n`;
-    message += `📝 ${plug.description}\n\n`;
-
-    // Services disponibles
-    const services = [];
-    if (plug.services?.delivery?.enabled) {
-      services.push(`🚚 **Livraison**${plug.services.delivery.description ? `: ${plug.services.delivery.description}` : ''}`);
-    }
-    if (plug.services?.postal?.enabled) {
-      services.push(`✈️ **Envoi postal**${plug.services.postal.description ? `: ${plug.services.postal.description}` : ''}`);
-    }
-    if (plug.services?.meetup?.enabled) {
-      services.push(`🏠 **Meetup**${plug.services.meetup.description ? `: ${plug.services.meetup.description}` : ''}`);
-    }
-    
-    if (services.length > 0) {
-      message += `**Services disponibles :**\n${services.join('\n')}\n\n`;
-    }
-    
-    message += `❤️ **${plug.likes} ${plug.likes > 1 ? 'likes' : 'like'}**`;
-    
-         // Nouvelle ligne pour indiquer le cooldown
-     message += `\n\n⏰ *Vous pourrez liker à nouveau dans 2h*`;
-    
-    // Créer le nouveau clavier avec le bouton mis à jour
+    // Créer le nouveau clavier avec le bouton like mis à jour (avec cooldown)
     const keyboard = createPlugKeyboard(plug, returnContext, userId);
     
-    // Mettre à jour avec l'image si disponible
-    await editMessageWithImage(ctx, message, plug.image, keyboard, config?.welcome?.image);
+    // Mettre à jour uniquement le clavier, garder le message et l'image existants
+    try {
+      await ctx.editMessageReplyMarkup(keyboard);
+    } catch (editError) {
+      console.log('⚠️ Erreur édition clavier après like:', editError.message);
+      // Fallback silencieux si erreur
+    }
     
   } catch (error) {
     console.error('❌ LIKE ERROR: Detailed error:', {
