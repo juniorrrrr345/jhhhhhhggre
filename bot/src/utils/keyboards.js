@@ -401,17 +401,31 @@ const createPlugListKeyboard = (plugs, page = 0, totalPages = 1, context = 'plug
   const startIndex = page * itemsPerPage;
   const endIndex = Math.min(startIndex + itemsPerPage, plugs.length);
   
-  // Plugs de la page actuelle avec format uniforme
+  // Plugs de la page actuelle avec format uniforme comme le screenshot
   for (let i = startIndex; i < endIndex; i++) {
     const plug = plugs[i];
     
-    // Format uniforme pour toutes les cartes produit :
-    // [STATUS_ICON] NOM_BOUTIQUE | ❤️ LIKES
-    const vipIcon = plug.isVip ? '⭐ ' : '🔌 ';  // Icône uniforme (⭐ pour VIP, 🔌 pour standard)
-    const likesCount = plug.likes || 0;         // Toujours afficher les likes (même si 0)
-    const likesText = ` | ❤️ ${likesCount}`;    // Format uniforme avec séparateur
+    // Format exact du screenshot :
+    // 🇫🇷 NOM DE LA BOUTIQUE
+    // 📦 📍 🛵 
+    // 👍 nombre
     
-    const cardText = `${vipIcon}${plug.name}${likesText}`;
+    // Ligne 1: Drapeau + nom (VIP avec étoile si applicable)
+    const vipIcon = plug.isVip ? ' ⭐' : '';
+    const line1 = `🇫🇷 ${plug.name.toUpperCase()}${vipIcon}`;
+    
+    // Ligne 2: Icônes des services disponibles
+    const services = [];
+    if (plug.services?.postal?.enabled) services.push('📦');
+    if (plug.services?.meetup?.enabled) services.push('📍'); 
+    if (plug.services?.delivery?.enabled) services.push('🛵');
+    const line2 = services.length > 0 ? services.join(' ') : '📦';
+    
+    // Ligne 3: Likes
+    const likesCount = plug.likes || 0;
+    const line3 = `👍 ${likesCount}`;
+    
+    const cardText = `${line1}\n${line2}\n${line3}`;
     buttons.push([Markup.button.callback(cardText, `plug_${plug._id}_from_${context}`)]);
   }
   
@@ -456,8 +470,27 @@ const createVIPKeyboard = (vipPlugs) => {
   const buttons = [];
   
   vipPlugs.forEach(plug => {
-    const likesText = plug.likes > 0 ? ` ❤️${plug.likes}` : '';
-    buttons.push([Markup.button.callback(`⭐ ${plug.name}${likesText}`, `plug_${plug._id}_from_plugs_vip`)]);
+    // Format exact du screenshot pour les cartes VIP aussi :
+    // 🇫🇷 NOM DE LA BOUTIQUE ⭐
+    // 📦 📍 🛵 
+    // 👍 nombre
+    
+    // Ligne 1: Drapeau + nom + étoile VIP
+    const line1 = `🇫🇷 ${plug.name.toUpperCase()} ⭐`;
+    
+    // Ligne 2: Icônes des services disponibles
+    const services = [];
+    if (plug.services?.postal?.enabled) services.push('📦');
+    if (plug.services?.meetup?.enabled) services.push('📍'); 
+    if (plug.services?.delivery?.enabled) services.push('🛵');
+    const line2 = services.length > 0 ? services.join(' ') : '📦';
+    
+    // Ligne 3: Likes
+    const likesCount = plug.likes || 0;
+    const line3 = `👍 ${likesCount}`;
+    
+    const cardText = `${line1}\n${line2}\n${line3}`;
+    buttons.push([Markup.button.callback(cardText, `plug_${plug._id}_from_plugs_vip`)]);
   });
   
   // Bouton retour
