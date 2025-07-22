@@ -280,8 +280,17 @@ const createPlugKeyboard = (plug, returnContext = 'top_plugs', userId = null) =>
   console.log(`🔍 BUTTON DEBUG: plug.likedBy=`, plug.likedBy);
   console.log(`🔍 BUTTON DEBUG: plug.likedBy types=`, plug.likedBy?.map(id => `${id}(${typeof id})`));
   
+  // Vérification robuste qui gère les types number et string
+  const hasLiked = userId && plug.likedBy && plug.likedBy.some(id => 
+    id == userId || // Comparaison loose
+    id === userId || // Comparaison stricte  
+    String(id) === String(userId) // Comparaison string
+  );
+  
+  console.log(`🔍 BUTTON DEBUG: hasLiked result: ${hasLiked}`);
+  
   // Vérifier si l'utilisateur a déjà liké
-  if (userId && plug.likedBy && plug.likedBy.includes(userId)) {
+  if (hasLiked) {
     console.log(`🔍 BUTTON DEBUG: User ${userId} has already liked, showing liked button`);
     likeButtonText = '❤️ Vous avez liké cette boutique';
   } else {

@@ -326,7 +326,13 @@ bot.action(/^like_([a-f\d]{24})$/, async (ctx) => {
     console.log(`🔍 LIKE DEBUG: likedBy array:`, plug.likedBy);
     console.log(`🔍 LIKE DEBUG: likedBy types:`, plug.likedBy.map(id => `${id}(${typeof id})`));
     
-    const hasLiked = plug.likedBy.includes(userId);
+    // Vérification robuste qui gère les types number et string
+    const hasLiked = plug.likedBy.some(id => 
+      id == userId || // Comparaison loose
+      id === userId || // Comparaison stricte  
+      String(id) === String(userId) // Comparaison string
+    );
+    
     console.log(`🔍 LIKE DEBUG: hasLiked result: ${hasLiked}`);
     
     // Vérification manuelle pour debug

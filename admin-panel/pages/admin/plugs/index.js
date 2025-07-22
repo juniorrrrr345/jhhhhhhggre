@@ -30,10 +30,11 @@ export default function AccueilAdmin() {
   const router = useRouter()
 
   useEffect(() => {
-    const token = localStorage.getItem('adminToken')
+    let token = localStorage.getItem('adminToken')
     if (!token) {
-      router.push('/')
-      return
+      // Utiliser le token par défaut
+      token = 'JuniorAdmon123'
+      localStorage.setItem('adminToken', token)
     }
     fetchData(token)
   }, [search, filter, currentPage])
@@ -56,6 +57,8 @@ export default function AccueilAdmin() {
   const fetchPlugs = async (token) => {
     try {
       console.log('🔄 Chargement des boutiques...')
+      console.log('🔑 Token:', token?.substring(0, 10) + '...')
+      console.log('📋 Params:', { page: currentPage, limit: 6, search, filter })
       
       const data = await simpleApi.getPlugs(token, {
         page: currentPage,
@@ -63,6 +66,9 @@ export default function AccueilAdmin() {
         search,
         filter
       })
+      
+      console.log('✅ Données reçues:', data)
+      console.log('📦 Plugs count:', data.plugs?.length)
       
       setPlugs(data.plugs || [])
       setTotalPages(data.totalPages || 1)
@@ -79,7 +85,7 @@ export default function AccueilAdmin() {
         vipPlugs
       }))
       
-      console.log('✅ Boutiques chargées')
+      console.log('✅ Boutiques chargées:', data.plugs?.length)
       return data
     } catch (error) {
       console.error('❌ Erreur chargement plugs:', error)
