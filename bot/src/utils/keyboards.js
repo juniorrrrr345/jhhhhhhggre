@@ -409,12 +409,12 @@ const createPlugListKeyboard = (plugs, page = 0, totalPages = 1, context = 'plug
     // 🇫🇷 NOM BOUTIQUE 🖤12
     // 📦 📍 🛵 ⭐
     
-    // Ligne 1: Nom court + 🖤 + likes (éviter troncature Telegram)
+    // Format compact comme les autres bots : 🇫🇷 NOM 🖤NOMBRE
     const likesCount = plug.likes || 0;
     const vipIndicator = plug.isVip ? ' ⭐' : '';
-    // Limiter à 20 caractères pour éviter les ... de Telegram
-    const shortName = plug.name.length > 20 ? plug.name.substring(0, 20) : plug.name;
-    const line1 = `${shortName.toUpperCase()}${vipIndicator} 🖤${likesCount}`;
+    // Limiter à 15 caractères pour le format compact
+    const shortName = plug.name.length > 15 ? plug.name.substring(0, 15) : plug.name;
+    const line1 = `🇫🇷 ${shortName.toUpperCase()}${vipIndicator} 🖤${likesCount}`;
     
     // Ligne 2: Services uniquement (plus simple et claire)  
     const services = [];
