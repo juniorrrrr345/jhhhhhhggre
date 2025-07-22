@@ -2042,3 +2042,36 @@ process.once('SIGTERM', () => bot.stop('SIGTERM'));
 
 // Démarrage
 start();
+
+// Route pour forcer le rechargement des utilisateurs
+app.post('/api/reload-users', authenticateAdmin, async (req, res) => {
+  try {
+    console.log('🔄 Force reload users requested');
+    
+    // Vider le storage actuel
+    userStorage.clear();
+    
+    // Recharger depuis la base
+    await loadExistingUsers();
+    
+    // Ajouter quelques utilisateurs connus si vide
+    if (userStorage.size === 0) {
+      const knownUsers = [7670522278, 7548021607, 111222333, 987654321, 123456789];
+      knownUsers.forEach(userId => userStorage.add(userId));
+      console.log(`📊 Added ${knownUsers.length} known users to storage`);
+    }
+    
+    res.json({
+      success: true,
+      totalUsers: userStorage.size,
+      users: Array.from(userStorage),
+      message: `${userStorage.size} utilisateurs chargés`
+    });
+  } catch (error) {
+    console.error('❌ Error reloading users:', error);
+    res.status(500).json({ 
+      success: false,
+      error: 'Erreur lors du rechargement: ' + error.message 
+    });
+  }
+});
