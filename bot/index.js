@@ -1655,14 +1655,39 @@ app.post('/api/public/plugs/:id/like', async (req, res) => {
 // ROUTES POUR LA DIFFUSION ET STATISTIQUES
 // ============================================
 
-// Modèle simple pour stocker les utilisateurs
+// Modèle simple pour stocker les utilisateurs avec persistance améliorée
 const userStorage = new Set();
+
+// Charger les utilisateurs existants depuis la base (applications plugs)
+const loadExistingUsers = async () => {
+  try {
+    const PlugApplication = require('./src/models/PlugApplication');
+    const applications = await PlugApplication.find({}, 'userId').lean();
+    
+    applications.forEach(app => {
+      if (app.userId) {
+        userStorage.add(app.userId);
+      }
+    });
+    
+    console.log(`📊 Loaded ${userStorage.size} existing users from database`);
+  } catch (error) {
+    console.error('⚠️ Error loading existing users:', error.message);
+  }
+};
+
+// Charger les utilisateurs au démarrage
+loadExistingUsers();
 
 // Middleware pour enregistrer les utilisateurs
 bot.use((ctx, next) => {
   const userId = ctx.from?.id;
   if (userId) {
+    const wasNew = !userStorage.has(userId);
     userStorage.add(userId);
+    if (wasNew) {
+      console.log(`👤 New user registered: ${userId}`);
+    }
   }
   return next();
 });

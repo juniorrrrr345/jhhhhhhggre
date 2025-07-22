@@ -43,26 +43,10 @@ const plugApplicationSchema = new mongoose.Schema({
     }
   },
   
-  // Services proposés
+  // Services proposés - Format flexible (array ou object pour compatibilité)
   services: {
-    delivery: {
-      enabled: {
-        type: Boolean,
-        default: false
-      }
-    },
-    postal: {
-      enabled: {
-        type: Boolean,
-        default: false
-      }
-    },
-    meetup: {
-      enabled: {
-        type: Boolean,
-        default: false
-      }
-    }
+    type: mongoose.Schema.Types.Mixed, // Permet array ou object
+    default: []
   },
   
   // Contact
