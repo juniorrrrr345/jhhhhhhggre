@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import Layout from '../../components/Layout'
+import { simpleApi } from '../../lib/api-simple'
 
 export default function Messages() {
   const [message, setMessage] = useState('')
@@ -9,22 +10,34 @@ export default function Messages() {
   const [sending, setSending] = useState(false)
   const [success, setSuccess] = useState('')
   const [error, setError] = useState('')
-  const [botUsers, setBotUsers] = useState(0)
+  const [config, setConfig] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [botUsers, setBotUsers] = useState(0)
   const router = useRouter()
 
   useEffect(() => {
     // Vérifier l'authentification
     let token = localStorage.getItem('adminToken')
     if (!token) {
+      // Utiliser le token par défaut
       token = 'ADMIN_TOKEN_F3F3FC574B8A95875449DBD68128C434CE3D7FB3F054567B0D3EAD3D9F1B01B1'
       localStorage.setItem('adminToken', token)
     }
 
-    // Récupérer le nombre d'utilisateurs
+    fetchConfig(token)
     fetchBotUsers(token)
-    setLoading(false)
   }, [])
+
+  const fetchConfig = async (token) => {
+    try {
+      const data = await simpleApi.getConfig(token)
+      setConfig(data)
+    } catch (error) {
+      console.error('❌ Erreur chargement config:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const fetchBotUsers = async (token) => {
     try {
@@ -85,21 +98,61 @@ export default function Messages() {
       console.log('📡 Envoi du message:', message.trim())
       console.log('📸 Avec image:', !!image)
 
-      // Convertir l'image en base64 si présente (envoi direct sans upload séparé)
-      let imageBase64 = null;
+      let imageUrl = null;
+
+      // Étape 1 : Upload de l'image si nécessaire
       if (image) {
-        console.log('📤 Conversion image...')
+        console.log('📤 Upload de l\'image...')
         console.log('📷 Image details:', {
           name: image.name,
           type: image.type,
           size: image.size
         })
         
-        imageBase64 = await imageToBase64(image)
-        console.log('🔄 Base64 conversion done, length:', imageBase64.length)
+        try {
+          const imageBase64 = await imageToBase64(image)
+          console.log('🔄 Base64 conversion done, length:', imageBase64.length)
+          
+          const uploadResponse = await fetch('/api/cors-proxy', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              endpoint: '/api/upload-image',
+              method: 'POST',
+              token: token,
+              data: {
+                imageBase64: imageBase64,
+                filename: image.name,
+                mimetype: image.type
+              }
+            })
+          })
+
+          console.log('📡 Upload response status:', uploadResponse.status)
+          
+          if (uploadResponse.ok) {
+            const uploadResult = await uploadResponse.json()
+            console.log('📋 Upload result:', uploadResult)
+            
+            if (uploadResult.success && uploadResult.imageUrl) {
+              imageUrl = uploadResult.imageUrl
+              console.log('✅ Image uploadée avec succès')
+            } else {
+              throw new Error(uploadResult.error || 'Pas d\'URL image retournée')
+            }
+          } else {
+            const errorData = await uploadResponse.json()
+            throw new Error(errorData.error || `Erreur HTTP ${uploadResponse.status}`)
+          }
+        } catch (uploadError) {
+          console.error('❌ Erreur upload détaillée:', uploadError)
+          throw new Error(`Upload failed: ${uploadError.message}`)
+        }
       }
 
-      // Envoi du message avec ou sans image (directement)
+      // Étape 2 : Envoi du message avec ou sans image
       const response = await fetch('/api/cors-proxy', {
         method: 'POST',
         headers: {
@@ -111,7 +164,8 @@ export default function Messages() {
           token: token,
           data: {
             message: message.trim(),
-            image: imageBase64
+            image: imageUrl,
+            hasImage: !!image
           }
         })
       })
@@ -127,6 +181,9 @@ export default function Messages() {
           setMessage('')
           setImage(null)
           setImagePreview('')
+          
+          // Actualiser le nombre d'utilisateurs
+          fetchBotUsers(token)
         } else {
           throw new Error(result.error || 'Erreur inconnue')
         }
@@ -220,7 +277,7 @@ export default function Messages() {
               {!imagePreview ? (
                 <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
                   <div className="space-y-1 text-center">
-                    <div className="text-6xl">📷</div>
+                                          <div className="text-6xl">📷</div>
                     <div className="flex text-sm text-gray-600">
                       <label
                         htmlFor="image-upload"
