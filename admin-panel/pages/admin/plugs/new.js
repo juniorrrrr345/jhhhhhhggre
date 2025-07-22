@@ -140,6 +140,7 @@ export default function NewPlug() {
 
     try {
       console.log('💾 Création de la boutique...')
+      console.log('📋 Données à envoyer:', formData)
       
       await simpleApi.createPlug(token, formData)
       
@@ -148,7 +149,8 @@ export default function NewPlug() {
       router.push('/admin/plugs')
     } catch (error) {
       console.error('❌ Erreur création boutique:', error)
-      toast.error('Erreur lors de la création')
+      const errorMessage = error.message || error.toString()
+      toast.error(`Erreur lors de la création: ${errorMessage}`)
     } finally {
       setLoading(false)
     }
