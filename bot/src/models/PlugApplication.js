@@ -85,6 +85,12 @@ const plugApplicationSchema = new mongoose.Schema({
     default: ''
   },
   
+  // URL de la photo pour l'admin panel
+  photoUrl: {
+    type: String,
+    default: null
+  },
+  
   // Statut de la demande
   status: {
     type: String,

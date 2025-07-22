@@ -4,8 +4,32 @@ const { Markup } = require('telegraf');
 // Stockage temporaire des données du formulaire par utilisateur
 const userForms = new Map();
 
-// Fonction utilitaire pour éditer les messages avec gestion des images
-const safeEditMessage = async (ctx, message, options = {}) => {
+// Fonction utilitaire pour éditer les messages avec gestion des images d'accueil
+const safeEditMessage = async (ctx, message, options = {}, keepWelcomeImage = false) => {
+  if (keepWelcomeImage) {
+    // Récupérer la config pour l'image d'accueil
+    const Config = require('../models/Config');
+    const config = await Config.findById('main');
+    const welcomeImage = config?.welcome?.image;
+    
+    if (welcomeImage) {
+      try {
+        await ctx.editMessageMedia({
+          type: 'photo',
+          media: welcomeImage,
+          caption: message,
+          parse_mode: options.parse_mode || 'Markdown'
+        }, {
+          reply_markup: options.reply_markup
+        });
+        return;
+      } catch (editError) {
+        // Si erreur édition image, continuer avec le texte simple
+        console.log('⚠️ Édition image échouée, fallback texte');
+      }
+    }
+  }
+  
   try {
     await ctx.editMessageText(message, options);
   } catch (editError) {
@@ -313,14 +337,24 @@ const askPhoto = async (ctx) => {
   const message = `✅ Contact enregistré\n\n` +
     `**Étape 6/6 : Photo (optionnelle)**\n\n` +
     `Tu peux envoyer une photo de profil ou de tes services.\n` +
-    `Cette étape est optionnelle.`;
+    `Cette étape est optionnelle.\n\n` +
+    `📱 **Comment envoyer une photo :**\n` +
+    `• Clique sur le trombone 📎 dans Telegram\n` +
+    `• Sélectionne "Galerie" ou "Appareil photo"\n` +
+    `• Choisis ta photo et envoie-la\n\n` +
+    `Ou utilise les boutons ci-dessous :`;
   
   const keyboard = Markup.inlineKeyboard([
-    [Markup.button.callback('📸 Ajouter une photo', 'add_photo')],
     [Markup.button.callback('⏭️ Passer cette étape', 'skip_photo')],
     [Markup.button.callback('❌ Annuler', 'cancel_application')]
   ]);
   
+  // Supprimer le message précédent pour éviter les bugs avec images
+  try {
+    await ctx.deleteMessage().catch(() => {});
+  } catch (e) {}
+  
+  // Envoyer un nouveau message texte simple
   await ctx.reply(message, {
     reply_markup: keyboard.reply_markup,
     parse_mode: 'Markdown'
@@ -337,18 +371,45 @@ const handlePhoto = async (ctx) => {
   }
   
   try {
-    // Récupérer l'ID de la photo la plus grande
+    // Vérifier que c'est bien une photo
+    if (!ctx.message.photo || !Array.isArray(ctx.message.photo)) {
+      await ctx.reply('❌ Veuillez envoyer une photo valide.');
+      return;
+    }
+    
+    // Récupérer l'ID de la photo la plus grande (meilleure qualité)
     const photos = ctx.message.photo;
     const photo = photos[photos.length - 1];
     
+    if (!photo || !photo.file_id) {
+      await ctx.reply('❌ Erreur lors de la récupération de la photo. Réessaie.');
+      return;
+    }
+    
+    // Sauvegarder l'ID de la photo et générer l'URL
     userForm.data.photo = photo.file_id;
+    
+    // Générer l'URL de la photo pour l'admin panel
+    try {
+      const fileLink = await ctx.telegram.getFileLink(photo.file_id);
+      userForm.data.photoUrl = fileLink.href;
+      console.log('📸 URL photo générée:', fileLink.href);
+    } catch (urlError) {
+      console.warn('⚠️ Impossible de générer l\'URL photo:', urlError.message);
+      userForm.data.photoUrl = null;
+    }
+    
     userForms.set(userId, userForm);
     
+    // Confirmer la réception
+    await ctx.reply('✅ Photo reçue avec succès !');
+    
+    // Soumettre la demande
     await submitApplication(ctx);
     
   } catch (error) {
     console.error('Erreur dans handlePhoto:', error);
-    await ctx.reply('❌ Erreur lors du traitement de la photo. Réessaie.');
+    await ctx.reply('❌ Erreur lors du traitement de la photo. Réessaie ou passe cette étape.');
   }
 };
 
@@ -385,7 +446,8 @@ const submitApplication = async (ctx) => {
         telegram: userForm.data.telegram,
         other: ''
       },
-      photo: userForm.data.photo || ''
+      photo: userForm.data.photo || '',
+      photoUrl: userForm.data.photoUrl || null
     });
     
     await application.save();
@@ -410,7 +472,7 @@ const submitApplication = async (ctx) => {
     await safeEditMessage(ctx, message, {
       reply_markup: keyboard.reply_markup,
       parse_mode: 'Markdown'
-    });
+    }, true); // Afficher avec l'image d'accueil
     
   } catch (error) {
     console.error('Erreur dans submitApplication:', error);
@@ -435,7 +497,7 @@ const handleCancelApplication = async (ctx) => {
     await safeEditMessage(ctx, message, {
       reply_markup: keyboard.reply_markup,
       parse_mode: 'Markdown'
-    });
+    }, true); // Afficher avec l'image d'accueil
     
     await ctx.answerCbQuery('Demande annulée');
     
