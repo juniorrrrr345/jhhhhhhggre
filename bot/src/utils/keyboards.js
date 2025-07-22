@@ -401,12 +401,18 @@ const createPlugListKeyboard = (plugs, page = 0, totalPages = 1, context = 'plug
   const startIndex = page * itemsPerPage;
   const endIndex = Math.min(startIndex + itemsPerPage, plugs.length);
   
-  // Plugs de la page actuelle avec le bon contexte
+  // Plugs de la page actuelle avec format uniforme
   for (let i = startIndex; i < endIndex; i++) {
     const plug = plugs[i];
-    const vipIcon = plug.isVip ? '⭐ ' : '';
-    const likesText = plug.likes > 0 ? ` ❤️${plug.likes}` : '';
-    buttons.push([Markup.button.callback(`${vipIcon}${plug.name}${likesText}`, `plug_${plug._id}_from_${context}`)]);
+    
+    // Format uniforme pour toutes les cartes produit :
+    // [STATUS_ICON] NOM_BOUTIQUE | ❤️ LIKES
+    const vipIcon = plug.isVip ? '⭐ ' : '🔌 ';  // Icône uniforme (⭐ pour VIP, 🔌 pour standard)
+    const likesCount = plug.likes || 0;         // Toujours afficher les likes (même si 0)
+    const likesText = ` | ❤️ ${likesCount}`;    // Format uniforme avec séparateur
+    
+    const cardText = `${vipIcon}${plug.name}${likesText}`;
+    buttons.push([Markup.button.callback(cardText, `plug_${plug._id}_from_${context}`)]);
   }
   
   // Navigation
