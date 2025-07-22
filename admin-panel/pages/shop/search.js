@@ -393,9 +393,9 @@ export default function ShopSearch() {
                 fontSize: '14px'
               }}
             >
-              <option value="" style={{ color: '#ffffff', backgroundColor: '#2a2a2a' }}>🌍 Tous pays</option>
+              <option value="">🌍 Tous pays</option>
               {uniqueCountries.map(country => (
-                <option key={country} value={country} style={{ color: '#ffffff', backgroundColor: '#2a2a2a' }}>{country}</option>
+                <option key={country} value={country}>{country}</option>
               ))}
             </select>
 
@@ -411,10 +411,10 @@ export default function ShopSearch() {
                 fontSize: '14px'
               }}
             >
-              <option value="" style={{ color: '#ffffff', backgroundColor: '#2a2a2a' }}>🚀 Tous services</option>
-              <option value="delivery" style={{ color: '#ffffff', backgroundColor: '#2a2a2a' }}>📦 Livraison</option>
-              <option value="postal" style={{ color: '#ffffff', backgroundColor: '#2a2a2a' }}>📍 Postal</option>
-              <option value="meetup" style={{ color: '#ffffff', backgroundColor: '#2a2a2a' }}>💰 Meetup</option>
+              <option value="">🚀 Tous services</option>
+              <option value="delivery">📦 Livraison</option>
+              <option value="postal">📍 Postal</option>
+              <option value="meetup">💰 Meetup</option>
             </select>
 
             <select
@@ -429,9 +429,9 @@ export default function ShopSearch() {
                 fontSize: '14px'
               }}
             >
-              <option value="" style={{ color: '#ffffff', backgroundColor: '#2a2a2a' }}>⭐ Tous types</option>
-              <option value="vip" style={{ color: '#ffffff', backgroundColor: '#2a2a2a' }}>👑 VIP uniquement</option>
-              <option value="standard" style={{ color: '#ffffff', backgroundColor: '#2a2a2a' }}>🔹 Standard uniquement</option>
+              <option value="">⭐ Tous types</option>
+              <option value="vip">👑 VIP uniquement</option>
+              <option value="standard">🔹 Standard uniquement</option>
             </select>
           </div>
 
@@ -576,6 +576,16 @@ export default function ShopSearch() {
         @keyframes spin {
           0% { transform: rotate(0deg); }
           100% { transform: rotate(360deg); }
+        }
+        
+        /* Force white text for select options */
+        select option {
+          color: #ffffff !important;
+          background-color: #2a2a2a !important;
+        }
+        
+        select {
+          color: #ffffff !important;
         }
       `}</style>
          </>
