@@ -37,8 +37,11 @@ const { handleSocialMedia } = require('./src/handlers/socialMediaHandler');
 const { 
   handleStartApplication,
   handleFormMessage,
+  handleCountrySelection,
   handleServiceToggle,
   handleServicesDone,
+  handlePhoto,
+  handleSkipPhoto,
   handleCancelApplication,
   userForms
 } = require('./src/handlers/applicationHandler');
@@ -174,7 +177,15 @@ bot.on('text', async (ctx) => {
   }
 });
 
-// Gestionnaire des photos supprimé - plus besoin pour l'inscription
+// Gestionnaire des photos pour le formulaire d'inscription
+bot.on('photo', async (ctx) => {
+  const userId = ctx.from.id;
+  const userForm = userForms.get(userId);
+  
+  if (userForm && userForm.step === 'photo') {
+    await handlePhoto(ctx);
+  }
+});
 
 // Commande /admin - DÉSACTIVÉE pour sécurité
 // bot.command('admin', async (ctx) => {
@@ -217,6 +228,16 @@ bot.action('social_media', handleSocialMedia);
 bot.action('start_application', handleStartApplication);
 bot.action('cancel_application', handleCancelApplication);
 bot.action('services_done', handleServicesDone);
+bot.action(/^country_(.+)$/, handleCountrySelection);
+bot.action('skip_telegram', (ctx) => handleSkipStep(ctx, 'telegram'));
+bot.action('skip_instagram', (ctx) => handleSkipStep(ctx, 'instagram'));
+bot.action('skip_potato', (ctx) => handleSkipStep(ctx, 'potato'));
+bot.action('skip_snapchat', (ctx) => handleSkipStep(ctx, 'snapchat'));
+bot.action('skip_whatsapp', (ctx) => handleSkipStep(ctx, 'whatsapp'));
+bot.action('skip_signal', (ctx) => handleSkipStep(ctx, 'signal'));
+bot.action('skip_session', (ctx) => handleSkipStep(ctx, 'session'));
+bot.action('skip_threema', (ctx) => handleSkipStep(ctx, 'threema'));
+bot.action('confirm_application', submitApplication);
 
 bot.action('check_application_status', handleCheckApplicationStatus);
 bot.action(/^cancel_my_application_(.+)$/, handleCancelMyApplication);

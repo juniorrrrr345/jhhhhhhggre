@@ -5,6 +5,19 @@ const { sendAdminNotification } = require('./notificationHandler');
 // Stockage temporaire des données du formulaire par utilisateur
 const userForms = new Map();
 
+// Liste des pays disponibles avec emojis
+const COUNTRIES = [
+  { code: 'FR', name: 'France', flag: '🇫🇷' },
+  { code: 'BE', name: 'Belgique', flag: '🇧🇪' },
+  { code: 'CH', name: 'Suisse', flag: '🇨🇭' },
+  { code: 'ES', name: 'Espagne', flag: '🇪🇸' },
+  { code: 'IT', name: 'Italie', flag: '🇮🇹' },
+  { code: 'DE', name: 'Allemagne', flag: '🇩🇪' },
+  { code: 'NL', name: 'Pays-Bas', flag: '🇳🇱' },
+  { code: 'MA', name: 'Maroc', flag: '🇲🇦' },
+  { code: 'OTHER', name: 'Autre', flag: '🌍' }
+];
+
 // Fonction utilitaire pour éditer les messages avec gestion robuste des erreurs
 const safeEditMessage = async (ctx, message, options = {}, keepWelcomeImage = false) => {
   try {
@@ -130,17 +143,11 @@ const handleStartApplication = async (ctx) => {
       }
     });
     
-    const message = `💼 **Devenir Plug**\n\n` +
-      `Bienvenue ! Je vais t'accompagner pour créer ta demande d'inscription en tant que plug.\n\n` +
-      `📋 **Étapes du formulaire :**\n` +
-      `1️⃣ Nom du plug\n` +
-      `2️⃣ Description des services\n` +
-      `3️⃣ Localisation (Pays/Ville)\n` +
-      `4️⃣ Services proposés\n` +
-      `5️⃣ Contact Telegram\n\n` +
-      `**Étape 1/5 : Nom du plug**\n\n` +
-      `Comment veux-tu appeler ton plug ?\n` +
-      `Écris le nom de ton plug :`;
+    const message = `📝 **Récapitulatif de votre inscription :**\n\n` +
+      `📝 Nom de Plug: \n` +
+      `🔗 Telegram: \n\n` +
+      `**Étape 1 : Nom du Plug**\n\n` +
+      `Quel est votre nom de Plug ?`;
     
     const keyboard = Markup.inlineKeyboard([
       [Markup.button.callback('❌ Annuler', 'cancel_application')]
@@ -176,45 +183,97 @@ const handleFormMessage = async (ctx) => {
         }
         
         userForm.data.name = text;
-        userForm.step = 'description';
+        userForm.step = 'telegram';
         
-        const descMessage = `✅ Nom enregistré : **${text}**\n\n` +
-          `**Étape 2/5 : Description**\n\n` +
-          `Décris les services que tu proposes.\n` +
-          `Exemple : "Livraison rapide dans toute la ville, envoi postal sécurisé vers l'Europe"`;
-        
-        await ctx.reply(descMessage, { parse_mode: 'Markdown' });
+        await askTelegram(ctx);
         break;
         
-      case 'description':
-        if (text.length < 10) {
-          return await ctx.reply('❌ La description doit faire au moins 10 caractères. Réessaie :');
+      case 'telegram':
+        if (!text.startsWith('@') && !text.includes('t.me/')) {
+          return await ctx.reply('❌ Merci de fournir un username Telegram (ex: @tonusername) ou un lien Telegram. Réessaie :');
         }
+
+        userForm.data.telegram = text;
+        userForm.step = 'instagram';
         
-        userForm.data.description = text;
+        await askInstagram(ctx);
+        break;
+        
+      case 'instagram':
+        if (!text.startsWith('https://www.instagram.com/') && !text.startsWith('@')) {
+          return await ctx.reply('❌ Merci de fournir un lien Instagram valide (ex: https://www.instagram.com/username ou @username). Réessaie :');
+        }
+
+        userForm.data.instagram = text;
+        userForm.step = 'potato';
+        
+        await askPotato(ctx);
+        break;
+        
+      case 'potato':
+        if (!text.startsWith('https://')) {
+          return await ctx.reply('❌ Merci de fournir un lien Potato valide commençant par https://. Réessaie :');
+        }
+
+        userForm.data.potato = text;
+        userForm.step = 'snapchat';
+        
+        await askSnapchat(ctx);
+        break;
+        
+      case 'snapchat':
+        if (!text.startsWith('https://')) {
+          return await ctx.reply('❌ Merci de fournir un lien Snapchat valide commençant par https://. Réessaie :');
+        }
+
+        userForm.data.snapchat = text;
+        userForm.step = 'whatsapp';
+        
+        await askWhatsApp(ctx);
+        break;
+        
+      case 'whatsapp':
+        if (!text.startsWith('https://')) {
+          return await ctx.reply('❌ Merci de fournir un lien WhatsApp valide commençant par https://. Réessaie :');
+        }
+
+        userForm.data.whatsapp = text;
+        userForm.step = 'signal';
+        
+        await askSignal(ctx);
+        break;
+        
+      case 'signal':
+        if (!text.startsWith('https://')) {
+          return await ctx.reply('❌ Merci de fournir un lien Signal valide commençant par https://. Réessaie :');
+        }
+
+        userForm.data.signal = text;
+        userForm.step = 'session';
+        
+        await askSession(ctx);
+        break;
+        
+      case 'session':
+        if (text.length < 2) {
+          return await ctx.reply('❌ L\'identifiant Session doit faire au moins 2 caractères. Réessaie :');
+        }
+
+        userForm.data.session = text;
+        userForm.step = 'threema';
+        
+        await askThreema(ctx);
+        break;
+        
+      case 'threema':
+        if (!text.startsWith('https://')) {
+          return await ctx.reply('❌ Merci de fournir un lien Threema valide commençant par https://. Réessaie :');
+        }
+
+        userForm.data.threema = text;
         userForm.step = 'country';
         
-        const countryMessage = `✅ Description enregistrée\n\n` +
-          `**Étape 3/5 : Localisation**\n\n` +
-          `Dans quel pays te trouves-tu ?\n` +
-          `Exemple : France, Belgique, Suisse...`;
-        
-        await ctx.reply(countryMessage, { parse_mode: 'Markdown' });
-        break;
-        
-      case 'country':
-        if (text.length < 2) {
-          return await ctx.reply('❌ Le pays doit faire au moins 2 caractères. Réessaie :');
-        }
-        
-        userForm.data.country = text;
-        userForm.step = 'city';
-        
-        const cityMessage = `✅ Pays enregistré : **${text}**\n\n` +
-          `Dans quelle ville te trouves-tu ?\n` +
-          `Exemple : Paris, Bruxelles, Genève...`;
-        
-        await ctx.reply(cityMessage, { parse_mode: 'Markdown' });
+        await askCountry(ctx);
         break;
         
       case 'city':
@@ -228,16 +287,45 @@ const handleFormMessage = async (ctx) => {
         await askServices(ctx);
         break;
         
-            case 'telegram':
-        if (!text.startsWith('@') && !text.includes('t.me/')) {
-          return await ctx.reply('❌ Merci de fournir un username Telegram (ex: @tonusername) ou un lien Telegram. Réessaie :');
+      case 'departments_meetup':
+        if (text.length < 2) {
+          return await ctx.reply('❌ Les départements doivent faire au moins 2 caractères. Réessaie :');
         }
-
-        userForm.data.telegram = text;
         
-        // Étape photo supprimée - on passe directement à la soumission
-        await submitApplication(ctx);
-        return; // Important: return pour éviter de continuer
+        userForm.data.departmentsMeetup = text;
+        
+        // Si livraison est aussi sélectionné, demander les départements livraison
+        if (userForm.data.services.delivery.enabled) {
+          userForm.step = 'departments_delivery';
+          userForms.set(userId, userForm);
+          
+          const message = `📝 **Récapitulatif de votre inscription :**\n\n` +
+            `📝 Nom de Plug: ${userForm.data.name}\n` +
+            `🔗 Telegram: ${userForm.data.telegram}\n` +
+            `🌍 Pays: ${userForm.data.country}\n` +
+            `🛠️ Services: 📍 Meetup, 🚚 Livraison\n` +
+            `📍 Secteur Meetup: ${text}\n\n` +
+            `Entrez les départements pour la livraison (séparés par des virgules, ex: 75, 92, 93):`;
+          
+          await safeEditMessage(ctx, message, { parse_mode: 'Markdown' });
+        } else {
+          // Sinon passer directement à la photo
+          userForm.step = 'photo';
+          userForms.set(userId, userForm);
+          await askPhoto(ctx);
+        }
+        break;
+        
+      case 'departments_delivery':
+        if (text.length < 2) {
+          return await ctx.reply('❌ Les départements doivent faire au moins 2 caractères. Réessaie :');
+        }
+        
+        userForm.data.departmentsDelivery = text;
+        userForm.step = 'photo';
+        
+        await askPhoto(ctx);
+        break;
     }
     
     userForms.set(userId, userForm);
@@ -248,23 +336,238 @@ const handleFormMessage = async (ctx) => {
   }
 };
 
-// Demander les services
-const askServices = async (ctx) => {
-  const message = `✅ Ville enregistrée\n\n` +
-    `**Étape 4/5 : Services proposés**\n\n` +
-    `Quels services proposes-tu ? (Tu peux en choisir plusieurs)`;
+// Demander Telegram
+const askTelegram = async (ctx) => {
+  const message = `📝 **Récapitulatif de votre inscription :**\n\n` +
+    `📝 Nom de Plug: ${userForms.get(ctx.from.id).data.name}\n` +
+    `🔗 Telegram: \n\n` +
+    `Entrez votre lien Telegram (format: @username ou https://t.me/username):`;
   
   const keyboard = Markup.inlineKeyboard([
-    [
-      Markup.button.callback('🚚 Livraison', 'service_delivery'),
-      Markup.button.callback('✈️ Envoi postal', 'service_postal')
-    ],
-    [Markup.button.callback('🏠 Meetup', 'service_meetup')],
-    [Markup.button.callback('✅ Continuer', 'services_done')],
+    [Markup.button.callback('➡️ Passer cette étape', 'skip_telegram')],
     [Markup.button.callback('❌ Annuler', 'cancel_application')]
   ]);
   
-  await ctx.reply(message, {
+  await safeEditMessage(ctx, message, {
+    reply_markup: keyboard.reply_markup,
+    parse_mode: 'Markdown'
+  });
+};
+
+// Demander Instagram
+const askInstagram = async (ctx) => {
+  const userForm = userForms.get(ctx.from.id);
+  const message = `📝 **Récapitulatif de votre inscription :**\n\n` +
+    `📝 Nom de Plug: ${userForm.data.name}\n` +
+    `🔗 Telegram: ${userForm.data.telegram}\n\n` +
+    `Entrez votre lien Instagram (format: https://www.instagram.com/username):`;
+  
+  const keyboard = Markup.inlineKeyboard([
+    [Markup.button.callback('➡️ Passer cette étape', 'skip_instagram')],
+    [Markup.button.callback('❌ Annuler', 'cancel_application')]
+  ]);
+  
+  await safeEditMessage(ctx, message, {
+    reply_markup: keyboard.reply_markup,
+    parse_mode: 'Markdown'
+  });
+};
+
+// Demander Potato
+const askPotato = async (ctx) => {
+  const userForm = userForms.get(ctx.from.id);
+  const message = `📝 **Récapitulatif de votre inscription :**\n\n` +
+    `📝 Nom de Plug: ${userForm.data.name}\n` +
+    `🔗 Telegram: ${userForm.data.telegram}\n\n` +
+    `Entrez votre lien Potato (commençant par https://):`;
+  
+  const keyboard = Markup.inlineKeyboard([
+    [Markup.button.callback('➡️ Passer cette étape', 'skip_potato')],
+    [Markup.button.callback('❌ Annuler', 'cancel_application')]
+  ]);
+  
+  await safeEditMessage(ctx, message, {
+    reply_markup: keyboard.reply_markup,
+    parse_mode: 'Markdown'
+  });
+};
+
+// Demander Snapchat
+const askSnapchat = async (ctx) => {
+  const userForm = userForms.get(ctx.from.id);
+  const message = `📝 **Récapitulatif de votre inscription :**\n\n` +
+    `📝 Nom de Plug: ${userForm.data.name}\n` +
+    `🔗 Telegram: ${userForm.data.telegram}\n\n` +
+    `Entrez votre lien Snapchat (commençant par https://):`;
+  
+  const keyboard = Markup.inlineKeyboard([
+    [Markup.button.callback('➡️ Passer cette étape', 'skip_snapchat')],
+    [Markup.button.callback('❌ Annuler', 'cancel_application')]
+  ]);
+  
+  await safeEditMessage(ctx, message, {
+    reply_markup: keyboard.reply_markup,
+    parse_mode: 'Markdown'
+  });
+};
+
+// Demander WhatsApp
+const askWhatsApp = async (ctx) => {
+  const userForm = userForms.get(ctx.from.id);
+  const message = `📝 **Récapitulatif de votre inscription :**\n\n` +
+    `📝 Nom de Plug: ${userForm.data.name}\n` +
+    `🔗 Telegram: ${userForm.data.telegram}\n\n` +
+    `Entrez votre lien WhatsApp (commençant par https://):`;
+  
+  const keyboard = Markup.inlineKeyboard([
+    [Markup.button.callback('➡️ Passer cette étape', 'skip_whatsapp')],
+    [Markup.button.callback('❌ Annuler', 'cancel_application')]
+  ]);
+  
+  await safeEditMessage(ctx, message, {
+    reply_markup: keyboard.reply_markup,
+    parse_mode: 'Markdown'
+  });
+};
+
+// Demander Signal
+const askSignal = async (ctx) => {
+  const userForm = userForms.get(ctx.from.id);
+  const message = `📝 **Récapitulatif de votre inscription :**\n\n` +
+    `📝 Nom de Plug: ${userForm.data.name}\n` +
+    `🔗 Telegram: ${userForm.data.telegram}\n\n` +
+    `Entrez votre lien Signal (commençant par https://):`;
+  
+  const keyboard = Markup.inlineKeyboard([
+    [Markup.button.callback('➡️ Passer cette étape', 'skip_signal')],
+    [Markup.button.callback('❌ Annuler', 'cancel_application')]
+  ]);
+  
+  await safeEditMessage(ctx, message, {
+    reply_markup: keyboard.reply_markup,
+    parse_mode: 'Markdown'
+  });
+};
+
+// Demander Session
+const askSession = async (ctx) => {
+  const userForm = userForms.get(ctx.from.id);
+  const message = `📝 **Récapitulatif de votre inscription :**\n\n` +
+    `📝 Nom de Plug: ${userForm.data.name}\n` +
+    `🔗 Telegram: ${userForm.data.telegram}\n\n` +
+    `Entrez votre identifiant Session (texte libre):`;
+  
+  const keyboard = Markup.inlineKeyboard([
+    [Markup.button.callback('➡️ Passer cette étape', 'skip_session')],
+    [Markup.button.callback('❌ Annuler', 'cancel_application')]
+  ]);
+  
+  await safeEditMessage(ctx, message, {
+    reply_markup: keyboard.reply_markup,
+    parse_mode: 'Markdown'
+  });
+};
+
+// Demander Threema
+const askThreema = async (ctx) => {
+  const userForm = userForms.get(ctx.from.id);
+  const message = `📝 **Récapitulatif de votre inscription :**\n\n` +
+    `📝 Nom de Plug: ${userForm.data.name}\n` +
+    `🔗 Telegram: ${userForm.data.telegram}\n\n` +
+    `Entrez votre lien Threema (commençant par https://):`;
+  
+  const keyboard = Markup.inlineKeyboard([
+    [Markup.button.callback('➡️ Passer cette étape', 'skip_threema')],
+    [Markup.button.callback('❌ Annuler', 'cancel_application')]
+  ]);
+  
+  await safeEditMessage(ctx, message, {
+    reply_markup: keyboard.reply_markup,
+    parse_mode: 'Markdown'
+  });
+};
+
+// Demander le pays avec boutons
+const askCountry = async (ctx) => {
+  const userForm = userForms.get(ctx.from.id);
+  const message = `📝 **Récapitulatif de votre inscription :**\n\n` +
+    `📝 Nom de Plug: ${userForm.data.name}\n` +
+    `🔗 Telegram: ${userForm.data.telegram}\n\n` +
+    `Dans quel pays opérez-vous principalement ?`;
+  
+  // Créer les boutons de pays (3 par ligne)
+  const countryButtons = [];
+  for (let i = 0; i < COUNTRIES.length; i += 3) {
+    const row = COUNTRIES.slice(i, i + 3).map(country => 
+      Markup.button.callback(`${country.flag} ${country.name}`, `country_${country.code}`)
+    );
+    countryButtons.push(row);
+  }
+  
+  // Ajouter boutons d'action
+  countryButtons.push([
+    Markup.button.callback('🌍 Tous les pays', 'country_all')
+  ]);
+  
+  const keyboard = Markup.inlineKeyboard(countryButtons);
+  
+  await safeEditMessage(ctx, message, {
+    reply_markup: keyboard.reply_markup,
+    parse_mode: 'Markdown'
+  });
+};
+
+// Gestionnaire pour la sélection de pays
+const handleCountrySelection = async (ctx) => {
+  try {
+    const userId = ctx.from.id;
+    const userForm = userForms.get(userId);
+    
+    if (!userForm || userForm.step !== 'country') {
+      return await ctx.answerCbQuery('❌ Erreur de formulaire');
+    }
+    
+    const countryCode = ctx.callbackQuery.data.replace('country_', '');
+    const selectedCountry = COUNTRIES.find(c => c.code === countryCode);
+    
+    if (!selectedCountry && countryCode !== 'all') {
+      return await ctx.answerCbQuery('❌ Pays invalide');
+    }
+    
+    userForm.data.country = selectedCountry ? selectedCountry.name : 'Tous les pays';
+    userForm.data.countryCode = countryCode;
+    userForm.step = 'services';
+    userForms.set(userId, userForm);
+    
+    await askServices(ctx);
+    await ctx.answerCbQuery(`Pays sélectionné : ${userForm.data.country}`);
+    
+  } catch (error) {
+    console.error('Erreur dans handleCountrySelection:', error);
+    await ctx.answerCbQuery('❌ Erreur');
+  }
+};
+
+// Demander les services
+const askServices = async (ctx) => {
+  const userForm = userForms.get(ctx.from.id);
+  const message = `📝 **Récapitulatif de votre inscription :**\n\n` +
+    `📝 Nom de Plug: ${userForm.data.name}\n` +
+    `🔗 Telegram: ${userForm.data.telegram}\n` +
+    `🌍 Pays: ${userForm.data.country}\n\n` +
+    `Quels services proposez-vous? (Sélectionnez tous ceux qui s'appliquent)`;
+  
+  const keyboard = Markup.inlineKeyboard([
+    [
+      Markup.button.callback('📍 Meetup', 'service_meetup'),
+      Markup.button.callback('🚚 Livraison', 'service_delivery')
+    ],
+    [Markup.button.callback('✈️ Envoi Postal', 'service_postal')],
+    [Markup.button.callback('✅ Terminer la sélection', 'services_done')],
+    [Markup.button.callback('❌ Annuler', 'cancel_application')]
+  ]);
+  
+  await safeEditMessage(ctx, message, {
     reply_markup: keyboard.reply_markup,
     parse_mode: 'Markdown'
   });
@@ -297,38 +600,37 @@ const handleServiceToggle = async (ctx) => {
     
     // Mettre à jour l'affichage
     const services = userForm.data.services;
-    let servicesText = '**Services sélectionnés :**\n';
+    let servicesText = '';
     
-    if (services.delivery.enabled) servicesText += '✅ 🚚 Livraison\n';
-    if (services.postal.enabled) servicesText += '✅ ✈️ Envoi postal\n';
-    if (services.meetup.enabled) servicesText += '✅ 🏠 Meetup\n';
+    if (services.meetup.enabled) servicesText += '📍 Meetup ✅\n';
+    if (services.delivery.enabled) servicesText += '🚚 Livraison ✅\n';
+    if (services.postal.enabled) servicesText += '✈️ Envoi Postal ✅\n';
     
-    if (!services.delivery.enabled && !services.postal.enabled && !services.meetup.enabled) {
-      servicesText += '➡️ Aucun service sélectionné';
-    }
-    
-    const message = `**Étape 4/6 : Services proposés**\n\n` +
-      `Quels services proposes-tu ? (Tu peux en choisir plusieurs)\n\n` +
-      servicesText;
+    const message = `📝 **Récapitulatif de votre inscription :**\n\n` +
+      `📝 Nom de Plug: ${userForm.data.name}\n` +
+      `🔗 Telegram: ${userForm.data.telegram}\n` +
+      `🌍 Pays: ${userForm.data.country}\n` +
+      `🛠️ Services: ${servicesText}\n\n` +
+      `Quels services proposez-vous? (Sélectionnez tous ceux qui s'appliquent)`;
     
     const keyboard = Markup.inlineKeyboard([
       [
         Markup.button.callback(
-          services.delivery.enabled ? '✅ Livraison' : '🚚 Livraison',
-          'service_delivery'
+          services.meetup.enabled ? '📍 Meetup ✅' : '📍 Meetup',
+          'service_meetup'
         ),
         Markup.button.callback(
-          services.postal.enabled ? '✅ Envoi postal' : '✈️ Envoi postal',
-          'service_postal'
+          services.delivery.enabled ? '🚚 Livraison ✅' : '🚚 Livraison',
+          'service_delivery'
         )
       ],
       [
         Markup.button.callback(
-          services.meetup.enabled ? '✅ Meetup' : '🏠 Meetup',
-          'service_meetup'
+          services.postal.enabled ? '✈️ Envoi Postal ✅' : '✈️ Envoi Postal',
+          'service_postal'
         )
       ],
-      [Markup.button.callback('✅ Continuer', 'services_done')],
+      [Markup.button.callback('✅ Terminer la sélection', 'services_done')],
       [Markup.button.callback('❌ Annuler', 'cancel_application')]
     ]);
     
@@ -345,7 +647,7 @@ const handleServiceToggle = async (ctx) => {
   }
 };
 
-// Terminer les services et passer au contact
+// Terminer les services et passer aux départements
 const handleServicesDone = async (ctx) => {
   try {
     const userId = ctx.from.id;
@@ -360,15 +662,26 @@ const handleServicesDone = async (ctx) => {
       return await ctx.answerCbQuery('❌ Tu dois sélectionner au moins un service');
     }
     
-    userForm.step = 'telegram';
-    userForms.set(userId, userForm);
+    // Si meetup est sélectionné, demander les départements meetup
+    if (services.meetup.enabled) {
+      userForm.step = 'departments_meetup';
+      userForms.set(userId, userForm);
+      
+      const message = `📝 **Récapitulatif de votre inscription :**\n\n` +
+        `📝 Nom de Plug: ${userForm.data.name}\n` +
+        `🔗 Telegram: ${userForm.data.telegram}\n` +
+        `🌍 Pays: ${userForm.data.country}\n` +
+        `🛠️ Services: 📍 Meetup, 🚚 Livraison\n\n` +
+        `Entrez les départements pour le meetup (séparés par des virgules, ex: 75, 92, 93):`;
+      
+      await safeEditMessage(ctx, message, { parse_mode: 'Markdown' });
+    } else {
+      // Sinon passer directement à la photo
+      userForm.step = 'photo';
+      userForms.set(userId, userForm);
+      await askPhoto(ctx);
+    }
     
-    const message = `✅ Services enregistrés\n\n` +
-      `**Étape 5/6 : Contact Telegram**\n\n` +
-      `Quel est ton username Telegram pour te contacter ?\n` +
-      `Exemple : @tonusername ou https://t.me/tonusername`;
-    
-    await safeEditMessage(ctx, message, { parse_mode: 'Markdown' });
     await ctx.answerCbQuery();
     
   } catch (error) {
@@ -377,9 +690,127 @@ const handleServicesDone = async (ctx) => {
   }
 };
 
-// Étape photo supprimée - plus besoin de askPhoto
+// Demander la photo
+const askPhoto = async (ctx) => {
+  const userForm = userForms.get(ctx.from.id);
+  const message = `📝 **Récapitulatif de votre inscription :**\n\n` +
+    `📝 Nom de Plug: ${userForm.data.name}\n` +
+    `🔗 Telegram: ${userForm.data.telegram}\n` +
+    `🌍 Pays: ${userForm.data.country}\n` +
+    `🛠️ Services: ${getServicesText(userForm.data.services)}\n` +
+    `${userForm.data.departmentsMeetup ? `📍 Secteur Meetup: ${userForm.data.departmentsMeetup}\n` : ''}` +
+    `${userForm.data.departmentsDelivery ? `🚚 Secteur Livraison: ${userForm.data.departmentsDelivery}\n` : ''}\n` +
+    `Veuillez confirmer ces informations:`;
+  
+  const keyboard = Markup.inlineKeyboard([
+    [
+      Markup.button.callback('✅ Confirmer', 'confirm_application'),
+      Markup.button.callback('❌ Annuler', 'cancel_application')
+    ]
+  ]);
+  
+  await safeEditMessage(ctx, message, {
+    reply_markup: keyboard.reply_markup,
+    parse_mode: 'Markdown'
+  });
+};
 
-// Toute la gestion photo supprimée
+// Gestionnaire pour les photos
+const handlePhoto = async (ctx) => {
+  try {
+    const userId = ctx.from.id;
+    const userForm = userForms.get(userId);
+    
+    if (!userForm || userForm.step !== 'photo') {
+      return;
+    }
+    
+    // Vérifier que c'est bien une photo
+    if (!ctx.message.photo || ctx.message.photo.length === 0) {
+      return await ctx.reply('❌ Merci d\'envoyer une photo valide.');
+    }
+    
+    // Récupérer la photo de meilleure qualité
+    const photo = ctx.message.photo[ctx.message.photo.length - 1];
+    
+    // Sauvegarder les infos de la photo
+    userForm.data.photo = {
+      fileId: photo.file_id,
+      fileSize: photo.file_size,
+      width: photo.width,
+      height: photo.height
+    };
+    
+    userForms.set(userId, userForm);
+    
+    // Confirmer et passer à la soumission
+    await ctx.reply('✅ Photo reçue !\n\nPréparation de ta demande...');
+    
+    // Attendre un peu puis soumettre
+    setTimeout(async () => {
+      await submitApplication(ctx);
+    }, 1000);
+    
+  } catch (error) {
+    console.error('Erreur dans handlePhoto:', error);
+    await ctx.reply('❌ Erreur lors du traitement de la photo. Réessaie.');
+  }
+};
+
+// Gestionnaires pour passer les étapes
+const handleSkipStep = async (ctx, step) => {
+  try {
+    const userId = ctx.from.id;
+    const userForm = userForms.get(userId);
+    
+    if (!userForm) {
+      return await ctx.answerCbQuery('❌ Erreur de formulaire');
+    }
+    
+    // Passer à l'étape suivante
+    switch (step) {
+      case 'telegram':
+        userForm.step = 'instagram';
+        await askInstagram(ctx);
+        break;
+      case 'instagram':
+        userForm.step = 'potato';
+        await askPotato(ctx);
+        break;
+      case 'potato':
+        userForm.step = 'snapchat';
+        await askSnapchat(ctx);
+        break;
+      case 'snapchat':
+        userForm.step = 'whatsapp';
+        await askWhatsApp(ctx);
+        break;
+      case 'whatsapp':
+        userForm.step = 'signal';
+        await askSignal(ctx);
+        break;
+      case 'signal':
+        userForm.step = 'session';
+        await askSession(ctx);
+        break;
+      case 'session':
+        userForm.step = 'threema';
+        await askThreema(ctx);
+        break;
+      case 'threema':
+        userForm.step = 'country';
+        await askCountry(ctx);
+        break;
+    }
+    
+    userForms.set(userId, userForm);
+    await ctx.answerCbQuery('Étape passée');
+    
+  } catch (error) {
+    console.error('Erreur dans handleSkipStep:', error);
+    await ctx.answerCbQuery('❌ Erreur');
+  }
+};
 
 // Soumettre la demande
 const submitApplication = async (ctx) => {
@@ -404,7 +835,8 @@ const submitApplication = async (ctx) => {
       location: {
         country: userForm.data.country,
         city: userForm.data.city
-      }
+      },
+      hasPhoto: !!userForm.data.photo
     });
 
     // Créer la demande en base
@@ -422,10 +854,17 @@ const submitApplication = async (ctx) => {
       services: servicesArray, // Format array au lieu d'object
       contact: {
         telegram: userForm.data.telegram,
+        instagram: userForm.data.instagram,
+        potato: userForm.data.potato,
+        snapchat: userForm.data.snapchat,
+        whatsapp: userForm.data.whatsapp,
+        signal: userForm.data.signal,
+        session: userForm.data.session,
+        threema: userForm.data.threema,
         other: ''
       },
-      photo: userForm.data.photo || '',
-      photoUrl: userForm.data.photoUrl || null
+      photo: userForm.data.photo || null,
+      photoUrl: userForm.data.photo ? userForm.data.photo.fileId : null
     });
     
     console.log('📋 SUBMIT DEBUG: Attempting to save application...');
@@ -448,15 +887,16 @@ const submitApplication = async (ctx) => {
     // Nettoyer le formulaire
     userForms.delete(userId);
     
-    const message = `🎉 **Demande soumise avec succès !**\n\n` +
-      `Merci ${userForm.data.firstName} !\n\n` +
-      `Ta demande d'inscription en tant que plug a été envoyée à nos équipes.\n\n` +
-      `📋 **Récapitulatif :**\n` +
-      `• **Nom :** ${userForm.data.name}\n` +
-      `• **Localisation :** ${userForm.data.city}, ${userForm.data.country}\n` +
-      `• **Services :** ${getServicesText(userForm.data.services)}\n\n` +
-      `⏳ Tu recevras une réponse dans les prochains jours.\n\n` +
-      `Merci pour ta patience !`;
+    const photoText = userForm.data.photo ? '✅ Photo incluse' : '⚠️ Aucune photo';
+    
+    const message = `🎉 **Formulaire reçu !**\n\n` +
+      `Pour valider ton inscription :\n\n` +
+      `**Étape 1 :** Poste le logo PlugsFinder sur un de tes réseaux renseignés (Instagram ou Telegram) avec le texte 'Inscription en cours chez PlugsFinder' et identifie @plugsfinder.\n\n` +
+      `**Étape 2 :** Envoie une photo de ton stock avec 'PlugsFinder' et la date du jour écrits sur un papier à l'admin @plugsfinder_admin.\n\n` +
+      `⏳ Tu as 24h pour faire ces 2 étapes.\n\n` +
+      `La pré-approbation peut prendre 24 à 48h*. Tu seras automatiquement notifié par le bot de la décision des admins.\n\n` +
+      `Si tu es pré approuvé par les admin, une fiche temporaire avec un lien unique sera créée. Tu devras obtenir 30 votes en 7 jours pour finaliser ton inscription et passer public dans la liste.\n\n` +
+      `Besoin de recommencer? /start`;
     
     const keyboard = Markup.inlineKeyboard([
       [Markup.button.callback('🔙 Retour au menu', 'back_main')]
@@ -540,17 +980,20 @@ const handleCancelApplication = async (ctx) => {
 // Fonction utilitaire pour formater les services
 const getServicesText = (services) => {
   const servicesList = [];
-  if (services.delivery.enabled) servicesList.push('Livraison');
-  if (services.postal.enabled) servicesList.push('Envoi postal');
-  if (services.meetup.enabled) servicesList.push('Meetup');
+  if (services.meetup.enabled) servicesList.push('📍 Meetup');
+  if (services.delivery.enabled) servicesList.push('🚚 Livraison');
+  if (services.postal.enabled) servicesList.push('✈️ Envoi Postal');
   return servicesList.join(', ');
 };
 
 module.exports = {
   handleStartApplication,
   handleFormMessage,
+  handleCountrySelection,
   handleServiceToggle,
   handleServicesDone,
+  handlePhoto,
+  handleSkipStep,
   handleCancelApplication,
   userForms
 };
