@@ -1397,9 +1397,19 @@ app.get('/api/plugs/:id/referral', authenticateAdmin, async (req, res) => {
       console.log('✅ Lien existant trouvé pour:', plug.name);
     }
 
+    // Générer aussi un lien direct simple (comme dans l'exemple)
+    let directLink = '';
+    try {
+      const botInfo = await bot.telegram.getMe();
+      directLink = `https://t.me/${botInfo.username}?start=plug_${plug._id}`;
+    } catch (directLinkError) {
+      console.warn('⚠️ Erreur génération lien direct:', directLinkError);
+    }
+
     const response = {
       boutique: plug.name,
       referralLink: plug.referralLink,
+      directLink: directLink, // Nouveau lien direct simple
       referralCode: plug.referralCode,
       totalReferred: plug.totalReferred || 0,
       referredUsers: plug.referredUsers || []

@@ -218,6 +218,20 @@ export default function ReferralsPage() {
     }
   }
 
+  const copyDirectLink = async (plug) => {
+    try {
+      if (plug.directLink) {
+        await navigator.clipboard.writeText(plug.directLink)
+        toast.success(`🎯 Lien direct de ${plug.name} copié !`)
+      } else {
+        toast.error('Lien direct non disponible')
+      }
+    } catch (error) {
+      console.error('❌ Erreur copie lien direct:', error)
+      toast.error('Erreur lors de la copie')
+    }
+  }
+
   const shareLinkViaTelegram = (plug) => {
     if (plug.referralLink) {
       const message = `🏪 Découvrez ${plug.name} !\n\n${plug.description}\n\n👇 Cliquez ici pour accéder directement :\n${plug.referralLink}`
@@ -407,36 +421,68 @@ export default function ReferralsPage() {
                         {plug.description}
                       </p>
 
-                      {/* Lien de parrainage */}
+                      {/* Liens de parrainage et direct */}
                       {plug.referralLink ? (
-                        <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 mb-3">
-                          <label className="block text-xs font-medium text-gray-500 mb-1">
-                            Lien de parrainage :
-                          </label>
-                          <div className="flex items-center space-x-2">
-                            <input
-                              type="text"
-                              value={plug.referralLink}
-                              readOnly
-                              className="flex-1 text-xs bg-white border border-gray-300 rounded px-2 py-1 font-mono"
-                            />
-                            <button
-                              onClick={() => copyReferralLink(plug)}
-                              className={`px-3 py-1 rounded text-xs font-medium transition-colors ${
-                                copiedLink === plug._id
-                                  ? 'bg-green-100 text-green-800'
-                                  : 'bg-blue-100 text-blue-800 hover:bg-blue-200'
-                              }`}
-                            >
-                              {copiedLink === plug._id ? '✅ Copié' : '📋 Copier'}
-                            </button>
-                            <button
-                              onClick={() => shareLinkViaTelegram(plug)}
-                              className="px-3 py-1 bg-blue-500 text-white rounded text-xs font-medium hover:bg-blue-600 transition-colors"
-                            >
-                              📱 Partager
-                            </button>
+                        <div className="space-y-3 mb-3">
+                          {/* Lien de parrainage (avec statistiques) */}
+                          <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                            <label className="block text-xs font-medium text-green-700 mb-1">
+                              🔗 Lien de parrainage (avec stats) :
+                            </label>
+                            <div className="flex items-center space-x-2">
+                              <input
+                                type="text"
+                                value={plug.referralLink}
+                                readOnly
+                                className="flex-1 text-xs bg-white border border-green-300 rounded px-2 py-1 font-mono"
+                              />
+                              <button
+                                onClick={() => copyReferralLink(plug)}
+                                className={`px-3 py-1 rounded text-xs font-medium transition-colors ${
+                                  copiedLink === plug._id
+                                    ? 'bg-green-600 text-white'
+                                    : 'bg-green-100 text-green-800 hover:bg-green-200'
+                                }`}
+                              >
+                                {copiedLink === plug._id ? '✅ Copié' : '📋 Copier'}
+                              </button>
+                            </div>
+                            <div className="text-xs text-green-600 mt-1">
+                              👥 Suit les statistiques de parrainage
+                            </div>
                           </div>
+
+                          {/* Lien direct simple (comme dans l'exemple) */}
+                          {plug.directLink && (
+                            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                              <label className="block text-xs font-medium text-blue-700 mb-1">
+                                🎯 Lien direct (comme exemple) :
+                              </label>
+                              <div className="flex items-center space-x-2">
+                                <input
+                                  type="text"
+                                  value={plug.directLink}
+                                  readOnly
+                                  className="flex-1 text-xs bg-white border border-blue-300 rounded px-2 py-1 font-mono"
+                                />
+                                <button
+                                  onClick={() => copyDirectLink(plug)}
+                                  className="px-3 py-1 bg-blue-100 text-blue-800 hover:bg-blue-200 rounded text-xs font-medium transition-colors"
+                                >
+                                  📋 Copier
+                                </button>
+                                <button
+                                  onClick={() => shareLinkViaTelegram(plug)}
+                                  className="px-3 py-1 bg-blue-500 text-white rounded text-xs font-medium hover:bg-blue-600 transition-colors"
+                                >
+                                  📱 Partager
+                                </button>
+                              </div>
+                              <div className="text-xs text-blue-600 mt-1">
+                                🎯 Redirection directe sans tracking
+                              </div>
+                            </div>
+                          )}
                         </div>
                       ) : (
                         <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-3">

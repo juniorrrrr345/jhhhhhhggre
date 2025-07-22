@@ -13,14 +13,32 @@ const handleStart = async (ctx) => {
     // Vérifier et s'assurer que MongoDB est connecté
     await ensureConnection();
 
-    // Vérifier s'il y a un code de parrainage
+    // Vérifier s'il y a un code de parrainage ou redirection directe
     const startPayload = ctx.message.text.split(' ')[1];
-    if (startPayload && startPayload.startsWith('ref_')) {
-      console.log('🔗 Code de parrainage détecté:', startPayload);
-      const referralHandled = await handleReferral(ctx, startPayload);
-      if (referralHandled) {
-        console.log('✅ Parrainage traité avec succès');
-        return; // Le message de bienvenue personnalisé a été envoyé
+    if (startPayload) {
+      // Format parrainage: ref_ID_BOUTIQUE_TIMESTAMP
+      if (startPayload.startsWith('ref_')) {
+        console.log('🔗 Code de parrainage détecté:', startPayload);
+        const referralHandled = await handleReferral(ctx, startPayload);
+        if (referralHandled) {
+          console.log('✅ Parrainage traité avec succès');
+          return; // Le message de bienvenue personnalisé a été envoyé
+        }
+      }
+      // Format direct: plug_ID_BOUTIQUE ou ID_BOUTIQUE
+      else if (startPayload.startsWith('plug_') || startPayload.match(/^[a-f\d]{24}$/)) {
+        console.log('🎯 Redirection directe vers boutique détectée:', startPayload);
+        const plugId = startPayload.startsWith('plug_') ? startPayload.replace('plug_', '') : startPayload;
+        
+        try {
+          const { handlePlugDetails } = require('./plugsHandler');
+          await handlePlugDetails(ctx, plugId, 'direct_link');
+          console.log('✅ Redirection directe réussie vers boutique:', plugId);
+          return;
+        } catch (directError) {
+          console.error('❌ Erreur redirection directe:', directError);
+          // Continuer vers le message d'accueil normal si échec
+        }
       }
     }
 
