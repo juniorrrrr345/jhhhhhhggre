@@ -1846,10 +1846,21 @@ app.post('/api/upload-image', authenticateAdmin, async (req, res) => {
       // Upload direct avec multer
       imageBase64 = `data:${req.file.mimetype};base64,${req.file.buffer.toString('base64')}`;
     } else if (req.body.data?.imageBase64) {
-      // Via CORS proxy avec base64
+      // Via CORS proxy avec base64 (format: data.imageBase64)
       imageBase64 = req.body.data.imageBase64;
-      console.log('📤 Image reçue via proxy:', req.body.data.filename);
+      console.log('📤 Image reçue via proxy (data):', req.body.data.filename);
+    } else if (req.body.imageBase64) {
+      // Direct dans body (format: imageBase64)
+      imageBase64 = req.body.imageBase64;
+      console.log('📤 Image reçue directement:', req.body.filename);
     } else {
+      console.log('❌ Aucune image trouvée dans:', {
+        hasFile: !!req.file,
+        hasDataImageBase64: !!req.body.data?.imageBase64,
+        hasBodyImageBase64: !!req.body.imageBase64,
+        bodyKeys: Object.keys(req.body || {}),
+        dataKeys: Object.keys(req.body?.data || {})
+      });
       return res.status(400).json({ 
         success: false,
         error: 'Aucune image fournie' 
