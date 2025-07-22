@@ -8,6 +8,7 @@ import {
   EyeIcon,
   PlusIcon
 } from '@heroicons/react/24/outline'
+import { simpleApi } from '../../lib/api-simple'
 
 export default function Dashboard() {
   const [stats, setStats] = useState({
@@ -16,6 +17,7 @@ export default function Dashboard() {
     vipPlugs: 0,
     totalUsers: 0
   })
+  const [config, setConfig] = useState(null)
   const [recentShops, setRecentShops] = useState([])
   const [loading, setLoading] = useState(true)
   const router = useRouter()
@@ -33,132 +35,39 @@ export default function Dashboard() {
 
   const fetchDashboardData = async (token) => {
     try {
-      console.log('🔍 Fetching dashboard data directly from bot API...')
+      console.log('🔍 Fetching dashboard data via proxy CORS...')
       
-      // Aller chercher directement depuis l'API bot
-      const botApiUrl = 'https://jhhhhhhggre.onrender.com'
-      
-      // Récupérer les boutiques directement
-      try {
-        const response = await fetch(`${botApiUrl}/api/plugs?page=1&limit=6`, {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${token || 'JuniorAdmon123'}`,
-            'Content-Type': 'application/json'
-          }
-        })
-        
-        if (response.ok) {
-          const data = await response.json()
-          console.log('✅ Bot API Response:', data)
-          
-          if (data.plugs && data.plugs.length > 0) {
-            setRecentShops(data.plugs)
-            setStats({
-              totalPlugs: data.pagination?.total || data.plugs.length,
-              activePlugs: data.plugs.filter(p => p.isActive).length,
-              vipPlugs: data.plugs.filter(p => p.isVip).length,
-              totalUsers: 0
-            })
-            console.log('✅ Boutiques chargées depuis bot API:', data.plugs.length)
-          } else {
-            throw new Error('No shops in response')
-          }
-        } else {
-          throw new Error(`API responded with ${response.status}`)
-        }
-      } catch (apiError) {
-        console.error('❌ Bot API failed:', apiError)
-        
-        // FALLBACK avec vraies boutiques de test basées sur vos données
-        console.log('🔄 Using real fallback data based on your bot...')
-        const fallbackShops = [
-          {
-            _id: '687e233151eb51ad38c5b9e7',
-            name: 'Plugs pour tester',
-            description: 'Plug de test pour les likes',
-            image: 'https://i.imgur.com/DD5OU6o.jpeg',
-            isVip: true,
-            isActive: true,
-            likes: 5,
-            services: {
-              delivery: { enabled: true, description: 'Op' },
-              postal: { enabled: true, description: 'Op' },
-              meetup: { enabled: true, description: '90' }
-            },
-            countries: ['France', 'Canada', 'Tunisie'],
-            socialMedia: [
-              {
-                name: 'Instagram',
-                emoji: '📲',
-                url: 'https://www.instagram.com/legrosj3/'
-              }
-            ]
-          },
-          {
-            _id: '687e2227792aa1be313ead28',
-            name: 'Boutique Teste2',
-            description: 'Description du plugs ci nécessaire',
-            image: 'https://i.imgur.com/DD5OU6o.jpeg',
-            isVip: true,
-            isActive: true,
-            likes: 5,
-            services: {
-              delivery: { enabled: true, description: 'Description de livraison' },
-              postal: { enabled: true, description: 'Envoi Postaux possible' },
-              meetup: { enabled: true, description: 'Pareil meetup' }
-            },
-            countries: ['Canada', 'France', 'Belgique', 'Suisse'],
-            socialMedia: [
-              {
-                name: 'Les Réseaux',
-                emoji: '📲',
-                url: 'https://www.instagram.com/legrosj3/'
-              }
-            ]
-          }
-        ]
-        
-        setRecentShops(fallbackShops)
-        setStats({
-          totalPlugs: 2,
-          activePlugs: 2,
-          vipPlugs: 2,
-          totalUsers: 0
-        })
-      }
-      
-    } catch (error) {
-      console.error('❌ Global error:', error)
-      
-      // FALLBACK FINAL - Toujours afficher des boutiques
-      setRecentShops([
-        {
-          _id: 'final1',
-          name: 'Boutique Demo 1',
-          description: 'Boutique de démonstration fonctionnelle',
-          image: 'https://i.imgur.com/DD5OU6o.jpeg',
-          isVip: true,
-          isActive: true,
-          likes: 10
-        },
-        {
-          _id: 'final2',
-          name: 'Boutique Demo 2',
-          description: 'Seconde boutique de démonstration',
-          image: '',
-          isVip: false,
-          isActive: true,
-          likes: 5
-        }
-      ])
+      // Récupérer les stats via proxy simple
+      const statsData = await simpleApi.getStats(token)
+      console.log('✅ Stats data:', statsData)
       
       setStats({
-        totalPlugs: 2,
-        activePlugs: 2,
-        vipPlugs: 1,
+        totalPlugs: statsData.totalPlugs || 0,
+        activePlugs: statsData.activePlugs || 0,
+        vipPlugs: statsData.vipPlugs || 0,
         totalUsers: 0
       })
+      
+      // Récupérer la config via proxy simple
+      const configData = await simpleApi.getConfig(token)
+      console.log('✅ Config data:', configData)
+      setConfig(configData)
+      
+      // Récupérer les dernières boutiques
+      const shopsData = await simpleApi.getPlugs(token, { page: 1, limit: 6 })
+      console.log('✅ Shops data:', shopsData)
+      setRecentShops(shopsData.plugs || [])
+      
+    } catch (error) {
+      console.error('❌ Error fetching dashboard data:', error)
+      // Fallback avec des valeurs par défaut
+      setStats({
+        totalPlugs: 0,
+        activePlugs: 0,
+        vipPlugs: 0,
+        totalUsers: 0
+      })
+      setRecentShops([])
     } finally {
       setLoading(false)
     }
