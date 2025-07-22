@@ -53,6 +53,8 @@ export default async function handler(req, res) {
       headers['Authorization'] = req.headers.authorization
     }
     
+    console.log(`🔑 Token utilisé: ${headers.Authorization ? 'Oui' : 'Non'}`)
+    
     // Faire la requête vers l'API distante
     const fetchOptions = {
       method: method,

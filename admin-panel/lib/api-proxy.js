@@ -4,11 +4,14 @@ const useProxy = true; // Force l'utilisation du proxy
 // Fonction pour faire des appels via le proxy
 const proxyCall = async (endpoint, method = 'GET', token = null, body = null) => {
   console.log(`🔄 Proxy API Call: ${method} ${endpoint}`);
-  console.log(`🔑 Token fourni: ${token ? 'Oui' : 'Non'}`);
   
   const headers = {
     'Content-Type': 'application/json'
   };
+  
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
   
   try {
     const response = await fetch('/api/cors-proxy', {
@@ -17,8 +20,7 @@ const proxyCall = async (endpoint, method = 'GET', token = null, body = null) =>
       body: JSON.stringify({
         endpoint: endpoint,
         method: method,
-        token: token, // Le token doit être dans le body, pas dans les headers
-        data: body
+        body: body
       })
     });
     
