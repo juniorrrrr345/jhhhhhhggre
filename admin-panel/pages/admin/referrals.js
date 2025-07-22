@@ -226,6 +226,50 @@ export default function ReferralsPage() {
     }
   }
 
+  // Fonction pour générer tous les liens de parrainage
+  const generateAllReferralLinks = async () => {
+    try {
+      setLoading(true)
+      const token = localStorage.getItem('adminToken')
+      
+      toast.promise(
+        fetch('/api/cors-proxy', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            endpoint: '/api/plugs/generate-all-referrals',
+            method: 'POST'
+          })
+        }).then(async (response) => {
+          if (response.ok) {
+            const result = await response.json()
+            console.log('✅ Génération massive réussie:', result)
+            
+            // Recharger les données pour voir les nouveaux liens
+            await loadReferralData(token)
+            
+            return result
+          } else {
+            const error = await response.json()
+            throw new Error(error.error || 'Erreur lors de la génération')
+          }
+        }),
+        {
+          loading: '🔄 Génération des liens de parrainage...',
+          success: (result) => `✅ ${result.generated} nouveaux liens générés ! (${result.existing} existants)`,
+          error: (err) => `❌ Erreur: ${err.message}`
+        }
+      )
+    } catch (error) {
+      console.error('❌ Erreur génération massive:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
   if (loading) {
     return (
       <Layout title="Parrainage - Chargement...">
@@ -330,9 +374,18 @@ export default function ReferralsPage() {
         {/* Liste des boutiques avec parrainage */}
         <div className="bg-white shadow rounded-lg">
           <div className="px-4 py-5 sm:p-6">
-            <h3 className="text-lg leading-6 font-medium text-gray-900 mb-6">
-              🏪 Liens de Parrainage par Boutique
-            </h3>
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-lg leading-6 font-medium text-gray-900">
+                🏪 Liens de Parrainage par Boutique
+              </h3>
+              <button
+                onClick={generateAllReferralLinks}
+                disabled={loading}
+                className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 transition-colors text-sm font-medium"
+              >
+                {loading ? '🔄 Génération...' : '⚡ Générer tous les liens'}
+              </button>
+            </div>
 
             <div className="space-y-4">
               {plugs.map((plug) => (

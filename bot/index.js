@@ -1417,6 +1417,58 @@ app.get('/api/plugs/:id/referral', authenticateAdmin, async (req, res) => {
   }
 });
 
+// Générer les liens de parrainage pour toutes les boutiques
+app.post('/api/plugs/generate-all-referrals', authenticateAdmin, async (req, res) => {
+  try {
+    console.log('🔗 Génération des liens de parrainage pour toutes les boutiques...');
+    
+    const botInfo = await bot.telegram.getMe();
+    const plugs = await Plug.find({});
+    let generated = 0;
+    let updated = 0;
+
+    for (const plug of plugs) {
+      if (!plug.referralCode || !plug.referralLink) {
+        // Générer le code et le lien manuellement si les méthodes n'existent pas
+        if (typeof plug.generateReferralCode === 'function') {
+          plug.referralCode = plug.generateReferralCode();
+        } else {
+          plug.referralCode = `ref_${plug._id}_${Date.now().toString(36)}`;
+        }
+        
+        if (typeof plug.generateReferralLink === 'function') {
+          plug.referralLink = plug.generateReferralLink(botInfo.username);
+        } else {
+          plug.referralLink = `https://t.me/${botInfo.username}?start=${plug.referralCode}`;
+        }
+        
+        await plug.save();
+        generated++;
+        console.log(`✅ Lien généré pour: ${plug.name}`);
+      } else {
+        updated++;
+      }
+    }
+
+    console.log(`🎉 Génération terminée: ${generated} nouveaux, ${updated} existants`);
+    
+    res.json({
+      success: true,
+      total: plugs.length,
+      generated: generated,
+      existing: updated,
+      botUsername: botInfo.username
+    });
+
+  } catch (error) {
+    console.error('❌ Erreur génération massive:', error);
+    res.status(500).json({ 
+      error: 'Erreur lors de la génération massive',
+      details: error.message 
+    });
+  }
+});
+
 // Modifier un plug (Admin seulement)
 app.put('/api/plugs/:id', authenticateAdmin, async (req, res) => {
   try {

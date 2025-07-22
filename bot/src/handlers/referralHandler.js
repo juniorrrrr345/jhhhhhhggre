@@ -82,8 +82,57 @@ const redirectToShopDetails = async (ctx, boutique) => {
   try {
     console.log(`🎯 Redirection directe vers ${boutique.name}`);
     
-    // Utiliser handlePlugDetails pour afficher directement les détails de la boutique
-    await handlePlugDetails(ctx, boutique._id, 'referral');
+    // Afficher directement les détails de la boutique avec bouton de retour approprié
+    const Config = require('../models/Config');
+    const { createPlugKeyboard } = require('../utils/keyboards');
+    const { sendMessageWithImage } = require('../utils/messageHelper');
+    
+    const config = await Config.findById('main');
+
+    let message = `${boutique.isVip ? '⭐ ' : ''}**${boutique.name}**\n\n`;
+    message += `📝 ${boutique.description}\n\n`;
+
+    // Services disponibles
+    const services = [];
+    if (boutique.services?.delivery?.enabled) {
+      services.push(`🚚 **Livraison**${boutique.services.delivery.description ? `: ${boutique.services.delivery.description}` : ''}`);
+    }
+    if (boutique.services?.postal?.enabled) {
+      services.push(`✈️ **Envoi postal**${boutique.services.postal.description ? `: ${boutique.services.postal.description}` : ''}`);
+    }
+    if (boutique.services?.meetup?.enabled) {
+      services.push(`🏠 **Meetup**${boutique.services.meetup.description ? `: ${boutique.services.meetup.description}` : ''}`);
+    }
+
+    if (services.length > 0) {
+      message += `🔧 **Services :**\n${services.join('\n')}\n\n`;
+    }
+
+    // Pays desservis
+    if (boutique.countries && boutique.countries.length > 0) {
+      message += `🌍 **Pays desservis :** ${boutique.countries.join(', ')}\n\n`;
+    }
+
+    // Afficher les likes
+    const likesCount = boutique.likes || 0;
+    message += `🖤 ${likesCount} like${likesCount !== 1 ? 's' : ''}\n\n`;
+
+    // Créer le clavier avec le contexte 'referral'
+    const keyboard = createPlugKeyboard(boutique, 'referral', ctx.from?.id);
+
+    // Envoyer avec image si disponible
+    if (boutique.image) {
+      await ctx.replyWithPhoto(boutique.image, {
+        caption: message,
+        reply_markup: keyboard.reply_markup,
+        parse_mode: 'Markdown'
+      });
+    } else {
+      await ctx.reply(message, {
+        reply_markup: keyboard.reply_markup,
+        parse_mode: 'Markdown'
+      });
+    }
     
     console.log(`✅ Redirection réussie vers ${boutique.name}`);
 
