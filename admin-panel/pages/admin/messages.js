@@ -282,22 +282,16 @@ export default function Messages() {
               </div>
             )}
 
-            {/* Messages d'état */}
-            {error && (
-              <div className="bg-red-50 border border-red-200 rounded-md p-4">
-                <div className="flex">
-                  <ExclamationTriangleIcon className="h-5 w-5 text-red-400 mr-2" />
-                  <span className="text-red-800">{error}</span>
-                </div>
+            {/* Messages de statut */}
+            {success && (
+              <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+                <p className="text-green-800">✅ {success}</p>
               </div>
             )}
 
-            {success && (
-              <div className="bg-green-50 border border-green-200 rounded-md p-4">
-                <div className="flex">
-                  <CheckCircleIcon className="h-5 w-5 text-green-400 mr-2" />
-                  <span className="text-green-800">{success}</span>
-                </div>
+            {error && (
+              <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+                <p className="text-red-800">❌ {error}</p>
               </div>
             )}
 
@@ -319,8 +313,7 @@ export default function Messages() {
                   </>
                 ) : (
                   <>
-                    <PaperAirplaneIcon className="h-5 w-5 mr-2" />
-                    Envoyer le message
+                    📤 Envoyer à {botUsers} utilisateur(s)
                   </>
                 )}
               </button>
