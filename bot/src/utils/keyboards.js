@@ -272,7 +272,7 @@ const createPlugKeyboard = (plug, returnContext = 'top_plugs', userId = null) =>
     console.log(`⚠️ Aucun réseau social configuré pour ${plug.name}`);
   }
   
-  // Bouton like avec état permanent
+  // Bouton like avec état permanent et cooldown
   let likeButtonText;
   
   // Debug pour comprendre le problème
@@ -289,10 +289,35 @@ const createPlugKeyboard = (plug, returnContext = 'top_plugs', userId = null) =>
   
   console.log(`🔍 BUTTON DEBUG: hasLiked result: ${hasLiked}`);
   
-  // Vérifier si l'utilisateur a déjà liké
+  // Vérifier si l'utilisateur a déjà liké et calculer le cooldown
   if (hasLiked) {
-    console.log(`🔍 BUTTON DEBUG: User ${userId} has already liked, showing liked button`);
-    likeButtonText = '❤️ Vous avez liké cette boutique';
+    // Trouver l'historique de like de cet utilisateur
+    const userLikeHistory = plug.likeHistory?.find(h => 
+      h.userId == userId || h.userId === userId || String(h.userId) === String(userId)
+    );
+    
+    if (userLikeHistory) {
+      const lastLikeTime = new Date(userLikeHistory.timestamp);
+      const now = new Date();
+      const timeDiff = now - lastLikeTime;
+      const cooldownTime = 24 * 60 * 60 * 1000; // 24 heures
+      
+      if (timeDiff < cooldownTime) {
+        const remainingTime = cooldownTime - timeDiff;
+        const hours = Math.floor(remainingTime / (60 * 60 * 1000));
+        const minutes = Math.floor((remainingTime % (60 * 60 * 1000)) / (60 * 1000));
+        
+        console.log(`🔍 BUTTON DEBUG: User ${userId} in cooldown, ${hours}h ${minutes}m remaining`);
+        likeButtonText = `⏰ Dans ${hours}h ${minutes}m`;
+      } else {
+        console.log(`🔍 BUTTON DEBUG: User ${userId} cooldown expired, can like again`);
+        likeButtonText = '🤍 Liker cette boutique';
+      }
+    } else {
+      // Pas d'historique trouvé, considérer comme pouvant liker
+      console.log(`🔍 BUTTON DEBUG: User ${userId} has liked but no history found, allowing like`);
+      likeButtonText = '🤍 Liker cette boutique';
+    }
   } else {
     console.log(`🔍 BUTTON DEBUG: User ${userId} hasn't liked, showing like button`);
     likeButtonText = '🤍 Liker cette boutique';
