@@ -17,18 +17,7 @@ const handleReferral = async (ctx, referralCode) => {
     const lastName = ctx.from.last_name;
 
     // Vérifier si l'utilisateur existe déjà
-    let user = await User.findOne({ telegramId: userId });
-    
-    if (user && user.invitedBy) {
-      console.log('⚠️ Utilisateur déjà parrainé par:', user.invitedBy);
-      console.log('🎯 Mais on va quand même afficher la boutique demandée');
-      // Utilisateur déjà parrainé, mais on affiche quand même la boutique
-      // Ne pas enregistrer de nouveau parrainage, juste rediriger
-      await redirectToShopDetails(ctx, boutique);
-      return true;
-    }
-
-    // Extraire l'ID de la boutique du code de parrainage
+    // ÉTAPE 1: D'abord trouver la boutique
     console.log('🔍 Recherche boutique avec code:', referralCode);
     
     // Essayer d'abord par code exact
@@ -55,6 +44,18 @@ const handleReferral = async (ctx, referralCode) => {
     }
 
     console.log('✅ Boutique trouvée:', boutique.name);
+
+    // ÉTAPE 2: Vérifier l'utilisateur
+    let user = await User.findOne({ telegramId: userId });
+    
+    if (user && user.invitedBy) {
+      console.log('⚠️ Utilisateur déjà parrainé par:', user.invitedBy);
+      console.log('🎯 Mais on va quand même afficher la boutique demandée');
+      // Utilisateur déjà parrainé, mais on affiche quand même la boutique
+      // Ne pas enregistrer de nouveau parrainage, juste rediriger
+      await redirectToShopDetails(ctx, boutique);
+      return true;
+    }
 
     // Créer ou mettre à jour l'utilisateur
     if (!user) {

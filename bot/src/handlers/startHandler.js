@@ -19,10 +19,14 @@ const handleStart = async (ctx) => {
       // Format parrainage: ref_ID_BOUTIQUE_TIMESTAMP
       if (startPayload.startsWith('ref_')) {
         console.log('🔗 Code de parrainage détecté:', startPayload);
+        console.log('👤 Utilisateur:', ctx.from.id, ctx.from.username || 'sans username');
         const referralHandled = await handleReferral(ctx, startPayload);
+        console.log('🔄 handleReferral returned:', referralHandled);
         if (referralHandled) {
-          console.log('✅ Parrainage traité avec succès');
+          console.log('✅ Parrainage traité avec succès - STOP ici');
           return; // Le message de bienvenue personnalisé a été envoyé
+        } else {
+          console.log('⚠️ Parrainage pas traité - continue vers message accueil');
         }
       }
       // Format direct: plug_ID_BOUTIQUE ou ID_BOUTIQUE
