@@ -405,27 +405,23 @@ const createPlugListKeyboard = (plugs, page = 0, totalPages = 1, context = 'plug
   for (let i = startIndex; i < endIndex; i++) {
     const plug = plugs[i];
     
-    // Format exact du screenshot :
-    // 🇫🇷 NOM DE LA BOUTIQUE
-    // 📦 📍 🛵 
-    // 👍 nombre
+    // Format optimisé pour TOUJOURS voir les likes :
+    // 🇫🇷 NOM BOUTIQUE | 👍 12
+    // 📦 📍 🛵 ⭐
     
-    // Ligne 1: Drapeau + nom (sans étoile pour éviter les conflits)
-    const line1 = `🇫🇷 ${plug.name.toUpperCase()}`;
+    // Ligne 1: Drapeau + nom + LIKES (toujours visibles sur la première ligne)
+    const likesCount = plug.likes || 0;
+    const vipIndicator = plug.isVip ? ' ⭐' : '';
+    const line1 = `🇫🇷 ${plug.name.toUpperCase()}${vipIndicator} | 👍 ${likesCount}`;
     
-    // Ligne 2: Services + VIP status si applicable
+    // Ligne 2: Services uniquement (plus simple et claire)
     const services = [];
     if (plug.services?.postal?.enabled) services.push('📦');
     if (plug.services?.meetup?.enabled) services.push('📍'); 
     if (plug.services?.delivery?.enabled) services.push('🛵');
-    if (plug.isVip) services.push('⭐'); // Étoile VIP dans les services
     const line2 = services.length > 0 ? services.join(' ') : '📦';
     
-    // Ligne 3: Likes (toujours visible)
-    const likesCount = plug.likes || 0;
-    const line3 = `👍 ${likesCount}`;
-    
-    const cardText = `${line1}\n${line2}\n${line3}`;
+    const cardText = `${line1}\n${line2}`;
     buttons.push([Markup.button.callback(cardText, `plug_${plug._id}_from_${context}`)]);
   }
   
@@ -453,27 +449,22 @@ const createVIPKeyboard = (vipPlugs) => {
   const buttons = [];
   
   vipPlugs.forEach(plug => {
-    // Format exact du screenshot pour les cartes VIP aussi :
-    // 🇫🇷 NOM DE LA BOUTIQUE ⭐
-    // 📦 📍 🛵 
-    // 👍 nombre
+    // Format optimisé VIP pour TOUJOURS voir les likes :
+    // 🇫🇷 NOM BOUTIQUE ⭐ | 👍 12
+    // 📦 📍 🛵
     
-    // Ligne 1: Drapeau + nom (VIP sans étoile sur cette ligne)
-    const line1 = `🇫🇷 ${plug.name.toUpperCase()}`;
+    // Ligne 1: Drapeau + nom + VIP + LIKES (tout sur la première ligne)
+    const likesCount = plug.likes || 0;
+    const line1 = `🇫🇷 ${plug.name.toUpperCase()} ⭐ | 👍 ${likesCount}`;
     
-    // Ligne 2: Services + étoile VIP (boutiques VIP)
+    // Ligne 2: Services uniquement (plus simple)
     const services = [];
     if (plug.services?.postal?.enabled) services.push('📦');
     if (plug.services?.meetup?.enabled) services.push('📍'); 
     if (plug.services?.delivery?.enabled) services.push('🛵');
-    services.push('⭐'); // Toujours une étoile pour les VIP
-    const line2 = services.join(' ');
+    const line2 = services.length > 0 ? services.join(' ') : '📦';
     
-    // Ligne 3: Likes (toujours visible)
-    const likesCount = plug.likes || 0;
-    const line3 = `👍 ${likesCount}`;
-    
-    const cardText = `${line1}\n${line2}\n${line3}`;
+    const cardText = `${line1}\n${line2}`;
     buttons.push([Markup.button.callback(cardText, `plug_${plug._id}_from_plugs_vip`)]);
   });
   
