@@ -16,6 +16,12 @@ export default async function handler(req, res) {
     
     console.log(`🔄 Proxy request: ${method} ${endpoint}`)
     console.log(`🔑 Token provided: ${token ? 'Yes' : 'No'}`)
+    console.log(`📦 Data provided: ${data ? 'Yes' : 'No'}`)
+    if (data && endpoint.includes('upload-image')) {
+      console.log(`📸 Image data keys:`, Object.keys(data))
+      console.log(`📸 Has imageBase64:`, !!data.imageBase64)
+      console.log(`📸 Filename:`, data.filename)
+    }
     
     // Préparer les headers
     const headers = {
@@ -37,7 +43,8 @@ export default async function handler(req, res) {
     }
     
     if (data && (method === 'POST' || method === 'PUT' || method === 'PATCH')) {
-      fetchOptions.body = JSON.stringify(data)
+      // L'API bot s'attend à recevoir { data: ... } dans req.body
+      fetchOptions.body = JSON.stringify({ data: data })
     }
     
     const response = await fetch(`${apiUrl}${endpoint}`, fetchOptions)
