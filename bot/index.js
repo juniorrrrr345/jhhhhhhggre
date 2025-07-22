@@ -40,8 +40,6 @@ const {
   handleFormMessage,
   handleServiceToggle,
   handleServicesDone,
-  handlePhoto,
-  handleSkipPhoto,
   handleCancelApplication,
   userForms
 } = require('./src/handlers/applicationHandler');
@@ -175,26 +173,7 @@ bot.on('text', async (ctx) => {
   }
 });
 
-// Gestionnaire des photos (pour le formulaire)
-bot.on('photo', async (ctx) => {
-  try {
-    const userId = ctx.from.id;
-    const userForm = userForms.get(userId);
-    
-    console.log(`📸 Photo reçue de l'utilisateur ${userId}`);
-    console.log(`📋 Formulaire existant:`, !!userForm);
-    console.log(`🔄 Étape actuelle:`, userForm?.step);
-    
-    if (userForm && userForm.step === 'photo') {
-      console.log(`✅ Traitement de la photo pour le formulaire`);
-      await handlePhoto(ctx);
-    } else {
-      console.log(`⚠️ Photo ignorée - pas en étape photo ou pas de formulaire`);
-    }
-  } catch (error) {
-    console.error('❌ Erreur gestionnaire photo:', error);
-  }
-});
+// Gestionnaire des photos supprimé - plus besoin pour l'inscription
 
 // Commande /admin - DÉSACTIVÉE pour sécurité
 // bot.command('admin', async (ctx) => {
@@ -237,7 +216,7 @@ bot.action('social_media', handleSocialMedia);
 bot.action('start_application', handleStartApplication);
 bot.action('cancel_application', handleCancelApplication);
 bot.action('services_done', handleServicesDone);
-bot.action('skip_photo', handleSkipPhoto);
+
 bot.action('check_application_status', handleCheckApplicationStatus);
 bot.action(/^cancel_my_application_(.+)$/, handleCancelMyApplication);
 bot.action(/^confirm_cancel_(.+)$/, handleConfirmCancel);
