@@ -137,9 +137,8 @@ const handleStartApplication = async (ctx) => {
       `2️⃣ Description des services\n` +
       `3️⃣ Localisation (Pays/Ville)\n` +
       `4️⃣ Services proposés\n` +
-      `5️⃣ Contact Telegram\n` +
-      `6️⃣ Photo (optionnelle)\n\n` +
-      `**Étape 1/6 : Nom du plug**\n\n` +
+      `5️⃣ Contact Telegram\n\n` +
+      `**Étape 1/5 : Nom du plug**\n\n` +
       `Comment veux-tu appeler ton plug ?\n` +
       `Écris le nom de ton plug :`;
     
@@ -180,7 +179,7 @@ const handleFormMessage = async (ctx) => {
         userForm.step = 'description';
         
         const descMessage = `✅ Nom enregistré : **${text}**\n\n` +
-          `**Étape 2/6 : Description**\n\n` +
+          `**Étape 2/5 : Description**\n\n` +
           `Décris les services que tu proposes.\n` +
           `Exemple : "Livraison rapide dans toute la ville, envoi postal sécurisé vers l'Europe"`;
         
@@ -196,7 +195,7 @@ const handleFormMessage = async (ctx) => {
         userForm.step = 'country';
         
         const countryMessage = `✅ Description enregistrée\n\n` +
-          `**Étape 3/6 : Localisation**\n\n` +
+          `**Étape 3/5 : Localisation**\n\n` +
           `Dans quel pays te trouves-tu ?\n` +
           `Exemple : France, Belgique, Suisse...`;
         
@@ -229,16 +228,16 @@ const handleFormMessage = async (ctx) => {
         await askServices(ctx);
         break;
         
-      case 'telegram':
+            case 'telegram':
         if (!text.startsWith('@') && !text.includes('t.me/')) {
           return await ctx.reply('❌ Merci de fournir un username Telegram (ex: @tonusername) ou un lien Telegram. Réessaie :');
         }
-        
+
         userForm.data.telegram = text;
-        userForm.step = 'photo';
         
-        await askPhoto(ctx);
-        break;
+        // Étape photo supprimée - on passe directement à la soumission
+        await submitApplication(ctx);
+        return; // Important: return pour éviter de continuer
     }
     
     userForms.set(userId, userForm);
@@ -252,7 +251,7 @@ const handleFormMessage = async (ctx) => {
 // Demander les services
 const askServices = async (ctx) => {
   const message = `✅ Ville enregistrée\n\n` +
-    `**Étape 4/6 : Services proposés**\n\n` +
+    `**Étape 4/5 : Services proposés**\n\n` +
     `Quels services proposes-tu ? (Tu peux en choisir plusieurs)`;
   
   const keyboard = Markup.inlineKeyboard([
@@ -378,117 +377,9 @@ const handleServicesDone = async (ctx) => {
   }
 };
 
-// Demander la photo
-const askPhoto = async (ctx) => {
-  const message = `✅ Contact enregistré\n\n` +
-    `**Étape 6/6 : Photo (optionnelle)**\n\n` +
-    `Tu peux envoyer une photo de profil ou de tes services.\n` +
-    `Cette étape est optionnelle.\n\n` +
-    `📱 **Comment envoyer une photo :**\n` +
-    `• Clique sur le trombone 📎 dans Telegram\n` +
-    `• Sélectionne "Galerie" ou "Appareil photo"\n` +
-    `• Choisis ta photo et envoie-la\n\n` +
-    `Ou utilise les boutons ci-dessous :`;
-  
-  const keyboard = Markup.inlineKeyboard([
-    [Markup.button.callback('⏭️ Passer cette étape', 'skip_photo')],
-    [Markup.button.callback('❌ Annuler', 'cancel_application')]
-  ]);
-  
-  // Supprimer le message précédent pour éviter les bugs avec images
-  try {
-    await ctx.deleteMessage().catch(() => {});
-  } catch (e) {}
-  
-  // Envoyer un nouveau message texte simple
-  await ctx.reply(message, {
-    reply_markup: keyboard.reply_markup,
-    parse_mode: 'Markdown'
-  });
-};
+// Étape photo supprimée - plus besoin de askPhoto
 
-// Gérer la photo
-const handlePhoto = async (ctx) => {
-  const userId = ctx.from.id;
-  const userForm = userForms.get(userId);
-  
-  console.log(`📸 handlePhoto appelé pour user ${userId}`);
-  
-  if (!userForm || userForm.step !== 'photo') {
-    console.log(`❌ Formulaire invalide ou étape incorrecte. Formulaire:`, !!userForm, 'Étape:', userForm?.step);
-    return;
-  }
-  
-  try {
-    // Vérifier que c'est bien une photo
-    if (!ctx.message?.photo || !Array.isArray(ctx.message.photo)) {
-      console.log(`❌ Message photo invalide:`, !!ctx.message?.photo);
-      await ctx.reply('❌ Veuillez envoyer une photo valide.');
-      return;
-    }
-    
-    // Récupérer l'ID de la photo la plus grande (meilleure qualité)
-    const photos = ctx.message.photo;
-    const photo = photos[photos.length - 1];
-    
-    console.log(`📸 Photo détectée:`, {
-      count: photos.length,
-      fileId: photo?.file_id?.substring(0, 20) + '...',
-      size: photo?.file_size
-    });
-    
-    if (!photo || !photo.file_id) {
-      console.log(`❌ Photo file_id manquant`);
-      await ctx.reply('❌ Erreur lors de la récupération de la photo. Réessaie.');
-      return;
-    }
-    
-    // Sauvegarder l'ID de la photo et générer l'URL
-    userForm.data.photo = photo.file_id;
-    
-    // Générer l'URL de la photo pour l'admin panel
-    try {
-      const fileLink = await ctx.telegram.getFileLink(photo.file_id);
-      userForm.data.photoUrl = fileLink.href;
-      
-      // Créer une URL persistante pour l'admin panel
-      const persistentUrl = `${process.env.BOT_URL || 'https://jhhhhhhggre.onrender.com'}/api/photo/${photo.file_id}`;
-      userForm.data.photoUrl = persistentUrl;
-      
-      console.log('📸 URL photo persistante générée:', persistentUrl);
-    } catch (urlError) {
-      console.warn('⚠️ Impossible de générer l\'URL photo:', urlError.message);
-      userForm.data.photoUrl = null;
-    }
-    
-    userForms.set(userId, userForm);
-    
-    // Confirmer la réception avec un message temporaire
-    const confirmMsg = await ctx.reply('✅ Photo reçue avec succès ! Traitement en cours...');
-    
-    // Attendre un peu pour que l'utilisateur voie la confirmation
-    setTimeout(async () => {
-      try {
-        await ctx.telegram.deleteMessage(ctx.chat.id, confirmMsg.message_id);
-      } catch (deleteError) {
-        console.log('⚠️ Impossible de supprimer le message de confirmation');
-      }
-    }, 2000);
-    
-    // Soumettre la demande
-    await submitApplication(ctx);
-    
-  } catch (error) {
-    console.error('❌ Erreur dans handlePhoto:', error);
-    await ctx.reply('❌ Erreur lors du traitement de la photo. Tu peux réessayer ou passer cette étape en cliquant sur "⏭️ Passer cette étape".');
-  }
-};
-
-// Passer la photo
-const handleSkipPhoto = async (ctx) => {
-  await ctx.answerCbQuery();
-  await submitApplication(ctx);
-};
+// Toute la gestion photo supprimée
 
 // Soumettre la demande
 const submitApplication = async (ctx) => {
@@ -660,8 +551,6 @@ module.exports = {
   handleFormMessage,
   handleServiceToggle,
   handleServicesDone,
-  handlePhoto,
-  handleSkipPhoto,
   handleCancelApplication,
   userForms
 };
