@@ -71,9 +71,7 @@ const userSchema = new mongoose.Schema({
   }
 });
 
-// Index pour optimiser les recherches
-userSchema.index({ telegramId: 1 });
-userSchema.index({ referralCode: 1 });
+// Index pour optimiser les recherches (telegramId et referralCode ont déjà unique: true)
 userSchema.index({ invitedBy: 1 });
 
 // Méthode pour générer un code de parrainage unique

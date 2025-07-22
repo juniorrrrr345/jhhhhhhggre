@@ -174,12 +174,11 @@ plugSchema.methods.generateReferralLink = function(botUsername) {
   return `https://t.me/${botUsername}?start=${this.referralCode}`;
 };
 
-// Index pour optimiser les recherches
+// Index pour optimiser les recherches (referralCode a déjà unique: true)
 plugSchema.index({ isVip: 1, vipOrder: 1 });
 plugSchema.index({ countries: 1 });
 plugSchema.index({ 'services.delivery.enabled': 1 });
 plugSchema.index({ 'services.postal.enabled': 1 });
 plugSchema.index({ 'services.meetup.enabled': 1 });
-plugSchema.index({ referralCode: 1 });
 
 module.exports = mongoose.model('Plug', plugSchema);
