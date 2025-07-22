@@ -188,6 +188,26 @@ const configSchema = new mongoose.Schema({
     }
   },
   
+  // Réseaux sociaux (champ principal pour l'API)
+  socialMedia: [{
+    name: {
+      type: String,
+      required: true
+    },
+    emoji: {
+      type: String,
+      required: true
+    },
+    url: {
+      type: String,
+      required: true
+    },
+    order: {
+      type: Number,
+      default: 0
+    }
+  }],
+  
   updatedAt: {
     type: Date,
     default: Date.now
