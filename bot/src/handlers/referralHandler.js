@@ -75,14 +75,23 @@ const handleReferral = async (ctx, referralCode) => {
     await user.save();
 
     // Ajouter l'utilisateur à la liste des parrainés de la boutique
-    if (!boutique.referredUsers.some(ref => ref.telegramId === userId)) {
+    console.log('📝 Vérification utilisateur déjà parrainé...');
+    const isAlreadyReferred = boutique.referredUsers.some(ref => ref.telegramId === userId);
+    console.log(`🔍 Utilisateur ${userId} déjà dans la liste: ${isAlreadyReferred}`);
+    
+    if (!isAlreadyReferred) {
+      console.log('➕ Ajout nouvel utilisateur parrainé...');
       boutique.referredUsers.push({
         telegramId: userId,
         username: username,
         invitedAt: new Date()
       });
       boutique.totalReferred = boutique.referredUsers.length;
+      console.log(`📊 Nouveau total parrainés: ${boutique.totalReferred}`);
       await boutique.save();
+      console.log('✅ Boutique sauvegardée avec nouveau parrainé');
+    } else {
+      console.log('⚠️ Utilisateur déjà parrainé, pas d\'ajout');
     }
 
     console.log(`✅ Parrainage réussi: ${username} → ${boutique.name}`);
