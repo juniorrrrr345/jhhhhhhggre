@@ -24,10 +24,16 @@ export default function ShopCard({ plug, index, layout = 'grid' }) {
           alignItems: 'center',
           gap: '12px',
           cursor: 'pointer',
-          transition: 'background-color 0.2s ease',
+          transition: 'all 0.2s ease',
           border: plug.isVip ? '1px solid #FFD700' : '1px solid #2a2a2a',
           borderRadius: '8px',
           marginBottom: '8px'
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.backgroundColor = '#2a2a2a'
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.backgroundColor = '#1a1a1a'
         }}>
           {/* Image/Logo */}
           <div style={{ 
