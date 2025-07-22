@@ -2045,6 +2045,26 @@ app.patch('/api/applications/:id', authenticateAdmin, async (req, res) => {
 });
 
 // ============================================
+// ENDPOINTS DE SANTÉ POUR KEEP-ALIVE
+// ============================================
+
+// Endpoint de santé pour keep-alive
+app.get('/health', (req, res) => {
+  res.status(200).json({
+    status: 'OK',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+    botConnected: bot ? true : false,
+    message: 'Bot Telegram actif'
+  });
+});
+
+// Endpoint de ping simple
+app.get('/ping', (req, res) => {
+  res.status(200).send('pong');
+});
+
+// ============================================
 // DÉMARRAGE DU SERVEUR
 // ============================================
 

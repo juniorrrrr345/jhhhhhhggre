@@ -7,6 +7,8 @@
     "dev:bot": "cd bot && npm run dev",
     "dev:admin": "cd admin && npm run dev",
     "start:bot": "cd bot && npm start",
+    "start": "node bot/index.js",
+    "keep-alive": "node keep-alive.js",
     "build:admin": "cd admin && npm run build",
     "install:bot": "cd bot && npm install",
     "install:admin": "cd admin && npm install",
