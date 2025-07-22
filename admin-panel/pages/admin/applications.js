@@ -9,21 +9,63 @@ export default function Applications() {
   const [selectedApp, setSelectedApp] = useState(null);
   const [actionLoading, setActionLoading] = useState(null);
   const [error, setError] = useState('');
+  const [authStatus, setAuthStatus] = useState('checking');
 
   useEffect(() => {
-    fetchApplications();
+    checkAuthAndFetchApplications();
   }, []);
+
+  const checkAuthAndFetchApplications = async () => {
+    // Vérifier l'authentification
+    let token = localStorage.getItem('adminToken');
+    
+    if (!token) {
+      console.log('❌ Pas de token, redirection vers login');
+      setAuthStatus('no-token');
+      setError('Vous devez vous connecter pour accéder à cette page');
+      setLoading(false);
+      return;
+    }
+
+    console.log('🔍 Token trouvé:', token.substring(0, 10) + '...');
+    setAuthStatus('authenticated');
+    await fetchApplications();
+  };
 
   const fetchApplications = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('adminToken');
+      setError('');
+      
+      let token = localStorage.getItem('adminToken');
+      
+      // Fallback vers le password par défaut si pas de token
+      if (!token) {
+        console.log('⚠️ Pas de token, utilisation password par défaut');
+        token = 'JuniorAdmon123';
+        localStorage.setItem('adminToken', token);
+      }
+
+      console.log('📡 Récupération des demandes avec token:', token.substring(0, 10) + '...');
+      
       const data = await simpleApi.getApplications(token);
+      console.log('✅ Données reçues:', data);
+      
       setApplications(data.applications || []);
       setError('');
     } catch (error) {
-      console.error('Erreur lors de la récupération des demandes:', error);
-      setError('Erreur lors de la récupération des demandes');
+      console.error('❌ Erreur lors de la récupération des demandes:', error);
+      
+      if (error.message.includes('401') || error.message.includes('Unauthorized')) {
+        setError('Token d\'authentification invalide. Veuillez vous reconnecter.');
+        setAuthStatus('invalid-token');
+        // Rediriger vers la page de login après 3 secondes
+        setTimeout(() => {
+          window.location.href = '/';
+        }, 3000);
+      } else {
+        setError(`Erreur lors de la récupération des demandes: ${error.message}`);
+      }
     } finally {
       setLoading(false);
     }
@@ -32,14 +74,20 @@ export default function Applications() {
   const handleAction = async (applicationId, action, adminNotes = '') => {
     try {
       setActionLoading(applicationId);
-      const token = localStorage.getItem('adminToken');
+      let token = localStorage.getItem('adminToken');
+      
+      if (!token) {
+        token = 'JuniorAdmon123';
+        localStorage.setItem('adminToken', token);
+      }
+      
       await simpleApi.updateApplicationStatus(token, applicationId, action, adminNotes);
       await fetchApplications(); // Recharger la liste
       setSelectedApp(null);
       setError('');
     } catch (error) {
       console.error(`Erreur lors de l'action ${action}:`, error);
-      setError(`Erreur lors de l'action ${action}`);
+      setError(`Erreur lors de l'action ${action}: ${error.message}`);
     } finally {
       setActionLoading(null);
     }
@@ -92,11 +140,32 @@ export default function Applications() {
     });
   };
 
+  // Interface d'authentification
+  if (authStatus === 'no-token' || authStatus === 'invalid-token') {
+    return (
+      <Layout>
+        <div className="flex justify-center items-center h-64">
+          <div className="text-center">
+            <div className="text-red-600 text-lg mb-4">🔐 Authentification requise</div>
+            <p className="text-gray-600 mb-4">{error}</p>
+            <a 
+              href="/"
+              className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
+            >
+              Se connecter
+            </a>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
+
   if (loading) {
     return (
       <Layout>
         <div className="flex justify-center items-center h-64">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+          <span className="ml-4 text-gray-600">Chargement des demandes...</span>
         </div>
       </Layout>
     );
@@ -125,8 +194,28 @@ export default function Applications() {
         {error && (
           <div className="mt-4 rounded-md bg-red-50 p-4">
             <div className="text-sm text-red-800">{error}</div>
+            {error.includes('Token') && (
+              <div className="mt-2">
+                <button
+                  onClick={() => window.location.href = '/'}
+                  className="text-sm text-red-600 hover:text-red-800 underline"
+                >
+                  Se reconnecter
+                </button>
+              </div>
+            )}
           </div>
         )}
+
+        {/* Debug info */}
+        <div className="mt-4 rounded-md bg-blue-50 p-4">
+          <div className="text-sm text-blue-800">
+            <strong>Debug:</strong> {applications.length} demandes trouvées
+            {authStatus === 'authenticated' && (
+              <span className="ml-2 text-green-600">✅ Authentifié</span>
+            )}
+          </div>
+        </div>
 
         {/* Filtres */}
         <div className="mt-6 flex space-x-4">
