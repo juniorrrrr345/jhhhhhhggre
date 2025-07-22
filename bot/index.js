@@ -48,6 +48,7 @@ const {
   handleCancelMyApplication,
   handleConfirmCancel
 } = require('./src/handlers/plugManagementHandler');
+const { handleParrainageCommand } = require('./src/handlers/referralHandler');
 
 // Modèles
 const Plug = require('./src/models/Plug');
@@ -159,8 +160,9 @@ bot.on('callback_query', (ctx, next) => {
   return next();
 });
 
-// Commande /start
+// Commandes
 bot.command('start', handleStart);
+bot.command('parrainage', handleParrainageCommand);
 
 // Gestionnaire des messages texte (pour le formulaire)
 bot.on('text', async (ctx) => {

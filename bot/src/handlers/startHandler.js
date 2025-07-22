@@ -1,8 +1,10 @@
 const Config = require('../models/Config');
 const Plug = require('../models/Plug');
+const User = require('../models/User');
 const { createMainKeyboard, createVIPKeyboard } = require('../utils/keyboards');
 const { sendMessageWithImage, editMessageWithImage } = require('../utils/messageHelper');
 const { ensureConnection } = require('../utils/database');
+const { handleReferral } = require('./referralHandler');
 
 const handleStart = async (ctx) => {
   try {
@@ -10,6 +12,46 @@ const handleStart = async (ctx) => {
     
     // Vérifier et s'assurer que MongoDB est connecté
     await ensureConnection();
+
+    // Vérifier s'il y a un code de parrainage
+    const startPayload = ctx.message.text.split(' ')[1];
+    if (startPayload && startPayload.startsWith('ref_')) {
+      console.log('🔗 Code de parrainage détecté:', startPayload);
+      const referralHandled = await handleReferral(ctx, startPayload);
+      if (referralHandled) {
+        console.log('✅ Parrainage traité avec succès');
+        return; // Le message de bienvenue personnalisé a été envoyé
+      }
+    }
+
+    // Enregistrer ou mettre à jour l'utilisateur
+    const userId = ctx.from.id;
+    const username = ctx.from.username;
+    const firstName = ctx.from.first_name;
+    const lastName = ctx.from.last_name;
+
+    try {
+      let user = await User.findOne({ telegramId: userId });
+      if (!user) {
+        user = new User({
+          telegramId: userId,
+          username: username,
+          firstName: firstName,
+          lastName: lastName
+        });
+        console.log('👤 Nouvel utilisateur créé:', username);
+      } else {
+        // Mettre à jour les infos si elles ont changé
+        user.username = username;
+        user.firstName = firstName;
+        user.lastName = lastName;
+        user.lastActivity = new Date();
+      }
+      await user.save();
+    } catch (userError) {
+      console.error('⚠️ Erreur gestion utilisateur:', userError);
+      // Continuer même si la sauvegarde utilisateur échoue
+    }
     
     // Récupérer la configuration avec fallback (toujours fresh)
     let config;

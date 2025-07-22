@@ -118,6 +118,34 @@ const plugSchema = new mongoose.Schema({
       required: true
     }
   }],
+  // Système de parrainage par boutique
+  referralCode: {
+    type: String,
+    unique: true,
+    sparse: true // Permet null/undefined
+  },
+  referralLink: {
+    type: String,
+    default: ''
+  },
+  referredUsers: [{
+    telegramId: {
+      type: Number,
+      required: true
+    },
+    username: {
+      type: String,
+      default: null
+    },
+    invitedAt: {
+      type: Date,
+      default: Date.now
+    }
+  }],
+  totalReferred: {
+    type: Number,
+    default: 0
+  },
   createdAt: {
     type: Date,
     default: Date.now
@@ -134,11 +162,24 @@ plugSchema.pre('save', function(next) {
   next();
 });
 
+// Méthodes pour le système de parrainage
+plugSchema.methods.generateReferralCode = function() {
+  return `ref_${this._id}_${Date.now().toString(36)}`;
+};
+
+plugSchema.methods.generateReferralLink = function(botUsername) {
+  if (!this.referralCode) {
+    this.referralCode = this.generateReferralCode();
+  }
+  return `https://t.me/${botUsername}?start=${this.referralCode}`;
+};
+
 // Index pour optimiser les recherches
 plugSchema.index({ isVip: 1, vipOrder: 1 });
 plugSchema.index({ countries: 1 });
 plugSchema.index({ 'services.delivery.enabled': 1 });
 plugSchema.index({ 'services.postal.enabled': 1 });
 plugSchema.index({ 'services.meetup.enabled': 1 });
+plugSchema.index({ referralCode: 1 });
 
 module.exports = mongoose.model('Plug', plugSchema);
