@@ -398,27 +398,56 @@ bot.action(/^like_([a-f\d]{24})$/, async (ctx) => {
     // Notification du like ajouté SANS popup qui interfère
     await ctx.answerCbQuery(`❤️ Vous avez liké ${plug.name} ! (${plug.likes} likes)`);
     
-    // ========== MISE À JOUR INTELLIGENTE : SEUL LE BOUTON LIKE CHANGE ==========
-    // On garde TOUS les boutons existants et on met à jour UNIQUEMENT le bouton like
-    const { createPlugKeyboard } = require('./src/utils/keyboards');
+    // ========== MISE À JOUR INTELLIGENTE : SEUL LE TEXTE DU BOUTON LIKE ==========
+    // NE PAS régénérer tout le clavier - juste modifier le bouton like existant
     
-    // Déterminer le bon contexte de retour
-    let returnContext = 'top_plugs';
-    if (ctx.session && ctx.session.lastContext) {
-      returnContext = ctx.session.lastContext;
-    }
-    
-    // Créer le clavier avec le nouveau statut du bouton like (cooldown)
-    const keyboard = createPlugKeyboard(plug, returnContext, userId);
-    
-    // Mettre à jour UNIQUEMENT les boutons sans toucher au message ni à l'image
     try {
-      await ctx.editMessageReplyMarkup(keyboard);
-      console.log(`✅ SEUL le bouton like mis à jour pour ${plug.name} - Menu intact`);
+      // Récupérer le clavier actuel
+      const currentKeyboard = ctx.callbackQuery.message.reply_markup;
+      
+      if (currentKeyboard && currentKeyboard.inline_keyboard) {
+        // Chercher et modifier SEULEMENT le bouton like
+        const updatedKeyboard = {
+          inline_keyboard: currentKeyboard.inline_keyboard.map(row => 
+            row.map(button => {
+              // Si c'est le bouton like (callback_data commence par "like_")
+              if (button.callback_data && button.callback_data.startsWith(`like_${plugId}`)) {
+                // Calculer le temps restant pour le cooldown
+                const lastLikeTime = new Date(plug.likeHistory.find(h => h.userId.toString() === userId.toString())?.timestamp);
+                const now = new Date();
+                const timeDiff = Math.floor((now - lastLikeTime) / 1000);
+                const cooldownDuration = 24 * 60 * 60; // 24h en secondes
+                const timeLeft = Math.max(0, cooldownDuration - timeDiff);
+                
+                if (timeLeft > 0) {
+                  const hours = Math.floor(timeLeft / 3600);
+                  const minutes = Math.floor((timeLeft % 3600) / 60);
+                  return {
+                    ...button,
+                    text: `❤️ Déjà liké (${hours}h${minutes}m)`
+                  };
+                } else {
+                  return {
+                    ...button,
+                    text: `👍 Liker (${plug.likes})`
+                  };
+                }
+              }
+              // Tous les autres boutons restent inchangés
+              return button;
+            })
+          )
+        };
+        
+        // Mettre à jour SEULEMENT le clavier modifié
+        await ctx.editMessageReplyMarkup(updatedKeyboard);
+        console.log(`✅ SEUL le texte du bouton like modifié pour ${plug.name} - Menu intact`);
+      } else {
+        console.log('⚠️ Pas de clavier existant trouvé');
+      }
     } catch (editError) {
-      console.log('⚠️ Erreur édition bouton like:', editError.message);
+      console.log('⚠️ Erreur édition texte bouton like:', editError.message);
       // En cas d'erreur, on ne fait rien pour préserver le menu existant
-      // L'utilisateur peut continuer à naviguer normalement
     }
     
   } catch (error) {
