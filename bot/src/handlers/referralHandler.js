@@ -1,7 +1,8 @@
 const User = require('../models/User');
 const Plug = require('../models/Plug');
 const { ensureConnection } = require('../utils/database');
-const { createMainKeyboard } = require('../utils/keyboards');
+const { createMainKeyboard, createPlugKeyboard } = require('../utils/keyboards');
+const { handlePlugDetails } = require('./plugsHandler');
 
 // Gestionnaire pour les liens de parrainage
 const handleReferral = async (ctx, referralCode) => {
@@ -65,8 +66,8 @@ const handleReferral = async (ctx, referralCode) => {
 
     console.log(`✅ Parrainage réussi: ${username} → ${boutique.name}`);
 
-    // Envoyer le message de bienvenue personnalisé
-    await sendWelcomeMessage(ctx, boutique);
+    // Rediriger directement vers les détails de la boutique
+    await redirectToShopDetails(ctx, boutique);
     
     return true;
 
