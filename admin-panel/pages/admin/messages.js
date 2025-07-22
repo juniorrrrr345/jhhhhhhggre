@@ -90,34 +90,52 @@ export default function Messages() {
       // Étape 1 : Upload de l'image si nécessaire
       if (image) {
         console.log('📤 Upload de l\'image...')
-        
-        const formData = new FormData()
-        formData.append('image', image)
-
-        const uploadResponse = await fetch('/api/cors-proxy', {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${token}`
-          },
-          body: JSON.stringify({
-            endpoint: '/api/upload-image',
-            method: 'POST',
-            token: token,
-            // Note: On ne peut pas envoyer FormData via JSON, on va utiliser base64
-            data: {
-              imageBase64: await imageToBase64(image),
-              filename: image.name,
-              mimetype: image.type
-            }
-          })
+        console.log('📷 Image details:', {
+          name: image.name,
+          type: image.type,
+          size: image.size
         })
+        
+        try {
+          const imageBase64 = await imageToBase64(image)
+          console.log('🔄 Base64 conversion done, length:', imageBase64.length)
+          
+          const uploadResponse = await fetch('/api/cors-proxy', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              endpoint: '/api/upload-image',
+              method: 'POST',
+              token: token,
+              data: {
+                imageBase64: imageBase64,
+                filename: image.name,
+                mimetype: image.type
+              }
+            })
+          })
 
-        if (uploadResponse.ok) {
-          const uploadResult = await uploadResponse.json()
-          imageUrl = uploadResult.imageUrl
-          console.log('✅ Image uploadée:', imageUrl ? 'OK' : 'Failed')
-        } else {
-          throw new Error('Erreur lors de l\'upload de l\'image')
+          console.log('📡 Upload response status:', uploadResponse.status)
+          
+          if (uploadResponse.ok) {
+            const uploadResult = await uploadResponse.json()
+            console.log('📋 Upload result:', uploadResult)
+            
+            if (uploadResult.success && uploadResult.imageUrl) {
+              imageUrl = uploadResult.imageUrl
+              console.log('✅ Image uploadée avec succès')
+            } else {
+              throw new Error(uploadResult.error || 'Pas d\'URL image retournée')
+            }
+          } else {
+            const errorData = await uploadResponse.json()
+            throw new Error(errorData.error || `Erreur HTTP ${uploadResponse.status}`)
+          }
+        } catch (uploadError) {
+          console.error('❌ Erreur upload détaillée:', uploadError)
+          throw new Error(`Upload failed: ${uploadError.message}`)
         }
       }
 

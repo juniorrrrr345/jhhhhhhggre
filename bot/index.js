@@ -1829,7 +1829,10 @@ app.post('/api/upload-image', authenticateAdmin, async (req, res) => {
     
   } catch (error) {
     console.error('❌ Erreur upload image:', error);
-    res.status(500).json({ error: 'Erreur lors de l\'upload' });
+    res.status(500).json({ 
+      success: false,
+      error: 'Erreur lors de l\'upload: ' + error.message 
+    });
   }
 });
 
