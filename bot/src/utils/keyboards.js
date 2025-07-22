@@ -150,6 +150,12 @@ const createMainKeyboard = (config) => {
   secondRow.push(Markup.button.callback(contactText, 'contact'));
   secondRow.push(Markup.button.callback(infoText, 'info'));
   buttons.push(secondRow);
+
+  // Bouton Réseaux sociaux si des réseaux sont configurés
+  if (config?.socialMedia && Array.isArray(config.socialMedia) && config.socialMedia.length > 0) {
+    const socialText = config?.buttons?.socialMedia?.text || '📱 Réseaux sociaux';
+    buttons.push([Markup.button.callback(socialText, 'social_media')]);
+  }
   
   // Réseaux sociaux personnalisés en bas du menu
   if (config?.socialMedia && Array.isArray(config.socialMedia) && config.socialMedia.length > 0) {
