@@ -412,8 +412,8 @@ const createPlugListKeyboard = (plugs, page = 0, totalPages = 1, context = 'plug
     // Format compact : 🇫🇷 NOM 🖤NOMBRE⭐ (étoile à la fin pour VIP)
     const likesCount = plug.likes || 0;
     const vipIndicator = plug.isVip ? '⭐' : '';
-    // Limiter à 15 caractères pour le format compact
-    const shortName = plug.name.length > 15 ? plug.name.substring(0, 15) : plug.name;
+    // Limiter à 10 caractères pour éviter les ... de Telegram
+    const shortName = plug.name.length > 10 ? plug.name.substring(0, 10) : plug.name;
     const line1 = `🇫🇷${shortName.toUpperCase()}🖤${likesCount}${vipIndicator}`;
     
     // Affichage simple : seulement le nom + likes, pas de services
@@ -451,8 +451,8 @@ const createVIPKeyboard = (vipPlugs) => {
     
     // Format VIP : 🇫🇷 NOM 🖤NOMBRE⭐ (étoile à la fin)
     const likesCount = plug.likes || 0;
-    // Limiter à 15 caractères pour le format compact
-    const shortName = plug.name.length > 15 ? plug.name.substring(0, 15) : plug.name;
+    // Limiter à 10 caractères pour éviter les ... de Telegram
+    const shortName = plug.name.length > 10 ? plug.name.substring(0, 10) : plug.name;
     const line1 = `🇫🇷${shortName.toUpperCase()}🖤${likesCount}⭐`;
     
     // Affichage VIP simple : seulement le nom + likes + étoile
