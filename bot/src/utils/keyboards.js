@@ -99,21 +99,14 @@ const createMainKeyboard = (config) => {
   secondRow.push(Markup.button.callback(infoText, 'info'));
   buttons.push(secondRow);
 
-  // Troisième ligne : Réseaux sociaux et Devenir Plug
-  const thirdRow = [];
-  
-  // Bouton Réseaux sociaux si activé (temporairement affiché même sans réseaux pour test)
+  // Troisième ligne : Réseaux sociaux (seul)
   if (config?.buttons?.socialMedia?.enabled !== false) { // Affiché par défaut
     const socialText = config?.buttons?.socialMedia?.text || '📱 Réseaux sociaux';
-    thirdRow.push(Markup.button.callback(socialText, 'social_media'));
+    buttons.push([Markup.button.callback(socialText, 'social_media')]);
   }
   
-  // Bouton Devenir Plug
-  thirdRow.push(Markup.button.callback('💼 Devenir Plug', 'start_application'));
-  
-  if (thirdRow.length > 0) {
-    buttons.push(thirdRow);
-  }
+  // Quatrième ligne : Devenir Plug (seul)
+  buttons.push([Markup.button.callback('💼 Devenir Plug', 'start_application')]);
   
   // Réseaux sociaux personnalisés en bas du menu
   if (config?.socialMedia && Array.isArray(config.socialMedia) && config.socialMedia.length > 0) {

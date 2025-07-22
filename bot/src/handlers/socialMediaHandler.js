@@ -14,11 +14,6 @@ const handleSocialMedia = async (ctx) => {
       return;
     }
 
-    // Vérifier si le bouton réseaux sociaux est activé
-    if (!config?.buttons?.socialMedia?.enabled) {
-      return;
-    }
-
     // Message d'introduction
     let message = `📱 **Réseaux Sociaux**\n\n${config?.buttons?.socialMedia?.content || 'Suivez-nous sur nos réseaux sociaux !'}`;
 
@@ -48,6 +43,9 @@ const handleSocialMedia = async (ctx) => {
       });
       
       socialButtons.push(...socialRows);
+    } else {
+      // Aucun réseau social configuré
+      message += '\n\n_Aucun réseau social configuré pour le moment._';
     }
     
     // Bouton retour au menu principal

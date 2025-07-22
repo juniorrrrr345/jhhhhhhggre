@@ -1780,9 +1780,82 @@ app.get('/', (req, res) => {
       'GET /api/plugs/:id (admin)',
       'POST /api/plugs (admin)',
       'PUT /api/plugs/:id (admin)',
-      'DELETE /api/plugs/:id (admin)'
+      'DELETE /api/plugs/:id (admin)',
+      'GET /api/applications (admin)',
+      'PATCH /api/applications/:id (admin)'
     ]
   });
+});
+
+// ============================================
+// ROUTES APPLICATIONS
+// ============================================
+
+// Route pour récupérer toutes les demandes d'inscription
+app.get('/api/applications', authenticateAdmin, async (req, res) => {
+  try {
+    const PlugApplication = require('./src/models/PlugApplication');
+    
+    const applications = await PlugApplication.find()
+      .sort({ createdAt: -1 })
+      .lean();
+
+    res.json({
+      success: true,
+      applications: applications
+    });
+  } catch (error) {
+    console.error('Erreur récupération applications:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Erreur lors de la récupération des demandes'
+    });
+  }
+});
+
+// Route pour mettre à jour le statut d'une demande
+app.patch('/api/applications/:id', authenticateAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status, adminNotes } = req.body;
+    
+    const PlugApplication = require('./src/models/PlugApplication');
+    
+    if (!['pending', 'approved', 'rejected'].includes(status)) {
+      return res.status(400).json({
+        success: false,
+        error: 'Statut invalide'
+      });
+    }
+
+    const application = await PlugApplication.findByIdAndUpdate(
+      id,
+      { 
+        status,
+        adminNotes: adminNotes || '',
+        updatedAt: new Date()
+      },
+      { new: true }
+    );
+
+    if (!application) {
+      return res.status(404).json({
+        success: false,
+        error: 'Demande non trouvée'
+      });
+    }
+
+    res.json({
+      success: true,
+      application: application
+    });
+  } catch (error) {
+    console.error('Erreur mise à jour application:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Erreur lors de la mise à jour'
+    });
+  }
 });
 
 // ============================================

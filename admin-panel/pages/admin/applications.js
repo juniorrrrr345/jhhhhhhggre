@@ -32,7 +32,8 @@ export default function Applications() {
   const handleAction = async (applicationId, action, adminNotes = '') => {
     try {
       setActionLoading(applicationId);
-      await simpleApi.updateApplicationStatus(applicationId, action, adminNotes);
+      const token = localStorage.getItem('admin_token');
+      await simpleApi.updateApplicationStatus(token, applicationId, action, adminNotes);
       await fetchApplications(); // Recharger la liste
       setSelectedApp(null);
       setError('');
