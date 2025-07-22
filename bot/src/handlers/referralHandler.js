@@ -21,8 +21,11 @@ const handleReferral = async (ctx, referralCode) => {
     
     if (user && user.invitedBy) {
       console.log('⚠️ Utilisateur déjà parrainé par:', user.invitedBy);
-      // Utilisateur déjà parrainé, continuer normalement
-      return false;
+      console.log('🎯 Mais on va quand même afficher la boutique demandée');
+      // Utilisateur déjà parrainé, mais on affiche quand même la boutique
+      // Ne pas enregistrer de nouveau parrainage, juste rediriger
+      await redirectToShopDetails(ctx, boutique);
+      return true;
     }
 
     // Extraire l'ID de la boutique du code de parrainage
@@ -85,7 +88,9 @@ const handleReferral = async (ctx, referralCode) => {
     console.log(`✅ Parrainage réussi: ${username} → ${boutique.name}`);
 
     // Rediriger directement vers les détails de la boutique
+    console.log('🎯 Appel redirectToShopDetails...');
     await redirectToShopDetails(ctx, boutique);
+    console.log('✅ redirectToShopDetails terminé');
     
     return true;
 
@@ -98,7 +103,9 @@ const handleReferral = async (ctx, referralCode) => {
 // Rediriger directement vers les détails de la boutique
 const redirectToShopDetails = async (ctx, boutique) => {
   try {
-    console.log(`🎯 Redirection directe vers ${boutique.name}`);
+    console.log(`🎯 DÉBUT redirectToShopDetails pour ${boutique.name}`);
+    console.log('🔍 Boutique ID:', boutique._id);
+    console.log('🔍 Boutique VIP:', boutique.isVip);
     
     // Afficher directement les détails de la boutique avec bouton de retour approprié
     const Config = require('../models/Config');
@@ -138,21 +145,26 @@ const redirectToShopDetails = async (ctx, boutique) => {
     // Créer le clavier avec le contexte 'referral'
     const keyboard = createPlugKeyboard(boutique, 'referral', ctx.from?.id);
 
+    console.log('📤 Envoi du message de détails...');
+    console.log('📝 Message à envoyer:', message.substring(0, 100) + '...');
+    
     // Envoyer avec image si disponible
     if (boutique.image) {
+      console.log('🖼️ Envoi avec image:', boutique.image);
       await ctx.replyWithPhoto(boutique.image, {
         caption: message,
         reply_markup: keyboard.reply_markup,
         parse_mode: 'Markdown'
       });
     } else {
+      console.log('📝 Envoi sans image');
       await ctx.reply(message, {
         reply_markup: keyboard.reply_markup,
         parse_mode: 'Markdown'
       });
     }
     
-    console.log(`✅ Redirection réussie vers ${boutique.name}`);
+    console.log(`✅ FIN redirectToShopDetails - Message envoyé pour ${boutique.name}`);
 
   } catch (error) {
     console.error('❌ Erreur redirection vers boutique:', error);
