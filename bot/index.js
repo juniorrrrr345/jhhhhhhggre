@@ -3,6 +3,16 @@ const express = require('express');
 const { Telegraf } = require('telegraf');
 const cors = require('cors');
 const multer = require('multer');
+
+// Configuration du rate limiting pour sécurité  
+const rateLimit = require('express-rate-limit');
+const adminLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limite à 100 requêtes par IP
+  message: { error: 'Trop de requêtes, réessayez dans 15 minutes' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
 const { connectDB } = require('./src/utils/database');
 
 // Gestionnaires
@@ -60,6 +70,9 @@ app.use(cors({
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
+
+// Appliquer le rate limiting aux routes admin pour sécurité
+app.use('/api', adminLimiter);
 
 // Middleware supplémentaire pour gérer les requêtes OPTIONS
 app.options('*', (req, res) => {
@@ -500,6 +513,10 @@ const authenticateAdmin = (req, res, next) => {
   try {
     console.log(`🔐 Tentative d'authentification: ${req.method} ${req.path}`);
     console.log(`📋 Headers reçus:`, Object.keys(req.headers));
+    
+    // Log de l'IP pour surveillance sécuritaire
+    const clientIP = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress;
+    console.log(`🌐 IP source:`, clientIP);
     
     const authHeader = req.headers.authorization;
     console.log(`🔑 Authorization header:`, authHeader ? `Bearer ***${authHeader.slice(-4)}` : 'Absent');
@@ -1239,10 +1256,24 @@ app.post('/api/plugs', authenticateAdmin, async (req, res) => {
     
     const plugData = req.body;
     
-    // Validation des champs requis
+    // Validation renforcée des champs requis
     if (!plugData.name || !plugData.description) {
       return res.status(400).json({ 
         error: 'Le nom et la description sont requis' 
+      });
+    }
+
+    // Validation de sécurité pour empêcher les injections
+    if (typeof plugData.name !== 'string' || typeof plugData.description !== 'string') {
+      return res.status(400).json({ 
+        error: 'Format de données invalide' 
+      });
+    }
+
+    // Validation de longueur pour éviter les abus
+    if (plugData.name.length > 100 || plugData.description.length > 1000) {
+      return res.status(400).json({ 
+        error: 'Données trop volumineuses' 
       });
     }
     
