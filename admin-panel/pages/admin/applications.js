@@ -112,13 +112,31 @@ export default function Applications() {
   };
 
   const getServicesBadges = (services) => {
-    if (!services || services.length === 0) return null;
+    if (!services) return null;
+    
     const serviceLabels = {
       delivery: 'Livraison',
       postal: 'Postal',
       meetup: 'Meetup'
     };
-    return services.map(service => (
+
+    let servicesList = [];
+    
+    // Gérer les deux formats : array et object
+    if (Array.isArray(services)) {
+      // Format nouveau (array)
+      servicesList = services;
+    } else if (typeof services === 'object') {
+      // Format ancien (object)
+      servicesList = Object.keys(services).filter(key => 
+        services[key] && 
+        (services[key] === true || (services[key].enabled === true))
+      );
+    }
+    
+    if (servicesList.length === 0) return null;
+    
+    return servicesList.map(service => (
       <span key={service} className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-blue-100 text-blue-800 mr-1">
         {serviceLabels[service] || service}
       </span>
