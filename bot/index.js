@@ -345,7 +345,7 @@ bot.action(/^like_([a-f\d]{24})$/, async (ctx) => {
         // Mise à jour du texte du message avec le nouveau nombre de likes
         const currentText = ctx.callbackQuery.message.text || ctx.callbackQuery.message.caption;
         if (currentText) {
-          const voteRegex = /(👍|👎|🖤|❤️|♥️) \d+ vote[s]?/g;
+          const voteRegex = /(👍) \d+ vote[s]?/g;
           const newVoteText = `👍 ${result.likes} vote${result.likes !== 1 ? 's' : ''}`;
           const updatedText = currentText.replace(likeRegex, newLikeText);
           

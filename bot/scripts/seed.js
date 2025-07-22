@@ -233,7 +233,7 @@ const defaultConfig = {
     topPlugsTitle: "🔌 Top Des Plugs", 
     topPlugsDescription: "Choisissez une option pour découvrir nos plugs :",
     allPlugsTitle: "Tous Nos Plugs Certifié 🔌",
-    totalCountFormat: "( Trier par le nombres de Likes 🖤 )",
+          totalCountFormat: "( Tous nos plugs certifiés )",
     paginationFormat: "",
     filterServiceTitle: "🔍 Filtrer par service",
     filterServiceDescription: "Choisissez le type de service :",

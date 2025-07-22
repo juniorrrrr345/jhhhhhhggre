@@ -526,7 +526,7 @@ export default function ReferralsPage() {
                             </div>
                           </div>
                           <div className="bg-blue-100 border border-blue-200 p-3 rounded-lg text-center">
-                            <div className="text-blue-600 font-medium">❤️ Likes totaux</div>
+                            <div className="text-blue-600 font-medium">👍 Votes totaux</div>
                             <div className="text-3xl font-bold text-blue-700 mt-1">
                               {plug.likes || 0}
                             </div>

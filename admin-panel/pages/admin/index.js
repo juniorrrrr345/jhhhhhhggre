@@ -381,7 +381,7 @@ export default function Dashboard() {
                         </span>
                         {shop.likes > 0 && (
                           <span className="text-xs text-gray-500">
-                            ❤️ {shop.likes}
+                            👍 {shop.likes}
                           </span>
                         )}
                       </div>
