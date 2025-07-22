@@ -311,7 +311,7 @@ bot.action(/^like_([a-f\d]{24})$/, async (ctx) => {
     const plugId = ctx.match[1];
     const userId = ctx.from.id;
     
-    console.log(`User ${userId} wants to like plug ${plugId}`);
+    console.log(`🔍 LIKE DEBUG: User ${userId} (type: ${typeof userId}) wants to like plug ${plugId}`);
     
     // Vérifier si la boutique existe
     const Plug = require('./src/models/Plug');
@@ -321,18 +321,28 @@ bot.action(/^like_([a-f\d]{24})$/, async (ctx) => {
       return ctx.answerCbQuery('❌ Boutique non trouvée');
     }
     
+    // Debug détaillé
+    console.log(`🔍 LIKE DEBUG: Plug "${plug.name}" - Current likes: ${plug.likes}`);
+    console.log(`🔍 LIKE DEBUG: likedBy array:`, plug.likedBy);
+    console.log(`🔍 LIKE DEBUG: likedBy types:`, plug.likedBy.map(id => `${id}(${typeof id})`));
+    
     const hasLiked = plug.likedBy.includes(userId);
+    console.log(`🔍 LIKE DEBUG: hasLiked result: ${hasLiked}`);
+    
+    // Vérification manuelle pour debug
+    const manualCheck = plug.likedBy.some(id => id == userId); // == au lieu de ===
+    console.log(`🔍 LIKE DEBUG: Manual check (==): ${manualCheck}`);
     
     // Si l'utilisateur a déjà liké, afficher un message de confirmation
     if (hasLiked) {
-      console.log(`User ${userId} already liked plug ${plugId} - showing confirmation`);
+      console.log(`🔍 LIKE DEBUG: User ${userId} already liked plug ${plugId} - showing confirmation`);
       return ctx.answerCbQuery(`❤️ Vous avez déjà liké ${plug.name} ! (${plug.likes} likes)`, { 
         show_alert: false 
       });
     }
     
     // ========== NOUVEAU LIKE ==========
-    console.log(`User ${userId} is adding a new like to plug ${plugId}`);
+    console.log(`🔍 LIKE DEBUG: User ${userId} is adding a new like to plug ${plugId}`);
     
     // Initialiser likeHistory si nécessaire
     if (!plug.likeHistory) {
@@ -351,7 +361,7 @@ bot.action(/^like_([a-f\d]{24})$/, async (ctx) => {
     });
     
     await plug.save();
-    console.log(`✅ User ${userId} liked plug ${plugId}. New likes count: ${plug.likes}`);
+    console.log(`✅ LIKE DEBUG: User ${userId} liked plug ${plugId}. New likes count: ${plug.likes}`);
     
     // Notification du like ajouté
     await ctx.answerCbQuery(`❤️ Vous avez liké ${plug.name} ! (${plug.likes} likes)`);

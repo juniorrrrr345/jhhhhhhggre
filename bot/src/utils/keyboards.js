@@ -275,10 +275,17 @@ const createPlugKeyboard = (plug, returnContext = 'top_plugs', userId = null) =>
   // Bouton like avec état permanent
   let likeButtonText;
   
+  // Debug pour comprendre le problème
+  console.log(`🔍 BUTTON DEBUG: userId=${userId} (type: ${typeof userId})`);
+  console.log(`🔍 BUTTON DEBUG: plug.likedBy=`, plug.likedBy);
+  console.log(`🔍 BUTTON DEBUG: plug.likedBy types=`, plug.likedBy?.map(id => `${id}(${typeof id})`));
+  
   // Vérifier si l'utilisateur a déjà liké
   if (userId && plug.likedBy && plug.likedBy.includes(userId)) {
+    console.log(`🔍 BUTTON DEBUG: User ${userId} has already liked, showing liked button`);
     likeButtonText = '❤️ Vous avez liké cette boutique';
   } else {
+    console.log(`🔍 BUTTON DEBUG: User ${userId} hasn't liked, showing like button`);
     likeButtonText = '🤍 Liker cette boutique';
   }
   
