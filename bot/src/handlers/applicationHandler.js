@@ -7,6 +7,7 @@ const userForms = new Map();
 // Gestionnaire pour démarrer le formulaire d'inscription
 const handleStartApplication = async (ctx) => {
   try {
+    console.log('🎯 DEBUG: handleStartApplication appelé par utilisateur:', ctx.from.id);
     await ctx.answerCbQuery();
     
     const userId = ctx.from.id;

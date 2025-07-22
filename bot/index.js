@@ -200,7 +200,10 @@ bot.action('filter_country', handleFilterCountry);
 bot.action('contact', handleContact);
 bot.action('info', handleInfo);
 bot.action('social_media', handleSocialMedia);
-bot.action('start_application', handleStartApplication);
+bot.action('start_application', async (ctx) => {
+  console.log('🚀 DEBUG: Action start_application reçue');
+  await handleStartApplication(ctx);
+});
 bot.action('cancel_application', handleCancelApplication);
 bot.action('services_done', handleServicesDone);
 bot.action('skip_photo', handleSkipPhoto);
