@@ -448,25 +448,22 @@ const createPlugListKeyboard = (plugs, page = 0, totalPages = 1, context = 'plug
     buttons.push(navButtons);
   }
   
-  // Bouton retour intelligent selon le contexte
-  let returnAction = 'top_plugs';
-  let returnText = '🔙 Retour';
+  // Navigation uniforme pour toutes les sections
+  const navRow = [];
   
-  if (context === 'plugs_all') {
-    returnAction = 'top_plugs'; // Retour vers le menu des filtres
-    returnText = '🔙 Retour aux filtres';
-  } else if (context === 'plugs_vip') {
-    returnAction = 'back_main'; // Retour vers menu principal pour VIP
-    returnText = '🔙 Retour au menu';
-  } else if (context.startsWith('service_')) {
-    returnAction = 'filter_service'; // Retour vers le menu des services
-    returnText = '🔙 Retour aux services';
-  } else if (context.startsWith('country_')) {
-    returnAction = 'filter_country'; // Retour vers le menu des pays
-    returnText = '🔙 Retour aux pays';
-  }
+  // Bouton Accueil (Top Plugs)
+  navRow.push(Markup.button.callback('🏠 Accueil', 'top_plugs'));
   
-  buttons.push([Markup.button.callback(returnText, returnAction)]);
+  // Bouton VIP
+  navRow.push(Markup.button.callback('⭐ VIP', 'plugs_vip'));
+  
+  // Bouton Recherche (Tous les plugs)
+  navRow.push(Markup.button.callback('🔍 Recherche', 'plugs_all'));
+  
+  buttons.push(navRow);
+  
+  // Bouton retour au menu principal
+  buttons.push([Markup.button.callback('🔙 Menu Principal', 'back_main')]);
   
   return Markup.inlineKeyboard(buttons);
 };
@@ -482,7 +479,13 @@ const createVIPKeyboard = (vipPlugs) => {
     // 👍 nombre
     
     // Ligne 1: Drapeau + nom + étoile VIP
-    const line1 = `🇫🇷 ${plug.name.toUpperCase()} ⭐`;
+    // Tronquer le nom si trop long pour éviter "..."
+    const maxNameLength = 23; // Limite plus courte car on a l'étoile VIP
+    let displayName = plug.name;
+    if (displayName.length > maxNameLength) {
+      displayName = displayName.substring(0, maxNameLength - 3) + '...';
+    }
+    const line1 = `🇫🇷 ${displayName.toUpperCase()} ⭐`;
     
     // Ligne 2: Icônes des services disponibles
     const services = [];
@@ -499,8 +502,22 @@ const createVIPKeyboard = (vipPlugs) => {
     buttons.push([Markup.button.callback(cardText, `plug_${plug._id}_from_plugs_vip`)]);
   });
   
-  // Bouton retour
-  buttons.push([Markup.button.callback('🔙 Retour', 'back_main')]);
+  // Navigation uniforme pour toutes les sections
+  const navRow = [];
+  
+  // Bouton Accueil (Top Plugs)
+  navRow.push(Markup.button.callback('🏠 Accueil', 'top_plugs'));
+  
+  // Bouton VIP (actuel)
+  navRow.push(Markup.button.callback('⭐ VIP', 'plugs_vip'));
+  
+  // Bouton Recherche (Tous les plugs)
+  navRow.push(Markup.button.callback('🔍 Recherche', 'plugs_all'));
+  
+  buttons.push(navRow);
+  
+  // Bouton retour au menu principal
+  buttons.push([Markup.button.callback('🔙 Menu Principal', 'back_main')]);
   
   return Markup.inlineKeyboard(buttons);
 };
