@@ -5,41 +5,86 @@ const { sendAdminNotification } = require('./notificationHandler');
 // Stockage temporaire des données du formulaire par utilisateur
 const userForms = new Map();
 
-// Fonction utilitaire pour éditer les messages avec gestion des images d'accueil
+// Fonction utilitaire pour éditer les messages avec gestion robuste des erreurs
 const safeEditMessage = async (ctx, message, options = {}, keepWelcomeImage = false) => {
-  if (keepWelcomeImage) {
-    // Récupérer la config pour l'image d'accueil
-    const Config = require('../models/Config');
-    const config = await Config.findById('main');
-    const welcomeImage = config?.welcome?.image;
-    
-    if (welcomeImage) {
-      try {
-        await ctx.editMessageMedia({
-          type: 'photo',
-          media: welcomeImage,
-          caption: message,
-          parse_mode: options.parse_mode || 'Markdown'
-        }, {
-          reply_markup: options.reply_markup
-        });
-        return;
-      } catch (editError) {
-        // Si erreur édition image, continuer avec le texte simple
-        console.log('⚠️ Édition image échouée, fallback texte');
+  try {
+    // Si on veut garder l'image d'accueil, on essaie plusieurs méthodes
+    if (keepWelcomeImage) {
+      const Config = require('../models/Config');
+      const config = await Config.findById('main');
+      const welcomeImage = config?.welcome?.image;
+      
+      if (welcomeImage) {
+        try {
+          // Essayer d'éditer le media avec caption
+          await ctx.editMessageMedia({
+            type: 'photo',
+            media: welcomeImage,
+            caption: message,
+            parse_mode: options.parse_mode || 'Markdown'
+          }, {
+            reply_markup: options.reply_markup
+          });
+          return;
+        } catch (mediaError) {
+          console.log('⚠️ editMessageMedia échoué:', mediaError.message);
+          
+          // Fallback 1: Essayer d'éditer la caption seulement
+          try {
+            await ctx.editMessageCaption(message, {
+              parse_mode: options.parse_mode || 'Markdown',
+              reply_markup: options.reply_markup
+            });
+            return;
+          } catch (captionError) {
+            console.log('⚠️ editMessageCaption échoué:', captionError.message);
+          }
+        }
       }
     }
-  }
-  
-  try {
-    await ctx.editMessageText(message, options);
-  } catch (editError) {
-    // Si erreur (message avec image), supprimer et envoyer un nouveau message
-    if (editError.description && editError.description.includes('no text in the message to edit')) {
-      await ctx.deleteMessage().catch(() => {});
-      await ctx.reply(message, options);
-    } else {
-      throw editError;
+    
+    // Essayer l'édition de texte normale
+    try {
+      await ctx.editMessageText(message, options);
+    } catch (textError) {
+      console.log('⚠️ editMessageText échoué:', textError.message);
+      
+      // Fallback final: Supprimer et envoyer nouveau message
+      try {
+        await ctx.deleteMessage();
+      } catch (deleteError) {
+        console.log('⚠️ Impossible de supprimer le message:', deleteError.message);
+      }
+      
+      // Envoyer un nouveau message
+      if (keepWelcomeImage) {
+        const Config = require('../models/Config');
+        const config = await Config.findById('main');
+        const welcomeImage = config?.welcome?.image;
+        
+        if (welcomeImage) {
+          await ctx.replyWithPhoto(welcomeImage, {
+            caption: message,
+            parse_mode: options.parse_mode || 'Markdown',
+            reply_markup: options.reply_markup
+          });
+        } else {
+          await ctx.reply(message, options);
+        }
+      } else {
+        await ctx.reply(message, options);
+      }
+    }
+    
+  } catch (error) {
+    console.error('❌ Erreur safeEditMessage:', error.message);
+    // Dernier fallback: message simple sans formatage
+    try {
+      await ctx.reply('✅ Ta demande a été soumise avec succès ! Tu recevras une réponse prochainement.', {
+        reply_markup: options.reply_markup
+      });
+    } catch (finalError) {
+      console.error('❌ Même le fallback final a échoué:', finalError.message);
     }
   }
 };
@@ -542,7 +587,26 @@ const submitApplication = async (ctx) => {
     const userId = ctx.from.id;
     userForms.delete(userId);
     
-    await ctx.reply('❌ Erreur lors de la soumission. Réessaie plus tard.\n\nDétails: ' + error.message);
+    // Message d'erreur plus user-friendly
+    const keyboard = Markup.inlineKeyboard([
+      [Markup.button.callback('🔙 Retour au menu', 'back_main')]
+    ]);
+    
+    try {
+      await ctx.reply(
+        '❌ **Erreur technique**\n\n' +
+        'Une erreur s\'est produite lors de l\'envoi de ta demande.\n\n' +
+        '🔄 Tu peux réessayer dans quelques minutes.\n\n' +
+        '💡 Si le problème persiste, contacte le support.',
+        {
+          parse_mode: 'Markdown',
+          reply_markup: keyboard.reply_markup
+        }
+      );
+    } catch (replyError) {
+      // Fallback ultime sans formatage
+      await ctx.reply('❌ Erreur technique. Réessaie plus tard.').catch(() => {});
+    }
   }
 };
 
