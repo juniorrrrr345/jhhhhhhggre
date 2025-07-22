@@ -1,18 +1,18 @@
 // Proxy CORS pour contourner les restrictions
 export default async function handler(req, res) {
-  // Configuration CORS sécurisée - seulement votre domaine
-  const allowedOrigins = [
-    'https://safeplugslink.vercel.app',
-    'https://safeplugslink-*.vercel.app', // Previews Vercel
-    'http://localhost:3000', // Développement local
-    'http://localhost:3001'
-  ];
-  
+  // Configuration CORS - autoriser les domaines Vercel et développement
   const origin = req.headers.origin;
-  if (allowedOrigins.includes(origin) || (origin && origin.includes('safeplugslink') && origin.includes('.vercel.app'))) {
+  
+  // Autoriser tous les domaines Vercel et localhost pour l'accès public
+  if (origin && (
+    origin.includes('.vercel.app') || 
+    origin.includes('localhost') ||
+    origin.includes('127.0.0.1')
+  )) {
     res.setHeader('Access-Control-Allow-Origin', origin);
   } else {
-    res.setHeader('Access-Control-Allow-Origin', 'https://safeplugslink.vercel.app');
+    // Fallback pour les domaines Vercel
+    res.setHeader('Access-Control-Allow-Origin', '*'); // Temporaire pour boutique publique
   }
   
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
