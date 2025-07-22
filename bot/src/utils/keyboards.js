@@ -409,12 +409,12 @@ const createPlugListKeyboard = (plugs, page = 0, totalPages = 1, context = 'plug
     // 🇫🇷 NOM BOUTIQUE | 👍 12
     // 📦 📍 🛵 ⭐
     
-    // Ligne 1: Drapeau + nom + LIKES (toujours visibles sur la première ligne)
+    // Ligne 1: Drapeau + nom + LIKES (sans points de suspension)
     const likesCount = plug.likes || 0;
     const vipIndicator = plug.isVip ? ' ⭐' : '';
-    const line1 = `🇫🇷 ${plug.name.toUpperCase()}${vipIndicator} | 👍 ${likesCount}`;
+    const line1 = `🇫🇷 ${plug.name.toUpperCase()}${vipIndicator} | 👍${likesCount}`;
     
-    // Ligne 2: Services uniquement (plus simple et claire)
+    // Ligne 2: Services uniquement (plus simple et claire)  
     const services = [];
     if (plug.services?.postal?.enabled) services.push('📦');
     if (plug.services?.meetup?.enabled) services.push('📍'); 
@@ -453,9 +453,9 @@ const createVIPKeyboard = (vipPlugs) => {
     // 🇫🇷 NOM BOUTIQUE ⭐ | 👍 12
     // 📦 📍 🛵
     
-    // Ligne 1: Drapeau + nom + VIP + LIKES (tout sur la première ligne)
+    // Ligne 1: Drapeau + nom + VIP + LIKES (sans points de suspension)
     const likesCount = plug.likes || 0;
-    const line1 = `🇫🇷 ${plug.name.toUpperCase()} ⭐ | 👍 ${likesCount}`;
+    const line1 = `🇫🇷 ${plug.name.toUpperCase()} ⭐ | 👍${likesCount}`;
     
     // Ligne 2: Services uniquement (plus simple)
     const services = [];
