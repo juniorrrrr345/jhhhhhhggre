@@ -417,6 +417,10 @@ const handlePlugServiceDetails = async (ctx, plugId, serviceType) => {
       message += `📝 ${service.description}\n\n`;
     }
 
+    // Ajouter les likes dans la description
+    const likesCount = plug.likes || 0;
+    message += `🖤 ${likesCount} like${likesCount !== 1 ? 's' : ''}\n\n`;
+
     if (plug.countries && plug.countries.length > 0) {
       message += `🌍 **Disponible en :** ${plug.countries.join(', ')}\n\n`;
     }
