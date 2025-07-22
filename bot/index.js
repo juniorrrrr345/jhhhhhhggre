@@ -20,6 +20,16 @@ const {
 } = require('./src/handlers/plugsHandler');
 const { handleContact, handleInfo, handleIgnoredCallback } = require('./src/handlers/menuHandler');
 const { handleSocialMedia } = require('./src/handlers/socialMediaHandler');
+const { 
+  handleStartApplication,
+  handleFormMessage,
+  handleServiceToggle,
+  handleServicesDone,
+  handlePhoto,
+  handleSkipPhoto,
+  handleCancelApplication,
+  userForms
+} = require('./src/handlers/applicationHandler');
 
 // Modèles
 const Plug = require('./src/models/Plug');
@@ -131,6 +141,27 @@ bot.on('callback_query', (ctx, next) => {
 // Commande /start
 bot.command('start', handleStart);
 
+// Gestionnaire des messages texte (pour le formulaire)
+bot.on('text', async (ctx) => {
+  // Vérifier si l'utilisateur est en train de remplir un formulaire
+  const userId = ctx.from.id;
+  const userForm = userForms.get(userId);
+  
+  if (userForm) {
+    await handleFormMessage(ctx);
+  }
+});
+
+// Gestionnaire des photos (pour le formulaire)
+bot.on('photo', async (ctx) => {
+  const userId = ctx.from.id;
+  const userForm = userForms.get(userId);
+  
+  if (userForm && userForm.step === 'photo') {
+    await handlePhoto(ctx);
+  }
+});
+
 // Commande /admin - DÉSACTIVÉE pour sécurité
 // bot.command('admin', async (ctx) => {
 //   const userId = ctx.from.id;
@@ -169,11 +200,25 @@ bot.action('filter_country', handleFilterCountry);
 bot.action('contact', handleContact);
 bot.action('info', handleInfo);
 bot.action('social_media', handleSocialMedia);
+bot.action('start_application', handleStartApplication);
+bot.action('cancel_application', handleCancelApplication);
+bot.action('services_done', handleServicesDone);
+bot.action('skip_photo', handleSkipPhoto);
 
-// Filtres par service
-bot.action('service_delivery', (ctx) => handleServiceFilter(ctx, 'delivery', 0));
-bot.action('service_postal', (ctx) => handleServiceFilter(ctx, 'postal', 0));
-bot.action('service_meetup', (ctx) => handleServiceFilter(ctx, 'meetup', 0));
+// Gestionnaire des services (distinguer formulaire vs filtres)
+bot.action(/^service_(delivery|postal|meetup)$/, async (ctx) => {
+  const userId = ctx.from.id;
+  const userForm = userForms.get(userId);
+  
+  if (userForm && userForm.step === 'services') {
+    // C'est pour le formulaire d'inscription
+    await handleServiceToggle(ctx);
+  } else {
+    // C'est pour les filtres de plugs
+    const serviceType = ctx.callbackQuery.data.replace('service_', '');
+    await handleServiceFilter(ctx, serviceType, 0);
+  }
+});
 
 // Pagination améliorée
 bot.action(/^page_(.+)_(\d+)$/, (ctx) => {

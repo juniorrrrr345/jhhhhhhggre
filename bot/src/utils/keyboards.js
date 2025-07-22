@@ -102,9 +102,8 @@ const createMainKeyboard = (config) => {
   // Troisième ligne : Réseaux sociaux et Devenir Plug
   const thirdRow = [];
   
-  // Bouton Réseaux sociaux si activé et des réseaux sont configurés
-  if (config?.buttons?.socialMedia?.enabled && 
-      config?.socialMedia && Array.isArray(config.socialMedia) && config.socialMedia.length > 0) {
+  // Bouton Réseaux sociaux si activé (temporairement affiché même sans réseaux pour test)
+  if (config?.buttons?.socialMedia?.enabled !== false) { // Affiché par défaut
     const socialText = config?.buttons?.socialMedia?.text || '📱 Réseaux sociaux';
     thirdRow.push(Markup.button.callback(socialText, 'social_media'));
   }
