@@ -336,20 +336,17 @@ const handlePlugDetails = async (ctx, plugId, returnContext = 'top_plugs') => {
     let message = `${plug.isVip ? '⭐ ' : ''}**${plug.name}**\n\n`;
     message += `📝 ${plug.description}\n\n`;
 
-    // Services disponibles
-    const services = [];
-    if (plug.services?.delivery?.enabled) {
-      services.push(`🚚 **Livraison**${plug.services.delivery.description ? `: ${plug.services.delivery.description}` : ''}`);
-    }
-    if (plug.services?.postal?.enabled) {
-      services.push(`✈️ **Envoi postal**${plug.services.postal.description ? `: ${plug.services.postal.description}` : ''}`);
-    }
-    if (plug.services?.meetup?.enabled) {
-      services.push(`🏠 **Meetup**${plug.services.meetup.description ? `: ${plug.services.meetup.description}` : ''}`);
-    }
-
-    if (services.length > 0) {
-      message += `🔧 **Services :**\n${services.join('\n')}\n\n`;
+    // Réseaux sociaux
+    if (plug.socialMedia && plug.socialMedia.length > 0) {
+      const socialLinks = [];
+      for (const social of plug.socialMedia) {
+        if (social.name && social.url) {
+          socialLinks.push(`${social.emoji || '🌐'} **${social.name}**`);
+        }
+      }
+      if (socialLinks.length > 0) {
+        message += `📱 **Réseaux sociaux :**\n${socialLinks.join('\n')}\n\n`;
+      }
     }
 
     // Pays desservis
@@ -357,9 +354,9 @@ const handlePlugDetails = async (ctx, plugId, returnContext = 'top_plugs') => {
       message += `🌍 **Pays desservis :** ${plug.countries.join(', ')}\n\n`;
     }
 
-    // Afficher les likes (même à 0 pour montrer la fonctionnalité)
+    // Afficher les votes (même à 0 pour montrer la fonctionnalité)
     const likesCount = plug.likes || 0;
-    message += `🖤 ${likesCount} like${likesCount !== 1 ? 's' : ''}\n\n`;
+    message += `🖤 ${likesCount} vote${likesCount !== 1 ? 's' : ''}\n\n`;
 
     // Utiliser la fonction createPlugKeyboard qui gère déjà tout (avec userId pour l'état du bouton like)
     const keyboard = createPlugKeyboard(plug, returnContext, ctx.from?.id);

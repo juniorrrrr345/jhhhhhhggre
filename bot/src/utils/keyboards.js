@@ -311,16 +311,16 @@ const createPlugKeyboard = (plug, returnContext = 'top_plugs', userId = null) =>
         likeButtonText = `⏰ Dans ${hours}h ${minutes}m`;
       } else {
         console.log(`🔍 BUTTON DEBUG: User ${userId} cooldown expired, can like again`);
-        likeButtonText = '🤍 Liker cette boutique';
+        likeButtonText = '🤍 Voter le plug';
       }
     } else {
       // Pas d'historique trouvé, considérer comme pouvant liker
       console.log(`🔍 BUTTON DEBUG: User ${userId} has liked but no history found, allowing like`);
-      likeButtonText = '🤍 Liker cette boutique';
+      likeButtonText = '🤍 Voter le plug';
     }
   } else {
     console.log(`🔍 BUTTON DEBUG: User ${userId} hasn't liked, showing like button`);
-    likeButtonText = '🤍 Liker cette boutique';
+    likeButtonText = '🤍 Voter le plug';
   }
   
   buttons.push([Markup.button.callback(likeButtonText, `like_${plug._id}`)]);

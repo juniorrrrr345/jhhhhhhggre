@@ -406,8 +406,8 @@ bot.action(/^like_([a-f\d]{24})$/, async (ctx) => {
       console.log('⚠️ Erreur mise à jour cache:', cacheError.message);
     }
     
-    // Notification du like ajouté SANS popup qui interfère
-    await ctx.answerCbQuery(`❤️ Vous avez liké ${plug.name} ! (${plug.likes} likes)`);
+    // Notification du vote ajouté SANS popup qui interfère
+    await ctx.answerCbQuery(`❤️ Vous avez voté pour ${plug.name} ! (${plug.likes} votes)`);
     
     // ========== MISE À JOUR INTELLIGENTE : SEUL LE TEXTE DU BOUTON LIKE ==========
     // NE PAS régénérer tout le clavier - juste modifier le bouton like existant
@@ -458,11 +458,11 @@ bot.action(/^like_([a-f\d]{24})$/, async (ctx) => {
         if (currentText) {
           console.log(`📝 Texte actuel (avant): ${currentText.substring(0, 200)}...`);
           
-          // Regex plus robuste pour capturer les likes (supporter plusieurs formats)
-          const likeRegex = /(🖤|❤️|♥️) \d+ like[s]?/g;
-          const newLikeText = `🖤 ${plug.likes} like${plug.likes !== 1 ? 's' : ''}`;
+          // Regex plus robuste pour capturer les votes (supporter plusieurs formats)
+          const voteRegex = /(🖤|❤️|♥️) \d+ (vote[s]?|like[s]?)/g;
+          const newVoteText = `🖤 ${plug.likes} vote${plug.likes !== 1 ? 's' : ''}`;
           
-          let updatedText = currentText.replace(likeRegex, newLikeText);
+          let updatedText = currentText.replace(voteRegex, newVoteText);
           
           // Si pas de match avec la regex, essayer d'autres patterns
           if (updatedText === currentText) {
