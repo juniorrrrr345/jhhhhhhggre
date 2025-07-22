@@ -1,13 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import Layout from '../../components/Layout'
-import {
-  UserGroupIcon,
-  ChatBubbleLeftRightIcon,
-  CogIcon,
-  EyeIcon,
-  PlusIcon
-} from '@heroicons/react/24/outline'
+
 
 export default function Dashboard() {
   const [stats, setStats] = useState({
@@ -186,28 +180,28 @@ export default function Dashboard() {
     {
       name: 'Total Boutiques',
       value: stats.totalPlugs,
-      icon: UserGroupIcon,
+      emoji: '🏪',
       color: 'bg-blue-500',
       href: '/admin/plugs'
     },
     {
       name: 'Boutiques Actives',
       value: stats.activePlugs,
-      icon: EyeIcon,
+      emoji: '✅',
       color: 'bg-green-500',
       href: '/admin/plugs?filter=active'
     },
     {
       name: 'Boutiques VIP',
       value: stats.vipPlugs,
-      icon: UserGroupIcon,
+      emoji: '⭐',
       color: 'bg-purple-500',
       href: '/admin/plugs?filter=vip'
     },
     {
       name: 'Utilisateurs Bot',
       value: stats.totalUsers,
-      icon: ChatBubbleLeftRightIcon,
+      emoji: '👥',
       color: 'bg-orange-500',
       href: '/admin/stats'
     }
@@ -218,21 +212,21 @@ export default function Dashboard() {
       name: 'Configuration',
       description: 'Configurer le bot et la boutique',
       href: '/admin/config',
-      icon: CogIcon,
+      emoji: '⚙️',
       color: 'bg-blue-500'
     },
     {
       name: 'Boutiques/Plugs',
       description: 'Gérer les boutiques et plugs',
       href: '/admin/plugs',
-      icon: UserGroupIcon,
+      emoji: '🏪',
       color: 'bg-green-500'
     },
     {
       name: 'Messages',
       description: 'Envoyer des messages à tous les utilisateurs',
       href: '/admin/messages',
-      icon: ChatBubbleLeftRightIcon,
+      emoji: '📢',
       color: 'bg-indigo-500'
     }
   ]
@@ -270,7 +264,7 @@ export default function Dashboard() {
               >
                 <dt>
                   <div className={`absolute rounded-md p-3 ${card.color}`}>
-                    <card.icon className="h-6 w-6 text-white" />
+                    <span className="text-white text-xl">{card.emoji}</span>
                   </div>
                   <p className="ml-16 truncate text-sm font-medium text-gray-500">
                     {card.name}
@@ -298,7 +292,7 @@ export default function Dashboard() {
               >
                 <div className="flex items-center">
                   <div className={`rounded-lg p-2 ${action.color}`}>
-                    <action.icon className="h-6 w-6 text-white" />
+                    <span className="text-white text-xl">{action.emoji}</span>
                   </div>
                   <div className="ml-4">
                     <h3 className="text-base font-medium text-gray-900">
@@ -328,7 +322,7 @@ export default function Dashboard() {
           
           {recentShops.length === 0 ? (
             <div className="text-center py-12 bg-white rounded-lg border border-gray-200">
-              <UserGroupIcon className="mx-auto h-12 w-12 text-gray-400" />
+              <div className="text-6xl text-gray-400">🏪</div>
               <h3 className="mt-2 text-sm font-medium text-gray-900">Aucune boutique</h3>
               <p className="mt-1 text-sm text-gray-500">
                 Commencez par ajouter votre première boutique.
@@ -338,8 +332,7 @@ export default function Dashboard() {
                   onClick={() => router.push('/admin/plugs')}
                   className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
                 >
-                  <PlusIcon className="-ml-1 mr-2 h-5 w-5" />
-                  Ajouter une boutique
+                  ➕ Ajouter une boutique
                 </button>
               </div>
             </div>
@@ -362,8 +355,8 @@ export default function Dashboard() {
                         }}
                       />
                     ) : (
-                      <div className="h-12 w-12 rounded-lg bg-gray-200 flex items-center justify-center">
-                        <UserGroupIcon className="h-6 w-6 text-gray-400" />
+                      <div className="h-12 w-12 rounded-lg bg-gray-200 flex items-center justify-center text-2xl">
+                        🏪
                       </div>
                     )}
                     <div className="flex-1 min-w-0">
