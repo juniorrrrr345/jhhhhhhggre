@@ -251,7 +251,7 @@ export default function Messages() {
               {!imagePreview ? (
                 <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
                   <div className="space-y-1 text-center">
-                    <PhotoIcon className="mx-auto h-12 w-12 text-gray-400" />
+                    <div className="text-4xl text-gray-400 mb-2">📷</div>
                     <div className="flex text-sm text-gray-600">
                       <label
                         htmlFor="image-upload"
@@ -282,7 +282,7 @@ export default function Messages() {
                     onClick={removeImage}
                     className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
                   >
-                    <XMarkIcon className="h-4 w-4" />
+                    ❌
                   </button>
                 </div>
               )}
