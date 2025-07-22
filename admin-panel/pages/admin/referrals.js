@@ -3,14 +3,7 @@ import { useRouter } from 'next/router'
 import Layout from '../../components/Layout'
 import toast from 'react-hot-toast'
 import { simpleApi } from '../../lib/api-simple'
-import {
-  UsersIcon,
-  LinkIcon,
-  ChartBarIcon,
-  ClipboardDocumentIcon,
-  EyeIcon,
-  ShareIcon
-} from '@heroicons/react/24/outline'
+// Heroicons remplacés par des emojis
 
 export default function ReferralsPage() {
   const [loading, setLoading] = useState(true)
@@ -313,7 +306,7 @@ export default function ReferralsPage() {
                 <div className="p-5">
                   <div className="flex items-center">
                     <div className="flex-shrink-0">
-                      <UsersIcon className="h-6 w-6 text-blue-400" />
+                      <span className="text-2xl">👥</span>
                     </div>
                     <div className="ml-5 w-0 flex-1">
                       <dl>
@@ -333,7 +326,7 @@ export default function ReferralsPage() {
                 <div className="p-5">
                   <div className="flex items-center">
                     <div className="flex-shrink-0">
-                      <ChartBarIcon className="h-6 w-6 text-green-400" />
+                      <span className="text-2xl">📊</span>
                     </div>
                     <div className="ml-5 w-0 flex-1">
                       <dl>
@@ -353,7 +346,7 @@ export default function ReferralsPage() {
                 <div className="p-5">
                   <div className="flex items-center">
                     <div className="flex-shrink-0">
-                      <LinkIcon className="h-6 w-6 text-purple-400" />
+                      <span className="text-2xl">🔗</span>
                     </div>
                     <div className="ml-5 w-0 flex-1">
                       <dl>
@@ -534,7 +527,7 @@ export default function ReferralsPage() {
                         className="p-2 text-gray-400 hover:text-gray-600"
                         title="Voir détails"
                       >
-                        <EyeIcon className="h-5 w-5" />
+                        <span className="text-lg">👁️</span>
                       </button>
                     </div>
                   </div>
@@ -570,7 +563,7 @@ export default function ReferralsPage() {
 
             {plugs.length === 0 && (
               <div className="text-center py-12">
-                <UsersIcon className="mx-auto h-12 w-12 text-gray-400" />
+                <span className="text-6xl">👥</span>
                 <h3 className="mt-2 text-sm font-medium text-gray-900">Aucune boutique</h3>
                 <p className="mt-1 text-sm text-gray-500">
                   Créez d'abord des boutiques pour utiliser le parrainage.
