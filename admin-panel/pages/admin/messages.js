@@ -100,9 +100,9 @@ export default function Messages() {
 
       let imageUrl = null;
 
-      // Étape 1 : Upload de l'image si nécessaire
+      // Étape 1 : Upload de l'image vers Imgur si nécessaire
       if (image) {
-        console.log('📤 Upload de l\'image...')
+        console.log('📤 Upload vers Imgur...')
         console.log('📷 Image details:', {
           name: image.name,
           type: image.type,
@@ -110,45 +110,44 @@ export default function Messages() {
         })
         
         try {
+          // Convertir en base64 pour Imgur
           const imageBase64 = await imageToBase64(image)
-          console.log('🔄 Base64 conversion done, length:', imageBase64.length)
+          const base64Data = imageBase64.split(',')[1] // Enlever le préfixe data:image/...
           
-          const uploadResponse = await fetch('/api/cors-proxy', {
+          console.log('🔄 Upload vers Imgur...')
+          
+          // Upload vers Imgur (API gratuite)
+          const uploadResponse = await fetch('https://api.imgur.com/3/image', {
             method: 'POST',
             headers: {
+              'Authorization': 'Client-ID 546c25a59c58ad7', // Client ID public Imgur
               'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-              endpoint: '/api/upload-image',
-              method: 'POST',
-              token: token,
-              data: {
-                imageBase64: imageBase64,
-                filename: image.name,
-                mimetype: image.type
-              }
+              image: base64Data,
+              type: 'base64'
             })
           })
 
-          console.log('📡 Upload response status:', uploadResponse.status)
+          console.log('📡 Imgur response status:', uploadResponse.status)
           
           if (uploadResponse.ok) {
             const uploadResult = await uploadResponse.json()
-            console.log('📋 Upload result:', uploadResult)
+            console.log('📋 Imgur result:', uploadResult)
             
-            if (uploadResult.success && uploadResult.imageUrl) {
-              imageUrl = uploadResult.imageUrl
-              console.log('✅ Image uploadée avec succès')
+            if (uploadResult.success && uploadResult.data?.link) {
+              imageUrl = uploadResult.data.link
+              console.log('✅ Image uploadée sur Imgur:', imageUrl)
             } else {
-              throw new Error(uploadResult.error || 'Pas d\'URL image retournée')
+              throw new Error(uploadResult.data?.error || 'Pas d\'URL image retournée par Imgur')
             }
           } else {
-            const errorData = await uploadResponse.json()
-            throw new Error(errorData.error || `Erreur HTTP ${uploadResponse.status}`)
+            const errorData = await uploadResponse.text()
+            throw new Error(`Erreur Imgur ${uploadResponse.status}: ${errorData}`)
           }
         } catch (uploadError) {
-          console.error('❌ Erreur upload détaillée:', uploadError)
-          throw new Error(`Upload failed: ${uploadError.message}`)
+          console.error('❌ Erreur upload Imgur:', uploadError)
+          throw new Error(`Upload Imgur failed: ${uploadError.message}`)
         }
       }
 
