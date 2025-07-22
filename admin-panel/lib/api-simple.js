@@ -73,6 +73,16 @@ export const simpleApi = {
   
   reloadBot: async (token) => {
     return await makeProxyCall('/api/bot/reload', 'POST', token);
+  },
+
+  // Fonction pour récupérer les demandes d'inscription
+  getApplications: async (token) => {
+    return await makeProxyCall('/api/applications', 'GET', token);
+  },
+
+  // Fonction pour mettre à jour le statut d'une demande
+  updateApplicationStatus: async (token, applicationId, status, adminNotes = '') => {
+    return await makeProxyCall(`/api/applications/${applicationId}`, 'PATCH', token, { status, adminNotes });
   }
 };
 
