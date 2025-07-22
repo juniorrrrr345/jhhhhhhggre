@@ -447,8 +447,24 @@ bot.action(/^like_([a-f\d]{24})$/, async (ctx) => {
         // Aussi mettre à jour le texte du message pour afficher le nouveau nombre de likes
         const currentText = ctx.callbackQuery.message.text || ctx.callbackQuery.message.caption;
         if (currentText) {
-          // Remplacer l'ancien nombre de likes par le nouveau (supporter les deux emojis)
-          const updatedText = currentText.replace(/(❤️|🖤) \d+ like[s]?/, `🖤 ${plug.likes} like${plug.likes !== 1 ? 's' : ''}`);
+          console.log(`📝 Texte actuel (avant): ${currentText.substring(0, 200)}...`);
+          
+          // Regex plus robuste pour capturer les likes (supporter plusieurs formats)
+          const likeRegex = /(🖤|❤️|♥️) \d+ like[s]?/g;
+          const newLikeText = `🖤 ${plug.likes} like${plug.likes !== 1 ? 's' : ''}`;
+          
+          let updatedText = currentText.replace(likeRegex, newLikeText);
+          
+          // Si pas de match avec la regex, essayer d'autres patterns
+          if (updatedText === currentText) {
+            // Patterns alternatifs
+            updatedText = currentText.replace(/🖤 \d+/g, `🖤 ${plug.likes}`);
+            if (updatedText === currentText) {
+              updatedText = currentText.replace(/❤️ \d+/g, `🖤 ${plug.likes}`);
+            }
+          }
+          
+          console.log(`📝 Texte mis à jour (après): ${updatedText.substring(0, 200)}...`);
           
           try {
             if (ctx.callbackQuery.message.photo) {
@@ -467,6 +483,7 @@ bot.action(/^like_([a-f\d]{24})$/, async (ctx) => {
             console.log(`✅ Message ET bouton like mis à jour pour ${plug.name} (${plug.likes} likes)`);
           } catch (textEditError) {
             console.log('⚠️ Erreur édition texte message:', textEditError.message);
+            console.log('⚠️ Détails erreur:', textEditError);
             // Le clavier a déjà été mis à jour, c'est l'essentiel
           }
         } else {
