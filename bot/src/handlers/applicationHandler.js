@@ -1,5 +1,6 @@
 const PlugApplication = require('../models/PlugApplication');
 const { Markup } = require('telegraf');
+const { sendAdminNotification } = require('./notificationHandler');
 
 // Stockage temporaire des données du formulaire par utilisateur
 const userForms = new Map();
@@ -451,6 +452,19 @@ const submitApplication = async (ctx) => {
     });
     
     await application.save();
+    
+    // Envoyer notification à l'admin
+    const adminId = process.env.ADMIN_TELEGRAM_ID || '7670522278'; // ID de l'admin
+    try {
+      // Récupérer l'instance du bot depuis le contexte global ou les paramètres
+      const bot = ctx.telegram ? { telegram: ctx.telegram } : global.bot;
+      if (bot) {
+        await sendAdminNotification(bot, application, adminId);
+      }
+    } catch (notificationError) {
+      console.error('⚠️ Erreur notification admin:', notificationError.message);
+      // Ne pas faire échouer la soumission pour une erreur de notification
+    }
     
     // Nettoyer le formulaire
     userForms.delete(userId);

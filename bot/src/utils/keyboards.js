@@ -105,8 +105,11 @@ const createMainKeyboard = (config) => {
     buttons.push([Markup.button.callback(socialText, 'social_media')]);
   }
   
-  // Quatrième ligne : Devenir Plug (seul)
-  buttons.push([Markup.button.callback('💼 Devenir Plug', 'start_application')]);
+  // Quatrième ligne : Devenir Plug et Ma demande
+  const fourthRow = [];
+  fourthRow.push(Markup.button.callback('💼 Devenir Plug', 'start_application'));
+  fourthRow.push(Markup.button.callback('📋 Ma demande', 'check_application_status'));
+  buttons.push(fourthRow);
   
   // Réseaux sociaux personnalisés en bas du menu
   if (config?.socialMedia && Array.isArray(config.socialMedia) && config.socialMedia.length > 0) {

@@ -30,6 +30,11 @@ const {
   handleCancelApplication,
   userForms
 } = require('./src/handlers/applicationHandler');
+const {
+  handleCheckApplicationStatus,
+  handleCancelMyApplication,
+  handleConfirmCancel
+} = require('./src/handlers/plugManagementHandler');
 
 // Modèles
 const Plug = require('./src/models/Plug');
@@ -204,6 +209,9 @@ bot.action('start_application', handleStartApplication);
 bot.action('cancel_application', handleCancelApplication);
 bot.action('services_done', handleServicesDone);
 bot.action('skip_photo', handleSkipPhoto);
+bot.action('check_application_status', handleCheckApplicationStatus);
+bot.action(/^cancel_my_application_(.+)$/, handleCancelMyApplication);
+bot.action(/^confirm_cancel_(.+)$/, handleConfirmCancel);
 
 // Gestionnaire des services (distinguer formulaire vs filtres)
 bot.action(/^service_(delivery|postal|meetup)$/, async (ctx) => {
@@ -1820,11 +1828,21 @@ app.patch('/api/applications/:id', authenticateAdmin, async (req, res) => {
     const { status, adminNotes } = req.body;
     
     const PlugApplication = require('./src/models/PlugApplication');
+    const { sendApprovalNotification, sendRejectionNotification } = require('./src/handlers/notificationHandler');
     
     if (!['pending', 'approved', 'rejected'].includes(status)) {
       return res.status(400).json({
         success: false,
         error: 'Statut invalide'
+      });
+    }
+
+    // Récupérer l'application avant mise à jour pour comparer les statuts
+    const oldApplication = await PlugApplication.findById(id);
+    if (!oldApplication) {
+      return res.status(404).json({
+        success: false,
+        error: 'Demande non trouvée'
       });
     }
 
@@ -1838,11 +1856,20 @@ app.patch('/api/applications/:id', authenticateAdmin, async (req, res) => {
       { new: true }
     );
 
-    if (!application) {
-      return res.status(404).json({
-        success: false,
-        error: 'Demande non trouvée'
-      });
+    // Envoyer notification si le statut a changé
+    if (oldApplication.status !== status) {
+      try {
+        if (status === 'approved') {
+          await sendApprovalNotification(bot, application);
+          console.log(`✅ Notification d'approbation envoyée pour ${application.name}`);
+        } else if (status === 'rejected') {
+          await sendRejectionNotification(bot, application, adminNotes);
+          console.log(`✅ Notification de rejet envoyée pour ${application.name}`);
+        }
+      } catch (notificationError) {
+        console.error('⚠️ Erreur notification utilisateur:', notificationError.message);
+        // Ne pas faire échouer la mise à jour pour une erreur de notification
+      }
     }
 
     res.json({
