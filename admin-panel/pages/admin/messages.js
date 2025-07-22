@@ -1,14 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import Layout from '../../components/Layout'
-import { simpleApi } from '../../lib/api-simple'
-import { 
-  PaperAirplaneIcon, 
-  PhotoIcon,
-  ExclamationTriangleIcon,
-  CheckCircleIcon,
-  XMarkIcon
-} from '@heroicons/react/24/outline'
 
 export default function Messages() {
   const [message, setMessage] = useState('')
@@ -17,30 +9,36 @@ export default function Messages() {
   const [sending, setSending] = useState(false)
   const [success, setSuccess] = useState('')
   const [error, setError] = useState('')
-  const [config, setConfig] = useState(null)
-  const [loading, setLoading] = useState(true)
+  const [botUsers, setBotUsers] = useState(0)
   const router = useRouter()
 
   useEffect(() => {
     // Vérifier l'authentification
     let token = localStorage.getItem('adminToken')
     if (!token) {
-      // Utiliser le token par défaut
       token = 'ADMIN_TOKEN_F3F3FC574B8A95875449DBD68128C434CE3D7FB3F054567B0D3EAD3D9F1B01B1'
       localStorage.setItem('adminToken', token)
     }
 
-    fetchConfig(token)
+    // Récupérer le nombre d'utilisateurs
+    fetchBotUsers(token)
   }, [])
 
-  const fetchConfig = async (token) => {
+  const fetchBotUsers = async (token) => {
     try {
-      const data = await simpleApi.getConfig(token)
-      setConfig(data)
+      const response = await fetch('https://jhhhhhhggre.onrender.com/api/users/stats', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      })
+      
+      if (response.ok) {
+        const data = await response.json()
+        setBotUsers(data.totalUsers || 0)
+      }
     } catch (error) {
-      console.error('❌ Erreur chargement config:', error)
-    } finally {
-      setLoading(false)
+      console.error('Erreur récupération utilisateurs:', error)
     }
   }
 

@@ -54,11 +54,32 @@ export default function Dashboard() {
           if (data.plugs && data.plugs.length > 0) {
             console.log(`🎉 SUCCÈS: ${data.plugs.length} boutiques chargées !`)
             setRecentShops(data.plugs)
+            
+            // Récupérer les stats utilisateurs en temps réel
+            let totalUsers = 0
+            try {
+              const usersResponse = await fetch(`${botApiUrl}/api/users/stats`, {
+                method: 'GET',
+                headers: {
+                  'Authorization': `Bearer ${token || 'ADMIN_TOKEN_F3F3FC574B8A95875449DBD68128C434CE3D7FB3F054567B0D3EAD3D9F1B01B1'}`,
+                  'Content-Type': 'application/json'
+                }
+              })
+              
+              if (usersResponse.ok) {
+                const usersData = await usersResponse.json()
+                totalUsers = usersData.totalUsers || 0
+                console.log('✅ Utilisateurs du bot en temps réel:', totalUsers)
+              }
+            } catch (usersError) {
+              console.log('⚠️ Impossible de récupérer les stats utilisateurs:', usersError.message)
+            }
+            
             setStats({
               totalPlugs: data.plugs.length,
               activePlugs: data.plugs.filter(p => p.isActive).length,
               vipPlugs: data.plugs.filter(p => p.isVip).length,
-              totalUsers: 0
+              totalUsers: totalUsers // Stats en temps réel
             })
           } else {
             throw new Error('No shops in response')
