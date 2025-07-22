@@ -11,7 +11,7 @@ export default function ShopHome() {
   const [config, setConfig] = useState(null)
   const [loading, setLoading] = useState(true)
   const [currentPage, setCurrentPage] = useState(1)
-  const itemsPerPage = 20
+  const itemsPerPage = 50
 
   useEffect(() => {
     fetchConfig()
@@ -236,7 +236,7 @@ export default function ShopHome() {
 
 
         {/* Contenu Principal */}
-        <div style={{ padding: '20px', paddingBottom: '90px' }}>
+        <div style={{ padding: '20px', paddingBottom: '120px' }}>
           {plugs.length === 0 ? (
             <div style={{ 
               textAlign: 'center', 
@@ -436,80 +436,87 @@ export default function ShopHome() {
           left: '0',
           right: '0',
           backgroundColor: '#000000',
-          padding: '12px 20px',
+          padding: '12px 0',
           borderTop: '1px solid #2a2a2a',
           zIndex: 1000
         }}>
           <div style={{ 
             display: 'flex', 
-            justifyContent: 'center', 
-            gap: '40px'
+            justifyContent: 'space-around',
+            alignItems: 'center',
+            width: '100%',
+            maxWidth: '100%'
           }}>
             <Link href="/shop" style={{ 
               display: 'flex', 
               flexDirection: 'column', 
               alignItems: 'center', 
               textDecoration: 'none',
-              color: '#007AFF'
+              color: '#007AFF',
+              flex: 1
             }}>
               <div style={{ 
-                width: '45px', 
-                height: '45px', 
+                width: '50px', 
+                height: '50px', 
                 backgroundColor: '#007AFF', 
-                borderRadius: '12px',
+                borderRadius: '15px',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                marginBottom: '6px',
-                fontSize: '22px'
+                marginBottom: '8px',
+                fontSize: '24px'
               }}>
                 🏠
               </div>
-              <span style={{ fontSize: '13px', color: '#ffffff', fontWeight: '500' }}>Accueil</span>
+              <span style={{ fontSize: '14px', color: '#ffffff', fontWeight: '600' }}>Accueil</span>
             </Link>
             <Link href="/shop/search" style={{ 
               display: 'flex', 
               flexDirection: 'column', 
               alignItems: 'center', 
               textDecoration: 'none',
-              color: '#8e8e93'
+              color: '#8e8e93',
+              flex: 1
             }}>
               <div style={{ 
-                width: '45px', 
-                height: '45px', 
-                backgroundColor: 'transparent', 
-                borderRadius: '12px',
+                width: '50px', 
+                height: '50px', 
+                backgroundColor: '#1a1a1a', 
+                borderRadius: '15px',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                marginBottom: '6px',
-                fontSize: '22px'
+                marginBottom: '8px',
+                fontSize: '24px',
+                border: '1px solid #2a2a2a'
               }}>
                 🔍
               </div>
-              <span style={{ fontSize: '13px', color: '#8e8e93', fontWeight: '500' }}>Recherche</span>
+              <span style={{ fontSize: '14px', color: '#8e8e93', fontWeight: '600' }}>Recherche</span>
             </Link>
             <Link href="/shop/vip" style={{ 
               display: 'flex', 
               flexDirection: 'column', 
               alignItems: 'center', 
               textDecoration: 'none',
-              color: '#8e8e93'
+              color: '#8e8e93',
+              flex: 1
             }}>
               <div style={{ 
-                width: '45px', 
-                height: '45px', 
-                backgroundColor: 'transparent', 
-                borderRadius: '12px',
+                width: '50px', 
+                height: '50px', 
+                backgroundColor: '#1a1a1a', 
+                borderRadius: '15px',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                marginBottom: '6px',
-                fontSize: '22px'
+                marginBottom: '8px',
+                fontSize: '24px',
+                border: '1px solid #2a2a2a'
               }}>
                 ⭐
               </div>
-              <span style={{ fontSize: '13px', color: '#8e8e93', fontWeight: '500' }}>VIP</span>
+              <span style={{ fontSize: '14px', color: '#8e8e93', fontWeight: '600' }}>VIP</span>
             </Link>
           </div>
         </nav>
