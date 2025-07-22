@@ -4,10 +4,24 @@ const { Markup } = require('telegraf');
 // Stockage temporaire des données du formulaire par utilisateur
 const userForms = new Map();
 
+// Fonction utilitaire pour éditer les messages avec gestion des images
+const safeEditMessage = async (ctx, message, options = {}) => {
+  try {
+    await ctx.editMessageText(message, options);
+  } catch (editError) {
+    // Si erreur (message avec image), supprimer et envoyer un nouveau message
+    if (editError.description && editError.description.includes('no text in the message to edit')) {
+      await ctx.deleteMessage().catch(() => {});
+      await ctx.reply(message, options);
+    } else {
+      throw editError;
+    }
+  }
+};
+
 // Gestionnaire pour démarrer le formulaire d'inscription
 const handleStartApplication = async (ctx) => {
   try {
-    console.log('🎯 DEBUG: handleStartApplication appelé par utilisateur:', ctx.from.id);
     await ctx.answerCbQuery();
     
     const userId = ctx.from.id;
@@ -29,7 +43,7 @@ const handleStartApplication = async (ctx) => {
         [Markup.button.callback('🔙 Retour au menu', 'back_main')]
       ]);
       
-      return await ctx.editMessageText(message, {
+      return await safeEditMessage(ctx, message, {
         reply_markup: keyboard.reply_markup,
         parse_mode: 'Markdown'
       });
@@ -63,7 +77,7 @@ const handleStartApplication = async (ctx) => {
       [Markup.button.callback('❌ Annuler', 'cancel_application')]
     ]);
     
-    await ctx.editMessageText(message, {
+    await safeEditMessage(ctx, message, {
       reply_markup: keyboard.reply_markup,
       parse_mode: 'Markdown'
     });
@@ -249,7 +263,7 @@ const handleServiceToggle = async (ctx) => {
       [Markup.button.callback('❌ Annuler', 'cancel_application')]
     ]);
     
-    await ctx.editMessageText(message, {
+    await safeEditMessage(ctx, message, {
       reply_markup: keyboard.reply_markup,
       parse_mode: 'Markdown'
     });
@@ -285,7 +299,7 @@ const handleServicesDone = async (ctx) => {
       `Quel est ton username Telegram pour te contacter ?\n` +
       `Exemple : @tonusername ou https://t.me/tonusername`;
     
-    await ctx.editMessageText(message, { parse_mode: 'Markdown' });
+    await safeEditMessage(ctx, message, { parse_mode: 'Markdown' });
     await ctx.answerCbQuery();
     
   } catch (error) {
@@ -393,7 +407,7 @@ const submitApplication = async (ctx) => {
       [Markup.button.callback('🔙 Retour au menu', 'back_main')]
     ]);
     
-    await ctx.editMessageText(message, {
+    await safeEditMessage(ctx, message, {
       reply_markup: keyboard.reply_markup,
       parse_mode: 'Markdown'
     });
@@ -418,7 +432,7 @@ const handleCancelApplication = async (ctx) => {
       [Markup.button.callback('🔙 Retour au menu', 'back_main')]
     ]);
     
-    await ctx.editMessageText(message, {
+    await safeEditMessage(ctx, message, {
       reply_markup: keyboard.reply_markup,
       parse_mode: 'Markdown'
     });
