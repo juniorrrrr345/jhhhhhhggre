@@ -113,25 +113,11 @@ export default function Dashboard() {
       color: 'bg-green-500'
     },
     {
-      name: 'Configuration Bot',
-      description: 'Configurer le bot Telegram',
-      href: '/admin/bot-config',
-      icon: CogIcon,
-      color: 'bg-orange-500'
-    },
-    {
       name: 'Messages',
       description: 'Envoyer des messages à tous les utilisateurs',
       href: '/admin/messages',
       icon: ChatBubbleLeftRightIcon,
       color: 'bg-indigo-500'
-    },
-    {
-      name: 'Diagnostic',
-      description: 'Tester la connectivité',
-      href: '/admin/diagnostic',
-      icon: EyeIcon,
-      color: 'bg-purple-500'
     }
   ]
 
@@ -211,35 +197,6 @@ export default function Dashboard() {
             ))}
           </div>
         </div>
-
-        {/* Configuration actuelle */}
-        {config && (
-          <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-lg font-medium text-gray-900 mb-4">Configuration actuelle</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <h3 className="text-sm font-medium text-gray-700 mb-2">Message d'accueil</h3>
-                <p className="text-sm text-gray-600 line-clamp-3">
-                  {config.messages?.welcome || 'Non défini'}
-                </p>
-              </div>
-              <div>
-                <h3 className="text-sm font-medium text-gray-700 mb-2">Réseaux sociaux</h3>
-                <div className="space-y-1">
-                  {config.socialMedia && Array.isArray(config.socialMedia) && config.socialMedia.length > 0 ? (
-                    config.socialMedia.map((social, index) => (
-                      <p key={index} className="text-sm text-gray-600">
-                        {social.emoji} {social.name}: {social.url}
-                      </p>
-                    ))
-                  ) : (
-                    <p className="text-sm text-gray-500">Aucun réseau configuré</p>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
     </Layout>
   )
