@@ -251,13 +251,13 @@ export default function ShopHome() {
           ) : (
             <>
               <div style={{ 
-                display: 'grid', 
-                gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))',
-                gap: '8px',
+                display: 'flex', 
+                flexDirection: 'column',
+                gap: '1px',
                 marginBottom: '20px'
               }}>
                 {currentPlugs.map((plug, index) => (
-                  <ShopCard key={plug._id} plug={plug} index={index} />
+                  <ShopCard key={plug._id} plug={plug} index={index} layout="list" />
                 ))}
               </div>
 
