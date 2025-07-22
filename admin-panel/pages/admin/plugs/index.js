@@ -124,12 +124,12 @@ export default function AccueilAdmin() {
         const response = await fetch(`/api/cors-proxy`, {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
           },
           body: JSON.stringify({
             endpoint: `/api/plugs/${plug._id}/referral`,
-            method: 'GET',
-            token: token
+            method: 'GET'
           })
         });
 

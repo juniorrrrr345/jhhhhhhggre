@@ -51,12 +51,12 @@ export default function ReferralsPage() {
             const response = await fetch('/api/cors-proxy', {
               method: 'POST',
               headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
               },
               body: JSON.stringify({
                 endpoint: `/api/plugs/${plug._id}/referral`,
-                method: 'GET',
-                token: token
+                method: 'GET'
               })
             })
 
@@ -147,12 +147,12 @@ export default function ReferralsPage() {
           const response = await fetch('/api/cors-proxy', {
             method: 'POST',
             headers: {
-              'Content-Type': 'application/json'
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
             },
             body: JSON.stringify({
               endpoint: `/api/plugs/${plug._id}/referral`,
-              method: 'GET',
-              token: token
+              method: 'GET'
             })
           })
 
@@ -181,16 +181,40 @@ export default function ReferralsPage() {
       }
 
       if (referralLink) {
-        await navigator.clipboard.writeText(referralLink)
-        setCopiedLink(plug._id)
-        setTimeout(() => setCopiedLink(null), 2000)
-        toast.success(`🔗 Lien de ${plug.name} copié !`)
+        try {
+          await navigator.clipboard.writeText(referralLink)
+          setCopiedLink(plug._id)
+          setTimeout(() => setCopiedLink(null), 2000)
+          toast.success(`🔗 Lien de ${plug.name} copié !`)
+          console.log('✅ Lien copié avec succès:', referralLink)
+        } catch (clipboardError) {
+          console.error('❌ Erreur clipboard:', clipboardError)
+          // Fallback : créer un élément temporaire pour copier
+          try {
+            const textArea = document.createElement('textarea')
+            textArea.value = referralLink
+            document.body.appendChild(textArea)
+            textArea.select()
+            document.execCommand('copy')
+            document.body.removeChild(textArea)
+            
+            setCopiedLink(plug._id)
+            setTimeout(() => setCopiedLink(null), 2000)
+            toast.success(`🔗 Lien de ${plug.name} copié !`)
+            console.log('✅ Lien copié avec fallback:', referralLink)
+          } catch (fallbackError) {
+            console.error('❌ Erreur fallback copie:', fallbackError)
+            toast.error('Impossible de copier automatiquement. Copiez manuellement ce lien :')
+            // Afficher le lien dans une alerte pour copie manuelle
+            prompt('Copiez ce lien de parrainage :', referralLink)
+          }
+        }
       } else {
         toast.error('Impossible de générer le lien de parrainage')
       }
     } catch (error) {
-      console.error('❌ Erreur copie:', error)
-      toast.error('Erreur lors de la copie')
+      console.error('❌ Erreur générale:', error)
+      toast.error(`Erreur: ${error.message}`)
     }
   }
 
