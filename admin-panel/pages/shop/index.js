@@ -61,37 +61,73 @@ export default function ShopHome() {
 
   const fetchPlugs = async () => {
     try {
-      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || process.env.API_BASE_URL
-      const response = await fetch(`${apiBaseUrl}/api/proxy`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          endpoint: '/api/public/plugs',
-          method: 'GET',
-          params: { limit: 50 }
-        })
-      })
+      console.log('🔍 Chargement boutiques via API directe...')
       
-      if (response.ok) {
-        const data = await response.json()
-        
-        let plugsArray = []
-        if (data && Array.isArray(data.plugs)) {
-          plugsArray = data.plugs
-        } else if (Array.isArray(data)) {
-          plugsArray = data
-        }
-
-        const sortedPlugs = plugsArray.sort((a, b) => {
-          if (a.isVip && !b.isVip) return -1
-          if (!a.isVip && b.isVip) return 1
-          return (b.likes || 0) - (a.likes || 0)
+      let data = null
+      
+      // 1. Essayer l'API directe du bot (comme VIP et search)
+      try {
+        const directResponse = await fetch('https://jhhhhhhggre.onrender.com/api/plugs?limit=50', {
+          method: 'GET',
+          headers: {
+            'Authorization': 'Bearer JuniorAdmon123',
+            'Content-Type': 'application/json'
+          }
         })
-
-        setPlugs(sortedPlugs)
+        
+        if (directResponse.ok) {
+          data = await directResponse.json()
+          console.log('✅ API directe réussie:', data)
+        } else {
+          throw new Error(`Direct failed: HTTP ${directResponse.status}`)
+        }
+      } catch (directError) {
+        console.log('❌ API directe échoué:', directError.message)
+        
+        // 2. Fallback avec proxy si direct échoue
+        try {
+          const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || process.env.API_BASE_URL
+          const proxyResponse = await fetch(`${apiBaseUrl}/api/proxy`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              endpoint: '/api/plugs',
+              method: 'GET',
+              params: { limit: 50 }
+            })
+          })
+          
+          if (proxyResponse.ok) {
+            data = await proxyResponse.json()
+            console.log('✅ Proxy réussi:', data)
+          } else {
+            throw new Error(`Proxy failed: HTTP ${proxyResponse.status}`)
+          }
+        } catch (proxyError) {
+          console.log('❌ Proxy échoué:', proxyError.message)
+          throw proxyError
+        }
       }
+      
+      // Traitement des données
+      let plugsArray = []
+      if (data && Array.isArray(data.plugs)) {
+        plugsArray = data.plugs
+      } else if (Array.isArray(data)) {
+        plugsArray = data
+      }
+
+      const sortedPlugs = plugsArray.sort((a, b) => {
+        if (a.isVip && !b.isVip) return -1
+        if (!a.isVip && b.isVip) return 1
+        return (b.likes || 0) - (a.likes || 0)
+      })
+
+      console.log(`🎉 ${sortedPlugs.length} boutiques chargées !`)
+      setPlugs(sortedPlugs)
+      
     } catch (error) {
       console.error('❌ Erreur chargement plugs:', error)
       setPlugs([])
