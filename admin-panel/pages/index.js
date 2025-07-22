@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/router'
 import toast from 'react-hot-toast'
-import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline'
+// Heroicons remplacés par des emojis
 import { api } from '../lib/api-proxy'
 
 export default function Login() {
@@ -106,9 +106,9 @@ export default function Login() {
                   className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
                 >
                   {showPassword ? (
-                    <EyeSlashIcon className="w-5 h-5" />
+                    <span className="text-lg">🙈</span>
                   ) : (
-                    <EyeIcon className="w-5 h-5" />
+                    <span className="text-lg">👁️</span>
                   )}
                 </button>
               </div>
