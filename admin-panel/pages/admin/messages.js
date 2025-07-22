@@ -242,51 +242,45 @@ export default function Messages() {
               </div>
             </div>
 
-            {/* Image optionnelle */}
+            {/* Image */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Image optionnelle
+                Image (optionnelle)
               </label>
-              
-              {!imagePreview ? (
-                <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
-                  <div className="space-y-1 text-center">
-                    <div className="text-4xl text-gray-400 mb-2">📷</div>
-                    <div className="flex text-sm text-gray-600">
-                      <label
-                        htmlFor="image-upload"
-                        className="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500"
-                      >
-                        <span>Télécharger une image</span>
-                        <input
-                          id="image-upload"
-                          name="image-upload"
-                          type="file"
-                          className="sr-only"
-                          accept="image/*"
-                          onChange={handleImageChange}
-                        />
-                      </label>
-                    </div>
-                    <p className="text-xs text-gray-500">PNG, JPG, GIF jusqu'à 10MB</p>
-                  </div>
-                </div>
-              ) : (
-                <div className="relative">
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <p className="text-sm text-gray-500 mt-1">
+                Formats supportés: JPG, PNG, GIF (max 10MB)
+              </p>
+            </div>
+
+            {/* Preview de l'image */}
+            {imagePreview && (
+              <div>
+                <p className="text-sm font-medium text-gray-700 mb-2">Aperçu:</p>
+                <div className="relative inline-block">
                   <img
                     src={imagePreview}
                     alt="Aperçu"
-                    className="w-full max-w-md mx-auto rounded-lg shadow-md"
+                    className="max-w-xs max-h-48 rounded-lg shadow-md"
                   />
                   <button
-                    onClick={removeImage}
-                    className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                    type="button"
+                    onClick={() => {
+                      setImage(null)
+                      setImagePreview('')
+                    }}
+                    className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs"
                   >
-                    ❌
+                    ×
                   </button>
                 </div>
-              )}
-            </div>
+              </div>
+            )}
 
             {/* Messages d'état */}
             {error && (
