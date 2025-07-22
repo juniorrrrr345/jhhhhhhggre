@@ -367,13 +367,17 @@ const handlePhoto = async (ctx) => {
   const userId = ctx.from.id;
   const userForm = userForms.get(userId);
   
+  console.log(`📸 handlePhoto appelé pour user ${userId}`);
+  
   if (!userForm || userForm.step !== 'photo') {
+    console.log(`❌ Formulaire invalide ou étape incorrecte. Formulaire:`, !!userForm, 'Étape:', userForm?.step);
     return;
   }
   
   try {
     // Vérifier que c'est bien une photo
-    if (!ctx.message.photo || !Array.isArray(ctx.message.photo)) {
+    if (!ctx.message?.photo || !Array.isArray(ctx.message.photo)) {
+      console.log(`❌ Message photo invalide:`, !!ctx.message?.photo);
       await ctx.reply('❌ Veuillez envoyer une photo valide.');
       return;
     }
@@ -382,7 +386,14 @@ const handlePhoto = async (ctx) => {
     const photos = ctx.message.photo;
     const photo = photos[photos.length - 1];
     
+    console.log(`📸 Photo détectée:`, {
+      count: photos.length,
+      fileId: photo?.file_id?.substring(0, 20) + '...',
+      size: photo?.file_size
+    });
+    
     if (!photo || !photo.file_id) {
+      console.log(`❌ Photo file_id manquant`);
       await ctx.reply('❌ Erreur lors de la récupération de la photo. Réessaie.');
       return;
     }
@@ -394,7 +405,7 @@ const handlePhoto = async (ctx) => {
     try {
       const fileLink = await ctx.telegram.getFileLink(photo.file_id);
       userForm.data.photoUrl = fileLink.href;
-      console.log('📸 URL photo générée:', fileLink.href);
+      console.log('📸 URL photo générée:', fileLink.href.substring(0, 50) + '...');
     } catch (urlError) {
       console.warn('⚠️ Impossible de générer l\'URL photo:', urlError.message);
       userForm.data.photoUrl = null;
@@ -402,15 +413,24 @@ const handlePhoto = async (ctx) => {
     
     userForms.set(userId, userForm);
     
-    // Confirmer la réception
-    await ctx.reply('✅ Photo reçue avec succès !');
+    // Confirmer la réception avec un message temporaire
+    const confirmMsg = await ctx.reply('✅ Photo reçue avec succès ! Traitement en cours...');
+    
+    // Attendre un peu pour que l'utilisateur voie la confirmation
+    setTimeout(async () => {
+      try {
+        await ctx.telegram.deleteMessage(ctx.chat.id, confirmMsg.message_id);
+      } catch (deleteError) {
+        console.log('⚠️ Impossible de supprimer le message de confirmation');
+      }
+    }, 2000);
     
     // Soumettre la demande
     await submitApplication(ctx);
     
   } catch (error) {
-    console.error('Erreur dans handlePhoto:', error);
-    await ctx.reply('❌ Erreur lors du traitement de la photo. Réessaie ou passe cette étape.');
+    console.error('❌ Erreur dans handlePhoto:', error);
+    await ctx.reply('❌ Erreur lors du traitement de la photo. Tu peux réessayer ou passer cette étape en cliquant sur "⏭️ Passer cette étape".');
   }
 };
 
