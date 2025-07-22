@@ -448,22 +448,11 @@ const createPlugListKeyboard = (plugs, page = 0, totalPages = 1, context = 'plug
     buttons.push(navButtons);
   }
   
-  // Navigation uniforme pour toutes les sections
-  const navRow = [];
-  
-  // Bouton Accueil (Top Plugs)
-  navRow.push(Markup.button.callback('🏠 Accueil', 'top_plugs'));
-  
-  // Bouton VIP
-  navRow.push(Markup.button.callback('⭐ VIP', 'plugs_vip'));
-  
-  // Bouton Recherche (Tous les plugs)
-  navRow.push(Markup.button.callback('🔍 Recherche', 'plugs_all'));
-  
-  buttons.push(navRow);
-  
-  // Bouton retour au menu principal
-  buttons.push([Markup.button.callback('🔙 Menu Principal', 'back_main')]);
+  // Navigation identique à la section recherche
+  buttons.push([Markup.button.callback('Tous les plugs', 'plugs_all')]);
+  buttons.push([Markup.button.callback('Par service', 'filter_service')]);
+  buttons.push([Markup.button.callback('Par pays', 'filter_country')]);
+  buttons.push([Markup.button.callback('🔙 Retour', 'back_main')]);
   
   return Markup.inlineKeyboard(buttons);
 };
@@ -502,22 +491,11 @@ const createVIPKeyboard = (vipPlugs) => {
     buttons.push([Markup.button.callback(cardText, `plug_${plug._id}_from_plugs_vip`)]);
   });
   
-  // Navigation uniforme pour toutes les sections
-  const navRow = [];
-  
-  // Bouton Accueil (Top Plugs)
-  navRow.push(Markup.button.callback('🏠 Accueil', 'top_plugs'));
-  
-  // Bouton VIP (actuel)
-  navRow.push(Markup.button.callback('⭐ VIP', 'plugs_vip'));
-  
-  // Bouton Recherche (Tous les plugs)
-  navRow.push(Markup.button.callback('🔍 Recherche', 'plugs_all'));
-  
-  buttons.push(navRow);
-  
-  // Bouton retour au menu principal
-  buttons.push([Markup.button.callback('🔙 Menu Principal', 'back_main')]);
+  // Navigation identique à la section recherche
+  buttons.push([Markup.button.callback('Tous les plugs', 'plugs_all')]);
+  buttons.push([Markup.button.callback('Par service', 'filter_service')]);
+  buttons.push([Markup.button.callback('Par pays', 'filter_country')]);
+  buttons.push([Markup.button.callback('🔙 Retour', 'back_main')]);
   
   return Markup.inlineKeyboard(buttons);
 };
