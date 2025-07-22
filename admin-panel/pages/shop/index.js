@@ -270,14 +270,14 @@ export default function ShopHome() {
           )}
         </div>
 
-        {/* Navigation en bas */}
+        {/* Navigation en bas - Style uniforme */}
         <nav style={{ 
           position: 'fixed',
           bottom: '0',
           left: '0',
           right: '0',
-          backgroundColor: '#000000',
-          padding: '12px 0',
+          backgroundColor: '#1a1a1a',
+          padding: '12px 20px',
           borderTop: '1px solid #2a2a2a',
           zIndex: 1000
         }}>
@@ -285,79 +285,44 @@ export default function ShopHome() {
             display: 'flex', 
             justifyContent: 'space-around',
             alignItems: 'center',
-            width: '100%',
-            maxWidth: '100%'
+            maxWidth: '600px',
+            margin: '0 auto'
           }}>
             <Link href="/shop" style={{ 
-              display: 'flex', 
-              flexDirection: 'column', 
-              alignItems: 'center', 
+              color: '#007AFF', 
               textDecoration: 'none',
-              color: '#007AFF',
-              flex: 1
+              fontSize: '10px',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: '4px'
             }}>
-              <div style={{ 
-                width: '50px', 
-                height: '50px', 
-                backgroundColor: '#007AFF', 
-                borderRadius: '15px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                marginBottom: '8px',
-                fontSize: '24px'
-              }}>
-                🏠
-              </div>
-              <span style={{ fontSize: '14px', color: '#ffffff', fontWeight: '600' }}>Accueil</span>
+              <span style={{ fontSize: '20px' }}>🏠</span>
+              Boutiques
             </Link>
             <Link href="/shop/search" style={{ 
-              display: 'flex', 
-              flexDirection: 'column', 
-              alignItems: 'center', 
+              color: '#8e8e93', 
               textDecoration: 'none',
-              color: '#8e8e93',
-              flex: 1
+              fontSize: '10px',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: '4px'
             }}>
-              <div style={{ 
-                width: '50px', 
-                height: '50px', 
-                backgroundColor: '#1a1a1a', 
-                borderRadius: '15px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                marginBottom: '8px',
-                fontSize: '24px',
-                border: '1px solid #2a2a2a'
-              }}>
-                🔍
-              </div>
-              <span style={{ fontSize: '14px', color: '#8e8e93', fontWeight: '600' }}>Recherche</span>
+              <span style={{ fontSize: '20px' }}>🔍</span>
+              Rechercher
             </Link>
             <Link href="/shop/vip" style={{ 
-              display: 'flex', 
-              flexDirection: 'column', 
-              alignItems: 'center', 
+              color: '#8e8e93', 
               textDecoration: 'none',
-              color: '#8e8e93',
-              flex: 1
+              fontSize: '10px',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: '4px'
             }}>
-              <div style={{ 
-                width: '50px', 
-                height: '50px', 
-                backgroundColor: '#1a1a1a', 
-                borderRadius: '15px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                marginBottom: '8px',
-                fontSize: '24px',
-                border: '1px solid #2a2a2a'
-              }}>
-                ⭐
-              </div>
-              <span style={{ fontSize: '14px', color: '#8e8e93', fontWeight: '600' }}>VIP</span>
+              <span style={{ fontSize: '20px' }}>👑</span>
+              VIP
             </Link>
           </div>
         </nav>
