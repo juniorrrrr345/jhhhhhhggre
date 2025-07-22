@@ -235,99 +235,89 @@ export default function Applications() {
           </div>
         </div>
 
-        {/* Filtres */}
-        <div className="mt-6 flex space-x-4">
-          {[
-            { key: 'all', label: 'Toutes', count: applications.length },
-            { key: 'pending', label: 'En attente', count: applications.filter(a => a.status === 'pending').length },
-            { key: 'approved', label: 'Approuvées', count: applications.filter(a => a.status === 'approved').length },
-            { key: 'rejected', label: 'Refusées', count: applications.filter(a => a.status === 'rejected').length }
-          ].map(filterOption => (
-            <button
-              key={filterOption.key}
-              onClick={() => setFilter(filterOption.key)}
-              className={`px-4 py-2 text-sm font-medium rounded-md ${
-                filter === filterOption.key
-                  ? 'bg-blue-100 text-blue-700 border border-blue-300'
-                  : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
-              }`}
-            >
-              {filterOption.label} ({filterOption.count})
-            </button>
-          ))}
+        {/* Filtres - Responsive */}
+        <div className="mt-6">
+          <div className="grid grid-cols-2 gap-2 sm:flex sm:space-x-4">
+            {[
+              { key: 'all', label: 'Toutes', count: applications.length },
+              { key: 'pending', label: 'En attente', count: applications.filter(a => a.status === 'pending').length },
+              { key: 'approved', label: 'Approuvées', count: applications.filter(a => a.status === 'approved').length },
+              { key: 'rejected', label: 'Refusées', count: applications.filter(a => a.status === 'rejected').length }
+            ].map(filterOption => (
+              <button
+                key={filterOption.key}
+                onClick={() => setFilter(filterOption.key)}
+                className={`px-3 py-2 text-xs sm:text-sm font-medium rounded-md transition-colors ${
+                  filter === filterOption.key
+                    ? 'bg-blue-100 text-blue-700 border border-blue-300'
+                    : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                }`}
+              >
+                <span className="block sm:inline">{filterOption.label}</span>
+                <span className="block sm:inline sm:ml-1">({filterOption.count})</span>
+              </button>
+            ))}
+          </div>
         </div>
 
-        {/* Liste des demandes */}
-        <div className="mt-6 overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
-          <table className="min-w-full divide-y divide-gray-300">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Plug
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Utilisateur
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Localisation
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Services
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Statut
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Date
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {filteredApplications.length === 0 ? (
-                <tr>
-                  <td colSpan="7" className="px-6 py-4 text-center text-sm text-gray-500">
-                    Aucune demande trouvée
-                  </td>
-                </tr>
-              ) : (
-                filteredApplications.map((app) => (
-                  <tr key={app._id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">{app.plugName}</div>
-                      <div className="text-sm text-gray-500 truncate max-w-xs">
-                        {app.description}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">
-                        {app.userFirstName} {app.userLastName}
-                      </div>
-                      <div className="text-sm text-gray-500">
-                        @{app.userUsername || app.userId}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      <div>{app.country}</div>
-                      <div className="text-gray-500">{app.city}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex flex-wrap">
-                        {getServicesBadges(app.services)}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+        {/* Liste des demandes - Mobile Cards + Desktop Table */}
+        {filteredApplications.length === 0 ? (
+          <div className="mt-6 text-center py-12">
+            <div className="text-gray-500 text-lg">📭</div>
+            <div className="mt-2 text-sm text-gray-500">Aucune demande trouvée</div>
+          </div>
+        ) : (
+          <>
+            {/* Vue Mobile (cartes) */}
+            <div className="mt-6 space-y-4 sm:hidden">
+              {filteredApplications.map((app) => (
+                <div key={app._id} className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
+                  {/* En-tête de la carte */}
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-sm font-medium text-gray-900 truncate">
+                        {app.name || app.plugName}
+                      </h3>
+                      <p className="text-xs text-gray-500 mt-1">
+                        {app.firstName} {app.lastName} (@{app.username || app.userId})
+                      </p>
+                    </div>
+                    <div className="ml-3 flex-shrink-0">
                       {getStatusBadge(app.status)}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    </div>
+                  </div>
+
+                  {/* Localisation */}
+                  <div className="mb-3">
+                    <div className="flex items-center text-xs text-gray-600">
+                      <span>📍</span>
+                      <span className="ml-1">{app.location?.city}, {app.location?.country}</span>
+                    </div>
+                  </div>
+
+                  {/* Services */}
+                  <div className="mb-3">
+                    <div className="flex flex-wrap gap-1">
+                      {getServicesBadges(app.services)}
+                    </div>
+                  </div>
+
+                  {/* Description */}
+                  <div className="mb-3">
+                    <p className="text-xs text-gray-600 line-clamp-2">
+                      {app.description}
+                    </p>
+                  </div>
+
+                  {/* Date et actions */}
+                  <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+                    <span className="text-xs text-gray-500">
                       {formatDate(app.createdAt)}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    </span>
+                    <div className="flex space-x-2">
                       <button
                         onClick={() => setSelectedApp(app)}
-                        className="text-blue-600 hover:text-blue-900 mr-3"
+                        className="px-3 py-1.5 text-xs font-medium bg-blue-50 text-blue-700 rounded-md hover:bg-blue-100 transition-colors"
                       >
                         Voir
                       </button>
@@ -336,26 +326,118 @@ export default function Applications() {
                           <button
                             onClick={() => handleAction(app._id, 'approved')}
                             disabled={actionLoading === app._id}
-                            className="text-green-600 hover:text-green-900 mr-3"
+                            className="px-3 py-1.5 text-xs font-medium bg-green-50 text-green-700 rounded-md hover:bg-green-100 transition-colors disabled:opacity-50"
                           >
-                            Approuver
+                            ✓
                           </button>
                           <button
                             onClick={() => handleAction(app._id, 'rejected')}
                             disabled={actionLoading === app._id}
-                            className="text-red-600 hover:text-red-900"
+                            className="px-3 py-1.5 text-xs font-medium bg-red-50 text-red-700 rounded-md hover:bg-red-100 transition-colors disabled:opacity-50"
                           >
-                            Refuser
+                            ✗
                           </button>
                         </>
                       )}
-                    </td>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Vue Desktop (tableau) */}
+            <div className="mt-6 hidden sm:block overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
+              <table className="min-w-full divide-y divide-gray-300">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Plug
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Utilisateur
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Localisation
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Services
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Statut
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Date
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Actions
+                    </th>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {filteredApplications.map((app) => (
+                    <tr key={app._id} className="hover:bg-gray-50">
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm font-medium text-gray-900">{app.name || app.plugName}</div>
+                        <div className="text-sm text-gray-500 truncate max-w-xs">
+                          {app.description}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-900">
+                          {app.firstName} {app.lastName}
+                        </div>
+                        <div className="text-sm text-gray-500">
+                          @{app.username || app.userId}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        <div>{app.location?.country}</div>
+                        <div className="text-gray-500">{app.location?.city}</div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex flex-wrap">
+                          {getServicesBadges(app.services)}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        {getStatusBadge(app.status)}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {formatDate(app.createdAt)}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <button
+                          onClick={() => setSelectedApp(app)}
+                          className="text-blue-600 hover:text-blue-900 mr-3"
+                        >
+                          Voir
+                        </button>
+                        {app.status === 'pending' && (
+                          <>
+                            <button
+                              onClick={() => handleAction(app._id, 'approved')}
+                              disabled={actionLoading === app._id}
+                              className="text-green-600 hover:text-green-900 mr-3"
+                            >
+                              Approuver
+                            </button>
+                            <button
+                              onClick={() => handleAction(app._id, 'rejected')}
+                              disabled={actionLoading === app._id}
+                              className="text-red-600 hover:text-red-900"
+                            >
+                              Refuser
+                            </button>
+                          </>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
+        )}
 
         {/* Modal de détails */}
         {selectedApp && (
