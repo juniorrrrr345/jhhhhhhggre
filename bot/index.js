@@ -1752,14 +1752,15 @@ app.get('/api/public/plugs', async (req, res) => {
     const total = filteredPlugs.length;
     const paginatedPlugs = filteredPlugs.slice(skip, skip + parseInt(limit));
     
-    // Headers pour éviter le cache et CORS
+    // Headers pour éviter le cache et CORS + sync temps réel
     res.set({
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Methods': 'GET, OPTIONS',
       'Access-Control-Allow-Headers': 'Content-Type',
-      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      'Cache-Control': 'no-cache, no-store, must-revalidate, max-age=0',
       'Pragma': 'no-cache',
       'Expires': '0',
+      'ETag': `"${Date.now()}"`, // ETag unique pour forcer le refresh
       'Last-Modified': new Date().toUTCString(),
       'X-Cache-Updated': cache.lastUpdate?.toISOString() || 'never'
     });

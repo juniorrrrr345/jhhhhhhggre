@@ -20,6 +20,19 @@ export default function ShopHome() {
     
     // Debug logs
     console.log('🔄 Boutique initialisée')
+    
+    // ========== SYNC AUTOMATIQUE AVEC LIKES BOT ==========
+    // Refresh automatique toutes les 30 secondes pour synchroniser les likes
+    const syncInterval = setInterval(() => {
+      console.log('🔄 Synchronisation automatique des likes...')
+      fetchPlugs() // Refresh les données depuis le bot
+    }, 30000) // 30 secondes
+    
+    // Cleanup au démontage du composant
+    return () => {
+      clearInterval(syncInterval)
+      console.log('🔄 Synchronisation automatique arrêtée')
+    }
   }, [])
 
   // Debug: afficher la config quand elle change
@@ -71,7 +84,10 @@ export default function ShopHome() {
         const directResponse = await fetch('https://jhhhhhhggre.onrender.com/api/public/plugs?limit=50', {
           method: 'GET',
           headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache',
+            'Expires': '0'
           }
         })
         

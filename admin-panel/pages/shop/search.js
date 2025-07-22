@@ -24,10 +24,12 @@ export default function ShopSearch() {
     fetchConfig()
     fetchPlugs()
     
+    // ========== SYNC AUTOMATIQUE AVEC LIKES BOT ==========
     const interval = setInterval(() => {
+      console.log('🔄 SEARCH - Synchronisation automatique des likes...')
       fetchConfig()
       fetchPlugs()
-    }, 15000)
+    }, 30000) // Uniformisé à 30 secondes comme les autres
     
     const handleStorageChange = (event) => {
       if (event?.key === 'boutique_sync_signal' || event?.key === 'global_sync_signal') {
