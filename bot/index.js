@@ -41,8 +41,9 @@ const {
   handleServiceToggle,
   handleServicesDone,
   handlePhoto,
-  handleSkipPhoto,
+  handleSkipStep,
   handleCancelApplication,
+  submitApplication,
   userForms
 } = require('./src/handlers/applicationHandler');
 const {
