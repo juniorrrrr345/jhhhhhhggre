@@ -491,7 +491,7 @@ export default function ShopSearch() {
               {/* Liste des résultats */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
                 {currentPlugs.map((plug, index) => (
-                  <ShopCard key={plug._id || index} plug={plug} index={index} layout="list" />
+                  <ShopCard key={plug._id || index} plug={plug} index={index} />
                 ))}
               </div>
 

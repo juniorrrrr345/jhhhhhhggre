@@ -257,7 +257,7 @@ export default function ShopHome() {
                 marginBottom: '20px'
               }}>
                 {currentPlugs.map((plug, index) => (
-                  <ShopCard key={plug._id} plug={plug} index={index} layout="list" />
+                  <ShopCard key={plug._id} plug={plug} index={index} />
                 ))}
               </div>
 
