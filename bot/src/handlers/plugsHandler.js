@@ -69,7 +69,7 @@ const handleVipPlugs = async (ctx, page = 0) => {
     const buttons = [];
     
     for (const plug of currentPagePlugs) {
-      const likesText = plug.likes > 0 ? ` ❤️${plug.likes}` : '';
+      const likesText = plug.likes > 0 ? ` 🖤${plug.likes}` : '';
       // Utiliser le contexte 'plugs_vip' pour que le retour fonctionne correctement
       buttons.push([Markup.button.callback(`👑 ${plug.name}${likesText}`, `plug_${plug._id}_from_plugs_vip`)]);
     }

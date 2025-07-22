@@ -447,8 +447,8 @@ bot.action(/^like_([a-f\d]{24})$/, async (ctx) => {
         // Aussi mettre à jour le texte du message pour afficher le nouveau nombre de likes
         const currentText = ctx.callbackQuery.message.text || ctx.callbackQuery.message.caption;
         if (currentText) {
-          // Remplacer l'ancien nombre de likes par le nouveau
-          const updatedText = currentText.replace(/❤️ \d+ like[s]?/, `❤️ ${plug.likes} like${plug.likes !== 1 ? 's' : ''}`);
+          // Remplacer l'ancien nombre de likes par le nouveau (supporter les deux emojis)
+          const updatedText = currentText.replace(/(❤️|🖤) \d+ like[s]?/, `🖤 ${plug.likes} like${plug.likes !== 1 ? 's' : ''}`);
           
           try {
             if (ctx.callbackQuery.message.photo) {
@@ -1258,7 +1258,7 @@ app.get('/api/plugs/:id', authenticateAdmin, async (req, res) => {
 });
 
 // Créer un nouveau plug (Admin seulement)
-app.post('/api/plugs', authenticateAdmin, async (req, res) => {
+app.post('/api/plugs', limits.admin, authenticateAdmin, async (req, res) => {
   try {
     console.log('🆕 Création d\'un nouveau plug');
     // Log sécurisé - masquer les données sensibles
@@ -1428,7 +1428,7 @@ app.get('/api/plugs/:id/referral', authenticateAdmin, async (req, res) => {
 });
 
 // Générer les liens de parrainage pour toutes les boutiques
-app.post('/api/plugs/generate-all-referrals', authenticateAdmin, async (req, res) => {
+app.post('/api/plugs/generate-all-referrals', limits.admin, authenticateAdmin, async (req, res) => {
   try {
     console.log('🔗 Génération des liens de parrainage pour toutes les boutiques...');
     
@@ -1933,7 +1933,7 @@ app.get('/api/users/stats', authenticateAdmin, async (req, res) => {
 });
 
 // Route pour la diffusion de messages
-app.post('/api/broadcast', authenticateAdmin, async (req, res) => {
+app.post('/api/broadcast', limits.admin, authenticateAdmin, async (req, res) => {
   try {
     const { message, image } = req.body.data || req.body;
     
