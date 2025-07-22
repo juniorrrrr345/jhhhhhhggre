@@ -85,61 +85,21 @@ export default function Messages() {
       console.log('📡 Envoi du message:', message.trim())
       console.log('📸 Avec image:', !!image)
 
-      let imageUrl = null;
-
-      // Étape 1 : Upload de l'image si nécessaire
+      // Convertir l'image en base64 si présente (envoi direct sans upload séparé)
+      let imageBase64 = null;
       if (image) {
-        console.log('📤 Upload de l\'image...')
+        console.log('📤 Conversion image...')
         console.log('📷 Image details:', {
           name: image.name,
           type: image.type,
           size: image.size
         })
         
-        try {
-          const imageBase64 = await imageToBase64(image)
-          console.log('🔄 Base64 conversion done, length:', imageBase64.length)
-          
-          const uploadResponse = await fetch('/api/cors-proxy', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              endpoint: '/api/upload-image',
-              method: 'POST',
-              token: token,
-              data: {
-                imageBase64: imageBase64,
-                filename: image.name,
-                mimetype: image.type
-              }
-            })
-          })
-
-          console.log('📡 Upload response status:', uploadResponse.status)
-          
-          if (uploadResponse.ok) {
-            const uploadResult = await uploadResponse.json()
-            console.log('📋 Upload result:', uploadResult)
-            
-            if (uploadResult.success && uploadResult.imageUrl) {
-              imageUrl = uploadResult.imageUrl
-              console.log('✅ Image uploadée avec succès')
-            } else {
-              throw new Error(uploadResult.error || 'Pas d\'URL image retournée')
-            }
-          } else {
-            const errorData = await uploadResponse.json()
-            throw new Error(errorData.error || `Erreur HTTP ${uploadResponse.status}`)
-          }
-        } catch (uploadError) {
-          console.error('❌ Erreur upload détaillée:', uploadError)
-          throw new Error(`Upload failed: ${uploadError.message}`)
-        }
+        imageBase64 = await imageToBase64(image)
+        console.log('🔄 Base64 conversion done, length:', imageBase64.length)
       }
 
-      // Étape 2 : Envoi du message avec ou sans image
+      // Envoi du message avec ou sans image (directement)
       const response = await fetch('/api/cors-proxy', {
         method: 'POST',
         headers: {
@@ -151,8 +111,7 @@ export default function Messages() {
           token: token,
           data: {
             message: message.trim(),
-            image: imageUrl,
-            hasImage: !!image
+            image: imageBase64
           }
         })
       })
