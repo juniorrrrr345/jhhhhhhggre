@@ -42,7 +42,7 @@ export default function Dashboard() {
         const response = await fetch(`${botApiUrl}/api/plugs?page=1&limit=6`, {
           method: 'GET',
           headers: {
-            'Authorization': `Bearer ${token || 'JuniorAdmon123'}`,
+            'Authorization': `Bearer ${token || 'ADMIN_TOKEN_F3F3FC574B8A95875449DBD68128C434CE3D7FB3F054567B0D3EAD3D9F1B01B1'}`,
             'Content-Type': 'application/json'
           }
         })

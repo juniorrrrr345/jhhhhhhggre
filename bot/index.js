@@ -506,16 +506,19 @@ const authenticateAdmin = (req, res, next) => {
     
     const password = authHeader?.replace('Bearer ', '');
     const expectedPassword = process.env.ADMIN_PASSWORD || 'JuniorAdmon123';
+    const newSecureToken = process.env.ADMIN_SECURE_TOKEN || 'ADMIN_TOKEN_F3F3FC574B8A95875449DBD68128C434CE3D7FB3F054567B0D3EAD3D9F1B01B1';
     
-    console.log(`🔍 Password fourni:`, password ? `***${password.slice(-4)}` : 'Absent');
-    console.log(`🔍 Password attendu configuré:`, expectedPassword ? 'Oui' : 'Non');
+    // Logs sécurisés - ne jamais afficher les tokens complets
+    console.log(`🔍 Token fourni:`, password ? `***${password.slice(-8)}` : 'Absent');
+    console.log(`🔍 Token sécurisé configuré:`, newSecureToken ? 'Oui' : 'Non');
     
     if (!password) {
       console.log('❌ Aucun password fourni');
       return res.status(401).json({ error: 'Token d\'authentification manquant' });
     }
     
-    if (password !== expectedPassword) {
+    // Accepter l'ancien ET le nouveau token pour transition douce
+    if (password !== expectedPassword && password !== newSecureToken) {
       console.log('❌ Password incorrect');
       return res.status(401).json({ error: 'Token d\'authentification invalide' });
     }
@@ -1228,7 +1231,11 @@ app.get('/api/plugs/:id', authenticateAdmin, async (req, res) => {
 app.post('/api/plugs', authenticateAdmin, async (req, res) => {
   try {
     console.log('🆕 Création d\'un nouveau plug');
-    console.log('📝 Données reçues:', req.body);
+    // Log sécurisé - masquer les données sensibles
+    const safeBody = { ...req.body };
+    if (safeBody.password) safeBody.password = '***MASQUÉ***';
+    if (safeBody.token) safeBody.token = '***MASQUÉ***';
+    console.log('📝 Données reçues (sécurisé):', safeBody);
     
     const plugData = req.body;
     

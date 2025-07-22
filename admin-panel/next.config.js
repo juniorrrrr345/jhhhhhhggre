@@ -5,7 +5,7 @@ const nextConfig = {
   env: {
     API_BASE_URL: process.env.API_BASE_URL || 'https://jhhhhhhggre.onrender.com',
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || process.env.API_BASE_URL || 'https://jhhhhhhggre.onrender.com',
-    ADMIN_PASSWORD: process.env.ADMIN_PASSWORD || 'JuniorAdmon123'
+    ADMIN_PASSWORD: process.env.ADMIN_PASSWORD || 'ADMIN_TOKEN_F3F3FC574B8A95875449DBD68128C434CE3D7FB3F054567B0D3EAD3D9F1B01B1'
   },
   images: {
     domains: [

@@ -17,7 +17,7 @@ export default function TestProxy() {
     setTesting(true)
     setResults([])
     
-    const token = 'JuniorAdmon123'
+    const token = 'ADMIN_TOKEN_F3F3FC574B8A95875449DBD68128C434CE3D7FB3F054567B0D3EAD3D9F1B01B1'
     
     try {
       addResult('🚀 Test complet du proxy CORS', 'info')
@@ -110,21 +110,21 @@ export default function TestProxy() {
             </button>
             
             <button
-              onClick={() => testSpecific('Config', () => api.getConfig('JuniorAdmon123'))}
+              onClick={() => testSpecific('Config', () => api.getConfig('ADMIN_TOKEN_F3F3FC574B8A95875449DBD68128C434CE3D7FB3F054567B0D3EAD3D9F1B01B1'))}
               className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-medium"
             >
               ⚙️ Test Config
             </button>
             
             <button
-              onClick={() => testSpecific('Stats', () => api.getStats('JuniorAdmon123'))}
+              onClick={() => testSpecific('Stats', () => api.getStats('ADMIN_TOKEN_F3F3FC574B8A95875449DBD68128C434CE3D7FB3F054567B0D3EAD3D9F1B01B1'))}
               className="bg-yellow-500 hover:bg-yellow-600 text-white px-6 py-3 rounded-lg font-medium"
             >
               📊 Test Stats
             </button>
             
             <button
-              onClick={() => testSpecific('Plugs', () => api.getPlugs('JuniorAdmon123'))}
+              onClick={() => testSpecific('Plugs', () => api.getPlugs('ADMIN_TOKEN_F3F3FC574B8A95875449DBD68128C434CE3D7FB3F054567B0D3EAD3D9F1B01B1'))}
               className="bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-lg font-medium"
             >
               🔌 Test Plugs

@@ -1,9 +1,23 @@
 // Proxy CORS pour contourner les restrictions
 export default async function handler(req, res) {
-  // Configuration CORS permissive pour ce proxy
-  res.setHeader('Access-Control-Allow-Origin', '*')
+  // Configuration CORS sécurisée - seulement votre domaine
+  const allowedOrigins = [
+    'https://safeplugslink.vercel.app',
+    'https://safeplugslink-*.vercel.app', // Previews Vercel
+    'http://localhost:3000', // Développement local
+    'http://localhost:3001'
+  ];
+  
+  const origin = req.headers.origin;
+  if (allowedOrigins.includes(origin) || (origin && origin.includes('safeplugslink') && origin.includes('.vercel.app'))) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+  } else {
+    res.setHeader('Access-Control-Allow-Origin', 'https://safeplugslink.vercel.app');
+  }
+  
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+  res.setHeader('Access-Control-Allow-Credentials', 'true')
   
   if (req.method === 'OPTIONS') {
     res.status(200).end()

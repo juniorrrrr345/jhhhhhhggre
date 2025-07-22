@@ -42,7 +42,7 @@ export default function Diagnostic() {
       
       // Test 4: Test d'authentification
       addResult('🔐 Test d\'authentification...', 'info')
-      const password = 'JuniorAdmon123'
+      const password = 'ADMIN_TOKEN_F3F3FC574B8A95875449DBD68128C434CE3D7FB3F054567B0D3EAD3D9F1B01B1'
       
       try {
         const response = await fetch(`${apiBaseUrl}/api/config`, {

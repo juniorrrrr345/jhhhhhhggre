@@ -11,7 +11,7 @@ export default function ProxyLogin() {
     setResult('🔄 Test de connexion via proxy...')
 
     try {
-      const password = 'JuniorAdmon123'
+      const password = 'ADMIN_TOKEN_F3F3FC574B8A95875449DBD68128C434CE3D7FB3F054567B0D3EAD3D9F1B01B1'
       
       console.log('🔐 Tentative de connexion via proxy...')
       
