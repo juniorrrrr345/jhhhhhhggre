@@ -18,6 +18,7 @@ export default function Dashboard() {
     totalUsers: 0
   })
   const [config, setConfig] = useState(null)
+  const [recentShops, setRecentShops] = useState([])
   const [loading, setLoading] = useState(true)
   const router = useRouter()
 
@@ -52,6 +53,11 @@ export default function Dashboard() {
       console.log('✅ Config data:', configData)
       setConfig(configData)
       
+      // Récupérer les dernières boutiques
+      const shopsData = await simpleApi.getPlugs(token, { page: 1, limit: 6 })
+      console.log('✅ Shops data:', shopsData)
+      setRecentShops(shopsData.plugs || [])
+      
     } catch (error) {
       console.error('❌ Error fetching dashboard data:', error)
       // Fallback avec des valeurs par défaut
@@ -61,6 +67,7 @@ export default function Dashboard() {
         vipPlugs: 0,
         totalUsers: 0
       })
+      setRecentShops([])
     } finally {
       setLoading(false)
     }
@@ -196,6 +203,92 @@ export default function Dashboard() {
               </div>
             ))}
           </div>
+        </div>
+
+        {/* Boutiques récentes */}
+        <div>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-medium text-gray-900">Boutiques récentes</h2>
+            <button
+              onClick={() => router.push('/admin/plugs')}
+              className="text-sm text-blue-600 hover:text-blue-500 font-medium"
+            >
+              Voir toutes →
+            </button>
+          </div>
+          
+          {recentShops.length === 0 ? (
+            <div className="text-center py-12 bg-white rounded-lg border border-gray-200">
+              <UserGroupIcon className="mx-auto h-12 w-12 text-gray-400" />
+              <h3 className="mt-2 text-sm font-medium text-gray-900">Aucune boutique</h3>
+              <p className="mt-1 text-sm text-gray-500">
+                Commencez par ajouter votre première boutique.
+              </p>
+              <div className="mt-6">
+                <button
+                  onClick={() => router.push('/admin/plugs')}
+                  className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
+                >
+                  <PlusIcon className="-ml-1 mr-2 h-5 w-5" />
+                  Ajouter une boutique
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {recentShops.map((shop) => (
+                <div
+                  key={shop._id}
+                  className="relative rounded-lg border border-gray-300 bg-white p-4 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+                  onClick={() => router.push(`/admin/plugs`)}
+                >
+                  <div className="flex items-start space-x-3">
+                    {shop.image ? (
+                      <img
+                        className="h-12 w-12 rounded-lg object-cover"
+                        src={shop.image}
+                        alt={shop.name}
+                        onError={(e) => {
+                          e.target.style.display = 'none';
+                        }}
+                      />
+                    ) : (
+                      <div className="h-12 w-12 rounded-lg bg-gray-200 flex items-center justify-center">
+                        <UserGroupIcon className="h-6 w-6 text-gray-400" />
+                      </div>
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center space-x-2">
+                        <h3 className="text-sm font-medium text-gray-900 truncate">
+                          {shop.name}
+                        </h3>
+                        {shop.isVip && (
+                          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800">
+                            VIP
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-sm text-gray-500 truncate mt-1">
+                        {shop.description}
+                      </p>
+                      <div className="flex items-center justify-between mt-2">
+                        <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
+                          shop.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                        }`}>
+                          {shop.isActive ? 'Actif' : 'Inactif'}
+                        </span>
+                        {shop.likes > 0 && (
+                          <span className="text-xs text-gray-500">
+                            ❤️ {shop.likes}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </Layout>
