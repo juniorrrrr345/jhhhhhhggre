@@ -251,8 +251,8 @@ export default function ShopHome() {
             <>
               <div style={{ 
                 display: 'grid', 
-                gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
-                gap: '16px',
+                gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))',
+                gap: '8px',
                 marginBottom: '20px'
               }}>
                 {currentPlugs.map((plug, index) => (
@@ -263,8 +263,8 @@ export default function ShopHome() {
                   >
                     <div style={{
                       backgroundColor: '#1a1a1a',
-                      borderRadius: '12px',
-                      padding: '16px',
+                      borderRadius: '8px',
+                      padding: '8px',
                       border: '1px solid #2a2a2a',
                       transition: 'all 0.2s ease',
                       cursor: 'pointer',
@@ -274,9 +274,9 @@ export default function ShopHome() {
                       {getPositionBadge(index) && (
                         <div style={{
                           position: 'absolute',
-                          top: '12px',
-                          left: '12px',
-                          fontSize: '20px',
+                          top: '4px',
+                          left: '4px',
+                          fontSize: '14px',
                           zIndex: 2
                         }}>
                           {getPositionBadge(index)}
@@ -287,29 +287,29 @@ export default function ShopHome() {
                       {plug.isVip && (
                         <div style={{
                           position: 'absolute',
-                          top: '12px',
-                          right: '12px',
+                          top: '4px',
+                          right: '4px',
                           backgroundColor: '#FFD700',
                           color: '#000000',
-                          padding: '4px 8px',
-                          borderRadius: '12px',
-                          fontSize: '10px',
+                          padding: '2px 4px',
+                          borderRadius: '6px',
+                          fontSize: '8px',
                           fontWeight: 'bold',
                           display: 'flex',
                           alignItems: 'center',
-                          gap: '4px'
+                          gap: '2px'
                         }}>
-                          ⭐ VIP
+                          ⭐
                         </div>
                       )}
 
                       {/* Image */}
                       <div style={{
                         width: '100%',
-                        height: '120px',
+                        height: '80px',
                         backgroundColor: '#2a2a2a',
-                        borderRadius: '8px',
-                        marginBottom: '12px',
+                        borderRadius: '6px',
+                        marginBottom: '6px',
                         backgroundImage: plug.image ? `url("${getProxiedImageUrl(plug.image)}")` : 'none',
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
@@ -318,30 +318,33 @@ export default function ShopHome() {
                         justifyContent: 'center'
                       }}>
                         {!plug.image && (
-                          <span style={{ fontSize: '24px' }}>🏪</span>
+                          <span style={{ fontSize: '18px' }}>🏪</span>
                         )}
                       </div>
 
                       {/* Informations */}
                       <h3 style={{
                         color: '#ffffff',
-                        fontSize: '16px',
+                        fontSize: '12px',
                         fontWeight: 'bold',
-                        margin: '0 0 8px 0',
-                        lineHeight: '1.2'
+                        margin: '0 0 4px 0',
+                        lineHeight: '1.2',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap'
                       }}>
                         {plug.name}
                       </h3>
 
                       <p style={{
                         color: '#8e8e93',
-                        fontSize: '14px',
-                        margin: '0 0 12px 0',
-                        lineHeight: '1.3',
+                        fontSize: '10px',
+                        margin: '0 0 6px 0',
+                        lineHeight: '1.2',
                         overflow: 'hidden',
                         textOverflow: 'ellipsis',
                         display: '-webkit-box',
-                        WebkitLineClamp: 2,
+                        WebkitLineClamp: 1,
                         WebkitBoxOrient: 'vertical'
                       }}>
                         {plug.description}
@@ -350,41 +353,41 @@ export default function ShopHome() {
                       {/* Services */}
                       <div style={{ 
                         display: 'flex', 
-                        gap: '8px', 
-                        marginBottom: '12px',
+                        gap: '2px', 
+                        marginBottom: '6px',
                         flexWrap: 'wrap'
                       }}>
                         {plug.services?.delivery?.enabled && (
                           <span style={{
                             backgroundColor: '#007AFF',
                             color: '#ffffff',
-                            padding: '2px 6px',
-                            borderRadius: '8px',
-                            fontSize: '10px'
+                            padding: '1px 3px',
+                            borderRadius: '4px',
+                            fontSize: '8px'
                           }}>
-                            🚚 Livraison
+                            🚚
                           </span>
                         )}
                         {plug.services?.postal?.enabled && (
                           <span style={{
                             backgroundColor: '#34C759',
                             color: '#ffffff',
-                            padding: '2px 6px',
-                            borderRadius: '8px',
-                            fontSize: '10px'
+                            padding: '1px 3px',
+                            borderRadius: '4px',
+                            fontSize: '8px'
                           }}>
-                            ✈️ Postal
+                            ✈️
                           </span>
                         )}
                         {plug.services?.meetup?.enabled && (
                           <span style={{
                             backgroundColor: '#FF9500',
                             color: '#ffffff',
-                            padding: '2px 6px',
-                            borderRadius: '8px',
-                            fontSize: '10px'
+                            padding: '1px 3px',
+                            borderRadius: '4px',
+                            fontSize: '8px'
                           }}>
-                            🏠 Meetup
+                            🏠
                           </span>
                         )}
                       </div>
