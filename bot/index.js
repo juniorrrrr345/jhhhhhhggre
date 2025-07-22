@@ -1858,6 +1858,36 @@ app.post('/api/upload-image', authenticateAdmin, async (req, res) => {
   }
 });
 
+// Route pour servir les photos des applications (URL persistante)
+app.get('/api/photo/:fileId', async (req, res) => {
+  try {
+    const { fileId } = req.params;
+    
+    // Vérifier si le fileId est valide
+    if (!fileId || fileId.length < 10) {
+      return res.status(400).json({ error: 'ID de fichier invalide' });
+    }
+    
+    console.log(`📸 Demande photo pour fileId: ${fileId}`);
+    
+    // Obtenir l'URL de la photo depuis Telegram
+    const fileLink = await bot.telegram.getFileLink(fileId);
+    
+    // Rediriger vers l'URL Telegram
+    console.log(`📸 Redirection vers: ${fileLink.href}`);
+    res.redirect(fileLink.href);
+    
+  } catch (error) {
+    console.error('❌ Erreur récupération photo:', error);
+    
+    // Retourner une image par défaut ou une erreur 404
+    res.status(404).json({ 
+      error: 'Photo non trouvée',
+      details: error.message
+    });
+  }
+});
+
 // ============================================
 // ROUTES DE SANTÉ ET INFORMATIONS
 // ============================================
@@ -1926,9 +1956,20 @@ app.get('/api/applications', authenticateAdmin, async (req, res) => {
       .sort({ createdAt: -1 })
       .lean();
 
+    // Mapper les champs pour l'admin panel
+    const mappedApplications = applications.map(app => ({
+      ...app,
+      // Mappage pour compatibilité admin panel
+      telegramContact: app.contact?.telegram || app.telegramContact,
+      userFirstName: app.firstName,
+      userLastName: app.lastName,
+      userUsername: app.username,
+      plugName: app.name
+    }));
+
     res.json({
       success: true,
-      applications: applications
+      applications: mappedApplications
     });
   } catch (error) {
     console.error('Erreur récupération applications:', error);

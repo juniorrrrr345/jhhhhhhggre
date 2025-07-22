@@ -405,7 +405,12 @@ const handlePhoto = async (ctx) => {
     try {
       const fileLink = await ctx.telegram.getFileLink(photo.file_id);
       userForm.data.photoUrl = fileLink.href;
-      console.log('📸 URL photo générée:', fileLink.href.substring(0, 50) + '...');
+      
+      // Créer une URL persistante pour l'admin panel
+      const persistentUrl = `${process.env.BOT_URL || 'https://jhhhhhhggre.onrender.com'}/api/photo/${photo.file_id}`;
+      userForm.data.photoUrl = persistentUrl;
+      
+      console.log('📸 URL photo persistante générée:', persistentUrl);
     } catch (urlError) {
       console.warn('⚠️ Impossible de générer l\'URL photo:', urlError.message);
       userForm.data.photoUrl = null;
