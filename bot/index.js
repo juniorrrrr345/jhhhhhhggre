@@ -1347,37 +1347,73 @@ app.post('/api/plugs', authenticateAdmin, async (req, res) => {
 app.get('/api/plugs/:id/referral', authenticateAdmin, async (req, res) => {
   try {
     const { id } = req.params;
+    console.log('🔗 Demande de lien de parrainage pour ID:', id);
     
     const plug = await Plug.findById(id);
     if (!plug) {
+      console.log('❌ Boutique non trouvée:', id);
       return res.status(404).json({ error: 'Boutique non trouvée' });
     }
+
+    console.log('✅ Boutique trouvée:', plug.name);
+    console.log('🔍 État actuel - Code:', plug.referralCode, 'Lien:', plug.referralLink);
 
     // Générer le lien si pas encore fait
     if (!plug.referralCode || !plug.referralLink) {
       try {
+        console.log('🔄 Génération du lien de parrainage...');
         const botInfo = await bot.telegram.getMe();
-        plug.referralCode = plug.generateReferralCode();
-        plug.referralLink = plug.generateReferralLink(botInfo.username);
+        console.log('📱 Bot info récupéré:', botInfo.username);
+        
+        // Générer le code manuellement si la méthode n'existe pas
+        if (typeof plug.generateReferralCode === 'function') {
+          plug.referralCode = plug.generateReferralCode();
+        } else {
+          plug.referralCode = `ref_${plug._id}_${Date.now().toString(36)}`;
+          console.log('⚠️ Méthode generateReferralCode non disponible, code généré manuellement');
+        }
+        
+        // Générer le lien manuellement si la méthode n'existe pas
+        if (typeof plug.generateReferralLink === 'function') {
+          plug.referralLink = plug.generateReferralLink(botInfo.username);
+        } else {
+          plug.referralLink = `https://t.me/${botInfo.username}?start=${plug.referralCode}`;
+          console.log('⚠️ Méthode generateReferralLink non disponible, lien généré manuellement');
+        }
+        
+        console.log('🔗 Code généré:', plug.referralCode);
+        console.log('🔗 Lien généré:', plug.referralLink);
+        
         await plug.save();
-        console.log('🔗 Nouveau lien de parrainage généré pour:', plug.name);
+        console.log('✅ Lien de parrainage sauvegardé pour:', plug.name);
       } catch (linkError) {
         console.error('❌ Erreur génération lien:', linkError);
-        return res.status(500).json({ error: 'Erreur lors de la génération du lien' });
+        return res.status(500).json({ 
+          error: 'Erreur lors de la génération du lien',
+          details: linkError.message 
+        });
       }
+    } else {
+      console.log('✅ Lien existant trouvé pour:', plug.name);
     }
 
-    res.json({
+    const response = {
       boutique: plug.name,
       referralLink: plug.referralLink,
       referralCode: plug.referralCode,
       totalReferred: plug.totalReferred || 0,
       referredUsers: plug.referredUsers || []
-    });
+    };
+    
+    console.log('📤 Réponse envoyée:', response);
+    res.json(response);
 
   } catch (error) {
     console.error('❌ Erreur récupération lien de parrainage:', error);
-    res.status(500).json({ error: 'Erreur serveur' });
+    res.status(500).json({ 
+      error: 'Erreur serveur',
+      details: error.message 
+    });
   }
 });
 

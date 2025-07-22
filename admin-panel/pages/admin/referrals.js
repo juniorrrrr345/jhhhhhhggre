@@ -156,23 +156,28 @@ export default function ReferralsPage() {
             })
           })
 
-          if (response.ok) {
-            const referralData = await response.json()
-            referralLink = referralData.referralLink
-            
-            // Mettre à jour la boutique dans l'état local
-            setPlugs(prevPlugs => 
-              prevPlugs.map(p => 
-                p._id === plug._id 
-                  ? { ...p, ...referralData }
-                  : p
-              )
-            )
-            console.log('✅ Lien généré:', referralLink)
-          }
-        } catch (linkError) {
-          console.error('❌ Erreur génération lien:', linkError)
-        }
+                     if (response.ok) {
+             const referralData = await response.json()
+             referralLink = referralData.referralLink
+             
+             // Mettre à jour la boutique dans l'état local
+             setPlugs(prevPlugs => 
+               prevPlugs.map(p => 
+                 p._id === plug._id 
+                   ? { ...p, ...referralData }
+                   : p
+               )
+             )
+             console.log('✅ Lien généré:', referralLink)
+           } else {
+             const errorData = await response.json()
+             console.error('❌ Erreur API génération lien:', errorData)
+             toast.error(`Erreur API: ${errorData.error || 'Erreur inconnue'}`)
+           }
+         } catch (linkError) {
+           console.error('❌ Erreur génération lien:', linkError)
+           toast.error(`Erreur: ${linkError.message}`)
+         }
       }
 
       if (referralLink) {
