@@ -1783,17 +1783,59 @@ app.post('/api/broadcast', authenticateAdmin, async (req, res) => {
           // Envoyer avec image
           let imageSource = image;
           
-          // Si c'est une image base64, la convertir en Buffer
+          // Si c'est une image base64, la convertir en Buffer avec validation
           if (typeof image === 'string' && image.startsWith('data:')) {
-            const base64Data = image.split(',')[1];
-            const buffer = Buffer.from(base64Data, 'base64');
-            imageSource = { source: buffer };
+            try {
+              // Extraire le type MIME et les données base64
+              const [header, base64Data] = image.split(',');
+              const mimeType = header.match(/data:([^;]+)/)?.[1];
+              
+              // Vérifier que c'est un type d'image supporté
+              if (!mimeType || !mimeType.startsWith('image/')) {
+                throw new Error(`Type MIME non supporté: ${mimeType}`);
+              }
+              
+              // Valider le base64
+              if (!base64Data || base64Data.length === 0) {
+                throw new Error('Données base64 vides');
+              }
+              
+              // Convertir en buffer avec validation
+              const buffer = Buffer.from(base64Data, 'base64');
+              if (buffer.length === 0) {
+                throw new Error('Buffer vide après conversion base64');
+              }
+              
+              // Vérifier la taille (max 10MB pour Telegram)
+              if (buffer.length > 10 * 1024 * 1024) {
+                throw new Error('Image trop volumineuse (>10MB)');
+              }
+              
+              imageSource = { source: buffer };
+              console.log(`📸 Image convertie: ${mimeType}, ${buffer.length} bytes`);
+            } catch (imageError) {
+              console.error(`❌ Erreur conversion image pour user ${userId}:`, imageError.message);
+              // Envoyer le message sans image si la conversion échoue
+              await bot.telegram.sendMessage(userId, `${message.trim()}\n\n⚠️ Image non disponible`, {
+                parse_mode: 'HTML'
+              });
+              sent++;
+              continue;
+            }
           }
           
-          await bot.telegram.sendPhoto(userId, imageSource, {
-            caption: message.trim(),
-            parse_mode: 'HTML'
-          });
+          try {
+            await bot.telegram.sendPhoto(userId, imageSource, {
+              caption: message.trim(),
+              parse_mode: 'HTML'
+            });
+          } catch (photoError) {
+            console.error(`❌ Erreur sendPhoto pour user ${userId}:`, photoError.message);
+            // Fallback: envoyer le message sans image
+            await bot.telegram.sendMessage(userId, `${message.trim()}\n\n⚠️ Image non disponible`, {
+              parse_mode: 'HTML'
+            });
+          }
         } else {
           // Envoyer message simple
           await bot.telegram.sendMessage(userId, message.trim(), {
@@ -1864,6 +1906,39 @@ app.post('/api/upload-image', authenticateAdmin, async (req, res) => {
       return res.status(400).json({ 
         success: false,
         error: 'Aucune image fournie' 
+      });
+    }
+    
+    // Validation de l'image base64
+    try {
+      if (!imageBase64 || !imageBase64.startsWith('data:')) {
+        throw new Error('Format base64 invalide');
+      }
+      
+      const [header, base64Data] = imageBase64.split(',');
+      const mimeType = header.match(/data:([^;]+)/)?.[1];
+      
+      if (!mimeType || !mimeType.startsWith('image/')) {
+        throw new Error(`Type MIME non supporté: ${mimeType}`);
+      }
+      
+      if (!base64Data || base64Data.length === 0) {
+        throw new Error('Données base64 vides');
+      }
+      
+      // Test de conversion pour vérifier la validité
+      const buffer = Buffer.from(base64Data, 'base64');
+      if (buffer.length === 0) {
+        throw new Error('Buffer vide après conversion');
+      }
+      
+      console.log(`✅ Image validée: ${mimeType}, ${buffer.length} bytes`);
+      
+    } catch (validationError) {
+      console.error('❌ Validation image échouée:', validationError.message);
+      return res.status(400).json({ 
+        success: false,
+        error: 'Image invalide: ' + validationError.message 
       });
     }
     
