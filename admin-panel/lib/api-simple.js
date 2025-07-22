@@ -1,15 +1,11 @@
 // API simplifiée utilisant directement le proxy CORS
 
-const makeProxyCall = async (endpoint, method = 'GET', token = null, body = null) => {
+const makeProxyCall = async (endpoint, method = 'GET', token = null, data = null) => {
   console.log(`🔄 Simple Proxy Call: ${method} ${endpoint}`);
   
   const headers = {
     'Content-Type': 'application/json'
   };
-  
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
-  }
   
   try {
     const response = await fetch('/api/cors-proxy', {
@@ -18,7 +14,8 @@ const makeProxyCall = async (endpoint, method = 'GET', token = null, body = null
       body: JSON.stringify({
         endpoint: endpoint,
         method: method,
-        body: body
+        token: token,
+        data: data
       })
     });
     
@@ -29,9 +26,9 @@ const makeProxyCall = async (endpoint, method = 'GET', token = null, body = null
       throw new Error(`Proxy error: ${response.status} - ${errorData.error || 'Unknown error'}`);
     }
     
-    const data = await response.json();
+    const responseData = await response.json();
     console.log('✅ Simple proxy data received');
-    return data;
+    return responseData;
     
   } catch (error) {
     console.error('💥 Simple Proxy Error:', error);

@@ -11,10 +11,11 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { endpoint, method = 'GET', body } = req.body || {}
+    const { endpoint, method = 'GET', token, data } = req.body || {}
     const apiUrl = 'https://jhhhhhhggre.onrender.com'
     
     console.log(`🔄 Proxy request: ${method} ${endpoint}`)
+    console.log(`🔑 Token provided: ${token ? 'Yes' : 'No'}`)
     
     // Préparer les headers
     const headers = {
@@ -22,8 +23,10 @@ export default async function handler(req, res) {
       'User-Agent': 'Admin-Panel-Proxy/1.0'
     }
     
-    // Ajouter l'autorisation si présente
-    if (req.headers.authorization) {
+    // Ajouter l'autorisation avec le token du body ou du header
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`
+    } else if (req.headers.authorization) {
       headers['Authorization'] = req.headers.authorization
     }
     
@@ -33,8 +36,8 @@ export default async function handler(req, res) {
       headers: headers
     }
     
-    if (body && (method === 'POST' || method === 'PUT')) {
-      fetchOptions.body = JSON.stringify(body)
+    if (data && (method === 'POST' || method === 'PUT' || method === 'PATCH')) {
+      fetchOptions.body = JSON.stringify(data)
     }
     
     const response = await fetch(`${apiUrl}${endpoint}`, fetchOptions)
@@ -42,14 +45,19 @@ export default async function handler(req, res) {
     console.log(`📡 Proxy response: ${response.status}`)
     
     // Récupérer la réponse
-    const data = await response.text()
+    const responseText = await response.text()
     
     // Retourner la réponse avec le bon status
-    res.status(response.status).json(
-      response.status >= 200 && response.status < 300 
-        ? JSON.parse(data) 
-        : { error: data }
-    )
+    if (response.status >= 200 && response.status < 300) {
+      try {
+        const jsonData = JSON.parse(responseText)
+        res.status(response.status).json(jsonData)
+      } catch (parseError) {
+        res.status(response.status).json({ data: responseText })
+      }
+    } else {
+      res.status(response.status).json({ error: responseText })
+    }
     
   } catch (error) {
     console.error('❌ Proxy error:', error.message)
