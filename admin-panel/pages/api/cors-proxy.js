@@ -17,6 +17,9 @@ export default async function handler(req, res) {
     console.log(`🔄 Proxy request: ${method} ${endpoint}`)
     console.log(`🔑 Token provided: ${token ? 'Yes' : 'No'}`)
     console.log(`📦 Data provided: ${data ? 'Yes' : 'No'}`)
+    if (data && endpoint === '/api/plugs') {
+      console.log(`📋 Plug data being sent:`, JSON.stringify(data, null, 2))
+    }
     if (data && endpoint.includes('upload-image')) {
       console.log(`📸 Image data keys:`, Object.keys(data))
       console.log(`📸 Has imageBase64:`, !!data.imageBase64)
@@ -44,7 +47,9 @@ export default async function handler(req, res) {
     
     if (data && (method === 'POST' || method === 'PUT' || method === 'PATCH')) {
       // L'API bot s'attend à recevoir { data: ... } dans req.body
-      fetchOptions.body = JSON.stringify({ data: data })
+      const bodyToSend = { data: data }
+      console.log(`📤 Body being sent to API:`, JSON.stringify(bodyToSend, null, 2))
+      fetchOptions.body = JSON.stringify(bodyToSend)
     }
     
     const response = await fetch(`${apiUrl}${endpoint}`, fetchOptions)

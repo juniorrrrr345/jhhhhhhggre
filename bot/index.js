@@ -1230,13 +1230,17 @@ app.get('/api/plugs/:id', authenticateAdmin, async (req, res) => {
 app.post('/api/plugs', authenticateAdmin, async (req, res) => {
   try {
     console.log('🆕 Création d\'un nouveau plug');
-    console.log('📝 Données reçues:', req.body);
+    console.log('📝 Données reçues (req.body):', JSON.stringify(req.body, null, 2));
     
     // Extraire les données du champ 'data' si elles viennent du proxy
     const plugData = req.body.data || req.body;
+    console.log('📝 Données extraites (plugData):', JSON.stringify(plugData, null, 2));
+    console.log('📝 plugData.name:', plugData.name);
+    console.log('📝 plugData.description:', plugData.description);
     
     // Validation des champs requis
     if (!plugData.name || !plugData.description) {
+      console.log('❌ Validation échouée - Nom ou description manquant');
       return res.status(400).json({ 
         error: 'Le nom et la description sont requis' 
       });
