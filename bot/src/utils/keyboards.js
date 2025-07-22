@@ -283,13 +283,13 @@ const createPlugKeyboard = (plug, returnContext = 'top_plugs', userId = null) =>
         
         voteButtonText = `👍 Déjà voté (${votesCount}) - ${hours}h${minutes}m`;
       } else {
-        voteButtonText = `🤍 VoterPour ce Plug (${votesCount})`;
+        voteButtonText = `👍 Voter Pour ce Plug (${votesCount})`;
       }
     } else {
-      voteButtonText = `🤍 VoterPour ce Plug (${votesCount})`;
+      voteButtonText = `👍 Voter Pour ce Plug (${votesCount})`;
     }
   } else {
-    voteButtonText = `🤍 VoterPour ce Plug (${votesCount})`;
+    voteButtonText = `👍 Voter Pour ce Plug (${votesCount})`;
   }
   
   buttons.push([Markup.button.callback(voteButtonText, `like_${plug._id}`)]);
