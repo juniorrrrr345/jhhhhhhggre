@@ -1,4 +1,5 @@
 {
+  "_comment": "Updated 2024-01-22 - Dashboard shops display fix",
   "functions": {
     "pages/admin/messages.js": {
       "memory": 1024
