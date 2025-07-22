@@ -113,7 +113,7 @@ const redirectToShopDetails = async (ctx, boutique) => {
       message += `🌍 **Pays desservis :** ${boutique.countries.join(', ')}\n\n`;
     }
 
-    // Afficher les likes
+    // Afficher les likes avec la bonne icône
     const likesCount = boutique.likes || 0;
     message += `🖤 ${likesCount} like${likesCount !== 1 ? 's' : ''}\n\n`;
 

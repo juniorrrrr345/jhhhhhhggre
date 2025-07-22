@@ -359,7 +359,7 @@ const handlePlugDetails = async (ctx, plugId, returnContext = 'top_plugs') => {
 
     // Afficher les likes (même à 0 pour montrer la fonctionnalité)
     const likesCount = plug.likes || 0;
-    message += `❤️ **${likesCount} like${likesCount !== 1 ? 's' : ''}**\n\n`;
+    message += `🖤 ${likesCount} like${likesCount !== 1 ? 's' : ''}\n\n`;
 
     // Utiliser la fonction createPlugKeyboard qui gère déjà tout (avec userId pour l'état du bouton like)
     const keyboard = createPlugKeyboard(plug, returnContext, ctx.from?.id);
