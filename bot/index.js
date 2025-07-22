@@ -1683,16 +1683,31 @@ app.get('/api/users/stats', authenticateAdmin, async (req, res) => {
 // Route pour la diffusion de messages
 app.post('/api/broadcast', authenticateAdmin, async (req, res) => {
   try {
-    const { message, image } = req.body;
+    const { message, image } = req.body.data || req.body;
+    
+    console.log('📢 BROADCAST DEBUG: Received data:', req.body);
+    console.log('📢 BROADCAST DEBUG: Message:', message);
+    console.log('📢 BROADCAST DEBUG: userStorage size:', userStorage.size);
     
     if (!message || !message.trim()) {
-      return res.status(400).json({ error: 'Message requis' });
+      return res.status(400).json({ 
+        success: false,
+        error: 'Message requis' 
+      });
+    }
+
+    if (userStorage.size === 0) {
+      return res.status(400).json({ 
+        success: false,
+        error: 'Aucun utilisateur enregistré pour recevoir les messages' 
+      });
     }
 
     let sent = 0;
     let failed = 0;
     
     console.log(`📢 Début diffusion à ${userStorage.size} utilisateur(s)`);
+    console.log(`📢 Liste utilisateurs:`, Array.from(userStorage));
     
     // Parcourir tous les utilisateurs enregistrés
     for (const userId of userStorage) {
@@ -1728,6 +1743,8 @@ app.post('/api/broadcast', authenticateAdmin, async (req, res) => {
     console.log(`✅ Diffusion terminée: ${sent} envoyés, ${failed} échecs`);
     
     res.json({
+      success: true,
+      sentCount: sent,
       sent,
       failed,
       totalUsers: userStorage.size,
@@ -1736,7 +1753,10 @@ app.post('/api/broadcast', authenticateAdmin, async (req, res) => {
     
   } catch (error) {
     console.error('❌ Erreur diffusion:', error);
-    res.status(500).json({ error: 'Erreur lors de la diffusion' });
+    res.status(500).json({ 
+      success: false,
+      error: 'Erreur lors de la diffusion: ' + error.message 
+    });
   }
 });
 
