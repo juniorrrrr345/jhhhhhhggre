@@ -10,6 +10,7 @@ export default function Messages() {
   const [success, setSuccess] = useState('')
   const [error, setError] = useState('')
   const [botUsers, setBotUsers] = useState(0)
+  const [loading, setLoading] = useState(true)
   const router = useRouter()
 
   useEffect(() => {
@@ -22,6 +23,7 @@ export default function Messages() {
 
     // Récupérer le nombre d'utilisateurs
     fetchBotUsers(token)
+    setLoading(false)
   }, [])
 
   const fetchBotUsers = async (token) => {
