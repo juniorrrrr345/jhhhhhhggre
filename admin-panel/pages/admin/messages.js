@@ -83,8 +83,45 @@ export default function Messages() {
       }
 
       console.log('📡 Envoi du message:', message.trim())
+      console.log('📸 Avec image:', !!image)
 
-      // Pour l'instant, on envoie juste le texte (pas d'image pour simplifier)
+      let imageUrl = null;
+
+      // Étape 1 : Upload de l'image si nécessaire
+      if (image) {
+        console.log('📤 Upload de l\'image...')
+        
+        const formData = new FormData()
+        formData.append('image', image)
+
+        const uploadResponse = await fetch('/api/cors-proxy', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            endpoint: '/api/upload-image',
+            method: 'POST',
+            token: token,
+            // Note: On ne peut pas envoyer FormData via JSON, on va utiliser base64
+            data: {
+              imageBase64: await imageToBase64(image),
+              filename: image.name,
+              mimetype: image.type
+            }
+          })
+        })
+
+        if (uploadResponse.ok) {
+          const uploadResult = await uploadResponse.json()
+          imageUrl = uploadResult.imageUrl
+          console.log('✅ Image uploadée:', imageUrl ? 'OK' : 'Failed')
+        } else {
+          throw new Error('Erreur lors de l\'upload de l\'image')
+        }
+      }
+
+      // Étape 2 : Envoi du message avec ou sans image
       const response = await fetch('/api/cors-proxy', {
         method: 'POST',
         headers: {
@@ -96,6 +133,7 @@ export default function Messages() {
           token: token,
           data: {
             message: message.trim(),
+            image: imageUrl,
             hasImage: !!image
           }
         })
@@ -108,7 +146,7 @@ export default function Messages() {
         console.log('✅ Broadcast result:', result)
         
         if (result.success) {
-          setSuccess(`Message envoyé avec succès à ${result.sentCount || 'tous les'} utilisateurs !`)
+          setSuccess(`Message ${image ? 'avec image' : ''} envoyé avec succès à ${result.sentCount || 'tous les'} utilisateurs !`)
           setMessage('')
           setImage(null)
           setImagePreview('')
@@ -125,6 +163,16 @@ export default function Messages() {
     } finally {
       setSending(false)
     }
+  }
+
+  // Fonction utilitaire pour convertir une image en base64
+  const imageToBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader()
+      reader.onload = () => resolve(reader.result)
+      reader.onerror = error => reject(error)
+      reader.readAsDataURL(file)
+    })
   }
 
   if (loading) {

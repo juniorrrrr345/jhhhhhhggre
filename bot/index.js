@@ -1712,6 +1712,7 @@ app.post('/api/broadcast', authenticateAdmin, async (req, res) => {
     
     console.log('📢 BROADCAST DEBUG: Received data:', req.body);
     console.log('📢 BROADCAST DEBUG: Message:', message);
+    console.log('📢 BROADCAST DEBUG: Image:', image ? 'Present' : 'None');
     console.log('📢 BROADCAST DEBUG: userStorage size:', userStorage.size);
     
     if (!message || !message.trim()) {
@@ -1739,7 +1740,16 @@ app.post('/api/broadcast', authenticateAdmin, async (req, res) => {
       try {
         if (image) {
           // Envoyer avec image
-          await bot.telegram.sendPhoto(userId, image, {
+          let imageSource = image;
+          
+          // Si c'est une image base64, la convertir en Buffer
+          if (typeof image === 'string' && image.startsWith('data:')) {
+            const base64Data = image.split(',')[1];
+            const buffer = Buffer.from(base64Data, 'base64');
+            imageSource = { source: buffer };
+          }
+          
+          await bot.telegram.sendPhoto(userId, imageSource, {
             caption: message.trim(),
             parse_mode: 'HTML'
           });
@@ -1786,16 +1796,27 @@ app.post('/api/broadcast', authenticateAdmin, async (req, res) => {
 });
 
 // Route pour l'upload d'images (pour la diffusion)
-app.post('/api/upload-image', authenticateAdmin, upload.single('image'), async (req, res) => {
+app.post('/api/upload-image', authenticateAdmin, async (req, res) => {
   try {
-    if (!req.file) {
-      return res.status(400).json({ error: 'Aucune image fournie' });
+    // Support des deux méthodes : upload direct ou base64 via proxy
+    let imageBase64;
+    
+    if (req.file) {
+      // Upload direct avec multer
+      imageBase64 = `data:${req.file.mimetype};base64,${req.file.buffer.toString('base64')}`;
+    } else if (req.body.data?.imageBase64) {
+      // Via CORS proxy avec base64
+      imageBase64 = req.body.data.imageBase64;
+      console.log('📤 Image reçue via proxy:', req.body.data.filename);
+    } else {
+      return res.status(400).json({ 
+        success: false,
+        error: 'Aucune image fournie' 
+      });
     }
-
-    // Convertir l'image en base64 pour simplifier (temporaire)
-    const imageBase64 = `data:${req.file.mimetype};base64,${req.file.buffer.toString('base64')}`;
     
     res.json({
+      success: true,
       imageUrl: imageBase64,
       message: 'Image uploadée avec succès'
     });
