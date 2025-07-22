@@ -30,14 +30,14 @@ export default function AccueilAdmin() {
   const router = useRouter()
 
   useEffect(() => {
-    let token = localStorage.getItem('adminToken')
+    const token = localStorage.getItem('adminToken')
     if (!token) {
-      // Utiliser le token par défaut temporairement
-      token = 'ADMIN_TOKEN_F3F3FC574B8A95875449DBD68128C434CE3D7FB3F054567B0D3EAD3D9F1B01B1'
-      localStorage.setItem('adminToken', token)
+      console.log('❌ Pas de token, redirection vers login')
+      router.push('/')
+      return
     }
     fetchData(token)
-  }, [search, filter, currentPage])
+  }, [search, filter, currentPage, router])
 
   const fetchData = async (token) => {
     try {
