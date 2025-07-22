@@ -410,15 +410,10 @@ const createPlugListKeyboard = (plugs, page = 0, totalPages = 1, context = 'plug
     // 📦 📍 🛵 
     // 👍 nombre
     
-    // Ligne 1: Drapeau + nom (VIP avec étoile si applicable)
+    // Ligne 1: Drapeau + nom complet (VIP avec étoile si applicable)
     const vipIcon = plug.isVip ? ' ⭐' : '';
-    // Tronquer le nom si trop long pour éviter "..."
-    const maxNameLength = 25; // Limite pour éviter la troncature Telegram
-    let displayName = plug.name;
-    if (displayName.length > maxNameLength) {
-      displayName = displayName.substring(0, maxNameLength - 3) + '...';
-    }
-    const line1 = `🇫🇷 ${displayName.toUpperCase()}${vipIcon}`;
+    // Afficher le nom complet sans troncature
+    const line1 = `🇫🇷 ${plug.name.toUpperCase()}${vipIcon}`;
     
     // Ligne 2: Icônes des services disponibles
     const services = [];
@@ -448,10 +443,7 @@ const createPlugListKeyboard = (plugs, page = 0, totalPages = 1, context = 'plug
     buttons.push(navButtons);
   }
   
-  // Navigation identique à la section recherche
-  buttons.push([Markup.button.callback('Tous les plugs', 'plugs_all')]);
-  buttons.push([Markup.button.callback('Par service', 'filter_service')]);
-  buttons.push([Markup.button.callback('Par pays', 'filter_country')]);
+  // Navigation simple - seulement retour
   buttons.push([Markup.button.callback('🔙 Retour', 'back_main')]);
   
   return Markup.inlineKeyboard(buttons);
@@ -467,14 +459,9 @@ const createVIPKeyboard = (vipPlugs) => {
     // 📦 📍 🛵 
     // 👍 nombre
     
-    // Ligne 1: Drapeau + nom + étoile VIP
-    // Tronquer le nom si trop long pour éviter "..."
-    const maxNameLength = 23; // Limite plus courte car on a l'étoile VIP
-    let displayName = plug.name;
-    if (displayName.length > maxNameLength) {
-      displayName = displayName.substring(0, maxNameLength - 3) + '...';
-    }
-    const line1 = `🇫🇷 ${displayName.toUpperCase()} ⭐`;
+    // Ligne 1: Drapeau + nom complet + étoile VIP
+    // Afficher le nom complet sans troncature
+    const line1 = `🇫🇷 ${plug.name.toUpperCase()} ⭐`;
     
     // Ligne 2: Icônes des services disponibles
     const services = [];
@@ -491,10 +478,7 @@ const createVIPKeyboard = (vipPlugs) => {
     buttons.push([Markup.button.callback(cardText, `plug_${plug._id}_from_plugs_vip`)]);
   });
   
-  // Navigation identique à la section recherche
-  buttons.push([Markup.button.callback('Tous les plugs', 'plugs_all')]);
-  buttons.push([Markup.button.callback('Par service', 'filter_service')]);
-  buttons.push([Markup.button.callback('Par pays', 'filter_country')]);
+  // Navigation simple - seulement retour
   buttons.push([Markup.button.callback('🔙 Retour', 'back_main')]);
   
   return Markup.inlineKeyboard(buttons);
