@@ -76,6 +76,20 @@ const configSchema = new mongoose.Schema({
         type: Boolean,
         default: true
       }
+    },
+    socialMedia: {
+      text: {
+        type: String,
+        default: '📱 Réseaux sociaux'
+      },
+      content: {
+        type: String,
+        default: 'Suivez-nous sur nos réseaux sociaux !'
+      },
+      enabled: {
+        type: Boolean,
+        default: true
+      }
     }
   },
   

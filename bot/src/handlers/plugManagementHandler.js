@@ -203,9 +203,20 @@ const handleConfirmCancel = async (ctx) => {
 // Fonction utilitaire pour formater les services
 const getServicesText = (services) => {
   const servicesList = [];
-  if (services.includes('delivery')) servicesList.push('Livraison');
-  if (services.includes('postal')) servicesList.push('Envoi postal');
-  if (services.includes('meetup')) servicesList.push('Meetup');
+  
+  // Gérer les deux formats possibles : array et object
+  if (Array.isArray(services)) {
+    // Format array (nouvelles applications)
+    if (services.includes('delivery')) servicesList.push('Livraison');
+    if (services.includes('postal')) servicesList.push('Envoi postal');
+    if (services.includes('meetup')) servicesList.push('Meetup');
+  } else if (services && typeof services === 'object') {
+    // Format object (anciennes applications)
+    if (services.delivery?.enabled) servicesList.push('Livraison');
+    if (services.postal?.enabled) servicesList.push('Envoi postal');
+    if (services.meetup?.enabled) servicesList.push('Meetup');
+  }
+  
   return servicesList.length > 0 ? servicesList.join(', ') : 'Aucun service spécifié';
 };
 
