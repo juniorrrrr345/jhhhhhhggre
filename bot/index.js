@@ -397,6 +397,15 @@ bot.action(/^like_([a-f\d]{24})$/, async (ctx) => {
     await plug.save();
     console.log(`✅ LIKE DEBUG: User ${userId} liked plug ${plugId}. New likes count: ${plug.likes}`);
     
+    // ========== MISE À JOUR CACHE TEMPS RÉEL ==========
+    // Mettre à jour le cache pour synchroniser toutes les listes
+    try {
+      await refreshCache();
+      console.log(`🔄 Cache mis à jour après like sur ${plug.name}`);
+    } catch (cacheError) {
+      console.log('⚠️ Erreur mise à jour cache:', cacheError.message);
+    }
+    
     // Notification du like ajouté SANS popup qui interfère
     await ctx.answerCbQuery(`❤️ Vous avez liké ${plug.name} ! (${plug.likes} likes)`);
     
