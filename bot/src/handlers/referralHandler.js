@@ -77,58 +77,47 @@ const handleReferral = async (ctx, referralCode) => {
   }
 };
 
-// Envoyer un message de bienvenue personnalisé pour la boutique
-const sendWelcomeMessage = async (ctx, boutique) => {
+// Rediriger directement vers les détails de la boutique
+const redirectToShopDetails = async (ctx, boutique) => {
   try {
-    const welcomeMessage = `🎉 **Bienvenue !**
+    console.log(`🎯 Redirection directe vers ${boutique.name}`);
+    
+    // Utiliser handlePlugDetails pour afficher directement les détails de la boutique
+    await handlePlugDetails(ctx, boutique._id, 'referral');
+    
+    console.log(`✅ Redirection réussie vers ${boutique.name}`);
+
+  } catch (error) {
+    console.error('❌ Erreur redirection vers boutique:', error);
+    
+    // Fallback : message simple si la redirection échoue
+    try {
+      const fallbackMessage = `🎉 **Bienvenue !**
 
 Vous avez été invité par **${boutique.name}** !
 
-🏪 **${boutique.name}**
-📍 ${boutique.location || 'Non spécifié'}
-${boutique.description}
+Cliquez sur le bouton ci-dessous pour voir cette boutique :`;
 
-🌟 Découvrez maintenant toutes nos boutiques ou explorez directement celle-ci !`;
+      const keyboard = {
+        inline_keyboard: [
+          [{
+            text: `🏪 Voir ${boutique.name}`,
+            callback_data: `plug_${boutique._id}_from_referral`
+          }],
+          [{
+            text: '🌟 Toutes les boutiques',
+            callback_data: 'top_plugs'
+          }]
+        ]
+      };
 
-    // Créer un clavier avec bouton spécial pour la boutique
-    const keyboard = {
-      inline_keyboard: [
-        [{
-          text: `🏪 Voir ${boutique.name}`,
-          callback_data: `plug_${boutique._id}_from_referral`
-        }],
-        [{
-          text: '🌟 Toutes les boutiques',
-          callback_data: 'top_plugs'
-        }],
-        [{
-          text: '💎 Boutiques VIP',
-          callback_data: 'plugs_vip'
-        }],
-        [{
-          text: '📞 Contact',
-          callback_data: 'contact'
-        }]
-      ]
-    };
-
-    if (boutique.image) {
-      await ctx.replyWithPhoto(boutique.image, {
-        caption: welcomeMessage,
+      await ctx.reply(fallbackMessage, {
         reply_markup: keyboard,
         parse_mode: 'Markdown'
       });
-    } else {
-      await ctx.reply(welcomeMessage, {
-        reply_markup: keyboard,
-        parse_mode: 'Markdown'
-      });
+    } catch (fallbackError) {
+      console.error('❌ Erreur fallback:', fallbackError);
     }
-
-    console.log(`✅ Message de bienvenue envoyé pour ${boutique.name}`);
-
-  } catch (error) {
-    console.error('❌ Erreur envoi message de bienvenue:', error);
   }
 };
 
@@ -192,5 +181,5 @@ const handleParrainageCommand = async (ctx) => {
 module.exports = {
   handleReferral,
   handleParrainageCommand,
-  sendWelcomeMessage
+  redirectToShopDetails
 };

@@ -401,18 +401,29 @@ export default function ReferralsPage() {
                         </div>
                       )}
 
-                      {/* Statistiques */}
-                      <div className="grid grid-cols-2 gap-4 text-sm">
-                        <div className="bg-green-50 p-3 rounded-lg">
-                          <div className="text-green-600 font-medium">Personnes invitées</div>
-                          <div className="text-2xl font-bold text-green-700">
-                            {plug.totalReferred || 0}
+                      {/* Statistiques améliorées */}
+                      <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-3">
+                        <h5 className="text-sm font-medium text-gray-900 mb-3">
+                          📊 Statistiques de Parrainage
+                        </h5>
+                        <div className="grid grid-cols-2 gap-4 text-sm">
+                          <div className="bg-green-100 border border-green-200 p-3 rounded-lg text-center">
+                            <div className="text-green-600 font-medium">👥 Personnes invitées</div>
+                            <div className="text-3xl font-bold text-green-700 mt-1">
+                              {plug.totalReferred || 0}
+                            </div>
+                            <div className="text-xs text-green-600 mt-1">
+                              via lien de parrainage
+                            </div>
                           </div>
-                        </div>
-                        <div className="bg-blue-50 p-3 rounded-lg">
-                          <div className="text-blue-600 font-medium">Likes totaux</div>
-                          <div className="text-2xl font-bold text-blue-700">
-                            {plug.likes || 0}
+                          <div className="bg-blue-100 border border-blue-200 p-3 rounded-lg text-center">
+                            <div className="text-blue-600 font-medium">❤️ Likes totaux</div>
+                            <div className="text-3xl font-bold text-blue-700 mt-1">
+                              {plug.likes || 0}
+                            </div>
+                            <div className="text-xs text-blue-600 mt-1">
+                              depuis le bot
+                            </div>
                           </div>
                         </div>
                       </div>
