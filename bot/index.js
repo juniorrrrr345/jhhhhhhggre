@@ -30,8 +30,7 @@ const {
   handleServiceFilter,
   handleFilterCountry, 
   handleCountryFilter, 
-  handlePlugDetails, 
-  handlePlugServiceDetails 
+  handlePlugDetails
 } = require('./src/handlers/plugsHandler');
 const { handleContact, handleInfo, handleIgnoredCallback } = require('./src/handlers/menuHandler');
 const { handleSocialMedia } = require('./src/handlers/socialMediaHandler');
@@ -280,239 +279,91 @@ bot.action(/^plug_([a-f\d]{24})$/, (ctx) => {
   return handlePlugDetails(ctx, plugId, 'top_plugs');
 });
 
-// Détails d'un service d'un plug
-bot.action(/^plug_service_([a-f\d]{24})_(.+)$/, async (ctx) => {
-  try {
-    const plugId = ctx.match[1];
-    const serviceType = ctx.match[2];
-    console.log(`🔧 Service callback: plugId=${plugId}, serviceType=${serviceType}`);
-    console.log(`📱 Service callback data:`, ctx.callbackQuery.data);
-    console.log(`📊 Match complet:`, ctx.match);
-    
-    // Valider le type de service
-    const validServices = ['delivery', 'postal', 'meetup'];
-    if (!validServices.includes(serviceType)) {
-      console.log(`❌ Type de service invalide: ${serviceType}`);
-      return ctx.answerCbQuery('❌ Service non reconnu');
-    }
-    
-    return await handlePlugServiceDetails(ctx, plugId, serviceType);
-  } catch (error) {
-    console.error('❌ Erreur dans le gestionnaire de service:', error);
-    await ctx.answerCbQuery('❌ Erreur lors du chargement du service').catch(() => {});
-  }
-});
+// Détails d'un service d'un plug - SUPPRIMÉ
+// Les services (postal, meetup, livraison) ont été retirés du menu
 
 
-// Liker une boutique (système permanent avec cooldown)
+// Liker une boutique (système synchronisé temps réel)
 bot.action(/^like_([a-f\d]{24})$/, async (ctx) => {
   try {
     const plugId = ctx.match[1];
     const userId = ctx.from.id;
     
-    console.log(`🔍 LIKE DEBUG: User ${userId} (type: ${typeof userId}) wants to like plug ${plugId}`);
+    console.log(`🔍 LIKE DEBUG: User ${userId} veut liker plug ${plugId}`);
     
-    // Vérifier si la boutique existe
-    const Plug = require('./src/models/Plug');
-    const plug = await Plug.findById(plugId);
-    
-    if (!plug) {
-      return ctx.answerCbQuery('❌ Boutique non trouvée');
-    }
-    
-    // Debug détaillé
-    console.log(`🔍 LIKE DEBUG: Plug "${plug.name}" - Current likes: ${plug.likes}`);
-    console.log(`🔍 LIKE DEBUG: likedBy array:`, plug.likedBy);
-    console.log(`🔍 LIKE DEBUG: likedBy types:`, plug.likedBy.map(id => `${id}(${typeof id})`));
-    
-    // Vérification robuste qui gère les types number et string
-    const hasLiked = plug.likedBy.some(id => 
-      id == userId || // Comparaison loose
-      id === userId || // Comparaison stricte  
-      String(id) === String(userId) // Comparaison string
-    );
-    
-    console.log(`🔍 LIKE DEBUG: hasLiked result: ${hasLiked}`);
-    
-    // Vérifier le cooldown si l'utilisateur a déjà liké
-    if (hasLiked) {
-      // Trouver quand l'utilisateur a liké pour la dernière fois
-      const userLikeHistory = plug.likeHistory?.find(h => 
-        h.userId == userId || h.userId === userId || String(h.userId) === String(userId)
-      );
-      
-      if (userLikeHistory) {
-        const lastLikeTime = new Date(userLikeHistory.timestamp);
-        const now = new Date();
-        const timeDiff = now - lastLikeTime;
-        const cooldownTime = 2 * 60 * 60 * 1000; // 2 heures en millisecondes
-        
-        if (timeDiff < cooldownTime) {
-          const remainingTime = cooldownTime - timeDiff;
-          const hours = Math.floor(remainingTime / (60 * 60 * 1000));
-          const minutes = Math.floor((remainingTime % (60 * 60 * 1000)) / (60 * 1000));
-          
-          console.log(`🔍 LIKE DEBUG: User ${userId} in cooldown. Remaining: ${hours}h ${minutes}m`);
-          return ctx.answerCbQuery(
-            `⏰ Vous avez déjà liké cette boutique ! Vous pourrez liker à nouveau dans ${hours}h ${minutes}m.`,
-            { show_alert: true }
-          );
-        } else {
-          // Le cooldown est terminé, permettre un nouveau like
-          console.log(`🔍 LIKE DEBUG: Cooldown expired, allowing new like`);
-          
-          // Retirer l'ancien like
-          plug.likedBy = plug.likedBy.filter(id => 
-            id != userId && id !== userId && String(id) !== String(userId)
-          );
-          plug.likes = Math.max(0, plug.likes - 1);
-          
-          // Retirer de l'historique
-          plug.likeHistory = plug.likeHistory?.filter(h => 
-            h.userId != userId && h.userId !== userId && String(h.userId) !== String(userId)
-          ) || [];
-        }
-      }
-    }
-    
-    // ========== NOUVEAU LIKE ==========
-    console.log(`🔍 LIKE DEBUG: User ${userId} is adding a new like to plug ${plugId}`);
-    
-    // Initialiser likeHistory si nécessaire
-    if (!plug.likeHistory) {
-      plug.likeHistory = [];
-    }
-    
-    // Ajouter le like (permanent)
-    plug.likedBy.push(userId);
-    plug.likes += 1;
-    
-    // Ajouter à l'historique avec timestamp
-    plug.likeHistory.push({
-      userId: userId,
-      timestamp: Date.now(),
-      action: 'like'
+    // Utiliser l'API interne pour la synchronisation
+    const response = await fetch(`${process.env.API_BASE_URL || 'http://localhost:3000'}/api/likes/${plugId}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        userId: userId,
+        action: 'like'
+      })
     });
     
-    await plug.save();
-    console.log(`✅ LIKE DEBUG: User ${userId} liked plug ${plugId}. New likes count: ${plug.likes}`);
+    const result = await response.json();
     
-    // ========== MISE À JOUR CACHE TEMPS RÉEL ==========
-    // Mettre à jour le cache pour synchroniser toutes les listes
-    try {
-      await refreshCache();
-      console.log(`🔄 Cache mis à jour après like sur ${plug.name}`);
-    } catch (cacheError) {
-      console.log('⚠️ Erreur mise à jour cache:', cacheError.message);
+    if (!response.ok) {
+      if (response.status === 429) {
+        // Cooldown actif
+        return ctx.answerCbQuery(
+          `⏰ Vous avez déjà liké cette boutique ! Vous pourrez liker à nouveau dans ${result.remainingTime}.`,
+          { show_alert: true }
+        );
+      }
+      return ctx.answerCbQuery('❌ Erreur lors du like');
     }
     
-    // Notification du like ajouté SANS popup qui interfère
-    await ctx.answerCbQuery(`❤️ Vous avez liké ${plug.name} ! (${plug.likes} likes)`);
+    console.log(`✅ LIKE réussi: ${result.plugName} - ${result.likes} likes`);
     
-    // ========== MISE À JOUR INTELLIGENTE : SEUL LE TEXTE DU BOUTON LIKE ==========
-    // NE PAS régénérer tout le clavier - juste modifier le bouton like existant
+    // Notification du like ajouté
+    await ctx.answerCbQuery(`❤️ Vous avez liké ${result.plugName} ! (${result.likes} likes)`);
     
+    // Mise à jour du bouton like en temps réel
     try {
-      // Récupérer le clavier actuel
       const currentKeyboard = ctx.callbackQuery.message.reply_markup;
       
       if (currentKeyboard && currentKeyboard.inline_keyboard) {
-        // Chercher et modifier SEULEMENT le bouton like
         const updatedKeyboard = {
           inline_keyboard: currentKeyboard.inline_keyboard.map(row => 
             row.map(button => {
-              // Si c'est le bouton like (callback_data commence par "like_")
               if (button.callback_data && button.callback_data.startsWith(`like_${plugId}`)) {
-                // Calculer le temps restant pour le cooldown
-                const lastLikeTime = new Date(plug.likeHistory.find(h => h.userId.toString() === userId.toString())?.timestamp);
-                const now = new Date();
-                const timeDiff = Math.floor((now - lastLikeTime) / 1000);
-                const cooldownDuration = 2 * 60 * 60; // 2h en secondes
-                const timeLeft = Math.max(0, cooldownDuration - timeDiff);
-                
-                if (timeLeft > 0) {
-                  const hours = Math.floor(timeLeft / 3600);
-                  const minutes = Math.floor((timeLeft % 3600) / 60);
-                  return {
-                    ...button,
-                    text: `❤️ Déjà liké (${hours}h${minutes}m)`
-                  };
-                } else {
-                  return {
-                    ...button,
-                    text: `👍 Liker (${plug.likes})`
-                  };
-                }
+                return {
+                  ...button,
+                  text: `❤️ Déjà liké (2h)`
+                };
               }
-              // Tous les autres boutons restent inchangés
               return button;
             })
           )
         };
         
-        // Mettre à jour le clavier ET le message avec le nouveau nombre de likes
         await ctx.editMessageReplyMarkup(updatedKeyboard);
         
-        // Aussi mettre à jour le texte du message pour afficher le nouveau nombre de likes
+        // Mise à jour du texte du message avec le nouveau nombre de likes
         const currentText = ctx.callbackQuery.message.text || ctx.callbackQuery.message.caption;
         if (currentText) {
-          console.log(`📝 Texte actuel (avant): ${currentText.substring(0, 200)}...`);
-          
-          // Regex plus robuste pour capturer les likes (supporter plusieurs formats)
           const likeRegex = /(🖤|❤️|♥️) \d+ like[s]?/g;
-          const newLikeText = `🖤 ${plug.likes} like${plug.likes !== 1 ? 's' : ''}`;
+          const newLikeText = `🖤 ${result.likes} like${result.likes !== 1 ? 's' : ''}`;
+          const updatedText = currentText.replace(likeRegex, newLikeText);
           
-          let updatedText = currentText.replace(likeRegex, newLikeText);
-          
-          // Si pas de match avec la regex, essayer d'autres patterns
-          if (updatedText === currentText) {
-            // Patterns alternatifs
-            updatedText = currentText.replace(/🖤 \d+/g, `🖤 ${plug.likes}`);
-            if (updatedText === currentText) {
-              updatedText = currentText.replace(/❤️ \d+/g, `🖤 ${plug.likes}`);
-            }
+          if (updatedText !== currentText) {
+            await ctx.editMessageText(updatedText, {
+              reply_markup: updatedKeyboard,
+              parse_mode: 'Markdown'
+            });
           }
-          
-          console.log(`📝 Texte mis à jour (après): ${updatedText.substring(0, 200)}...`);
-          
-          try {
-            if (ctx.callbackQuery.message.photo) {
-              // Si c'est un message avec photo, utiliser editMessageCaption
-              await ctx.editMessageCaption(updatedText, { 
-                reply_markup: updatedKeyboard,
-                parse_mode: 'Markdown' 
-              });
-            } else {
-              // Si c'est un message texte, utiliser editMessageText
-              await ctx.editMessageText(updatedText, { 
-                reply_markup: updatedKeyboard,
-                parse_mode: 'Markdown' 
-              });
-            }
-            console.log(`✅ Message ET bouton like mis à jour pour ${plug.name} (${plug.likes} likes)`);
-          } catch (textEditError) {
-            console.log('⚠️ Erreur édition texte message:', textEditError.message);
-            console.log('⚠️ Détails erreur:', textEditError);
-            // Le clavier a déjà été mis à jour, c'est l'essentiel
-          }
-        } else {
-          console.log(`✅ SEUL le texte du bouton like modifié pour ${plug.name} - Menu intact`);
         }
-      } else {
-        console.log('⚠️ Pas de clavier existant trouvé');
       }
-    } catch (editError) {
-      console.log('⚠️ Erreur édition texte bouton like:', editError.message);
-      // En cas d'erreur, on ne fait rien pour préserver le menu existant
+    } catch (updateError) {
+      console.log('⚠️ Erreur mise à jour interface:', updateError.message);
     }
     
   } catch (error) {
-    console.error('❌ LIKE ERROR: Detailed error:', {
-      message: error.message,
-      stack: error.stack,
-      name: error.name
-    });
-    await ctx.answerCbQuery('❌ Erreur lors du like. Réessaie plus tard.').catch(() => {});
+    console.error('❌ Erreur dans le gestionnaire de like:', error);
+    await ctx.answerCbQuery('❌ Erreur lors du like').catch(() => {});
   }
 });
 
@@ -2503,5 +2354,152 @@ app.post('/api/reload-users', authenticateAdmin, async (req, res) => {
       success: false,
       error: 'Erreur lors du rechargement: ' + error.message 
     });
+  }
+});
+
+// API pour les likes - synchronisation temps réel
+app.post('/api/likes/:plugId', async (req, res) => {
+  try {
+    const { plugId } = req.params;
+    const { userId, action } = req.body; // action: 'like' ou 'unlike'
+    
+    console.log(`🔄 API LIKE: ${action} pour plug ${plugId} par user ${userId}`);
+    
+    if (!plugId || !userId || !action) {
+      return res.status(400).json({ error: 'Paramètres manquants' });
+    }
+    
+    const plug = await Plug.findById(plugId);
+    if (!plug) {
+      return res.status(404).json({ error: 'Plug non trouvé' });
+    }
+    
+    // Vérification robuste qui gère les types number et string
+    const hasLiked = plug.likedBy.some(id => 
+      id == userId || id === userId || String(id) === String(userId)
+    );
+    
+    if (action === 'like') {
+      if (hasLiked) {
+        // Vérifier le cooldown
+        const userLikeHistory = plug.likeHistory?.find(h => 
+          h.userId == userId || h.userId === userId || String(h.userId) === String(userId)
+        );
+        
+        if (userLikeHistory) {
+          const lastLikeTime = new Date(userLikeHistory.timestamp);
+          const now = new Date();
+          const timeDiff = now - lastLikeTime;
+          const cooldownTime = 2 * 60 * 60 * 1000; // 2 heures
+          
+          if (timeDiff < cooldownTime) {
+            const remainingTime = cooldownTime - timeDiff;
+            const hours = Math.floor(remainingTime / (60 * 60 * 1000));
+            const minutes = Math.floor((remainingTime % (60 * 60 * 1000)) / (60 * 1000));
+            
+            return res.status(429).json({ 
+              error: 'Cooldown actif',
+              remainingTime: `${hours}h ${minutes}m`
+            });
+          }
+        }
+      }
+      
+      // Ajouter le like
+      if (!hasLiked) {
+        plug.likedBy.push(userId);
+        plug.likes += 1;
+      }
+      
+      // Mettre à jour l'historique
+      if (!plug.likeHistory) plug.likeHistory = [];
+      plug.likeHistory.push({
+        userId: userId,
+        timestamp: Date.now(),
+        action: 'like'
+      });
+      
+    } else if (action === 'unlike') {
+      if (hasLiked) {
+        // Retirer le like
+        plug.likedBy = plug.likedBy.filter(id => 
+          id != userId && id !== userId && String(id) !== String(userId)
+        );
+        plug.likes = Math.max(0, plug.likes - 1);
+        
+        // Retirer de l'historique
+        plug.likeHistory = plug.likeHistory?.filter(h => 
+          h.userId != userId && h.userId !== userId && String(h.userId) !== String(userId)
+        ) || [];
+      }
+    }
+    
+    await plug.save();
+    
+    // Mettre à jour le cache
+    await refreshCache();
+    
+    console.log(`✅ API LIKE: ${action} réussi pour ${plug.name}. Nouveaux likes: ${plug.likes}`);
+    
+    res.json({
+      success: true,
+      likes: plug.likes,
+      hasLiked: action === 'like' ? true : false,
+      plugName: plug.name
+    });
+    
+  } catch (error) {
+    console.error('❌ Erreur API LIKE:', error);
+    res.status(500).json({ error: 'Erreur serveur' });
+  }
+});
+
+// API pour récupérer l'état des likes d'un plug
+app.get('/api/likes/:plugId/:userId', async (req, res) => {
+  try {
+    const { plugId, userId } = req.params;
+    
+    const plug = await Plug.findById(plugId);
+    if (!plug) {
+      return res.status(404).json({ error: 'Plug non trouvé' });
+    }
+    
+    // Vérifier si l'utilisateur a liké
+    const hasLiked = plug.likedBy.some(id => 
+      id == userId || id === userId || String(id) === String(userId)
+    );
+    
+    // Calculer le temps restant si liké
+    let remainingTime = null;
+    if (hasLiked) {
+      const userLikeHistory = plug.likeHistory?.find(h => 
+        h.userId == userId || h.userId === userId || String(h.userId) === String(userId)
+      );
+      
+      if (userLikeHistory) {
+        const lastLikeTime = new Date(userLikeHistory.timestamp);
+        const now = new Date();
+        const timeDiff = now - lastLikeTime;
+        const cooldownTime = 2 * 60 * 60 * 1000; // 2 heures
+        
+        if (timeDiff < cooldownTime) {
+          const remaining = cooldownTime - timeDiff;
+          const hours = Math.floor(remaining / (60 * 60 * 1000));
+          const minutes = Math.floor((remaining % (60 * 60 * 1000)) / (60 * 1000));
+          remainingTime = `${hours}h ${minutes}m`;
+        }
+      }
+    }
+    
+    res.json({
+      likes: plug.likes,
+      hasLiked,
+      remainingTime,
+      plugName: plug.name
+    });
+    
+  } catch (error) {
+    console.error('❌ Erreur API GET LIKES:', error);
+    res.status(500).json({ error: 'Erreur serveur' });
   }
 });

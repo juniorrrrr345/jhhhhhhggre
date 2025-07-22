@@ -12,6 +12,7 @@ export default function ShopHome() {
   const [config, setConfig] = useState(null)
   const [loading, setLoading] = useState(true)
   const [currentPage, setCurrentPage] = useState(1)
+  const [likesSync, setLikesSync] = useState({}) // Pour synchroniser les likes en temps réel
   const itemsPerPage = 50
 
   useEffect(() => {
@@ -22,11 +23,11 @@ export default function ShopHome() {
     console.log('🔄 Boutique initialisée')
     
     // ========== SYNC AUTOMATIQUE AVEC LIKES BOT ==========
-    // Refresh automatique toutes les 30 secondes pour synchroniser les likes
+    // Refresh automatique toutes les 15 secondes pour synchroniser les likes en temps réel
     const syncInterval = setInterval(() => {
       console.log('🔄 Synchronisation automatique des likes...')
       fetchPlugs() // Refresh les données depuis le bot
-    }, 30000) // 30 secondes
+    }, 15000) // 15 secondes pour une synchronisation plus rapide
     
     // Cleanup au démontage du composant
     return () => {

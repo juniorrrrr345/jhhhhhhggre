@@ -1,7 +1,10 @@
 import Link from 'next/link'
+import { useState } from 'react'
 import { getProxiedImageUrl } from '../lib/imageUtils'
 
 export default function ShopCard({ plug, index, layout = 'grid' }) {
+  const [likes, setLikes] = useState(plug.likes || 0)
+  const [isVoting, setIsVoting] = useState(false)
   const getPositionBadge = (position) => {
     if (position === 0) return '🥇'
     if (position === 1) return '🥈'
@@ -24,6 +27,42 @@ export default function ShopCard({ plug, index, layout = 'grid' }) {
       'Pays-Bas': '🇳🇱'
     }
     return countryFlagMap[countries[0]] || '🌍'
+  }
+
+  const handleVote = async (e) => {
+    e.preventDefault()
+    e.stopPropagation()
+    
+    if (isVoting) return
+    
+    setIsVoting(true)
+    
+    try {
+      const response = await fetch('/api/likes', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          plugId: plug._id,
+          userId: 12345, // ID de test pour le panel admin
+          action: 'like'
+        })
+      })
+      
+      const result = await response.json()
+      
+      if (response.ok) {
+        setLikes(result.likes)
+        console.log(`✅ Vote réussi: ${result.plugName} - ${result.likes} likes`)
+      } else {
+        console.error('❌ Erreur vote:', result.error)
+      }
+    } catch (error) {
+      console.error('❌ Erreur lors du vote:', error)
+    } finally {
+      setIsVoting(false)
+    }
   }
 
   // Format uniforme (beau format VIP original) pour toutes les pages
@@ -186,13 +225,34 @@ export default function ShopCard({ plug, index, layout = 'grid' }) {
             alignItems: 'center', 
             gap: '4px'
           }}>
-            <span style={{ fontSize: '16px' }}>👍</span>
+            <button
+              onClick={handleVote}
+              disabled={isVoting}
+              style={{
+                background: 'none',
+                border: 'none',
+                cursor: isVoting ? 'not-allowed' : 'pointer',
+                fontSize: '16px',
+                padding: '4px',
+                borderRadius: '4px',
+                transition: 'background-color 0.2s ease',
+                color: '#ffffff'
+              }}
+              onMouseEnter={(e) => {
+                if (!isVoting) e.target.style.backgroundColor = '#333333'
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.backgroundColor = 'transparent'
+              }}
+            >
+              {isVoting ? '⏳' : '👍'}
+            </button>
             <span style={{ 
               fontSize: '16px',
               fontWeight: '600',
               color: plug.isVip ? '#FFD700' : '#ffffff'
             }}>
-              {plug.likes || 0}
+              {likes}
             </span>
           </div>
         </div>

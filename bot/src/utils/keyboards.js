@@ -192,27 +192,8 @@ const createCountriesKeyboard = (countries) => {
 const createPlugKeyboard = (plug, returnContext = 'top_plugs', userId = null) => {
   const buttons = [];
   
-  // Services disponibles
-  const serviceButtons = [];
-  if (plug.services.delivery.enabled) {
-    serviceButtons.push(Markup.button.callback('🚚 Livraison', `plug_service_${plug._id}_delivery`));
-  }
-  if (plug.services.postal.enabled) {
-    serviceButtons.push(Markup.button.callback('✈️ Postal', `plug_service_${plug._id}_postal`));
-  }
-  if (plug.services.meetup.enabled) {
-    serviceButtons.push(Markup.button.callback('🏠 Meetup', `plug_service_${plug._id}_meetup`));
-  }
-  
-  // Ajouter les services par lignes de 2
-  for (let i = 0; i < serviceButtons.length; i += 2) {
-    const row = [];
-    row.push(serviceButtons[i]);
-    if (serviceButtons[i + 1]) {
-      row.push(serviceButtons[i + 1]);
-    }
-    buttons.push(row);
-  }
+  // Services disponibles - SUPPRIMÉS (postal, meetup, livraison)
+  // Les boutons de services ont été retirés selon la demande
   
   // Lien Telegram optionnel
   if (plug.telegramLink) {
@@ -272,58 +253,46 @@ const createPlugKeyboard = (plug, returnContext = 'top_plugs', userId = null) =>
     console.log(`⚠️ Aucun réseau social configuré pour ${plug.name}`);
   }
   
-  // Bouton like avec état permanent et cooldown
-  let likeButtonText;
-  
-  // Debug pour comprendre le problème
-  console.log(`🔍 BUTTON DEBUG: userId=${userId} (type: ${typeof userId})`);
-  console.log(`🔍 BUTTON DEBUG: plug.likedBy=`, plug.likedBy);
-  console.log(`🔍 BUTTON DEBUG: plug.likedBy types=`, plug.likedBy?.map(id => `${id}(${typeof id})`));
+  // Bouton vote interactif avec nombre de likes en temps réel
+  let voteButtonText;
   
   // Vérification robuste qui gère les types number et string
-  const hasLiked = userId && plug.likedBy && plug.likedBy.some(id => 
-    id == userId || // Comparaison loose
-    id === userId || // Comparaison stricte  
-    String(id) === String(userId) // Comparaison string
+  const hasVoted = userId && plug.likedBy && plug.likedBy.some(id => 
+    id == userId || id === userId || String(id) === String(userId)
   );
   
-  console.log(`🔍 BUTTON DEBUG: hasLiked result: ${hasLiked}`);
+  // Afficher le nombre de votes actuel
+  const votesCount = plug.likes || 0;
   
-  // Vérifier si l'utilisateur a déjà liké et calculer le cooldown
-  if (hasLiked) {
-    // Trouver l'historique de like de cet utilisateur
-    const userLikeHistory = plug.likeHistory?.find(h => 
+  if (hasVoted) {
+    // Trouver l'historique de vote de cet utilisateur
+    const userVoteHistory = plug.likeHistory?.find(h => 
       h.userId == userId || h.userId === userId || String(h.userId) === String(userId)
     );
     
-    if (userLikeHistory) {
-      const lastLikeTime = new Date(userLikeHistory.timestamp);
+    if (userVoteHistory) {
+      const lastVoteTime = new Date(userVoteHistory.timestamp);
       const now = new Date();
-      const timeDiff = now - lastLikeTime;
-             const cooldownTime = 2 * 60 * 60 * 1000; // 2 heures
+      const timeDiff = now - lastVoteTime;
+      const cooldownTime = 2 * 60 * 60 * 1000; // 2 heures
       
       if (timeDiff < cooldownTime) {
         const remainingTime = cooldownTime - timeDiff;
         const hours = Math.floor(remainingTime / (60 * 60 * 1000));
         const minutes = Math.floor((remainingTime % (60 * 60 * 1000)) / (60 * 1000));
         
-        console.log(`🔍 BUTTON DEBUG: User ${userId} in cooldown, ${hours}h ${minutes}m remaining`);
-        likeButtonText = `⏰ Dans ${hours}h ${minutes}m`;
+        voteButtonText = `❤️ Déjà voté (${votesCount}) - ${hours}h${minutes}m`;
       } else {
-        console.log(`🔍 BUTTON DEBUG: User ${userId} cooldown expired, can like again`);
-        likeButtonText = '🤍 Liker cette boutique';
+        voteButtonText = `🤍 VoterPour ce Plug (${votesCount})`;
       }
     } else {
-      // Pas d'historique trouvé, considérer comme pouvant liker
-      console.log(`🔍 BUTTON DEBUG: User ${userId} has liked but no history found, allowing like`);
-      likeButtonText = '🤍 Liker cette boutique';
+      voteButtonText = `🤍 VoterPour ce Plug (${votesCount})`;
     }
   } else {
-    console.log(`🔍 BUTTON DEBUG: User ${userId} hasn't liked, showing like button`);
-    likeButtonText = '🤍 Liker cette boutique';
+    voteButtonText = `🤍 VoterPour ce Plug (${votesCount})`;
   }
   
-  buttons.push([Markup.button.callback(likeButtonText, `like_${plug._id}`)]);
+  buttons.push([Markup.button.callback(voteButtonText, `like_${plug._id}`)]);
   
   // Bouton retour intelligent selon le contexte
   const returnText = getReturnButtonText(returnContext);
@@ -343,10 +312,7 @@ const getReturnButtonText = (context) => {
       return '🔙 Retour à la liste';
     case 'plugs_vip':
       return '🔙 Retour aux VIP';
-    case 'service_delivery':
-    case 'service_postal':
-    case 'service_meetup':
-      return '🔙 Retour aux services';
+    // Services supprimés - plus de retour vers les services
     default:
       if (context.startsWith('country_')) {
         return '🔙 Retour aux pays';
@@ -371,12 +337,7 @@ const getReturnAction = (context) => {
       return 'plugs_all';
     case 'plugs_vip':
       return 'plugs_vip';
-    case 'service_delivery':
-      return 'service_delivery';
-    case 'service_postal':
-      return 'service_postal';
-    case 'service_meetup':
-      return 'service_meetup';
+    // Services supprimés - plus d'actions de retour vers les services
     default:
       if (context.startsWith('country_')) {
         return 'filter_country';

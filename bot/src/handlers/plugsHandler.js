@@ -379,112 +379,7 @@ const handlePlugDetails = async (ctx, plugId, returnContext = 'top_plugs') => {
   }
 };
 
-// Afficher les détails d'un service d'un plug
-const handlePlugServiceDetails = async (ctx, plugId, serviceType) => {
-  try {
-    console.log(`🔧 handlePlugServiceDetails: plugId=${plugId}, serviceType=${serviceType}`);
-    
-    // CORRECTION: Confirmer immédiatement la callback pour éviter le loading
-    await ctx.answerCbQuery();
-    
-    const plug = await Plug.findById(plugId);
-    console.log(`📦 Plug found for service:`, plug ? `${plug.name} (active: ${plug.isActive})` : 'null');
-    
-    if (!plug || !plug.isActive) {
-      console.log('❌ Plug non trouvé pour service');
-      return ctx.answerCbQuery('❌ Plug non trouvé');
-    }
-
-    const service = plug.services[serviceType];
-    if (!service || !service.enabled) {
-      console.log(`⚠️ Service ${serviceType} non disponible pour ${plug.name}`);
-      return ctx.answerCbQuery('❌ Service non disponible');
-    }
-
-    // Récupérer la config pour les textes et images
-    const config = await Config.findById('main');
-
-    const serviceNames = {
-      delivery: '🚚 Livraison',
-      postal: '✈️ Envoi postal',
-      meetup: '🏠 Meetup'
-    };
-
-    let message = `${plug.isVip ? '⭐ ' : ''}**${plug.name}**\n\n`;
-    message += `${serviceNames[serviceType]}\n\n`;
-    
-    if (service.description) {
-      message += `📝 ${service.description}\n\n`;
-    }
-
-    // Ajouter les likes dans la description
-    const likesCount = plug.likes || 0;
-    message += `🖤 ${likesCount} like${likesCount !== 1 ? 's' : ''}\n\n`;
-
-    if (plug.countries && plug.countries.length > 0) {
-      message += `🌍 **Disponible en :** ${plug.countries.join(', ')}\n\n`;
-    }
-
-    message += '📱 **Contactez directement :**';
-
-    // CORRECTION: Créer un clavier avec les réseaux sociaux du plug
-    const buttons = [];
-    
-    // Lien Telegram optionnel
-    if (plug.telegramLink) {
-      buttons.push([Markup.button.url('📱 Telegram', plug.telegramLink)]);
-    }
-    
-    // Réseaux sociaux personnalisés du plug
-    console.log(`🔧 Réseaux sociaux du plug ${plug.name} pour service:`, plug.socialMedia);
-    if (plug.socialMedia && Array.isArray(plug.socialMedia) && plug.socialMedia.length > 0) {
-      const validSocialMedia = plug.socialMedia.filter(social => 
-        social && social.name && social.emoji && social.url && social.url.trim() !== ''
-      );
-      
-      console.log(`✅ Réseaux sociaux valides pour service ${serviceType}:`, validSocialMedia.length);
-      
-      // Grouper les réseaux sociaux par lignes de 2
-      for (let i = 0; i < validSocialMedia.length; i += 2) {
-        const socialRow = [];
-        const social1 = validSocialMedia[i];
-        
-        try {
-          socialRow.push(Markup.button.url(`${social1.emoji} ${social1.name}`, social1.url));
-          console.log(`📱 Bouton service créé: ${social1.emoji} ${social1.name} -> ${social1.url}`);
-          
-          if (validSocialMedia[i + 1]) {
-            const social2 = validSocialMedia[i + 1];
-            socialRow.push(Markup.button.url(`${social2.emoji} ${social2.name}`, social2.url));
-            console.log(`📱 Bouton service créé: ${social2.emoji} ${social2.name} -> ${social2.url}`);
-          }
-          
-          buttons.push(socialRow);
-        } catch (error) {
-          console.error(`❌ Erreur création bouton social pour service:`, error);
-        }
-      }
-    }
-    
-    // Bouton like
-    buttons.push([Markup.button.callback('👤 Liker cette boutique', `like_${plug._id}`)]);
-    
-    // Bouton retour vers les détails du plug
-    buttons.push([Markup.button.callback('🔙 Retour aux détails', `plug_${plug._id}_from_top_plugs`)]);
-    
-    const keyboard = Markup.inlineKeyboard(buttons);
-
-    // CORRECTION: Utiliser editMessageWithImage avec l'image du plug
-    await editMessageWithImage(ctx, message, keyboard, config, { 
-      parse_mode: 'Markdown',
-      plugImage: plug.image  // Passer l'image du plug
-    });
-
-  } catch (error) {
-    console.error('Erreur dans handlePlugServiceDetails:', error);
-    await ctx.answerCbQuery('❌ Erreur lors du chargement').catch(() => {});
-  }
-};
+// Fonction handlePlugServiceDetails supprimée - les services ont été retirés du menu
 
 module.exports = {
   handleTopPlugs,
@@ -494,6 +389,5 @@ module.exports = {
   handleServiceFilter,
   handleFilterCountry,
   handleCountryFilter,
-  handlePlugDetails,
-  handlePlugServiceDetails
+  handlePlugDetails
 };

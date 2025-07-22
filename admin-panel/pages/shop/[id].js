@@ -14,6 +14,8 @@ export default function ShopPlugDetail() {
   const [loading, setLoading] = useState(true)
   const [initialLoading, setInitialLoading] = useState(true)
   const [notFound, setNotFound] = useState(false)
+  const [likes, setLikes] = useState(0)
+  const [isVoting, setIsVoting] = useState(false)
 
   useEffect(() => {
     if (router.isReady && id) {
@@ -151,6 +153,7 @@ export default function ShopPlugDetail() {
       if (foundPlug) {
         console.log('✅ Plug trouvé:', foundPlug.name)
         setPlug(foundPlug)
+        setLikes(foundPlug.likes || 0)
       } else {
         console.log('❌ Plug non trouvé avec ID:', id)
         setNotFound(true)
@@ -188,6 +191,42 @@ export default function ShopPlugDetail() {
       'Pays-Bas': '🇳🇱'
     }
     return countryFlagMap[countries[0]] || '🌍'
+  }
+
+  const handleVote = async () => {
+    if (isVoting || !plug) return
+    
+    setIsVoting(true)
+    
+    try {
+      const response = await fetch('/api/likes', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          plugId: plug._id,
+          userId: 12345, // ID de test pour le panel admin
+          action: 'like'
+        })
+      })
+      
+      const result = await response.json()
+      
+      if (response.ok) {
+        setLikes(result.likes)
+        toast.success(`Vote ajouté ! ${result.plugName} a maintenant ${result.likes} likes`)
+        console.log(`✅ Vote réussi: ${result.plugName} - ${result.likes} likes`)
+      } else {
+        toast.error(result.error || 'Erreur lors du vote')
+        console.error('❌ Erreur vote:', result.error)
+      }
+    } catch (error) {
+      toast.error('Erreur de connexion')
+      console.error('❌ Erreur lors du vote:', error)
+    } finally {
+      setIsVoting(false)
+    }
   }
 
   if (initialLoading) {
@@ -433,15 +472,37 @@ export default function ShopPlugDetail() {
               borderBottom: '1px solid #2a2a2a'
             }}>
               <div style={{ textAlign: 'center' }}>
-                <div style={{ fontSize: '20px', marginBottom: '4px' }}>👍</div>
+                <button
+                  onClick={handleVote}
+                  disabled={isVoting}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    cursor: isVoting ? 'not-allowed' : 'pointer',
+                    fontSize: '20px',
+                    marginBottom: '4px',
+                    padding: '4px',
+                    borderRadius: '4px',
+                    transition: 'background-color 0.2s ease',
+                    color: '#ffffff'
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!isVoting) e.target.style.backgroundColor = '#333333'
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.backgroundColor = 'transparent'
+                  }}
+                >
+                  {isVoting ? '⏳' : '👍'}
+                </button>
                 <div style={{ 
                   fontSize: '18px', 
                   fontWeight: 'bold', 
                   color: plug.isVip ? '#FFD700' : '#ffffff'
                 }}>
-                  {plug.likes || 0}
+                  {likes}
                 </div>
-                <div style={{ fontSize: '12px', color: '#8e8e93' }}>Likes</div>
+                <div style={{ fontSize: '12px', color: '#8e8e93' }}>Votes</div>
               </div>
               
               <div style={{ textAlign: 'center' }}>
