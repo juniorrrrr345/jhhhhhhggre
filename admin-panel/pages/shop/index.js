@@ -68,10 +68,9 @@ export default function ShopHome() {
       
       // 1. Essayer l'API directe du bot (comme VIP et search)
       try {
-        const directResponse = await fetch('https://jhhhhhhggre.onrender.com/api/plugs?limit=50', {
+        const directResponse = await fetch('https://jhhhhhhggre.onrender.com/api/public/plugs?limit=50', {
           method: 'GET',
           headers: {
-            'Authorization': 'Bearer JuniorAdmon123',
             'Content-Type': 'application/json'
           }
         })
@@ -94,7 +93,7 @@ export default function ShopHome() {
               'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-              endpoint: '/api/plugs',
+              endpoint: '/api/public/plugs',
               method: 'GET',
               params: { limit: 50 }
             })
