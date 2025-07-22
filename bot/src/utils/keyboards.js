@@ -410,19 +410,18 @@ const createPlugListKeyboard = (plugs, page = 0, totalPages = 1, context = 'plug
     // 📦 📍 🛵 
     // 👍 nombre
     
-    // Ligne 1: Drapeau + nom complet (VIP avec étoile si applicable)
-    const vipIcon = plug.isVip ? ' ⭐' : '';
-    // Afficher le nom complet sans troncature
-    const line1 = `🇫🇷 ${plug.name.toUpperCase()}${vipIcon}`;
+    // Ligne 1: Drapeau + nom (sans étoile pour éviter les conflits)
+    const line1 = `🇫🇷 ${plug.name.toUpperCase()}`;
     
-    // Ligne 2: Icônes des services disponibles
+    // Ligne 2: Services + VIP status si applicable
     const services = [];
     if (plug.services?.postal?.enabled) services.push('📦');
     if (plug.services?.meetup?.enabled) services.push('📍'); 
     if (plug.services?.delivery?.enabled) services.push('🛵');
+    if (plug.isVip) services.push('⭐'); // Étoile VIP dans les services
     const line2 = services.length > 0 ? services.join(' ') : '📦';
     
-    // Ligne 3: Likes
+    // Ligne 3: Likes (toujours visible)
     const likesCount = plug.likes || 0;
     const line3 = `👍 ${likesCount}`;
     
@@ -459,18 +458,18 @@ const createVIPKeyboard = (vipPlugs) => {
     // 📦 📍 🛵 
     // 👍 nombre
     
-    // Ligne 1: Drapeau + nom complet + étoile VIP
-    // Afficher le nom complet sans troncature
-    const line1 = `🇫🇷 ${plug.name.toUpperCase()} ⭐`;
+    // Ligne 1: Drapeau + nom (VIP sans étoile sur cette ligne)
+    const line1 = `🇫🇷 ${plug.name.toUpperCase()}`;
     
-    // Ligne 2: Icônes des services disponibles
+    // Ligne 2: Services + étoile VIP (boutiques VIP)
     const services = [];
     if (plug.services?.postal?.enabled) services.push('📦');
     if (plug.services?.meetup?.enabled) services.push('📍'); 
     if (plug.services?.delivery?.enabled) services.push('🛵');
-    const line2 = services.length > 0 ? services.join(' ') : '📦';
+    services.push('⭐'); // Toujours une étoile pour les VIP
+    const line2 = services.join(' ');
     
-    // Ligne 3: Likes
+    // Ligne 3: Likes (toujours visible)
     const likesCount = plug.likes || 0;
     const line3 = `👍 ${likesCount}`;
     
