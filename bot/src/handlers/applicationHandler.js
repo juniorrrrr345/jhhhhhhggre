@@ -450,6 +450,22 @@ const submitApplication = async (ctx) => {
       return;
     }
     
+    // Convertir les services au nouveau format (array)
+    const servicesArray = [];
+    if (userForm.data.services.delivery?.enabled) servicesArray.push('delivery');
+    if (userForm.data.services.postal?.enabled) servicesArray.push('postal');
+    if (userForm.data.services.meetup?.enabled) servicesArray.push('meetup');
+    
+    console.log('📋 SUBMIT DEBUG: Creating application with data:', {
+      userId: userForm.data.userId,
+      name: userForm.data.name,
+      services: servicesArray,
+      location: {
+        country: userForm.data.country,
+        city: userForm.data.city
+      }
+    });
+
     // Créer la demande en base
     const application = new PlugApplication({
       userId: userForm.data.userId,
@@ -462,7 +478,7 @@ const submitApplication = async (ctx) => {
         country: userForm.data.country,
         city: userForm.data.city
       },
-      services: userForm.data.services,
+      services: servicesArray, // Format array au lieu d'object
       contact: {
         telegram: userForm.data.telegram,
         other: ''
@@ -471,7 +487,9 @@ const submitApplication = async (ctx) => {
       photoUrl: userForm.data.photoUrl || null
     });
     
+    console.log('📋 SUBMIT DEBUG: Attempting to save application...');
     await application.save();
+    console.log('✅ SUBMIT DEBUG: Application saved successfully with ID:', application._id);
     
     // Envoyer notification à l'admin
     const adminId = process.env.ADMIN_TELEGRAM_ID || '7670522278'; // ID de l'admin
@@ -509,8 +527,17 @@ const submitApplication = async (ctx) => {
     }, true); // Afficher avec l'image d'accueil
     
   } catch (error) {
-    console.error('Erreur dans submitApplication:', error);
-    await ctx.reply('❌ Erreur lors de la soumission. Réessaie plus tard.');
+    console.error('❌ SUBMIT ERROR: Detailed error in submitApplication:', {
+      message: error.message,
+      stack: error.stack,
+      name: error.name
+    });
+    
+    // Nettoyer le formulaire même en cas d'erreur
+    const userId = ctx.from.id;
+    userForms.delete(userId);
+    
+    await ctx.reply('❌ Erreur lors de la soumission. Réessaie plus tard.\n\nDétails: ' + error.message);
   }
 };
 
