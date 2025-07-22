@@ -1319,6 +1319,18 @@ app.post('/api/plugs', authenticateAdmin, async (req, res) => {
     });
     
     const savedPlug = await newPlug.save();
+    
+    // Générer automatiquement le lien de parrainage
+    try {
+      const botInfo = await bot.telegram.getMe();
+      savedPlug.referralCode = savedPlug.generateReferralCode();
+      savedPlug.referralLink = savedPlug.generateReferralLink(botInfo.username);
+      await savedPlug.save();
+      console.log('🔗 Lien de parrainage généré:', savedPlug.referralLink);
+    } catch (linkError) {
+      console.error('⚠️ Erreur génération lien de parrainage:', linkError);
+    }
+    
     console.log('✅ Plug créé:', savedPlug.name);
     
     // Invalider le cache
@@ -1328,6 +1340,44 @@ app.post('/api/plugs', authenticateAdmin, async (req, res) => {
   } catch (error) {
     console.error('Erreur création plug:', error);
     res.status(500).json({ error: 'Erreur lors de la création du plug' });
+  }
+});
+
+// Obtenir ou générer le lien de parrainage d'une boutique
+app.get('/api/plugs/:id/referral', authenticateAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    const plug = await Plug.findById(id);
+    if (!plug) {
+      return res.status(404).json({ error: 'Boutique non trouvée' });
+    }
+
+    // Générer le lien si pas encore fait
+    if (!plug.referralCode || !plug.referralLink) {
+      try {
+        const botInfo = await bot.telegram.getMe();
+        plug.referralCode = plug.generateReferralCode();
+        plug.referralLink = plug.generateReferralLink(botInfo.username);
+        await plug.save();
+        console.log('🔗 Nouveau lien de parrainage généré pour:', plug.name);
+      } catch (linkError) {
+        console.error('❌ Erreur génération lien:', linkError);
+        return res.status(500).json({ error: 'Erreur lors de la génération du lien' });
+      }
+    }
+
+    res.json({
+      boutique: plug.name,
+      referralLink: plug.referralLink,
+      referralCode: plug.referralCode,
+      totalReferred: plug.totalReferred || 0,
+      referredUsers: plug.referredUsers || []
+    });
+
+  } catch (error) {
+    console.error('❌ Erreur récupération lien de parrainage:', error);
+    res.status(500).json({ error: 'Erreur serveur' });
   }
 });
 

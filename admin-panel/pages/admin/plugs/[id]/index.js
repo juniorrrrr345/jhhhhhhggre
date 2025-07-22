@@ -42,6 +42,9 @@ export default function PlugDetails() {
   const [plug, setPlug] = useState(null);
   const [liked, setLiked] = useState(false);
   const [liking, setLiking] = useState(false);
+  const [referralData, setReferralData] = useState(null);
+  const [loadingReferral, setLoadingReferral] = useState(false);
+  const [copiedLink, setCopiedLink] = useState(false);
 
   // Charger les données de la boutique
   useEffect(() => {
@@ -72,6 +75,9 @@ export default function PlugDetails() {
         const data = await response.json();
         setPlug(data);
         setLiked(data.liked || false);
+        
+        // Charger les données de parrainage
+        loadReferralData();
       } catch (err) {
         console.error('Erreur chargement boutique:', err);
         setError(`Erreur lors du chargement: ${err.message}`);
@@ -82,6 +88,45 @@ export default function PlugDetails() {
 
     loadPlug();
   }, [id, router]);
+
+  // Charger les données de parrainage
+  const loadReferralData = async () => {
+    if (!id) return;
+    
+    try {
+      setLoadingReferral(true);
+      const token = localStorage.getItem('adminToken');
+      
+      const response = await apiCall(`/api/plugs/${id}/referral`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setReferralData(data);
+      }
+    } catch (err) {
+      console.error('Erreur chargement données de parrainage:', err);
+    } finally {
+      setLoadingReferral(false);
+    }
+  };
+
+  // Fonction pour copier le lien de parrainage
+  const copyReferralLink = async () => {
+    if (!referralData?.referralLink) return;
+    
+    try {
+      await navigator.clipboard.writeText(referralData.referralLink);
+      setCopiedLink(true);
+      setTimeout(() => setCopiedLink(false), 2000);
+    } catch (err) {
+      console.error('Erreur copie:', err);
+    }
+  };
 
   const handleLike = async () => {
     if (liking) return;
@@ -335,6 +380,67 @@ export default function PlugDetails() {
                 <p className="text-gray-300">{plug.contact}</p>
               </div>
             )}
+
+            {/* Section Parrainage */}
+            <div className="mb-8 p-6 bg-gray-900 rounded-lg border border-gray-700">
+              <h3 className="text-xl font-bold mb-4 flex items-center">
+                🔗 Lien de Parrainage
+              </h3>
+              
+              {loadingReferral ? (
+                <div className="text-gray-400">Chargement...</div>
+              ) : referralData ? (
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-400 mb-2">
+                      Lien d'invitation automatique :
+                    </label>
+                    <div className="flex items-center space-x-3">
+                      <input
+                        type="text"
+                        value={referralData.referralLink}
+                        readOnly
+                        className="flex-1 bg-gray-800 border border-gray-600 rounded-lg px-4 py-2 text-white font-mono text-sm"
+                      />
+                      <button
+                        onClick={copyReferralLink}
+                        className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                          copiedLink 
+                            ? 'bg-green-600 text-white' 
+                            : 'bg-blue-600 hover:bg-blue-700 text-white'
+                        }`}
+                      >
+                        {copiedLink ? '✅ Copié' : '📋 Copier'}
+                      </button>
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div className="bg-gray-800 p-3 rounded-lg">
+                      <div className="text-gray-400">Personnes invitées</div>
+                      <div className="text-2xl font-bold text-green-400">
+                        {referralData.totalReferred || 0}
+                      </div>
+                    </div>
+                    <div className="bg-gray-800 p-3 rounded-lg">
+                      <div className="text-gray-400">Code unique</div>
+                      <div className="text-sm font-mono text-blue-400">
+                        {referralData.referralCode}
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="text-xs text-gray-500 bg-gray-800 p-3 rounded-lg">
+                    💡 <strong>Comment ça marche :</strong> Partagez ce lien ! Quand quelqu'un clique dessus, 
+                    il sera automatiquement redirigé vers votre boutique dans le bot Telegram.
+                  </div>
+                </div>
+              ) : (
+                <div className="text-gray-400">
+                  Erreur lors du chargement du lien de parrainage
+                </div>
+              )}
+            </div>
 
             {/* Actions */}
             <div className="flex flex-wrap gap-4 pt-6 border-t border-gray-700">

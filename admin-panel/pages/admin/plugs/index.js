@@ -113,6 +113,44 @@ export default function AccueilAdmin() {
     }
   }
 
+  // Fonction pour copier le lien de parrainage
+  const copyReferralLink = async (plug) => {
+    try {
+      // Générer le lien s'il n'existe pas
+      let referralLink = plug.referralLink;
+      
+      if (!referralLink) {
+        const token = localStorage.getItem('adminToken')
+        const response = await fetch(`/api/cors-proxy`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            endpoint: `/api/plugs/${plug._id}/referral`,
+            method: 'GET',
+            token: token
+          })
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          referralLink = data.referralLink;
+        }
+      }
+
+      if (referralLink) {
+        await navigator.clipboard.writeText(referralLink);
+        toast.success(`🔗 Lien de ${plug.name} copié !`);
+      } else {
+        toast.error('Impossible de générer le lien');
+      }
+    } catch (error) {
+      console.error('Erreur copie lien:', error);
+      toast.error('Erreur lors de la copie');
+    }
+  }
+
   const StatusBadge = ({ isActive, isVip }) => {
     if (isVip) {
       return (
@@ -309,25 +347,38 @@ export default function AccueilAdmin() {
                     </div>
                   </div>
                   
-                  <div className="mt-3 flex justify-end space-x-2">
+                  <div className="mt-3 flex justify-between items-center">
                     <button
-                      onClick={() => router.push(`/admin/plugs/${plug._id}`)}
-                      className="text-blue-600 hover:text-blue-800 text-sm"
+                      onClick={() => copyReferralLink(plug)}
+                      className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full hover:bg-green-200 transition-colors"
+                      title="Copier le lien de parrainage"
                     >
-                      <EyeIcon className="h-4 w-4" />
+                      🔗 Parrainage
                     </button>
-                    <button
-                      onClick={() => router.push(`/admin/plugs/${plug._id}/edit`)}
-                      className="text-yellow-600 hover:text-yellow-800 text-sm"
-                    >
-                      <PencilIcon className="h-4 w-4" />
-                    </button>
-                    <button
-                      onClick={() => deletePlug(plug._id)}
-                      className="text-red-600 hover:text-red-800 text-sm"
-                    >
-                      <TrashIcon className="h-4 w-4" />
-                    </button>
+                    
+                    <div className="flex space-x-2">
+                      <button
+                        onClick={() => router.push(`/admin/plugs/${plug._id}`)}
+                        className="text-blue-600 hover:text-blue-800 text-sm"
+                        title="Voir détails"
+                      >
+                        <EyeIcon className="h-4 w-4" />
+                      </button>
+                      <button
+                        onClick={() => router.push(`/admin/plugs/${plug._id}/edit`)}
+                        className="text-yellow-600 hover:text-yellow-800 text-sm"
+                        title="Modifier"
+                      >
+                        <PencilIcon className="h-4 w-4" />
+                      </button>
+                      <button
+                        onClick={() => deletePlug(plug._id)}
+                        className="text-red-600 hover:text-red-800 text-sm"
+                        title="Supprimer"
+                      >
+                        <TrashIcon className="h-4 w-4" />
+                      </button>
+                    </div>
                   </div>
                 </div>
               ))}
