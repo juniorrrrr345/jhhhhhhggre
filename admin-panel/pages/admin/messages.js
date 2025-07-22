@@ -191,15 +191,7 @@ export default function Messages() {
     })
   }
 
-  if (loading) {
-    return (
-      <Layout title="Messages">
-        <div className="flex justify-center items-center h-64">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
-        </div>
-      </Layout>
-    )
-  }
+  // Plus de loading state nécessaire
 
   return (
     <Layout title="Messages">
@@ -211,24 +203,22 @@ export default function Messages() {
           </p>
         </div>
 
-        {/* Informations du bot */}
-        {config?.bot?.botName && (
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-            <div className="flex items-center">
-              <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold text-lg">
-                🤖
-              </div>
-              <div className="ml-3">
-                <h3 className="text-lg font-medium text-blue-900">
-                  Bot connecté : @{config.bot.botName}
-                </h3>
-                <p className="text-blue-700 text-sm">
-                  Les messages seront envoyés à tous les utilisateurs de ce bot
-                </p>
-              </div>
+        {/* Stats utilisateurs */}
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+          <div className="flex items-center">
+            <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold text-xl">
+              👥
+            </div>
+            <div className="ml-4">
+              <h3 className="text-lg font-medium text-blue-900">
+                Utilisateurs connectés: {botUsers}
+              </h3>
+              <p className="text-blue-700 text-sm">
+                Votre message sera envoyé à tous ces utilisateurs
+              </p>
             </div>
           </div>
-        )}
+        </div>
 
         {/* Formulaire d'envoi */}
         <div className="bg-white shadow rounded-lg p-6">
