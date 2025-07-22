@@ -346,7 +346,7 @@ bot.action(/^like_([a-f\d]{24})$/, async (ctx) => {
         const lastLikeTime = new Date(userLikeHistory.timestamp);
         const now = new Date();
         const timeDiff = now - lastLikeTime;
-        const cooldownTime = 24 * 60 * 60 * 1000; // 24 heures en millisecondes
+        const cooldownTime = 2 * 60 * 60 * 1000; // 2 heures en millisecondes
         
         if (timeDiff < cooldownTime) {
           const remainingTime = cooldownTime - timeDiff;
@@ -437,8 +437,8 @@ bot.action(/^like_([a-f\d]{24})$/, async (ctx) => {
     
     message += `❤️ **${plug.likes} ${plug.likes > 1 ? 'likes' : 'like'}**`;
     
-    // Nouvelle ligne pour indiquer le cooldown
-    message += `\n\n⏰ *Vous pourrez liker à nouveau dans 24h*`;
+         // Nouvelle ligne pour indiquer le cooldown
+     message += `\n\n⏰ *Vous pourrez liker à nouveau dans 2h*`;
     
     // Créer le nouveau clavier avec le bouton mis à jour
     const keyboard = createPlugKeyboard(plug, returnContext, userId);

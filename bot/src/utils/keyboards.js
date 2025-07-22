@@ -300,7 +300,7 @@ const createPlugKeyboard = (plug, returnContext = 'top_plugs', userId = null) =>
       const lastLikeTime = new Date(userLikeHistory.timestamp);
       const now = new Date();
       const timeDiff = now - lastLikeTime;
-      const cooldownTime = 24 * 60 * 60 * 1000; // 24 heures
+             const cooldownTime = 2 * 60 * 60 * 1000; // 2 heures
       
       if (timeDiff < cooldownTime) {
         const remainingTime = cooldownTime - timeDiff;
