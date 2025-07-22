@@ -318,8 +318,8 @@ bot.action(/^like_([a-f\d]{24})$/, async (ctx) => {
     
     console.log(`✅ LIKE réussi: ${result.plugName} - ${result.likes} likes`);
     
-    // Notification du like ajouté
-    await ctx.answerCbQuery(`❤️ Vous avez liké ${result.plugName} ! (${result.likes} likes)`);
+    // Notification du vote ajouté
+    await ctx.answerCbQuery(`👍 Vous avez voté pour ${result.plugName} ! (${result.likes} votes)`);
     
     // Mise à jour du bouton like en temps réel
     try {
@@ -330,10 +330,10 @@ bot.action(/^like_([a-f\d]{24})$/, async (ctx) => {
           inline_keyboard: currentKeyboard.inline_keyboard.map(row => 
             row.map(button => {
               if (button.callback_data && button.callback_data.startsWith(`like_${plugId}`)) {
-                return {
-                  ...button,
-                  text: `❤️ Déjà liké (2h)`
-                };
+                                  return {
+                    ...button,
+                    text: `👍 Déjà voté (2h)`
+                  };
               }
               return button;
             })
@@ -345,8 +345,8 @@ bot.action(/^like_([a-f\d]{24})$/, async (ctx) => {
         // Mise à jour du texte du message avec le nouveau nombre de likes
         const currentText = ctx.callbackQuery.message.text || ctx.callbackQuery.message.caption;
         if (currentText) {
-          const likeRegex = /(🖤|❤️|♥️) \d+ like[s]?/g;
-          const newLikeText = `🖤 ${result.likes} like${result.likes !== 1 ? 's' : ''}`;
+          const voteRegex = /(👍|👎|🖤|❤️|♥️) \d+ vote[s]?/g;
+          const newVoteText = `👍 ${result.likes} vote${result.likes !== 1 ? 's' : ''}`;
           const updatedText = currentText.replace(likeRegex, newLikeText);
           
           if (updatedText !== currentText) {

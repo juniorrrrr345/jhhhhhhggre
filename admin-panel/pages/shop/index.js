@@ -134,7 +134,17 @@ export default function ShopHome() {
         plugsArray = data.plugs
       } else if (Array.isArray(data)) {
         plugsArray = data
+      } else if (data && data.plugs && Array.isArray(data.plugs)) {
+        plugsArray = data.plugs
       }
+      
+      console.log('📊 Données reçues:', {
+        dataType: typeof data,
+        hasPlugs: !!data?.plugs,
+        plugsLength: data?.plugs?.length || 0,
+        isArray: Array.isArray(data),
+        finalArrayLength: plugsArray.length
+      })
 
       const sortedPlugs = plugsArray.sort((a, b) => {
         if (a.isVip && !b.isVip) return -1
@@ -143,11 +153,20 @@ export default function ShopHome() {
       })
 
       console.log(`🎉 ${sortedPlugs.length} boutiques chargées !`)
+      
+      if (sortedPlugs.length === 0) {
+        console.log('⚠️ Aucune boutique trouvée, affichage du message d\'erreur')
+        setPlugs([])
+        setLoading(false)
+        return
+      }
+      
       setPlugs(sortedPlugs)
       
     } catch (error) {
       console.error('❌ Erreur chargement plugs:', error)
       setPlugs([])
+      toast.error('Erreur lors du chargement des boutiques')
     } finally {
       setLoading(false)
     }

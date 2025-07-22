@@ -281,7 +281,7 @@ const createPlugKeyboard = (plug, returnContext = 'top_plugs', userId = null) =>
         const hours = Math.floor(remainingTime / (60 * 60 * 1000));
         const minutes = Math.floor((remainingTime % (60 * 60 * 1000)) / (60 * 1000));
         
-        voteButtonText = `❤️ Déjà voté (${votesCount}) - ${hours}h${minutes}m`;
+        voteButtonText = `👍 Déjà voté (${votesCount}) - ${hours}h${minutes}m`;
       } else {
         voteButtonText = `🤍 VoterPour ce Plug (${votesCount})`;
       }
@@ -366,16 +366,16 @@ const createPlugListKeyboard = (plugs, page = 0, totalPages = 1, context = 'plug
   for (let i = startIndex; i < endIndex; i++) {
     const plug = plugs[i];
     
-    // Format optimisé : Pays + Nom + 🖤 + Likes (sans troncature)
-    // 🇫🇷 NOM BOUTIQUE 🖤12
+    // Format optimisé : Pays + Nom + 👍 + Votes (sans troncature)
+    // 🇫🇷 NOM BOUTIQUE 👍12
     // 📦 📍 🛵 ⭐
     
-    // Format inspiré d'autres bots : 🇫🇷[NOM COMPLET]🖤[LIKES] (+ ⭐ pour VIP)
-    const likesCount = plug.likes || 0;
+    // Format inspiré d'autres bots : 🇫🇷[NOM COMPLET]👍[VOTES] (+ ⭐ pour VIP)
+    const votesCount = plug.likes || 0;
     // Pas de limite de caractères - noms complets comme "LA FLECHE COFFEE 33"
     const cardText = plug.isVip ? 
-      `🇫🇷${plug.name.toUpperCase()}🖤${likesCount}⭐` :
-      `🇫🇷${plug.name.toUpperCase()}🖤${likesCount}`;
+      `🇫🇷${plug.name.toUpperCase()}👍${votesCount}⭐` :
+      `🇫🇷${plug.name.toUpperCase()}👍${votesCount}`;
     buttons.push([Markup.button.callback(cardText, `plug_${plug._id}_from_${context}`)]);
   }
   
@@ -403,14 +403,14 @@ const createVIPKeyboard = (vipPlugs) => {
   const buttons = [];
   
   vipPlugs.forEach(plug => {
-    // Format VIP spécial : Pays + Nom + ⭐ + 🖤 + Likes
-    // 🇫🇷 NOM BOUTIQUE ⭐ 🖤12
+    // Format VIP spécial : Pays + Nom + ⭐ + 👍 + Votes
+    // 🇫🇷 NOM BOUTIQUE ⭐ 👍12
     // 📦 📍 🛵
     
-    // Format VIP complet : 🇫🇷[NOM COMPLET]🖤[LIKES]⭐
-    const likesCount = plug.likes || 0;
+    // Format VIP complet : 🇫🇷[NOM COMPLET]👍[VOTES]⭐
+    const votesCount = plug.likes || 0;
     // Noms complets pour VIP aussi
-    const cardText = `🇫🇷${plug.name.toUpperCase()}🖤${likesCount}⭐`;
+    const cardText = `🇫🇷${plug.name.toUpperCase()}👍${votesCount}⭐`;
     buttons.push([Markup.button.callback(cardText, `plug_${plug._id}_from_plugs_vip`)]);
   });
   

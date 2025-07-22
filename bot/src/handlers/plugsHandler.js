@@ -69,9 +69,8 @@ const handleVipPlugs = async (ctx, page = 0) => {
     const buttons = [];
     
     for (const plug of currentPagePlugs) {
-      const likesText = plug.likes > 0 ? ` 🖤${plug.likes}` : '';
       // Utiliser le contexte 'plugs_vip' pour que le retour fonctionne correctement
-      buttons.push([Markup.button.callback(`👑 ${plug.name}${likesText}`, `plug_${plug._id}_from_plugs_vip`)]);
+      buttons.push([Markup.button.callback(`👑 ${plug.name}`, `plug_${plug._id}_from_plugs_vip`)]);
     }
 
     // Boutons de navigation
@@ -134,7 +133,7 @@ const handleAllPlugs = async (ctx, page = 0) => {
     let message = `${config.botTexts?.allPlugsTitle || 'Tous Nos Plugs Certifié 🔌'}\n`;
     
     // Format du compteur total configurable
-    const totalCountFormat = config.botTexts?.totalCountFormat || '( Trier par le nombres de Likes 🖤 )';
+    const totalCountFormat = config.botTexts?.totalCountFormat || '( Tous nos plugs certifiés )';
     const totalCountText = totalCountFormat.replace('{count}', plugs.length);
     message += `${totalCountText}\n\n`;
     
@@ -357,9 +356,7 @@ const handlePlugDetails = async (ctx, plugId, returnContext = 'top_plugs') => {
       message += `🌍 **Pays desservis :** ${plug.countries.join(', ')}\n\n`;
     }
 
-    // Afficher les likes (même à 0 pour montrer la fonctionnalité)
-    const likesCount = plug.likes || 0;
-    message += `🖤 ${likesCount} like${likesCount !== 1 ? 's' : ''}\n\n`;
+    // Likes supprimés de la description - affichés uniquement sur le bouton
 
     // Utiliser la fonction createPlugKeyboard qui gère déjà tout (avec userId pour l'état du bouton like)
     const keyboard = createPlugKeyboard(plug, returnContext, ctx.from?.id);

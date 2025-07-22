@@ -148,9 +148,7 @@ const redirectToShopDetails = async (ctx, boutique) => {
       message += `🌍 **Pays desservis :** ${boutique.countries.join(', ')}\n\n`;
     }
 
-    // Afficher les likes avec la bonne icône
-    const likesCount = boutique.likes || 0;
-    message += `🖤 ${likesCount} like${likesCount !== 1 ? 's' : ''}\n\n`;
+    // Likes supprimés de la description - affichés uniquement sur le bouton
 
     // Créer le clavier avec le contexte 'referral'
     const keyboard = createPlugKeyboard(boutique, 'referral', ctx.from?.id);
@@ -245,7 +243,7 @@ const handleParrainageCommand = async (ctx) => {
 
 📊 **Statistiques:**
 👥 Personnes invitées: **${userShop.totalReferred}**
-❤️ Likes totaux: **${userShop.likes}**
+📊 Votes totaux: **${userShop.likes}**
 
 💡 Partagez ce lien pour que les nouveaux utilisateurs découvrent directement votre boutique !`;
 
