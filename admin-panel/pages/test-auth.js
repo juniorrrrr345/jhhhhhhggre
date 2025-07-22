@@ -13,7 +13,11 @@ export default function TestAuth() {
 
   const testPassword = async (pwd) => {
     setLoading(true)
+    setResult(`🔄 Test du mot de passe: ${pwd.slice(0, 20)}...`)
+    
     try {
+      console.log('🔐 Test du mot de passe:', pwd.slice(0, 20) + '...')
+      
       const response = await fetch('/api/cors-proxy', {
         method: 'POST',
         headers: {
@@ -22,9 +26,12 @@ export default function TestAuth() {
         body: JSON.stringify({
           endpoint: '/api/config',
           method: 'GET',
-          token: pwd
+          token: pwd,
+          data: null
         })
       })
+      
+      console.log('📡 Réponse API:', response.status)
 
       if (response.ok) {
         setResult(`✅ Password "${pwd.slice(0, 20)}..." FONCTIONNE`)
