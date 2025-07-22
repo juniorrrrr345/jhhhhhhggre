@@ -26,7 +26,7 @@ export default function Messages() {
     let token = localStorage.getItem('adminToken')
     if (!token) {
       // Utiliser le token par défaut
-      token = 'ADMIN_TOKEN_F3F3FC574B8A95875449DBD68128C434CE3D7FB3F054567B0D3EAD3D9F1B01B1'
+      token = 'JuniorAdmon123'
       localStorage.setItem('adminToken', token)
     }
 
@@ -78,7 +78,7 @@ export default function Messages() {
     try {
       let token = localStorage.getItem('adminToken')
       if (!token) {
-        token = 'ADMIN_TOKEN_F3F3FC574B8A95875449DBD68128C434CE3D7FB3F054567B0D3EAD3D9F1B01B1'
+        token = 'JuniorAdmon123'
         localStorage.setItem('adminToken', token)
       }
 
