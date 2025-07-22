@@ -416,7 +416,7 @@ bot.action(/^like_([a-f\d]{24})$/, async (ctx) => {
                 const lastLikeTime = new Date(plug.likeHistory.find(h => h.userId.toString() === userId.toString())?.timestamp);
                 const now = new Date();
                 const timeDiff = Math.floor((now - lastLikeTime) / 1000);
-                const cooldownDuration = 24 * 60 * 60; // 24h en secondes
+                const cooldownDuration = 2 * 60 * 60; // 2h en secondes
                 const timeLeft = Math.max(0, cooldownDuration - timeDiff);
                 
                 if (timeLeft > 0) {
@@ -439,9 +439,37 @@ bot.action(/^like_([a-f\d]{24})$/, async (ctx) => {
           )
         };
         
-        // Mettre à jour SEULEMENT le clavier modifié
+        // Mettre à jour le clavier ET le message avec le nouveau nombre de likes
         await ctx.editMessageReplyMarkup(updatedKeyboard);
-        console.log(`✅ SEUL le texte du bouton like modifié pour ${plug.name} - Menu intact`);
+        
+        // Aussi mettre à jour le texte du message pour afficher le nouveau nombre de likes
+        const currentText = ctx.callbackQuery.message.text || ctx.callbackQuery.message.caption;
+        if (currentText) {
+          // Remplacer l'ancien nombre de likes par le nouveau
+          const updatedText = currentText.replace(/❤️ \d+ like[s]?/, `❤️ ${plug.likes} like${plug.likes !== 1 ? 's' : ''}`);
+          
+          try {
+            if (ctx.callbackQuery.message.photo) {
+              // Si c'est un message avec photo, utiliser editMessageCaption
+              await ctx.editMessageCaption(updatedText, { 
+                reply_markup: updatedKeyboard,
+                parse_mode: 'Markdown' 
+              });
+            } else {
+              // Si c'est un message texte, utiliser editMessageText
+              await ctx.editMessageText(updatedText, { 
+                reply_markup: updatedKeyboard,
+                parse_mode: 'Markdown' 
+              });
+            }
+            console.log(`✅ Message ET bouton like mis à jour pour ${plug.name} (${plug.likes} likes)`);
+          } catch (textEditError) {
+            console.log('⚠️ Erreur édition texte message:', textEditError.message);
+            // Le clavier a déjà été mis à jour, c'est l'essentiel
+          }
+        } else {
+          console.log(`✅ SEUL le texte du bouton like modifié pour ${plug.name} - Menu intact`);
+        }
       } else {
         console.log('⚠️ Pas de clavier existant trouvé');
       }
