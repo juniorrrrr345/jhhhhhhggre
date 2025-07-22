@@ -405,15 +405,14 @@ const createPlugListKeyboard = (plugs, page = 0, totalPages = 1, context = 'plug
   for (let i = startIndex; i < endIndex; i++) {
     const plug = plugs[i];
     
-    // Format optimisé pour TOUJOURS voir les likes :
+    // Format optimisé : Pays + Nom + 🖤 + Likes (sans troncature)
     // 🇫🇷 NOM BOUTIQUE 🖤12
     // 📦 📍 🛵 ⭐
     
-    // Ligne 1: Drapeau + nom + LIKES (nom limité pour éviter troncature)
+    // Ligne 1: Pays + nom complet + 🖤 + likes (format demandé)
     const likesCount = plug.likes || 0;
     const vipIndicator = plug.isVip ? ' ⭐' : '';
-    const shortName = plug.name.length > 15 ? plug.name.substring(0, 15) : plug.name;
-    const line1 = `🇫🇷 ${shortName.toUpperCase()}${vipIndicator} 🖤${likesCount}`;
+    const line1 = `🇫🇷 ${plug.name.toUpperCase()}${vipIndicator} 🖤${likesCount}`;
     
     // Ligne 2: Services uniquement (plus simple et claire)  
     const services = [];
@@ -450,14 +449,13 @@ const createVIPKeyboard = (vipPlugs) => {
   const buttons = [];
   
   vipPlugs.forEach(plug => {
-    // Format optimisé VIP pour TOUJOURS voir les likes :
+    // Format VIP spécial : Pays + Nom + ⭐ + 🖤 + Likes
     // 🇫🇷 NOM BOUTIQUE ⭐ 🖤12
     // 📦 📍 🛵
     
-    // Ligne 1: Drapeau + nom + VIP + LIKES (nom limité pour éviter troncature)
+    // Ligne 1: Pays + nom complet + ⭐ + 🖤 + likes (format VIP)
     const likesCount = plug.likes || 0;
-    const shortName = plug.name.length > 15 ? plug.name.substring(0, 15) : plug.name;
-    const line1 = `🇫🇷 ${shortName.toUpperCase()} ⭐ 🖤${likesCount}`;
+    const line1 = `🇫🇷 ${plug.name.toUpperCase()} ⭐ 🖤${likesCount}`;
     
     // Ligne 2: Services uniquement (plus simple)
     const services = [];
