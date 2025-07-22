@@ -493,11 +493,6 @@ export default function ShopSearch() {
                 {currentPlugs.map((plug, index) => (
                   <ShopCard key={plug._id || index} plug={plug} index={index} layout="list" />
                 ))}
-                  <Link 
-                    key={plug._id || index} 
-                    href={`/shop/${plug._id}`}
-                    style={{ textDecoration: 'none', color: 'inherit' }}
-                  >
                     <div style={{ 
                       backgroundColor: '#1a1a1a',
                       padding: '16px',
