@@ -1791,8 +1791,13 @@ app.post('/api/broadcast', authenticateAdmin, async (req, res) => {
           // Envoyer avec image
           let imageSource = image;
           
+          // Si c'est une URL d'image (Imgur, etc.), l'utiliser directement
+          if (typeof image === 'string' && (image.startsWith('http://') || image.startsWith('https://'))) {
+            imageSource = image;
+            console.log(`📸 Image URL utilisée: ${image}`);
+          }
           // Si c'est une image base64, la convertir en Buffer avec validation
-          if (typeof image === 'string' && image.startsWith('data:')) {
+          else if (typeof image === 'string' && image.startsWith('data:')) {
             try {
               // Extraire le type MIME et les données base64
               const [header, base64Data] = image.split(',');
