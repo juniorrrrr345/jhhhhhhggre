@@ -409,15 +409,12 @@ const createPlugListKeyboard = (plugs, page = 0, totalPages = 1, context = 'plug
     // 🇫🇷 NOM BOUTIQUE 🖤12
     // 📦 📍 🛵 ⭐
     
-    // Format compact : 🇫🇷 NOM 🖤NOMBRE⭐ (étoile à la fin pour VIP)
+    // Format inspiré d'autres bots : 🇫🇷[NOM COMPLET]🖤[LIKES] (+ ⭐ pour VIP)
     const likesCount = plug.likes || 0;
-    const vipIndicator = plug.isVip ? '⭐' : '';
-    // Limiter à 8 caractères (test pour noms plus longs)
-    const shortName = plug.name.length > 8 ? plug.name.substring(0, 8) : plug.name;
-    const line1 = `🇫🇷${shortName.toUpperCase()}🖤${likesCount}${vipIndicator}`;
-    
-    // Affichage simple : seulement le nom + likes, pas de services
-    const cardText = line1;
+    // Pas de limite de caractères - noms complets comme "LA FLECHE COFFEE 33"
+    const cardText = plug.isVip ? 
+      `🇫🇷${plug.name.toUpperCase()}🖤${likesCount}⭐` :
+      `🇫🇷${plug.name.toUpperCase()}🖤${likesCount}`;
     buttons.push([Markup.button.callback(cardText, `plug_${plug._id}_from_${context}`)]);
   }
   
@@ -449,14 +446,10 @@ const createVIPKeyboard = (vipPlugs) => {
     // 🇫🇷 NOM BOUTIQUE ⭐ 🖤12
     // 📦 📍 🛵
     
-    // Format VIP : 🇫🇷 NOM 🖤NOMBRE⭐ (étoile à la fin)
+    // Format VIP complet : 🇫🇷[NOM COMPLET]🖤[LIKES]⭐
     const likesCount = plug.likes || 0;
-    // Limiter à 8 caractères (test pour noms plus longs)
-    const shortName = plug.name.length > 8 ? plug.name.substring(0, 8) : plug.name;
-    const line1 = `🇫🇷${shortName.toUpperCase()}🖤${likesCount}⭐`;
-    
-    // Affichage VIP simple : seulement le nom + likes + étoile
-    const cardText = line1;
+    // Noms complets pour VIP aussi
+    const cardText = `🇫🇷${plug.name.toUpperCase()}🖤${likesCount}⭐`;
     buttons.push([Markup.button.callback(cardText, `plug_${plug._id}_from_plugs_vip`)]);
   });
   
