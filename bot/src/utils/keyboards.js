@@ -443,8 +443,8 @@ const createPlugListKeyboard = (plugs, page = 0, totalPages = 1, context = 'plug
     buttons.push(navButtons);
   }
   
-  // Navigation simple - seulement retour
-  buttons.push([Markup.button.callback('🔙 Retour', 'back_main')]);
+  // Retour vers le menu des filtres (Tous les plugs, Par service, Par pays)
+  buttons.push([Markup.button.callback('🔙 Retour aux filtres', 'top_plugs')]);
   
   return Markup.inlineKeyboard(buttons);
 };
@@ -478,8 +478,8 @@ const createVIPKeyboard = (vipPlugs) => {
     buttons.push([Markup.button.callback(cardText, `plug_${plug._id}_from_plugs_vip`)]);
   });
   
-  // Navigation simple - seulement retour
-  buttons.push([Markup.button.callback('🔙 Retour', 'back_main')]);
+  // Retour vers le menu principal pour VIP
+  buttons.push([Markup.button.callback('🔙 Retour au menu', 'back_main')]);
   
   return Markup.inlineKeyboard(buttons);
 };
