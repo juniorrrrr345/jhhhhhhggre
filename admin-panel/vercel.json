@@ -8,8 +8,7 @@
       "maxDuration": 15
     }
   },
-  "public": true,
-  "auth": false,
+
   "headers": [
     {
       "source": "/admin/messages",
