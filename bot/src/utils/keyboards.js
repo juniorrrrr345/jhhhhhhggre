@@ -416,14 +416,8 @@ const createPlugListKeyboard = (plugs, page = 0, totalPages = 1, context = 'plug
     const shortName = plug.name.length > 15 ? plug.name.substring(0, 15) : plug.name;
     const line1 = `🇫🇷${shortName.toUpperCase()}🖤${likesCount}${vipIndicator}`;
     
-    // Ligne 2: Services uniquement (plus simple et claire)  
-    const services = [];
-    if (plug.services?.postal?.enabled) services.push('📦');
-    if (plug.services?.meetup?.enabled) services.push('📍'); 
-    if (plug.services?.delivery?.enabled) services.push('🛵');
-    const line2 = services.length > 0 ? services.join(' ') : '📦';
-    
-    const cardText = `${line1}\n${line2}`;
+    // Affichage simple : seulement le nom + likes, pas de services
+    const cardText = line1;
     buttons.push([Markup.button.callback(cardText, `plug_${plug._id}_from_${context}`)]);
   }
   
@@ -461,14 +455,8 @@ const createVIPKeyboard = (vipPlugs) => {
     const shortName = plug.name.length > 15 ? plug.name.substring(0, 15) : plug.name;
     const line1 = `🇫🇷${shortName.toUpperCase()}🖤${likesCount}⭐`;
     
-    // Ligne 2: Services uniquement (plus simple)
-    const services = [];
-    if (plug.services?.postal?.enabled) services.push('📦');
-    if (plug.services?.meetup?.enabled) services.push('📍'); 
-    if (plug.services?.delivery?.enabled) services.push('🛵');
-    const line2 = services.length > 0 ? services.join(' ') : '📦';
-    
-    const cardText = `${line1}\n${line2}`;
+    // Affichage VIP simple : seulement le nom + likes + étoile
+    const cardText = line1;
     buttons.push([Markup.button.callback(cardText, `plug_${plug._id}_from_plugs_vip`)]);
   });
   
