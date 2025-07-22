@@ -26,10 +26,28 @@ const handleReferral = async (ctx, referralCode) => {
     }
 
     // Extraire l'ID de la boutique du code de parrainage
-    const boutique = await Plug.findOne({ referralCode: referralCode });
+    console.log('🔍 Recherche boutique avec code:', referralCode);
+    
+    // Essayer d'abord par code exact
+    let boutique = await Plug.findOne({ referralCode: referralCode });
+    
+    // Si pas trouvé, extraire l'ID du code (format: ref_ID_timestamp)
+    if (!boutique && referralCode.startsWith('ref_')) {
+      const parts = referralCode.split('_');
+      if (parts.length >= 2) {
+        const boutiqueId = parts[1]; // L'ID est après "ref_"
+        console.log('🔍 Recherche par ID extrait:', boutiqueId);
+        
+        // Vérifier si c'est un ID MongoDB valide
+        if (boutiqueId.match(/^[a-f\d]{24}$/)) {
+          boutique = await Plug.findById(boutiqueId);
+        }
+      }
+    }
     
     if (!boutique) {
       console.log('❌ Code de parrainage invalide:', referralCode);
+      console.log('❌ Aucune boutique trouvée pour ce code');
       return false;
     }
 
