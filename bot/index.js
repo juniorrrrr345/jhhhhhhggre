@@ -4,15 +4,20 @@ const { Telegraf } = require('telegraf');
 const cors = require('cors');
 const multer = require('multer');
 
-// Configuration du rate limiting pour sécurité  
+// Import du middleware de sécurité avancé
+const { 
+  corsOptions, 
+  limits, 
+  helmetConfig, 
+  sanitizeInput, 
+  securityLogger, 
+  antiDDoS,
+  compression
+} = require('./security-middleware');
+
+// Garde l'ancien rate limiter pour compatibilité
 const rateLimit = require('express-rate-limit');
-const adminLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Limite à 100 requêtes par IP
-  message: { error: 'Trop de requêtes, réessayez dans 15 minutes' },
-  standardHeaders: true,
-  legacyHeaders: false,
-});
+const adminLimiter = limits.auth; // Utilise le rate limiter d'auth plus strict
 const { connectDB } = require('./src/utils/database');
 
 // Gestionnaires
