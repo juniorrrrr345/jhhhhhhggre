@@ -571,10 +571,19 @@ const submitApplication = async (ctx) => {
       [Markup.button.callback('🔙 Retour au menu', 'back_main')]
     ]);
     
-    await safeEditMessage(ctx, message, {
-      reply_markup: keyboard.reply_markup,
-      parse_mode: 'Markdown'
-    }, true); // Afficher avec l'image d'accueil
+    // Utiliser editMessageText simple sans image pour éviter les problèmes
+    try {
+      await ctx.editMessageText(message, {
+        reply_markup: keyboard.reply_markup,
+        parse_mode: 'Markdown'
+      });
+    } catch (editError) {
+      // Fallback: nouveau message si édition impossible
+      await ctx.reply(message, {
+        reply_markup: keyboard.reply_markup,
+        parse_mode: 'Markdown'
+      });
+    }
     
   } catch (error) {
     console.error('❌ SUBMIT ERROR: Detailed error in submitApplication:', {
