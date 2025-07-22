@@ -22,7 +22,24 @@ export default function ReferralsPage() {
       router.push('/')
       return
     }
-    loadReferralData(token)
+    
+    // Ajouter un délai pour éviter les erreurs de rechargement
+    const loadData = async () => {
+      try {
+        await loadReferralData(token)
+      } catch (error) {
+        console.error('❌ Erreur initiale:', error)
+        // En cas d'erreur au chargement initial, réessayer une fois
+        setTimeout(() => {
+          loadReferralData(token).catch(retryError => {
+            console.error('❌ Erreur après retry:', retryError)
+            toast.error('Erreur de chargement. Veuillez rafraîchir la page.')
+          })
+        }, 1000)
+      }
+    }
+    
+    loadData()
   }, [])
 
   const loadReferralData = async (token) => {
