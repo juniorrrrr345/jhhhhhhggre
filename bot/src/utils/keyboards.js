@@ -414,7 +414,7 @@ const createPlugListKeyboard = (plugs, page = 0, totalPages = 1, context = 'plug
     const vipIndicator = plug.isVip ? '⭐' : '';
     // Limiter à 15 caractères pour le format compact
     const shortName = plug.name.length > 15 ? plug.name.substring(0, 15) : plug.name;
-    const line1 = `🇫🇷 ${shortName.toUpperCase()} 🖤${likesCount}${vipIndicator}`;
+    const line1 = `🇫🇷${shortName.toUpperCase()}🖤${likesCount}${vipIndicator}`;
     
     // Ligne 2: Services uniquement (plus simple et claire)  
     const services = [];
@@ -459,7 +459,7 @@ const createVIPKeyboard = (vipPlugs) => {
     const likesCount = plug.likes || 0;
     // Limiter à 15 caractères pour le format compact
     const shortName = plug.name.length > 15 ? plug.name.substring(0, 15) : plug.name;
-    const line1 = `🇫🇷 ${shortName.toUpperCase()} 🖤${likesCount}⭐`;
+    const line1 = `🇫🇷${shortName.toUpperCase()}🖤${likesCount}⭐`;
     
     // Ligne 2: Services uniquement (plus simple)
     const services = [];
