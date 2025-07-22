@@ -412,7 +412,13 @@ const createPlugListKeyboard = (plugs, page = 0, totalPages = 1, context = 'plug
     
     // Ligne 1: Drapeau + nom (VIP avec étoile si applicable)
     const vipIcon = plug.isVip ? ' ⭐' : '';
-    const line1 = `🇫🇷 ${plug.name.toUpperCase()}${vipIcon}`;
+    // Tronquer le nom si trop long pour éviter "..."
+    const maxNameLength = 25; // Limite pour éviter la troncature Telegram
+    let displayName = plug.name;
+    if (displayName.length > maxNameLength) {
+      displayName = displayName.substring(0, maxNameLength - 3) + '...';
+    }
+    const line1 = `🇫🇷 ${displayName.toUpperCase()}${vipIcon}`;
     
     // Ligne 2: Icônes des services disponibles
     const services = [];
