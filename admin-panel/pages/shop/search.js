@@ -493,13 +493,94 @@ export default function ShopSearch() {
                 {currentPlugs.map((plug, index) => (
                   <ShopCard key={plug._id || index} plug={plug} index={index} layout="list" />
                 ))}
-                    <div style={{ 
-                      backgroundColor: '#1a1a1a',
-                      padding: '16px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '12px',
-                      cursor: 'pointer',
+              </div>
+
+                            {/* Pagination */}
+              {plugs.length > itemsPerPage && (
+                <div style={{ 
+                  display: 'flex', 
+                  justifyContent: 'center',
+                  marginTop: '32px'
+                }}>
+                  <Pagination
+                    currentPage={currentPage}
+                    totalItems={plugs.length}
+                    itemsPerPage={itemsPerPage}
+                    onPageChange={setCurrentPage}
+                  />
+                </div>
+              )}
+            </>
+          )}
+        </main>
+
+        {/* Navigation en bas */}
+        <nav style={{ 
+          position: 'fixed',
+          bottom: '0',
+          left: '0',
+          right: '0',
+          backgroundColor: '#000000',
+          padding: '12px 0',
+          borderTop: '1px solid #2a2a2a',
+          zIndex: 1000
+        }}>
+          <div style={{ 
+            display: 'flex', 
+            justifyContent: 'space-around',
+            alignItems: 'center',
+            width: '100%',
+            maxWidth: '100%'
+          }}>
+            <Link href="/shop" style={{ 
+              color: '#8e8e93', 
+              textDecoration: 'none',
+              fontSize: '10px',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: '4px'
+            }}>
+              <span style={{ fontSize: '20px' }}>🏠</span>
+              Boutiques
+            </Link>
+            <Link href="/shop/search" style={{ 
+              color: '#007AFF', 
+              textDecoration: 'none',
+              fontSize: '10px',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: '4px'
+            }}>
+              <span style={{ fontSize: '20px' }}>🔍</span>
+              Rechercher
+            </Link>
+            <Link href="/shop/vip" style={{ 
+              color: '#8e8e93', 
+              textDecoration: 'none',
+              fontSize: '10px',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: '4px'
+            }}>
+              <span style={{ fontSize: '20px' }}>👑</span>
+              VIP
+            </Link>
+          </div>
+        </nav>
+      </div>
+
+      <style jsx>{`
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+      `}</style>
+    </>
+  )
+}
                       transition: 'background-color 0.2s ease',
                       border: plug.isVip ? '1px solid #FFD700' : 'none',
                       borderRadius: '8px',
