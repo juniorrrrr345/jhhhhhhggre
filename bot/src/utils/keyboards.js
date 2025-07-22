@@ -449,13 +449,13 @@ const createVIPKeyboard = (vipPlugs) => {
   const buttons = [];
   
   vipPlugs.forEach(plug => {
-    // Format VIP spécial : Pays + Nom + ⭐ + 🖤 + Likes
-    // 🇫🇷 NOM BOUTIQUE ⭐ 🖤12
+    // Format VIP spécial : Pays + Nom + 🖤 + Likes
+    // 🇫🇷 NOM BOUTIQUE 🖤12
     // 📦 📍 🛵
     
-    // Ligne 1: Pays + nom complet + ⭐ + 🖤 + likes (format VIP)
+    // Ligne 1: Pays + nom complet + 🖤 + likes (format VIP)
     const likesCount = plug.likes || 0;
-    const line1 = `🇫🇷 ${plug.name.toUpperCase()} ⭐ 🖤${likesCount}`;
+    const line1 = `🇫🇷 ${plug.name.toUpperCase()} 🖤${likesCount}`;
     
     // Ligne 2: Services uniquement (plus simple)
     const services = [];
