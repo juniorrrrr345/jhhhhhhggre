@@ -46,10 +46,9 @@ export default async function handler(req, res) {
     }
     
     if (data && (method === 'POST' || method === 'PUT' || method === 'PATCH')) {
-      // L'API bot s'attend à recevoir { data: ... } dans req.body
-      const bodyToSend = { data: data }
-      console.log(`📤 Body being sent to API:`, JSON.stringify(bodyToSend, null, 2))
-      fetchOptions.body = JSON.stringify(bodyToSend)
+      // Envoyer les données directement sans encapsulation pour éviter les problèmes
+      console.log(`📤 Body being sent to API:`, JSON.stringify(data, null, 2))
+      fetchOptions.body = JSON.stringify(data)
     }
     
     const response = await fetch(`${apiUrl}${endpoint}`, fetchOptions)

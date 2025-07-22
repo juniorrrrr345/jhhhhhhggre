@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import Layout from '../../../components/Layout'
 import toast from 'react-hot-toast'
-import { api } from '../../../lib/api-proxy'
+import { simpleApi } from '../../../lib/api-simple'
 import {
   PlusIcon,
   PhotoIcon,
@@ -142,7 +142,7 @@ export default function NewPlug() {
       console.log('💾 Création de la boutique...')
       console.log('📋 Données à envoyer:', formData)
       
-      await api.createPlug(token, formData)
+      await simpleApi.createPlug(token, formData)
       
       toast.success('Boutique créée avec succès !')
       console.log('✅ Boutique créée')

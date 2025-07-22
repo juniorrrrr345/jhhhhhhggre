@@ -835,10 +835,8 @@ app.put('/api/config', authenticateAdmin, async (req, res) => {
       throw new Error('Modèle Config non disponible');
     }
     
-    // Extraire les données du champ 'data' si elles viennent du proxy
-    const rawData = req.body.data || req.body;
     // Nettoyer les données avant la mise à jour
-    const cleanConfigData = { ...rawData };
+    const cleanConfigData = { ...req.body };
     
     // Retirer les champs système pour éviter les conflits
     delete cleanConfigData._id;
@@ -1230,17 +1228,12 @@ app.get('/api/plugs/:id', authenticateAdmin, async (req, res) => {
 app.post('/api/plugs', authenticateAdmin, async (req, res) => {
   try {
     console.log('🆕 Création d\'un nouveau plug');
-    console.log('📝 Données reçues (req.body):', JSON.stringify(req.body, null, 2));
+    console.log('📝 Données reçues:', req.body);
     
-    // Extraire les données du champ 'data' si elles viennent du proxy
-    const plugData = req.body.data || req.body;
-    console.log('📝 Données extraites (plugData):', JSON.stringify(plugData, null, 2));
-    console.log('📝 plugData.name:', plugData.name);
-    console.log('📝 plugData.description:', plugData.description);
+    const plugData = req.body;
     
     // Validation des champs requis
     if (!plugData.name || !plugData.description) {
-      console.log('❌ Validation échouée - Nom ou description manquant');
       return res.status(400).json({ 
         error: 'Le nom et la description sont requis' 
       });
@@ -1291,8 +1284,7 @@ app.post('/api/plugs', authenticateAdmin, async (req, res) => {
 app.put('/api/plugs/:id', authenticateAdmin, async (req, res) => {
   try {
     const { id } = req.params;
-    // Extraire les données du champ 'data' si elles viennent du proxy
-    const updateData = req.body.data || req.body;
+    const updateData = req.body;
     
     console.log(`📝 Modification du plug ${id}`);
     console.log('📝 Données de mise à jour:', updateData);
@@ -1992,9 +1984,7 @@ app.get('/api/applications', authenticateAdmin, async (req, res) => {
 app.patch('/api/applications/:id', authenticateAdmin, async (req, res) => {
   try {
     const { id } = req.params;
-    // Extraire les données du champ 'data' si elles viennent du proxy
-    const data = req.body.data || req.body;
-    const { status, adminNotes } = data;
+    const { status, adminNotes } = req.body;
     
     const PlugApplication = require('./src/models/PlugApplication');
     const { sendApprovalNotification, sendRejectionNotification } = require('./src/handlers/notificationHandler');
