@@ -401,8 +401,8 @@ bot.action(/^like_([a-f\d]{24})$/, async (ctx) => {
     // Notification du like ajouté
     await ctx.answerCbQuery(`❤️ Vous avez liké ${plug.name} ! (${plug.likes} likes)`);
     
-    // ========== MISE À JOUR CLAVIER SEULEMENT ==========
-    // Ne pas changer le message, juste mettre à jour le clavier avec le nouveau bouton like
+    // ========== MISE À JOUR CLAVIER AVEC TOUS LES BOUTONS ==========
+    // Recréer le clavier complet en gardant tous les boutons existants
     const { createPlugKeyboard } = require('./src/utils/keyboards');
     
     // Déterminer le bon contexte de retour
@@ -411,15 +411,47 @@ bot.action(/^like_([a-f\d]{24})$/, async (ctx) => {
       returnContext = ctx.session.lastContext;
     }
     
-    // Créer le nouveau clavier avec le bouton like mis à jour (avec cooldown)
+    // Créer le clavier complet avec TOUS les boutons (services, réseaux sociaux, retour)
+    // Le bouton like sera automatiquement mis à jour avec le cooldown
     const keyboard = createPlugKeyboard(plug, returnContext, userId);
     
-    // Mettre à jour uniquement le clavier, garder le message et l'image existants
+    // Mettre à jour le clavier en gardant le message et l'image existants
     try {
       await ctx.editMessageReplyMarkup(keyboard);
+      console.log(`✅ Clavier mis à jour après like pour plug ${plug.name}`);
     } catch (editError) {
       console.log('⚠️ Erreur édition clavier après like:', editError.message);
-      // Fallback silencieux si erreur
+      // Fallback: afficher le menu complet si erreur d'édition
+      try {
+        const Config = require('./src/models/Config');
+        const config = await Config.findById('main');
+        const { editMessageWithImage } = require('./src/utils/messageHelper');
+        
+        let message = `${plug.isVip ? '⭐ ' : ''}**${plug.name}**\n\n`;
+        message += `📝 ${plug.description}\n\n`;
+
+        // Services disponibles
+        const services = [];
+        if (plug.services?.delivery?.enabled) {
+          services.push(`🚚 **Livraison**${plug.services.delivery.description ? `: ${plug.services.delivery.description}` : ''}`);
+        }
+        if (plug.services?.postal?.enabled) {
+          services.push(`✈️ **Envoi postal**${plug.services.postal.description ? `: ${plug.services.postal.description}` : ''}`);
+        }
+        if (plug.services?.meetup?.enabled) {
+          services.push(`🏠 **Meetup**${plug.services.meetup.description ? `: ${plug.services.meetup.description}` : ''}`);
+        }
+        
+        if (services.length > 0) {
+          message += `**Services disponibles :**\n${services.join('\n')}\n\n`;
+        }
+        
+        message += `❤️ **${plug.likes} ${plug.likes > 1 ? 'likes' : 'like'}**`;
+        
+        await editMessageWithImage(ctx, message, plug.image, keyboard, config?.welcome?.image);
+      } catch (fallbackError) {
+        console.error('❌ Erreur fallback après like:', fallbackError.message);
+      }
     }
     
   } catch (error) {
