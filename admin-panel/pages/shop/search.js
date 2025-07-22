@@ -5,6 +5,7 @@ import { api } from '../../lib/api'
 import { getProxiedImageUrl } from '../../lib/imageUtils'
 import toast from 'react-hot-toast'
 import Pagination from '../../components/Pagination'
+import ShopCard from '../../components/ShopCard'
 
 export default function ShopSearch() {
   const [plugs, setPlugs] = useState([])
@@ -490,6 +491,8 @@ export default function ShopSearch() {
               {/* Liste des résultats */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
                 {currentPlugs.map((plug, index) => (
+                  <ShopCard key={plug._id || index} plug={plug} index={index} layout="list" />
+                ))}
                   <Link 
                     key={plug._id || index} 
                     href={`/shop/${plug._id}`}
