@@ -143,11 +143,11 @@ const handleStartApplication = async (ctx) => {
       }
     });
     
-    const message = `📝 **Récapitulatif de votre inscription :**\n\n` +
-      `📝 Nom de Plug: \n` +
-      `🔗 Telegram: \n\n` +
-      `**Étape 1 : Nom du Plug**\n\n` +
-      `Quel est votre nom de Plug ?`;
+    const message = `🛠️ **FORMULAIRE D'INSCRIPTION – SafePlugLink**\n\n` +
+      `⸻\n\n` +
+      `🟦 **Étape 1 : Nom de Plug**\n\n` +
+      `📝 Commençons ton inscription sur SafePlugLink !\n\n` +
+      `Quel est ton **nom de Plug** ?`;
     
     const keyboard = Markup.inlineKeyboard([
       [Markup.button.callback('❌ Annuler', 'cancel_application')]
@@ -194,6 +194,17 @@ const handleFormMessage = async (ctx) => {
         }
 
         userForm.data.telegram = text;
+        userForm.step = 'telegram_channel';
+        
+        await askTelegramChannel(ctx);
+        break;
+        
+      case 'telegram_channel':
+        if (!text.includes('t.me/')) {
+          return await ctx.reply('❌ Merci de fournir un lien de canal Telegram valide (ex: https://t.me/username). Réessaie :');
+        }
+
+        userForm.data.telegramChannel = text;
         userForm.step = 'instagram';
         
         await askInstagram(ctx);
@@ -299,13 +310,10 @@ const handleFormMessage = async (ctx) => {
           userForm.step = 'departments_delivery';
           userForms.set(userId, userForm);
           
-          const message = `📝 **Récapitulatif de votre inscription :**\n\n` +
-            `📝 Nom de Plug: ${userForm.data.name}\n` +
-            `🔗 Telegram: ${userForm.data.telegram}\n` +
-            `🌍 Pays: ${userForm.data.country}\n` +
-            `🛠️ Services: 📍 Meetup, 🚚 Livraison\n` +
-            `📍 Secteur Meetup: ${text}\n\n` +
-            `Entrez les départements pour la livraison (séparés par des virgules, ex: 75, 92, 93):`;
+          const message = `🛠️ **FORMULAIRE D'INSCRIPTION – SafePlugLink**\n\n` +
+            `⸻\n\n` +
+            `🟦 **Étape 14 : Départements pour Livraison**\n\n` +
+            `🚚 Indique les départements pour la **Livraison** (ex: 75, 94...) :`;
           
           await safeEditMessage(ctx, message, { parse_mode: 'Markdown' });
         } else {
@@ -338,13 +346,31 @@ const handleFormMessage = async (ctx) => {
 
 // Demander Telegram
 const askTelegram = async (ctx) => {
-  const message = `📝 **Récapitulatif de votre inscription :**\n\n` +
-    `📝 Nom de Plug: ${userForms.get(ctx.from.id).data.name}\n` +
-    `🔗 Telegram: \n\n` +
-    `Entrez votre lien Telegram (format: @username ou https://t.me/username):`;
+  const message = `🛠️ **FORMULAIRE D'INSCRIPTION – SafePlugLink**\n\n` +
+    `⸻\n\n` +
+    `🟦 **Étape 2 : Lien Telegram**\n\n` +
+    `🔗 Entrez votre lien Telegram (format : @username ou https://t.me/username)`;
   
   const keyboard = Markup.inlineKeyboard([
-    [Markup.button.callback('➡️ Passer cette étape', 'skip_telegram')],
+    [Markup.button.callback('❌ Annuler', 'cancel_application')]
+  ]);
+  
+  await safeEditMessage(ctx, message, {
+    reply_markup: keyboard.reply_markup,
+    parse_mode: 'Markdown'
+  });
+};
+
+// Demander Canal Telegram
+const askTelegramChannel = async (ctx) => {
+  const message = `🛠️ **FORMULAIRE D'INSCRIPTION – SafePlugLink**\n\n` +
+    `⸻\n\n` +
+    `🟦 **Étape 3 : Lien Canal Telegram**\n\n` +
+    `🔗 Entrez le lien de votre **canal Telegram** (format : https://t.me/username)\n\n` +
+    `⚠️ Tu peux aussi passer cette étape.`;
+  
+  const keyboard = Markup.inlineKeyboard([
+    [Markup.button.callback('⏭️ Passer cette étape', 'skip_telegram_channel')],
     [Markup.button.callback('❌ Annuler', 'cancel_application')]
   ]);
   
@@ -356,14 +382,14 @@ const askTelegram = async (ctx) => {
 
 // Demander Instagram
 const askInstagram = async (ctx) => {
-  const userForm = userForms.get(ctx.from.id);
-  const message = `📝 **Récapitulatif de votre inscription :**\n\n` +
-    `📝 Nom de Plug: ${userForm.data.name}\n` +
-    `🔗 Telegram: ${userForm.data.telegram}\n\n` +
-    `Entrez votre lien Instagram (format: https://www.instagram.com/username):`;
+  const message = `🛠️ **FORMULAIRE D'INSCRIPTION – SafePlugLink**\n\n` +
+    `⸻\n\n` +
+    `🟦 **Étape 4 : Lien Instagram**\n\n` +
+    `📸 Entrez votre lien Instagram (https://www.instagram.com/username)\n\n` +
+    `⚠️ Tu peux aussi passer cette étape.`;
   
   const keyboard = Markup.inlineKeyboard([
-    [Markup.button.callback('➡️ Passer cette étape', 'skip_instagram')],
+    [Markup.button.callback('⏭️ Passer cette étape', 'skip_instagram')],
     [Markup.button.callback('❌ Annuler', 'cancel_application')]
   ]);
   
@@ -375,14 +401,20 @@ const askInstagram = async (ctx) => {
 
 // Demander Potato
 const askPotato = async (ctx) => {
-  const userForm = userForms.get(ctx.from.id);
-  const message = `📝 **Récapitulatif de votre inscription :**\n\n` +
-    `📝 Nom de Plug: ${userForm.data.name}\n` +
-    `🔗 Telegram: ${userForm.data.telegram}\n\n` +
-    `Entrez votre lien Potato (commençant par https://):`;
+  const message = `🛠️ **FORMULAIRE D'INSCRIPTION – SafePlugLink**\n\n` +
+    `⸻\n\n` +
+    `🟦 **Étapes Réseaux supplémentaires :**\n\n` +
+    `Entrez votre lien **Potato** (commençant par https://)\n\n` +
+    `Plateformes :\n` +
+    `\t•\tPotato\n` +
+    `\t•\tSnapchat\n` +
+    `\t•\tWhatsApp\n` +
+    `\t•\tSignal\n` +
+    `\t•\tSession (identifiant libre)\n` +
+    `\t•\tThreema`;
   
   const keyboard = Markup.inlineKeyboard([
-    [Markup.button.callback('➡️ Passer cette étape', 'skip_potato')],
+    [Markup.button.callback('⏭️ Passer cette étape', 'skip_potato')],
     [Markup.button.callback('❌ Annuler', 'cancel_application')]
   ]);
   
@@ -489,11 +521,10 @@ const askThreema = async (ctx) => {
 
 // Demander le pays avec boutons
 const askCountry = async (ctx) => {
-  const userForm = userForms.get(ctx.from.id);
-  const message = `📝 **Récapitulatif de votre inscription :**\n\n` +
-    `📝 Nom de Plug: ${userForm.data.name}\n` +
-    `🔗 Telegram: ${userForm.data.telegram}\n\n` +
-    `Dans quel pays opérez-vous principalement ?`;
+  const message = `🛠️ **FORMULAIRE D'INSCRIPTION – SafePlugLink**\n\n` +
+    `⸻\n\n` +
+    `🟦 **Étape 11 : Pays d'activité**\n\n` +
+    `🌍 Dans quel pays opères-tu principalement ?`;
   
   // Créer les boutons de pays (3 par ligne)
   const countryButtons = [];
@@ -550,12 +581,14 @@ const handleCountrySelection = async (ctx) => {
 
 // Demander les services
 const askServices = async (ctx) => {
-  const userForm = userForms.get(ctx.from.id);
-  const message = `📝 **Récapitulatif de votre inscription :**\n\n` +
-    `📝 Nom de Plug: ${userForm.data.name}\n` +
-    `🔗 Telegram: ${userForm.data.telegram}\n` +
-    `🌍 Pays: ${userForm.data.country}\n\n` +
-    `Quels services proposez-vous? (Sélectionnez tous ceux qui s'appliquent)`;
+  const message = `🛠️ **FORMULAIRE D'INSCRIPTION – SafePlugLink**\n\n` +
+    `⸻\n\n` +
+    `🟦 **Étape 12 : Services proposés**\n\n` +
+    `📦 Quels services proposes-tu ?\n` +
+    `(Sélectionne tous ceux qui s'appliquent)\n\n` +
+    `☑️ Meetup\n` +
+    `☑️ Livraison\n` +
+    `☑️ Envoi Postal`;
   
   const keyboard = Markup.inlineKeyboard([
     [
@@ -667,12 +700,10 @@ const handleServicesDone = async (ctx) => {
       userForm.step = 'departments_meetup';
       userForms.set(userId, userForm);
       
-      const message = `📝 **Récapitulatif de votre inscription :**\n\n` +
-        `📝 Nom de Plug: ${userForm.data.name}\n` +
-        `🔗 Telegram: ${userForm.data.telegram}\n` +
-        `🌍 Pays: ${userForm.data.country}\n` +
-        `🛠️ Services: 📍 Meetup, 🚚 Livraison\n\n` +
-        `Entrez les départements pour le meetup (séparés par des virgules, ex: 75, 92, 93):`;
+      const message = `🛠️ **FORMULAIRE D'INSCRIPTION – SafePlugLink**\n\n` +
+        `⸻\n\n` +
+        `🟦 **Étape 13 : Départements pour Meetup**\n\n` +
+        `📍 Indique les départements pour le **Meetup** (ex: 75, 92, 93) :`;
       
       await safeEditMessage(ctx, message, { parse_mode: 'Markdown' });
     } else {
@@ -692,15 +723,37 @@ const handleServicesDone = async (ctx) => {
 
 // Demander la photo
 const askPhoto = async (ctx) => {
+  const message = `🛠️ **FORMULAIRE D'INSCRIPTION – SafePlugLink**\n\n` +
+    `⸻\n\n` +
+    `🟦 **Étape 15 : Envoi du logo**\n\n` +
+    `🖼️ Envoie ton **logo** (obligatoire pour finaliser ton inscription)\n\n` +
+    `⚠️ Tu peux envoyer une image ici.`;
+  
+  const keyboard = Markup.inlineKeyboard([
+    [Markup.button.callback('❌ Annuler', 'cancel_application')]
+  ]);
+  
+  await safeEditMessage(ctx, message, {
+    reply_markup: keyboard.reply_markup,
+    parse_mode: 'Markdown'
+  });
+};
+
+// Demander la confirmation
+const askConfirmation = async (ctx) => {
   const userForm = userForms.get(ctx.from.id);
-  const message = `📝 **Récapitulatif de votre inscription :**\n\n` +
-    `📝 Nom de Plug: ${userForm.data.name}\n` +
-    `🔗 Telegram: ${userForm.data.telegram}\n` +
-    `🌍 Pays: ${userForm.data.country}\n` +
-    `🛠️ Services: ${getServicesText(userForm.data.services)}\n` +
-    `${userForm.data.departmentsMeetup ? `📍 Secteur Meetup: ${userForm.data.departmentsMeetup}\n` : ''}` +
-    `${userForm.data.departmentsDelivery ? `🚚 Secteur Livraison: ${userForm.data.departmentsDelivery}\n` : ''}\n` +
-    `Veuillez confirmer ces informations:`;
+  const message = `🛠️ **FORMULAIRE D'INSCRIPTION – SafePlugLink**\n\n` +
+    `⸻\n\n` +
+    `🟢 **Étape 16 : Confirmation**\n\n` +
+    `✅ Voici le récapitulatif final :\n\n` +
+    `• Nom de Plug : ${userForm.data.name}\n` +
+    `• Telegram : ${userForm.data.telegram}\n` +
+    `• Pays : ${userForm.data.country}\n` +
+    `• Services : ${getServicesText(userForm.data.services)}\n` +
+    `${userForm.data.departmentsMeetup ? `• Meetup : ${userForm.data.departmentsMeetup}\n` : ''}` +
+    `${userForm.data.departmentsDelivery ? `• Livraison : ${userForm.data.departmentsDelivery}\n` : ''}` +
+    `• Logo : ✔️ Reçu\n\n` +
+    `Confirmer l'inscription ?`;
   
   const keyboard = Markup.inlineKeyboard([
     [
@@ -741,15 +794,14 @@ const handlePhoto = async (ctx) => {
       height: photo.height
     };
     
+    userForm.step = 'confirmation';
     userForms.set(userId, userForm);
     
-    // Confirmer et passer à la soumission
-    await ctx.reply('✅ Photo reçue !\n\nPréparation de ta demande...');
+    // Confirmer réception et passer à la confirmation
+    await ctx.reply('✅ Photo reçue !');
     
-    // Attendre un peu puis soumettre
-    setTimeout(async () => {
-      await submitApplication(ctx);
-    }, 1000);
+    // Passer à l'étape de confirmation
+    await askConfirmation(ctx);
     
   } catch (error) {
     console.error('Erreur dans handlePhoto:', error);
@@ -770,6 +822,10 @@ const handleSkipStep = async (ctx, step) => {
     // Passer à l'étape suivante
     switch (step) {
       case 'telegram':
+        userForm.step = 'telegram_channel';
+        await askTelegramChannel(ctx);
+        break;
+      case 'telegram_channel':
         userForm.step = 'instagram';
         await askInstagram(ctx);
         break;
@@ -889,14 +945,20 @@ const submitApplication = async (ctx) => {
     
     const photoText = userForm.data.photo ? '✅ Photo incluse' : '⚠️ Aucune photo';
     
-    const message = `🎉 **Formulaire reçu !**\n\n` +
-      `Pour valider ton inscription :\n\n` +
-              `**Étape 1 :** Poste le logo SAFEPLUGLINK sur un de tes réseaux renseignés (Instagram ou Telegram) avec le texte 'Inscription en cours chez SAFEPLUGLINK' et identifie @safepluglink.\n\n` +
-        `**Étape 2 :** Envoie une photo de ton stock avec 'SAFEPLUGLINK' et la date du jour écrits sur un papier à l'admin @safepluglink_admin.\n\n` +
-      `⏳ Tu as 24h pour faire ces 2 étapes.\n\n` +
-      `La pré-approbation peut prendre 24 à 48h*. Tu seras automatiquement notifié par le bot de la décision des admins.\n\n` +
-      `Si tu es pré approuvé par les admin, une fiche temporaire avec un lien unique sera créée. Tu devras obtenir 30 votes en 7 jours pour finaliser ton inscription et passer public dans la liste.\n\n` +
-      `Besoin de recommencer? /start`;
+    const message = `🛠️ **FORMULAIRE D'INSCRIPTION – SafePlugLink**\n\n` +
+      `⸻\n\n` +
+      `🟩 **ÉTAPE FINALE**\n\n` +
+      `🎉 Formulaire reçu !\n\n` +
+      `📌 Pour valider ton inscription :\n\n` +
+      `1️⃣ Poste le logo **SafePlugLink** sur un de tes réseaux renseignés avec le texte :\n` +
+      `"Inscription en cours chez **@SafePlugLink**"\n` +
+      `et identifie **@safepluglink**\n\n` +
+      `2️⃣ Envoie une photo de ton stock avec\n` +
+      `**SafePlugLink** et la **date du jour** écrits sur papier\n` +
+      `à l'admin : @safepluglink_admin\n\n` +
+      `⏰ Tu as **24h** pour faire ces 2 étapes.\n\n` +
+      `ℹ️ La pré-approbation peut prendre 24 à 48h.\n` +
+      `Tu seras notifié automatiquement de la décision.`;
     
     const keyboard = Markup.inlineKeyboard([
       [Markup.button.callback('🔙 Retour au menu', 'back_main')]
