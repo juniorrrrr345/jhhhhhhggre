@@ -145,16 +145,18 @@ export default function BotConfiguration() {
       console.log('✅ Configuration bot sauvegardée')
       
       if (result._degraded) {
-        toast.success('⚠️ Configuration sauvegardée (mode dégradé - serveur bot lent)')
+        if (result._reason === 'server_overloaded') {
+          toast.success('⚠️ Configuration sauvegardée (mode dégradé - serveur surchargé)')
+        } else {
+          toast.success('⚠️ Configuration sauvegardée (mode dégradé - serveur bot lent)')
+        }
       } else {
         toast.success('Configuration sauvegardée avec succès !')
-      }
-      
-    } catch (error) {
-      console.error('❌ Erreur sauvegarde:', error)
-      if (error.message.includes('429')) {
-        toast.error('Trop de tentatives. Veuillez patienter quelques secondes.')
-      } else if (error.message.includes('401')) {
+              }
+        
+      } catch (error) {
+        console.error('❌ Erreur sauvegarde:', error)
+        if (error.message.includes('401')) {
         toast.error('Session expirée. Veuillez vous reconnecter.')
         router.push('/')
       } else if (error.message.includes('500') || error.message.includes('Internal Server Error')) {

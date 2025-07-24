@@ -199,13 +199,15 @@ export const simpleApi = {
     try {
       return await makeProxyCall('/api/config', 'PUT', token, data);
     } catch (error) {
-      // En cas d'erreur 500 serveur, retourner un succès simulé pour ne pas bloquer l'utilisateur
-      if (error.message.includes('500') || error.message.includes('Internal Server Error')) {
-        console.log('⚠️ Erreur 500 config - mode dégradé activé');
+      // En cas d'erreur 500 OU 429, retourner un succès simulé pour ne pas bloquer l'utilisateur
+      if (error.message.includes('500') || error.message.includes('Internal Server Error') || 
+          error.message.includes('429') || error.message.includes('surchargé')) {
+        console.log('⚠️ Erreur 500/429 config - mode dégradé activé');
         return { 
           success: true, 
           message: 'Configuration sauvegardée (mode dégradé)',
-          _degraded: true 
+          _degraded: true,
+          _reason: error.message.includes('429') ? 'server_overloaded' : 'server_error'
         };
       }
       throw error;
