@@ -245,6 +245,13 @@ export default function Dashboard() {
       href: '/admin/messages',
       emoji: '📢',
       color: 'bg-indigo-500'
+    },
+    {
+      name: 'Test Connectivité',
+      description: 'Diagnostiquer les problèmes de connexion',
+      href: '/admin/test-connection',
+      emoji: '🔧',
+      color: 'bg-yellow-500'
     }
   ]
 
