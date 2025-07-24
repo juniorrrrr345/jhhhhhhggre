@@ -31,14 +31,23 @@ const handleTopPlugs = async (ctx) => {
     let message = `🔌 **Liste des Plugs**\n`;
     message += `*(Triés par nombre de votes)*\n\n`;
     
-    // Afficher les premiers plugs (top 10 par défaut)
+    // Afficher les premiers plugs (top 10 par défaut) - MISE À JOUR pour boutons
     const topPlugs = allPlugs.slice(0, 10);
     if (topPlugs.length > 0) {
+      message += `**${topPlugs.length} boutiques disponibles :**\n\n`;
+      
+      // Ajouter les boutiques au clavier
+      const plugButtons = [];
       topPlugs.forEach((plug, index) => {
         const country = getCountryFlag(plug.countries[0]);
         const location = plug.location ? ` ${plug.location}` : '';
-        message += `${country}${location} ${plug.name} 👍 ${plug.likes}\n`;
+        const buttonText = `${country}${location} ${plug.name} 👍 ${plug.likes}`;
+        plugButtons.push([Markup.button.callback(buttonText, `plug_${plug._id}_from_top_plugs`)]);
       });
+      
+      // Ajouter les boutons de boutiques au clavier principal
+      keyboard = createTopPlugsKeyboard(availableCountries, null, null, plugButtons);
+      
     } else {
       message += `❌ Aucun plug disponible pour le moment.`;
     }
@@ -72,11 +81,18 @@ const handleTopCountryFilter = async (ctx, country) => {
     message += `🌍 **Filtre:** ${getCountryFlag(country)} ${country}\n\n`;
     
     if (countryPlugs.length > 0) {
+      message += `**${countryPlugs.length} boutiques trouvées :**\n\n`;
+      
+      // Ajouter les boutiques au clavier
+      const plugButtons = [];
       countryPlugs.slice(0, 10).forEach((plug, index) => {
         const countryFlag = getCountryFlag(plug.countries[0]);
         const location = plug.location ? ` ${plug.location}` : '';
-        message += `${countryFlag}${location} ${plug.name} 👍 ${plug.likes}\n`;
+        const buttonText = `${countryFlag}${location} ${plug.name} 👍 ${plug.likes}`;
+        plugButtons.push([Markup.button.callback(buttonText, `plug_${plug._id}_from_top_country`)]);
       });
+      
+      keyboard = createTopPlugsKeyboard(availableCountries, country, null, plugButtons);
     } else {
       message += `❌ Aucun plug disponible pour ${country}.`;
     }
@@ -138,11 +154,18 @@ const handleTopServiceFilter = async (ctx, serviceType, selectedCountry = null) 
     }
     
     if (servicePlugs.length > 0) {
+      message += `**${servicePlugs.length} boutiques trouvées :**\n\n`;
+      
+      // Ajouter les boutiques au clavier
+      const plugButtons = [];
       servicePlugs.slice(0, 10).forEach((plug, index) => {
         const country = getCountryFlag(plug.countries[0]);
         const location = plug.location ? ` ${plug.location}` : '';
-        message += `${country}${location} ${plug.name} 👍 ${plug.likes}\n`;
+        const buttonText = `${country}${location} ${plug.name} 👍 ${plug.likes}`;
+        plugButtons.push([Markup.button.callback(buttonText, `plug_${plug._id}_from_top_service`)]);
       });
+      
+      keyboard = createTopPlugsKeyboard(availableCountries, selectedCountry, serviceType, plugButtons);
     } else {
       const serviceName = serviceNames[serviceType].toLowerCase();
       message += `❌ Aucun plug disponible pour ${serviceName}.`;
@@ -240,11 +263,18 @@ const handleSpecificDepartment = async (ctx, serviceType, department, selectedCo
     message += `\n`;
     
     if (deptPlugs.length > 0) {
+      message += `**${deptPlugs.length} boutiques trouvées :**\n\n`;
+      
+      // Ajouter les boutiques au clavier
+      const plugButtons = [];
       deptPlugs.slice(0, 10).forEach((plug, index) => {
         const country = getCountryFlag(plug.countries[0]);
         const location = plug.location ? ` ${plug.location}` : '';
-        message += `${country}${location} ${plug.name} 👍 ${plug.likes}\n`;
+        const buttonText = `${country}${location} ${plug.name} 👍 ${plug.likes}`;
+        plugButtons.push([Markup.button.callback(buttonText, `plug_${plug._id}_from_top_dept`)]);
       });
+      
+      keyboard = createTopPlugsKeyboard(availableCountries, selectedCountry, serviceType, plugButtons);
     } else {
       message += `❌ Aucun plug disponible dans le département ${department}.`;
     }
@@ -323,19 +353,45 @@ const getAvailableDepartments = async (serviceType, selectedCountry = null) => {
 const getCountryFlag = (country) => {
   const flags = {
     'France': '🇫🇷',
+    'Espagne': '🇪🇸',
     'Spain': '🇪🇸', 
+    'Suisse': '🇨🇭',
     'Switzerland': '🇨🇭',
+    'Italie': '🇮🇹',
     'Italy': '🇮🇹',
+    'Belgique': '🇧🇪',
     'Belgium': '🇧🇪',
+    'Allemagne': '🇩🇪',
     'Germany': '🇩🇪',
+    'Pays-Bas': '🇳🇱',
     'Netherlands': '🇳🇱',
-    'Portugal': '🇵🇹'
+    'Portugal': '🇵🇹',
+    'Maroc': '🇲🇦',
+    'Morocco': '🇲🇦',
+    'Tunisie': '🇹🇳',
+    'Tunisia': '🇹🇳',
+    'Algérie': '🇩🇿',
+    'Algeria': '🇩🇿',
+    'Canada': '🇨🇦',
+    'États-Unis': '🇺🇸',
+    'USA': '🇺🇸',
+    'United States': '🇺🇸',
+    'Royaume-Uni': '🇬🇧',
+    'UK': '🇬🇧',
+    'United Kingdom': '🇬🇧',
+    'Cameroun': '🇨🇲',
+    'Cameroon': '🇨🇲',
+    'Sénégal': '🇸🇳',
+    'Senegal': '🇸🇳',
+    'Madagascar': '🇲🇬',
+    "Côte d'Ivoire": '🇨🇮',
+    'Ivory Coast': '🇨🇮'
   };
   return flags[country] || '🌍';
 };
 
 // Créer le clavier principal Top des Plugs
-const createTopPlugsKeyboard = (countries, selectedCountry, selectedService) => {
+const createTopPlugsKeyboard = (countries, selectedCountry, selectedService, plugButtons = []) => {
   const buttons = [];
   
   // Première ligne : Pays (4 boutons max par ligne)
@@ -373,7 +429,14 @@ const createTopPlugsKeyboard = (countries, selectedCountry, selectedService) => 
     buttons.push([deptButton]);
   }
   
-  // Quatrième ligne : Réinitialiser + Retour
+  // Ajouter les boutons de boutiques s'il y en a
+  if (plugButtons && plugButtons.length > 0) {
+    plugButtons.forEach(plugButtonRow => {
+      buttons.push(plugButtonRow);
+    });
+  }
+  
+  // Dernière ligne : Réinitialiser + Retour
   const actionRow = [];
   actionRow.push(Markup.button.callback('🔁 Réinitialiser les filtres', 'top_reset_filters'));
   actionRow.push(Markup.button.callback('🔙 Retour au menu', 'back_main'));
@@ -389,10 +452,23 @@ const createDepartmentsKeyboard = (departments, serviceType, selectedCountry) =>
   // Départements (2 par ligne)
   for (let i = 0; i < departments.length; i += 2) {
     const row = [];
-    row.push(Markup.button.callback(`📍 ${departments[i]}`, `top_dept_${serviceType}_${departments[i]}${selectedCountry ? `_${selectedCountry}` : ''}`));
+    
+    // Premier département de la ligne
+    const dept1 = departments[i];
+    const callback1 = selectedCountry ? 
+      `top_dept_${serviceType}_${dept1}_${selectedCountry}` : 
+      `top_dept_${serviceType}_${dept1}`;
+    row.push(Markup.button.callback(`📍 ${dept1}`, callback1));
+    
+    // Deuxième département de la ligne s'il existe
     if (departments[i + 1]) {
-      row.push(Markup.button.callback(`📍 ${departments[i + 1]}`, `top_dept_${serviceType}_${departments[i + 1]}${selectedCountry ? `_${selectedCountry}` : ''}`));
+      const dept2 = departments[i + 1];
+      const callback2 = selectedCountry ? 
+        `top_dept_${serviceType}_${dept2}_${selectedCountry}` : 
+        `top_dept_${serviceType}_${dept2}`;
+      row.push(Markup.button.callback(`📍 ${dept2}`, callback2));
     }
+    
     buttons.push(row);
   }
   

@@ -259,16 +259,35 @@ bot.action(/^top_departments_(.+)$/, (ctx) => {
   return handleDepartmentFilter(ctx, serviceType, selectedCountry);
 });
 
-bot.action(/^top_dept_(.+)_(.+)$/, (ctx) => {
+bot.action(/^top_dept_(.+)_(.+)_?(.*)$/, (ctx) => {
   const serviceType = ctx.match[1]; // delivery ou meetup
-  const fullMatch = ctx.match[2];
-  const parts = fullMatch.split('_');
-  const department = parts[0];
-  const selectedCountry = parts.length > 1 ? parts[1] : null;
+  const department = ctx.match[2];
+  const selectedCountry = ctx.match[3] || null;
   return handleSpecificDepartment(ctx, serviceType, department, selectedCountry);
 });
 
 bot.action('top_reset_filters', handleResetFilters);
+
+// Handlers pour les boutons de boutiques depuis Top des Plugs
+bot.action(/^plug_(.+)_from_top_plugs$/, (ctx) => {
+  const plugId = ctx.match[1];
+  return handlePlugDetails(ctx, plugId, 'top_plugs');
+});
+
+bot.action(/^plug_(.+)_from_top_country$/, (ctx) => {
+  const plugId = ctx.match[1];
+  return handlePlugDetails(ctx, plugId, 'top_plugs');
+});
+
+bot.action(/^plug_(.+)_from_top_service$/, (ctx) => {
+  const plugId = ctx.match[1];
+  return handlePlugDetails(ctx, plugId, 'top_plugs');
+});
+
+bot.action(/^plug_(.+)_from_top_dept$/, (ctx) => {
+  const plugId = ctx.match[1];
+  return handlePlugDetails(ctx, plugId, 'top_plugs');
+});
 bot.action('skip_telegram', (ctx) => handleSkipStep(ctx, 'telegram'));
 bot.action('skip_telegram_channel', (ctx) => handleSkipStep(ctx, 'telegram_channel'));
 bot.action('skip_instagram', (ctx) => handleSkipStep(ctx, 'instagram'));
