@@ -43,6 +43,7 @@ const {
   handlePhoto,
   handleSkipPhoto,
   handleCancelApplication,
+  handleSkipStep,
   submitApplication,
   userForms
 } = require('./src/handlers/applicationHandler');
