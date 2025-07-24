@@ -389,9 +389,20 @@ export default function Applications() {
                   {filteredApplications.map((app) => (
                     <tr key={app._id} className="hover:bg-gray-50">
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-gray-900">{app.name || app.plugName}</div>
-                        <div className="text-sm text-gray-500 truncate max-w-xs">
-                          {app.description}
+                        <div className="flex items-center">
+                          <div className="flex-1">
+                            <div className="text-sm font-medium text-gray-900">{app.name || app.plugName}</div>
+                            <div className="text-sm text-gray-500 truncate max-w-xs">
+                              {app.description}
+                            </div>
+                          </div>
+                          {(app.photo || app.photoUrl) && (
+                            <div className="ml-2 flex-shrink-0">
+                              <svg className="h-5 w-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd" />
+                              </svg>
+                            </div>
+                          )}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
@@ -508,14 +519,50 @@ export default function Applications() {
                     <p className="text-sm text-gray-900">{selectedApp.telegramContact}</p>
                   </div>
 
-                  {selectedApp.photoUrl && (
+                  {(selectedApp.photo || selectedApp.photoUrl) && (
                     <div>
-                      <label className="block text-sm font-medium text-gray-700">Photo</label>
-                      <img 
-                        src={selectedApp.photoUrl} 
-                        alt="Photo du plug" 
-                        className="mt-1 h-32 w-32 object-cover rounded-lg"
-                      />
+                      <label className="block text-sm font-medium text-gray-700">Photo du plug</label>
+                      <div className="mt-2">
+                        <img 
+                          src={selectedApp.photo ? 
+                            `${process.env.NEXT_PUBLIC_API_URL || 'https://jhhhhhhggre.onrender.com'}/api/photo/${selectedApp.photo}` : 
+                            selectedApp.photoUrl
+                          } 
+                          alt="Photo du plug" 
+                          className="h-48 w-48 object-cover rounded-lg border border-gray-300 shadow-sm"
+                          onError={(e) => {
+                            e.target.style.display = 'none';
+                            e.target.nextSibling.style.display = 'block';
+                          }}
+                        />
+                        <div 
+                          className="h-48 w-48 flex items-center justify-center bg-gray-100 border border-gray-300 rounded-lg text-gray-500"
+                          style={{display: 'none'}}
+                        >
+                          <div className="text-center">
+                            <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            <p className="mt-2 text-sm">Photo non disponible</p>
+                          </div>
+                        </div>
+                        {selectedApp.photo && (
+                          <div className="mt-2">
+                            <p className="text-xs text-gray-500">
+                              ID: {selectedApp.photo}
+                              <br />
+                              <a 
+                                href={`${process.env.NEXT_PUBLIC_API_URL || 'https://jhhhhhhggre.onrender.com'}/api/photo/${selectedApp.photo}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-blue-600 hover:text-blue-800"
+                              >
+                                Ouvrir l'image dans un nouvel onglet
+                              </a>
+                            </p>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   )}
 

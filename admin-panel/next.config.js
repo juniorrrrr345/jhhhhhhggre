@@ -14,7 +14,9 @@ const nextConfig = {
       'imgur.com',
       'i.imgur.com',
       'example.com',
-      'localhost'
+      'localhost',
+      'api.telegram.org',
+      'jhhhhhhggre.onrender.com'
     ],
     remotePatterns: [
       {
