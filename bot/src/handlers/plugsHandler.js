@@ -24,15 +24,14 @@ const handleTopPlugs = async (ctx) => {
     // Récupérer les pays disponibles dynamiquement
     const availableCountries = await getAvailableCountries();
     
-    // Créer le clavier avec pays + filtres + liste
-    const keyboard = createTopPlugsKeyboard(availableCountries, null, null);
-    
     // Message d'affichage initial
     let message = `🔌 **Liste des Plugs**\n`;
     message += `*(Triés par nombre de votes)*\n\n`;
     
     // Afficher les premiers plugs (top 10 par défaut) - MISE À JOUR pour boutons
     const topPlugs = allPlugs.slice(0, 10);
+    let keyboard;
+    
     if (topPlugs.length > 0) {
       message += `**${topPlugs.length} boutiques disponibles :**\n\n`;
       
@@ -45,11 +44,13 @@ const handleTopPlugs = async (ctx) => {
         plugButtons.push([Markup.button.callback(buttonText, `plug_${plug._id}_from_top_plugs`)]);
       });
       
-      // Ajouter les boutons de boutiques au clavier principal
+      // Créer le clavier avec les boutons de boutiques
       keyboard = createTopPlugsKeyboard(availableCountries, null, null, plugButtons);
       
     } else {
       message += `❌ Aucun plug disponible pour le moment.`;
+      // Créer un clavier basique sans boutiques
+      keyboard = createTopPlugsKeyboard(availableCountries, null, null);
     }
     
     await editMessageWithImage(ctx, message, keyboard, config, { parse_mode: 'Markdown' });
@@ -74,11 +75,12 @@ const handleTopCountryFilter = async (ctx, country) => {
     }).sort({ likes: -1, createdAt: -1 });
 
     const availableCountries = await getAvailableCountries();
-    const keyboard = createTopPlugsKeyboard(availableCountries, country, null);
     
     let message = `🔌 **Liste des Plugs**\n`;
     message += `*(Triés par nombre de votes)*\n\n`;
     message += `🌍 **Filtre:** ${getCountryFlag(country)} ${country}\n\n`;
+    
+    let keyboard;
     
     if (countryPlugs.length > 0) {
       message += `**${countryPlugs.length} boutiques trouvées :**\n\n`;
@@ -95,6 +97,7 @@ const handleTopCountryFilter = async (ctx, country) => {
       keyboard = createTopPlugsKeyboard(availableCountries, country, null, plugButtons);
     } else {
       message += `❌ Aucun plug disponible pour ${country}.`;
+      keyboard = createTopPlugsKeyboard(availableCountries, country, null);
     }
     
     await editMessageWithImage(ctx, message, keyboard, config, { parse_mode: 'Markdown' });
@@ -135,7 +138,6 @@ const handleTopServiceFilter = async (ctx, serviceType, selectedCountry = null) 
     const servicePlugs = await Plug.find(query).sort({ likes: -1, createdAt: -1 });
     
     const availableCountries = await getAvailableCountries();
-    const keyboard = createTopPlugsKeyboard(availableCountries, selectedCountry, serviceType);
     
     let message = `🔌 **Liste des Plugs**\n`;
     message += `*(Triés par nombre de votes)*\n\n`;
@@ -153,6 +155,8 @@ const handleTopServiceFilter = async (ctx, serviceType, selectedCountry = null) 
       message += `🌍 **Filtre:** ${getCountryFlag(selectedCountry)} ${selectedCountry}\n\n`;
     }
     
+    let keyboard;
+    
     if (servicePlugs.length > 0) {
       message += `**${servicePlugs.length} boutiques trouvées :**\n\n`;
       
@@ -169,6 +173,7 @@ const handleTopServiceFilter = async (ctx, serviceType, selectedCountry = null) 
     } else {
       const serviceName = serviceNames[serviceType].toLowerCase();
       message += `❌ Aucun plug disponible pour ${serviceName}.`;
+      keyboard = createTopPlugsKeyboard(availableCountries, selectedCountry, serviceType);
     }
     
     await editMessageWithImage(ctx, message, keyboard, config, { parse_mode: 'Markdown' });
@@ -243,7 +248,6 @@ const handleSpecificDepartment = async (ctx, serviceType, department, selectedCo
     const deptPlugs = await Plug.find(query).sort({ likes: -1, createdAt: -1 });
     
     const availableCountries = await getAvailableCountries();
-    const keyboard = createTopPlugsKeyboard(availableCountries, selectedCountry, serviceType);
     
     let message = `🔌 **Liste des Plugs**\n`;
     message += `*(Triés par nombre de votes)*\n\n`;
@@ -262,6 +266,8 @@ const handleSpecificDepartment = async (ctx, serviceType, department, selectedCo
     
     message += `\n`;
     
+    let keyboard;
+    
     if (deptPlugs.length > 0) {
       message += `**${deptPlugs.length} boutiques trouvées :**\n\n`;
       
@@ -277,6 +283,7 @@ const handleSpecificDepartment = async (ctx, serviceType, department, selectedCo
       keyboard = createTopPlugsKeyboard(availableCountries, selectedCountry, serviceType, plugButtons);
     } else {
       message += `❌ Aucun plug disponible dans le département ${department}.`;
+      keyboard = createTopPlugsKeyboard(availableCountries, selectedCountry, serviceType);
     }
     
     await editMessageWithImage(ctx, message, keyboard, config, { parse_mode: 'Markdown' });
