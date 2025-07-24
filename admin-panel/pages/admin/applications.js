@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import Layout from '../../components/Layout';
 import { simpleApi } from '../../lib/api-simple';
+import toast from 'react-hot-toast';
 
 export default function Applications() {
   const [applications, setApplications] = useState([]);
@@ -92,14 +93,32 @@ export default function Applications() {
       
       await simpleApi.updateApplicationStatus(token, applicationId, action, adminNotes);
       
-      // Attendre 2 secondes avant de recharger pour éviter le rate limiting
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      await fetchApplications(); // Recharger la liste
-      setSelectedApp(null);
+      // MISE À JOUR IMMÉDIATE dans l'état local (plus rapide que recharger)
+      setApplications(prevApps => 
+        prevApps.map(app => 
+          app._id === applicationId 
+            ? { ...app, status: action, adminNotes: adminNotes || app.adminNotes }
+            : app
+        )
+      );
+      
+      // Mettre à jour la modal si ouverte
+      if (selectedApp && selectedApp._id === applicationId) {
+        setSelectedApp({ ...selectedApp, status: action, adminNotes: adminNotes || selectedApp.adminNotes });
+      }
+      
+      // Toast de succès
+      if (action === 'approved') {
+        toast.success('✅ Demande approuvée avec succès !');
+      } else {
+        toast.success('❌ Demande refusée avec succès !');
+      }
+      
       setError('');
     } catch (error) {
       console.error(`Erreur lors de l'action ${action}:`, error);
       setError(`Erreur lors de l'action ${action}: ${error.message}`);
+      toast.error(`Erreur: ${error.message}`);
     } finally {
       setActionLoading(null);
     }

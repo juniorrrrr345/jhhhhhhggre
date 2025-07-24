@@ -17,6 +17,7 @@ const navigation = [
   { name: 'Parrainage', href: '/admin/referrals', icon: UserGroupIcon },
   { name: 'Messages', href: '/admin/messages', icon: ChartBarIcon },
   { name: 'Demandes', href: '/admin/applications', icon: ChartBarIcon },
+  { name: 'Réseaux Sociaux', href: '/admin/social-media', icon: UserGroupIcon },
   { name: 'Configuration', href: '/admin/config', icon: CogIcon }
 ]
 
