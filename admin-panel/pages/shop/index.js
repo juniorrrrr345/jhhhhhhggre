@@ -78,7 +78,15 @@ export default function ShopHome() {
     } catch (error) {
       console.error('❌ Erreur chargement boutiques:', error)
       setPlugs([])
-      toast.error('Erreur lors du chargement des boutiques')
+      
+      // Message d'erreur plus informatif selon le type d'erreur
+      if (error.message.includes('Timeout')) {
+        toast.error('Le serveur met trop de temps à répondre. Veuillez réessayer.')
+      } else if (error.message.includes('429')) {
+        toast.error('Serveur surchargé. Utilisation des données en cache.')
+      } else {
+        toast.error('Erreur lors du chargement des boutiques')
+      }
     } finally {
       setLoading(false)
     }

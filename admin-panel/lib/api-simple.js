@@ -36,6 +36,10 @@ const makeProxyCall = async (endpoint, method = 'GET', token = null, data = null
     // Marquer l'appel pour l'anti-spam
     apiCache.markCall(cacheKey);
     
+    // Timeout de 15 secondes pour éviter le chargement infini
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15000);
+    
     const response = await fetch('/api/cors-proxy', {
       method: 'POST',
       headers: headers,
@@ -44,8 +48,11 @@ const makeProxyCall = async (endpoint, method = 'GET', token = null, data = null
         method: method,
         token: token,
         data: data
-      })
+      }),
+      signal: controller.signal
     });
+    
+    clearTimeout(timeoutId);
     
     console.log('📡 Simple proxy response status:', response.status);
     
@@ -105,6 +112,20 @@ const makeProxyCall = async (endpoint, method = 'GET', token = null, data = null
     
   } catch (error) {
     console.error('💥 Simple Proxy Error:', error);
+    
+    // Gestion spéciale pour timeout
+    if (error.name === 'AbortError') {
+      console.log(`⏱️ Timeout (15s) pour ${endpoint}`);
+      // Utiliser fallback immédiatement en cas de timeout
+      if (method === 'GET') {
+        const fallbackData = fallbackApi.get(fallbackKey);
+        if (fallbackData) {
+          console.log(`💾 Utilisation fallback pour timeout: ${endpoint}`);
+          return fallbackData;
+        }
+      }
+      throw new Error('Timeout: Le serveur met trop de temps à répondre');
+    }
     
     // Essayer le fallback pour les erreurs de réseau sur GET
     if (method === 'GET' && retryCount === maxRetries) {

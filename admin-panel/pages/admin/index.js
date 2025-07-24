@@ -35,13 +35,20 @@ export default function Dashboard() {
       const botApiUrl = 'https://jhhhhhhggre.onrender.com'
       
       try {
+        // Timeout de 10 secondes pour le dashboard
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000);
+        
         const response = await fetch(`${botApiUrl}/api/plugs?page=1&limit=6`, {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token || 'ADMIN_TOKEN_F3F3FC574B8A95875449DBD68128C434CE3D7FB3F054567B0D3EAD3D9F1B01B1'}`,
             'Content-Type': 'application/json'
-          }
+          },
+          signal: controller.signal
         })
+        
+        clearTimeout(timeoutId);
         
         if (response.ok) {
           const data = await response.json()
@@ -54,13 +61,19 @@ export default function Dashboard() {
             // Récupérer les stats utilisateurs en temps réel
             let totalUsers = 0
             try {
+              const usersController = new AbortController();
+              const usersTimeoutId = setTimeout(() => usersController.abort(), 5000);
+              
               const usersResponse = await fetch(`${botApiUrl}/api/users/stats`, {
                 method: 'GET',
                 headers: {
                   'Authorization': `Bearer ${token || 'ADMIN_TOKEN_F3F3FC574B8A95875449DBD68128C434CE3D7FB3F054567B0D3EAD3D9F1B01B1'}`,
                   'Content-Type': 'application/json'
-                }
+                },
+                signal: usersController.signal
               })
+              
+              clearTimeout(usersTimeoutId);
               
               if (usersResponse.ok) {
                 const usersData = await usersResponse.json()
@@ -85,6 +98,14 @@ export default function Dashboard() {
         }
       } catch (apiError) {
         console.error('❌ Bot API failed:', apiError)
+        
+        // Gestion spéciale pour timeout
+        if (apiError.name === 'AbortError') {
+          console.log('⏱️ Timeout dashboard - utilisation des données de fallback')
+          toast.error('Le serveur met trop de temps à répondre. Affichage des données de secours.')
+        } else {
+          toast.error('Erreur de connexion au serveur bot')
+        }
         
         // FALLBACK avec VOS vraies boutiques récupérées plus tôt
         console.log('🔄 Using REAL fallback data from your actual bot...')
