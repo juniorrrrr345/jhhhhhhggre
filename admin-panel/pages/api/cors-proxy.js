@@ -1,5 +1,21 @@
 // Proxy CORS pour contourner les restrictions
+// Système de protection anti-flood 429
+let last429Count = 0;
+let last429Time = 0;
+const MAX_429_PER_MINUTE = 10; // Max 10 erreurs 429 par minute
+const EMERGENCY_BLOCK_DURATION = 60000; // Bloquer 1 minute si trop d'erreurs
+
 export default async function handler(req, res) {
+  // Vérification urgence: Si trop d'erreurs 429 récentes, bloquer temporairement
+  const now = Date.now();
+  if (now - last429Time < EMERGENCY_BLOCK_DURATION && last429Count >= MAX_429_PER_MINUTE) {
+    console.log(`🚫 EMERGENCY BLOCK: Trop d'erreurs 429 (${last429Count}) - proxy bloqué temporairement`);
+    return res.status(503).json({
+      error: 'Service temporairement indisponible',
+      reason: 'server_overloaded',
+      retryAfter: Math.ceil((EMERGENCY_BLOCK_DURATION - (now - last429Time)) / 1000)
+    });
+  }
   // Configuration CORS - autoriser les domaines Vercel et développement
   const origin = req.headers.origin;
   
@@ -70,6 +86,19 @@ export default async function handler(req, res) {
     const response = await fetch(`${apiUrl}${endpoint}`, fetchOptions)
     
     console.log(`📡 Proxy response: ${response.status}`)
+    
+    // Compteur d'erreurs 429 pour protection
+    if (response.status === 429) {
+      const now = Date.now();
+      // Reset compteur si plus d'une minute
+      if (now - last429Time > EMERGENCY_BLOCK_DURATION) {
+        last429Count = 1;
+        last429Time = now;
+      } else {
+        last429Count++;
+      }
+      console.log(`🚫 Erreur 429 #${last429Count} détectée`);
+    }
     
     // Récupérer la réponse
     const responseText = await response.text()
