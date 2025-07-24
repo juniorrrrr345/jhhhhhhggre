@@ -348,44 +348,7 @@ export default function BotConfiguration() {
               </div>
             </div>
 
-            {/* Réseaux Sociaux */}
-            <div className="bg-white shadow rounded-lg">
-              <div className="px-4 py-5 sm:p-6">
-                <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">
-                  📱 Réseaux Sociaux du Bot
-                </h3>
-                
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">Telegram</label>
-                    <input
-                      type="text"
-                      value={config.socialMedia.telegram}
-                      onChange={(e) => updateSocialMedia('telegram', e.target.value)}
-                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                      placeholder="@votre_channel ou https://t.me/votre_channel"
-                    />
-                    <p className="mt-1 text-xs text-gray-500">
-                      Affiché dans le menu contact du bot
-                    </p>
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">WhatsApp</label>
-                    <input
-                      type="text"
-                      value={config.socialMedia.whatsapp}
-                      onChange={(e) => updateSocialMedia('whatsapp', e.target.value)}
-                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                      placeholder="+33123456789 ou https://wa.me/33123456789"
-                    />
-                    <p className="mt-1 text-xs text-gray-500">
-                      Affiché dans le menu contact du bot
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
+
 
             {/* Boutons du Bot */}
             <div className="bg-white shadow rounded-lg">
