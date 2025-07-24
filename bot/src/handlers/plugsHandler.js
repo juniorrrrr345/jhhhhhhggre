@@ -401,17 +401,37 @@ const getCountryFlag = (country) => {
 const createTopPlugsKeyboard = (countries, selectedCountry, selectedService, plugButtons = []) => {
   const buttons = [];
   
-  // Première ligne : Pays (4 boutons max par ligne)
+  // Première ligne : Pays (affichage intelligent)
   if (countries.length > 0) {
     const countryButtons = [];
-    countries.slice(0, 4).forEach(country => {
+    
+    // Prioriser certains pays importants et limiter l'affichage
+    const priorityCountries = ['France', 'Espagne', 'Suisse', 'Italie', 'Maroc', 'Belgique'];
+    const displayCountries = [];
+    
+    // Ajouter les pays prioritaires s'ils existent
+    priorityCountries.forEach(priority => {
+      if (countries.includes(priority)) {
+        displayCountries.push(priority);
+      }
+    });
+    
+    // Ajouter les autres pays jusqu'à maximum 8 pays
+    countries.forEach(country => {
+      if (!displayCountries.includes(country) && displayCountries.length < 8) {
+        displayCountries.push(country);
+      }
+    });
+    
+    // Créer les boutons
+    displayCountries.forEach(country => {
       const flag = getCountryFlag(country);
       const isSelected = selectedCountry === country;
       const buttonText = isSelected ? `✅ ${flag}` : flag;
       countryButtons.push(Markup.button.callback(buttonText, `top_country_${country}`));
     });
     
-    // Grouper par 4
+    // Grouper par 4 boutons par ligne
     for (let i = 0; i < countryButtons.length; i += 4) {
       buttons.push(countryButtons.slice(i, i + 4));
     }
@@ -479,8 +499,17 @@ const createDepartmentsKeyboard = (departments, serviceType, selectedCountry) =>
     buttons.push(row);
   }
   
-  // Retour
-  buttons.push([Markup.button.callback('🔙 Retour', 'top_plugs')]);
+  // Bouton retour intelligent selon le contexte
+  let returnCallback;
+  if (selectedCountry) {
+    // Si un pays est sélectionné, retourner au service avec ce pays
+    returnCallback = `top_service_${serviceType}_${selectedCountry}`;
+  } else {
+    // Sinon, retourner au service sans pays
+    returnCallback = `top_service_${serviceType}`;
+  }
+  
+  buttons.push([Markup.button.callback('🔙 Retour', returnCallback)]);
   
   return Markup.inlineKeyboard(buttons);
 };
