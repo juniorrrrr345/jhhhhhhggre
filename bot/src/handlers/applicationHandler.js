@@ -1204,18 +1204,18 @@ const submitApplication = async (ctx) => {
     
     const photoText = userForm.data.photo ? '✅ Photo incluse' : '⚠️ Aucune photo';
     
-    const message = `🛠️ **FORMULAIRE D'INSCRIPTION – SafePlugLink**\n\n` +
+    const message = `🛠️ FORMULAIRE D'INSCRIPTION – SafePlugLink\n\n` +
       `⸻\n\n` +
-      `🟩 **ÉTAPE FINALE**\n\n` +
+      `🟩 ÉTAPE FINALE\n\n` +
       `🎉 Formulaire reçu !\n\n` +
       `📌 Pour valider ton inscription :\n\n` +
-      `1️⃣ Poste le logo **SafePlugLink** sur un de tes réseaux renseignés avec le texte :\n` +
-      `"Inscription en cours chez **@SafePlugLink**"\n` +
-      `et identifie **@safepluglink**\n\n` +
+      `1️⃣ Poste le logo SafePlugLink sur un de tes réseaux renseignés avec le texte :\n` +
+      `"Inscription en cours chez @SafePlugLink"\n` +
+      `et identifie @safepluglink\n\n` +
       `2️⃣ Envoie une photo de ton stock avec\n` +
-      `**SafePlugLink** et la **date du jour** écrits sur papier\n` +
+      `SafePlugLink et la date du jour écrits sur papier\n` +
       `à l'admin : @safepluglink_admin\n\n` +
-      `⏰ Tu as **24h** pour faire ces 2 étapes.\n\n` +
+      `⏰ Tu as 24h pour faire ces 2 étapes.\n\n` +
       `ℹ️ La pré-approbation peut prendre 24 à 48h.\n` +
       `Tu seras notifié automatiquement de la décision.`;
     
@@ -1223,17 +1223,17 @@ const submitApplication = async (ctx) => {
       [Markup.button.callback('🔙 Retour au menu', 'back_main')]
     ]);
     
-    // Utiliser editMessageText simple sans image pour éviter les problèmes
+    // Utiliser editMessageText simple sans formatage pour éviter les problèmes
     try {
       await ctx.editMessageText(message, {
-        reply_markup: keyboard.reply_markup,
-        parse_mode: 'Markdown'
+        reply_markup: keyboard.reply_markup
+        // Pas de parse_mode pour éviter les erreurs de formatage
       });
     } catch (editError) {
       // Fallback: nouveau message si édition impossible
       await ctx.reply(message, {
-        reply_markup: keyboard.reply_markup,
-        parse_mode: 'Markdown'
+        reply_markup: keyboard.reply_markup
+        // Pas de parse_mode pour éviter les erreurs de formatage
       });
     }
     
