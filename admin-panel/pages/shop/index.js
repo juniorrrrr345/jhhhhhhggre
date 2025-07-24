@@ -54,15 +54,10 @@ export default function ShopHome() {
       console.log('🔍 Chargement boutiques...')
       setLoading(true)
       
-      // Timeout de 10 secondes pour éviter le chargement infini
-      const timeoutPromise = new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('Timeout')), 10000)
-      )
+      // Utiliser l'API simple avec fallback automatique
+      const data = await api.getPublicPlugs({ limit: 50 })
       
-      const dataPromise = api.getPublicPlugs({ limit: 50 })
-      const data = await Promise.race([dataPromise, timeoutPromise])
-      
-      if (data && data.plugs && data.plugs.length > 0) {
+      if (data && data.plugs) {
         console.log('🎯 Boutiques récupérées:', data.plugs.length)
         setPlugs(data.plugs)
         
@@ -76,18 +71,14 @@ export default function ShopHome() {
         setLikesSync(likesData)
         console.log('🔄 Likes synchronisés:', Object.keys(likesData).length, 'boutiques')
       } else {
-        console.log('⚠️ Aucune boutique trouvée')
+        console.log('⚠️ Aucune boutique trouvée dans la réponse')
         setPlugs([])
       }
       
     } catch (error) {
       console.error('❌ Erreur chargement boutiques:', error)
       setPlugs([])
-      if (error.message === 'Timeout') {
-        toast.error('Chargement trop long. Veuillez réessayer.')
-      } else {
-        toast.error('Erreur lors du chargement des boutiques')
-      }
+      toast.error('Erreur lors du chargement des boutiques')
     } finally {
       setLoading(false)
     }

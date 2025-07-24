@@ -68,14 +68,7 @@ export default function ShopSearch() {
   const fetchPlugs = async () => {
     try {
       setLoading(true)
-      
-      // Timeout pour éviter chargement infini
-      const timeoutPromise = new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('Timeout')), 10000)
-      )
-      
-      const dataPromise = api.getPublicPlugs({ limit: 100 })
-      const data = await Promise.race([dataPromise, timeoutPromise])
+      const data = await api.getPublicPlugs({ limit: 100 })
 
       let plugsArray = []
       if (data && Array.isArray(data.plugs)) {
@@ -92,9 +85,6 @@ export default function ShopSearch() {
     } catch (error) {
       console.error('❌ Erreur chargement plugs recherche:', error)
       setAllPlugs([])
-      if (error.message === 'Timeout') {
-        toast.error('Chargement trop long. Veuillez réessayer.')
-      }
     } finally {
       setLoading(false)
     }
