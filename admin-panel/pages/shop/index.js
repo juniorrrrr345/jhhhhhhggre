@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import Head from 'next/head'
 import Link from 'next/link'
-import { api } from '../../lib/api'
+import { simpleApi as api } from '../../lib/api-simple'
 import { getProxiedImageUrl } from '../../lib/imageUtils'
 import toast from 'react-hot-toast'
 import Pagination from '../../components/Pagination'
@@ -49,26 +49,12 @@ export default function ShopHome() {
 
   const fetchConfig = async () => {
     try {
-      const timestamp = Date.now()
-      const response = await fetch(`/api/proxy?endpoint=/api/public/config&t=${timestamp}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'Cache-Control': 'no-cache, no-store, must-revalidate',
-          'Pragma': 'no-cache'
-        }
+      const data = await api.getPublicConfig()
+      console.log('✅ Config boutique chargée:', {
+        name: data.boutique?.name,
+        subtitle: data.boutique?.subtitle
       })
-
-      if (response.ok) {
-        const data = await response.json()
-        console.log('✅ Config boutique chargée:', {
-          name: data.boutique?.name,
-          subtitle: data.boutique?.subtitle
-        })
-        setConfig(data)
-      } else {
-        console.error('❌ Erreur API proxy:', response.status)
-      }
+      setConfig(data)
     } catch (error) {
       console.error('❌ Erreur chargement config:', error)
     }
@@ -79,52 +65,8 @@ export default function ShopHome() {
       console.log('🔍 Chargement boutiques...')
       setLoading(true)
       
-      let data = null
-      
-      // 1. Essayer l'API directe du bot (le plus fiable)
-      try {
-        const timestamp = Date.now()
-        const directResponse = await fetch(`https://jhhhhhhggre.onrender.com/api/public/plugs?limit=50&t=${timestamp}`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'Cache-Control': 'no-cache, no-store, must-revalidate',
-            'Pragma': 'no-cache',
-            'Expires': '0'
-          }
-        })
-        
-        if (directResponse.ok) {
-          data = await directResponse.json()
-          console.log('✅ API directe réussie - boutiques chargées:', data.plugs?.length || 0)
-        } else {
-          throw new Error(`Direct failed: HTTP ${directResponse.status}`)
-        }
-      } catch (directError) {
-        console.log('❌ API directe échoué:', directError.message)
-        
-        // 2. Fallback avec api proxy local
-        try {
-          const timestamp = Date.now()
-          const proxyResponse = await fetch(`/api/proxy?endpoint=/api/public/plugs&limit=50&t=${timestamp}`, {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-              'Cache-Control': 'no-cache'
-            }
-          })
-          
-          if (proxyResponse.ok) {
-            data = await proxyResponse.json()
-            console.log('✅ Proxy local réussi - boutiques chargées:', data.plugs?.length || 0)
-          } else {
-            throw new Error(`Proxy failed: HTTP ${proxyResponse.status}`)
-          }
-        } catch (proxyError) {
-          console.log('❌ Proxy local échoué:', proxyError.message)
-          throw new Error('Impossible de charger les boutiques')
-        }
-      }
+      // Utiliser l'API simple avec fallback automatique
+      const data = await api.getPublicPlugs({ limit: 50 })
       
       if (data && data.plugs) {
         console.log('🎯 Boutiques récupérées:', data.plugs.length)
@@ -147,6 +89,7 @@ export default function ShopHome() {
     } catch (error) {
       console.error('❌ Erreur chargement boutiques:', error)
       setPlugs([])
+      toast.error('Erreur lors du chargement des boutiques')
     } finally {
       setLoading(false)
     }

@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/router'
 import toast from 'react-hot-toast'
 // Heroicons remplacés par des emojis
-import { api } from '../lib/api-proxy'
+import { simpleApi as api } from '../lib/api-simple'
 
 export default function Login() {
   const [password, setPassword] = useState('')

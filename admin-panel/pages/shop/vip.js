@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import Head from 'next/head'
 import Link from 'next/link'
-import { api } from '../../lib/api'
+import { simpleApi as api } from '../../lib/api-simple'
 import { getProxiedImageUrl } from '../../lib/imageUtils'
 import toast from 'react-hot-toast'
 import Pagination from '../../components/Pagination'
@@ -53,48 +53,8 @@ export default function ShopVIP() {
 
   const fetchPlugs = async () => {
     try {
-      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
-      const timestamp = new Date().getTime()
-      
-      let data
-      try {
-        const url = `${apiBaseUrl}/api/public/plugs?filter=vip&limit=50&t=${timestamp}`
-        const directResponse = await fetch(url, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'Cache-Control': 'no-cache, no-store, must-revalidate',
-            'Pragma': 'no-cache',
-            'Expires': '0'
-          }
-        })
-        
-        if (directResponse.ok) {
-          data = await directResponse.json()
-          console.log('✅ API VIP directe réussie:', data)
-        } else {
-          throw new Error(`VIP direct failed: HTTP ${directResponse.status}`)
-        }
-      } catch (directError) {
-        console.log('❌ VIP directs échoués:', directError.message)
-        
-        try {
-          const proxyUrl = `/api/proxy?endpoint=/api/public/plugs&filter=vip&limit=50&t=${new Date().getTime()}`
-          const proxyResponse = await fetch(proxyUrl, {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-              'Cache-Control': 'no-cache'
-            }
-          })
-          
-          if (!proxyResponse.ok) {
-            throw new Error(`VIP proxy failed: HTTP ${proxyResponse.status}`)
-          }
-          
-          data = await proxyResponse.json()
-          console.log('✅ VIP proxy réussi:', data)
-        } catch (proxyError) {
+      setLoading(true)
+      const data = await api.getPublicPlugs({ limit: 100 }) catch (proxyError) {
           console.log('❌ VIP proxy échoués:', proxyError.message)
           throw proxyError
         }

@@ -1,5 +1,5 @@
 import { createContext, useContext } from 'react'
-import { api } from '../lib/api-proxy'
+import { simpleApi as api } from '../lib/api-simple'
 
 const ApiContext = createContext()
 

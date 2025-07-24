@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import Head from 'next/head'
 import Link from 'next/link'
-import { api } from '../../lib/api'
+import { simpleApi as api } from '../../lib/api-simple'
 import { getProxiedImageUrl } from '../../lib/imageUtils'
 import toast from 'react-hot-toast'
 import Pagination from '../../components/Pagination'
@@ -79,49 +79,7 @@ export default function ShopSearch() {
 
   const fetchConfig = async () => {
     try {
-      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
-      const timestamp = new Date().getTime()
-      
-      let data
-      try {
-        const directResponse = await fetch(`${apiBaseUrl}/api/public/config?t=${timestamp}`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'Cache-Control': 'no-cache, no-store, must-revalidate',
-            'Pragma': 'no-cache',
-            'Expires': '0'
-          }
-        })
-        
-        if (directResponse.ok) {
-          data = await directResponse.json()
-        } else {
-          throw new Error(`Direct config failed: HTTP ${directResponse.status}`)
-        }
-      } catch (directError) {
-        console.log('❌ Config directe échouée:', directError.message)
-        
-        try {
-          const proxyResponse = await fetch(`/api/proxy?endpoint=/api/public/config&t=${new Date().getTime()}`, {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-              'Cache-Control': 'no-cache'
-            }
-          })
-          
-          if (!proxyResponse.ok) {
-            throw new Error(`Config proxy failed: HTTP ${proxyResponse.status}`)
-          }
-          
-          data = await proxyResponse.json()
-        } catch (proxyError) {
-          console.log('❌ Config proxy échouée:', proxyError.message)
-          throw proxyError
-        }
-      }
-
+      const data = await api.getPublicConfig()
       setConfig(data)
     } catch (error) {
       console.error('❌ Erreur chargement config:', error)
@@ -134,46 +92,7 @@ export default function ShopSearch() {
   const fetchPlugs = async () => {
     try {
       setLoading(true)
-      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
-      const timestamp = new Date().getTime()
-      
-      let data
-      try {
-        const directResponse = await fetch(`${apiBaseUrl}/api/public/plugs?limit=100&t=${timestamp}`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'Cache-Control': 'no-cache, no-store, must-revalidate',
-            'Pragma': 'no-cache',
-            'Expires': '0'
-          }
-        })
-        
-        if (directResponse.ok) {
-          data = await directResponse.json()
-          console.log('✅ API recherche directe réussie:', data)
-        } else {
-          throw new Error(`Direct plugs failed: HTTP ${directResponse.status}`)
-        }
-      } catch (directError) {
-        console.log('❌ Plugs recherche directs échoués:', directError.message)
-        
-        try {
-          const proxyResponse = await fetch(`/api/proxy?endpoint=/api/public/plugs&limit=100&t=${new Date().getTime()}`, {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-              'Cache-Control': 'no-cache'
-            }
-          })
-          
-          if (!proxyResponse.ok) {
-            throw new Error(`Plugs proxy failed: HTTP ${proxyResponse.status}`)
-          }
-          
-          data = await proxyResponse.json()
-          console.log('✅ Recherche proxy réussi:', data)
-        } catch (proxyError) {
+      const data = await api.getPublicPlugs({ limit: 100 }) catch (proxyError) {
           console.log('❌ Plugs recherche proxy échoués:', proxyError.message)
           throw proxyError
         }

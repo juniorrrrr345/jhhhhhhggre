@@ -178,6 +178,20 @@ export const simpleApi = {
     return await makeProxyCall(`/api/applications/${applicationId}`, 'PATCH', token, { status, adminNotes });
   },
 
+  // Fonctions publiques (sans authentification)
+  getPublicPlugs: async (params = {}) => {
+    const queryString = new URLSearchParams({
+      ...params,
+      t: Date.now() // Cache busting
+    }).toString();
+    const endpoint = queryString ? `/api/public/plugs?${queryString}` : '/api/public/plugs';
+    return await makeProxyCall(endpoint, 'GET', null);
+  },
+
+  getPublicConfig: async () => {
+    return await makeProxyCall('/api/public/config', 'GET', null);
+  },
+
   // Fonction pour nettoyer le cache manuellement
   clearCache: () => {
     apiCache.clear();
