@@ -1131,9 +1131,13 @@ const submitApplication = async (ctx) => {
       services: servicesArray,
       location: {
         country: userForm.data.country,
-        city: userForm.data.city
+        city: userForm.data.country || 'Non spécifiée'
       },
-      hasPhoto: !!userForm.data.photo
+      contact: {
+        telegram: userForm.data.telegram
+      },
+      hasPhoto: !!userForm.data.photo,
+      photoFileId: userForm.data.photo ? userForm.data.photo.fileId : null
     });
 
     // Créer la demande en base
@@ -1143,10 +1147,10 @@ const submitApplication = async (ctx) => {
       firstName: userForm.data.firstName,
       lastName: userForm.data.lastName,
       name: userForm.data.name,
-      description: userForm.data.description,
+      description: userForm.data.name + ' - Inscription SafePlugLink', // Description par défaut
       location: {
         country: userForm.data.country,
-        city: userForm.data.city
+        city: userForm.data.country || 'Non spécifiée' // City par défaut
       },
       services: servicesArray, // Format array au lieu d'object
       contact: {
@@ -1160,11 +1164,24 @@ const submitApplication = async (ctx) => {
         threema: userForm.data.threema,
         other: ''
       },
-      photo: userForm.data.photo || null,
+      photo: userForm.data.photo ? userForm.data.photo.fileId : null, // Juste le fileId
       photoUrl: userForm.data.photo ? userForm.data.photo.fileId : null
     });
     
     console.log('📋 SUBMIT DEBUG: Attempting to save application...');
+    
+    // Vérifications avant sauvegarde
+    if (!userForm.data.telegram) {
+      throw new Error('Telegram manquant - requis pour contact.telegram');
+    }
+    if (!userForm.data.name) {
+      throw new Error('Nom du plug manquant - requis');
+    }
+    if (!userForm.data.country) {
+      throw new Error('Pays manquant - requis');
+    }
+    
+    console.log('✅ SUBMIT DEBUG: Tous les champs requis sont présents');
     await application.save();
     console.log('✅ SUBMIT DEBUG: Application saved successfully with ID:', application._id);
     
