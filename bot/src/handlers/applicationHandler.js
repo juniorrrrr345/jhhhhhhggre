@@ -891,8 +891,8 @@ const submitApplication = async (ctx) => {
     
     const message = `🎉 **Formulaire reçu !**\n\n` +
       `Pour valider ton inscription :\n\n` +
-      `**Étape 1 :** Poste le logo PlugsFinder sur un de tes réseaux renseignés (Instagram ou Telegram) avec le texte 'Inscription en cours chez PlugsFinder' et identifie @plugsfinder.\n\n` +
-      `**Étape 2 :** Envoie une photo de ton stock avec 'PlugsFinder' et la date du jour écrits sur un papier à l'admin @plugsfinder_admin.\n\n` +
+              `**Étape 1 :** Poste le logo SAFEPLUGLINK sur un de tes réseaux renseignés (Instagram ou Telegram) avec le texte 'Inscription en cours chez SAFEPLUGLINK' et identifie @safepluglink.\n\n` +
+        `**Étape 2 :** Envoie une photo de ton stock avec 'SAFEPLUGLINK' et la date du jour écrits sur un papier à l'admin @safepluglink_admin.\n\n` +
       `⏳ Tu as 24h pour faire ces 2 étapes.\n\n` +
       `La pré-approbation peut prendre 24 à 48h*. Tu seras automatiquement notifié par le bot de la décision des admins.\n\n` +
       `Si tu es pré approuvé par les admin, une fiche temporaire avec un lien unique sera créée. Tu devras obtenir 30 votes en 7 jours pour finaliser ton inscription et passer public dans la liste.\n\n` +

@@ -54,10 +54,15 @@ export default function ShopHome() {
       console.log('🔍 Chargement boutiques...')
       setLoading(true)
       
-      // Utiliser l'API simple avec fallback automatique
-      const data = await api.getPublicPlugs({ limit: 50 })
+      // Timeout de 10 secondes pour éviter le chargement infini
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Timeout')), 10000)
+      )
       
-      if (data && data.plugs) {
+      const dataPromise = api.getPublicPlugs({ limit: 50 })
+      const data = await Promise.race([dataPromise, timeoutPromise])
+      
+      if (data && data.plugs && data.plugs.length > 0) {
         console.log('🎯 Boutiques récupérées:', data.plugs.length)
         setPlugs(data.plugs)
         
@@ -71,14 +76,18 @@ export default function ShopHome() {
         setLikesSync(likesData)
         console.log('🔄 Likes synchronisés:', Object.keys(likesData).length, 'boutiques')
       } else {
-        console.log('⚠️ Aucune boutique trouvée dans la réponse')
+        console.log('⚠️ Aucune boutique trouvée')
         setPlugs([])
       }
       
     } catch (error) {
       console.error('❌ Erreur chargement boutiques:', error)
       setPlugs([])
-      toast.error('Erreur lors du chargement des boutiques')
+      if (error.message === 'Timeout') {
+        toast.error('Chargement trop long. Veuillez réessayer.')
+      } else {
+        toast.error('Erreur lors du chargement des boutiques')
+      }
     } finally {
       setLoading(false)
     }
@@ -100,7 +109,7 @@ export default function ShopHome() {
     return (
       <>
         <Head>
-          <title>PlugsFinder Bot</title>
+          <title>SAFEPLUGLINK</title>
         </Head>
         <div style={{ 
           backgroundColor: '#000000', 
@@ -130,7 +139,7 @@ export default function ShopHome() {
   return (
     <>
       <Head>
-        <title>{config?.boutique?.name || 'PlugsFinder Bot'}</title>
+        <title>{config?.boutique?.name || 'SAFEPLUGLINK'}</title>
         <meta name="description" content="Découvrez notre sélection de boutiques premium avec livraison et services disponibles." />
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
       </Head>
@@ -159,7 +168,7 @@ export default function ShopHome() {
             color: '#ffffff',
             letterSpacing: '2px'
           }}>
-            {config?.boutique?.name || 'PlugsFinder Bot'}
+            {config?.boutique?.name || 'SAFEPLUGLINK'}
           </h2>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
             <span style={{ color: '#ffffff', fontSize: '14px' }}>

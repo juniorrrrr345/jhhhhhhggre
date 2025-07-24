@@ -68,7 +68,14 @@ export default function ShopSearch() {
   const fetchPlugs = async () => {
     try {
       setLoading(true)
-      const data = await api.getPublicPlugs({ limit: 100 })
+      
+      // Timeout pour éviter chargement infini
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Timeout')), 10000)
+      )
+      
+      const dataPromise = api.getPublicPlugs({ limit: 100 })
+      const data = await Promise.race([dataPromise, timeoutPromise])
 
       let plugsArray = []
       if (data && Array.isArray(data.plugs)) {
@@ -85,6 +92,9 @@ export default function ShopSearch() {
     } catch (error) {
       console.error('❌ Erreur chargement plugs recherche:', error)
       setAllPlugs([])
+      if (error.message === 'Timeout') {
+        toast.error('Chargement trop long. Veuillez réessayer.')
+      }
     } finally {
       setLoading(false)
     }
@@ -189,7 +199,7 @@ export default function ShopSearch() {
   return (
     <>
       <Head>
-        <title>Recherche - {config?.boutique?.name || 'PlugsFinder Bot'}</title>
+        <title>Recherche - {config?.boutique?.name || 'SAFEPLUGLINK'}</title>
         <meta name="description" content="Recherchez vos boutiques préférées par nom, pays ou service." />
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
       </Head>

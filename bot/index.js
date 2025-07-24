@@ -953,7 +953,7 @@ app.get('/api/public/config/fresh', async (req, res) => {
     if (!config) {
       config = await Config.create({
         _id: 'main',
-        boutique: { name: 'PlugsFinder Bot' },
+        boutique: { name: 'SAFEPLUGLINK' },
         interface: {
           title: 'PLUGS FINDER',
           tagline1: 'JUSTE UNE',
