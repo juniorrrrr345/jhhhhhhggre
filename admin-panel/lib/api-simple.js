@@ -105,6 +105,11 @@ export const simpleApi = {
     return await makeProxyCall('/api/bot/reload', 'POST', token);
   },
 
+  // Fonction pour envoyer des messages de diffusion
+  broadcast: async (token, data) => {
+    return await makeProxyCall('/api/broadcast', 'POST', token, data);
+  },
+
   // Fonction pour récupérer les demandes d'inscription avec cache
   getApplications: async (token) => {
     return await makeProxyCall('/api/applications', 'GET', token);

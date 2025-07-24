@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import Head from 'next/head'
 import toast, { Toaster } from 'react-hot-toast'
+import { simpleApi } from '../../lib/api-simple'
 
 export default function BotConfiguration() {
   const [config, setConfig] = useState({
@@ -38,6 +39,7 @@ export default function BotConfiguration() {
   
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
+  const [error, setError] = useState(null)
   const router = useRouter()
 
   useEffect(() => {
@@ -52,32 +54,21 @@ export default function BotConfiguration() {
   const fetchConfig = async () => {
     try {
       setLoading(true)
+      setError(null)
       console.log('🔄 Chargement configuration bot...')
       
-      const token = localStorage.getItem('adminToken')
-      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || process.env.API_BASE_URL
-      const response = await fetch(`${apiBaseUrl}/api/proxy`, {
-        method: 'POST',
-        headers: { 
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
+      const token = localStorage.getItem('adminToken') || 'JuniorAdmon123'
+      
+      // Utiliser l'API simple avec gestion d'erreur améliorée
+      const data = await simpleApi.getConfig(token)
+      console.log('✅ Configuration bot chargée:', data)
+      
+      setConfig({
+        welcome: {
+          text: data.welcome?.text || '',
+          image: data.welcome?.image || ''
         },
-        body: JSON.stringify({
-          endpoint: '/admin/config',
-          method: 'GET'
-        })
-      })
-
-      if (response.ok) {
-        const data = await response.json()
-        console.log('✅ Configuration bot chargée')
-        
-        setConfig({
-          welcome: {
-            text: data.welcome?.text || '',
-            image: data.welcome?.image || ''
-          },
-          buttons: {
+        buttons: {
             contact: {
               text: data.buttons?.contact?.text || '📞 Contact',
               content: data.buttons?.contact?.content || 'Contactez-nous pour plus d\'informations.',
@@ -96,50 +87,49 @@ export default function BotConfiguration() {
         })
         
         toast.success('Configuration chargée')
-      } else {
-        throw new Error('Erreur de chargement')
+      } catch (error) {
+        console.error('❌ Erreur chargement config:', error)
+        setError(error.message)
+        if (error.message.includes('429')) {
+          toast.error('Trop de tentatives. Veuillez patienter quelques secondes.')
+        } else if (error.message.includes('401')) {
+          toast.error('Session expirée. Veuillez vous reconnecter.')
+          router.push('/')
+        } else {
+          toast.error('Erreur lors du chargement de la configuration: ' + error.message)
+        }
+      } finally {
+        setLoading(false)
       }
-    } catch (error) {
-      console.error('❌ Erreur:', error)
-      toast.error('Erreur de chargement')
-    } finally {
-      setLoading(false)
     }
-  }
 
   const saveConfig = async () => {
     try {
       setSaving(true)
       console.log('💾 Sauvegarde configuration bot...')
       
-      const token = localStorage.getItem('adminToken')
-      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || process.env.API_BASE_URL
-      const response = await fetch(`${apiBaseUrl}/api/proxy`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          endpoint: '/admin/config',
-          method: 'PUT',
-          data: {
-            welcome: config.welcome,
-            buttons: config.buttons,
-            socialMedia: config.socialMedia
-          }
-        })
-      })
-
-      if (response.ok) {
-        console.log('✅ Configuration bot sauvegardée')
-        toast.success('Configuration sauvegardée avec succès !')
-      } else {
-        throw new Error('Erreur de sauvegarde')
+      const token = localStorage.getItem('adminToken') || 'JuniorAdmon123'
+      
+      const configData = {
+        welcome: config.welcome,
+        buttons: config.buttons,
+        socialMedia: config.socialMedia
       }
+      
+      await simpleApi.updateConfig(token, configData)
+      console.log('✅ Configuration bot sauvegardée')
+      toast.success('Configuration sauvegardée avec succès !')
+      
     } catch (error) {
       console.error('❌ Erreur sauvegarde:', error)
-      toast.error('Erreur lors de la sauvegarde')
+      if (error.message.includes('429')) {
+        toast.error('Trop de tentatives. Veuillez patienter quelques secondes.')
+      } else if (error.message.includes('401')) {
+        toast.error('Session expirée. Veuillez vous reconnecter.')
+        router.push('/')
+      } else {
+        toast.error('Erreur lors de la sauvegarde: ' + error.message)
+      }
     } finally {
       setSaving(false)
     }
@@ -184,7 +174,7 @@ export default function BotConfiguration() {
       return
     }
 
-    const token = localStorage.getItem('adminToken')
+    const token = localStorage.getItem('adminToken') || 'JuniorAdmon123'
     if (!token) {
       toast.error('Non authentifié')
       return
@@ -194,40 +184,31 @@ export default function BotConfiguration() {
     setStats({ sent: 0, failed: 0, total: 0 })
 
     try {
-      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || process.env.API_BASE_URL
-      const response = await fetch(`${apiBaseUrl}/api/proxy`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          endpoint: '/admin/broadcast',
-          method: 'POST',
-          data: {
-            message: message.trim(),
-            image: image.trim() || null
-          }
-        })
-      })
-
-      if (response.ok) {
-        const data = await response.json()
-        setStats({
-          sent: data.sent || 0,
-          failed: data.failed || 0,
-          total: data.total || 0
-        })
-        toast.success(`Message envoyé à ${data.sent} utilisateurs !`)
-        setMessage('')
-        setImage('')
-      } else {
-        const errorData = await response.json().catch(() => ({ error: 'Erreur inconnue' }))
-        throw new Error(errorData.error || 'Erreur d\'envoi')
+      const broadcastData = {
+        message: message.trim(),
+        image: image.trim() || null
       }
+      
+      const data = await simpleApi.broadcast(token, broadcastData)
+      setStats({
+        sent: data.sent || 0,
+        failed: data.failed || 0,
+        total: data.total || 0
+      })
+      toast.success(`Message envoyé à ${data.sent} utilisateurs !`)
+      setMessage('')
+      setImage('')
+      
     } catch (error) {
       console.error('❌ Erreur broadcast:', error)
-      toast.error('Erreur : ' + error.message)
+      if (error.message.includes('429')) {
+        toast.error('Trop de tentatives. Veuillez patienter.')
+      } else if (error.message.includes('401')) {
+        toast.error('Session expirée. Veuillez vous reconnecter.')
+        router.push('/')
+      } else {
+        toast.error('Erreur : ' + error.message)
+      }
     } finally {
       setSending(false)
     }
@@ -275,11 +256,21 @@ export default function BotConfiguration() {
                   Configurez le message d'accueil, les réseaux sociaux et envoyez des messages à tous les utilisateurs
                 </p>
               </div>
-              <div className="mt-4 flex md:mt-0 md:ml-4">
+              <div className="mt-4 flex md:mt-0 md:ml-4 space-x-2">
+                <button
+                  onClick={() => {
+                    simpleApi.clearCache()
+                    fetchConfig()
+                    toast.success('Cache nettoyé et configuration rechargée')
+                  }}
+                  className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                >
+                  🔄 Actualiser
+                </button>
                 <button
                   onClick={saveConfig}
                   disabled={saving}
-                  className="ml-3 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+                  className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
                 >
                   {saving ? 'Sauvegarde...' : '💾 Sauvegarder'}
                 </button>
