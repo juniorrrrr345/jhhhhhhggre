@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import Layout from '../../components/Layout'
+import { simpleApi } from '../../lib/api-simple'
+import toast from 'react-hot-toast'
 
 
 export default function Dashboard() {
@@ -176,6 +178,21 @@ export default function Dashboard() {
     }
   }
 
+  const handleClearCache = () => {
+    try {
+      simpleApi.clearCache()
+      toast.success('Cache API nettoyé avec succès !')
+      // Recharger les données
+      fetchDashboardData()
+    } catch (error) {
+      toast.error('Erreur lors du nettoyage du cache')
+    }
+  }
+
+  const handleRefresh = () => {
+    handleClearCache() // Nettoie le cache et recharge
+  }
+
   const statsCards = [
     {
       name: 'Total Boutiques',
@@ -254,7 +271,23 @@ export default function Dashboard() {
 
         {/* Statistiques */}
         <div>
-          <h2 className="text-lg font-medium text-gray-900 mb-4">Statistiques</h2>
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-lg font-medium text-gray-900">Statistiques</h2>
+            <div className="space-x-2">
+              <button
+                onClick={handleClearCache}
+                className="inline-flex items-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
+              >
+                🧹 Nettoyer Cache
+              </button>
+              <button
+                onClick={handleRefresh}
+                className="inline-flex items-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+              >
+                🔄 Actualiser
+              </button>
+            </div>
+          </div>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {statsCards.map((card) => (
               <div

@@ -76,13 +76,15 @@ export default function ShopHome() {
 
   const fetchPlugs = async () => {
     try {
-      console.log('🔍 Chargement boutiques via API directe...')
+      console.log('🔍 Chargement boutiques...')
+      setLoading(true)
       
       let data = null
       
-      // 1. Essayer l'API directe du bot (comme VIP et search)
+      // 1. Essayer l'API directe du bot (le plus fiable)
       try {
-        const directResponse = await fetch('https://jhhhhhhggre.onrender.com/api/public/plugs?limit=50', {
+        const timestamp = Date.now()
+        const directResponse = await fetch(`https://jhhhhhhggre.onrender.com/api/public/plugs?limit=50&t=${timestamp}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -94,79 +96,57 @@ export default function ShopHome() {
         
         if (directResponse.ok) {
           data = await directResponse.json()
-          console.log('✅ API directe réussie:', data)
+          console.log('✅ API directe réussie - boutiques chargées:', data.plugs?.length || 0)
         } else {
           throw new Error(`Direct failed: HTTP ${directResponse.status}`)
         }
       } catch (directError) {
         console.log('❌ API directe échoué:', directError.message)
         
-        // 2. Fallback avec proxy si direct échoue
+        // 2. Fallback avec api proxy local
         try {
-          const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || process.env.API_BASE_URL
-          const proxyResponse = await fetch(`${apiBaseUrl}/api/proxy`, {
-            method: 'POST',
+          const timestamp = Date.now()
+          const proxyResponse = await fetch(`/api/proxy?endpoint=/api/public/plugs&limit=50&t=${timestamp}`, {
+            method: 'GET',
             headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              endpoint: '/api/public/plugs',
-              method: 'GET',
-              params: { limit: 50 }
-            })
+              'Content-Type': 'application/json',
+              'Cache-Control': 'no-cache'
+            }
           })
           
           if (proxyResponse.ok) {
             data = await proxyResponse.json()
-            console.log('✅ Proxy réussi:', data)
+            console.log('✅ Proxy local réussi - boutiques chargées:', data.plugs?.length || 0)
           } else {
             throw new Error(`Proxy failed: HTTP ${proxyResponse.status}`)
           }
         } catch (proxyError) {
-          console.log('❌ Proxy échoué:', proxyError.message)
-          throw proxyError
+          console.log('❌ Proxy local échoué:', proxyError.message)
+          throw new Error('Impossible de charger les boutiques')
         }
       }
       
-      // Traitement des données
-      let plugsArray = []
-      if (data && Array.isArray(data.plugs)) {
-        plugsArray = data.plugs
-      } else if (Array.isArray(data)) {
-        plugsArray = data
-      } else if (data && data.plugs && Array.isArray(data.plugs)) {
-        plugsArray = data.plugs
-      }
-      
-      console.log('📊 Données reçues:', {
-        dataType: typeof data,
-        hasPlugs: !!data?.plugs,
-        plugsLength: data?.plugs?.length || 0,
-        isArray: Array.isArray(data),
-        finalArrayLength: plugsArray.length
-      })
-
-      const sortedPlugs = plugsArray.sort((a, b) => {
-        if (a.isVip && !b.isVip) return -1
-        if (!a.isVip && b.isVip) return 1
-        return (b.likes || 0) - (a.likes || 0)
-      })
-
-      console.log(`🎉 ${sortedPlugs.length} boutiques chargées !`)
-      
-      if (sortedPlugs.length === 0) {
-        console.log('⚠️ Aucune boutique trouvée, affichage du message d\'erreur')
+      if (data && data.plugs) {
+        console.log('🎯 Boutiques récupérées:', data.plugs.length)
+        setPlugs(data.plugs)
+        
+        // Synchroniser les likes en temps réel
+        const likesData = {}
+        data.plugs.forEach(plug => {
+          if (plug._id && plug.likes !== undefined) {
+            likesData[plug._id] = plug.likes
+          }
+        })
+        setLikesSync(likesData)
+        console.log('🔄 Likes synchronisés:', Object.keys(likesData).length, 'boutiques')
+      } else {
+        console.log('⚠️ Aucune boutique trouvée dans la réponse')
         setPlugs([])
-        setLoading(false)
-        return
       }
-      
-      setPlugs(sortedPlugs)
       
     } catch (error) {
-      console.error('❌ Erreur chargement plugs:', error)
+      console.error('❌ Erreur chargement boutiques:', error)
       setPlugs([])
-      toast.error('Erreur lors du chargement des boutiques')
     } finally {
       setLoading(false)
     }

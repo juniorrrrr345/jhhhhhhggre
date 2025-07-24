@@ -39,14 +39,10 @@ export default function Applications() {
       
       let token = localStorage.getItem('adminToken');
       
-      // Fallback vers le nouveau token sécurisé par défaut
+      // Utiliser le bon token (JuniorAdmon123 qui fonctionne)
       if (!token) {
-        console.log('⚠️ Pas de token, utilisation token sécurisé par défaut');
-        token = 'ADMIN_TOKEN_F3F3FC574B8A95875449DBD68128C434CE3D7FB3F054567B0D3EAD3D9F1B01B1';
-        localStorage.setItem('adminToken', token);
-      } else if (token === 'ADMIN_TOKEN_F3F3FC574B8A95875449DBD68128C434CE3D7FB3F054567B0D3EAD3D9F1B01B1') {
-        // Migration automatique vers le nouveau token
-        token = 'ADMIN_TOKEN_F3F3FC574B8A95875449DBD68128C434CE3D7FB3F054567B0D3EAD3D9F1B01B1';
+        console.log('⚠️ Pas de token, utilisation token par défaut');
+        token = 'JuniorAdmon123';
         localStorage.setItem('adminToken', token);
       }
 
@@ -67,6 +63,12 @@ export default function Applications() {
         setTimeout(() => {
           window.location.href = '/';
         }, 3000);
+      } else if (error.message.includes('429')) {
+        setError('Trop de tentatives. Veuillez attendre quelques secondes avant de réessayer.');
+        // Retry après 5 secondes
+        setTimeout(() => {
+          fetchApplications();
+        }, 5000);
       } else {
         setError(`Erreur lors de la récupération des demandes: ${error.message}`);
       }
@@ -81,11 +83,14 @@ export default function Applications() {
       let token = localStorage.getItem('adminToken');
       
       if (!token) {
-        token = 'ADMIN_TOKEN_F3F3FC574B8A95875449DBD68128C434CE3D7FB3F054567B0D3EAD3D9F1B01B1';
+        token = 'JuniorAdmon123';
         localStorage.setItem('adminToken', token);
       }
       
       await simpleApi.updateApplicationStatus(token, applicationId, action, adminNotes);
+      
+      // Attendre 2 secondes avant de recharger pour éviter le rate limiting
+      await new Promise(resolve => setTimeout(resolve, 2000));
       await fetchApplications(); // Recharger la liste
       setSelectedApp(null);
       setError('');
@@ -205,7 +210,10 @@ export default function Applications() {
           </div>
           <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
             <button
-              onClick={fetchApplications}
+              onClick={() => {
+                simpleApi.clearCache(); // Nettoyer le cache
+                fetchApplications();
+              }}
               className="block rounded-md bg-blue-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
             >
               Actualiser
