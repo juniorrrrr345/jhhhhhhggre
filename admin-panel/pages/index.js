@@ -28,7 +28,13 @@ export default function Login() {
       console.log('🔐 Login via proxy API...');
       
       try {
-        const config = await api.getConfig(password);
+        // Timeout de sécurité de 10 secondes pour la connexion
+        const loginPromise = api.getConfig(password);
+        const timeoutPromise = new Promise((_, reject) => {
+          setTimeout(() => reject(new Error('Timeout: Connexion trop lente')), 10000);
+        });
+        
+        const config = await Promise.race([loginPromise, timeoutPromise]);
         console.log('✅ Login proxy réussi');
         
         // Stocker le token
@@ -44,8 +50,12 @@ export default function Login() {
         console.log('❌ Login échoué:', directError.message);
         
         // Gestion des erreurs spécifiques
-        if (directError.message.includes('Proxy error: 401')) {
+        if (directError.message.includes('Proxy error: 401') || directError.message.includes('401')) {
           toast.error('Mot de passe incorrect');
+        } else if (directError.message.includes('Timeout')) {
+          toast.error('Le serveur met trop de temps à répondre. Vérifiez que le serveur bot est démarré.');
+        } else if (directError.message.includes('429')) {
+          toast.error('Trop de tentatives. Attendez quelques secondes.');
         } else {
           toast.error('Erreur de connexion. Vérifiez votre mot de passe.');
         }
