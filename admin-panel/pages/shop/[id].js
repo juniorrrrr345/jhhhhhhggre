@@ -793,28 +793,7 @@ export default function ShopPlugDetail() {
               </div>
               <span style={{ fontSize: '13px', color: '#8e8e93', fontWeight: '500' }}>Recherche</span>
             </Link>
-            <Link href="/shop/vip" style={{ 
-              display: 'flex', 
-              flexDirection: 'column', 
-              alignItems: 'center', 
-              textDecoration: 'none',
-              color: '#8e8e93'
-            }}>
-              <div style={{ 
-                width: '45px', 
-                height: '45px', 
-                backgroundColor: 'transparent', 
-                borderRadius: '12px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                marginBottom: '6px',
-                fontSize: '22px'
-              }}>
-                ⭐
-              </div>
-              <span style={{ fontSize: '13px', color: '#8e8e93', fontWeight: '500' }}>VIP</span>
-            </Link>
+
           </div>
         </nav>
       </div>

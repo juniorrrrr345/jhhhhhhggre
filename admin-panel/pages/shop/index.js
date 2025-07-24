@@ -268,18 +268,7 @@ export default function ShopHome() {
               <span style={{ fontSize: '20px' }}>🔍</span>
               Rechercher
             </Link>
-            <Link href="/shop/vip" style={{ 
-              color: '#8e8e93', 
-              textDecoration: 'none',
-              fontSize: '10px',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              gap: '4px'
-            }}>
-              <span style={{ fontSize: '20px' }}>👑</span>
-              VIP
-            </Link>
+
           </div>
         </nav>
       </div>
