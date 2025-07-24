@@ -43,6 +43,7 @@ const {
   handlePhoto,
   handleSkipPhoto,
   handleCancelApplication,
+  submitApplication,
   userForms
 } = require('./src/handlers/applicationHandler');
 const {
@@ -230,6 +231,7 @@ bot.action('cancel_application', handleCancelApplication);
 bot.action('services_done', handleServicesDone);
 bot.action(/^country_(.+)$/, handleCountrySelection);
 bot.action('skip_telegram', (ctx) => handleSkipStep(ctx, 'telegram'));
+bot.action('skip_telegram_channel', (ctx) => handleSkipStep(ctx, 'telegram_channel'));
 bot.action('skip_instagram', (ctx) => handleSkipStep(ctx, 'instagram'));
 bot.action('skip_potato', (ctx) => handleSkipStep(ctx, 'potato'));
 bot.action('skip_snapchat', (ctx) => handleSkipStep(ctx, 'snapchat'));

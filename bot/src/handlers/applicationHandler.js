@@ -1057,5 +1057,6 @@ module.exports = {
   handlePhoto,
   handleSkipStep,
   handleCancelApplication,
+  submitApplication,
   userForms
 };
