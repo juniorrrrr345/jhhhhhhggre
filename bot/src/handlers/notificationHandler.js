@@ -85,12 +85,8 @@ const sendAdminNotification = async (bot, application, adminId) => {
       `📞 **Contact :** ${application.contact.telegram}\n\n` +
       `💡 Rendez-vous sur le panel admin pour traiter cette demande.`;
 
-    const keyboard = Markup.inlineKeyboard([
-      [Markup.button.url('🎛️ Panel Admin', process.env.ADMIN_URL || 'https://safeplugslink.vercel.app/admin/applications')]
-    ]);
-
+    // Pas de bouton panel admin - juste le message texte
     await bot.telegram.sendMessage(adminId, message, {
-      reply_markup: keyboard.reply_markup,
       parse_mode: 'Markdown'
     });
 
