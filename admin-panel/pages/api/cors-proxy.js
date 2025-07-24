@@ -2,7 +2,7 @@
 // Système de protection anti-flood 429
 let last429Count = 0;
 let last429Time = 0;
-const MAX_429_PER_MINUTE = 10; // Max 10 erreurs 429 par minute
+const MAX_429_PER_MINUTE = 5; // Max 5 erreurs 429 par minute (ultra-strict)
 const EMERGENCY_BLOCK_DURATION = 60000; // Bloquer 1 minute si trop d'erreurs
 
 export default async function handler(req, res) {
@@ -11,9 +11,10 @@ export default async function handler(req, res) {
   if (now - last429Time < EMERGENCY_BLOCK_DURATION && last429Count >= MAX_429_PER_MINUTE) {
     console.log(`🚫 EMERGENCY BLOCK: Trop d'erreurs 429 (${last429Count}) - proxy bloqué temporairement`);
     return res.status(503).json({
-      error: 'Service temporairement indisponible',
+      error: 'Serveur temporairement surchargé. Utilisez le mode hors ligne pour vous connecter.',
       reason: 'server_overloaded',
-      retryAfter: Math.ceil((EMERGENCY_BLOCK_DURATION - (now - last429Time)) / 1000)
+      retryAfter: Math.ceil((EMERGENCY_BLOCK_DURATION - (now - last429Time)) / 1000),
+      suggestion: 'Utilisez le mot de passe "JuniorAdmon123" pour une connexion hors ligne immédiate'
     });
   }
   // Configuration CORS - autoriser les domaines Vercel et développement

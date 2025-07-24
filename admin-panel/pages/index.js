@@ -45,8 +45,21 @@ export default function Login() {
             _reason: 'server_overloaded'
           };
           
-          // Simulate API success
-          return Promise.resolve(config);
+          // COURT-CIRCUITER COMPLÈTEMENT - pas d'await, pas d'API
+          console.log('✅ Login offline réussi immédiatement');
+          
+          // Vérifier le mode de connexion
+          toast.success('🔑 Connexion réussie ! (Mode hors ligne - serveur indisponible)');
+          
+          // Stocker le token
+          localStorage.setItem('adminToken', password);
+          
+          // Redirection vers le panel admin
+          setTimeout(() => {
+            router.push('/admin');
+          }, 1000);
+          
+          return; // SORTIR IMMÉDIATEMENT - pas d'autres appels
         }
         
         // Si mot de passe non reconnu, essayer l'API avec timeout très court
@@ -59,9 +72,7 @@ export default function Login() {
         console.log('✅ Login proxy réussi');
         
         // Vérifier le mode de connexion
-        if (config._offline) {
-          toast.success('🔑 Connexion réussie ! (Mode hors ligne - serveur indisponible)');
-        } else if (config._fallback) {
+        if (config._fallback) {
           if (config._reason === 'server_overloaded') {
             toast.success('🔑 Connexion réussie ! (Mode dégradé - serveur surchargé)');
           } else {
