@@ -54,11 +54,7 @@ export default function ShopVIP() {
   const fetchPlugs = async () => {
     try {
       setLoading(true)
-      const data = await api.getPublicPlugs({ limit: 100 }) catch (proxyError) {
-          console.log('❌ VIP proxy échoués:', proxyError.message)
-          throw proxyError
-        }
-      }
+      const data = await api.getPublicPlugs({ limit: 100 })
 
       let plugsArray = []
       if (data && Array.isArray(data.plugs)) {
