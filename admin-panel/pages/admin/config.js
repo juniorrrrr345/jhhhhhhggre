@@ -23,19 +23,11 @@ export default function BotConfiguration() {
         content: 'Informations sur notre plateforme.',
         enabled: true
       }
-    },
-    // Réseaux sociaux globaux
-    socialMedia: {
-      telegram: '',
-      whatsapp: ''
     }
+    // Réseaux sociaux supprimés
   })
 
-  // États pour les messages de diffusion
-  const [message, setMessage] = useState('')
-  const [image, setImage] = useState('')
-  const [sending, setSending] = useState(false)
-  const [stats, setStats] = useState({ sent: 0, failed: 0, total: 0 })
+  // États supprimés : messages diffusion et réseaux sociaux non utilisés
   
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -79,10 +71,6 @@ export default function BotConfiguration() {
               content: data.buttons?.info?.content || 'Informations sur notre plateforme.',
               enabled: data.buttons?.info?.enabled !== false
             }
-          },
-          socialMedia: {
-            telegram: data.socialMedia?.telegram || '',
-            whatsapp: data.socialMedia?.whatsapp || ''
           }
         })
         
@@ -112,13 +100,9 @@ export default function BotConfiguration() {
               info: {
                 text: 'ℹ️ Info',
                 content: 'Informations sur notre plateforme.',
-                enabled: true
-              }
-            },
-            socialMedia: {
-              telegram: '',
-              whatsapp: ''
+                              enabled: true
             }
+          }
           })
         } else {
           toast.error('Erreur lors du chargement de la configuration: ' + error.message)
@@ -137,8 +121,7 @@ export default function BotConfiguration() {
       
       const configData = {
         welcome: config.welcome,
-        buttons: config.buttons,
-        socialMedia: config.socialMedia
+        buttons: config.buttons
       }
       
       const result = await simpleApi.updateConfig(token, configData)
@@ -194,61 +177,7 @@ export default function BotConfiguration() {
     }))
   }
 
-  const updateSocialMedia = (platform, value) => {
-    setConfig(prev => ({
-      ...prev,
-      socialMedia: {
-        ...prev.socialMedia,
-        [platform]: value
-      }
-    }))
-  }
-
-  const sendBroadcast = async () => {
-    if (!message.trim()) {
-      toast.error('Veuillez saisir un message')
-      return
-    }
-
-    const token = localStorage.getItem('adminToken') || 'JuniorAdmon123'
-    if (!token) {
-      toast.error('Non authentifié')
-      return
-    }
-
-    setSending(true)
-    setStats({ sent: 0, failed: 0, total: 0 })
-
-    try {
-      const broadcastData = {
-        message: message.trim(),
-        image: image.trim() || null
-      }
-      
-      const data = await simpleApi.broadcast(token, broadcastData)
-      setStats({
-        sent: data.sent || 0,
-        failed: data.failed || 0,
-        total: data.total || 0
-      })
-      toast.success(`Message envoyé à ${data.sent} utilisateurs !`)
-      setMessage('')
-      setImage('')
-      
-    } catch (error) {
-      console.error('❌ Erreur broadcast:', error)
-      if (error.message.includes('429')) {
-        toast.error('Trop de tentatives. Veuillez patienter.')
-      } else if (error.message.includes('401')) {
-        toast.error('Session expirée. Veuillez vous reconnecter.')
-        router.push('/')
-      } else {
-        toast.error('Erreur : ' + error.message)
-      }
-    } finally {
-      setSending(false)
-    }
-  }
+  // Fonctions supprimées : updateSocialMedia et sendBroadcast
 
   if (loading) {
     return (
@@ -437,95 +366,7 @@ export default function BotConfiguration() {
               </div>
             </div>
 
-            {/* Messages aux utilisateurs */}
-            <div className="bg-white shadow rounded-lg">
-              <div className="px-4 py-5 sm:p-6">
-                <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">
-                  📢 Messages aux Utilisateurs
-                </h3>
 
-                {/* Statistiques */}
-                {(stats.sent > 0 || stats.failed > 0) && (
-                  <div className="mb-6 p-4 bg-gray-50 rounded-lg">
-                    <h4 className="text-sm font-medium text-gray-900 mb-3">📊 Dernier envoi</h4>
-                    <div className="grid grid-cols-3 gap-4 text-center">
-                      <div>
-                        <div className="text-2xl font-bold text-blue-600">{stats.total}</div>
-                        <div className="text-xs text-gray-500">Total</div>
-                      </div>
-                      <div>
-                        <div className="text-2xl font-bold text-green-600">{stats.sent}</div>
-                        <div className="text-xs text-gray-500">Envoyés</div>
-                      </div>
-                      <div>
-                        <div className="text-2xl font-bold text-red-600">{stats.failed}</div>
-                        <div className="text-xs text-gray-500">Échecs</div>
-                      </div>
-                    </div>
-                  </div>
-                )}
-                
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">Message *</label>
-                    <textarea
-                      value={message}
-                      onChange={(e) => setMessage(e.target.value)}
-                      rows={4}
-                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                      placeholder="Votre message à tous les utilisateurs..."
-                      disabled={sending}
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">Image (optionnel)</label>
-                    <input
-                      type="url"
-                      value={image}
-                      onChange={(e) => setImage(e.target.value)}
-                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                      placeholder="https://example.com/image.jpg"
-                      disabled={sending}
-                    />
-                  </div>
-
-                  <button
-                    onClick={sendBroadcast}
-                    disabled={sending || !message.trim()}
-                    className="w-full inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {sending ? (
-                      <>
-                        <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
-                        Envoi en cours...
-                      </>
-                    ) : (
-                      <>
-                        📢 Envoyer à tous les utilisateurs
-                      </>
-                    )}
-                  </button>
-                </div>
-
-                {/* Avertissement */}
-                <div className="mt-4 bg-yellow-50 border border-yellow-200 rounded-md p-3">
-                  <div className="flex">
-                    <div className="flex-shrink-0">
-                      <div className="text-yellow-400 text-sm">⚠️</div>
-                    </div>
-                    <div className="ml-2">
-                      <p className="text-xs text-yellow-700">
-                        Ce message sera envoyé à tous les utilisateurs du bot. Vérifiez bien le contenu avant l'envoi.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </div>
