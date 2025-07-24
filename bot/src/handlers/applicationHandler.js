@@ -1022,70 +1022,90 @@ const handlePhoto = async (ctx) => {
 // Gestionnaires pour passer les étapes
 const handleSkipStep = async (ctx, step) => {
   try {
+    console.log('🔄 handleSkipStep appelé avec step:', step);
     const userId = ctx.from.id;
     const userForm = userForms.get(userId);
     
+    console.log('👤 UserId:', userId);
+    console.log('📝 UserForm exists:', !!userForm);
+    
     if (!userForm) {
+      console.log('❌ Pas de formulaire trouvé pour userId:', userId);
       return await ctx.answerCbQuery('❌ Erreur de formulaire');
     }
     
-    // Passer à l'étape suivante
+    console.log('📋 Current step avant skip:', userForm.step);
+    
+    // Version simplifiée : juste passer à l'étape suivante et utiliser les anciennes fonctions ask
     switch (step) {
       case 'telegram':
         userForm.step = 'telegram_channel';
         userForms.set(userId, userForm);
-        await replyWithStep(ctx, 'telegram_channel');
+        console.log('➡️ Skip telegram → telegram_channel');
+        await askTelegramChannel(ctx);
         break;
       case 'telegram_channel':
         userForm.step = 'instagram';
         userForms.set(userId, userForm);
-        await replyWithStep(ctx, 'instagram');
+        console.log('➡️ Skip telegram_channel → instagram');
+        await askInstagram(ctx);
         break;
       case 'instagram':
         userForm.step = 'potato';
         userForms.set(userId, userForm);
-        await replyWithStep(ctx, 'potato');
+        console.log('➡️ Skip instagram → potato');
+        await askPotato(ctx);
         break;
       case 'potato':
         userForm.step = 'snapchat';
         userForms.set(userId, userForm);
-        await replyWithStep(ctx, 'snapchat');
+        console.log('➡️ Skip potato → snapchat');
+        await askSnapchat(ctx);
         break;
       case 'snapchat':
         userForm.step = 'whatsapp';
         userForms.set(userId, userForm);
-        await replyWithStep(ctx, 'whatsapp');
+        console.log('➡️ Skip snapchat → whatsapp');
+        await askWhatsApp(ctx);
         break;
       case 'whatsapp':
         userForm.step = 'signal';
         userForms.set(userId, userForm);
-        await replyWithStep(ctx, 'signal');
+        console.log('➡️ Skip whatsapp → signal');
+        await askSignal(ctx);
         break;
       case 'signal':
         userForm.step = 'session';
         userForms.set(userId, userForm);
-        await replyWithStep(ctx, 'session');
+        console.log('➡️ Skip signal → session');
+        await askSession(ctx);
         break;
       case 'session':
         userForm.step = 'threema';
         userForms.set(userId, userForm);
-        await replyWithStep(ctx, 'threema');
+        console.log('➡️ Skip session → threema');
+        await askThreema(ctx);
         break;
       case 'threema':
         userForm.step = 'country';
         userForms.set(userId, userForm);
+        console.log('➡️ Skip threema → country');
         await askCountry(ctx);
         break;
+      default:
+        console.log('❌ Step non reconnu:', step);
+        throw new Error(`Step non supporté: ${step}`);
     }
     
+    console.log('✅ Skip step terminé avec succès');
     await ctx.answerCbQuery('Étape passée');
     
   } catch (error) {
-    console.error('Erreur dans handleSkipStep:', error);
+    console.error('❌ ERREUR DANS handleSkipStep:');
     console.error('Step:', step);
-    console.error('UserId:', userId);
-    console.error('UserForm exists:', !!userForm);
-    await ctx.answerCbQuery('❌ Erreur: ' + error.message);
+    console.error('Error message:', error.message);
+    console.error('Error stack:', error.stack);
+    await ctx.answerCbQuery('❌ Erreur: ' + error.message).catch(e => console.error('Erreur answerCbQuery:', e));
   }
 };
 
