@@ -10,26 +10,396 @@ const {
 } = require('../utils/keyboards');
 const { sendMessageWithImage, editMessageWithImage, sendPlugWithImage } = require('../utils/messageHelper');
 
-// Afficher le menu des plugs
+// 🔘 NOUVEAU SYSTÈME - Top des Plugs avec filtres avancés
 const handleTopPlugs = async (ctx) => {
   try {
-    // CORRECTION: Confirmer immédiatement la callback pour éviter le loading
     await ctx.answerCbQuery();
     
-    // Toujours récupérer la config fraîche
     const config = await Config.findById('main');
-    const keyboard = createPlugsFilterKeyboard(config);
     
-    const messageText = `${config?.botTexts?.topPlugsTitle || '🔌 Top Des Plugs'}\n\n${config?.botTexts?.topPlugsDescription || 'Choisissez une option pour découvrir nos plugs :'}`;
+    // Récupérer tous les plugs actifs triés par votes
+    const allPlugs = await Plug.find({ isActive: true })
+      .sort({ likes: -1, createdAt: -1 });
+
+    // Récupérer les pays disponibles dynamiquement
+    const availableCountries = await getAvailableCountries();
     
-    // Utiliser la fonction helper pour afficher avec image
-    await editMessageWithImage(ctx, messageText, keyboard, config, { parse_mode: 'Markdown' });
+    // Créer le clavier avec pays + filtres + liste
+    const keyboard = createTopPlugsKeyboard(availableCountries, null, null);
+    
+    // Message d'affichage initial
+    let message = `🔌 **Liste des Plugs**\n`;
+    message += `*(Triés par nombre de votes)*\n\n`;
+    
+    // Afficher les premiers plugs (top 10 par défaut)
+    const topPlugs = allPlugs.slice(0, 10);
+    if (topPlugs.length > 0) {
+      topPlugs.forEach((plug, index) => {
+        const country = getCountryFlag(plug.countries[0]);
+        const location = plug.location ? ` ${plug.location}` : '';
+        message += `${country}${location} ${plug.name} 👍 ${plug.likes}\n`;
+      });
+    } else {
+      message += `❌ Aucun plug disponible pour le moment.`;
+    }
+    
+    await editMessageWithImage(ctx, message, keyboard, config, { parse_mode: 'Markdown' });
     
   } catch (error) {
     console.error('Erreur dans handleTopPlugs:', error);
-    // Fallback: essayer de répondre si pas déjà fait
     await ctx.answerCbQuery('❌ Erreur lors du chargement').catch(() => {});
   }
+};
+
+// Gestionnaire pour les filtres de pays - NOUVEAU SYSTÈME
+const handleTopCountryFilter = async (ctx, country) => {
+  try {
+    await ctx.answerCbQuery();
+    
+    const config = await Config.findById('main');
+    
+    // Filtrer les plugs par pays
+    const countryPlugs = await Plug.find({ 
+      isActive: true,
+      countries: { $in: [country] }
+    }).sort({ likes: -1, createdAt: -1 });
+
+    const availableCountries = await getAvailableCountries();
+    const keyboard = createTopPlugsKeyboard(availableCountries, country, null);
+    
+    let message = `🔌 **Liste des Plugs**\n`;
+    message += `*(Triés par nombre de votes)*\n\n`;
+    message += `🌍 **Filtre:** ${getCountryFlag(country)} ${country}\n\n`;
+    
+    if (countryPlugs.length > 0) {
+      countryPlugs.slice(0, 10).forEach((plug, index) => {
+        const countryFlag = getCountryFlag(plug.countries[0]);
+        const location = plug.location ? ` ${plug.location}` : '';
+        message += `${countryFlag}${location} ${plug.name} 👍 ${plug.likes}\n`;
+      });
+    } else {
+      message += `❌ Aucun plug disponible pour ${country}.`;
+    }
+    
+    await editMessageWithImage(ctx, message, keyboard, config, { parse_mode: 'Markdown' });
+    
+  } catch (error) {
+    console.error('Erreur dans handleTopCountryFilter:', error);
+    await ctx.answerCbQuery('❌ Erreur lors du filtrage').catch(() => {});
+  }
+};
+
+// Gestionnaire pour les filtres de services (Livraison, Meetup, Postal) - NOUVEAU SYSTÈME
+const handleTopServiceFilter = async (ctx, serviceType, selectedCountry = null) => {
+  try {
+    await ctx.answerCbQuery();
+    
+    const config = await Config.findById('main');
+    
+    // Construire la requête selon le service
+    let query = { isActive: true };
+    
+    switch (serviceType) {
+      case 'delivery':
+        query['services.delivery.enabled'] = true;
+        break;
+      case 'meetup':
+        query['services.meetup.enabled'] = true;
+        break;
+      case 'postal':
+        query['services.postal.enabled'] = true;
+        break;
+    }
+    
+    // Ajouter le filtre pays si sélectionné
+    if (selectedCountry) {
+      query.countries = { $in: [selectedCountry] };
+    }
+    
+    const servicePlugs = await Plug.find(query).sort({ likes: -1, createdAt: -1 });
+    
+    const availableCountries = await getAvailableCountries();
+    const keyboard = createTopPlugsKeyboard(availableCountries, selectedCountry, serviceType);
+    
+    let message = `🔌 **Liste des Plugs**\n`;
+    message += `*(Triés par nombre de votes)*\n\n`;
+    
+    // Titre selon le service
+    const serviceNames = {
+      delivery: '📦 Afficher les boutiques disponibles pour livraison',
+      meetup: '🤝 Afficher les boutiques disponibles pour meetup',
+      postal: '📬 Boutiques qui font des envois postaux'
+    };
+    
+    message += `${serviceNames[serviceType]}\n\n`;
+    
+    if (selectedCountry) {
+      message += `🌍 **Filtre:** ${getCountryFlag(selectedCountry)} ${selectedCountry}\n\n`;
+    }
+    
+    if (servicePlugs.length > 0) {
+      servicePlugs.slice(0, 10).forEach((plug, index) => {
+        const country = getCountryFlag(plug.countries[0]);
+        const location = plug.location ? ` ${plug.location}` : '';
+        message += `${country}${location} ${plug.name} 👍 ${plug.likes}\n`;
+      });
+    } else {
+      const serviceName = serviceNames[serviceType].toLowerCase();
+      message += `❌ Aucun plug disponible pour ${serviceName}.`;
+    }
+    
+    await editMessageWithImage(ctx, message, keyboard, config, { parse_mode: 'Markdown' });
+    
+  } catch (error) {
+    console.error('Erreur dans handleTopServiceFilter:', error);
+    await ctx.answerCbQuery('❌ Erreur lors du filtrage').catch(() => {});
+  }
+};
+
+// Gestionnaire pour les départements (delivery et meetup)
+const handleDepartmentFilter = async (ctx, serviceType, selectedCountry = null) => {
+  try {
+    await ctx.answerCbQuery();
+    
+    const config = await Config.findById('main');
+    
+    // Récupérer les départements disponibles selon le service
+    const departments = await getAvailableDepartments(serviceType, selectedCountry);
+    
+    if (departments.length === 0) {
+      await ctx.answerCbQuery('❌ Aucun département disponible');
+      return;
+    }
+    
+    const keyboard = createDepartmentsKeyboard(departments, serviceType, selectedCountry);
+    
+    let message = `📍 **Départements disponibles**\n\n`;
+    
+    if (serviceType === 'delivery') {
+      message += `📦 **Service:** Livraison\n`;
+    } else if (serviceType === 'meetup') {
+      message += `🤝 **Service:** Meetup\n`;
+    }
+    
+    if (selectedCountry) {
+      message += `🌍 **Pays:** ${getCountryFlag(selectedCountry)} ${selectedCountry}\n`;
+    }
+    
+    message += `\nSélectionnez un département :`;
+    
+    await editMessageWithImage(ctx, message, keyboard, config, { parse_mode: 'Markdown' });
+    
+  } catch (error) {
+    console.error('Erreur dans handleDepartmentFilter:', error);
+    await ctx.answerCbQuery('❌ Erreur lors du chargement des départements').catch(() => {});
+  }
+};
+
+// Gestionnaire pour un département spécifique
+const handleSpecificDepartment = async (ctx, serviceType, department, selectedCountry = null) => {
+  try {
+    await ctx.answerCbQuery();
+    
+    const config = await Config.findById('main');
+    
+    // Construire la requête
+    let query = { isActive: true };
+    
+    if (serviceType === 'delivery') {
+      query['services.delivery.enabled'] = true;
+      query['services.delivery.departments'] = { $in: [department] };
+    } else if (serviceType === 'meetup') {
+      query['services.meetup.enabled'] = true;
+      query['services.meetup.departments'] = { $in: [department] };
+    }
+    
+    if (selectedCountry) {
+      query.countries = { $in: [selectedCountry] };
+    }
+    
+    const deptPlugs = await Plug.find(query).sort({ likes: -1, createdAt: -1 });
+    
+    const availableCountries = await getAvailableCountries();
+    const keyboard = createTopPlugsKeyboard(availableCountries, selectedCountry, serviceType);
+    
+    let message = `🔌 **Liste des Plugs**\n`;
+    message += `*(Triés par nombre de votes)*\n\n`;
+    
+    if (serviceType === 'delivery') {
+      message += `📦 **Service:** Livraison\n`;
+    } else if (serviceType === 'meetup') {
+      message += `🤝 **Service:** Meetup\n`;
+    }
+    
+    message += `📍 **Département:** ${department}\n`;
+    
+    if (selectedCountry) {
+      message += `🌍 **Pays:** ${getCountryFlag(selectedCountry)} ${selectedCountry}\n`;
+    }
+    
+    message += `\n`;
+    
+    if (deptPlugs.length > 0) {
+      deptPlugs.slice(0, 10).forEach((plug, index) => {
+        const country = getCountryFlag(plug.countries[0]);
+        const location = plug.location ? ` ${plug.location}` : '';
+        message += `${country}${location} ${plug.name} 👍 ${plug.likes}\n`;
+      });
+    } else {
+      message += `❌ Aucun plug disponible dans le département ${department}.`;
+    }
+    
+    await editMessageWithImage(ctx, message, keyboard, config, { parse_mode: 'Markdown' });
+    
+  } catch (error) {
+    console.error('Erreur dans handleSpecificDepartment:', error);
+    await ctx.answerCbQuery('❌ Erreur lors du filtrage').catch(() => {});
+  }
+};
+
+// Gestionnaire pour réinitialiser tous les filtres
+const handleResetFilters = async (ctx) => {
+  try {
+    await ctx.answerCbQuery('🔄 Filtres réinitialisés');
+    // Retourner à l'affichage initial
+    await handleTopPlugs(ctx);
+  } catch (error) {
+    console.error('Erreur dans handleResetFilters:', error);
+    await ctx.answerCbQuery('❌ Erreur lors de la réinitialisation').catch(() => {});
+  }
+};
+
+// === FONCTIONS UTILITAIRES ===
+
+// Récupérer les pays disponibles
+const getAvailableCountries = async () => {
+  try {
+    const countries = await Plug.distinct('countries', { isActive: true });
+    return countries.filter(country => country && country.trim() !== '');
+  } catch (error) {
+    console.error('Erreur récupération pays:', error);
+    return ['France', 'Spain', 'Switzerland', 'Italy']; // Fallback
+  }
+};
+
+// Récupérer les départements disponibles
+const getAvailableDepartments = async (serviceType, selectedCountry = null) => {
+  try {
+    let query = { isActive: true };
+    
+    if (selectedCountry) {
+      query.countries = { $in: [selectedCountry] };
+    }
+    
+    if (serviceType === 'delivery') {
+      query['services.delivery.enabled'] = true;
+    } else if (serviceType === 'meetup') {
+      query['services.meetup.enabled'] = true;
+    }
+    
+    const plugs = await Plug.find(query);
+    
+    const departments = new Set();
+    plugs.forEach(plug => {
+      if (serviceType === 'delivery' && plug.services.delivery.departments) {
+        plug.services.delivery.departments.forEach(dept => {
+          if (dept && dept.trim() !== '') departments.add(dept.trim());
+        });
+      } else if (serviceType === 'meetup' && plug.services.meetup.departments) {
+        plug.services.meetup.departments.forEach(dept => {
+          if (dept && dept.trim() !== '') departments.add(dept.trim());
+        });
+      }
+    });
+    
+    return Array.from(departments).sort();
+  } catch (error) {
+    console.error('Erreur récupération départements:', error);
+    return [];
+  }
+};
+
+// Obtenir le drapeau du pays
+const getCountryFlag = (country) => {
+  const flags = {
+    'France': '🇫🇷',
+    'Spain': '🇪🇸', 
+    'Switzerland': '🇨🇭',
+    'Italy': '🇮🇹',
+    'Belgium': '🇧🇪',
+    'Germany': '🇩🇪',
+    'Netherlands': '🇳🇱',
+    'Portugal': '🇵🇹'
+  };
+  return flags[country] || '🌍';
+};
+
+// Créer le clavier principal Top des Plugs
+const createTopPlugsKeyboard = (countries, selectedCountry, selectedService) => {
+  const buttons = [];
+  
+  // Première ligne : Pays (4 boutons max par ligne)
+  if (countries.length > 0) {
+    const countryButtons = [];
+    countries.slice(0, 4).forEach(country => {
+      const flag = getCountryFlag(country);
+      const isSelected = selectedCountry === country;
+      const buttonText = isSelected ? `✅ ${flag}` : flag;
+      countryButtons.push(Markup.button.callback(buttonText, `top_country_${country}`));
+    });
+    
+    // Grouper par 4
+    for (let i = 0; i < countryButtons.length; i += 4) {
+      buttons.push(countryButtons.slice(i, i + 4));
+    }
+  }
+  
+  // Deuxième ligne : Filtres de services
+  const serviceRow = [];
+  
+  const deliveryText = selectedService === 'delivery' ? '✅ 📦 Livraison' : '📦 Livraison';
+  const meetupText = selectedService === 'meetup' ? '✅ 🤝 Meetup' : '🤝 Meetup';
+  const postalText = selectedService === 'postal' ? '✅ 📬 Envoi Postal' : '📬 Envoi Postal';
+  
+  serviceRow.push(Markup.button.callback(deliveryText, `top_service_delivery${selectedCountry ? `_${selectedCountry}` : ''}`));
+  serviceRow.push(Markup.button.callback(meetupText, `top_service_meetup${selectedCountry ? `_${selectedCountry}` : ''}`));
+  serviceRow.push(Markup.button.callback(postalText, `top_service_postal${selectedCountry ? `_${selectedCountry}` : ''}`));
+  
+  buttons.push(serviceRow);
+  
+  // Troisième ligne : Département (si service delivery ou meetup sélectionné)
+  if (selectedService === 'delivery' || selectedService === 'meetup') {
+    const deptButton = Markup.button.callback('📍 Département 🔁', `top_departments_${selectedService}${selectedCountry ? `_${selectedCountry}` : ''}`);
+    buttons.push([deptButton]);
+  }
+  
+  // Quatrième ligne : Réinitialiser + Retour
+  const actionRow = [];
+  actionRow.push(Markup.button.callback('🔁 Réinitialiser les filtres', 'top_reset_filters'));
+  actionRow.push(Markup.button.callback('🔙 Retour au menu', 'back_main'));
+  buttons.push(actionRow);
+  
+  return Markup.inlineKeyboard(buttons);
+};
+
+// Créer le clavier des départements
+const createDepartmentsKeyboard = (departments, serviceType, selectedCountry) => {
+  const buttons = [];
+  
+  // Départements (2 par ligne)
+  for (let i = 0; i < departments.length; i += 2) {
+    const row = [];
+    row.push(Markup.button.callback(`📍 ${departments[i]}`, `top_dept_${serviceType}_${departments[i]}${selectedCountry ? `_${selectedCountry}` : ''}`));
+    if (departments[i + 1]) {
+      row.push(Markup.button.callback(`📍 ${departments[i + 1]}`, `top_dept_${serviceType}_${departments[i + 1]}${selectedCountry ? `_${selectedCountry}` : ''}`));
+    }
+    buttons.push(row);
+  }
+  
+  // Retour
+  buttons.push([Markup.button.callback('🔙 Retour', 'top_plugs')]);
+  
+  return Markup.inlineKeyboard(buttons);
 };
 
 // Afficher les boutiques VIP
@@ -386,5 +756,13 @@ module.exports = {
   handleServiceFilter,
   handleFilterCountry,
   handleCountryFilter,
-  handlePlugDetails
+  handlePlugDetails,
+  handleDepartmentFilter,
+  handleSpecificDepartment,
+  handleResetFilters,
+  handleTopServiceFilter,
+  handleTopCountryFilter,
+  getAvailableCountries,
+  getAvailableDepartments,
+  getCountryFlag
 };

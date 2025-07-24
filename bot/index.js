@@ -30,7 +30,12 @@ const {
   handleServiceFilter,
   handleFilterCountry, 
   handleCountryFilter, 
-  handlePlugDetails
+  handlePlugDetails,
+  handleDepartmentFilter,
+  handleSpecificDepartment,
+  handleResetFilters,
+  handleTopServiceFilter,
+  handleTopCountryFilter
 } = require('./src/handlers/plugsHandler');
 const { handleContact, handleInfo, handleIgnoredCallback } = require('./src/handlers/menuHandler');
 const { handleSocialMedia } = require('./src/handlers/socialMediaHandler');
@@ -231,6 +236,39 @@ bot.action('start_application', handleStartApplication);
 bot.action('cancel_application', handleCancelApplication);
 bot.action('services_done', handleServicesDone);
 bot.action(/^country_(.+)$/, handleCountrySelection);
+
+// === NOUVEAUX HANDLERS TOP DES PLUGS ===
+bot.action(/^top_country_(.+)$/, (ctx) => {
+  const country = ctx.match[1];
+  return handleTopCountryFilter(ctx, country);
+});
+
+bot.action(/^top_service_(.+)$/, (ctx) => {
+  const fullMatch = ctx.match[1];
+  const parts = fullMatch.split('_');
+  const serviceType = parts[0]; // delivery, meetup, postal
+  const selectedCountry = parts.length > 1 ? parts[1] : null;
+  return handleTopServiceFilter(ctx, serviceType, selectedCountry);
+});
+
+bot.action(/^top_departments_(.+)$/, (ctx) => {
+  const fullMatch = ctx.match[1];
+  const parts = fullMatch.split('_');
+  const serviceType = parts[0]; // delivery ou meetup
+  const selectedCountry = parts.length > 1 ? parts[1] : null;
+  return handleDepartmentFilter(ctx, serviceType, selectedCountry);
+});
+
+bot.action(/^top_dept_(.+)_(.+)$/, (ctx) => {
+  const serviceType = ctx.match[1]; // delivery ou meetup
+  const fullMatch = ctx.match[2];
+  const parts = fullMatch.split('_');
+  const department = parts[0];
+  const selectedCountry = parts.length > 1 ? parts[1] : null;
+  return handleSpecificDepartment(ctx, serviceType, department, selectedCountry);
+});
+
+bot.action('top_reset_filters', handleResetFilters);
 bot.action('skip_telegram', (ctx) => handleSkipStep(ctx, 'telegram'));
 bot.action('skip_telegram_channel', (ctx) => handleSkipStep(ctx, 'telegram_channel'));
 bot.action('skip_instagram', (ctx) => handleSkipStep(ctx, 'instagram'));

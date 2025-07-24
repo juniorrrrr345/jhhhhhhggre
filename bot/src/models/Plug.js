@@ -41,7 +41,11 @@ const plugSchema = new mongoose.Schema({
       description: {
         type: String,
         default: ''
-      }
+      },
+      departments: [{
+        type: String,
+        trim: true
+      }]
     },
     postal: {
       enabled: {
@@ -61,7 +65,11 @@ const plugSchema = new mongoose.Schema({
       description: {
         type: String,
         default: ''
-      }
+      },
+      departments: [{
+        type: String,
+        trim: true
+      }]
     }
   },
   telegramLink: {
