@@ -150,7 +150,7 @@ bot.on('callback_query', (ctx, next) => {
         ctx.session.lastContext = contextMatch[1];
         console.log(`📍 Context updated to: ${ctx.session.lastContext}`);
       }
-    } else if (data === 'top_plugs' || data === 'plugs_all' || data === 'plugs_vip') {
+    } else if (data === 'top_plugs' || data === 'plugs_all') {
       ctx.session.lastContext = data;
       console.log(`📍 Context updated to: ${ctx.session.lastContext}`);
     }
@@ -221,7 +221,7 @@ bot.on('photo', async (ctx) => {
 bot.action('back_main', handleBackMain);
 bot.action('top_plugs', handleTopPlugs);
 bot.action('plugs_all', (ctx) => handleAllPlugs(ctx, 0));
-bot.action('plugs_vip', (ctx) => handleVipPlugs(ctx, 0));
+// bot.action('plugs_vip', (ctx) => handleVipPlugs(ctx, 0)); // SUPPRIMÉ - Boutique VIP retirée
 bot.action('filter_service', handleFilterService);
 bot.action('filter_country', handleFilterCountry);
 bot.action('contact', handleContact);
@@ -270,7 +270,7 @@ bot.action(/^page_(.+)_(\d+)$/, (ctx) => {
   
   if (context === 'all' || context === 'plugs_all') {
     return handleAllPlugs(ctx, page);
-  } else if (context === 'vip' || context === 'plugs_vip') {
+  } else if (context === 'vip') {
     return handleVipPlugs(ctx, page);
   } else if (context.startsWith('service_')) {
     const serviceType = context.split('_')[1];

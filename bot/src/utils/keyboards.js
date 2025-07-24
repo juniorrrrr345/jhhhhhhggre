@@ -86,10 +86,6 @@ const createMainKeyboard = (config) => {
   const topPlugsText = config?.buttons?.topPlugs?.text || '🔌 Top Des Plugs';
   buttons.push([Markup.button.callback(topPlugsText, 'top_plugs')]);
   
-  // Bouton Boutique VIP
-  const vipButtonText = config?.buttons?.vipPlugs?.text || '🛍️ Boutiques VIP';
-  buttons.push([Markup.button.callback(vipButtonText, 'plugs_vip')]);
-  
   // Boutons Contact et Info sur la même ligne
   const secondRow = [];
   const contactText = config?.buttons?.contact?.text || '📞 Contact';
@@ -102,15 +98,21 @@ const createMainKeyboard = (config) => {
   // Troisième ligne : Devenir Plug (seul)
   buttons.push([Markup.button.callback('💼 Devenir Plug', 'start_application')]);
   
-  // Réseaux sociaux personnalisés en bas du menu
-  if (config?.socialMedia && Array.isArray(config.socialMedia) && config.socialMedia.length > 0) {
+  // Réseaux sociaux personnalisés en bas du menu - PRIORITÉ socialMediaList
+  const socialMediaData = config?.socialMediaList || config?.socialMedia || [];
+  
+  if (Array.isArray(socialMediaData) && socialMediaData.length > 0) {
     console.log('🔄 Création des boutons réseaux sociaux personnalisés...');
     
     // Grouper les réseaux sociaux par rangées de 2 boutons max
     const socialButtons = [];
     const socialRows = [];
     
-    config.socialMedia.forEach((social, index) => {
+    // Filtrer uniquement les réseaux activés
+    const activeSocials = socialMediaData.filter(social => social.enabled !== false);
+    console.log(`📱 ${activeSocials.length} réseaux sociaux activés trouvés`);
+    
+    activeSocials.forEach((social, index) => {
       if (social.name && social.url) {
         const cleanedUrl = cleanUrl(social.url);
         if (cleanedUrl) {
@@ -121,7 +123,7 @@ const createMainKeyboard = (config) => {
           console.log(`📱 Bouton réseau social créé: ${buttonText} -> ${cleanedUrl}`);
           
           // Créer une nouvelle rangée tous les 2 boutons
-          if (socialButtons.length === 2 || index === config.socialMedia.length - 1) {
+          if (socialButtons.length === 2 || index === activeSocials.length - 1) {
             socialRows.push([...socialButtons]);
             socialButtons.length = 0; // Vider le tableau
           }
