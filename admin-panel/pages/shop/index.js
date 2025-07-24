@@ -22,18 +22,7 @@ export default function ShopHome() {
     // Debug logs
     console.log('🔄 Boutique initialisée')
     
-    // ========== SYNC AUTOMATIQUE AVEC LIKES BOT ==========
-    // Refresh automatique toutes les 15 secondes pour synchroniser les likes en temps réel
-    const syncInterval = setInterval(() => {
-      console.log('🔄 Synchronisation automatique des likes...')
-      fetchPlugs() // Refresh les données depuis le bot
-    }, 15000) // 15 secondes pour une synchronisation plus rapide
-    
-    // Cleanup au démontage du composant
-    return () => {
-      clearInterval(syncInterval)
-      console.log('🔄 Synchronisation automatique arrêtée')
-    }
+    // Plus de refresh automatique - utiliser le bouton "Actualiser" si besoin
   }, [])
 
   // Debug: afficher la config quand elle change

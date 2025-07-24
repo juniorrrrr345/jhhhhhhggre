@@ -19,13 +19,7 @@ export default function ShopVIP() {
     fetchConfig()
     fetchPlugs()
     
-    // ========== SYNC AUTOMATIQUE AVEC LIKES BOT ==========
-    const syncInterval = setInterval(() => {
-      console.log('🔄 VIP - Synchronisation automatique des likes...')
-      fetchPlugs()
-    }, 30000)
-    
-    return () => clearInterval(syncInterval)
+    // Plus de refresh automatique - utiliser le bouton "Actualiser" si besoin
   }, [])
 
   const fetchConfig = async () => {

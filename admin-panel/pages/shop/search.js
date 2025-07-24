@@ -24,12 +24,7 @@ export default function ShopSearch() {
     fetchConfig()
     fetchPlugs()
     
-    // ========== SYNC AUTOMATIQUE AVEC LIKES BOT ==========
-    const interval = setInterval(() => {
-      console.log('🔄 SEARCH - Synchronisation automatique des likes...')
-      fetchConfig()
-      fetchPlugs()
-    }, 30000) // Uniformisé à 30 secondes comme les autres
+    // Plus de refresh automatique - utiliser le bouton "Actualiser" si besoin
     
     const handleStorageChange = (event) => {
       if (event?.key === 'boutique_sync_signal' || event?.key === 'global_sync_signal') {
@@ -47,29 +42,10 @@ export default function ShopSearch() {
       }
     }
 
-    const handleFocus = () => {
-      console.log('👁️ Fenêtre focus - rafraîchissement des données recherche')
-      fetchConfig()
-      fetchPlugs()
-    }
-
-    const handleVisibilityChange = () => {
-      if (!document.hidden) {
-        console.log('👁️ Page recherche visible - vérification des mises à jour')
-        fetchConfig()
-        fetchPlugs()
-      }
-    }
-
     window.addEventListener('storage', handleStorageChange)
-    window.addEventListener('focus', handleFocus)
-    document.addEventListener('visibilitychange', handleVisibilityChange)
     
     return () => {
-      clearInterval(interval)
       window.removeEventListener('storage', handleStorageChange)
-      window.removeEventListener('focus', handleFocus)
-      document.removeEventListener('visibilitychange', handleVisibilityChange)
     }
   }, [])
 
