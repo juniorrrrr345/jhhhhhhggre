@@ -95,6 +95,31 @@ export default function BotConfiguration() {
         } else if (error.message.includes('401')) {
           toast.error('Session expirée. Veuillez vous reconnecter.')
           router.push('/')
+        } else if (error.message.includes('Timeout')) {
+          toast.error('Le serveur met trop de temps à répondre. Configuration par défaut utilisée.')
+          // Utiliser une configuration par défaut au lieu de rester bloqué
+          setConfig({
+            welcome: {
+              text: 'Bienvenue sur SafePlugLink! Explorez nos services.',
+              image: ''
+            },
+            buttons: {
+              contact: {
+                text: '📞 Contact',
+                content: 'Contactez-nous pour plus d\'informations.',
+                enabled: true
+              },
+              info: {
+                text: 'ℹ️ Info',
+                content: 'Informations sur notre plateforme.',
+                enabled: true
+              }
+            },
+            socialMedia: {
+              telegram: '',
+              whatsapp: ''
+            }
+          })
         } else {
           toast.error('Erreur lors du chargement de la configuration: ' + error.message)
         }

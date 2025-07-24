@@ -69,6 +69,9 @@ export default function Applications() {
         setTimeout(() => {
           fetchApplications();
         }, 5000);
+      } else if (error.message.includes('Timeout')) {
+        setError('Le serveur met trop de temps à répondre. Vérifiez que le serveur bot est démarré.');
+        setApplications([]); // Afficher liste vide plutôt que rester bloqué
       } else {
         setError(`Erreur lors de la récupération des demandes: ${error.message}`);
       }

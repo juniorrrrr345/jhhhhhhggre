@@ -151,7 +151,41 @@ const makeProxyCall = async (endpoint, method = 'GET', token = null, data = null
 // API simple et directe
 export const simpleApi = {
   getConfig: async (token) => {
-    return await makeProxyCall('/api/config', 'GET', token);
+    try {
+      return await makeProxyCall('/api/config', 'GET', token);
+    } catch (error) {
+      // En cas de timeout, retourner une config par défaut
+      if (error.message.includes('Timeout')) {
+        console.log('⏱️ Timeout config - retour config par défaut');
+        return {
+          welcome: {
+            text: 'Bienvenue sur SafePlugLink! Explorez nos services.',
+            image: ''
+          },
+          buttons: {
+            contact: {
+              text: '📞 Contact',
+              content: 'Contactez-nous pour plus d\'informations.',
+              enabled: true
+            },
+            info: {
+              text: 'ℹ️ Info',
+              content: 'Informations sur notre plateforme.',
+              enabled: true
+            }
+          },
+          socialMedia: {
+            telegram: '',
+            whatsapp: ''
+          },
+          boutique: {
+            name: 'SafePlugLink',
+            subtitle: 'Votre marketplace de confiance'
+          }
+        };
+      }
+      throw error;
+    }
   },
   
   updateConfig: async (token, data) => {
@@ -191,7 +225,16 @@ export const simpleApi = {
 
   // Fonction pour récupérer les demandes d'inscription avec cache
   getApplications: async (token) => {
-    return await makeProxyCall('/api/applications', 'GET', token);
+    try {
+      return await makeProxyCall('/api/applications', 'GET', token);
+    } catch (error) {
+      // En cas de timeout, retourner une structure vide mais valide
+      if (error.message.includes('Timeout')) {
+        console.log('⏱️ Timeout applications - retour structure vide');
+        return { success: true, applications: [] };
+      }
+      throw error;
+    }
   },
 
   // Fonction pour mettre à jour le statut d'une demande
