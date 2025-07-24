@@ -382,11 +382,12 @@ const askTelegram = async (ctx) => {
 
 // Fonction pour générer le récapitulatif des réponses
 const generateSummary = (ctx, userForm) => {
-  const user = ctx.from;
-  const data = userForm.data;
-  
-  let summary = `👤 **${user.first_name}${user.last_name ? ` ${user.last_name}` : ''}**${user.username ? ` (@${user.username})` : ''}\n\n`;
-  summary += `📋 **Progression :**\n`;
+  try {
+    const user = ctx.from;
+    const data = userForm?.data || {};
+    
+    let summary = `👤 **${user.first_name || 'Utilisateur'}${user.last_name ? ` ${user.last_name}` : ''}**${user.username ? ` (@${user.username})` : ''}\n\n`;
+    summary += `📋 **Progression :**\n`;
   
   if (data.name) summary += `✅ Nom de Plug : ${data.name}\n`;
   if (data.telegram) summary += `✅ Telegram : ${data.telegram}\n`;
@@ -398,9 +399,13 @@ const generateSummary = (ctx, userForm) => {
   if (data.signal) summary += `✅ Signal : ${data.signal}\n`;
   if (data.session) summary += `✅ Session : ${data.session}\n`;
   if (data.threema) summary += `✅ Threema : ${data.threema}\n`;
-  if (data.country) summary += `✅ Pays : ${data.country}\n`;
-  
-  return summary;
+    if (data.country) summary += `✅ Pays : ${data.country}\n`;
+    
+    return summary;
+  } catch (error) {
+    console.error('Erreur dans generateSummary:', error);
+    return `👤 **Utilisateur**\n\n📋 **Progression :**\n`;
+  }
 };
 
 // Fonction centralisée pour afficher les étapes avec ctx.reply (évite les conflits d'édition)
@@ -483,6 +488,7 @@ const replyWithStep = async (ctx, step) => {
       
     case 'snapchat':
       message = `🛠️ **FORMULAIRE D'INSCRIPTION – SafePlugLink**\n\n` +
+        `${summary}` +
         `⸻\n\n` +
         `🟦 **Étapes Réseaux supplémentaires :**\n\n` +
         `Entrez votre lien **Snapchat** (commençant par https://)\n\n` +
@@ -495,6 +501,7 @@ const replyWithStep = async (ctx, step) => {
       
     case 'whatsapp':
       message = `🛠️ **FORMULAIRE D'INSCRIPTION – SafePlugLink**\n\n` +
+        `${summary}` +
         `⸻\n\n` +
         `🟦 **Étapes Réseaux supplémentaires :**\n\n` +
         `Entrez votre lien **WhatsApp** (commençant par https://)\n\n` +
@@ -507,6 +514,7 @@ const replyWithStep = async (ctx, step) => {
       
     case 'signal':
       message = `🛠️ **FORMULAIRE D'INSCRIPTION – SafePlugLink**\n\n` +
+        `${summary}` +
         `⸻\n\n` +
         `🟦 **Étapes Réseaux supplémentaires :**\n\n` +
         `Entrez votre lien **Signal** (commençant par https://)\n\n` +
@@ -519,6 +527,7 @@ const replyWithStep = async (ctx, step) => {
       
     case 'session':
       message = `🛠️ **FORMULAIRE D'INSCRIPTION – SafePlugLink**\n\n` +
+        `${summary}` +
         `⸻\n\n` +
         `🟦 **Étapes Réseaux supplémentaires :**\n\n` +
         `Entrez votre **Session** (identifiant libre)\n\n` +
@@ -531,6 +540,7 @@ const replyWithStep = async (ctx, step) => {
       
     case 'threema':
       message = `🛠️ **FORMULAIRE D'INSCRIPTION – SafePlugLink**\n\n` +
+        `${summary}` +
         `⸻\n\n` +
         `🟦 **Étapes Réseaux supplémentaires :**\n\n` +
         `Entrez votre lien **Threema** (commençant par https://)\n\n` +
@@ -550,6 +560,9 @@ const replyWithStep = async (ctx, step) => {
     
     // Sauvegarder l'ID du message pour le supprimer à la prochaine étape
     lastBotMessages.set(userId, sentMessage.message_id);
+  } else {
+    console.error('Aucun message généré pour l\'étape:', step);
+    throw new Error(`Étape non supportée: ${step}`);
   }
 };
 
@@ -1069,7 +1082,10 @@ const handleSkipStep = async (ctx, step) => {
     
   } catch (error) {
     console.error('Erreur dans handleSkipStep:', error);
-    await ctx.answerCbQuery('❌ Erreur');
+    console.error('Step:', step);
+    console.error('UserId:', userId);
+    console.error('UserForm exists:', !!userForm);
+    await ctx.answerCbQuery('❌ Erreur: ' + error.message);
   }
 };
 
