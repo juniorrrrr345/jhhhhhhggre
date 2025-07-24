@@ -329,12 +329,7 @@ const handleFormMessage = async (ctx) => {
           userForm.step = 'departments_delivery';
           userForms.set(userId, userForm);
           
-          const message = `🛠️ **FORMULAIRE D'INSCRIPTION – SafePlugLink**\n\n` +
-            `⸻\n\n` +
-            `🟦 **Étape 14 : Départements pour Livraison**\n\n` +
-            `🚚 Indique les départements pour la **Livraison** (ex: 75, 94...) :`;
-          
-          await safeEditMessage(ctx, message, { parse_mode: 'Markdown' });
+          await replyWithStep(ctx, 'departments_delivery');
         } else {
           // Sinon passer directement à la photo
           userForm.step = 'photo';
@@ -547,6 +542,28 @@ const replyWithStep = async (ctx, step) => {
         `Dernière plateforme !`;
       keyboard = Markup.inlineKeyboard([
         [Markup.button.callback('⏭️ Passer cette étape', 'skip_threema')],
+        [Markup.button.callback('❌ Annuler', 'cancel_application')]
+      ]);
+      break;
+      
+    case 'departments_meetup':
+      message = `🛠️ **FORMULAIRE D'INSCRIPTION – SafePlugLink**\n\n` +
+        `${summary}` +
+        `⸻\n\n` +
+        `🟦 **Étape 13 : Départements pour Meetup**\n\n` +
+        `📍 Indique les départements pour le **Meetup** (ex: 75, 92, 93) :`;
+      keyboard = Markup.inlineKeyboard([
+        [Markup.button.callback('❌ Annuler', 'cancel_application')]
+      ]);
+      break;
+      
+    case 'departments_delivery':
+      message = `🛠️ **FORMULAIRE D'INSCRIPTION – SafePlugLink**\n\n` +
+        `${summary}` +
+        `⸻\n\n` +
+        `🟦 **Étape 14 : Départements pour Livraison**\n\n` +
+        `🚚 Indique les départements pour la **Livraison** (ex: 75, 94...) :`;
+      keyboard = Markup.inlineKeyboard([
         [Markup.button.callback('❌ Annuler', 'cancel_application')]
       ]);
       break;
@@ -910,12 +927,7 @@ const handleServicesDone = async (ctx) => {
       userForm.step = 'departments_meetup';
       userForms.set(userId, userForm);
       
-      const message = `🛠️ **FORMULAIRE D'INSCRIPTION – SafePlugLink**\n\n` +
-        `⸻\n\n` +
-        `🟦 **Étape 13 : Départements pour Meetup**\n\n` +
-        `📍 Indique les départements pour le **Meetup** (ex: 75, 92, 93) :`;
-      
-      await safeEditMessage(ctx, message, { parse_mode: 'Markdown' });
+      await replyWithStep(ctx, 'departments_meetup');
     } else {
       // Sinon passer directement à la photo
       userForm.step = 'photo';
