@@ -380,9 +380,33 @@ const askTelegram = async (ctx) => {
   });
 };
 
+// Fonction pour générer le récapitulatif des réponses
+const generateSummary = (ctx, userForm) => {
+  const user = ctx.from;
+  const data = userForm.data;
+  
+  let summary = `👤 **${user.first_name}${user.last_name ? ` ${user.last_name}` : ''}**${user.username ? ` (@${user.username})` : ''}\n\n`;
+  summary += `📋 **Progression :**\n`;
+  
+  if (data.name) summary += `✅ Nom de Plug : ${data.name}\n`;
+  if (data.telegram) summary += `✅ Telegram : ${data.telegram}\n`;
+  if (data.telegramChannel) summary += `✅ Canal Telegram : ${data.telegramChannel}\n`;
+  if (data.instagram) summary += `✅ Instagram : ${data.instagram}\n`;
+  if (data.potato) summary += `✅ Potato : ${data.potato}\n`;
+  if (data.snapchat) summary += `✅ Snapchat : ${data.snapchat}\n`;
+  if (data.whatsapp) summary += `✅ WhatsApp : ${data.whatsapp}\n`;
+  if (data.signal) summary += `✅ Signal : ${data.signal}\n`;
+  if (data.session) summary += `✅ Session : ${data.session}\n`;
+  if (data.threema) summary += `✅ Threema : ${data.threema}\n`;
+  if (data.country) summary += `✅ Pays : ${data.country}\n`;
+  
+  return summary;
+};
+
 // Fonction centralisée pour afficher les étapes avec ctx.reply (évite les conflits d'édition)
 const replyWithStep = async (ctx, step) => {
   const userId = ctx.from.id;
+  const userForm = userForms.get(userId);
   
   // Supprimer l'ancien message du bot s'il existe
   const lastBotMessageId = lastBotMessages.get(userId);
@@ -394,12 +418,16 @@ const replyWithStep = async (ctx, step) => {
     }
   }
   
+  // Générer le récapitulatif
+  const summary = generateSummary(ctx, userForm);
+  
   let message = '';
   let keyboard = null;
   
   switch (step) {
     case 'telegram':
       message = `🛠️ **FORMULAIRE D'INSCRIPTION – SafePlugLink**\n\n` +
+        `${summary}` +
         `⸻\n\n` +
         `🟦 **Étape 2 : Lien Telegram**\n\n` +
         `🔗 Entrez votre lien Telegram (format : @username ou https://t.me/username)`;
@@ -410,6 +438,7 @@ const replyWithStep = async (ctx, step) => {
       
     case 'telegram_channel':
       message = `🛠️ **FORMULAIRE D'INSCRIPTION – SafePlugLink**\n\n` +
+        `${summary}` +
         `⸻\n\n` +
         `🟦 **Étape 3 : Lien Canal Telegram**\n\n` +
         `🔗 Entrez le lien de votre **canal Telegram** (format : https://t.me/username)\n\n` +
@@ -422,6 +451,7 @@ const replyWithStep = async (ctx, step) => {
       
     case 'instagram':
       message = `🛠️ **FORMULAIRE D'INSCRIPTION – SafePlugLink**\n\n` +
+        `${summary}` +
         `⸻\n\n` +
         `🟦 **Étape 4 : Lien Instagram**\n\n` +
         `📸 Entrez votre lien Instagram (https://www.instagram.com/username)\n\n` +
@@ -434,6 +464,7 @@ const replyWithStep = async (ctx, step) => {
       
     case 'potato':
       message = `🛠️ **FORMULAIRE D'INSCRIPTION – SafePlugLink**\n\n` +
+        `${summary}` +
         `⸻\n\n` +
         `🟦 **Étapes Réseaux supplémentaires :**\n\n` +
         `Entrez votre lien **Potato** (commençant par https://)\n\n` +
@@ -446,6 +477,66 @@ const replyWithStep = async (ctx, step) => {
         `\t•\tThreema`;
       keyboard = Markup.inlineKeyboard([
         [Markup.button.callback('⏭️ Passer cette étape', 'skip_potato')],
+        [Markup.button.callback('❌ Annuler', 'cancel_application')]
+      ]);
+      break;
+      
+    case 'snapchat':
+      message = `🛠️ **FORMULAIRE D'INSCRIPTION – SafePlugLink**\n\n` +
+        `⸻\n\n` +
+        `🟦 **Étapes Réseaux supplémentaires :**\n\n` +
+        `Entrez votre lien **Snapchat** (commençant par https://)\n\n` +
+        `Plateformes restantes : Snapchat, WhatsApp, Signal, Session, Threema`;
+      keyboard = Markup.inlineKeyboard([
+        [Markup.button.callback('⏭️ Passer cette étape', 'skip_snapchat')],
+        [Markup.button.callback('❌ Annuler', 'cancel_application')]
+      ]);
+      break;
+      
+    case 'whatsapp':
+      message = `🛠️ **FORMULAIRE D'INSCRIPTION – SafePlugLink**\n\n` +
+        `⸻\n\n` +
+        `🟦 **Étapes Réseaux supplémentaires :**\n\n` +
+        `Entrez votre lien **WhatsApp** (commençant par https://)\n\n` +
+        `Plateformes restantes : WhatsApp, Signal, Session, Threema`;
+      keyboard = Markup.inlineKeyboard([
+        [Markup.button.callback('⏭️ Passer cette étape', 'skip_whatsapp')],
+        [Markup.button.callback('❌ Annuler', 'cancel_application')]
+      ]);
+      break;
+      
+    case 'signal':
+      message = `🛠️ **FORMULAIRE D'INSCRIPTION – SafePlugLink**\n\n` +
+        `⸻\n\n` +
+        `🟦 **Étapes Réseaux supplémentaires :**\n\n` +
+        `Entrez votre lien **Signal** (commençant par https://)\n\n` +
+        `Plateformes restantes : Signal, Session, Threema`;
+      keyboard = Markup.inlineKeyboard([
+        [Markup.button.callback('⏭️ Passer cette étape', 'skip_signal')],
+        [Markup.button.callback('❌ Annuler', 'cancel_application')]
+      ]);
+      break;
+      
+    case 'session':
+      message = `🛠️ **FORMULAIRE D'INSCRIPTION – SafePlugLink**\n\n` +
+        `⸻\n\n` +
+        `🟦 **Étapes Réseaux supplémentaires :**\n\n` +
+        `Entrez votre **Session** (identifiant libre)\n\n` +
+        `Plateformes restantes : Session, Threema`;
+      keyboard = Markup.inlineKeyboard([
+        [Markup.button.callback('⏭️ Passer cette étape', 'skip_session')],
+        [Markup.button.callback('❌ Annuler', 'cancel_application')]
+      ]);
+      break;
+      
+    case 'threema':
+      message = `🛠️ **FORMULAIRE D'INSCRIPTION – SafePlugLink**\n\n` +
+        `⸻\n\n` +
+        `🟦 **Étapes Réseaux supplémentaires :**\n\n` +
+        `Entrez votre lien **Threema** (commençant par https://)\n\n` +
+        `Dernière plateforme !`;
+      keyboard = Markup.inlineKeyboard([
+        [Markup.button.callback('⏭️ Passer cette étape', 'skip_threema')],
         [Markup.button.callback('❌ Annuler', 'cancel_application')]
       ]);
       break;
@@ -929,43 +1020,51 @@ const handleSkipStep = async (ctx, step) => {
     switch (step) {
       case 'telegram':
         userForm.step = 'telegram_channel';
-        await askTelegramChannel(ctx);
+        userForms.set(userId, userForm);
+        await replyWithStep(ctx, 'telegram_channel');
         break;
       case 'telegram_channel':
         userForm.step = 'instagram';
-        await askInstagram(ctx);
+        userForms.set(userId, userForm);
+        await replyWithStep(ctx, 'instagram');
         break;
       case 'instagram':
         userForm.step = 'potato';
-        await askPotato(ctx);
+        userForms.set(userId, userForm);
+        await replyWithStep(ctx, 'potato');
         break;
       case 'potato':
         userForm.step = 'snapchat';
-        await askSnapchat(ctx);
+        userForms.set(userId, userForm);
+        await replyWithStep(ctx, 'snapchat');
         break;
       case 'snapchat':
         userForm.step = 'whatsapp';
-        await askWhatsApp(ctx);
+        userForms.set(userId, userForm);
+        await replyWithStep(ctx, 'whatsapp');
         break;
       case 'whatsapp':
         userForm.step = 'signal';
-        await askSignal(ctx);
+        userForms.set(userId, userForm);
+        await replyWithStep(ctx, 'signal');
         break;
       case 'signal':
         userForm.step = 'session';
-        await askSession(ctx);
+        userForms.set(userId, userForm);
+        await replyWithStep(ctx, 'session');
         break;
       case 'session':
         userForm.step = 'threema';
-        await askThreema(ctx);
+        userForms.set(userId, userForm);
+        await replyWithStep(ctx, 'threema');
         break;
       case 'threema':
         userForm.step = 'country';
+        userForms.set(userId, userForm);
         await askCountry(ctx);
         break;
     }
     
-    userForms.set(userId, userForm);
     await ctx.answerCbQuery('Étape passée');
     
   } catch (error) {
