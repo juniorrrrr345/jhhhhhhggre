@@ -5,6 +5,9 @@ const { sendAdminNotification } = require('./notificationHandler');
 // Stockage temporaire des données du formulaire par utilisateur
 const userForms = new Map();
 
+// Stockage des derniers messages du bot (pour les supprimer avant nouvelle question)
+const lastBotMessages = new Map();
+
 // Liste des pays disponibles avec emojis
 const COUNTRIES = [
   { code: 'FR', name: 'France', flag: '🇫🇷' },
@@ -20,6 +23,7 @@ const COUNTRIES = [
 
 // Fonction utilitaire pour éditer les messages avec gestion robuste des erreurs
 const safeEditMessage = async (ctx, message, options = {}, keepWelcomeImage = false) => {
+  const userId = ctx.from.id;
   try {
     // Si on veut garder l'image d'accueil, on essaie plusieurs méthodes
     if (keepWelcomeImage) {
@@ -76,16 +80,19 @@ const safeEditMessage = async (ctx, message, options = {}, keepWelcomeImage = fa
         const welcomeImage = config?.welcome?.image;
         
         if (welcomeImage) {
-          await ctx.replyWithPhoto(welcomeImage, {
+          const sentMessage = await ctx.replyWithPhoto(welcomeImage, {
             caption: message,
             parse_mode: options.parse_mode || 'Markdown',
             reply_markup: options.reply_markup
           });
+          lastBotMessages.set(userId, sentMessage.message_id);
         } else {
-          await ctx.reply(message, options);
+          const sentMessage = await ctx.reply(message, options);
+          lastBotMessages.set(userId, sentMessage.message_id);
         }
       } else {
-        await ctx.reply(message, options);
+        const sentMessage = await ctx.reply(message, options);
+        lastBotMessages.set(userId, sentMessage.message_id);
       }
     }
     
@@ -375,6 +382,18 @@ const askTelegram = async (ctx) => {
 
 // Fonction centralisée pour afficher les étapes avec ctx.reply (évite les conflits d'édition)
 const replyWithStep = async (ctx, step) => {
+  const userId = ctx.from.id;
+  
+  // Supprimer l'ancien message du bot s'il existe
+  const lastBotMessageId = lastBotMessages.get(userId);
+  if (lastBotMessageId) {
+    try {
+      await ctx.telegram.deleteMessage(ctx.chat.id, lastBotMessageId);
+    } catch (error) {
+      // Ignorer l'erreur si le message ne peut pas être supprimé
+    }
+  }
+  
   let message = '';
   let keyboard = null;
   
@@ -433,14 +452,17 @@ const replyWithStep = async (ctx, step) => {
   }
   
   if (message) {
-    await ctx.reply(message, {
+    const sentMessage = await ctx.reply(message, {
       reply_markup: keyboard ? keyboard.reply_markup : undefined,
       parse_mode: 'Markdown'
     });
+    
+    // Sauvegarder l'ID du message pour le supprimer à la prochaine étape
+    lastBotMessages.set(userId, sentMessage.message_id);
   }
 };
 
-// Version reply pour éviter les conflits d'édition
+// Version reply pour éviter les conflits d'édition (supprime l'ancien message)
 const askTelegramReply = async (ctx) => {
   await replyWithStep(ctx, 'telegram');
 };
@@ -1026,6 +1048,7 @@ const submitApplication = async (ctx) => {
     
     // Nettoyer le formulaire
     userForms.delete(userId);
+    lastBotMessages.delete(userId);
     
     const photoText = userForm.data.photo ? '✅ Photo incluse' : '⚠️ Aucune photo';
     
@@ -1072,6 +1095,7 @@ const submitApplication = async (ctx) => {
     // Nettoyer le formulaire même en cas d'erreur
     const userId = ctx.from.id;
     userForms.delete(userId);
+    lastBotMessages.delete(userId);
     
     // Message d'erreur plus user-friendly
     const keyboard = Markup.inlineKeyboard([
@@ -1101,6 +1125,7 @@ const handleCancelApplication = async (ctx) => {
   try {
     const userId = ctx.from.id;
     userForms.delete(userId);
+    lastBotMessages.delete(userId);
     
     const message = `❌ **Demande annulée**\n\n` +
       `Ta demande d'inscription a été annulée.\n\n` +
@@ -1142,5 +1167,6 @@ module.exports = {
   handleSkipStep,
   handleCancelApplication,
   submitApplication,
-  userForms
+  userForms,
+  lastBotMessages
 };
