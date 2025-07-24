@@ -1,0 +1,37 @@
+🔄 Tentative de connexion MongoDB #1...
+✅ MongoDB connecté avec succès
+✅ MongoDB connecté: ac-rxln3be-shard-00-00.oghzx2v.mongodb.net
+📊 Loaded 6 existing users from database
+ℹ️ Configuration existante trouvée
+🔄 Migration automatique des réseaux sociaux...
+🔗 Connexion à MongoDB réussie
+📋 3 plugs trouvés
+🎉 Migration terminée: 0 plugs migrés
+✅ Migration terminée avec succès
+🔄 Initialisation du cache...
+🔄 Rafraîchissement du cache...
+✅ Cache mis à jour - 3 plugs, config: OK
+✅ Cache initialisé et programmé pour se rafraîchir toutes les 30s
+✅ Bot en mode polling (développement)
+node:events:496
+      throw er; // Unhandled 'error' event
+      ^
+
+Error: listen EADDRINUSE: address already in use :::3000
+    at Server.setupListenHandle [as _listen2] (node:net:1939:16)
+    at listenInCluster (node:net:1996:12)
+    at Server.listen (node:net:2101:7)
+    at Function.listen (/workspace/bot/node_modules/express/lib/application.js:635:24)
+    at start (/workspace/bot/index.js:2369:9)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+Emitted 'error' event on Server instance at:
+    at emitErrorNT (node:net:1975:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21) {
+  code: 'EADDRINUSE',
+  errno: -98,
+  syscall: 'listen',
+  address: '::',
+  port: 3000
+}
+
+Node.js v22.16.0
