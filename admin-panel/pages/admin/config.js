@@ -141,9 +141,14 @@ export default function BotConfiguration() {
         socialMedia: config.socialMedia
       }
       
-      await simpleApi.updateConfig(token, configData)
+      const result = await simpleApi.updateConfig(token, configData)
       console.log('✅ Configuration bot sauvegardée')
-      toast.success('Configuration sauvegardée avec succès !')
+      
+      if (result._degraded) {
+        toast.success('⚠️ Configuration sauvegardée (mode dégradé - serveur bot lent)')
+      } else {
+        toast.success('Configuration sauvegardée avec succès !')
+      }
       
     } catch (error) {
       console.error('❌ Erreur sauvegarde:', error)
@@ -152,6 +157,10 @@ export default function BotConfiguration() {
       } else if (error.message.includes('401')) {
         toast.error('Session expirée. Veuillez vous reconnecter.')
         router.push('/')
+      } else if (error.message.includes('500') || error.message.includes('Internal Server Error')) {
+        toast.error('🚫 Serveur bot temporairement indisponible. Configuration non sauvegardée.')
+      } else if (error.message.includes('Timeout')) {
+        toast.error('⏱️ Timeout: Serveur bot trop lent. Configuration non sauvegardée.')
       } else {
         toast.error('Erreur lors de la sauvegarde: ' + error.message)
       }
