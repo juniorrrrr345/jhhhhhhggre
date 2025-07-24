@@ -59,32 +59,36 @@ const makeProxyCall = async (endpoint, method = 'GET', token = null, data = null
     if (!response.ok) {
       const errorData = await response.json();
       
-      // Gestion spéciale pour 429 avec fallback intelligent
+      // Gestion spéciale pour 429 avec fallback intelligent - PLUS AGRESSIF
       if (response.status === 429) {
-        // Essayer de récupérer depuis le fallback
+        console.log(`🚫 Erreur 429 détectée pour ${endpoint} - tentative ${retryCount + 1}`);
+        
+        // Pour les erreurs 429, utiliser IMMÉDIATEMENT le fallback si disponible
         if (method === 'GET') {
           const fallbackData = fallbackApi.get(fallbackKey);
           if (fallbackData) {
-            console.log(`💾 Utilisation fallback pour ${endpoint} (429)`);
+            console.log(`💾 Utilisation IMMÉDIATE fallback pour ${endpoint} (429)`);
             return fallbackData;
           }
         }
         
-        if (retryCount < maxRetries) {
-          const backoffDelay = Math.pow(2, retryCount) * 3000; // Délai exponentiel: 3s, 6s, 12s
-          console.log(`🔄 Erreur 429 - Retry dans ${backoffDelay}ms (tentative ${retryCount + 1}/${maxRetries})`);
+        // Réduire drastiquement les retries pour 429 (1 seul retry au lieu de 3)
+        if (retryCount < 1) { // Seulement 1 retry au lieu de maxRetries
+          const backoffDelay = 10000; // Délai fixe de 10 secondes au lieu d'exponentiel
+          console.log(`🔄 Erreur 429 - SEUL retry dans ${backoffDelay}ms`);
           await sleep(backoffDelay);
           return makeProxyCall(endpoint, method, token, data, retryCount + 1);
         } else {
-          // Dernière tentative avec fallback
+          // Arrêter immédiatement après 1 retry
           if (method === 'GET') {
             const fallbackData = fallbackApi.get(fallbackKey);
             if (fallbackData) {
-              console.log(`💾 Utilisation fallback final pour ${endpoint}`);
+              console.log(`💾 Utilisation fallback FINAL pour ${endpoint}`);
               return fallbackData;
             }
           }
-          throw new Error('Serveur surchargé. Données en cache disponibles sous peu.');
+          console.log(`🚫 ABANDON après 1 retry pour ${endpoint} - serveur surchargé`);
+          throw new Error('Serveur temporairement surchargé. Veuillez réessayer dans quelques minutes.');
         }
       }
       
@@ -154,9 +158,9 @@ export const simpleApi = {
     try {
       return await makeProxyCall('/api/config', 'GET', token);
     } catch (error) {
-      // En cas de timeout, retourner une config par défaut
-      if (error.message.includes('Timeout')) {
-        console.log('⏱️ Timeout config - retour config par défaut');
+      // En cas de timeout OU 429 (serveur surchargé), retourner une config par défaut
+      if (error.message.includes('Timeout') || error.message.includes('429') || error.message.includes('surchargé')) {
+        console.log('⏱️ Timeout/429 config - retour config par défaut pour connexion');
         return {
           welcome: {
             text: 'Bienvenue sur SafePlugLink! Explorez nos services.',
@@ -181,7 +185,10 @@ export const simpleApi = {
           boutique: {
             name: 'SafePlugLink',
             subtitle: 'Votre marketplace de confiance'
-          }
+          },
+          // Indicateur que c'est un fallback pour le login
+          _fallback: true,
+          _reason: error.message.includes('429') ? 'server_overloaded' : 'timeout'
         };
       }
       throw error;

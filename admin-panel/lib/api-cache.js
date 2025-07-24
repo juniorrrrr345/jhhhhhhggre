@@ -3,7 +3,7 @@ class ApiCache {
   constructor() {
     this.cache = new Map();
     this.lastCall = new Map();
-    this.minInterval = 2000; // 2 secondes minimum entre les appels
+    this.minInterval = 5000; // 5 secondes minimum entre les appels (réduit la charge serveur)
   }
 
   // Vérifier si on peut faire l'appel (anti-spam)

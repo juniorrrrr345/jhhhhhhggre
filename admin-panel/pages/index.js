@@ -37,9 +37,19 @@ export default function Login() {
         const config = await Promise.race([loginPromise, timeoutPromise]);
         console.log('✅ Login proxy réussi');
         
+        // Vérifier si c'est un fallback (serveur surchargé)
+        if (config._fallback) {
+          if (config._reason === 'server_overloaded') {
+            toast.success('🔑 Connexion réussie ! (Mode dégradé - serveur surchargé)');
+          } else {
+            toast.success('🔑 Connexion réussie ! (Mode dégradé - serveur lent)');
+          }
+        } else {
+          toast.success('Connexion réussie !');
+        }
+        
         // Stocker le token
         localStorage.setItem('adminToken', password);
-        toast.success('Connexion réussie !');
         
         // Redirection vers le panel admin
         setTimeout(() => {
@@ -54,8 +64,8 @@ export default function Login() {
           toast.error('Mot de passe incorrect');
         } else if (directError.message.includes('Timeout')) {
           toast.error('Le serveur met trop de temps à répondre. Vérifiez que le serveur bot est démarré.');
-        } else if (directError.message.includes('429')) {
-          toast.error('Trop de tentatives. Attendez quelques secondes.');
+        } else if (directError.message.includes('429') || directError.message.includes('surchargé')) {
+          toast.error('🚫 Serveur surchargé. Attendez 2-3 minutes avant de vous reconnecter.');
         } else {
           toast.error('Erreur de connexion. Vérifiez votre mot de passe.');
         }
@@ -70,6 +80,10 @@ export default function Login() {
         toast.error('Impossible de contacter le serveur. Vérifiez que le serveur bot est démarré.');
       } else if (error.message.includes('démarrage')) {
         toast.error('Le serveur bot est en cours de démarrage. Veuillez patienter et réessayer dans quelques secondes.');
+      } else if (error.message.includes('429') || error.message.includes('surchargé')) {
+        toast.error('🚫 Serveur temporairement surchargé. Attendez quelques minutes.');
+      } else if (error.message.includes('Timeout')) {
+        toast.error('⏱️ Connexion trop lente. Le serveur met trop de temps à répondre.');
       } else {
         toast.error(`Erreur de connexion: ${error.message}`);
       }
