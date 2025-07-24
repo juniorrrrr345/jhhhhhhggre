@@ -1,4 +1,14 @@
-# 🤖 Bot Boutique VIP - Telegram & Vercel
+# 🤖 SafePlugLink - Bot Telegram & Boutique Web
+
+## 🌐 **ACCÈS DIRECT**
+
+### 🔗 **Site Web:** https://sfeplugslink.vercel.app
+
+### 📱 **Accès Rapide:**
+- **🏪 Boutique Publique:** https://sfeplugslink.vercel.app/shop
+- **🔍 Recherche:** https://sfeplugslink.vercel.app/shop/search  
+- **💎 VIP:** https://sfeplugslink.vercel.app/shop/vip
+- **👨‍💼 Panel Admin:** https://sfeplugslink.vercel.app (mot de passe: `JuniorAdmon123`)
 
 ## 📋 Description
 
