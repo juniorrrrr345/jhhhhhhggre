@@ -175,62 +175,74 @@ const handleFormMessage = async (ctx) => {
   
   const text = ctx.message.text.trim();
   
+  // Supprimer le message de l'utilisateur pour garder le chat propre
+  try {
+    await ctx.deleteMessage();
+  } catch (error) {
+    // Ignorer l'erreur si on ne peut pas supprimer
+  }
+  
   try {
     switch (userForm.step) {
-      case 'name':
-        if (text.length < 2) {
-          return await ctx.reply('❌ Le nom doit faire au moins 2 caractères. Réessaie :');
-        }
+              case 'name':
+          if (text.length < 2) {
+            return await ctx.reply('❌ Le nom doit faire au moins 2 caractères. Réessaie :');
+          }
+          
+          userForm.data.name = text;
+          userForm.step = 'telegram';
+          userForms.set(userId, userForm);
+          
+          await askTelegramReply(ctx);
+          break;
         
-        userForm.data.name = text;
-        userForm.step = 'telegram';
-        
-        await askTelegram(ctx);
-        break;
-        
-      case 'telegram':
-        if (!text.startsWith('@') && !text.includes('t.me/')) {
-          return await ctx.reply('❌ Merci de fournir un username Telegram (ex: @tonusername) ou un lien Telegram. Réessaie :');
-        }
+              case 'telegram':
+          if (!text.startsWith('@') && !text.includes('t.me/')) {
+            return await ctx.reply('❌ Merci de fournir un username Telegram (ex: @tonusername) ou un lien Telegram. Réessaie :');
+          }
 
-        userForm.data.telegram = text;
-        userForm.step = 'telegram_channel';
-        
-        await askTelegramChannel(ctx);
-        break;
-        
-      case 'telegram_channel':
-        if (!text.includes('t.me/')) {
-          return await ctx.reply('❌ Merci de fournir un lien de canal Telegram valide (ex: https://t.me/username). Réessaie :');
-        }
+          userForm.data.telegram = text;
+          userForm.step = 'telegram_channel';
+          userForms.set(userId, userForm);
+          
+          await replyWithStep(ctx, 'telegram_channel');
+          break;
+          
+        case 'telegram_channel':
+          if (!text.includes('t.me/')) {
+            return await ctx.reply('❌ Merci de fournir un lien de canal Telegram valide (ex: https://t.me/username). Réessaie :');
+          }
 
-        userForm.data.telegramChannel = text;
-        userForm.step = 'instagram';
+          userForm.data.telegramChannel = text;
+          userForm.step = 'instagram';
+          userForms.set(userId, userForm);
+          
+          await replyWithStep(ctx, 'instagram');
+          break;
         
-        await askInstagram(ctx);
-        break;
-        
-      case 'instagram':
-        if (!text.startsWith('https://www.instagram.com/') && !text.startsWith('@')) {
-          return await ctx.reply('❌ Merci de fournir un lien Instagram valide (ex: https://www.instagram.com/username ou @username). Réessaie :');
-        }
+              case 'instagram':
+          if (!text.startsWith('https://www.instagram.com/') && !text.startsWith('@')) {
+            return await ctx.reply('❌ Merci de fournir un lien Instagram valide (ex: https://www.instagram.com/username ou @username). Réessaie :');
+          }
 
-        userForm.data.instagram = text;
-        userForm.step = 'potato';
+          userForm.data.instagram = text;
+          userForm.step = 'potato';
+          userForms.set(userId, userForm);
+          
+          await replyWithStep(ctx, 'potato');
+          break;
         
-        await askPotato(ctx);
-        break;
-        
-      case 'potato':
-        if (!text.startsWith('https://')) {
-          return await ctx.reply('❌ Merci de fournir un lien Potato valide commençant par https://. Réessaie :');
-        }
+              case 'potato':
+          if (!text.startsWith('https://')) {
+            return await ctx.reply('❌ Merci de fournir un lien Potato valide commençant par https://. Réessaie :');
+          }
 
-        userForm.data.potato = text;
-        userForm.step = 'snapchat';
-        
-        await askSnapchat(ctx);
-        break;
+          userForm.data.potato = text;
+          userForm.step = 'snapchat';
+          userForms.set(userId, userForm);
+          
+          await askSnapchat(ctx);
+          break;
         
       case 'snapchat':
         if (!text.startsWith('https://')) {
@@ -359,6 +371,78 @@ const askTelegram = async (ctx) => {
     reply_markup: keyboard.reply_markup,
     parse_mode: 'Markdown'
   });
+};
+
+// Fonction centralisée pour afficher les étapes avec ctx.reply (évite les conflits d'édition)
+const replyWithStep = async (ctx, step) => {
+  let message = '';
+  let keyboard = null;
+  
+  switch (step) {
+    case 'telegram':
+      message = `🛠️ **FORMULAIRE D'INSCRIPTION – SafePlugLink**\n\n` +
+        `⸻\n\n` +
+        `🟦 **Étape 2 : Lien Telegram**\n\n` +
+        `🔗 Entrez votre lien Telegram (format : @username ou https://t.me/username)`;
+      keyboard = Markup.inlineKeyboard([
+        [Markup.button.callback('❌ Annuler', 'cancel_application')]
+      ]);
+      break;
+      
+    case 'telegram_channel':
+      message = `🛠️ **FORMULAIRE D'INSCRIPTION – SafePlugLink**\n\n` +
+        `⸻\n\n` +
+        `🟦 **Étape 3 : Lien Canal Telegram**\n\n` +
+        `🔗 Entrez le lien de votre **canal Telegram** (format : https://t.me/username)\n\n` +
+        `⚠️ Tu peux aussi passer cette étape.`;
+      keyboard = Markup.inlineKeyboard([
+        [Markup.button.callback('⏭️ Passer cette étape', 'skip_telegram_channel')],
+        [Markup.button.callback('❌ Annuler', 'cancel_application')]
+      ]);
+      break;
+      
+    case 'instagram':
+      message = `🛠️ **FORMULAIRE D'INSCRIPTION – SafePlugLink**\n\n` +
+        `⸻\n\n` +
+        `🟦 **Étape 4 : Lien Instagram**\n\n` +
+        `📸 Entrez votre lien Instagram (https://www.instagram.com/username)\n\n` +
+        `⚠️ Tu peux aussi passer cette étape.`;
+      keyboard = Markup.inlineKeyboard([
+        [Markup.button.callback('⏭️ Passer cette étape', 'skip_instagram')],
+        [Markup.button.callback('❌ Annuler', 'cancel_application')]
+      ]);
+      break;
+      
+    case 'potato':
+      message = `🛠️ **FORMULAIRE D'INSCRIPTION – SafePlugLink**\n\n` +
+        `⸻\n\n` +
+        `🟦 **Étapes Réseaux supplémentaires :**\n\n` +
+        `Entrez votre lien **Potato** (commençant par https://)\n\n` +
+        `Plateformes :\n` +
+        `\t•\tPotato\n` +
+        `\t•\tSnapchat\n` +
+        `\t•\tWhatsApp\n` +
+        `\t•\tSignal\n` +
+        `\t•\tSession (identifiant libre)\n` +
+        `\t•\tThreema`;
+      keyboard = Markup.inlineKeyboard([
+        [Markup.button.callback('⏭️ Passer cette étape', 'skip_potato')],
+        [Markup.button.callback('❌ Annuler', 'cancel_application')]
+      ]);
+      break;
+  }
+  
+  if (message) {
+    await ctx.reply(message, {
+      reply_markup: keyboard ? keyboard.reply_markup : undefined,
+      parse_mode: 'Markdown'
+    });
+  }
+};
+
+// Version reply pour éviter les conflits d'édition
+const askTelegramReply = async (ctx) => {
+  await replyWithStep(ctx, 'telegram');
 };
 
 // Demander Canal Telegram
