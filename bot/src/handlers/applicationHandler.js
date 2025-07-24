@@ -1197,13 +1197,21 @@ const submitApplication = async (ctx) => {
     await application.save();
     console.log('✅ SUBMIT DEBUG: Application saved successfully with ID:', application._id);
     
-    // Envoyer notification à l'admin
-    const adminId = process.env.ADMIN_TELEGRAM_ID || '7670522278'; // ID de l'admin
+    // Envoyer notification à l'admin (privé)
+    const adminIds = [
+      process.env.ADMIN_TELEGRAM_ID || '7670522278', // Admin principal
+      // Ajoutez d'autres IDs ici si besoin :
+      // '1234567890', // Autre admin
+    ];
+    
     try {
       // Récupérer l'instance du bot depuis le contexte global ou les paramètres
       const bot = ctx.telegram ? { telegram: ctx.telegram } : global.bot;
       if (bot) {
-        await sendAdminNotification(bot, application, adminId);
+        // Envoyer à tous les admins en privé
+        for (const adminId of adminIds) {
+          await sendAdminNotification(bot, application, adminId);
+        }
       }
     } catch (notificationError) {
       console.error('⚠️ Erreur notification admin:', notificationError.message);
