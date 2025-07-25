@@ -895,7 +895,9 @@ app.post('/api/bot/reload', authenticateAdmin, async (req, res) => {
   try {
     console.log('🔄 Demande de rechargement de la configuration du bot...');
     
-    // Invalider le cache
+    // Invalider le cache principal ET configHelper
+    const { invalidateConfigCache } = require('./src/utils/configHelper');
+    invalidateConfigCache();
     configCache = null;
     lastConfigUpdate = 0;
     
@@ -1339,6 +1341,8 @@ app.post('/api/refresh-shop-cache', async (req, res) => {
     console.log('🔄 Demande de refresh cache boutique reçue');
     
     // Invalider tous les caches
+    const { invalidateConfigCache: invalidateHelper } = require('./src/utils/configHelper');
+    invalidateHelper();
     configCache = null;
     lastConfigUpdate = 0;
     

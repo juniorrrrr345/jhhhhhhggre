@@ -19,6 +19,9 @@ const getFreshConfig = async () => {
     configCache = await Config.findById('main');
     cacheTimestamp = now;
     console.log('🔄 Config rechargée depuis la DB via configHelper');
+    console.log('📝 Welcome text chargé:', configCache?.welcome?.text?.substring(0, 50) + '...');
+    console.log('📞 Contact content chargé:', configCache?.buttons?.contact?.content?.substring(0, 50) + '...');
+    console.log('ℹ️ Info content chargé:', configCache?.buttons?.info?.content?.substring(0, 50) + '...');
     return configCache;
   } catch (error) {
     console.error('❌ Erreur chargement config fraîche:', error);
