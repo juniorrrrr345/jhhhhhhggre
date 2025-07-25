@@ -901,7 +901,8 @@ app.post('/api/bot/reload', authenticateAdmin, async (req, res) => {
     lastConfigUpdate = 0;
     
     // Recharger la configuration
-    await reloadBotConfig();
+    const reloadedConfig = await Config.findById('main');
+    console.log('📝 Config rechargée:', reloadedConfig ? 'OK' : 'ERREUR');
     
     console.log('✅ Configuration du bot rechargée avec succès');
     
@@ -1272,8 +1273,16 @@ app.put('/api/config', authenticateAdmin, async (req, res) => {
     
     // CORRECTION: Forcer le rechargement de la configuration du bot
     try {
-      await reloadBotConfig();
+      // Invalider tous les caches
+      configCache = null;
+      lastConfigUpdate = Date.now();
+      
+      // Forcer un nouveau chargement immédiat
+      const reloadedConfig = await Config.findById('main');
       console.log('✅ Configuration du bot rechargée automatiquement');
+      console.log('📝 Welcome text rechargé:', reloadedConfig?.welcome?.text || 'N/A');
+      console.log('📞 Contact content rechargé:', reloadedConfig?.buttons?.contact?.content || 'N/A');
+      console.log('ℹ️ Info content rechargé:', reloadedConfig?.buttons?.info?.content || 'N/A');
     } catch (reloadError) {
       console.error('⚠️ Erreur rechargement automatique:', reloadError.message);
     }
@@ -1332,7 +1341,8 @@ app.post('/api/refresh-shop-cache', async (req, res) => {
     lastConfigUpdate = 0;
     
     // Forcer le rechargement de la configuration
-    await reloadBotConfig();
+    const reloadedConfig = await Config.findById('main');
+    console.log('📝 Config refresh cache:', reloadedConfig ? 'OK' : 'ERREUR');
     
     // Répondre avec un timestamp de mise à jour
     res.json({
@@ -1375,12 +1385,11 @@ app.get('/api/public/config/fresh', async (req, res) => {
       // CORRECTION AUTOMATIQUE: Forcer le nom correct et nettoyer les réseaux sociaux
       let needsUpdate = false;
       
-      // 1. Forcer le nom FINDYOURPLUG
-      if (!config.boutique) config.boutique = {};
-      if (config.boutique.name !== 'FINDYOURPLUG') {
-        config.boutique.name = 'FINDYOURPLUG';
+      // 1. Initialiser boutique si nécessaire
+      if (!config.boutique) {
+        config.boutique = { name: 'FINDYOURPLUG' };
         needsUpdate = true;
-        console.log('🔧 Nom boutique corrigé: FINDYOURPLUG');
+        console.log('🔧 Boutique initialisée');
       }
       
       // 2. Nettoyer socialMedia vide

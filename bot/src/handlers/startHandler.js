@@ -141,6 +141,7 @@ const showLanguageSelection = async (ctx, config) => {
     
     // Utiliser le texte d'accueil personnalisé du panel admin ou traduction par défaut
     const welcomeMessage = config?.welcome?.text || getTranslation('messages_welcome', currentLang, customTranslations);
+    console.log('📝 Message d\'accueil (fallback) utilisé:', welcomeMessage);
     const keyboard = await createMainKeyboard(config);
     
     await sendMessageWithImage(ctx, welcomeMessage, keyboard, config, { 
@@ -174,6 +175,7 @@ const handleBackMain = async (ctx) => {
 
     // Utiliser le texte d'accueil personnalisé du panel admin ou traduction par défaut
     const welcomeMessage = config?.welcome?.text || getTranslation('messages_welcome', currentLang, customTranslations);
+    console.log('📝 Message d\'accueil (retour menu) utilisé:', welcomeMessage);
     
     const keyboard = createMainKeyboard(config);
     
