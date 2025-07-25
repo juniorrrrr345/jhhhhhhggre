@@ -487,9 +487,14 @@ bot.action(/^service_(delivery|postal|meetup)$/, async (ctx) => {
     // C'est pour le formulaire d'inscription
     await handleServiceToggle(ctx);
   } else {
-    // C'est pour les filtres de plugs
+    // C'est pour les filtres de plugs - rediriger vers codes postaux
     const serviceType = ctx.callbackQuery.data.replace('service_', '');
-    await handleServiceFilter(ctx, serviceType, 0);
+    if (serviceType === 'delivery' || serviceType === 'meetup') {
+      // Rediriger vers le système de codes postaux
+      await handlePostalCodeFilter(ctx, serviceType, null, 0);
+    } else {
+      await handleServiceFilter(ctx, serviceType, 0);
+    }
   }
 });
 

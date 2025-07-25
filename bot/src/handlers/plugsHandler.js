@@ -1255,7 +1255,9 @@ const handlePlugDetails = async (ctx, plugId, returnContext = 'top_plugs') => {
     const currentLang = config?.languages?.currentLanguage || 'fr';
     const customTranslations = config?.languages?.translations;
 
-    let message = `${plug.isVip ? '⭐ ' : ''}**${plug.name}**\n\n`;
+    // Afficher le nom avec le drapeau du premier pays desservi
+    const countryFlag = plug.countries && plug.countries.length > 0 ? getCountryFlag(plug.countries[0]) : '';
+    let message = `${countryFlag} ${plug.isVip ? '⭐ ' : ''}**${plug.name}**\n\n`;
     const translatedDescription = translateDescription(plug.description, currentLang);
     message += `${getTranslation('shop_description_label', currentLang, customTranslations)} ${translatedDescription}\n\n`;
 
