@@ -139,6 +139,7 @@ export default function BotConfiguration() {
     try {
       setSaving(true)
       console.log('💾 Sauvegarde configuration bot...')
+      console.log('📝 Données à sauvegarder:', { welcome: config.welcome, buttons: config.buttons })
       
       const token = localStorage.getItem('adminToken') || 'JuniorAdmon123'
       
@@ -157,20 +158,25 @@ export default function BotConfiguration() {
       }
       
       // Configuration sauvegardée et synchronisée
-        
-              } catch (error) {
-        console.error('Erreur sauvegarde:', error)
-        if (error.message.includes('401')) {
-        toast.error('Session expirée. Veuillez vous reconnecter.')
+      toast.success('✅ Configuration sauvegardée avec succès!')
+      console.log('✅ Configuration sauvegardée:', result)
+      
+    } catch (error) {
+      console.error('❌ Erreur sauvegarde:', error)
+      console.error('❌ Stack trace:', error.stack)
+      
+      if (error.message.includes('401')) {
+        toast.error('🔐 Session expirée. Veuillez vous reconnecter.')
         router.push('/')
       } else if (error.message.includes('500') || error.message.includes('Internal Server Error')) {
         toast.error('🚫 Serveur bot temporairement indisponible. Configuration non sauvegardée.')
       } else if (error.message.includes('Timeout')) {
         toast.error('⏱️ Timeout: Serveur bot trop lent. Configuration non sauvegardée.')
       } else {
-        toast.error('Erreur lors de la sauvegarde: ' + error.message)
+        toast.error('❌ Erreur lors de la sauvegarde: ' + error.message)
       }
     } finally {
+      console.log('🔄 Fin sauvegarde - setSaving(false)')
       setSaving(false)
     }
   }
@@ -282,7 +288,7 @@ export default function BotConfiguration() {
                   disabled={saving}
                   className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
                 >
-                  {saving ? 'Sauvegarde...' : '💾 Sauvegarder'}
+                  {saving ? '⏳ Sauvegarde en cours...' : '💾 Sauvegarder la configuration'}
                 </button>
               </div>
             </div>
