@@ -100,20 +100,13 @@ const createMainKeyboard = (config) => {
   secondRow.push(Markup.button.callback(infoText, 'info'));
   buttons.push(secondRow);
 
-  // Troisième ligne : Devenir Plug + Traduction
-  const thirdRow = [];
+  // Troisième ligne : Devenir Plug seul
   const becomeDealerText = getTranslation('menu.becomeDealer', currentLang, customTranslations);
-  thirdRow.push(Markup.button.callback(becomeDealerText, 'start_application'));
+  buttons.push([Markup.button.callback(becomeDealerText, 'start_application')]);
   
-  // Bouton Traduction (toujours affiché)
+  // Quatrième ligne : Bouton Traduction seul en bas
   const translationText = getTranslation('menu.translation', currentLang, customTranslations);
-  thirdRow.push(Markup.button.callback(translationText, 'select_language'));
-  
-  buttons.push(thirdRow);
-  
-  // Quatrième ligne : Bouton Livraison (regroupe Envoi et Meetup)
-  const deliveryText = getTranslation('menu.delivery', currentLang, customTranslations);
-  buttons.push([Markup.button.callback(deliveryText, 'delivery_options')]);
+  buttons.push([Markup.button.callback(translationText, 'select_language')]);
   
   // Réseaux sociaux personnalisés en bas du menu - PRIORITÉ socialMediaList
   const socialMediaData = config?.socialMediaList || config?.socialMedia || [];

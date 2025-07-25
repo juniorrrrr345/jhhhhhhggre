@@ -459,7 +459,11 @@ const createTopPlugsKeyboard = (countries, selectedCountry, selectedService, plu
   
   buttons.push(serviceRow);
   
-  // Troisième ligne : Département (si service delivery ou meetup sélectionné)
+  // Troisième ligne : Bouton Livraison regroupé (Envoi & Meetup)
+  const deliveryGroupText = '🚚 Livraison (Envoi & Meetup)';
+  buttons.push([Markup.button.callback(deliveryGroupText, 'delivery_options')]);
+  
+  // Quatrième ligne : Département (si service delivery ou meetup sélectionné)
   if (selectedService === 'delivery' || selectedService === 'meetup') {
     const deptButton = Markup.button.callback('📍 Département 🔁', `top_departments_${selectedService}${selectedCountry ? `_${selectedCountry}` : ''}`);
     buttons.push([deptButton]);
