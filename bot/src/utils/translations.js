@@ -720,6 +720,34 @@ const translations = {
       es: 'Elige tu provincia',
       de: 'Wählen Sie Ihr Bundesland'
     },
+    'select_department': {
+      fr: 'Sélectionnez un département :',
+      en: 'Select a department:',
+      it: 'Seleziona una regione:',
+      es: 'Selecciona una provincia:',
+      de: 'Wählen Sie ein Bundesland:'
+    },
+    'service_label': {
+      fr: 'Service',
+      en: 'Service',
+      it: 'Servizio',
+      es: 'Servicio',
+      de: 'Service'
+    },
+    'country_label': {
+      fr: 'Pays',
+      en: 'Country',
+      it: 'Paese',
+      es: 'País',
+      de: 'Land'
+    },
+    'department_label': {
+      fr: 'Département',
+      en: 'Department',
+      it: 'Regione',
+      es: 'Provincia',
+      de: 'Bundesland'
+    },
     'shops_in_department': {
       fr: 'boutiques dans',
       en: 'shops in',

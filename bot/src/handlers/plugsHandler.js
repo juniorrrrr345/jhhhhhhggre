@@ -11,6 +11,22 @@ const {
 const { sendMessageWithImage, editMessageWithImage, sendPlugWithImage } = require('../utils/messageHelper');
 const { getTranslation, translateDescription } = require('../utils/translations');
 
+// 🚫 PRÉVENTION SPAM - Stockage des derniers états
+const lastUserState = new Map();
+
+// Fonction pour vérifier si c'est un spam (même action répétée)
+const isSpamClick = (userId, action, params = '') => {
+  const currentState = `${action}:${params}`;
+  const lastState = lastUserState.get(userId);
+  
+  if (lastState === currentState) {
+    return true; // C'est un spam
+  }
+  
+  lastUserState.set(userId, currentState);
+  return false; // Pas un spam
+};
+
 // 🔘 SYSTÈME TOP PLUGS - Bouton principal avec pays, filtres et liste
 const handleTopPlugs = async (ctx) => {
   try {
@@ -75,6 +91,14 @@ const handleTopPlugs = async (ctx) => {
 // Gestionnaire pour les filtres de pays - NOUVEAU SYSTÈME
 const handleTopCountryFilter = async (ctx, country) => {
   try {
+    const userId = ctx.from.id;
+    
+    // 🚫 Prévention spam
+    if (isSpamClick(userId, 'country', country)) {
+      await ctx.answerCbQuery('🔄');
+      return;
+    }
+    
     await ctx.answerCbQuery();
     
     const config = await Config.findById('main');
@@ -133,6 +157,14 @@ const handleTopCountryFilter = async (ctx, country) => {
 // Gestionnaire pour les filtres de services (Livraison, Meetup, Postal) - SYSTÈME TRADUIT
 const handleTopServiceFilter = async (ctx, serviceType, selectedCountry = null) => {
   try {
+    const userId = ctx.from.id;
+    
+    // 🚫 Prévention spam
+    if (isSpamClick(userId, 'service', `${serviceType}_${selectedCountry || 'none'}`)) {
+      await ctx.answerCbQuery('🔄');
+      return;
+    }
+    
     await ctx.answerCbQuery();
     
     const config = await Config.findById('main');
@@ -213,6 +245,14 @@ const handleTopServiceFilter = async (ctx, serviceType, selectedCountry = null) 
 // Gestionnaire pour les départements (delivery et meetup)
 const handleDepartmentFilter = async (ctx, serviceType, selectedCountry = null) => {
   try {
+    const userId = ctx.from.id;
+    
+    // 🚫 Prévention spam
+    if (isSpamClick(userId, 'department', `${serviceType}_${selectedCountry || 'none'}`)) {
+      await ctx.answerCbQuery('🔄');
+      return;
+    }
+    
     await ctx.answerCbQuery();
     
     const config = await Config.findById('main');
@@ -236,17 +276,21 @@ const handleDepartmentFilter = async (ctx, serviceType, selectedCountry = null) 
     
     if (serviceType === 'delivery') {
       const serviceName = getTranslation('service_delivery', currentLang, customTranslations);
-      message += `📦 **Service:** ${serviceName}\n`;
+      const serviceLabel = getTranslation('service_label', currentLang, customTranslations);
+      message += `📦 **${serviceLabel}:** ${serviceName}\n`;
     } else if (serviceType === 'meetup') {
       const serviceName = getTranslation('service_meetup', currentLang, customTranslations);
-      message += `🤝 **Service:** ${serviceName}\n`;
+      const serviceLabel = getTranslation('service_label', currentLang, customTranslations);
+      message += `🤝 **${serviceLabel}:** ${serviceName}\n`;
     }
     
     if (selectedCountry) {
-      message += `🌍 **Pays:** ${getCountryFlag(selectedCountry)} ${selectedCountry}\n`;
+      const countryLabel = getTranslation('country_label', currentLang, customTranslations);
+      message += `🌍 **${countryLabel}:** ${getCountryFlag(selectedCountry)} ${selectedCountry}\n`;
     }
     
-    message += `\nSélectionnez un département :`;
+    const selectDepartmentText = getTranslation('select_department', currentLang, customTranslations);
+    message += `\n${selectDepartmentText}`;
     
     await editMessageWithImage(ctx, message, keyboard, config, { parse_mode: 'Markdown' });
     
@@ -293,16 +337,20 @@ const handleSpecificDepartment = async (ctx, serviceType, department, selectedCo
     
     if (serviceType === 'delivery') {
       const serviceName = getTranslation('service_delivery', currentLang, customTranslations);
-      message += `📦 **Service:** ${serviceName}\n`;
+      const serviceLabel = getTranslation('service_label', currentLang, customTranslations);
+      message += `📦 **${serviceLabel}:** ${serviceName}\n`;
     } else if (serviceType === 'meetup') {
       const serviceName = getTranslation('service_meetup', currentLang, customTranslations);
-      message += `🤝 **Service:** ${serviceName}\n`;
+      const serviceLabel = getTranslation('service_label', currentLang, customTranslations);
+      message += `🤝 **${serviceLabel}:** ${serviceName}\n`;
     }
     
-    message += `📍 **Département:** ${department}\n`;
+    const departmentLabel = getTranslation('department_label', currentLang, customTranslations);
+    message += `📍 **${departmentLabel}:** ${department}\n`;
     
     if (selectedCountry) {
-      message += `🌍 **Pays:** ${getCountryFlag(selectedCountry)} ${selectedCountry}\n`;
+      const countryLabel = getTranslation('country_label', currentLang, customTranslations);
+      message += `🌍 **${countryLabel}:** ${getCountryFlag(selectedCountry)} ${selectedCountry}\n`;
     }
     
     message += `\n`;
