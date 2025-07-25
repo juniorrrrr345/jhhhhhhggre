@@ -70,21 +70,6 @@ export default function ReferralsPage() {
           })
           totalReferred += plug.totalReferred || 0
         }
-                referredUsers: []
-              })
-            }
-          } catch (error) {
-            console.error(`Erreur parrainage pour ${plug.name}:`, error)
-            // Ajouter la boutique même en cas d'erreur
-            plugsWithReferrals.push({
-              ...plug,
-              referralLink: null,
-              referralCode: null,
-              totalReferred: 0,
-              referredUsers: []
-            })
-          }
-        }
 
         setPlugs(plugsWithReferrals)
         setTotalStats({
