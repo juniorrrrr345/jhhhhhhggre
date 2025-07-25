@@ -38,9 +38,7 @@ const {
   handleTopServiceFilter,
   handleTopCountryFilter,
   handlePostalCodeFilter,
-  handleShopsByPostalCode,
-  handleCountryServiceShops,
-  handleDepartmentsList
+  handleShopsByPostalCode
 } = require('./src/handlers/plugsHandler');
 const { handleContact, handleInfo, handleIgnoredCallback } = require('./src/handlers/menuHandler');
 const { handleSocialMedia } = require('./src/handlers/socialMediaHandler');
@@ -408,7 +406,7 @@ bot.action(/^top_departments_(.+)$/, (ctx) => {
   const parts = fullMatch.split('_');
   const serviceType = parts[0]; // delivery ou meetup
   const selectedCountry = parts.length > 1 ? parts[1] : null;
-  return handleDepartmentsList(ctx, serviceType, selectedCountry);
+  return handleDepartmentFilter(ctx, serviceType, selectedCountry);
 });
 
 bot.action(/^top_dept_(.+)_(.+)_?(.*)$/, (ctx) => {
@@ -440,12 +438,12 @@ bot.action(/^postal_(.+)_(.+)$/, (ctx) => {
   return handleShopsByPostalCode(ctx, country, postalCode);
 });
 
-// Gestionnaire pour service_country_ (boutiques par pays pour un service)
-bot.action(/^service_country_(.+)_(.+)$/, (ctx) => {
-  const serviceType = ctx.match[1];
-  const country = ctx.match[2];
-  return handleCountryServiceShops(ctx, serviceType, country);
-});
+// Gestionnaire pour service_country_ (boutiques par pays pour un service) - DÉSACTIVÉ
+// bot.action(/^service_country_(.+)_(.+)$/, (ctx) => {
+//   const serviceType = ctx.match[1];
+//   const country = ctx.match[2];
+//   return handleCountryServiceShops(ctx, serviceType, country);
+// });
 
 // Handlers pour les boutons de boutiques depuis Top des Plugs
 bot.action(/^plug_(.+)_from_top_plugs$/, (ctx) => {

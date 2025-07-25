@@ -561,32 +561,24 @@ const handleShopsByPostalCode = async (ctx, country, postalCode, serviceType = n
   }
 };
 
-// Gestionnaire pour les services (delivery et meetup) - Afficher exemples de boutiques par pays
+// Gestionnaire pour les services (delivery et meetup) - Afficher les départements directement
 const handleDepartmentFilter = async (ctx, serviceType, selectedCountry = null) => {
   try {
-    console.log(`🔍 handleDepartmentFilter appelé: serviceType=${serviceType}, selectedCountry=${selectedCountry}`);
-    console.log(`🔍 Étape 1: Récupération userId`);
     const userId = ctx.from.id;
-    console.log(`🔍 Étape 2: userId=${userId}`);
     
-    // 🚫 Prévention spam - TEMPORAIREMENT DÉSACTIVÉ POUR DEBUG
-    console.log(`🔍 Étape 3: Vérification spam (DÉSACTIVÉ)`);
-    // if (isSpamClick(userId, 'service', `${serviceType}_${selectedCountry || 'none'}`)) {
-    //   await ctx.answerCbQuery('🔄');
-    //   return;
-    // }
+    // 🚫 Prévention spam
+    if (isSpamClick(userId, 'service', `${serviceType}_${selectedCountry || 'none'}`)) {
+      await ctx.answerCbQuery('🔄');
+      return;
+    }
     
-    console.log(`🔍 Étape 4: Answer callback query`);
     await ctx.answerCbQuery();
     
-    console.log(`🔍 Étape 5: Récupération config`);
     const config = await Config.findById('main');
-    console.log(`🔍 Étape 6: Config récupérée`);
     const currentLang = config?.languages?.currentLanguage || 'fr';
     const customTranslations = config?.languages?.translations;
-    console.log(`🔍 Étape 7: Langue=${currentLang}`);
     
-    // Récupérer toutes les boutiques pour ce service
+    // Récupérer tous les départements disponibles pour ce service
     let query = { isActive: true };
     
     if (serviceType === 'delivery') {
@@ -599,12 +591,36 @@ const handleDepartmentFilter = async (ctx, serviceType, selectedCountry = null) 
       query.countries = { $in: [selectedCountry] };
     }
     
-    console.log(`🔍 Requête MongoDB:`, JSON.stringify(query));
-    const shopsWithService = await Plug.find(query).sort({ likes: -1, isVip: -1 });
-    console.log(`📊 Boutiques trouvées: ${shopsWithService.length} pour serviceType=${serviceType}, selectedCountry=${selectedCountry}`);
+    const shopsWithService = await Plug.find(query);
     
-    if (shopsWithService.length === 0) {
-      let message = `❌ **Aucune boutique disponible**\n\n`;
+    // Extraire tous les départements avec comptage
+    let departmentCounts = {};
+    
+    if (serviceType === 'delivery') {
+      shopsWithService.forEach(shop => {
+        const departments = shop.services?.delivery?.departments || [];
+        departments.forEach(dept => {
+          departmentCounts[dept] = (departmentCounts[dept] || 0) + 1;
+        });
+      });
+    } else if (serviceType === 'meetup') {
+      shopsWithService.forEach(shop => {
+        const departments = shop.services?.meetup?.departments || [];
+        departments.forEach(dept => {
+          departmentCounts[dept] = (departmentCounts[dept] || 0) + 1;
+        });
+      });
+    }
+    
+    // Trier les départements par numéro
+    const sortedDepartments = Object.keys(departmentCounts).sort((a, b) => {
+      const numA = parseInt(a);
+      const numB = parseInt(b);
+      return numA - numB;
+    });
+    
+    if (sortedDepartments.length === 0) {
+      let message = `❌ **Aucun département disponible**\n\n`;
       
       if (serviceType === 'delivery') {
         const serviceName = getTranslation('service_delivery', currentLang, customTranslations);
@@ -618,7 +634,7 @@ const handleDepartmentFilter = async (ctx, serviceType, selectedCountry = null) 
         message += `🌍 **Pays:** ${getCountryFlag(selectedCountry)} ${selectedCountry}\n`;
       }
       
-      message += `\n💡 *Aucune boutique ne propose ce service actuellement*`;
+      message += `\n💡 *Aucun département disponible pour ce service*`;
       
       const keyboard = {
         inline_keyboard: [
@@ -629,41 +645,15 @@ const handleDepartmentFilter = async (ctx, serviceType, selectedCountry = null) 
         ]
       };
       
-      // Éditer le message existant
-      try {
-        await ctx.editMessageText(message, {
-          parse_mode: 'Markdown',
-          reply_markup: keyboard
-        });
-      } catch (editError) {
-        console.log('Erreur édition message, tentative avec reply:', editError.message);
-        await ctx.reply(message, {
-          parse_mode: 'Markdown',
-          reply_markup: keyboard
-        });
-      }
+      await ctx.editMessageText(message, {
+        parse_mode: 'Markdown',
+        reply_markup: keyboard
+      });
       return;
     }
     
-    // Si un pays est déjà sélectionné, afficher la liste des départements de ce pays
-    if (selectedCountry) {
-      console.log(`🎯 Redirection vers handleDepartmentsList pour ${selectedCountry}`);
-      return await handleDepartmentsList(ctx, serviceType, selectedCountry);
-    }
-    
-    // Grouper les boutiques par pays
-    const shopsByCountry = {};
-    shopsWithService.forEach(shop => {
-      shop.countries.forEach(country => {
-        if (!shopsByCountry[country]) {
-          shopsByCountry[country] = [];
-        }
-        shopsByCountry[country].push(shop);
-      });
-    });
-    
     // Construire le message
-    let message = `🏪 **Boutiques disponibles**\n\n`;
+    let message = `📍 **Départements disponibles**\n\n`;
     
     if (serviceType === 'delivery') {
       const serviceName = getTranslation('service_delivery', currentLang, customTranslations);
@@ -673,65 +663,52 @@ const handleDepartmentFilter = async (ctx, serviceType, selectedCountry = null) 
       message += `🤝 **Service:** ${serviceName}\n\n`;
     }
     
-    // Afficher les pays avec exemples de boutiques
-    const countryButtons = [];
-    Object.keys(shopsByCountry).sort().forEach(country => {
-      const shopsInCountry = shopsByCountry[country];
-      const topShops = shopsInCountry.slice(0, 2); // 2 exemples max
-      
-      // Créer le texte d'exemple
-      let exampleText = topShops.map(shop => {
-        const vipIcon = shop.isVip ? '⭐' : '';
-        return `${vipIcon}${shop.name}`;
-      }).join(', ');
-      
-      if (shopsInCountry.length > 2) {
-        exampleText += `... (+${shopsInCountry.length - 2})`;
-      }
-      
-      message += `${getCountryFlag(country)} **${country}** (${shopsInCountry.length})\n`;
-      message += `   ${exampleText}\n\n`;
-      
-      // Bouton pour ce pays (2 par ligne)
-      if (countryButtons.length === 0 || countryButtons[countryButtons.length - 1].length === 2) {
-        countryButtons.push([]);
-      }
-      
-      countryButtons[countryButtons.length - 1].push({
-        text: `${getCountryFlag(country)} ${country} (${shopsInCountry.length})`,
-        callback_data: `service_country_${serviceType}_${country}`
+    if (selectedCountry) {
+      message += `🌍 **Pays:** ${getCountryFlag(selectedCountry)} ${selectedCountry}\n\n`;
+    }
+    
+    message += `💡 *Sélectionnez un département :*\n\n`;
+    
+    // Créer les boutons de départements (4 par ligne)
+    const departmentButtons = [];
+    let currentRow = [];
+    
+    sortedDepartments.forEach(dept => {
+      const count = departmentCounts[dept];
+      currentRow.push({
+        text: `${dept} (${count})`,
+        callback_data: `top_dept_${serviceType}_${dept}_${selectedCountry || ''}`
       });
+      
+      if (currentRow.length === 4) {
+        departmentButtons.push(currentRow);
+        currentRow = [];
+      }
     });
     
-    message += `💡 *Cliquez sur un pays pour voir toutes les boutiques*`;
+    // Ajouter la dernière ligne si elle n'est pas vide
+    if (currentRow.length > 0) {
+      departmentButtons.push(currentRow);
+    }
     
     // Bouton retour
-    countryButtons.push([{
+    departmentButtons.push([{
       text: '🔙 Retour au menu',
       callback_data: 'top_plugs'
     }]);
     
-    const keyboard = { inline_keyboard: countryButtons };
+    const keyboard = { inline_keyboard: departmentButtons };
     
-    // Éditer le message existant
-    try {
-      await ctx.editMessageText(message, {
-        parse_mode: 'Markdown',
-        reply_markup: keyboard
-      });
-    } catch (editError) {
-      console.log('Erreur édition message, tentative avec reply:', editError.message);
-      await ctx.reply(message, {
-        parse_mode: 'Markdown',
-        reply_markup: keyboard
-      });
-    }
+    // Éditer le message existant (ANTI-SPAM)
+    await ctx.editMessageText(message, {
+      parse_mode: 'Markdown',
+      reply_markup: keyboard
+    });
     
   } catch (error) {
-    console.error('❌ ERREUR CRITIQUE dans handleDepartmentFilter:', error);
-    console.error('❌ Stack trace:', error.stack);
+    console.error('❌ Erreur dans handleDepartmentFilter:', error);
+    await ctx.answerCbQuery('❌ Erreur').catch(() => {});
     
-    // Envoyer un message d'erreur à l'utilisateur
     try {
       await ctx.editMessageText('❌ Erreur technique. Veuillez réessayer.', {
         reply_markup: {
@@ -743,10 +720,7 @@ const handleDepartmentFilter = async (ctx, serviceType, selectedCountry = null) 
       });
     } catch (editError) {
       console.error('❌ Erreur édition message erreur:', editError);
-      await ctx.reply('❌ Erreur technique. Veuillez réessayer.');
     }
-    
-    await ctx.answerCbQuery('❌ Erreur').catch(() => {});
   }
 };
 
@@ -823,7 +797,7 @@ const handleSpecificDepartment = async (ctx, serviceType, department, selectedCo
       // Ajouter bouton retour aux départements
       plugButtons.push([{
         text: '🔙 Retour aux départements',
-        callback_data: `top_departments_${serviceType}${selectedCountry ? `_${selectedCountry}` : ''}`
+        callback_data: `service_${serviceType}`
       }]);
       
       // Bouton retour au menu principal
@@ -841,7 +815,7 @@ const handleSpecificDepartment = async (ctx, serviceType, department, selectedCo
         inline_keyboard: [
           [{
             text: '🔙 Retour aux départements',
-            callback_data: `top_departments_${serviceType}${selectedCountry ? `_${selectedCountry}` : ''}`
+            callback_data: `service_${serviceType}`
           }],
           [{
             text: '🏠 Menu principal',
@@ -1915,8 +1889,6 @@ module.exports = {
   handleTopCountryFilter,
   handlePostalCodeFilter,
   handleShopsByPostalCode,
-  handleCountryServiceShops,
-  handleDepartmentsList,
   getAvailableCountries,
   getAvailableDepartments,
   getCountryFlag
