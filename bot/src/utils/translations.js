@@ -235,6 +235,115 @@ const translations = {
       de: '🔙 Zurück zum Menü'
     },
 
+    // === FORMULAIRE ÉTAPES DÉTAILLÉES ===
+    'registration.step2': {
+      fr: '🟦 Étape 2 : Lien Telegram',
+      en: '🟦 Step 2: Telegram Link',
+      it: '🟦 Fase 2: Link Telegram',
+      es: '🟦 Paso 2: Enlace de Telegram',
+      de: '🟦 Schritt 2: Telegram-Link'
+    },
+    'registration.step3': {
+      fr: '🟦 Étape 3 : Lien Canal Telegram',
+      en: '🟦 Step 3: Telegram Channel Link',
+      it: '🟦 Fase 3: Link Canale Telegram',
+      es: '🟦 Paso 3: Enlace del Canal de Telegram',
+      de: '🟦 Schritt 3: Telegram-Kanal-Link'
+    },
+    'registration.step4': {
+      fr: '🟦 Étape 4 : Lien Instagram',
+      en: '🟦 Step 4: Instagram Link',
+      it: '🟦 Fase 4: Link Instagram',
+      es: '🟦 Paso 4: Enlace de Instagram',
+      de: '🟦 Schritt 4: Instagram-Link'
+    },
+    'registration.telegramQuestion': {
+      fr: '🔗 Entrez votre lien Telegram (format : @username ou https://t.me/username)',
+      en: '🔗 Enter your Telegram link (format: @username or https://t.me/username)',
+      it: '🔗 Inserisci il tuo link Telegram (formato: @username o https://t.me/username)',
+      es: '🔗 Introduce tu enlace de Telegram (formato: @username o https://t.me/username)',
+      de: '🔗 Geben Sie Ihren Telegram-Link ein (Format: @username oder https://t.me/username)'
+    },
+    'registration.telegramChannelQuestion': {
+      fr: '🔗 Entrez le lien de votre **canal Telegram** (format : https://t.me/username)',
+      en: '🔗 Enter your **Telegram channel** link (format: https://t.me/username)',
+      it: '🔗 Inserisci il link del tuo **canale Telegram** (formato: https://t.me/username)',
+      es: '🔗 Introduce el enlace de tu **canal de Telegram** (formato: https://t.me/username)',
+      de: '🔗 Geben Sie den Link zu Ihrem **Telegram-Kanal** ein (Format: https://t.me/username)'
+    },
+    'registration.instagramQuestion': {
+      fr: '📸 Entrez votre lien Instagram (https://www.instagram.com/username)',
+      en: '📸 Enter your Instagram link (https://www.instagram.com/username)',
+      it: '📸 Inserisci il tuo link Instagram (https://www.instagram.com/username)',
+      es: '📸 Introduce tu enlace de Instagram (https://www.instagram.com/username)',
+      de: '📸 Geben Sie Ihren Instagram-Link ein (https://www.instagram.com/username)'
+    },
+    'registration.skipStep': {
+      fr: '⏭️ Passer cette étape',
+      en: '⏭️ Skip this step',
+      it: '⏭️ Salta questo passaggio',
+      es: '⏭️ Saltar este paso',
+      de: '⏭️ Diesen Schritt überspringen'
+    },
+    'registration.canSkip': {
+      fr: '⚠️ Tu peux aussi passer cette étape.',
+      en: '⚠️ You can also skip this step.',
+      it: '⚠️ Puoi anche saltare questo passaggio.',
+      es: '⚠️ También puedes saltar este paso.',
+      de: '⚠️ Sie können diesen Schritt auch überspringen.'
+    },
+    'registration.additionalNetworks': {
+      fr: '🟦 Étapes Réseaux supplémentaires :',
+      en: '🟦 Additional Networks Steps:',
+      it: '🟦 Passaggi Reti Aggiuntive:',
+      es: '🟦 Pasos de Redes Adicionales:',
+      de: '🟦 Zusätzliche Netzwerk-Schritte:'
+    },
+    'registration.platforms': {
+      fr: 'Plateformes :',
+      en: 'Platforms:',
+      it: 'Piattaforme:',
+      es: 'Plataformas:',
+      de: 'Plattformen:'
+    },
+
+    // === ERREURS DE VALIDATION ===
+    'registration.error.nameLength': {
+      fr: '❌ Le nom doit faire au moins 2 caractères. Réessaie :',
+      en: '❌ Name must be at least 2 characters. Try again:',
+      it: '❌ Il nome deve essere di almeno 2 caratteri. Riprova:',
+      es: '❌ El nombre debe tener al menos 2 caracteres. Inténtalo de nuevo:',
+      de: '❌ Name muss mindestens 2 Zeichen haben. Versuchen Sie es erneut:'
+    },
+    'registration.error.telegramFormat': {
+      fr: '❌ Merci de fournir un username Telegram (ex: @tonusername) ou un lien Telegram. Réessaie :',
+      en: '❌ Please provide a Telegram username (ex: @yourusername) or Telegram link. Try again:',
+      it: '❌ Fornisci un username Telegram (es: @tuousername) o un link Telegram. Riprova:',
+      es: '❌ Proporciona un nombre de usuario de Telegram (ej: @tuusuario) o un enlace de Telegram. Inténtalo de nuevo:',
+      de: '❌ Bitte geben Sie einen Telegram-Benutzernamen (z.B.: @ihrname) oder einen Telegram-Link an. Versuchen Sie es erneut:'
+    },
+    'registration.error.telegramChannelFormat': {
+      fr: '❌ Merci de fournir un lien de canal Telegram valide (ex: https://t.me/username). Réessaie :',
+      en: '❌ Please provide a valid Telegram channel link (ex: https://t.me/username). Try again:',
+      it: '❌ Fornisci un link di canale Telegram valido (es: https://t.me/username). Riprova:',
+      es: '❌ Proporciona un enlace de canal de Telegram válido (ej: https://t.me/username). Inténtalo de nuevo:',
+      de: '❌ Bitte geben Sie einen gültigen Telegram-Kanal-Link an (z.B.: https://t.me/username). Versuchen Sie es erneut:'
+    },
+    'registration.error.instagramFormat': {
+      fr: '❌ Merci de fournir un lien Instagram valide (ex: https://www.instagram.com/username ou @username). Réessaie :',
+      en: '❌ Please provide a valid Instagram link (ex: https://www.instagram.com/username or @username). Try again:',
+      it: '❌ Fornisci un link Instagram valido (es: https://www.instagram.com/username o @username). Riprova:',
+      es: '❌ Proporciona un enlace de Instagram válido (ej: https://www.instagram.com/username o @username). Inténtalo de nuevo:',
+      de: '❌ Bitte geben Sie einen gültigen Instagram-Link an (z.B.: https://www.instagram.com/username oder @username). Versuchen Sie es erneut:'
+    },
+    'registration.error.urlFormat': {
+      fr: '❌ Merci de fournir un lien valide commençant par https://. Réessaie :',
+      en: '❌ Please provide a valid link starting with https://. Try again:',
+      it: '❌ Fornisci un link valido che inizia con https://. Riprova:',
+      es: '❌ Proporciona un enlace válido que comience con https://. Inténtalo de nuevo:',
+      de: '❌ Bitte geben Sie einen gültigen Link an, der mit https:// beginnt. Versuchen Sie es erneut:'
+    },
+
     // === SERVICES ===
     'service_delivery': {
       fr: 'Livraison',

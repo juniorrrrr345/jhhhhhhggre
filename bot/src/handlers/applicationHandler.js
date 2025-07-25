@@ -206,8 +206,14 @@ const handleFormMessage = async (ctx) => {
   try {
     switch (userForm.step) {
               case 'name':
+          // Récupérer la langue pour les erreurs
+          const Config = require('../models/Config');
+          const config = await Config.findById('main');
+          const currentLang = config?.languages?.currentLanguage || 'fr';
+          const customTranslations = config?.languages?.translations;
+          
           if (text.length < 2) {
-            return await ctx.reply('❌ Le nom doit faire au moins 2 caractères. Réessaie :');
+            return await ctx.reply(getTranslation('registration.error.nameLength', currentLang, customTranslations));
           }
           
           userForm.data.name = text;
@@ -219,7 +225,7 @@ const handleFormMessage = async (ctx) => {
         
               case 'telegram':
           if (!text.startsWith('@') && !text.includes('t.me/')) {
-            return await ctx.reply('❌ Merci de fournir un username Telegram (ex: @tonusername) ou un lien Telegram. Réessaie :');
+            return await ctx.reply(getTranslation('registration.error.telegramFormat', currentLang, customTranslations));
           }
 
           userForm.data.telegram = text;
@@ -231,7 +237,7 @@ const handleFormMessage = async (ctx) => {
           
         case 'telegram_channel':
           if (!text.includes('t.me/')) {
-            return await ctx.reply('❌ Merci de fournir un lien de canal Telegram valide (ex: https://t.me/username). Réessaie :');
+            return await ctx.reply(getTranslation('registration.error.telegramChannelFormat', currentLang, customTranslations));
           }
 
           userForm.data.telegramChannel = text;
@@ -243,7 +249,7 @@ const handleFormMessage = async (ctx) => {
         
               case 'instagram':
           if (!text.startsWith('https://www.instagram.com/') && !text.startsWith('@')) {
-            return await ctx.reply('❌ Merci de fournir un lien Instagram valide (ex: https://www.instagram.com/username ou @username). Réessaie :');
+            return await ctx.reply(getTranslation('registration.error.instagramFormat', currentLang, customTranslations));
           }
 
           userForm.data.instagram = text;
@@ -422,6 +428,12 @@ const replyWithStep = async (ctx, step) => {
   const userId = ctx.from.id;
   const userForm = userForms.get(userId);
   
+  // Récupérer la langue actuelle
+  const Config = require('../models/Config');
+  const config = await Config.findById('main');
+  const currentLang = config?.languages?.currentLanguage || 'fr';
+  const customTranslations = config?.languages?.translations;
+  
   // Supprimer l'ancien message du bot s'il existe
   const lastBotMessageId = lastBotMessages.get(userId);
   if (lastBotMessageId) {
@@ -440,39 +452,39 @@ const replyWithStep = async (ctx, step) => {
   
   switch (step) {
     case 'telegram':
-      message = `🛠️ **FORMULAIRE D'INSCRIPTION – FindYourPlug**\n\n` +
+      message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
         `${summary}` +
         `⸻\n\n` +
-        `🟦 **Étape 2 : Lien Telegram**\n\n` +
-        `🔗 Entrez votre lien Telegram (format : @username ou https://t.me/username)`;
+        `${getTranslation('registration.step2', currentLang, customTranslations)}\n\n` +
+        `${getTranslation('registration.telegramQuestion', currentLang, customTranslations)}`;
       keyboard = Markup.inlineKeyboard([
-        [Markup.button.callback('❌ Annuler', 'cancel_application')]
+        [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
       ]);
       break;
       
     case 'telegram_channel':
-      message = `🛠️ **FORMULAIRE D'INSCRIPTION – FindYourPlug**\n\n` +
+      message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
         `${summary}` +
         `⸻\n\n` +
-        `🟦 **Étape 3 : Lien Canal Telegram**\n\n` +
-        `🔗 Entrez le lien de votre **canal Telegram** (format : https://t.me/username)\n\n` +
-        `⚠️ Tu peux aussi passer cette étape.`;
+        `${getTranslation('registration.step3', currentLang, customTranslations)}\n\n` +
+        `${getTranslation('registration.telegramChannelQuestion', currentLang, customTranslations)}\n\n` +
+        `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
       keyboard = Markup.inlineKeyboard([
-        [Markup.button.callback('⏭️ Passer cette étape', 'skip_telegram_channel')],
-        [Markup.button.callback('❌ Annuler', 'cancel_application')]
+        [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_telegram_channel')],
+        [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
       ]);
       break;
       
     case 'instagram':
-      message = `🛠️ **FORMULAIRE D'INSCRIPTION – FindYourPlug**\n\n` +
+      message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
         `${summary}` +
         `⸻\n\n` +
-        `🟦 **Étape 4 : Lien Instagram**\n\n` +
-        `📸 Entrez votre lien Instagram (https://www.instagram.com/username)\n\n` +
-        `⚠️ Tu peux aussi passer cette étape.`;
+        `${getTranslation('registration.step4', currentLang, customTranslations)}\n\n` +
+        `${getTranslation('registration.instagramQuestion', currentLang, customTranslations)}\n\n` +
+        `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
       keyboard = Markup.inlineKeyboard([
-        [Markup.button.callback('⏭️ Passer cette étape', 'skip_instagram')],
-        [Markup.button.callback('❌ Annuler', 'cancel_application')]
+        [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_instagram')],
+        [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
       ]);
       break;
       
