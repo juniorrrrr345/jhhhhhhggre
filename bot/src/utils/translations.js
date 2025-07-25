@@ -847,6 +847,57 @@ const translations = {
       de: 'Keine Shops verfügbar für'
     },
 
+    // === NOUVELLES TRADUCTIONS DÉPARTEMENTS ===
+    'country_required_title': {
+      fr: '🚫 Pays requis',
+      en: '🚫 Country Required',
+      it: '🚫 Paese Richiesto',
+      es: '🚫 País Requerido',
+      de: '🚫 Land Erforderlich'
+    },
+    'country_required_message': {
+      fr: 'Vous devez d\'abord sélectionner un pays !',
+      en: 'You must first select a country!',
+      it: 'Devi prima selezionare un paese!',
+      es: '¡Primero debes seleccionar un país!',
+      de: 'Sie müssen zuerst ein Land auswählen!'
+    },
+    'country_required_instruction': {
+      fr: 'Retournez au menu et choisissez un pays avant de sélectionner',
+      en: 'Go back to the menu and choose a country before selecting',
+      it: 'Torna al menu e scegli un paese prima di selezionare',
+      es: 'Vuelve al menú y elige un país antes de seleccionar',
+      de: 'Gehen Sie zurück zum Menü und wählen Sie ein Land vor der Auswahl'
+    },
+    'departments_available_title': {
+      fr: '📍 DÉPARTEMENTS DISPONIBLES',
+      en: '📍 AVAILABLE DEPARTMENTS',
+      it: '📍 REGIONI DISPONIBILI',
+      es: '📍 PROVINCIAS DISPONIBLES',
+      de: '📍 VERFÜGBARE BUNDESLÄNDER'
+    },
+    'departments_click_instruction': {
+      fr: 'Cliquez sur un département:',
+      en: 'Click on a department:',
+      it: 'Clicca su una regione:',
+      es: 'Haz clic en una provincia:',
+      de: 'Klicken Sie auf ein Bundesland:'
+    },
+    'service_delivery_name': {
+      fr: 'Livraison',
+      en: 'Delivery',
+      it: 'Consegna',
+      es: 'Entrega',
+      de: 'Lieferung'
+    },
+    'service_meetup_name': {
+      fr: 'Meetup',
+      en: 'Meetup',
+      it: 'Incontro',
+      es: 'Encuentro',
+      de: 'Treffen'
+    },
+
     // === TITRES SYSTÈME ===
     'list_plugs_title': {
       fr: '🔌 Liste des Plugs',

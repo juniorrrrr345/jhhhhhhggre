@@ -1694,16 +1694,22 @@ const handleDepartmentsList = async (ctx, serviceType, selectedCountry = null) =
       console.log(`⚠️ Aucun pays sélectionné pour ${serviceType}, affichage du message d'erreur`);
       
       const config = await Config.findById('main');
-      const serviceName = serviceType === 'delivery' ? 'Livraison' : 'Meetup';
+      const currentLang = config?.languages?.currentLanguage || 'fr';
+      const customTranslations = config?.languages?.translations;
       
-      let message = `🚫 **Pays requis**\n\n`;
-      message += `📦 **Service:** ${serviceName}\n\n`;
-      message += `❌ **Vous devez d'abord sélectionner un pays !**\n\n`;
-      message += `💡 *Retournez au menu et choisissez un pays avant de sélectionner ${serviceName}*`;
+      const serviceName = getTranslation('service_delivery_name', currentLang, customTranslations);
+      const meetupName = getTranslation('service_meetup_name', currentLang, customTranslations);
+      const currentServiceName = serviceType === 'delivery' ? serviceName : meetupName;
       
+      let message = `${getTranslation('country_required_title', currentLang, customTranslations)}\n\n`;
+      message += `📦 **Service:** ${currentServiceName}\n\n`;
+      message += `❌ **${getTranslation('country_required_message', currentLang, customTranslations)}**\n\n`;
+      message += `💡 *${getTranslation('country_required_instruction', currentLang, customTranslations)} ${currentServiceName}*`;
+      
+      const backText = getTranslation('back_to_menu', currentLang, customTranslations);
       const keyboard = Markup.inlineKeyboard([
         [{
-          text: '🔙 Retour au menu',
+          text: backText,
           callback_data: 'top_plugs'
         }]
       ]);
@@ -1712,11 +1718,19 @@ const handleDepartmentsList = async (ctx, serviceType, selectedCountry = null) =
       return;
     }
     
-    // MESSAGE AVEC PAYS SÉLECTIONNÉ
-    let message = `📍 **DÉPARTEMENTS DISPONIBLES**\n\n`;
-    message += `📦 Service: ${serviceType === 'delivery' ? 'Livraison' : 'Meetup'}\n`;
+    // MESSAGE AVEC PAYS SÉLECTIONNÉ (TRADUIT)
+    const config = await Config.findById('main');
+    const currentLang = config?.languages?.currentLanguage || 'fr';
+    const customTranslations = config?.languages?.translations;
+    
+    const serviceName = getTranslation('service_delivery_name', currentLang, customTranslations);
+    const meetupName = getTranslation('service_meetup_name', currentLang, customTranslations);
+    const currentServiceName = serviceType === 'delivery' ? serviceName : meetupName;
+    
+    let message = `${getTranslation('departments_available_title', currentLang, customTranslations)}\n\n`;
+    message += `📦 Service: ${currentServiceName}\n`;
     message += `🌍 Pays: ${getCountryFlag(selectedCountry)} ${selectedCountry}\n`;
-    message += `\n💡 Cliquez sur un département:\n\n`;
+    message += `\n💡 ${getTranslation('departments_click_instruction', currentLang, customTranslations)}\n\n`;
     
     // BOUTONS DÉPARTEMENTS PAR PAYS
     const buttons = [];
@@ -1776,9 +1790,10 @@ const handleDepartmentsList = async (ctx, serviceType, selectedCountry = null) =
       buttons.push(row);
     }
     
-    // Bouton retour
+    // Bouton retour (traduit)
+    const backText = getTranslation('back_to_menu', currentLang, customTranslations);
     buttons.push([{
-      text: '🔙 Retour au menu',
+      text: backText,
       callback_data: 'top_plugs'
     }]);
     
@@ -1786,7 +1801,6 @@ const handleDepartmentsList = async (ctx, serviceType, selectedCountry = null) =
     console.log(`🚨 Première ligne:`, buttons[0]);
     
     // EDITION AVEC IMAGE (compatible avec messages image + texte)
-    const config = await Config.findById('main');
     const keyboard = Markup.inlineKeyboard(buttons);
     await editMessageWithImage(ctx, message, keyboard, config, { parse_mode: 'Markdown' });
     
