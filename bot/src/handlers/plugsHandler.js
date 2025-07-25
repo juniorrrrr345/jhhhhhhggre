@@ -759,38 +759,25 @@ const handleSpecificDepartment = async (ctx, serviceType, department, selectedCo
         callback_data: 'top_plugs'
       }]);
       
-      keyboard = { inline_keyboard: plugButtons };
+      keyboard = Markup.inlineKeyboard(plugButtons);
     } else {
       message += `❌ **Aucune boutique trouvée**\n\n`;
       message += `💡 *Aucune boutique ne propose ce service dans le département ${department}*`;
       
-      keyboard = {
-        inline_keyboard: [
-          [{
-            text: '🔙 Retour aux départements',
-            callback_data: `service_${serviceType}`
-          }],
-          [{
-            text: '🏠 Menu principal',
-            callback_data: 'top_plugs'
-          }]
-        ]
-      };
+      keyboard = Markup.inlineKeyboard([
+        [{
+          text: '🔙 Retour aux départements',
+          callback_data: `top_departments_${serviceType}${selectedCountry ? `_${selectedCountry}` : ''}`
+        }],
+        [{
+          text: '🏠 Menu principal',
+          callback_data: 'top_plugs'
+        }]
+      ]);
     }
     
-    // Éditer le message existant sans image pour éviter le spam
-    try {
-      await ctx.editMessageText(message, {
-        parse_mode: 'Markdown',
-        reply_markup: keyboard
-      });
-    } catch (editError) {
-      console.log('Erreur édition message, tentative avec reply:', editError.message);
-      await ctx.reply(message, {
-        parse_mode: 'Markdown',
-        reply_markup: keyboard
-      });
-    }
+    // Éditer le message existant AVEC image pour éviter le spam
+    await editMessageWithImage(ctx, message, keyboard, config, { parse_mode: 'Markdown' });
     
   } catch (error) {
     console.error('Erreur dans handleSpecificDepartment:', error);
@@ -1692,9 +1679,21 @@ const handleDepartmentsList = async (ctx, serviceType, selectedCountry = null) =
     }
     message += `\n💡 Cliquez sur un département:\n\n`;
     
-    // BOUTONS DÉPARTEMENTS SIMPLES
+    // BOUTONS DÉPARTEMENTS PAR PAYS
     const buttons = [];
-    const depts = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20'];
+    
+    // Départements par pays
+    const departmentsByCountry = {
+      'France': ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '2A', '2B', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31', '32', '33', '34', '35', '36', '37', '38', '39', '40', '41', '42', '43', '44', '45', '46', '47', '48', '49', '50', '51', '52', '53', '54', '55', '56', '57', '58', '59', '60', '61', '62', '63', '64', '65', '66', '67', '68', '69', '70', '71', '72', '73', '74', '75', '76', '77', '78', '79', '80', '81', '82', '83', '84', '85', '86', '87', '88', '89', '90', '91', '92', '93', '94', '95'],
+      'Belgique': ['1000', '1020', '1030', '1040', '1050', '1060', '1070', '1080', '1090', '1120', '1130', '1140', '1150', '1160', '1170', '1180', '1190', '1200', '1210', '1300', '1310', '1320', '1330', '1340', '1350', '1360', '1370', '1380', '1390', '1400', '1410', '1420', '1430', '1440', '1450', '1460', '1470', '1480', '1490', '1500'],
+      'Suisse': ['1000', '1200', '1290', '1300', '2000', '2500', '3000', '4000', '5000', '6000', '7000', '8000', '9000'],
+      'Espagne': ['01000', '02000', '03000', '04000', '05000', '06000', '07000', '08000', '09000', '10000', '11000', '12000', '13000', '14000', '15000', '16000', '17000', '18000', '19000', '20000'],
+      'Italie': ['00100', '10100', '20100', '30100', '40100', '50100', '60100', '70100', '80100', '90100'],
+      'Maroc': ['10000', '20000', '30000', '40000', '50000', '60000', '70000', '80000', '90000']
+    };
+    
+    // Récupérer les départements du pays ou par défaut les 20 premiers français
+    const depts = departmentsByCountry[selectedCountry] || departmentsByCountry['France'].slice(0, 20);
     
     // 4 boutons par ligne
     for (let i = 0; i < depts.length; i += 4) {
