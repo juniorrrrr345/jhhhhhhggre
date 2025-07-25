@@ -701,7 +701,7 @@ export default function ShopPlugDetail() {
                           fontSize: '15px',
                           lineHeight: '1.3',
                           wordBreak: 'break-word',
-                          textAlign: 'left'
+                          textAlign: 'center'
                         }}>
                           {translateService('delivery') || 'Livraison'}
                         </div>
@@ -757,7 +757,7 @@ export default function ShopPlugDetail() {
                           fontSize: '15px',
                           lineHeight: '1.3',
                           wordBreak: 'break-word',
-                          textAlign: 'left'
+                          textAlign: 'center'
                         }}>
                           {translateService('postal') || 'Envoi postal'}
                         </div>
@@ -813,7 +813,7 @@ export default function ShopPlugDetail() {
                           fontSize: '15px',
                           lineHeight: '1.3',
                           wordBreak: 'break-word',
-                          textAlign: 'left'
+                          textAlign: 'center'
                         }}>
                           {translateService('meetup') || 'Meetup'}
                         </div>
