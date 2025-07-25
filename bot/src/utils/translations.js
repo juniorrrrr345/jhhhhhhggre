@@ -904,8 +904,7 @@ const createLanguageKeyboard = (currentLanguage = 'fr') => {
       // Retourner un clavier minimal en cas d'erreur
       return Markup.inlineKeyboard([
         [Markup.button.callback('🇫🇷 Français', 'lang_fr')],
-        [Markup.button.callback('🇬🇧 English', 'lang_en')],
-        [Markup.button.callback('🔙 Retour', 'back_main')]
+        [Markup.button.callback('🇬🇧 English', 'lang_en')]
       ]);
     }
     
@@ -929,8 +928,7 @@ const createLanguageKeyboard = (currentLanguage = 'fr') => {
       // Retourner un clavier minimal en cas d'erreur
       return Markup.inlineKeyboard([
         [Markup.button.callback('🇫🇷 Français', 'lang_fr')],
-        [Markup.button.callback('🇬🇧 English', 'lang_en')],
-        [Markup.button.callback('🔙 Retour', 'back_main')]
+        [Markup.button.callback('🇬🇧 English', 'lang_en')]
       ]);
     }
     
@@ -939,18 +937,7 @@ const createLanguageKeyboard = (currentLanguage = 'fr') => {
       buttons.push(flagRow.slice(i, i + 2));
     }
     
-    // Ligne des boutons de navigation
-    const navRow = [];
-    
-    // Bouton retour
-    const backText = getTranslation('filters_back', currentLanguage) || '🔙 Retour';
-    navRow.push(Markup.button.callback(backText, 'back_main'));
-    
-    // Bouton "Retour au menu" pour aller directement au menu principal avec la langue choisie
-    const menuText = getTranslation('menu_main', currentLanguage) || '🏠 Menu principal';
-    navRow.push(Markup.button.callback(menuText, 'goto_main_menu'));
-    
-    buttons.push(navRow);
+    // PLUS DE BOUTONS DE NAVIGATION - seulement les langues
     
     console.log(`✅ Clavier langue créé avec ${flagRow.length} langues`);
     return Markup.inlineKeyboard(buttons);
@@ -960,8 +947,7 @@ const createLanguageKeyboard = (currentLanguage = 'fr') => {
     // Retourner un clavier minimal en cas d'erreur
     return Markup.inlineKeyboard([
       [Markup.button.callback('🇫🇷 Français', 'lang_fr')],
-      [Markup.button.callback('🇬🇧 English', 'lang_en')],
-      [Markup.button.callback('🔙 Retour', 'back_main')]
+      [Markup.button.callback('🇬🇧 English', 'lang_en')]
     ]);
   }
 };
