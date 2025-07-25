@@ -63,6 +63,7 @@ const { handleParrainageCommand } = require('./src/handlers/referralHandler');
 // Modèles
 const Plug = require('./src/models/Plug');
 const Config = require('./src/models/Config');
+const User = require('./src/models/User');
 
 // Migration automatique
 const migrateSocialMedia = require('./scripts/migrate-social-media');
