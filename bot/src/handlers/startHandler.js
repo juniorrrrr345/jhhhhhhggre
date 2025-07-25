@@ -6,15 +6,10 @@ const { sendMessageWithImage, editMessageWithImage } = require('../utils/message
 const { ensureConnection } = require('../utils/database');
 const { handleReferral } = require('./referralHandler');
 const { getTranslation } = require('../utils/translations');
+const { getFreshConfig: getConfigHelper } = require('../utils/configHelper');
 const locationService = require('../services/locationService');
 
-// Note: getFreshConfig sera passé comme paramètre ou accessible globalement
-let getFreshConfig = null;
-
-// Fonction pour définir la référence à getFreshConfig
-const setGetFreshConfig = (fn) => {
-  getFreshConfig = fn;
-};
+// Configuration helper centralisé remplace l'ancien système getFreshConfig
 
 const handleStart = async (ctx) => {
   try {
@@ -89,7 +84,7 @@ const handleStart = async (ctx) => {
     }
 
     // Obtenir la config
-    const config = getFreshConfig ? await getFreshConfig() : await Config.findById('main');
+    const config = await getConfigHelper();
     
     // NOUVEAU : Proposer directement les langues au /start
     await showLanguageSelection(ctx, config);
@@ -159,7 +154,7 @@ const handleBackMain = async (ctx) => {
     await ctx.answerCbQuery();
     
     // Toujours récupérer la config fraîche
-    const config = await Config.findById('main');
+    const config = await getConfigHelper();
     if (!config) {
       console.log('❌ Configuration non trouvée');
       return;
@@ -198,6 +193,5 @@ const handleBackMain = async (ctx) => {
 
 module.exports = {
   handleStart,
-  handleBackMain,
-  setGetFreshConfig
+  handleBackMain
 };

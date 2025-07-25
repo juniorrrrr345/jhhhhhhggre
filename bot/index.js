@@ -21,7 +21,7 @@ const adminLimiter = limits.auth; // Utilise le rate limiter d'auth plus strict
 const { connectDB } = require('./src/utils/database');
 
 // Gestionnaires
-const { handleStart, handleBackMain, setGetFreshConfig } = require('./src/handlers/startHandler');
+const { handleStart, handleBackMain } = require('./src/handlers/startHandler');
 const { getTranslation, createLanguageKeyboard, initializeDefaultTranslations } = require('./src/utils/translations');
 const { 
   handleTopPlugs, 
@@ -838,8 +838,7 @@ const getFreshConfig = async () => {
   }
 };
 
-// Initialiser la référence getFreshConfig dans startHandler
-setGetFreshConfig(getFreshConfig);
+// Configuration helper centralisé initialisé automatiquement
 
 // Endpoint PUBLIC pour la configuration de la boutique (sans auth)
 app.get('/api/public/config', async (req, res) => {
@@ -1268,7 +1267,10 @@ app.put('/api/config', authenticateAdmin, async (req, res) => {
     console.log('📊 ID du document:', config._id);
     
     // Invalider le cache et forcer un rechargement
+    const { invalidateConfigCache } = require('./src/utils/configHelper');
+    invalidateConfigCache();
     configCache = null;
+    cacheTimestamp = 0;
     lastConfigUpdate = Date.now();
     
     // CORRECTION: Forcer le rechargement de la configuration du bot

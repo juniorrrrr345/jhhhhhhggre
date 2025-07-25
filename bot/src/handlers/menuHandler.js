@@ -1,6 +1,7 @@
 const Config = require('../models/Config');
 const { createMainKeyboard } = require('../utils/keyboards');
 const { getTranslation } = require('../utils/translations');
+const { getFreshConfig } = require('../utils/configHelper');
 
 // Gestionnaire pour le bouton Contact
 const handleContact = async (ctx) => {
@@ -8,7 +9,7 @@ const handleContact = async (ctx) => {
     // Confirmer immédiatement la callback pour éviter le loading
     await ctx.answerCbQuery();
     
-    const config = await Config.findById('main');
+    const config = await getFreshConfig();
     
     if (!config) {
       return;
@@ -135,7 +136,7 @@ const handleInfo = async (ctx) => {
     // Confirmer immédiatement la callback pour éviter le loading
     await ctx.answerCbQuery();
     
-    const config = await Config.findById('main');
+    const config = await getFreshConfig();
     
     if (!config) {
       return;
