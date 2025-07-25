@@ -177,6 +177,7 @@ const handleTopServiceFilter = async (ctx, serviceType, selectedCountry = null) 
     // Pour Livraison et Meetup : rediriger IMMÉDIATEMENT vers le système de départements (ANTI-SPAM)
     if (serviceType === 'delivery' || serviceType === 'meetup') {
       console.log(`🎯 handleTopServiceFilter: Redirection immédiate vers handleDepartmentFilter pour ${serviceType}, pays=${selectedCountry}`);
+      console.log(`🔍 Utilisateur: ${ctx.from.id}, Chat: ${ctx.chat.id}`);
       return await handleDepartmentFilter(ctx, serviceType, selectedCountry);
     }
     
@@ -522,13 +523,15 @@ const handleShopsByPostalCode = async (ctx, country, postalCode, serviceType = n
 // Gestionnaire pour les services (delivery et meetup) - Afficher les départements directement
 const handleDepartmentFilter = async (ctx, serviceType, selectedCountry = null) => {
   try {
+    console.log(`🔍 handleDepartmentFilter appelé: serviceType=${serviceType}, selectedCountry=${selectedCountry}`);
     const userId = ctx.from.id;
     
-    // 🚫 Prévention spam
-    if (isSpamClick(userId, 'service', `${serviceType}_${selectedCountry || 'none'}`)) {
-      await ctx.answerCbQuery('🔄');
-      return;
-    }
+    // 🚫 Prévention spam - DÉSACTIVÉ temporairement pour debug
+    // if (isSpamClick(userId, 'service', `${serviceType}_${selectedCountry || 'none'}`)) {
+    //   console.log(`🔄 Spam détecté pour ${serviceType}_${selectedCountry || 'none'}`);
+    //   await ctx.answerCbQuery('🔄');
+    //   return;
+    // }
     
     await ctx.answerCbQuery();
     
