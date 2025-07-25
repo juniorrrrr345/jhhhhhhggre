@@ -868,6 +868,32 @@ app.put('/api/config', authenticateAdmin, async (req, res) => {
     
     const finalData = cleanRecursive(cleanConfigData);
     
+    // Validation spécifique pour socialMedia - retirer les entrées vides
+    if (finalData.socialMedia && Array.isArray(finalData.socialMedia)) {
+      finalData.socialMedia = finalData.socialMedia.filter(social => 
+        social && 
+        social.url && 
+        social.emoji && 
+        social.name && 
+        social.url.trim() !== '' && 
+        social.name.trim() !== ''
+      );
+      console.log('✅ socialMedia filtré:', finalData.socialMedia.length, 'entrées valides');
+    }
+    
+    // Validation spécifique pour socialMediaList - retirer les entrées vides
+    if (finalData.socialMediaList && Array.isArray(finalData.socialMediaList)) {
+      finalData.socialMediaList = finalData.socialMediaList.filter(social => 
+        social && 
+        social.url && 
+        social.emoji && 
+        social.name && 
+        social.url.trim() !== '' && 
+        social.name.trim() !== ''
+      );
+      console.log('✅ socialMediaList filtré:', finalData.socialMediaList.length, 'entrées valides');
+    }
+    
     // Forcer une nouvelle date de mise à jour APRÈS le nettoyage
     finalData.updatedAt = new Date();
     
