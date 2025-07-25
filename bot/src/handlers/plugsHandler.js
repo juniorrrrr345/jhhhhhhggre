@@ -11,45 +11,61 @@ const {
 const { sendMessageWithImage, editMessageWithImage, sendPlugWithImage } = require('../utils/messageHelper');
 const { getTranslation } = require('../utils/translations');
 
-// 🔘 NOUVEAU SYSTÈME - Top des Plugs avec filtres avancés
+// 🔘 SYSTÈME TOP PLUGS - Bouton principal avec pays, filtres et liste
 const handleTopPlugs = async (ctx) => {
   try {
     await ctx.answerCbQuery();
     
-    // Récupérer la langue actuelle
+    // Récupérer la config pour les traductions
     const config = await Config.findById('main');
     const currentLang = config?.languages?.currentLanguage || 'fr';
     const customTranslations = config?.languages?.translations;
     
+    console.log(`🔝 Top Plugs affiché en langue: ${currentLang}`);
+    
     // Récupérer tous les plugs actifs triés par votes
-    const plugs = await Plug.find({ 
-      isActive: true 
-    }).sort({ 
-      isVip: -1,
-      likes: -1,
-      createdAt: -1 
-    });
+    const allPlugs = await Plug.find({ isActive: true })
+      .sort({ likes: -1, createdAt: -1 });
+
+    // Récupérer les pays disponibles dynamiquement
+    const availableCountries = await getAvailableCountries();
     
-    console.log(`🔝 Top Plugs: ${plugs.length} plugs trouvés`);
+    // Message d'affichage initial avec traduction
+    const topPlugsTitle = getTranslation('menu_topPlugs', currentLang, customTranslations);
+    let message = `${topPlugsTitle}\n`;
+    message += `*(${getTranslation('messages_sortedByVotes', currentLang, customTranslations)})*\n\n`;
     
-    let message = `🔝 **${getTranslation('menu_topPlugs', currentLang, customTranslations)}**\n\n`;
+    // Afficher les premiers plugs (top 10 par défaut)
+    const topPlugs = allPlugs.slice(0, 10);
+    let keyboard;
     
-    if (plugs.length === 0) {
-      message += getTranslation('messages_noShops', currentLang, customTranslations);
-      const keyboard = createPlugsFilterKeyboard(currentLang, customTranslations);
-      await editMessageWithImage(ctx, message, keyboard, config, { parse_mode: 'Markdown' });
+    if (topPlugs.length > 0) {
+      const shopsAvailableText = getTranslation('messages_shopsAvailable', currentLang, customTranslations);
+      message += `**${topPlugs.length} ${shopsAvailableText} :**\n\n`;
+      
+      // Ajouter les boutiques au clavier
+      const plugButtons = [];
+      topPlugs.forEach((plug, index) => {
+        const country = getCountryFlag(plug.countries[0]);
+        const location = plug.location ? ` ${plug.location}` : '';
+        const vipIcon = plug.isVip ? '⭐️ ' : '';
+        const buttonText = `${country}${location} ${vipIcon}${plug.name} 👍 ${plug.likes}`;
+        plugButtons.push([Markup.button.callback(buttonText, `plug_${plug._id}_from_top_plugs`)]);
+      });
+      
+      keyboard = createTopPlugsKeyboard(config, availableCountries, [], null, null);
+      keyboard.reply_markup.inline_keyboard = plugButtons.concat(keyboard.reply_markup.inline_keyboard);
     } else {
-      // Afficher les boutiques avec notre nouveau système de cartes
-      const keyboard = await createPlugsKeyboard(plugs, 0, 'top_plugs', 8);
-      
-      message += `*(${getTranslation('messages_sortedByVotes', currentLang, customTranslations)})*\n\n`;
-      message += `📊 ${getTranslation('total_shops', currentLang, customTranslations)} : ${plugs.length} ${getTranslation('shops_word', currentLang, customTranslations)}`;
-      
-      await editMessageWithImage(ctx, message, keyboard, config, { parse_mode: 'Markdown' });
+      const noShopsText = getTranslation('messages_noShops', currentLang, customTranslations);
+      message += noShopsText;
+      keyboard = createTopPlugsKeyboard(config, availableCountries, [], null, null);
     }
+    
+    await editMessageWithImage(ctx, message, keyboard, config, { parse_mode: 'Markdown' });
+    
   } catch (error) {
     console.error('Erreur dans handleTopPlugs:', error);
-    await ctx.answerCbQuery(getTranslation('error_loading', 'fr')).catch(() => {});
+    await ctx.answerCbQuery('❌ Erreur lors du chargement').catch(() => {});
   }
 };
 
@@ -303,15 +319,46 @@ const handleResetFilters = async (ctx) => {
 
 // === FONCTIONS UTILITAIRES ===
 
-// Récupérer les pays disponibles
+// Fonction pour récupérer les pays disponibles dynamiquement
 const getAvailableCountries = async () => {
   try {
     const countries = await Plug.distinct('countries', { isActive: true });
     return countries.filter(country => country && country.trim() !== '');
   } catch (error) {
     console.error('Erreur récupération pays:', error);
-    return ['France', 'Spain', 'Switzerland', 'Italy']; // Fallback
+    return ['France', 'Belgique', 'Suisse', 'Italie']; // Fallback
   }
+};
+
+// Fonction pour obtenir le drapeau d'un pays
+const getCountryFlag = (country) => {
+  const countryFlags = {
+    'france': '🇫🇷',
+    'belgique': '🇧🇪',
+    'belgium': '🇧🇪',
+    'suisse': '🇨🇭',
+    'switzerland': '🇨🇭',
+    'luxembourg': '🇱🇺',
+    'allemagne': '🇩🇪',
+    'germany': '🇩🇪',
+    'italie': '🇮🇹',
+    'italy': '🇮🇹',
+    'espagne': '🇪🇸',
+    'spain': '🇪🇸',
+    'pays-bas': '🇳🇱',
+    'netherlands': '🇳🇱',
+    'portugal': '🇵🇹',
+    'royaume-uni': '🇬🇧',
+    'uk': '🇬🇧',
+    'canada': '🇨🇦',
+    'maroc': '🇲🇦',
+    'morocco': '🇲🇦'
+  };
+  
+  if (!country) return '🌍';
+  
+  const normalizedCountry = country.toLowerCase().trim();
+  return countryFlags[normalizedCountry] || '🌍';
 };
 
 // Récupérer les départements disponibles
@@ -349,47 +396,6 @@ const getAvailableDepartments = async (serviceType, selectedCountry = null) => {
     console.error('Erreur récupération départements:', error);
     return [];
   }
-};
-
-// Obtenir le drapeau du pays
-const getCountryFlag = (country) => {
-  const flags = {
-    'France': '🇫🇷',
-    'Espagne': '🇪🇸',
-    'Spain': '🇪🇸', 
-    'Suisse': '🇨🇭',
-    'Switzerland': '🇨🇭',
-    'Italie': '🇮🇹',
-    'Italy': '🇮🇹',
-    'Belgique': '🇧🇪',
-    'Belgium': '🇧🇪',
-    'Allemagne': '🇩🇪',
-    'Germany': '🇩🇪',
-    'Pays-Bas': '🇳🇱',
-    'Netherlands': '🇳🇱',
-    'Portugal': '🇵🇹',
-    'Maroc': '🇲🇦',
-    'Morocco': '🇲🇦',
-    'Tunisie': '🇹🇳',
-    'Tunisia': '🇹🇳',
-    'Algérie': '🇩🇿',
-    'Algeria': '🇩🇿',
-    'Canada': '🇨🇦',
-    'États-Unis': '🇺🇸',
-    'USA': '🇺🇸',
-    'United States': '🇺🇸',
-    'Royaume-Uni': '🇬🇧',
-    'UK': '🇬🇧',
-    'United Kingdom': '🇬🇧',
-    'Cameroun': '🇨🇲',
-    'Cameroon': '🇨🇲',
-    'Sénégal': '🇸🇳',
-    'Senegal': '🇸🇳',
-    'Madagascar': '🇲🇬',
-    "Côte d'Ivoire": '🇨🇮',
-    'Ivory Coast': '🇨🇮'
-  };
-  return flags[country] || '🌍';
 };
 
 // Créer le clavier principal Top des Plugs
