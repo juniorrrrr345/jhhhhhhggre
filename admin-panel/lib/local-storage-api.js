@@ -2,10 +2,16 @@
 class LocalStorageAPI {
   constructor() {
     this.storageKey = 'findyourplug_config'
-    this.init()
+    this.isClient = typeof window !== 'undefined'
+    if (this.isClient) {
+      this.init()
+    }
   }
 
   init() {
+    // Ne s'exécute que côté client
+    if (!this.isClient) return
+    
     // Initialiser la config par défaut si elle n'existe pas
     if (!localStorage.getItem(this.storageKey)) {
       const defaultConfig = {
@@ -51,6 +57,8 @@ class LocalStorageAPI {
   }
 
   save(config) {
+    if (!this.isClient) return config
+    
     config._lastSaved = new Date().toISOString()
     config._isLocal = true
     localStorage.setItem(this.storageKey, JSON.stringify(config))
@@ -59,6 +67,8 @@ class LocalStorageAPI {
   }
 
   load() {
+    if (!this.isClient) return null
+    
     try {
       const data = localStorage.getItem(this.storageKey)
       if (data) {
@@ -121,12 +131,14 @@ class LocalStorageAPI {
   }
 
   clear() {
+    if (!this.isClient) return
     localStorage.removeItem(this.storageKey)
     this.init()
   }
 
   // Status de la configuration
   getStatus() {
+    if (!this.isClient) return 'server'
     const config = this.load()
     if (!config) return 'empty'
     if (config._isLocal) return 'local'
@@ -134,5 +146,15 @@ class LocalStorageAPI {
   }
 }
 
-export const localApi = new LocalStorageAPI()
+// Créer l'instance seulement côté client
+let localApiInstance = null
+
+export const getLocalApi = () => {
+  if (typeof window !== 'undefined' && !localApiInstance) {
+    localApiInstance = new LocalStorageAPI()
+  }
+  return localApiInstance
+}
+
+export const localApi = getLocalApi()
 export default localApi

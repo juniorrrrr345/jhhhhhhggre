@@ -3,7 +3,7 @@ import { useRouter } from 'next/router'
 import Head from 'next/head'
 import Layout from '../../components/Layout'
 import { simpleApi } from '../../lib/api-simple'
-import { localApi } from '../../lib/local-storage-api'
+import { getLocalApi } from '../../lib/local-storage-api'
 import toast from 'react-hot-toast'
 
 export default function SocialMediaManager() {
@@ -34,6 +34,9 @@ export default function SocialMediaManager() {
       setLoading(true)
       setIsLocalMode(false)
       
+      // Vérifier si on est côté client
+      if (typeof window === 'undefined') return
+      
       // Essayer d'abord le serveur
       const token = localStorage.getItem('adminToken') || 'JuniorAdmon123'
       const config = await simpleApi.getConfig(token)
@@ -51,23 +54,26 @@ export default function SocialMediaManager() {
       // Basculer en mode local
       setIsLocalMode(true)
       
-      try {
-        const localConfig = await localApi.getConfig()
-        if (localConfig && localConfig.socialMediaList) {
-          setSocialMedias(localConfig.socialMediaList)
-          console.log('📁 Réseaux sociaux chargés depuis le stockage local')
-        } else {
-          // Initialiser avec des données par défaut
-          const defaultSocialMedias = [
-            { id: 'telegram', name: 'Telegram', emoji: '📱', url: '', enabled: true },
-            { id: 'whatsapp', name: 'WhatsApp', emoji: '💬', url: '', enabled: true },
-            { id: 'discord', name: 'Discord', emoji: '🎮', url: '', enabled: false },
-            { id: 'instagram', name: 'Instagram', emoji: '📸', url: '', enabled: false }
-          ]
-          setSocialMedias(defaultSocialMedias)
-          await localApi.updateSocialMedia(defaultSocialMedias)
-          console.log('🔧 Réseaux sociaux initialisés en mode local')
-        }
+             try {
+         const localApi = getLocalApi()
+         if (localApi) {
+           const localConfig = await localApi.getConfig()
+           if (localConfig && localConfig.socialMediaList) {
+             setSocialMedias(localConfig.socialMediaList)
+             console.log('📁 Réseaux sociaux chargés depuis le stockage local')
+           } else {
+             // Initialiser avec des données par défaut
+             const defaultSocialMedias = [
+               { id: 'telegram', name: 'Telegram', emoji: '📱', url: '', enabled: true },
+               { id: 'whatsapp', name: 'WhatsApp', emoji: '💬', url: '', enabled: true },
+               { id: 'discord', name: 'Discord', emoji: '🎮', url: '', enabled: false },
+               { id: 'instagram', name: 'Instagram', emoji: '📸', url: '', enabled: false }
+             ]
+             setSocialMedias(defaultSocialMedias)
+             await localApi.updateSocialMedia(defaultSocialMedias)
+             console.log('🔧 Réseaux sociaux initialisés en mode local')
+           }
+         }
       } catch (localError) {
         console.error('Erreur mode local:', localError)
         toast.error('Erreur de stockage local')
@@ -83,8 +89,11 @@ export default function SocialMediaManager() {
       
       if (isLocalMode) {
         // Mode local : sauvegarde directe
-        await localApi.updateSocialMedia(socialMedias)
-        console.log('💾 Réseaux sociaux sauvegardés localement')
+        const localApi = getLocalApi()
+        if (localApi) {
+          await localApi.updateSocialMedia(socialMedias)
+          console.log('💾 Réseaux sociaux sauvegardés localement')
+        }
       } else {
         // Mode serveur : essayer de sauvegarder sur le serveur
         try {
@@ -101,12 +110,15 @@ export default function SocialMediaManager() {
           
           await simpleApi.updateConfig(token, configData)
           console.log('✅ Réseaux sociaux sauvegardés sur le serveur')
-        } catch (serverError) {
-          console.log('Serveur indisponible, sauvegarde locale de secours')
-          // Fallback en mode local
-          setIsLocalMode(true)
-          await localApi.updateSocialMedia(socialMedias)
-        }
+                  } catch (serverError) {
+            console.log('Serveur indisponible, sauvegarde locale de secours')
+            // Fallback en mode local
+            setIsLocalMode(true)
+            const localApi = getLocalApi()
+            if (localApi) {
+              await localApi.updateSocialMedia(socialMedias)
+            }
+          }
       }
       
     } catch (error) {
@@ -154,10 +166,13 @@ export default function SocialMediaManager() {
       try {
         setSaving(true)
         
-        if (isLocalMode) {
-          // Mode local : sauvegarde directe
-          await localApi.updateSocialMedia(updatedSocialMedias)
-          console.log('💾 Réseau social supprimé et sauvegardé localement')
+                 if (isLocalMode) {
+           // Mode local : sauvegarde directe
+           const localApi = getLocalApi()
+           if (localApi) {
+             await localApi.updateSocialMedia(updatedSocialMedias)
+             console.log('💾 Réseau social supprimé et sauvegardé localement')
+           }
         } else {
           // Mode serveur : essayer de sauvegarder sur le serveur
           try {
@@ -169,12 +184,15 @@ export default function SocialMediaManager() {
             
             await simpleApi.updateConfig(token, configData)
             console.log('✅ Réseau social supprimé et sauvegardé sur le serveur')
-          } catch (serverError) {
-            console.log('Serveur indisponible, sauvegarde locale de secours')
-            // Fallback en mode local
-            setIsLocalMode(true)
-            await localApi.updateSocialMedia(updatedSocialMedias)
-          }
+                       } catch (serverError) {
+               console.log('Serveur indisponible, sauvegarde locale de secours')
+               // Fallback en mode local
+               setIsLocalMode(true)
+               const localApi = getLocalApi()
+               if (localApi) {
+                 await localApi.updateSocialMedia(updatedSocialMedias)
+               }
+             }
         }
       } catch (error) {
         console.error('Erreur suppression:', error)
@@ -232,12 +250,15 @@ export default function SocialMediaManager() {
                   onClick={async () => {
                     try {
                       setSaving(true)
-                      const synced = await localApi.syncWithServer(simpleApi)
-                      if (synced) {
-                        setIsLocalMode(false)
-                        toast.success('✅ Synchronisé avec le serveur')
-                      } else {
-                        toast.error('Serveur encore indisponible')
+                      const localApi = getLocalApi()
+                      if (localApi) {
+                        const synced = await localApi.syncWithServer(simpleApi)
+                        if (synced) {
+                          setIsLocalMode(false)
+                          toast.success('✅ Synchronisé avec le serveur')
+                        } else {
+                          toast.error('Serveur encore indisponible')
+                        }
                       }
                     } catch (error) {
                       toast.error('Erreur de synchronisation')
