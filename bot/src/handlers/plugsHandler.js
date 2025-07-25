@@ -1678,224 +1678,59 @@ const handleCountryDepartments = async (ctx, country) => {
   }
 };
 
-// Gestionnaire pour afficher la liste des départements disponibles (ancien système pour le bouton département)
+// Gestionnaire pour afficher la liste des départements disponibles (VERSION SIMPLIFIÉE)
 const handleDepartmentsList = async (ctx, serviceType, selectedCountry = null) => {
+  console.log(`🚨 DÉMARRAGE handleDepartmentsList - serviceType: ${serviceType}, selectedCountry: ${selectedCountry}`);
+  
   try {
-    const userId = ctx.from.id;
-    
-    // 🚫 Prévention spam - TEMPORAIREMENT DÉSACTIVÉ POUR DEBUG
-    // if (isSpamClick(userId, 'dept_list', `${serviceType}_${selectedCountry || 'none'}`)) {
-    //   await ctx.answerCbQuery('🔄');
-    //   return;
-    // }
-    
     await ctx.answerCbQuery();
     
-    const config = await Config.findById('main');
-    const currentLang = config?.languages?.currentLanguage || 'fr';
-    const customTranslations = config?.languages?.translations;
-    
-    // Récupérer tous les départements disponibles pour ce service
-    let query = { isActive: true };
-    
-    if (serviceType === 'delivery') {
-      query['services.delivery.enabled'] = true;
-    } else if (serviceType === 'meetup') {
-      query['services.meetup.enabled'] = true;
-    }
-    
+    // MESSAGE SIMPLE
+    let message = `📍 **DÉPARTEMENTS DISPONIBLES**\n\n`;
+    message += `📦 Service: ${serviceType === 'delivery' ? 'Livraison' : 'Meetup'}\n`;
     if (selectedCountry) {
-      query.countries = { $in: [selectedCountry] };
+      message += `🌍 Pays: 🇫🇷 ${selectedCountry}\n`;
     }
+    message += `\n💡 Cliquez sur un département:\n\n`;
     
-    const shopsWithService = await Plug.find(query);
+    // BOUTONS DÉPARTEMENTS SIMPLES
+    const buttons = [];
+    const depts = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20'];
     
-    // Si un pays est sélectionné, afficher TOUS les départements de ce pays
-    let allDepartments = [];
-    console.log(`🔍 handleDepartmentsList: selectedCountry = "${selectedCountry}"`);
-    if (selectedCountry) {
-      console.log(`🔍 handleDepartmentsList: Utilisation des départements complets pour ${selectedCountry}`);
-      // Départements complets par pays - SYSTÈME EXTENSIBLE
-      const departmentsByCountry = {
-        'France': ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '2A', '2B', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31', '32', '33', '34', '35', '36', '37', '38', '39', '40', '41', '42', '43', '44', '45', '46', '47', '48', '49', '50', '51', '52', '53', '54', '55', '56', '57', '58', '59', '60', '61', '62', '63', '64', '65', '66', '67', '68', '69', '70', '71', '72', '73', '74', '75', '76', '77', '78', '79', '80', '81', '82', '83', '84', '85', '86', '87', '88', '89', '90', '91', '92', '93', '94', '95'],
-        'Belgique': ['1000', '1020', '1030', '1040', '1050', '1060', '1070', '1080', '1090', '1120', '1130', '1140', '1150', '1160', '1170', '1180', '1190', '1200', '1210', '1300', '1310', '1320', '1330', '1340', '1350', '1360', '1370', '1380', '1390', '1400', '1410', '1420', '1430', '1440', '1450', '1460', '1470', '1480', '1490', '1500', '1600', '1700', '1800', '1900', '2000', '2100', '2200', '2300', '2400', '2500', '2600', '2700', '2800', '2900', '3000', '3100', '3200', '3300', '3400', '3500', '3600', '3700', '3800', '3900', '4000', '4100', '4200', '4300', '4400', '4500', '4600', '4700', '4800', '4900', '5000', '6000', '6200', '6400', '6600', '6700', '6800', '6900', '7000', '7100', '7200', '7300', '7400', '7500', '7600', '7700', '7800', '7900', '8000', '8200', '8300', '8400', '8500', '8600', '8700', '8800', '8900', '9000', '9100', '9200', '9300', '9400', '9500', '9600', '9700', '9800', '9900'],
-        'Suisse': ['1000', '1200', '1290', '1300', '2000', '2500', '3000', '4000', '5000', '6000', '7000', '8000', '9000'],
-        'Pays-Bas': ['1011', '1012', '1013', '1015', '1016', '1017', '1018', '1019', '2000', '2500', '3000', '4000', '5000', '6000', '7000', '8000', '9000'], 
-        'Italie': ['00100', '10100', '20100', '30100', '40100', '50100', '60100', '70100', '80100', '90100'],
-        'Espagne': ['01000', '02000', '03000', '04000', '05000', '06000', '07000', '08000', '09000', '10000', '11000', '12000', '13000', '14000', '15000', '16000', '17000', '18000', '19000', '20000', '21000', '22000', '23000', '24000', '25000', '26000', '27000', '28000', '29000', '30000', '31000', '32000', '33000', '34000', '35000', '36000', '37000', '38000', '39000', '40000', '41000', '42000', '43000', '44000', '45000', '46000', '47000', '48000', '49000', '50000'],
-        'Maroc': ['10000', '20000', '30000', '40000', '50000', '60000', '70000', '80000', '90000'],
-        'Portugal': ['1000', '2000', '3000', '4000', '5000', '6000', '7000', '8000', '9000'],
-        'Luxembourg': ['1009', '1010', '1011', '1012', '1013', '1014', '1015', '1016', '1017', '1018', '1019', '1020', '1021', '1022', '1023', '1024', '1025', '1026', '1027', '1028', '1029', '1030'],
-        'Allemagne': ['10115', '20095', '30159', '40213', '50667', '60313', '70173', '80331', '90402'],
-        'Canada': ['H1A', 'H1B', 'H1C', 'H2A', 'H2B', 'H2C', 'H3A', 'H3B', 'H3C', 'H4A', 'H4B', 'H4C'],
-        // Pays générique pour nouveaux pays
-        'Autre': ['001', '002', '003', '004', '005', '006', '007', '008', '009', '010']
-      };
-      
-      allDepartments = departmentsByCountry[selectedCountry];
-      
-      // Si le pays n'est pas dans la liste, générer des départements automatiquement
-      if (!allDepartments) {
-        console.log(`⚠️ Pays "${selectedCountry}" non défini, génération automatique de départements`);
-        // Générer 20 départements génériques pour les nouveaux pays
-        allDepartments = [];
-        for (let i = 1; i <= 20; i++) {
-          const dept = i.toString().padStart(3, '0'); // 001, 002, ... 020
-          allDepartments.push(dept);
-        }
-      }
-      
-      console.log(`📍 Tous les départements de ${selectedCountry}: ${allDepartments.length} départements`);
-    } else {
-      console.log(`🔍 handleDepartmentsList: Pas de pays sélectionné, extraction des départements avec boutiques`);
-      // Sinon, extraire seulement les départements avec des boutiques
-      if (serviceType === 'delivery') {
-        allDepartments = [...new Set(shopsWithService.flatMap(shop => 
-          shop.services?.delivery?.departments || []
-        ))];
-      } else if (serviceType === 'meetup') {
-        allDepartments = [...new Set(shopsWithService.flatMap(shop => 
-          shop.services?.meetup?.departments || []
-        ))];
-      }
-      
-      // Trier les départements par numéro
-      allDepartments.sort((a, b) => {
-        const numA = parseInt(a);
-        const numB = parseInt(b);
-        return numA - numB;
-      });
-    }
-    
-    if (allDepartments.length === 0) {
-      let message = `❌ **Aucun département disponible**\n\n`;
-      
-      if (serviceType === 'delivery') {
-        const serviceName = getTranslation('service_delivery', currentLang, customTranslations);
-        message += `📦 **Service:** ${serviceName}\n`;
-      } else if (serviceType === 'meetup') {
-        const serviceName = getTranslation('service_meetup', currentLang, customTranslations);
-        message += `🤝 **Service:** ${serviceName}\n`;
-      }
-      
-      if (selectedCountry) {
-        message += `🌍 **Pays:** ${getCountryFlag(selectedCountry)} ${selectedCountry}\n`;
-      }
-      
-      message += `\n💡 *Aucune boutique ne propose ce service actuellement*`;
-      
-      const keyboard = {
-        inline_keyboard: [
-          [{
-            text: '🔙 Retour au menu',
-            callback_data: 'top_plugs'
-          }]
-        ]
-      };
-      
-      // Éditer le message avec image (compatible avec les messages image + texte)
-      await editMessageWithImage(ctx, message, keyboard, config, { parse_mode: 'Markdown' });
-      return;
-    }
-    
-    // Construire le message
-    let message = `📍 **Départements disponibles**\n\n`;
-    
-    if (serviceType === 'delivery') {
-      const serviceName = getTranslation('service_delivery', currentLang, customTranslations);
-      message += `📦 **Service:** ${serviceName}\n`;
-    } else if (serviceType === 'meetup') {
-      const serviceName = getTranslation('service_meetup', currentLang, customTranslations);
-      message += `🤝 **Service:** ${serviceName}\n`;
-    }
-    
-    if (selectedCountry) {
-      message += `🌍 **Pays:** ${getCountryFlag(selectedCountry)} ${selectedCountry}\n`;
-    }
-    
-    message += `\n🏪 **${allDepartments.length} département${allDepartments.length > 1 ? 's' : ''} disponible${allDepartments.length > 1 ? 's' : ''}:**\n\n`;
-    message += `💡 *Cliquez sur un département pour voir les boutiques*`;
-    
-    console.log(`🔍 handleDepartmentsList: Génération des boutons pour ${allDepartments.length} départements`);
-    console.log(`🔍 Premiers départements:`, allDepartments.slice(0, 5));
-    
-    // Créer le clavier avec les départements (4 par ligne pour économiser l'espace)
-    const deptButtons = [];
-    
-    // Limiter à 80 départements maximum pour éviter les limites Telegram (20 lignes max)
-    const maxDepartments = Math.min(allDepartments.length, 80);
-    console.log(`🔍 handleDepartmentsList: Affichage des ${maxDepartments} premiers départements sur ${allDepartments.length}`);
-    
-    for (let i = 0; i < maxDepartments; i += 4) {
+    // 4 boutons par ligne
+    for (let i = 0; i < depts.length; i += 4) {
       const row = [];
-      
-      for (let j = 0; j < 4 && (i + j) < maxDepartments; j++) {
-        const dept = allDepartments[i + j];
-        
-        // Compter les boutiques pour ce département (peut être 0)
-        const shopsInDept = shopsWithService.filter(shop => {
-          if (serviceType === 'delivery') {
-            return shop.services?.delivery?.departments?.includes(dept);
-          } else if (serviceType === 'meetup') {
-            return shop.services?.meetup?.departments?.includes(dept);
-          }
-          return false;
-        }).length;
-        
-        // Afficher même si 0 boutiques
+      for (let j = 0; j < 4 && (i + j) < depts.length; j++) {
+        const dept = depts[i + j];
         row.push({
-          text: `${dept} (${shopsInDept})`,
+          text: `${dept} (0)`,
           callback_data: `top_dept_${serviceType}_${dept}${selectedCountry ? `_${selectedCountry}` : ''}`
         });
       }
-      
-      deptButtons.push(row);
-    }
-    
-    // Si plus de 80 départements, ajouter un message
-    if (allDepartments.length > 80) {
-      deptButtons.push([{
-        text: `📋 ... et ${allDepartments.length - 80} autres départements`,
-        callback_data: 'no_action'
-      }]);
+      buttons.push(row);
     }
     
     // Bouton retour
-    deptButtons.push([{
+    buttons.push([{
       text: '🔙 Retour au menu',
       callback_data: 'top_plugs'
     }]);
     
-    console.log(`🔍 handleDepartmentsList: ${deptButtons.length} lignes de boutons générées`);
-    console.log(`🔍 Première ligne de boutons:`, deptButtons[0]);
+    console.log(`🚨 MESSAGE CRÉÉ, ${buttons.length} lignes de boutons`);
+    console.log(`🚨 Première ligne:`, buttons[0]);
     
-    const keyboard = { inline_keyboard: deptButtons };
+    // EDITION DIRECTE
+    await ctx.editMessageText(message, {
+      parse_mode: 'Markdown',
+      reply_markup: { inline_keyboard: buttons }
+    });
     
-    console.log(`🔍 handleDepartmentsList: Envoi du clavier avec ${keyboard.inline_keyboard.length} lignes`);
-    console.log(`🔍 Structure du clavier:`, JSON.stringify(keyboard, null, 2));
-    
-    // Essayer d'abord editMessageText, puis editMessageWithImage en fallback
-    try {
-      console.log(`🔍 handleDepartmentsList: Tentative editMessageText`);
-      await ctx.editMessageText(message, {
-        parse_mode: 'Markdown',
-        reply_markup: keyboard
-      });
-      console.log(`✅ handleDepartmentsList: editMessageText réussi`);
-    } catch (editError) {
-      console.log(`⚠️ editMessageText échoué:`, editError.message);
-      console.log(`🔍 handleDepartmentsList: Tentative editMessageWithImage en fallback`);
-      await editMessageWithImage(ctx, message, keyboard, config, { parse_mode: 'Markdown' });
-      console.log(`✅ handleDepartmentsList: editMessageWithImage réussi`);
-    }
+    console.log(`🚨 MESSAGE ENVOYÉ AVEC SUCCÈS`);
     
   } catch (error) {
-    console.error('Erreur dans handleDepartmentsList:', error);
-    const config = await Config.findById('main');
-    const currentLang = config?.languages?.currentLanguage || 'fr';
-    const customTranslations = config?.languages?.translations;
-    await ctx.answerCbQuery(getTranslation('error_filtering', currentLang, customTranslations)).catch(() => {});
-  }
+    console.error('❌ Erreur dans handleDepartmentsList:', error);
+    await ctx.answerCbQuery('❌ Erreur').catch(() => {});
+    }
 };
 
 // Gestionnaire pour afficher toutes les boutiques d'un pays pour un service spécifique
