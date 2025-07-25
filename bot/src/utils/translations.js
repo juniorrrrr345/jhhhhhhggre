@@ -351,6 +351,36 @@ const translations = {
       de: '❌ Ein Fehler ist aufgetreten. Versuchen Sie es erneut oder geben Sie /start ein, um neu zu beginnen.'
     },
 
+    // === MESSAGES D'ANNULATION ===
+    'registration.cancelTitle': {
+      fr: '❌ Demande annulée',
+      en: '❌ Request cancelled',
+      it: '❌ Richiesta annullata',
+      es: '❌ Solicitud cancelada',
+      de: '❌ Anfrage abgebrochen'
+    },
+    'registration.cancelMessage': {
+      fr: 'Ta demande d\'inscription a été annulée.',
+      en: 'Your registration request has been cancelled.',
+      it: 'La tua richiesta di registrazione è stata annullata.',
+      es: 'Tu solicitud de registro ha sido cancelada.',
+      de: 'Ihre Registrierungsanfrage wurde abgebrochen.'
+    },
+    'registration.canRestart': {
+      fr: 'Tu peux recommencer quand tu veux !',
+      en: 'You can restart whenever you want!',
+      it: 'Puoi ricominciare quando vuoi!',
+      es: '¡Puedes reiniciar cuando quieras!',
+      de: 'Sie können jederzeit neu beginnen!'
+    },
+    'registration.cancelledShort': {
+      fr: 'Demande annulée',
+      en: 'Request cancelled',
+      it: 'Richiesta annullata',
+      es: 'Solicitud cancelada',
+      de: 'Anfrage abgebrochen'
+    },
+
     // === SERVICES ===
     'service_delivery': {
       fr: 'Livraison',

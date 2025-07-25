@@ -1332,28 +1332,42 @@ const submitApplication = async (ctx) => {
 // Annuler la demande
 const handleCancelApplication = async (ctx) => {
   try {
-    const userId = ctx.from.id;
-    userForms.delete(userId);
-    lastBotMessages.delete(userId);
-    
-    const message = `❌ **Demande annulée**\n\n` +
-      `Ta demande d'inscription a été annulée.\n\n` +
-      `Tu peux recommencer quand tu veux !`;
-    
-    const keyboard = Markup.inlineKeyboard([
-      [Markup.button.callback('🔙 Retour au menu', 'back_main')]
-    ]);
-    
-    await safeEditMessage(ctx, message, {
-      reply_markup: keyboard.reply_markup,
-      parse_mode: 'Markdown'
-    }, true); // Afficher avec l'image d'accueil
-    
-    await ctx.answerCbQuery('Demande annulée');
+      const userId = ctx.from.id;
+  userForms.delete(userId);
+  lastBotMessages.delete(userId);
+  
+  // Récupérer la langue actuelle pour les traductions
+  const Config = require('../models/Config');
+  const config = await Config.findById('main');
+  const currentLang = config?.languages?.currentLanguage || 'fr';
+  const customTranslations = config?.languages?.translations;
+  
+  const message = `${getTranslation('registration.cancelTitle', currentLang, customTranslations)}\n\n` +
+    `${getTranslation('registration.cancelMessage', currentLang, customTranslations)}\n\n` +
+    `${getTranslation('registration.canRestart', currentLang, customTranslations)}`;
+  
+  const keyboard = Markup.inlineKeyboard([
+    [Markup.button.callback(getTranslation('registration.backToMenu', currentLang, customTranslations), 'back_main')]
+  ]);
+  
+  await safeEditMessage(ctx, message, {
+    reply_markup: keyboard.reply_markup,
+    parse_mode: 'Markdown'
+  }, true); // Afficher avec l'image d'accueil
+  
+  await ctx.answerCbQuery(getTranslation('registration.cancelledShort', currentLang, customTranslations));
     
   } catch (error) {
     console.error('Erreur dans handleCancelApplication:', error);
-    await ctx.answerCbQuery('❌ Erreur');
+    try {
+      const Config = require('../models/Config');
+      const config = await Config.findById('main');
+      const currentLang = config?.languages?.currentLanguage || 'fr';
+      const customTranslations = config?.languages?.translations;
+      await ctx.answerCbQuery(getTranslation('registration.error.general', currentLang, customTranslations));
+    } catch (langError) {
+      await ctx.answerCbQuery('❌ Erreur');
+    }
   }
 };
 
