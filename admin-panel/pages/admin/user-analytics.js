@@ -103,11 +103,11 @@ export default function UserAnalytics() {
         <title>Analyse Géographique - Administration</title>
       </Head>
 
-      <div className="p-4 lg:p-6 text-white min-h-screen">
+      <div className="p-4 lg:p-6 text-white min-h-screen bg-gray-900">
         {/* Header Mobile-First */}
         <div className="mb-6">
           <div className="bg-gray-800 rounded-xl border-2 border-green-500 p-4 mb-4">
-            <h1 className="text-lg sm:text-xl lg:text-2xl font-bold text-white text-center">
+            <h1 className="text-lg sm:text-xl lg:text-2xl font-bold text-black text-center bg-white rounded-lg p-2">
               🌍 📊 ANALYSE GÉOGRAPHIQUE 🌍
             </h1>
           </div>
@@ -123,17 +123,17 @@ export default function UserAnalytics() {
             
             {stats.lastUpdate && (
               <div className="flex flex-col sm:flex-row items-center gap-2">
-                <div className="text-gray-400 text-sm text-center sm:text-left">
+                <div className="text-black bg-white rounded px-2 py-1 text-sm text-center sm:text-left">
                   📅 MAJ: {stats.lastUpdate.toLocaleTimeString('fr-FR')}
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="flex items-center gap-1">
-                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                    <span className="text-green-400 text-xs font-medium">TEMPS RÉEL</span>
-                  </div>
-                  <div className="text-yellow-400 text-xs">
-                    ⏱️ {nextUpdateIn}s
-                  </div>
+                                      <div className="flex items-center gap-1 bg-green-100 rounded px-2 py-1">
+                      <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                      <span className="text-green-700 text-xs font-medium">TEMPS RÉEL</span>
+                    </div>
+                    <div className="text-black bg-yellow-200 rounded px-2 py-1 text-xs font-medium">
+                      ⏱️ {nextUpdateIn}s
+                    </div>
                 </div>
               </div>
             )}
@@ -142,7 +142,7 @@ export default function UserAnalytics() {
 
         {/* Filtres temporels - Mobile Responsive */}
         <div className="mb-6">
-          <h3 className="text-white font-semibold mb-3 text-center sm:text-left">Période :</h3>
+          <h3 className="text-black font-semibold mb-3 text-center sm:text-left bg-white rounded px-3 py-1 inline-block">Période :</h3>
           <div className="grid grid-cols-2 sm:flex gap-2">
             {[
               { value: 'all', label: 'Tout' },
@@ -155,8 +155,8 @@ export default function UserAnalytics() {
                 onClick={() => setTimeRange(option.value)}
                 className={`px-4 py-2 rounded-lg font-medium transition-all text-sm ${
                   timeRange === option.value 
-                    ? 'bg-green-600 text-white font-bold' 
-                    : 'bg-gray-700 text-white hover:bg-gray-600'
+                    ? 'bg-green-600 text-white font-bold border-2 border-white' 
+                    : 'bg-white text-black border-2 border-gray-300 hover:bg-gray-100'
                 }`}
               >
                 {option.label}
@@ -169,12 +169,12 @@ export default function UserAnalytics() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
           <div className="bg-gray-800 p-6 rounded-xl border border-gray-700 text-center">
             <h4 className="text-green-500 mb-2 font-semibold">👥 Total Utilisateurs</h4>
-            <div className="text-3xl font-bold text-white">{stats.totalUsers || 0}</div>
+            <div className="text-3xl font-bold text-black bg-white rounded px-2 py-1 inline-block">{stats.totalUsers || 0}</div>
           </div>
 
           <div className="bg-gray-800 p-6 rounded-xl border border-gray-700 text-center">
             <h4 className="text-blue-500 mb-2 font-semibold">📍 Localisés</h4>
-            <div className="text-3xl font-bold text-white">{stats.usersWithLocation || 0}</div>
+            <div className="text-3xl font-bold text-black bg-white rounded px-2 py-1 inline-block">{stats.usersWithLocation || 0}</div>
             <div className="text-sm text-blue-400 mt-1">
               {getLocationCoverage()}% de couverture
             </div>
@@ -182,13 +182,13 @@ export default function UserAnalytics() {
 
           <div className="bg-gray-800 p-6 rounded-xl border border-gray-700 text-center sm:col-span-2 lg:col-span-1">
             <h4 className="text-yellow-500 mb-2 font-semibold">🌍 Pays Détectés</h4>
-            <div className="text-3xl font-bold text-white">{stats.countryStats?.length || 0}</div>
+            <div className="text-3xl font-bold text-black bg-white rounded px-2 py-1 inline-block">{stats.countryStats?.length || 0}</div>
           </div>
         </div>
 
         {/* Barre de progression de couverture */}
         <div className="bg-gray-800 p-6 rounded-xl border border-gray-700 mb-6">
-          <h3 className="mb-4 text-white font-semibold text-center sm:text-left">📈 Couverture Géolocalisation</h3>
+          <h3 className="mb-4 text-black font-semibold text-center sm:text-left bg-white rounded px-3 py-1 inline-block">📈 Couverture Géolocalisation</h3>
           
           <div className="bg-gray-700 rounded-lg overflow-hidden h-6 mb-3">
             <div 
@@ -197,15 +197,15 @@ export default function UserAnalytics() {
             />
           </div>
           
-          <div className="flex flex-col sm:flex-row justify-between text-sm text-gray-400 gap-2">
-            <span className="text-center sm:text-left">{stats.usersWithLocation} utilisateurs localisés</span>
-            <span className="text-center sm:text-right">{getLocationCoverage()}% de couverture</span>
+          <div className="flex flex-col sm:flex-row justify-between text-sm gap-2">
+            <span className="text-center sm:text-left text-black bg-white rounded px-2 py-1">{stats.usersWithLocation} utilisateurs localisés</span>
+            <span className="text-center sm:text-right text-black bg-white rounded px-2 py-1">{getLocationCoverage()}% de couverture</span>
           </div>
         </div>
 
         {/* Graphique par pays - Mobile optimisé */}
         <div className="bg-gray-800 p-6 rounded-xl border border-gray-700 mb-6">
-          <h3 className="mb-4 text-white font-semibold text-center sm:text-left">🗺️ Répartition par Pays</h3>
+          <h3 className="mb-4 text-black font-semibold text-center sm:text-left bg-white rounded px-3 py-1 inline-block">🗺️ Répartition par Pays</h3>
           
           {stats.countryStats?.length === 0 ? (
             <div className="text-center py-12 text-gray-400">
@@ -226,7 +226,7 @@ export default function UserAnalytics() {
                     <div className="flex items-center gap-3 mb-2 sm:mb-0">
                       <span className="text-2xl">{getCountryFlag(country.countryCode)}</span>
                       <div>
-                        <div className="font-semibold text-white text-sm sm:text-base">
+                        <div className="font-semibold text-black bg-white rounded px-2 py-1 text-sm sm:text-base inline-block">
                           {country.country}
                         </div>
                         {country.latestUser && (
@@ -246,7 +246,7 @@ export default function UserAnalytics() {
                     
                     <div className="flex items-center justify-between w-full sm:w-auto gap-4">
                       <div className="text-right">
-                        <div className={`text-lg font-bold ${index < 3 ? 'text-green-500' : 'text-white'}`}>
+                        <div className={`text-lg font-bold text-black bg-white rounded px-2 py-1 inline-block ${index < 3 ? 'border-2 border-green-500' : ''}`}>
                           {country.count}
                         </div>
                         <div className="text-xs text-gray-400">
