@@ -109,6 +109,7 @@ export default function ShopPlugDetail() {
       
       let data
       try {
+        // Méthode 1: Essayer l'API directe avec tous les plugs
         const directResponse = await fetch(`${apiBaseUrl}/api/public/plugs?limit=1000&t=${timestamp}`, {
           method: 'GET',
           headers: {
@@ -121,14 +122,15 @@ export default function ShopPlugDetail() {
         
         if (directResponse.ok) {
           data = await directResponse.json()
-          console.log('✅ API détail directe réussie:', data)
+          console.log('✅ API détail directe réussie, recherche plug:', id)
         } else {
-          throw new Error(`Direct plug failed: HTTP ${directResponse.status}`)
+          throw new Error(`Direct API failed: HTTP ${directResponse.status}`)
         }
       } catch (directError) {
-        console.log('❌ Plug détail direct échoué:', directError.message)
+        console.log('❌ API directe échouée:', directError.message)
         
         try {
+          // Méthode 2: Fallback via proxy
           const proxyResponse = await fetch(`/api/proxy?endpoint=/api/public/plugs&limit=1000&t=${new Date().getTime()}`, {
             method: 'GET',
             headers: {
@@ -139,15 +141,12 @@ export default function ShopPlugDetail() {
           
           if (proxyResponse.ok) {
             data = await proxyResponse.json()
-            console.log('✅ Plug détail via proxy:', data)
-          } else if (proxyResponse.status === 404) {
-            setNotFound(true)
-            return
+            console.log('✅ Plug détail via proxy réussi')
           } else {
-            throw new Error(`Plug proxy failed: HTTP ${proxyResponse.status}`)
+            throw new Error(`Proxy failed: HTTP ${proxyResponse.status}`)
           }
         } catch (proxyError) {
-          console.log('❌ Plug détail proxy échoué:', proxyError.message)
+          console.log('❌ Proxy échoué:', proxyError.message)
           setNotFound(true)
           return
         }
@@ -167,10 +166,25 @@ export default function ShopPlugDetail() {
       const foundPlug = plugsArray.find(p => p._id === id)
       if (foundPlug) {
         console.log('✅ Plug trouvé:', foundPlug.name)
+        
+        // Vérifier que le plug a les propriétés nécessaires
+        if (!foundPlug.name) {
+          console.warn('⚠️ Plug sans nom:', foundPlug)
+        }
+        if (!foundPlug.services) {
+          console.warn('⚠️ Plug sans services:', foundPlug.name)
+          foundPlug.services = {
+            delivery: { enabled: false },
+            postal: { enabled: false },
+            meetup: { enabled: false }
+          }
+        }
+        
         setPlug(foundPlug)
         setLikes(foundPlug.likes || 0)
       } else {
         console.log('❌ Plug non trouvé avec ID:', id)
+        console.log('📋 Plugs disponibles:', plugsArray.map(p => ({ id: p._id, name: p.name })))
         setNotFound(true)
       }
     } catch (error) {
@@ -323,11 +337,37 @@ export default function ShopPlugDetail() {
     )
   }
 
+  // Protection supplémentaire pour s'assurer que plug est défini
+  if (!plug) {
+    return (
+      <>
+        <Head>
+          <title>{t('loading') || 'Chargement'}...</title>
+          <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+        </Head>
+        <div style={{ backgroundColor: '#000000', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ 
+              width: '48px', 
+              height: '48px', 
+              border: '2px solid transparent',
+              borderTop: '2px solid #ffffff',
+              borderRadius: '50%',
+              animation: 'spin 1s linear infinite',
+              margin: '0 auto 16px'
+            }}></div>
+            <p style={{ color: '#ffffff', fontWeight: '500' }}>{t('loading_shop') || 'Chargement de la boutique'}...</p>
+          </div>
+        </div>
+      </>
+    )
+  }
+
   return (
     <>
       <Head>
-        <title>{plug.name} - {config?.boutique?.name || 'FINDYOURPLUG'}</title>
-        <meta name="description" content={plug.description} />
+        <title>{plug?.name || 'Boutique'} - {config?.boutique?.name || 'FINDYOURPLUG'}</title>
+        <meta name="description" content={plug?.description || ''} />
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
       </Head>
 
@@ -600,7 +640,7 @@ export default function ShopPlugDetail() {
                 </div>
 
                 {/* Localisation */}
-                {plug.countries && plug.countries.length > 0 && (
+                {plug?.countries && Array.isArray(plug.countries) && plug.countries.length > 0 && (
                   <div style={{ 
                     marginTop: '20px',
                     paddingTop: '16px',
@@ -653,15 +693,15 @@ export default function ShopPlugDetail() {
                     alignItems: 'center', 
                     justifyContent: 'space-between',
                     padding: '12px',
-                    backgroundColor: plug.services?.delivery?.enabled ? '#0a4a2a' : '#2a2a2a',
+                    backgroundColor: plug?.services?.delivery?.enabled ? '#0a4a2a' : '#2a2a2a',
                     borderRadius: '8px',
-                    border: plug.services?.delivery?.enabled ? '1px solid #22c55e' : '1px solid #3a3a3a'
+                    border: plug?.services?.delivery?.enabled ? '1px solid #22c55e' : '1px solid #3a3a3a'
                   }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                       <span style={{ fontSize: '20px' }}>📦</span>
                       <div>
-                        <div style={{ fontWeight: '500', color: '#ffffff' }}>{translateService('delivery')}</div>
-                        {plug.services?.delivery?.price && (
+                        <div style={{ fontWeight: '500', color: '#ffffff' }}>{translateService('delivery') || 'Livraison'}</div>
+                        {plug?.services?.delivery?.price && (
                           <div style={{ fontSize: '13px', color: '#8e8e93' }}>
                             {plug.services.delivery.price}
                           </div>
@@ -669,11 +709,11 @@ export default function ShopPlugDetail() {
                       </div>
                     </div>
                     <div style={{ 
-                      color: plug.services?.delivery?.enabled ? '#22c55e' : '#ef4444',
+                      color: plug?.services?.delivery?.enabled ? '#22c55e' : '#ef4444',
                       fontWeight: '500',
                       fontSize: '14px'
                     }}>
-                      {plug.services?.delivery?.enabled ? `✓ ${t('available') || 'Disponible'}` : `✗ ${t('not_available') || 'Non disponible'}`}
+                      {plug?.services?.delivery?.enabled ? `✓ ${t('available') || 'Disponible'}` : `✗ ${t('not_available') || 'Non disponible'}`}
                     </div>
                   </div>
 
@@ -683,15 +723,15 @@ export default function ShopPlugDetail() {
                     alignItems: 'center', 
                     justifyContent: 'space-between',
                     padding: '12px',
-                    backgroundColor: plug.services?.postal?.enabled ? '#1a3a4a' : '#2a2a2a',
+                    backgroundColor: plug?.services?.postal?.enabled ? '#1a3a4a' : '#2a2a2a',
                     borderRadius: '8px',
-                    border: plug.services?.postal?.enabled ? '1px solid #3b82f6' : '1px solid #3a3a3a'
+                    border: plug?.services?.postal?.enabled ? '1px solid #3b82f6' : '1px solid #3a3a3a'
                   }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                      <span style={{ fontSize: '20px' }}>📍</span>
+                      <span style={{ fontSize: '20px' }}>📬</span>
                       <div>
-                        <div style={{ fontWeight: '500', color: '#ffffff' }}>{translateService('postal')}</div>
-                        {plug.services?.postal?.price && (
+                        <div style={{ fontWeight: '500', color: '#ffffff' }}>{translateService('postal') || 'Envoi postal'}</div>
+                        {plug?.services?.postal?.price && (
                           <div style={{ fontSize: '13px', color: '#8e8e93' }}>
                             {plug.services.postal.price}
                           </div>
@@ -699,11 +739,11 @@ export default function ShopPlugDetail() {
                       </div>
                     </div>
                     <div style={{ 
-                      color: plug.services?.postal?.enabled ? '#3b82f6' : '#ef4444',
+                      color: plug?.services?.postal?.enabled ? '#3b82f6' : '#ef4444',
                       fontWeight: '500',
                       fontSize: '14px'
                     }}>
-                      {plug.services?.postal?.enabled ? `✓ ${t('available') || 'Disponible'}` : `✗ ${t('not_available') || 'Non disponible'}`}
+                      {plug?.services?.postal?.enabled ? `✓ ${t('available') || 'Disponible'}` : `✗ ${t('not_available') || 'Non disponible'}`}
                     </div>
                   </div>
 
@@ -713,15 +753,15 @@ export default function ShopPlugDetail() {
                     alignItems: 'center', 
                     justifyContent: 'space-between',
                     padding: '12px',
-                    backgroundColor: plug.services?.meetup?.enabled ? '#4a2a1a' : '#2a2a2a',
+                    backgroundColor: plug?.services?.meetup?.enabled ? '#4a2a1a' : '#2a2a2a',
                     borderRadius: '8px',
-                    border: plug.services?.meetup?.enabled ? '1px solid #f59e0b' : '1px solid #3a3a3a'
+                    border: plug?.services?.meetup?.enabled ? '1px solid #f59e0b' : '1px solid #3a3a3a'
                   }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                      <span style={{ fontSize: '20px' }}>💰</span>
+                      <span style={{ fontSize: '20px' }}>🤝</span>
                       <div>
-                        <div style={{ fontWeight: '500', color: '#ffffff' }}>{translateService('meetup')}</div>
-                        {plug.services?.meetup?.price && (
+                        <div style={{ fontWeight: '500', color: '#ffffff' }}>{translateService('meetup') || 'Meetup'}</div>
+                        {plug?.services?.meetup?.price && (
                           <div style={{ fontSize: '13px', color: '#8e8e93' }}>
                             {plug.services.meetup.price}
                           </div>
@@ -729,18 +769,18 @@ export default function ShopPlugDetail() {
                       </div>
                     </div>
                     <div style={{ 
-                      color: plug.services?.meetup?.enabled ? '#f59e0b' : '#ef4444',
+                      color: plug?.services?.meetup?.enabled ? '#f59e0b' : '#ef4444',
                       fontWeight: '500',
                       fontSize: '14px'
                     }}>
-                      {plug.services?.meetup?.enabled ? `✓ ${t('available') || 'Disponible'}` : `✗ ${t('not_available') || 'Non disponible'}`}
+                      {plug?.services?.meetup?.enabled ? `✓ ${t('available') || 'Disponible'}` : `✗ ${t('not_available') || 'Non disponible'}`}
                     </div>
                   </div>
                 </div>
               </div>
 
               {/* Réseaux sociaux */}
-              {plug.socialMedia && plug.socialMedia.length > 0 && (
+              {plug?.socialMedia && Array.isArray(plug.socialMedia) && plug.socialMedia.length > 0 && (
                 <div style={{ 
                   backgroundColor: '#1a1a1a',
                   borderRadius: '12px',
@@ -787,7 +827,7 @@ export default function ShopPlugDetail() {
               )}
 
               {/* Informations complémentaires */}
-              {plug.additionalInfo && (
+              {plug?.additionalInfo && (
                 <div style={{ 
                   backgroundColor: '#1a1a1a',
                   borderRadius: '12px',
