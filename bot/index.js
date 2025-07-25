@@ -3148,15 +3148,44 @@ app.post('/api/force-geolocate-all', async (req, res) => {
   }
 });
 
-// API pour les statistiques de géolocalisation des utilisateurs
-app.post('/api/admin/user-analytics', async (req, res) => {
+// API pour les statistiques de géolocalisation des utilisateurs (GET et POST)
+const handleUserAnalytics = async (req, res) => {
   try {
-    const { timeRange, dateFilter } = req.body;
+    // Support des paramètres depuis query (GET) ou body (POST)
+    const timeRange = req.query.timeRange || req.body?.timeRange || 'all';
+    const dateFilter = req.body?.dateFilter || {};
     
     console.log(`📊 Génération stats utilisateurs - période: ${timeRange}`);
     
+    // Calcul des filtres de date selon la période
+    let calculatedDateFilter = { ...dateFilter };
+    
+    if (timeRange !== 'all') {
+      const now = new Date();
+      let startDate;
+      
+      switch (timeRange) {
+        case '1d':
+          startDate = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+          break;
+        case '7d':
+          startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+          break;
+        case '30d':
+          startDate = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+          break;
+        default:
+          startDate = null;
+      }
+      
+      if (startDate) {
+        calculatedDateFilter.createdAt = { $gte: startDate };
+        console.log(`📅 Filtre de date appliqué: depuis ${startDate.toISOString()}`);
+      }
+    }
+    
     // Filtres de base
-    const userFilter = { ...dateFilter };
+    const userFilter = { ...calculatedDateFilter };
     
     // Statistiques générales
     const totalUsers = await User.countDocuments(userFilter);
@@ -3171,7 +3200,7 @@ app.post('/api/admin/user-analytics', async (req, res) => {
     
     // Filtrer les stats par période si nécessaire
     let filteredCountryStats = countryStats;
-    if (timeRange !== 'all' && dateFilter.createdAt) {
+    if (timeRange !== 'all' && calculatedDateFilter.createdAt) {
       // Re-calculer les stats avec le filtre de date
       filteredCountryStats = await User.aggregate([
         {
@@ -3224,7 +3253,11 @@ app.post('/api/admin/user-analytics', async (req, res) => {
       details: error.message 
     });
   }
-});
+};
+
+// Routes pour user analytics (GET et POST)
+app.get('/api/admin/user-analytics', handleUserAnalytics);
+app.post('/api/admin/user-analytics', handleUserAnalytics);
 
 // DEBUG: Endpoint pour forcer reload config et afficher debug
 app.get('/api/debug/config-reload', async (req, res) => {

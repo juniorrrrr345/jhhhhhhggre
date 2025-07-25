@@ -76,14 +76,11 @@ export default function UserAnalytics() {
   if (stats.loading) {
     return (
       <AdminLayout>
-        <div style={{ 
-          display: 'flex', 
-          justifyContent: 'center', 
-          alignItems: 'center', 
-          height: '400px',
-          color: '#ffffff'
-        }}>
-          <div>⏳ Chargement des statistiques utilisateurs...</div>
+        <div className="flex justify-center items-center h-96 text-white">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500 mx-auto mb-4"></div>
+            <div>⏳ Chargement des statistiques utilisateurs...</div>
+          </div>
         </div>
       </AdminLayout>
     )
@@ -95,218 +92,153 @@ export default function UserAnalytics() {
         <title>Analyse Géographique - Administration</title>
       </Head>
 
-      <div style={{ padding: '20px', color: '#ffffff' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-          <h1 style={{ 
-            fontSize: '28px', 
-            fontWeight: 'bold', 
-            color: '#ffffff',
-            textAlign: 'center',
-            padding: '20px',
-            backgroundColor: '#1f2937',
-            borderRadius: '12px',
-            border: '2px solid #22c55e',
-            textShadow: '2px 2px 4px rgba(0,0,0,0.5)',
-            flex: 1
-          }}>
-            🌍 📊 ANALYSE GÉOGRAPHIQUE DES UTILISATEURS 🌍
-          </h1>
+      <div className="p-4 lg:p-6 text-white min-h-screen">
+        {/* Header Mobile-First */}
+        <div className="mb-6">
+          <div className="bg-gray-800 rounded-xl border-2 border-green-500 p-4 mb-4">
+            <h1 className="text-lg sm:text-xl lg:text-2xl font-bold text-white text-center">
+              🌍 📊 ANALYSE GÉOGRAPHIQUE 🌍
+            </h1>
+          </div>
           
-          <button
-            onClick={fetchUserStats}
-            disabled={stats.loading}
-            style={{
-              marginLeft: '20px',
-              padding: '12px 20px',
-              backgroundColor: '#22c55e',
-              color: '#ffffff',
-              border: 'none',
-              borderRadius: '8px',
-              cursor: stats.loading ? 'not-allowed' : 'pointer',
-              fontSize: '14px',
-              fontWeight: 'bold',
-              opacity: stats.loading ? 0.5 : 1
-            }}
-          >
-            {stats.loading ? '⏳ Chargement...' : '🔄 Actualiser'}
-          </button>
-        </div>
-
-        {/* Filtres temporels */}
-        <div style={{ 
-          marginBottom: '30px',
-          display: 'flex',
-          gap: '10px',
-          flexWrap: 'wrap',
-          alignItems: 'center'
-        }}>
-          <h3 style={{ 
-            marginRight: '15px', 
-            color: '#ffffff', 
-            fontSize: '16px',
-            marginBottom: '0',
-            minWidth: 'fit-content'
-          }}>Période :</h3>
-          {[
-            { value: 'all', label: 'Tout' },
-            { value: '30d', label: '30 jours' },
-            { value: '7d', label: '7 jours' },
-            { value: '1d', label: '24h' }
-          ].map(option => (
+          <div className="flex flex-col sm:flex-row gap-4 items-center">
             <button
-              key={option.value}
-              onClick={() => setTimeRange(option.value)}
-              style={{
-                padding: '10px 16px',
-                borderRadius: '8px',
-                border: 'none',
-                backgroundColor: timeRange === option.value ? '#22c55e' : '#374151',
-                color: '#ffffff',
-                cursor: 'pointer',
-                fontSize: '14px',
-                fontWeight: timeRange === option.value ? 'bold' : 'normal',
-                transition: 'all 0.2s ease',
-                minWidth: '80px'
-              }}
+              onClick={fetchUserStats}
+              disabled={stats.loading}
+              className="w-full sm:w-auto px-4 py-2 bg-green-600 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-colors"
             >
-              {option.label}
+              {stats.loading ? '⏳ Chargement...' : '🔄 Actualiser'}
             </button>
-          ))}
-          
-          {stats.lastUpdate && (
-            <div style={{ 
-              color: '#9ca3af', 
-              fontSize: '12px', 
-              alignSelf: 'center',
-              marginLeft: '20px'
-            }}>
-              📅 Dernière maj: {stats.lastUpdate.toLocaleTimeString('fr-FR')}
-            </div>
-          )}
+            
+            {stats.lastUpdate && (
+              <div className="text-gray-400 text-sm text-center sm:text-left">
+                📅 MAJ: {stats.lastUpdate.toLocaleTimeString('fr-FR')}
+              </div>
+            )}
+          </div>
         </div>
 
-        {/* Statistiques générales */}
-        <div style={{ 
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-          gap: '15px',
-          marginBottom: '30px'
-        }}>
-          <div style={{
-            backgroundColor: '#1f2937',
-            padding: '20px',
-            borderRadius: '12px',
-            border: '1px solid #374151',
-            textAlign: 'center'
-          }}>
-            <h4 style={{ color: '#22c55e', marginBottom: '10px', fontSize: '16px' }}>👥 Total Utilisateurs</h4>
-            <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#ffffff' }}>{stats.totalUsers || 0}</div>
+        {/* Filtres temporels - Mobile Responsive */}
+        <div className="mb-6">
+          <h3 className="text-white font-semibold mb-3 text-center sm:text-left">Période :</h3>
+          <div className="grid grid-cols-2 sm:flex gap-2">
+            {[
+              { value: 'all', label: 'Tout' },
+              { value: '30d', label: '30 jours' },
+              { value: '7d', label: '7 jours' },
+              { value: '1d', label: '24h' }
+            ].map(option => (
+              <button
+                key={option.value}
+                onClick={() => setTimeRange(option.value)}
+                className={`px-4 py-2 rounded-lg font-medium transition-all text-sm ${
+                  timeRange === option.value 
+                    ? 'bg-green-600 text-white font-bold' 
+                    : 'bg-gray-700 text-white hover:bg-gray-600'
+                }`}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Statistiques générales - Cards responsives */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+          <div className="bg-gray-800 p-6 rounded-xl border border-gray-700 text-center">
+            <h4 className="text-green-500 mb-2 font-semibold">👥 Total Utilisateurs</h4>
+            <div className="text-3xl font-bold text-white">{stats.totalUsers || 0}</div>
           </div>
 
-          <div style={{
-            backgroundColor: '#1f2937',
-            padding: '20px',
-            borderRadius: '12px',
-            border: '1px solid #374151',
-            textAlign: 'center'
-          }}>
-            <h4 style={{ color: '#3b82f6', marginBottom: '10px', fontSize: '16px' }}>📍 Localisés</h4>
-            <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#ffffff' }}>{stats.usersWithLocation || 0}</div>
-            <div style={{ fontSize: '14px', color: '#3b82f6', marginTop: '5px' }}>
+          <div className="bg-gray-800 p-6 rounded-xl border border-gray-700 text-center">
+            <h4 className="text-blue-500 mb-2 font-semibold">📍 Localisés</h4>
+            <div className="text-3xl font-bold text-white">{stats.usersWithLocation || 0}</div>
+            <div className="text-sm text-blue-400 mt-1">
               {getLocationCoverage()}% de couverture
             </div>
           </div>
 
-          <div style={{
-            backgroundColor: '#1f2937',
-            padding: '20px',
-            borderRadius: '12px',
-            border: '1px solid #374151',
-            textAlign: 'center'
-          }}>
-            <h4 style={{ color: '#f59e0b', marginBottom: '10px', fontSize: '16px' }}>🌍 Pays Détectés</h4>
-            <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#ffffff' }}>{stats.countryStats?.length || 0}</div>
+          <div className="bg-gray-800 p-6 rounded-xl border border-gray-700 text-center sm:col-span-2 lg:col-span-1">
+            <h4 className="text-yellow-500 mb-2 font-semibold">🌍 Pays Détectés</h4>
+            <div className="text-3xl font-bold text-white">{stats.countryStats?.length || 0}</div>
           </div>
         </div>
 
-        {/* Graphique par pays */}
-        <div style={{
-          backgroundColor: '#1f2937',
-          padding: '20px',
-          borderRadius: '8px',
-          border: '1px solid #374151',
-          marginBottom: '20px'
-        }}>
-          <h3 style={{ marginBottom: '20px', color: '#ffffff' }}>🗺️ Répartition par Pays</h3>
+        {/* Barre de progression de couverture */}
+        <div className="bg-gray-800 p-6 rounded-xl border border-gray-700 mb-6">
+          <h3 className="mb-4 text-white font-semibold text-center sm:text-left">📈 Couverture Géolocalisation</h3>
           
-          {stats.countryStats.length === 0 ? (
-            <div style={{ 
-              textAlign: 'center', 
-              padding: '40px',
-              color: '#9ca3af'
-            }}>
-              Aucune donnée de géolocalisation disponible
+          <div className="bg-gray-700 rounded-lg overflow-hidden h-6 mb-3">
+            <div 
+              className="bg-green-500 h-full transition-all duration-300 ease-out"
+              style={{ width: `${getLocationCoverage()}%` }}
+            />
+          </div>
+          
+          <div className="flex flex-col sm:flex-row justify-between text-sm text-gray-400 gap-2">
+            <span className="text-center sm:text-left">{stats.usersWithLocation} utilisateurs localisés</span>
+            <span className="text-center sm:text-right">{getLocationCoverage()}% de couverture</span>
+          </div>
+        </div>
+
+        {/* Graphique par pays - Mobile optimisé */}
+        <div className="bg-gray-800 p-6 rounded-xl border border-gray-700 mb-6">
+          <h3 className="mb-4 text-white font-semibold text-center sm:text-left">🗺️ Répartition par Pays</h3>
+          
+          {stats.countryStats?.length === 0 ? (
+            <div className="text-center py-12 text-gray-400">
+              <div className="text-4xl mb-2">🌍</div>
+              <div>Aucune donnée de géolocalisation disponible</div>
             </div>
           ) : (
-            <div style={{ 
-              display: 'grid',
-              gap: '10px'
-            }}>
-              {stats.countryStats.map((country, index) => {
+            <div className="space-y-3">
+              {stats.countryStats?.map((country, index) => {
                 const percentage = Math.round((country.count / stats.usersWithLocation) * 100)
                 
                 return (
-                  <div key={`${country.countryCode}-${index}`} style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    padding: '12px',
-                    backgroundColor: '#374151',
-                    borderRadius: '6px',
-                    border: index < 3 ? '1px solid #22c55e' : '1px solid #4b5563'
-                  }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                      <span style={{ fontSize: '24px' }}>
-                        {getCountryFlag(country.countryCode)}
-                      </span>
+                  <div key={`${country.countryCode}-${index}`} className={`
+                    flex flex-col sm:flex-row items-start sm:items-center justify-between 
+                    p-4 rounded-lg transition-all
+                    ${index < 3 ? 'bg-gray-700 border border-green-500' : 'bg-gray-700 border border-gray-600'}
+                  `}>
+                    <div className="flex items-center gap-3 mb-2 sm:mb-0">
+                      <span className="text-2xl">{getCountryFlag(country.countryCode)}</span>
                       <div>
-                        <div style={{ fontWeight: '600', color: '#ffffff' }}>
+                        <div className="font-semibold text-white text-sm sm:text-base">
                           {country.country}
                         </div>
                         {country.latestUser && (
-                          <div style={{ fontSize: '12px', color: '#9ca3af' }}>
+                          <div className="text-xs text-gray-400">
                             Dernier: {formatDate(country.latestUser)}
                           </div>
                         )}
                       </div>
+                      
+                      {/* Badge TOP mobile */}
+                      {index < 3 && (
+                        <div className="bg-green-500 text-black px-2 py-1 rounded-full text-xs font-bold ml-auto sm:hidden">
+                          TOP {index + 1}
+                        </div>
+                      )}
                     </div>
                     
-                    <div style={{ textAlign: 'right' }}>
-                      <div style={{ 
-                        fontSize: '18px', 
-                        fontWeight: 'bold',
-                        color: index < 3 ? '#22c55e' : '#ffffff'
-                      }}>
-                        {country.count} utilisateurs
+                    <div className="flex items-center justify-between w-full sm:w-auto gap-4">
+                      <div className="text-right">
+                        <div className={`text-lg font-bold ${index < 3 ? 'text-green-500' : 'text-white'}`}>
+                          {country.count}
+                        </div>
+                        <div className="text-xs text-gray-400">
+                          {percentage}%
+                        </div>
                       </div>
-                      <div style={{ fontSize: '12px', color: '#9ca3af' }}>
-                        {percentage}%
-                      </div>
+                      
+                      {/* Badge TOP desktop */}
+                      {index < 3 && (
+                        <div className="hidden sm:block bg-green-500 text-black px-3 py-1 rounded-full text-xs font-bold">
+                          TOP {index + 1}
+                        </div>
+                      )}
                     </div>
-                    
-                    {/* Badge top 3 */}
-                    {index < 3 && (
-                      <div style={{
-                        backgroundColor: '#22c55e',
-                        color: '#000000',
-                        padding: '2px 8px',
-                        borderRadius: '12px',
-                        fontSize: '11px',
-                        fontWeight: 'bold'
-                      }}>
-                        TOP {index + 1}
-                      </div>
-                    )}
                   </div>
                 )
               })}
@@ -314,52 +246,13 @@ export default function UserAnalytics() {
           )}
         </div>
 
-        {/* Barre de progression de couverture */}
-        <div style={{
-          backgroundColor: '#1f2937',
-          padding: '20px',
-          borderRadius: '8px',
-          border: '1px solid #374151'
-        }}>
-          <h3 style={{ marginBottom: '15px', color: '#ffffff' }}>📈 Couverture Géolocalisation</h3>
-          
-          <div style={{
-            backgroundColor: '#374151',
-            borderRadius: '8px',
-            overflow: 'hidden',
-            height: '20px',
-            marginBottom: '10px'
-          }}>
-            <div style={{
-              backgroundColor: '#22c55e',
-              height: '100%',
-              width: `${getLocationCoverage()}%`,
-              transition: 'width 0.3s ease'
-            }} />
-          </div>
-          
-          <div style={{ 
-            display: 'flex', 
-            justifyContent: 'space-between',
-            fontSize: '14px',
-            color: '#9ca3af'
-          }}>
-            <span>{stats.usersWithLocation} utilisateurs localisés</span>
-            <span>{getLocationCoverage()}% de couverture</span>
-          </div>
-        </div>
-
         {/* Note technique */}
-        <div style={{
-          marginTop: '20px',
-          padding: '15px',
-          backgroundColor: '#1e40af',
-          borderRadius: '6px',
-          fontSize: '14px',
-          color: '#bfdbfe'
-        }}>
-          <strong>ℹ️ Note technique :</strong> La géolocalisation est détectée via l'IP du serveur (approximation). 
-          Pour une précision optimale, il faudrait l'IP réelle des utilisateurs via une intégration Telegram Web App.
+        <div className="bg-blue-900 border border-blue-700 p-4 rounded-lg text-blue-200 text-sm">
+          <div className="font-semibold mb-2">ℹ️ Note technique</div>
+          <div>
+            La géolocalisation est détectée via l'IP du serveur (approximation). 
+            Pour une précision optimale, il faudrait l'IP réelle des utilisateurs via une intégration Telegram Web App.
+          </div>
         </div>
       </div>
     </AdminLayout>
