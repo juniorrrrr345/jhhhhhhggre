@@ -1,5 +1,6 @@
 const Config = require('../models/Config');
 const { createMainKeyboard } = require('../utils/keyboards');
+const { getTranslation } = require('../utils/translations');
 
 // Gestionnaire pour le bouton Contact
 const handleContact = async (ctx) => {
@@ -18,8 +19,14 @@ const handleContact = async (ctx) => {
       return handleSupportMenu(ctx, config);
     }
 
-    // Affichage contact classique
-    let message = `📞 **Contact**\n\n${config?.buttons?.contact?.content || 'Contactez-nous pour plus d\'informations !'}`;
+    // Récupérer la langue actuelle et les traductions
+    const currentLang = config?.languages?.currentLanguage || 'fr';
+    const customTranslations = config?.languages?.translations;
+    
+    // Affichage contact classique avec traductions
+    const contactTitle = getTranslation('menu_contact', currentLang, customTranslations);
+    const defaultContactText = getTranslation('contact_default_text', currentLang, customTranslations) || 'Contactez-nous pour plus d\'informations !';
+    let message = `${contactTitle}\n\n${config?.buttons?.contact?.content || defaultContactText}`;
 
     // Ajouter les réseaux sociaux globaux - PRIORITÉ socialMediaList
     const socialMediaData = config?.socialMediaList || config?.socialMedia || [];
@@ -28,7 +35,8 @@ const handleContact = async (ctx) => {
     );
     
     if (activeSocials.length > 0) {
-      message += '\n\n📱 **Nous contacter :**\n';
+      const contactUsText = getTranslation('contact_us_text', currentLang, customTranslations) || 'Nous contacter';
+      message += `\n\n📱 **${contactUsText} :**\n`;
       
       activeSocials.forEach(social => {
         const emoji = social.emoji || '🌐';
@@ -132,8 +140,14 @@ const handleInfo = async (ctx) => {
       return handleInfoMenu(ctx, config);
     }
 
-    // Affichage info classique
-    const message = `ℹ️ **Informations**\n\n${config?.buttons?.info?.content || 'Découvrez notre plateforme premium.'}`;
+    // Récupérer la langue actuelle et les traductions
+    const currentLang = config?.languages?.currentLanguage || 'fr';
+    const customTranslations = config?.languages?.translations;
+    
+    // Affichage info classique avec traductions
+    const infoTitle = getTranslation('menu_info', currentLang, customTranslations);
+    const defaultInfoText = getTranslation('info_default_text', currentLang, customTranslations) || 'Découvrez notre plateforme premium.';
+    const message = `${infoTitle}\n\n${config?.buttons?.info?.content || defaultInfoText}`;
 
     const keyboard = createMainKeyboard(config);
 

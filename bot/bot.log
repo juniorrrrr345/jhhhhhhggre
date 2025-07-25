@@ -1,8 +1,8 @@
 nohup: ignoring input
 🔄 Tentative de connexion MongoDB #1...
 ✅ MongoDB connecté avec succès
-✅ MongoDB connecté: ac-rxln3be-shard-00-00.oghzx2v.mongodb.net
-📊 Loaded 6 existing users from database
+✅ MongoDB connecté: tesye-shard-00-00.qazpla.mongodb.net
+📊 Loaded 0 existing users from database
 ℹ️ Configuration existante trouvée
 🌍 Initialisation des traductions...
 🌍 Initialisation des traductions...
@@ -10,33 +10,20 @@ nohup: ignoring input
 ✅ Traductions initialisées
 🔄 Migration automatique des réseaux sociaux...
 🔗 Connexion à MongoDB réussie
-📋 3 plugs trouvés
+📋 1 plugs trouvés
 🎉 Migration terminée: 0 plugs migrés
 ✅ Migration terminée avec succès
 🔄 Initialisation du cache...
 🔄 Rafraîchissement du cache...
-✅ Cache mis à jour - 3 plugs, config: OK
+✅ Cache mis à jour - 1 plugs, config: OK
 ✅ Cache initialisé et programmé pour se rafraîchir toutes les 30s
 ✅ Bot en mode polling (développement)
-✅ Serveur démarré sur le port 3020
+✅ Serveur démarré sur le port 3021
 📱 Bot Telegram connecté
-🌐 API disponible sur http://localhost:3020
-📊 Cache: 3 plugs, config: OK
+🌐 API disponible sur http://localhost:3021
+📊 Cache: 1 plugs, config: OK
 📡 GET /api/public/plugs - IP: ::1 - UserAgent: curl/8.12.1
 📋 Headers: [ 'host', 'user-agent', 'accept' ]
-🔄 Callback reçu: top_plugs
-👤 User ID: 7670522278, Chat ID: 7670522278
-📝 Message ID: 5794
-📍 Context updated to: top_plugs
-🔝 Top Plugs affiché en langue: de
-🖼️ Images: plug=false, welcome=true, isPlugDetails=false, using=true
-🖼️ Modification avec image: https://i.imgur.com/leViC3R.jpeg
-🔄 Rafraîchissement du cache...
-✅ Cache mis à jour - 3 plugs, config: OK
-📡 GET /api/public/plugs - IP: ::1 - UserAgent: curl/8.12.1
-📋 Headers: [ 'host', 'user-agent', 'accept' ]
-🔄 Rafraîchissement du cache...
-✅ Cache mis à jour - 3 plugs, config: OK
 📡 GET /api/public/plugs - IP: ::1 - UserAgent: Admin-Panel-Proxy/1.0
 📋 Headers: [
   'host',
@@ -48,6 +35,8 @@ nohup: ignoring input
   'sec-fetch-mode',
   'accept-encoding'
 ]
+🔄 Rafraîchissement du cache...
+✅ Cache mis à jour - 1 plugs, config: OK
 🚀 Commande /start reçue de: 7670522278
 ❌ Erreur lors de l'enregistrement utilisateur: StrictModeError: Path "userId" is not in schema, strict mode is `true`, and upsert is `true`.
     at cast (/workspace/bot/node_modules/mongoose/lib/cast.js:305:17)
@@ -64,124 +53,29 @@ nohup: ignoring input
   path: 'userId'
 }
 🔄 Config rechargée depuis la DB
-🌍 Menu principal affiché en langue: de
-📸 Envoi message avec image: https://i.imgur.com/leViC3R.jpeg
+🌍 Menu principal affiché en langue: es
+📸 Envoi message avec image: https://i.imgur.com/soi9PbO.jpeg
 ✅ Message avec image envoyé
 🔄 Callback reçu: top_plugs
 👤 User ID: 7670522278, Chat ID: 7670522278
-📝 Message ID: 5796
+📝 Message ID: 5800
 📍 Context updated to: top_plugs
-🔝 Top Plugs affiché en langue: de
+🔝 Top Plugs affiché en langue: es
 🖼️ Images: plug=false, welcome=true, isPlugDetails=false, using=true
-🖼️ Modification avec image: https://i.imgur.com/leViC3R.jpeg
-🔄 Rafraîchissement du cache...
-✅ Cache mis à jour - 3 plugs, config: OK
-🔄 Rafraîchissement du cache...
-✅ Cache mis à jour - 3 plugs, config: OK
-🔄 Rafraîchissement du cache...
-✅ Cache mis à jour - 3 plugs, config: OK
-🔄 Rafraîchissement du cache...
-✅ Cache mis à jour - 3 plugs, config: OK
-🔄 Rafraîchissement du cache...
-✅ Cache mis à jour - 3 plugs, config: OK
-🔄 Rafraîchissement du cache...
-✅ Cache mis à jour - 3 plugs, config: OK
-🔄 Rafraîchissement du cache...
-✅ Cache mis à jour - 3 plugs, config: OK
-🔄 Rafraîchissement du cache...
-✅ Cache mis à jour - 3 plugs, config: OK
-🔄 Rafraîchissement du cache...
-✅ Cache mis à jour - 3 plugs, config: OK
-🔄 Rafraîchissement du cache...
-✅ Cache mis à jour - 3 plugs, config: OK
-🔄 Rafraîchissement du cache...
-✅ Cache mis à jour - 3 plugs, config: OK
-🔄 Rafraîchissement du cache...
-✅ Cache mis à jour - 3 plugs, config: OK
-🔄 Rafraîchissement du cache...
-✅ Cache mis à jour - 3 plugs, config: OK
-🔄 Rafraîchissement du cache...
-✅ Cache mis à jour - 3 plugs, config: OK
-🚀 Commande /start reçue de: 7670522278
-❌ Erreur lors de l'enregistrement utilisateur: StrictModeError: Path "userId" is not in schema, strict mode is `true`, and upsert is `true`.
-    at cast (/workspace/bot/node_modules/mongoose/lib/cast.js:305:17)
-    at Query.cast (/workspace/bot/node_modules/mongoose/lib/query.js:5055:12)
-    at Query._castConditions (/workspace/bot/node_modules/mongoose/lib/query.js:2351:10)
-    at model.Query._findOneAndUpdate (/workspace/bot/node_modules/mongoose/lib/query.js:3454:8)
-    at model.Query.exec (/workspace/bot/node_modules/mongoose/lib/query.js:4604:80)
-    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
-    at async handleStart (/workspace/bot/src/handlers/startHandler.js:65:7)
-    at async execute (/workspace/bot/node_modules/telegraf/lib/composer.js:518:17)
-    at async /workspace/bot/node_modules/telegraf/lib/composer.js:519:21
-    at async execute (/workspace/bot/node_modules/telegraf/lib/composer.js:518:17) {
-  isImmutableError: false,
-  path: 'userId'
-}
-🔄 Config rechargée depuis la DB
-🌍 Menu principal affiché en langue: de
-📸 Envoi message avec image: https://i.imgur.com/leViC3R.jpeg
-✅ Message avec image envoyé
-🔄 Callback reçu: top_plugs
-👤 User ID: 7670522278, Chat ID: 7670522278
-📝 Message ID: 5798
-📍 Context updated to: top_plugs
-🔝 Top Plugs affiché en langue: de
-🖼️ Images: plug=false, welcome=true, isPlugDetails=false, using=true
-🖼️ Modification avec image: https://i.imgur.com/leViC3R.jpeg
+🖼️ Modification avec image: https://i.imgur.com/soi9PbO.jpeg
 🔄 Callback reçu: back_main
 👤 User ID: 7670522278, Chat ID: 7670522278
-📝 Message ID: 5798
+📝 Message ID: 5800
 🔙 Retour au menu principal demandé
 📋 Configuration récupérée pour le retour
-🌍 Langue actuelle pour le retour: de
+🌍 Langue actuelle pour le retour: es
 📝 Message d'accueil préparé pour le retour avec traduction
 🖼️ Images: plug=false, welcome=true, isPlugDetails=false, using=true
-🖼️ Modification avec image: https://i.imgur.com/leViC3R.jpeg
+🖼️ Modification avec image: https://i.imgur.com/soi9PbO.jpeg
 ✅ Retour au menu principal terminé
 🔄 Callback reçu: info
 👤 User ID: 7670522278, Chat ID: 7670522278
-📝 Message ID: 5798
+📝 Message ID: 5800
 🔄 Callback reçu: contact
 👤 User ID: 7670522278, Chat ID: 7670522278
-📝 Message ID: 5798
-🔄 Rafraîchissement du cache...
-✅ Cache mis à jour - 3 plugs, config: OK
-🔄 Callback reçu: top_plugs
-👤 User ID: 7670522278, Chat ID: 7670522278
-📝 Message ID: 5798
-📍 Context updated to: top_plugs
-🔝 Top Plugs affiché en langue: de
-🖼️ Images: plug=false, welcome=true, isPlugDetails=false, using=true
-🖼️ Modification avec image: https://i.imgur.com/leViC3R.jpeg
-🔄 Callback reçu: plug_687e233151eb51ad38c5b9e7_from_top_plugs
-👤 User ID: 7670522278, Chat ID: 7670522278
-📝 Message ID: 5798
-📍 Context updated to: top_plugs
-🔍 handlePlugDetails: plugId=687e233151eb51ad38c5b9e7, returnContext=top_plugs
-📦 Plug found: Plugs pour tester (active: true)
-🖼️ Images: plug=true, welcome=true, isPlugDetails=true, using=true
-🖼️ Modification avec image: https://i.imgur.com/DD5OU6o.jpeg
-🔄 Callback reçu: like_687e233151eb51ad38c5b9e7
-👤 User ID: 7670522278, Chat ID: 7670522278
-📝 Message ID: 5798
-🔍 LIKE DEBUG: User 7670522278 veut liker plug 687e233151eb51ad38c5b9e7
-❌ Erreur dans le gestionnaire de like: TypeError: fetch failed
-    at node:internal/deps/undici/undici:13510:13
-    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
-    at async /workspace/bot/index.js:526:22
-    at async execute (/workspace/bot/node_modules/telegraf/lib/composer.js:518:17)
-    at async /workspace/bot/node_modules/telegraf/lib/composer.js:519:21
-    at async execute (/workspace/bot/node_modules/telegraf/lib/composer.js:518:17)
-    at async /workspace/bot/node_modules/telegraf/lib/composer.js:519:21
-    at async execute (/workspace/bot/node_modules/telegraf/lib/composer.js:518:17)
-    at async /workspace/bot/node_modules/telegraf/lib/composer.js:519:21
-    at async execute (/workspace/bot/node_modules/telegraf/lib/composer.js:518:17) {
-  [cause]: AggregateError [ECONNREFUSED]: 
-      at internalConnectMultiple (node:net:1139:18)
-      at afterConnectMultiple (node:net:1714:7) {
-    code: 'ECONNREFUSED',
-    [errors]: [ [Error], [Error] ]
-  }
-}
-🔄 Rafraîchissement du cache...
-✅ Cache mis à jour - 3 plugs, config: OK
+📝 Message ID: 5800

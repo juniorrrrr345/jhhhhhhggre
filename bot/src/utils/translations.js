@@ -32,6 +32,27 @@ const translations = {
       es: 'ℹ️ Información',
       de: 'ℹ️ Informationen'
     },
+    'contact_default_text': {
+      fr: 'Contactez-nous pour plus d\'informations !',
+      en: 'Contact us for more information!',
+      it: 'Contattaci per maggiori informazioni!',
+      es: '¡Contáctanos para más información!',
+      de: 'Kontaktieren Sie uns für weitere Informationen!'
+    },
+    'contact_us_text': {
+      fr: 'Nous contacter',
+      en: 'Contact us',
+      it: 'Contattaci',
+      es: 'Contáctanos',
+      de: 'Kontakt'
+    },
+    'info_default_text': {
+      fr: 'Découvrez notre plateforme premium.',
+      en: 'Discover our premium platform.',
+      it: 'Scopri la nostra piattaforma premium.',
+      es: 'Descubre nuestra plataforma premium.',
+      de: 'Entdecken Sie unsere Premium-Plattform.'
+    },
     'menu_becomeDealer': {
       fr: '💼 Devenir Plug',
       en: '💼 Become Dealer',
