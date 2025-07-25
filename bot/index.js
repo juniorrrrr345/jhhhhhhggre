@@ -236,7 +236,7 @@ bot.action('select_language', async (ctx) => {
     const currentLang = config?.languages?.currentLanguage || 'fr';
     const customTranslations = config?.languages?.translations;
     
-    const message = `🌍 **${getTranslation('menu.language', currentLang, customTranslations)}**\n\nSélectionnez votre langue préférée :`;
+    const message = `🌍 **${getTranslation('menu_language', currentLang, customTranslations)}**\n\nSélectionnez votre langue préférée :`;
     const keyboard = createLanguageKeyboard(currentLang);
     
     await ctx.editMessageText(message, {

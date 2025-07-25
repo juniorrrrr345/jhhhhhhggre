@@ -88,24 +88,24 @@ const createMainKeyboard = (config) => {
   }
   
   // Bouton Top Des Plugs avec traduction
-  const topPlugsText = config?.buttons?.topPlugs?.text || getTranslation('menu.topPlugs', currentLang, customTranslations);
+  const topPlugsText = config?.buttons?.topPlugs?.text || getTranslation('menu_topPlugs', currentLang, customTranslations);
   buttons.push([Markup.button.callback(topPlugsText, 'top_plugs')]);
   
   // Boutons Contact et Info sur la même ligne avec traductions
   const secondRow = [];
-  const contactText = config?.buttons?.contact?.text || getTranslation('menu.contact', currentLang, customTranslations);
-  const infoText = config?.buttons?.info?.text || getTranslation('menu.info', currentLang, customTranslations);
+  const contactText = config?.buttons?.contact?.text || getTranslation('menu_contact', currentLang, customTranslations);
+  const infoText = config?.buttons?.info?.text || getTranslation('menu_info', currentLang, customTranslations);
   
   secondRow.push(Markup.button.callback(contactText, 'contact'));
   secondRow.push(Markup.button.callback(infoText, 'info'));
   buttons.push(secondRow);
 
   // Troisième ligne : Devenir Plug seul
-  const becomeDealerText = getTranslation('menu.becomeDealer', currentLang, customTranslations);
+  const becomeDealerText = getTranslation('menu_becomeDealer', currentLang, customTranslations);
   buttons.push([Markup.button.callback(becomeDealerText, 'start_application')]);
   
   // Quatrième ligne : Bouton Traduction seul en bas
-  const translationText = getTranslation('menu.translation', currentLang, customTranslations);
+  const translationText = getTranslation('menu_translation', currentLang, customTranslations);
   buttons.push([Markup.button.callback(translationText, 'select_language')]);
   
   // Réseaux sociaux personnalisés en bas du menu - PRIORITÉ socialMediaList
@@ -176,10 +176,10 @@ const createDeliveryOptionsKeyboard = (config) => {
   const currentLang = config?.languages?.currentLanguage || 'fr';
   const customTranslations = config?.languages?.translations;
   
-  const deliveryText = getTranslation('filters.delivery', currentLang, customTranslations);
-  const postalText = getTranslation('filters.postal', currentLang, customTranslations);
-  const meetupText = getTranslation('filters.meetup', currentLang, customTranslations);
-  const backText = getTranslation('filters.back', currentLang, customTranslations);
+  const deliveryText = getTranslation('filters_delivery', currentLang, customTranslations);
+  const postalText = getTranslation('filters_postal', currentLang, customTranslations);
+  const meetupText = getTranslation('filters_meetup', currentLang, customTranslations);
+  const backText = getTranslation('filters_back', currentLang, customTranslations);
   
   return Markup.inlineKeyboard([
     // Première ligne : Meetup à gauche, Envoi à droite

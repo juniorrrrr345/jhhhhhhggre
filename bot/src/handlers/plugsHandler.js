@@ -28,7 +28,7 @@ const handleTopPlugs = async (ctx) => {
     const availableCountries = await getAvailableCountries();
     
     // Message d'affichage initial avec traduction
-    const topPlugsTitle = getTranslation('menu.topPlugs', currentLang, customTranslations);
+    const topPlugsTitle = getTranslation('menu_topPlugs', currentLang, customTranslations);
     let message = `${topPlugsTitle}\n`;
     message += `*(Triés par nombre de votes)*\n\n`;
     
@@ -37,7 +37,7 @@ const handleTopPlugs = async (ctx) => {
     let keyboard;
     
     if (topPlugs.length > 0) {
-      const shopsAvailableText = getTranslation('messages.shopsAvailable', currentLang, customTranslations);
+      const shopsAvailableText = getTranslation('messages_shopsAvailable', currentLang, customTranslations);
       message += `**${topPlugs.length} ${shopsAvailableText} :**\n\n`;
       
       // Ajouter les boutiques au clavier

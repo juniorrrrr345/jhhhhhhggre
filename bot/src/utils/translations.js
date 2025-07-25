@@ -11,49 +11,49 @@ const translations = {
   // Traductions par défaut
   defaultTranslations: {
     // === MENU PRINCIPAL ===
-    'menu.topPlugs': {
-      fr: '🔌 Top Des Plugs',
-      en: '🔌 Top Plugs',
-      it: '🔌 Top Negozi',
-      es: '🔌 Top Tiendas',
-      de: '🔌 Top Shops'
+    'menu_topPlugs': {
+      fr: '🔝 Top Des Plugs',
+      en: '🔝 Top Plugs',
+      it: '🔝 Top Negozi',
+      es: '🔝 Top Tiendas',
+      de: '🔝 Top Shops'
     },
-    'menu.contact': {
+    'menu_contact': {
       fr: '📞 Contact',
       en: '📞 Contact',
       it: '📞 Contatto',
       es: '📞 Contacto',
       de: '📞 Kontakt'
     },
-    'menu.info': {
+    'menu_info': {
       fr: 'ℹ️ Info',
       en: 'ℹ️ Info',
       it: 'ℹ️ Info',
       es: 'ℹ️ Info',
       de: 'ℹ️ Info'
     },
-    'menu.becomeDealer': {
+    'menu_becomeDealer': {
       fr: '💼 Devenir Plug',
       en: '💼 Become Dealer',
       it: '💼 Diventa Rivenditore',
       es: '💼 Ser Distribuidor',
       de: '💼 Händler werden'
     },
-    'menu.language': {
+    'menu_language': {
       fr: '🌍 Langue',
       en: '🌍 Language',
       it: '🌍 Lingua',
       es: '🌍 Idioma',
       de: '🌍 Sprache'
     },
-    'menu.translation': {
+    'menu_translation': {
       fr: '🌍 Traduction',
       en: '🌍 Translation',
       it: '🌍 Traduzione',
       es: '🌍 Traducción',
       de: '🌍 Übersetzung'
     },
-    'menu.delivery': {
+    'menu_delivery': {
       fr: '🚚 Livraison',
       en: '🚚 Delivery',
       it: '🚚 Consegna',
@@ -62,42 +62,42 @@ const translations = {
     },
 
     // === FILTRES TOP PLUGS ===
-    'filters.delivery': {
+    'filters_delivery': {
       fr: '📦 Livraison',
       en: '📦 Delivery',
       it: '📦 Consegna',
       es: '📦 Entrega',
       de: '📦 Lieferung'
     },
-    'filters.meetup': {
+    'filters_meetup': {
       fr: '🤝 Meetup',
       en: '🤝 Meetup',
       it: '🤝 Incontro',
       es: '🤝 Encuentro',
       de: '🤝 Treffen'
     },
-    'filters.postal': {
+    'filters_postal': {
       fr: '📬 Envoi Postal',
       en: '📬 Postal Shipping',
       it: '📬 Spedizione Postale',
       es: '📬 Envío Postal',
       de: '📬 Postversand'
     },
-    'filters.department': {
+    'filters_department': {
       fr: '📍 Département 🔁',
       en: '📍 State/Region 🔁',
       it: '📍 Regione 🔁',
       es: '📍 Provincia 🔁',
       de: '📍 Bundesland 🔁'
     },
-    'filters.reset': {
+    'filters_reset': {
       fr: '🔁 Réinitialiser les filtres',
       en: '🔁 Reset Filters',
       it: '🔁 Reimposta Filtri',
       es: '🔁 Reiniciar Filtros',
       de: '🔁 Filter zurücksetzen'
     },
-    'filters.back': {
+    'filters_back': {
       fr: '🔙 Retour',
       en: '🔙 Back',
       it: '🔙 Indietro',
@@ -106,35 +106,35 @@ const translations = {
     },
 
     // === MESSAGES ===
-    'messages.welcome': {
+    'messages_welcome': {
       fr: 'FINDYOURPLUG\nMINI-APP TELEGRAM\nCHILL',
       en: 'FINDYOURPLUG\nTELEGRAM MINI-APP\nCHILL',
       it: 'FINDYOURPLUG\nMINI-APP TELEGRAM\nCHILL',
       es: 'FINDYOURPLUG\nMINI-APP TELEGRAM\nCHILL',
       de: 'FINDYOURPLUG\nTELEGRAM MINI-APP\nCHILL'
     },
-    'messages.contactUs': {
+    'messages_contactUs': {
       fr: 'Contactez-nous pour plus d\'informations.',
       en: 'Contact us for more information.',
       it: 'Contattaci per maggiori informazioni.',
       es: 'Contáctanos para más información.',
       de: 'Kontaktieren Sie uns für weitere Informationen.'
     },
-    'messages.contactSocial': {
+    'messages_contactSocial': {
       fr: '📱 Nous contacter :',
       en: '📱 Contact us:',
       it: '📱 Contattaci:',
       es: '📱 Contáctanos:',
       de: '📱 Kontaktiere uns:'
     },
-    'messages.noPlugs': {
+    'messages_noPlugs': {
       fr: '❌ Aucun plug disponible pour le moment.',
       en: '❌ No plugs available at the moment.',
       it: '❌ Nessun negozio disponibile al momento.',
       es: '❌ No hay tiendas disponibles en este momento.',
-      de: '❌ Momentan keine Shops verfügbar.'
+      de: '❌ Keine Shops verfügbar im Moment.'
     },
-    'messages.shopsAvailable': {
+    'messages_shopsAvailable': {
       fr: 'boutiques disponibles',
       en: 'shops available',
       it: 'negozi disponibili',
@@ -262,7 +262,7 @@ const createLanguageKeyboard = (currentLanguage = 'fr') => {
   }
   
   // Ligne de retour
-  const backText = getTranslation('filters.back', currentLanguage);
+  const backText = getTranslation('filters_back', currentLanguage);
   buttons.push([Markup.button.callback(backText, 'back_main')]);
   
   return Markup.inlineKeyboard(buttons);
@@ -271,13 +271,18 @@ const createLanguageKeyboard = (currentLanguage = 'fr') => {
 // Fonction pour initialiser les traductions par défaut
 const initializeDefaultTranslations = async (Config) => {
   try {
-    const config = await Config.findById('main');
-    if (!config) return;
+    console.log('🌍 Initialisation des traductions...');
     
-    // Initialiser languages si pas défini
+    const config = await Config.findById('main');
+    if (!config) {
+      console.log('❌ Config non trouvée pour initialiser traductions');
+      return;
+    }
+
+    // Initialiser la structure languages si elle n'existe pas
     if (!config.languages) {
       config.languages = {
-        enabled: false,
+        enabled: true, // Activer par défaut
         currentLanguage: 'fr',
         availableLanguages: Object.entries(translations.languages).map(([code, lang]) => ({
           code,
@@ -289,14 +294,17 @@ const initializeDefaultTranslations = async (Config) => {
       };
     }
     
-    // Ajouter toutes les traductions par défaut
+    // Ajouter toutes les traductions par défaut - SANS POINTS DANS LES CLÉS
     Object.entries(translations.defaultTranslations).forEach(([key, langs]) => {
-      if (!config.languages.translations.has(key)) {
+      // Convertir les clés avec points en clés avec underscores si nécessaire
+      const cleanKey = key.replace(/\./g, '_');
+      
+      if (!config.languages.translations.has(cleanKey)) {
         const langMap = new Map();
         Object.entries(langs).forEach(([langCode, text]) => {
           langMap.set(langCode, text);
         });
-        config.languages.translations.set(key, langMap);
+        config.languages.translations.set(cleanKey, langMap);
       }
     });
     
@@ -305,6 +313,7 @@ const initializeDefaultTranslations = async (Config) => {
     
   } catch (error) {
     console.error('❌ Erreur initialisation traductions:', error);
+    console.log('✅ Traductions initialisées'); // Continuer même en cas d'erreur
   }
 };
 
