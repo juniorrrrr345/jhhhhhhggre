@@ -43,10 +43,13 @@ Erreur dans handleTopServiceFilter: ReferenceError: currentLang is not defined
 ✅ Cache mis à jour - 3 plugs, config: OK
 🔄 Rafraîchissement du cache...
 ✅ Cache mis à jour - 3 plugs, config: OK
-query.js:5055:12)
-    at Query._castConditions (/workspace/bot/node_modules/mongoose/lib/query.js:2351:10)
-    at model.Query._findOneAndUpdate (/workspace/bot/node_modules/mongoose/lib/query.js:3454:8)
-    at model.Query.exec (/workspace/bot/node_modules/mongoose/lib/query.js:4604:80)
+🔄 Rafraîchissement du cache...
+✅ Cache mis à jour - 3 plugs, config: OK
+🔄 Rafraîchissement du cache...
+✅ Cache mis à jour - 3 plugs, config: OK
+🔄 Rafraîchissement du cache...
+✅ Cache mis à jour - 3 plugs, config: OK
+e/bot/node_modules/mongoose/lib/query.js:4604:80)
     at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
     at async handleStart (/workspace/bot/src/handlers/startHandler.js:65:7)
     at async execute (/workspace/bot/node_modules/telegraf/lib/composer.js:518:17)
@@ -154,5 +157,41 @@ Erreur dans handleTopServiceFilter: ReferenceError: currentLang is not defined
 📝 Message ID: 5751
 🖼️ Images: plug=false, welcome=true, isPlugDetails=false, using=true
 🖼️ Modification avec image: https://i.imgur.com/leViC3R.jpeg
+🔄 Rafraîchissement du cache...
+✅ Cache mis à jour - 3 plugs, config: OK
+🔄 Rafraîchissement du cache...
+✅ Cache mis à jour - 3 plugs, config: OK
+🔄 Callback reçu: plug_687f03380b0241806dccddd8_from_top_country
+👤 User ID: 7670522278, Chat ID: 7670522278
+📝 Message ID: 5751
+📍 Context updated to: top_country
+🔍 handlePlugDetails: plugId=687f03380b0241806dccddd8, returnContext=top_plugs
+📦 Plug found: hhggrs (active: true)
+🖼️ Images: plug=true, welcome=true, isPlugDetails=true, using=true
+🖼️ Modification avec image: https://i.imgur.com/mefID4r.jpeg
+🔄 Callback reçu: top_plugs
+👤 User ID: 7670522278, Chat ID: 7670522278
+📝 Message ID: 5751
+📍 Context updated to: top_plugs
+🔝 Top Plugs affiché en langue: es
+🖼️ Images: plug=false, welcome=true, isPlugDetails=false, using=true
+🖼️ Modification avec image: https://i.imgur.com/leViC3R.jpeg
+🔄 Callback reçu: back_main
+👤 User ID: 7670522278, Chat ID: 7670522278
+📝 Message ID: 5751
+🔙 Retour au menu principal demandé
+📋 Configuration récupérée pour le retour
+🌍 Langue actuelle pour le retour: es
+📝 Message d'accueil préparé pour le retour avec traduction
+🖼️ Images: plug=false, welcome=true, isPlugDetails=false, using=true
+🖼️ Modification avec image: https://i.imgur.com/leViC3R.jpeg
+✅ Retour au menu principal terminé
+🔄 Callback reçu: start_application
+👤 User ID: 7670522278, Chat ID: 7670522278
+📝 Message ID: 5751
+🌍 Formulaire d'inscription en langue: es
+⚠️ editMessageText échoué: 400: Bad Request: there is no text in the message to edit
+🔄 Rafraîchissement du cache...
+✅ Cache mis à jour - 3 plugs, config: OK
 🔄 Rafraîchissement du cache...
 ✅ Cache mis à jour - 3 plugs, config: OK

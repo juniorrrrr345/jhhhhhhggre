@@ -92,12 +92,15 @@ const handleTopCountryFilter = async (ctx, country) => {
     
     let message = `${getTranslation('list_plugs_title', currentLang, customTranslations)}\n`;
     message += `*${getTranslation('sorted_by_votes_subtitle', currentLang, customTranslations)}*\n\n`;
-    message += `🌍 **Filtre:** ${getCountryFlag(country)} ${country}\n\n`;
+    
+    const filterLabel = getTranslation('filter_country_selected', currentLang, customTranslations);
+    message += `🌍 **${filterLabel}:** ${getCountryFlag(country)} ${country}\n\n`;
     
     let keyboard;
     
     if (countryPlugs.length > 0) {
-      message += `**${countryPlugs.length} boutiques trouvées :**\n\n`;
+      const shopsFoundLabel = getTranslation('shops_found_country', currentLang, customTranslations);
+      message += `**${countryPlugs.length} ${shopsFoundLabel} :**\n\n`;
       
       // Ajouter les boutiques au clavier
       const plugButtons = [];
@@ -111,8 +114,9 @@ const handleTopCountryFilter = async (ctx, country) => {
       
       keyboard = createTopPlugsKeyboard(config, availableCountries, country, null, plugButtons);
     } else {
-      message += `❌ Aucun plug disponible pour ${country}.`;
-              keyboard = createTopPlugsKeyboard(config, availableCountries, country, null, []);
+      const noShopsLabel = getTranslation('no_shops_country', currentLang, customTranslations);
+      message += `❌ ${noShopsLabel} ${country}.`;
+      keyboard = createTopPlugsKeyboard(config, availableCountries, country, null, []);
     }
     
     await editMessageWithImage(ctx, message, keyboard, config, { parse_mode: 'Markdown' });
@@ -126,72 +130,72 @@ const handleTopCountryFilter = async (ctx, country) => {
   }
 };
 
-// Gestionnaire pour les filtres de services (Livraison, Meetup, Postal) - NOUVEAU SYSTÈME
+// Gestionnaire pour les filtres de services (Livraison, Meetup, Postal) - SYSTÈME TRADUIT
 const handleTopServiceFilter = async (ctx, serviceType, selectedCountry = null) => {
   try {
     await ctx.answerCbQuery();
     
     const config = await Config.findById('main');
-    
-    // Construire la requête selon le service
-    let query = { isActive: true };
-    
-    switch (serviceType) {
-      case 'delivery':
-        query['services.delivery.enabled'] = true;
-        break;
-      case 'meetup':
-        query['services.meetup.enabled'] = true;
-        break;
-      case 'postal':
-        query['services.postal.enabled'] = true;
-        break;
-    }
-    
-    // Ajouter le filtre pays si sélectionné
-    if (selectedCountry) {
-      query.countries = { $in: [selectedCountry] };
-    }
-    
-    const servicePlugs = await Plug.find(query).sort({ likes: -1, createdAt: -1 });
+    const currentLang = config?.languages?.currentLanguage || 'fr';
+    const customTranslations = config?.languages?.translations;
     
     const availableCountries = await getAvailableCountries();
     
     let message = `${getTranslation('list_plugs_title', currentLang, customTranslations)}\n`;
     message += `*${getTranslation('sorted_by_votes_subtitle', currentLang, customTranslations)}*\n\n`;
     
-    // Titre selon le service avec traductions
-    const serviceNames = {
+    // Message spécifique selon le service avec traductions complètes
+    const serviceMessages = {
       delivery: getTranslation('filter_delivery_message', currentLang, customTranslations),
       meetup: getTranslation('filter_meetup_message', currentLang, customTranslations),
       postal: getTranslation('filter_postal_message', currentLang, customTranslations)
     };
     
-    message += `${serviceNames[serviceType]}\n\n`;
+    message += `${serviceMessages[serviceType]}\n\n`;
     
     if (selectedCountry) {
-      message += `🌍 **Filtre:** ${getCountryFlag(selectedCountry)} ${selectedCountry}\n\n`;
+      const filterLabel = getTranslation('filter_country_selected', currentLang, customTranslations);
+      message += `🌍 **${filterLabel}:** ${getCountryFlag(selectedCountry)} ${selectedCountry}\n\n`;
     }
     
     let keyboard;
     
-    if (servicePlugs.length > 0) {
-      message += `**${servicePlugs.length} boutiques trouvées :**\n\n`;
+    // Pour Envoi Postal : afficher directement les boutiques
+    if (serviceType === 'postal') {
+      const query = { 
+        isActive: true,
+        'services.postal.enabled': true
+      };
       
-      // Ajouter les boutiques au clavier
-      const plugButtons = [];
-      servicePlugs.slice(0, 10).forEach((plug, index) => {
-        const country = getCountryFlag(plug.countries[0]);
-        const location = plug.location ? ` ${plug.location}` : '';
-        const vipIcon = plug.isVip ? '⭐️ ' : '';
-        const buttonText = `${country}${location} ${vipIcon}${plug.name} 👍 ${plug.likes}`;
-        plugButtons.push([Markup.button.callback(buttonText, `plug_${plug._id}_from_top_service`)]);
-      });
+      if (selectedCountry) {
+        query.countries = { $in: [selectedCountry] };
+      }
       
-      keyboard = createTopPlugsKeyboard(config, availableCountries, selectedCountry, serviceType, plugButtons);
+      const postalPlugs = await Plug.find(query).sort({ likes: -1, createdAt: -1 });
+      
+      if (postalPlugs.length > 0) {
+        const shopsFoundLabel = getTranslation('shops_found_postal', currentLang, customTranslations);
+        message += `**${postalPlugs.length} ${shopsFoundLabel} :**\n\n`;
+        
+        const plugButtons = [];
+        postalPlugs.slice(0, 10).forEach((plug) => {
+          const country = getCountryFlag(plug.countries[0]);
+          const location = plug.location ? ` ${plug.location}` : '';
+          const vipIcon = plug.isVip ? '⭐️ ' : '';
+          const buttonText = `${country}${location} ${vipIcon}${plug.name} 👍 ${plug.likes}`;
+          plugButtons.push([Markup.button.callback(buttonText, `plug_${plug._id}_from_top_service`)]);
+        });
+        
+        keyboard = createTopPlugsKeyboard(config, availableCountries, selectedCountry, serviceType, plugButtons);
+      } else {
+        const noShopsLabel = getTranslation('no_shops_postal', currentLang, customTranslations);
+        message += `❌ ${noShopsLabel}`;
+        keyboard = createTopPlugsKeyboard(config, availableCountries, selectedCountry, serviceType, []);
+      }
     } else {
-      const serviceName = serviceNames[serviceType].toLowerCase();
-      message += `❌ Aucun plug disponible pour ${serviceName}.`;
+      // Pour Livraison et Meetup : afficher le menu avec instruction pour départements
+      const instructionLabel = getTranslation('click_department_instruction', currentLang, customTranslations);
+      message += `${instructionLabel}`;
       keyboard = createTopPlugsKeyboard(config, availableCountries, selectedCountry, serviceType, []);
     }
     

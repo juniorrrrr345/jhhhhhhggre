@@ -510,6 +510,99 @@ const translations = {
       de: '🔁 Filter zurücksetzen'
     },
 
+    // === FILTRES SPÉCIFIQUES ===
+    'filter_country_selected': {
+      fr: 'Pays sélectionné',
+      en: 'Selected country',
+      it: 'Paese selezionato',
+      es: 'País seleccionado',
+      de: 'Ausgewähltes Land'
+    },
+    'shops_found_postal': {
+      fr: 'boutiques avec envoi postal',
+      en: 'shops with postal shipping',
+      it: 'negozi con spedizione postale',
+      es: 'tiendas con envío postal',
+      de: 'Shops mit Postversand'
+    },
+    'no_shops_postal': {
+      fr: 'Aucune boutique avec envoi postal.',
+      en: 'No shops with postal shipping.',
+      it: 'Nessun negozio con spedizione postale.',
+      es: 'No hay tiendas con envío postal.',
+      de: 'Keine Shops mit Postversand.'
+    },
+    'click_department_instruction': {
+      fr: 'Cliquez sur "📍 Département 🔁" pour sélectionner votre zone.',
+      en: 'Click on "📍 Department 🔁" to select your area.',
+      it: 'Clicca su "📍 Regione 🔁" per selezionare la tua zona.',
+      es: 'Haz clic en "📍 Provincia 🔁" para seleccionar tu zona.',
+      de: 'Klicken Sie auf "📍 Bundesland 🔁", um Ihr Gebiet auszuwählen.'
+    },
+    'shops_found_delivery': {
+      fr: 'boutiques avec livraison',
+      en: 'shops with delivery',
+      it: 'negozi con consegna',
+      es: 'tiendas con entrega',
+      de: 'Shops mit Lieferung'
+    },
+    'shops_found_meetup': {
+      fr: 'boutiques avec meetup',
+      en: 'shops with meetup',
+      it: 'negozi con incontro',
+      es: 'tiendas con encuentro',
+      de: 'Shops mit Treffen'
+    },
+    'no_shops_delivery': {
+      fr: 'Aucune boutique avec livraison.',
+      en: 'No shops with delivery.',
+      it: 'Nessun negozio con consegna.',
+      es: 'No hay tiendas con entrega.',
+      de: 'Keine Shops mit Lieferung.'
+    },
+    'no_shops_meetup': {
+      fr: 'Aucune boutique avec meetup.',
+      en: 'No shops with meetup.',
+      it: 'Nessun negozio con incontro.',
+      es: 'No hay tiendas con encuentro.',
+      de: 'Keine Shops mit Treffen.'
+    },
+    'department_instruction': {
+      fr: 'Choisissez votre département',
+      en: 'Choose your department',
+      it: 'Scegli la tua regione',
+      es: 'Elige tu provincia',
+      de: 'Wählen Sie Ihr Bundesland'
+    },
+    'shops_in_department': {
+      fr: 'boutiques dans',
+      en: 'shops in',
+      it: 'negozi in',
+      es: 'tiendas en',
+      de: 'Shops in'
+    },
+    'no_shops_in_department': {
+      fr: 'Aucune boutique disponible dans ce département.',
+      en: 'No shops available in this department.',
+      it: 'Nessun negozio disponibile in questa regione.',
+      es: 'No hay tiendas disponibles en esta provincia.',
+      de: 'Keine Shops in diesem Bundesland verfügbar.'
+    },
+    'shops_found_country': {
+      fr: 'boutiques trouvées',
+      en: 'shops found',
+      it: 'negozi trovati',
+      es: 'tiendas encontradas',
+      de: 'Shops gefunden'
+    },
+    'no_shops_country': {
+      fr: 'Aucune boutique disponible pour',
+      en: 'No shops available for',
+      it: 'Nessun negozio disponibile per',
+      es: 'No hay tiendas disponibles para',
+      de: 'Keine Shops verfügbar für'
+    },
+
     // === TITRES SYSTÈME ===
     'list_plugs_title': {
       fr: '🔌 Liste des Plugs',
