@@ -114,10 +114,31 @@ export default function SocialMediaManager() {
     ))
   }
 
-  const deleteSocialMedia = (id) => {
+  const deleteSocialMedia = async (id) => {
     if (confirm('Êtes-vous sûr de vouloir supprimer ce réseau social ?')) {
-      setSocialMedias(socialMedias.filter(item => item.id !== id))
-      // Suppression silencieuse
+      // Supprimer de l'état local
+      const updatedSocialMedias = socialMedias.filter(item => item.id !== id)
+      setSocialMedias(updatedSocialMedias)
+      
+      // Sauvegarder automatiquement
+      try {
+        setSaving(true)
+        const token = localStorage.getItem('adminToken') || 'JuniorAdmon123'
+        
+        const configData = {
+          socialMediaList: updatedSocialMedias
+        }
+        
+        await simpleApi.updateConfig(token, configData)
+        // Suppression et sauvegarde silencieuses
+      } catch (error) {
+        console.error('Erreur suppression:', error)
+        // Restaurer l'état en cas d'erreur
+        setSocialMedias(socialMedias)
+        toast.error('Erreur lors de la suppression')
+      } finally {
+        setSaving(false)
+      }
     }
   }
 
