@@ -225,10 +225,45 @@ const handleTopServiceFilter = async (ctx, serviceType, selectedCountry = null) 
         keyboard = createTopPlugsKeyboard(config, availableCountries, selectedCountry, serviceType, []);
       }
     } else {
-      // Pour Livraison et Meetup : afficher le menu avec instruction pour départements
-      const instructionLabel = getTranslation('click_department_instruction', currentLang, customTranslations);
-      message += `${instructionLabel}`;
-      keyboard = createTopPlugsKeyboard(config, availableCountries, selectedCountry, serviceType, []);
+      // Pour Livraison et Meetup : afficher directement toutes les boutiques de ce service
+      const query = { 
+        isActive: true,
+        [`services.${serviceType}.enabled`]: true
+      };
+      
+      if (selectedCountry) {
+        query.countries = { $in: [selectedCountry] };
+      }
+      
+      const servicePlugs = await Plug.find(query).sort({ likes: -1, createdAt: -1 });
+      
+      if (servicePlugs.length > 0) {
+        const shopsFoundLabel = serviceType === 'delivery' 
+          ? getTranslation('shops_found_delivery', currentLang, customTranslations)
+          : getTranslation('shops_found_meetup', currentLang, customTranslations);
+        message += `**${servicePlugs.length} ${shopsFoundLabel} :**\n\n`;
+        
+        // Ajouter instruction pour filtre département en bas
+        const instructionLabel = getTranslation('click_department_instruction', currentLang, customTranslations);
+        message += `ℹ️ ${instructionLabel}\n\n`;
+        
+        const plugButtons = [];
+        servicePlugs.slice(0, 10).forEach((plug) => {
+          const country = getCountryFlag(plug.countries[0]);
+          const location = plug.location ? ` ${plug.location}` : '';
+          const vipIcon = plug.isVip ? '⭐️ ' : '';
+          const buttonText = `${country}${location} ${vipIcon}${plug.name} 👍 ${plug.likes}`;
+          plugButtons.push([Markup.button.callback(buttonText, `plug_${plug._id}_from_top_service`)]);
+        });
+        
+        keyboard = createTopPlugsKeyboard(config, availableCountries, selectedCountry, serviceType, plugButtons);
+      } else {
+        const noShopsLabel = serviceType === 'delivery' 
+          ? getTranslation('no_shops_delivery', currentLang, customTranslations)
+          : getTranslation('no_shops_meetup', currentLang, customTranslations);
+        message += `❌ ${noShopsLabel}`;
+        keyboard = createTopPlugsKeyboard(config, availableCountries, selectedCountry, serviceType, []);
+      }
     }
     
     await editMessageWithImage(ctx, message, keyboard, config, { parse_mode: 'Markdown' });
@@ -390,11 +425,23 @@ const handleSpecificDepartment = async (ctx, serviceType, department, selectedCo
 // Gestionnaire pour réinitialiser tous les filtres
 const handleResetFilters = async (ctx) => {
   try {
+    const userId = ctx.from.id;
+    
+    // 🚫 Prévention spam pour réinitialisation
+    if (isSpamClick(userId, 'reset', 'filters')) {
+      await ctx.answerCbQuery('🔄');
+      return;
+    }
+    
     const config = await Config.findById('main');
     const currentLang = config?.languages?.currentLanguage || 'fr';
     const customTranslations = config?.languages?.translations;
     await ctx.answerCbQuery(getTranslation('filters_reset', currentLang, customTranslations));
-    // Retourner à l'affichage initial
+    
+    // Effacer l'état utilisateur pour permettre une nouvelle sélection
+    lastUserState.delete(userId);
+    
+    // Retourner à l'affichage initial (remplace le message existant)
     await handleTopPlugs(ctx);
   } catch (error) {
     console.error('Erreur dans handleResetFilters:', error);
