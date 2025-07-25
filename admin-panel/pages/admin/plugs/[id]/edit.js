@@ -3,6 +3,7 @@ import { useRouter } from 'next/router'
 import Head from 'next/head'
 import toast, { Toaster } from 'react-hot-toast'
 import { TrashIcon, PlusIcon, ArrowLeftIcon } from '@heroicons/react/24/outline'
+import { getRobustSync } from '../../../../lib/robust-sync'
 
 // Fonction wrapper pour toast avec gestion d'erreur
 const safeToast = {

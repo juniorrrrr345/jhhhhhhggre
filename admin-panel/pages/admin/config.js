@@ -3,6 +3,7 @@ import { useRouter } from 'next/router'
 import Head from 'next/head'
 import toast, { Toaster } from 'react-hot-toast'
 import { simpleApi } from '../../lib/api-simple'
+import { getRobustSync } from '../../lib/robust-sync'
 
 export default function BotConfiguration() {
   const [config, setConfig] = useState({
@@ -125,9 +126,14 @@ export default function BotConfiguration() {
       }
       
       const result = await simpleApi.updateConfig(token, configData)
-      // Configuration sauvegardée
       
-      // Sauvegarde silencieuse sans message
+      // Synchroniser avec le bot
+      const robustSync = getRobustSync()
+      if (robustSync) {
+        robustSync.syncConfigUpdate(configData)
+      }
+      
+      // Configuration sauvegardée et synchronisée
         
               } catch (error) {
         console.error('Erreur sauvegarde:', error)

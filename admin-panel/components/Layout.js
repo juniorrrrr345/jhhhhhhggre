@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/router'
 import toast from 'react-hot-toast'
+import SyncStatus from './SyncStatus'
 import {
   HomeIcon,
   CogIcon,
@@ -140,6 +141,7 @@ export default function Layout({ children, title = 'Admin Panel' }) {
           </ul>
         </nav>
       </div>
+      <SyncStatus />
     )
   }
 }

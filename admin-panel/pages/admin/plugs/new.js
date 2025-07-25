@@ -3,6 +3,7 @@ import { useRouter } from 'next/router'
 import Layout from '../../../components/Layout'
 import toast from 'react-hot-toast'
 import { simpleApi } from '../../../lib/api-simple'
+import { getRobustSync } from '../../../lib/robust-sync'
 import {
   PlusIcon,
   PhotoIcon,
@@ -142,10 +143,16 @@ export default function NewPlug() {
       console.log('💾 Création de la boutique...')
       console.log('📋 Données à envoyer:', formData)
       
-      await simpleApi.createPlug(token, formData)
+      const result = await simpleApi.createPlug(token, formData)
+      
+      // Synchroniser avec le bot
+      const robustSync = getRobustSync()
+      if (robustSync) {
+        robustSync.syncShopCreate(formData)
+      }
       
       toast.success('Boutique créée avec succès !')
-      console.log('✅ Boutique créée')
+      console.log('✅ Boutique créée et synchronisée')
       router.push('/admin/plugs')
     } catch (error) {
       console.error('❌ Erreur création boutique:', error)

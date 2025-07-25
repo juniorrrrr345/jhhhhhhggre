@@ -3,7 +3,7 @@ import { useRouter } from 'next/router'
 import Layout from '../../../components/Layout'
 import toast from 'react-hot-toast'
 import { simpleApi } from '../../../lib/api-simple'
-import { getSyncManager } from '../../../lib/sync-manager'
+import { getRobustSync } from '../../../lib/robust-sync'
 import {
   PlusIcon,
   MagnifyingGlassIcon,
@@ -105,9 +105,15 @@ export default function AccueilAdmin() {
       
       await simpleApi.deletePlug(token, id)
       
+      // Synchroniser avec le bot
+      const robustSync = getRobustSync()
+      if (robustSync) {
+        robustSync.syncShopDelete(id)
+      }
+      
       toast.success('Boutique supprimée')
       fetchData(token)
-      console.log('✅ Boutique supprimée')
+      console.log('✅ Boutique supprimée et synchronisée')
     } catch (error) {
       console.error('❌ Erreur suppression:', error)
       toast.error('Erreur lors de la suppression')

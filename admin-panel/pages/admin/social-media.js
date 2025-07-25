@@ -4,6 +4,7 @@ import Head from 'next/head'
 import Layout from '../../components/Layout'
 import { simpleApi } from '../../lib/api-simple'
 import { getLocalApi } from '../../lib/local-storage-api'
+import { getRobustSync } from '../../lib/robust-sync'
 import toast from 'react-hot-toast'
 
 export default function SocialMediaManager() {
@@ -108,9 +109,16 @@ export default function SocialMediaManager() {
             }
           }
           
-          await simpleApi.updateConfig(token, configData)
-          console.log('✅ Réseaux sociaux sauvegardés sur le serveur')
-                  } catch (serverError) {
+                    await simpleApi.updateConfig(token, configData)
+          
+          // Synchroniser avec le bot
+          const robustSync = getRobustSync()
+          if (robustSync) {
+            robustSync.syncConfigUpdate(configData)
+          }
+          
+          console.log('✅ Réseaux sociaux sauvegardés et synchronisés')
+        } catch (serverError) {
             console.log('Serveur indisponible, sauvegarde locale de secours')
             // Fallback en mode local
             setIsLocalMode(true)
