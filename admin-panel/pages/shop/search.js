@@ -189,7 +189,7 @@ export default function ShopSearch() {
   return (
     <>
       <Head>
-        <title>Recherche - {config?.boutique?.name || 'SAFEPLUGLINK'}</title>
+        <title>Recherche - {config?.boutique?.name || 'FINDYOURPLUG'}</title>
         <meta name="description" content="Recherchez vos boutiques préférées par nom, pays ou service." />
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
       </Head>

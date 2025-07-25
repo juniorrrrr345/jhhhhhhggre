@@ -128,7 +128,7 @@ export default function ShopVIP() {
   return (
     <>
       <Head>
-        <title>VIP - {config?.boutique?.name || 'SAFEPLUGLINK'}</title>
+        <title>VIP - {config?.boutique?.name || 'FINDYOURPLUG'}</title>
         <meta name="description" content="Découvrez notre sélection exclusive de boutiques VIP premium avec services garantis." />
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
       </Head>

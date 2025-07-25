@@ -163,7 +163,7 @@ export const simpleApi = {
         console.log('⏱️ Timeout/429 config - retour config par défaut pour connexion');
         return {
           welcome: {
-            text: 'Bienvenue sur SafePlugLink! Explorez nos services.',
+            text: 'Bienvenue sur FindYourPlug! Explorez nos services.',
             image: ''
           },
           buttons: {
@@ -183,7 +183,7 @@ export const simpleApi = {
             whatsapp: ''
           },
           boutique: {
-            name: 'SafePlugLink',
+            name: 'FindYourPlug',
             subtitle: 'Votre marketplace de confiance'
           },
           // Indicateur que c'est un fallback pour le login

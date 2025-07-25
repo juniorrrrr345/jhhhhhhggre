@@ -108,7 +108,7 @@ export default function ShopHome() {
     return (
       <>
         <Head>
-          <title>SAFEPLUGLINK</title>
+          <title>FINDYOURPLUG</title>
         </Head>
         <div style={{ 
           backgroundColor: '#000000', 
@@ -138,7 +138,7 @@ export default function ShopHome() {
   return (
     <>
       <Head>
-        <title>{config?.boutique?.name || 'SAFEPLUGLINK'}</title>
+        <title>{config?.boutique?.name || 'FINDYOURPLUG'}</title>
         <meta name="description" content="Découvrez notre sélection de boutiques premium avec livraison et services disponibles." />
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
       </Head>
@@ -167,7 +167,7 @@ export default function ShopHome() {
             color: '#ffffff',
             letterSpacing: '2px'
           }}>
-            {config?.boutique?.name || 'SAFEPLUGLINK'}
+            {config?.boutique?.name || 'FINDYOURPLUG'}
           </h2>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
             <span style={{ color: '#ffffff', fontSize: '14px' }}>

@@ -88,7 +88,7 @@ export default function BotConfiguration() {
           // Utiliser une configuration par défaut au lieu de rester bloqué
           setConfig({
             welcome: {
-              text: 'Bienvenue sur SafePlugLink! Explorez nos services.',
+              text: 'Bienvenue sur FindYourPlug! Explorez nos services.',
               image: ''
             },
             buttons: {

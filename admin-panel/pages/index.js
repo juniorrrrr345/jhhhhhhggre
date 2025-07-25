@@ -32,7 +32,7 @@ export default function Login() {
         const validPasswords = [
           'JuniorAdmon123',
           'ADMIN_TOKEN_F3F3FC574B8A95875449DBD68128C434CE3D7FB3F054567B0D3EAD3D9F1B01B1',
-          'SafePlugLink2024',
+          'FindYourPlug2024',
           'admin123'
         ];
         
@@ -40,7 +40,7 @@ export default function Login() {
           console.log('🔑 LOGIN OFFLINE: Mot de passe valide détecté - bypass API');
           // Connexion en mode offline - pas d'appel API
           const config = {
-            welcome: { text: 'Bienvenue sur SafePlugLink!' },
+            welcome: { text: 'Bienvenue sur FindYourPlug!' },
             _offline: true,
             _reason: 'server_overloaded'
           };

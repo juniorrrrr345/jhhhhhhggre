@@ -1024,7 +1024,7 @@ app.get('/api/public/config/fresh', async (req, res) => {
     if (!config) {
       config = await Config.create({
         _id: 'main',
-        boutique: { name: 'SAFEPLUGLINK' },
+        boutique: { name: 'FINDYOURPLUG' },
         interface: {
           title: 'PLUGS FINDER',
           tagline1: 'JUSTE UNE',

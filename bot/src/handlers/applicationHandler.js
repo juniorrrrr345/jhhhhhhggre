@@ -150,10 +150,10 @@ const handleStartApplication = async (ctx) => {
       }
     });
     
-    const message = `🛠️ **FORMULAIRE D'INSCRIPTION – SafePlugLink**\n\n` +
+    const message = `🛠️ **FORMULAIRE D'INSCRIPTION – FindYourPlug**\n\n` +
       `⸻\n\n` +
       `🟦 **Étape 1 : Nom de Plug**\n\n` +
-      `📝 Commençons ton inscription sur SafePlugLink !\n\n` +
+      `📝 Commençons ton inscription sur FindYourPlug !\n\n` +
       `Quel est ton **nom de Plug** ?`;
     
     const keyboard = Markup.inlineKeyboard([
@@ -360,7 +360,7 @@ const handleFormMessage = async (ctx) => {
 
 // Demander Telegram
 const askTelegram = async (ctx) => {
-  const message = `🛠️ **FORMULAIRE D'INSCRIPTION – SafePlugLink**\n\n` +
+  const message = `🛠️ **FORMULAIRE D'INSCRIPTION – FindYourPlug**\n\n` +
     `⸻\n\n` +
     `🟦 **Étape 2 : Lien Telegram**\n\n` +
     `🔗 Entrez votre lien Telegram (format : @username ou https://t.me/username)`;
@@ -426,7 +426,7 @@ const replyWithStep = async (ctx, step) => {
   
   switch (step) {
     case 'telegram':
-      message = `🛠️ **FORMULAIRE D'INSCRIPTION – SafePlugLink**\n\n` +
+      message = `🛠️ **FORMULAIRE D'INSCRIPTION – FindYourPlug**\n\n` +
         `${summary}` +
         `⸻\n\n` +
         `🟦 **Étape 2 : Lien Telegram**\n\n` +
@@ -437,7 +437,7 @@ const replyWithStep = async (ctx, step) => {
       break;
       
     case 'telegram_channel':
-      message = `🛠️ **FORMULAIRE D'INSCRIPTION – SafePlugLink**\n\n` +
+      message = `🛠️ **FORMULAIRE D'INSCRIPTION – FindYourPlug**\n\n` +
         `${summary}` +
         `⸻\n\n` +
         `🟦 **Étape 3 : Lien Canal Telegram**\n\n` +
@@ -450,7 +450,7 @@ const replyWithStep = async (ctx, step) => {
       break;
       
     case 'instagram':
-      message = `🛠️ **FORMULAIRE D'INSCRIPTION – SafePlugLink**\n\n` +
+      message = `🛠️ **FORMULAIRE D'INSCRIPTION – FindYourPlug**\n\n` +
         `${summary}` +
         `⸻\n\n` +
         `🟦 **Étape 4 : Lien Instagram**\n\n` +
@@ -463,7 +463,7 @@ const replyWithStep = async (ctx, step) => {
       break;
       
     case 'potato':
-      message = `🛠️ **FORMULAIRE D'INSCRIPTION – SafePlugLink**\n\n` +
+      message = `🛠️ **FORMULAIRE D'INSCRIPTION – FindYourPlug**\n\n` +
         `${summary}` +
         `⸻\n\n` +
         `🟦 **Étapes Réseaux supplémentaires :**\n\n` +
@@ -482,7 +482,7 @@ const replyWithStep = async (ctx, step) => {
       break;
       
     case 'snapchat':
-      message = `🛠️ **FORMULAIRE D'INSCRIPTION – SafePlugLink**\n\n` +
+      message = `🛠️ **FORMULAIRE D'INSCRIPTION – FindYourPlug**\n\n` +
         `${summary}` +
         `⸻\n\n` +
         `🟦 **Étapes Réseaux supplémentaires :**\n\n` +
@@ -495,7 +495,7 @@ const replyWithStep = async (ctx, step) => {
       break;
       
     case 'whatsapp':
-      message = `🛠️ **FORMULAIRE D'INSCRIPTION – SafePlugLink**\n\n` +
+      message = `🛠️ **FORMULAIRE D'INSCRIPTION – FindYourPlug**\n\n` +
         `${summary}` +
         `⸻\n\n` +
         `🟦 **Étapes Réseaux supplémentaires :**\n\n` +
@@ -508,7 +508,7 @@ const replyWithStep = async (ctx, step) => {
       break;
       
     case 'signal':
-      message = `🛠️ **FORMULAIRE D'INSCRIPTION – SafePlugLink**\n\n` +
+      message = `🛠️ **FORMULAIRE D'INSCRIPTION – FindYourPlug**\n\n` +
         `${summary}` +
         `⸻\n\n` +
         `🟦 **Étapes Réseaux supplémentaires :**\n\n` +
@@ -521,7 +521,7 @@ const replyWithStep = async (ctx, step) => {
       break;
       
     case 'session':
-      message = `🛠️ **FORMULAIRE D'INSCRIPTION – SafePlugLink**\n\n` +
+      message = `🛠️ **FORMULAIRE D'INSCRIPTION – FindYourPlug**\n\n` +
         `${summary}` +
         `⸻\n\n` +
         `🟦 **Étapes Réseaux supplémentaires :**\n\n` +
@@ -534,7 +534,7 @@ const replyWithStep = async (ctx, step) => {
       break;
       
     case 'threema':
-      message = `🛠️ **FORMULAIRE D'INSCRIPTION – SafePlugLink**\n\n` +
+      message = `🛠️ **FORMULAIRE D'INSCRIPTION – FindYourPlug**\n\n` +
         `${summary}` +
         `⸻\n\n` +
         `🟦 **Étapes Réseaux supplémentaires :**\n\n` +
@@ -547,7 +547,7 @@ const replyWithStep = async (ctx, step) => {
       break;
       
     case 'departments_meetup':
-      message = `🛠️ **FORMULAIRE D'INSCRIPTION – SafePlugLink**\n\n` +
+      message = `🛠️ **FORMULAIRE D'INSCRIPTION – FindYourPlug**\n\n` +
         `${summary}` +
         `⸻\n\n` +
         `🟦 **Étape 13 : Départements pour Meetup**\n\n` +
@@ -558,7 +558,7 @@ const replyWithStep = async (ctx, step) => {
       break;
       
     case 'departments_delivery':
-      message = `🛠️ **FORMULAIRE D'INSCRIPTION – SafePlugLink**\n\n` +
+      message = `🛠️ **FORMULAIRE D'INSCRIPTION – FindYourPlug**\n\n` +
         `${summary}` +
         `⸻\n\n` +
         `🟦 **Étape 14 : Départements pour Livraison**\n\n` +
@@ -590,7 +590,7 @@ const askTelegramReply = async (ctx) => {
 
 // Demander Canal Telegram
 const askTelegramChannel = async (ctx) => {
-  const message = `🛠️ **FORMULAIRE D'INSCRIPTION – SafePlugLink**\n\n` +
+  const message = `🛠️ **FORMULAIRE D'INSCRIPTION – FindYourPlug**\n\n` +
     `⸻\n\n` +
     `🟦 **Étape 3 : Lien Canal Telegram**\n\n` +
     `🔗 Entrez le lien de votre **canal Telegram** (format : https://t.me/username)\n\n` +
@@ -609,7 +609,7 @@ const askTelegramChannel = async (ctx) => {
 
 // Demander Instagram
 const askInstagram = async (ctx) => {
-  const message = `🛠️ **FORMULAIRE D'INSCRIPTION – SafePlugLink**\n\n` +
+  const message = `🛠️ **FORMULAIRE D'INSCRIPTION – FindYourPlug**\n\n` +
     `⸻\n\n` +
     `🟦 **Étape 4 : Lien Instagram**\n\n` +
     `📸 Entrez votre lien Instagram (https://www.instagram.com/username)\n\n` +
@@ -628,7 +628,7 @@ const askInstagram = async (ctx) => {
 
 // Demander Potato
 const askPotato = async (ctx) => {
-  const message = `🛠️ **FORMULAIRE D'INSCRIPTION – SafePlugLink**\n\n` +
+  const message = `🛠️ **FORMULAIRE D'INSCRIPTION – FindYourPlug**\n\n` +
     `⸻\n\n` +
     `🟦 **Étapes Réseaux supplémentaires :**\n\n` +
     `Entrez votre lien **Potato** (commençant par https://)\n\n` +
@@ -748,7 +748,7 @@ const askThreema = async (ctx) => {
 
 // Demander le pays avec boutons
 const askCountry = async (ctx) => {
-  const message = `🛠️ **FORMULAIRE D'INSCRIPTION – SafePlugLink**\n\n` +
+  const message = `🛠️ **FORMULAIRE D'INSCRIPTION – FindYourPlug**\n\n` +
     `⸻\n\n` +
     `🟦 **Étape 11 : Pays d'activité**\n\n` +
     `🌍 Dans quel pays opères-tu principalement ?`;
@@ -808,7 +808,7 @@ const handleCountrySelection = async (ctx) => {
 
 // Demander les services
 const askServices = async (ctx) => {
-  const message = `🛠️ **FORMULAIRE D'INSCRIPTION – SafePlugLink**\n\n` +
+  const message = `🛠️ **FORMULAIRE D'INSCRIPTION – FindYourPlug**\n\n` +
     `⸻\n\n` +
     `🟦 **Étape 12 : Services proposés**\n\n` +
     `📦 Quels services proposes-tu ?\n` +
@@ -945,7 +945,7 @@ const handleServicesDone = async (ctx) => {
 
 // Demander la photo
 const askPhoto = async (ctx) => {
-  const message = `🛠️ **FORMULAIRE D'INSCRIPTION – SafePlugLink**\n\n` +
+  const message = `🛠️ **FORMULAIRE D'INSCRIPTION – FindYourPlug**\n\n` +
     `⸻\n\n` +
     `🟦 **Étape 15 : Envoi du logo**\n\n` +
     `🖼️ Envoie ton **logo** (obligatoire pour finaliser ton inscription)\n\n` +
@@ -964,7 +964,7 @@ const askPhoto = async (ctx) => {
 // Demander la confirmation
 const askConfirmation = async (ctx) => {
   const userForm = userForms.get(ctx.from.id);
-  const message = `🛠️ **FORMULAIRE D'INSCRIPTION – SafePlugLink**\n\n` +
+  const message = `🛠️ **FORMULAIRE D'INSCRIPTION – FindYourPlug**\n\n` +
     `⸻\n\n` +
     `🟢 **Étape 16 : Confirmation**\n\n` +
     `✅ Voici le récapitulatif final :\n\n` +
@@ -1159,7 +1159,7 @@ const submitApplication = async (ctx) => {
       firstName: userForm.data.firstName,
       lastName: userForm.data.lastName,
       name: userForm.data.name,
-      description: userForm.data.name + ' - Inscription SafePlugLink', // Description par défaut
+      description: userForm.data.name + ' - Inscription FindYourPlug', // Description par défaut
       location: {
         country: userForm.data.country,
         city: userForm.data.country || 'Non spécifiée' // City par défaut
@@ -1224,17 +1224,17 @@ const submitApplication = async (ctx) => {
     
     const photoText = userForm.data.photo ? '✅ Photo incluse' : '⚠️ Aucune photo';
     
-    const message = `🛠️ FORMULAIRE D'INSCRIPTION – SafePlugLink\n\n` +
+    const message = `🛠️ FORMULAIRE D'INSCRIPTION – FindYourPlug\n\n` +
       `⸻\n\n` +
       `🟩 ÉTAPE FINALE\n\n` +
       `🎉 Formulaire reçu !\n\n` +
       `📌 Pour valider ton inscription :\n\n` +
-      `1️⃣ Poste le logo SafePlugLink sur un de tes réseaux renseignés avec le texte :\n` +
-      `"Inscription en cours chez @SafePlugLink"\n` +
-      `et identifie @safepluglink\n\n` +
+      `1️⃣ Poste le logo FindYourPlug sur un de tes réseaux renseignés avec le texte :\n` +
+      `"Inscription en cours chez @FindYourPlug"\n` +
+      `et identifie @findyourplug\n\n` +
       `2️⃣ Envoie une photo de ton stock avec\n` +
-      `SafePlugLink et la date du jour écrits sur papier\n` +
-      `à l'admin : @safepluglink_admin\n\n` +
+      `FindYourPlug et la date du jour écrits sur papier\n` +
+      `à l'admin : @findyourplug_admin\n\n` +
       `⏰ Tu as 24h pour faire ces 2 étapes.\n\n` +
       `ℹ️ La pré-approbation peut prendre 24 à 48h.\n` +
       `Tu seras notifié automatiquement de la décision.`;

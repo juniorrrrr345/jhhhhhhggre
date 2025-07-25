@@ -1,4 +1,4 @@
-# 🤖 SafePlugLink - Bot Telegram & Boutique Web
+# 🤖 FindYourPlug - Bot Telegram & Boutique Web
 
 ## 🌐 **ACCÈS DIRECT**
 

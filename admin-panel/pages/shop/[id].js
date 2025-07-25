@@ -298,7 +298,7 @@ export default function ShopPlugDetail() {
   return (
     <>
       <Head>
-        <title>{plug.name} - {config?.boutique?.name || 'SAFEPLUGLINK'}</title>
+        <title>{plug.name} - {config?.boutique?.name || 'FINDYOURPLUG'}</title>
         <meta name="description" content={plug.description} />
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
       </Head>
