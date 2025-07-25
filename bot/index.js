@@ -321,6 +321,38 @@ bot.action('select_language', async (ctx) => {
   }
 });
 
+// Fonction pour afficher le menu principal dans la langue sélectionnée
+const showMainMenuInLanguage = async (ctx, config, language) => {
+  try {
+    // Récupérer la config fraîche avec la nouvelle langue
+    const freshConfig = await Config.findById('main');
+    const currentLang = freshConfig?.languages?.currentLanguage || language;
+    const customTranslations = freshConfig?.languages?.translations;
+    
+    console.log(`🌍 Affichage menu principal en langue: ${currentLang}`);
+    
+    // Message de bienvenue traduit
+    const { getTranslation } = require('./src/utils/translations');
+    const welcomeMessage = getTranslation('messages_welcome', currentLang, customTranslations);
+    
+    // Créer le clavier principal avec traductions (AVEC le bouton langue)
+    const { createMainKeyboard } = require('./src/utils/keyboards');
+    const keyboard = await createMainKeyboard(freshConfig);
+    
+    // Modifier le message existant avec la nouvelle langue
+    const { editMessageWithImage } = require('./src/utils/messageHelper');
+    await editMessageWithImage(ctx, welcomeMessage, keyboard, freshConfig, { 
+      parse_mode: 'Markdown' 
+    });
+    
+    console.log('✅ Menu principal affiché dans la nouvelle langue');
+  } catch (error) {
+    console.error('❌ Erreur affichage menu principal dans langue:', error);
+    // Fallback
+    await ctx.reply('❌ Erreur lors du changement de langue').catch(() => {});
+  }
+};
+
 // Changer de langue
 bot.action(/^lang_(.+)$/, async (ctx) => {
   try {
@@ -359,14 +391,13 @@ bot.action(/^lang_(.+)$/, async (ctx) => {
       }
     }
 
-    // Confirmation et retour au menu principal avec la nouvelle langue
+    // Confirmation et aller directement au menu principal avec la nouvelle langue
     const translations = require('./src/utils/translations');
     const languageName = translations.translations.languages[newLanguage]?.name || newLanguage;
     await ctx.answerCbQuery(`✅ ${languageName} sélectionnée !`);
     
-    // Appeler handleBackMain pour retourner au menu avec la nouvelle langue
-    const { handleBackMain } = require('./src/handlers/startHandler');
-    await handleBackMain(ctx);
+    // Aller directement au menu principal dans la nouvelle langue
+    await showMainMenuInLanguage(ctx, config, newLanguage);
     
   } catch (error) {
     console.error('❌ Erreur changement langue:', error);
