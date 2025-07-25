@@ -523,7 +523,8 @@ bot.action(/^like_([a-f\d]{24})$/, async (ctx) => {
     console.log(`🔍 LIKE DEBUG: User ${userId} veut liker plug ${plugId}`);
     
     // Utiliser l'API interne pour la synchronisation
-    const response = await fetch(`${process.env.API_BASE_URL || 'http://localhost:3000'}/api/likes/${plugId}`, {
+    const apiUrl = process.env.API_BASE_URL || `http://localhost:${process.env.PORT || 3022}`;
+    const response = await fetch(`${apiUrl}/api/likes/${plugId}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -551,7 +552,7 @@ bot.action(/^like_([a-f\d]{24})$/, async (ctx) => {
     
     // IMPORTANT: Forcer rafraîchissement cache pour synchronisation web
     try {
-      await fetch(`${process.env.API_BASE_URL || 'http://localhost:3000'}/api/cache/refresh`, {
+      await fetch(`${apiUrl}/api/cache/refresh`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' }
       });
