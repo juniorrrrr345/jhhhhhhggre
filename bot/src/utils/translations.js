@@ -53,6 +53,13 @@ const translations = {
       es: '🌍 Traducción',
       de: '🌍 Übersetzung'
     },
+    'menu_main': {
+      fr: '🏠 Menu principal',
+      en: '🏠 Main menu',
+      it: '🏠 Menu principale',
+      es: '🏠 Menú principal',
+      de: '🏠 Hauptmenü'
+    },
     'menu_delivery': {
       fr: '🚚 Livraison',
       en: '🚚 Delivery',
@@ -304,9 +311,18 @@ const createLanguageKeyboard = (currentLanguage = 'fr') => {
       buttons.push(flagRow.slice(i, i + 2));
     }
     
-    // Ligne de retour
+    // Ligne des boutons de navigation
+    const navRow = [];
+    
+    // Bouton retour
     const backText = getTranslation('filters_back', currentLanguage) || '🔙 Retour';
-    buttons.push([Markup.button.callback(backText, 'back_main')]);
+    navRow.push(Markup.button.callback(backText, 'back_main'));
+    
+    // Bouton "Retour au menu" pour aller directement au menu principal avec la langue choisie
+    const menuText = getTranslation('menu_main', currentLanguage) || '🏠 Menu principal';
+    navRow.push(Markup.button.callback(menuText, 'goto_main_menu'));
+    
+    buttons.push(navRow);
     
     console.log(`✅ Clavier langue créé avec ${flagRow.length} langues`);
     return Markup.inlineKeyboard(buttons);

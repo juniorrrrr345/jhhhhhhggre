@@ -226,6 +226,42 @@ bot.on('photo', async (ctx) => {
 // Gestionnaires des callbacks
 bot.action('back_main', handleBackMain);
 
+// Retour au menu principal depuis le sélecteur de langue
+bot.action('goto_main_menu', async (ctx) => {
+  try {
+    await ctx.answerCbQuery();
+    
+    // Récupérer la config pour avoir la langue actuelle
+    const config = await Config.findById('main');
+    const currentLang = config?.languages?.currentLanguage || 'fr';
+    const customTranslations = config?.languages?.translations;
+    
+    console.log(`🏠 Retour au menu principal en langue: ${currentLang}`);
+    
+    // Créer le message de bienvenue avec la langue actuelle
+    const welcomeMessage = getTranslation('messages_welcome', currentLang, customTranslations);
+    const keyboard = createMainKeyboard(config);
+    
+    // Mettre à jour l'affichage vers le menu principal
+    try {
+      await ctx.editMessageText(welcomeMessage, {
+        reply_markup: keyboard.reply_markup,
+        parse_mode: 'Markdown'
+      });
+      console.log(`✅ Menu principal affiché en ${currentLang}`);
+    } catch (editError) {
+      console.error('❌ Erreur édition menu principal:', editError);
+      // Fallback : utiliser handleStart
+      const { handleStart } = require('./src/handlers/startHandler');
+      await handleStart(ctx);
+    }
+    
+  } catch (error) {
+    console.error('❌ Erreur retour menu principal:', error);
+    await ctx.answerCbQuery('❌ Erreur lors du retour au menu').catch(() => {});
+  }
+});
+
 // === GESTION DES LANGUES ===
 // Afficher le sélecteur de langue
 bot.action('select_language', async (ctx) => {
@@ -288,8 +324,6 @@ bot.action('select_language', async (ctx) => {
 // Changer de langue
 bot.action(/^lang_(.+)$/, async (ctx) => {
   try {
-    await ctx.answerCbQuery(); // Répondre immédiatement pour éviter le loading
-    
     const newLanguage = ctx.match[1];
     
     if (!['fr', 'en', 'it', 'es', 'de'].includes(newLanguage)) {
@@ -333,36 +367,23 @@ bot.action(/^lang_(.+)$/, async (ctx) => {
     const translations = require('./src/utils/translations');
     const languageName = translations.translations.languages[newLanguage]?.name || newLanguage;
     
-    // Créer le message de bienvenue avec la nouvelle langue
-    const welcomeMessage = getTranslation('messages_welcome', newLanguage, customTranslations);
-    const keyboard = createMainKeyboard(updatedConfig);
+    // Réafficher le sélecteur de langue avec la nouvelle langue cochée
+    const message = `🌍 **${getTranslation('menu_language', newLanguage, customTranslations)}**\n\nSélectionnez votre langue préférée :`;
+    const keyboard = createLanguageKeyboard(newLanguage);
     
-    // Essayer d'éditer le message existant avec la nouvelle langue
+    // Mettre à jour l'affichage du sélecteur de langue
     try {
-      await ctx.editMessageText(welcomeMessage, {
+      await ctx.editMessageText(message, {
         reply_markup: keyboard.reply_markup,
         parse_mode: 'Markdown'
       });
       
       // Confirmation de changement de langue
       await ctx.answerCbQuery(`✅ ${languageName} sélectionnée !`);
-      console.log(`✅ Interface mise à jour en ${newLanguage}`);
+      console.log(`✅ Sélecteur de langue mis à jour avec ${newLanguage} cochée`);
       
     } catch (editError) {
-      console.log('⚠️ Impossible d\'éditer le message, envoi d\'un nouveau');
-      
-      // Si l'édition échoue, supprimer l'ancien message et en envoyer un nouveau
-      try {
-        await ctx.deleteMessage();
-      } catch (deleteError) {
-        console.log('⚠️ Impossible de supprimer l\'ancien message');
-      }
-      
-      // Envoyer un nouveau message avec la nouvelle langue
-      const { sendWelcomeMessage } = require('./src/utils/messageHelper');
-      await sendWelcomeMessage(ctx, updatedConfig);
-      
-      // Confirmation de changement de langue
+      console.error('❌ Erreur édition sélecteur langue:', editError);
       await ctx.answerCbQuery(`✅ ${languageName} sélectionnée !`);
     }
     
@@ -2918,4 +2939,4 @@ app.get('/api/likes/:plugId/:userId', async (req, res) => {
     console.error('❌ Erreur API GET LIKES:', error);
     res.status(500).json({ error: 'Erreur serveur' });
   }
-});
+  });
