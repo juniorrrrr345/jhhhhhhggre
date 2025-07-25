@@ -509,6 +509,7 @@ const handleShopsByPostalCode = async (ctx, country, postalCode, serviceType = n
 // Gestionnaire pour les services (delivery et meetup) - Afficher exemples de boutiques par pays
 const handleDepartmentFilter = async (ctx, serviceType, selectedCountry = null) => {
   try {
+    console.log(`🔍 handleDepartmentFilter appelé: serviceType=${serviceType}, selectedCountry=${selectedCountry}`);
     const userId = ctx.from.id;
     
     // 🚫 Prévention spam
@@ -537,6 +538,7 @@ const handleDepartmentFilter = async (ctx, serviceType, selectedCountry = null) 
     }
     
     const shopsWithService = await Plug.find(query).sort({ likes: -1, isVip: -1 });
+    console.log(`📊 Boutiques trouvées: ${shopsWithService.length} pour serviceType=${serviceType}, selectedCountry=${selectedCountry}`);
     
     if (shopsWithService.length === 0) {
       let message = `❌ **Aucune boutique disponible**\n\n`;
@@ -547,6 +549,10 @@ const handleDepartmentFilter = async (ctx, serviceType, selectedCountry = null) 
       } else if (serviceType === 'meetup') {
         const serviceName = getTranslation('service_meetup', currentLang, customTranslations);
         message += `🤝 **Service:** ${serviceName}\n`;
+      }
+      
+      if (selectedCountry) {
+        message += `🌍 **Pays:** ${getCountryFlag(selectedCountry)} ${selectedCountry}\n`;
       }
       
       message += `\n💡 *Aucune boutique ne propose ce service actuellement*`;
@@ -574,6 +580,12 @@ const handleDepartmentFilter = async (ctx, serviceType, selectedCountry = null) 
         });
       }
       return;
+    }
+    
+    // Si un pays est déjà sélectionné, afficher directement toutes les boutiques de ce pays
+    if (selectedCountry) {
+      console.log(`🎯 Redirection vers handleCountryServiceShops pour ${selectedCountry}`);
+      return await handleCountryServiceShops(ctx, serviceType, selectedCountry);
     }
     
     // Grouper les boutiques par pays
