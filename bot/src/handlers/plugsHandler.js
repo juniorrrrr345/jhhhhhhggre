@@ -897,7 +897,12 @@ const handleResetFilters = async (ctx) => {
 const getAvailableCountries = async () => {
   try {
     const countries = await Plug.distinct('countries', { isActive: true });
-    return countries.filter(country => country && country.trim() !== '');
+    return countries.filter(country => 
+      country && 
+      country.trim() !== '' && 
+      country.toLowerCase() !== 'autre' &&
+      country.toLowerCase() !== 'other'
+    );
   } catch (error) {
     console.error('Erreur récupération pays:', error);
     return ['France', 'Belgique', 'Suisse', 'Italie']; // Fallback
@@ -1682,26 +1687,55 @@ const handleDepartmentsList = async (ctx, serviceType, selectedCountry = null) =
     // BOUTONS DÉPARTEMENTS PAR PAYS
     const buttons = [];
     
-    // Départements par pays
+    // Départements par pays (ABRÉGÉS)
     const departmentsByCountry = {
       'France': ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '2A', '2B', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31', '32', '33', '34', '35', '36', '37', '38', '39', '40', '41', '42', '43', '44', '45', '46', '47', '48', '49', '50', '51', '52', '53', '54', '55', '56', '57', '58', '59', '60', '61', '62', '63', '64', '65', '66', '67', '68', '69', '70', '71', '72', '73', '74', '75', '76', '77', '78', '79', '80', '81', '82', '83', '84', '85', '86', '87', '88', '89', '90', '91', '92', '93', '94', '95'],
-      'Belgique': ['1000', '1020', '1030', '1040', '1050', '1060', '1070', '1080', '1090', '1120', '1130', '1140', '1150', '1160', '1170', '1180', '1190', '1200', '1210', '1300', '1310', '1320', '1330', '1340', '1350', '1360', '1370', '1380', '1390', '1400', '1410', '1420', '1430', '1440', '1450', '1460', '1470', '1480', '1490', '1500'],
-      'Suisse': ['1000', '1200', '1290', '1300', '2000', '2500', '3000', '4000', '5000', '6000', '7000', '8000', '9000'],
-      'Espagne': ['01000', '02000', '03000', '04000', '05000', '06000', '07000', '08000', '09000', '10000', '11000', '12000', '13000', '14000', '15000', '16000', '17000', '18000', '19000', '20000'],
-      'Italie': ['00100', '10100', '20100', '30100', '40100', '50100', '60100', '70100', '80100', '90100'],
-      'Maroc': ['10000', '20000', '30000', '40000', '50000', '60000', '70000', '80000', '90000']
+      'Belgique': ['10', '20', '30', '40', '50', '60', '70', '80', '90', '11', '13', '14', '15', '16', '17', '18', '19', '12', '21', '13', '31', '32', '33', '34', '35', '36', '37', '38', '39', '14', '41', '42', '43', '44', '45', '46', '47', '48', '49', '15'],
+      'Suisse': ['10', '12', '13', '20', '25', '30', '40', '50', '60', '70', '80', '90'],
+      'Espagne': ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20'],
+      'Italie': ['01', '10', '20', '30', '40', '50', '60', '70', '80', '90'],
+      'Maroc': ['10', '20', '30', '40', '50', '60', '70', '80', '90']
     };
     
     // Récupérer les départements du pays ou par défaut les 20 premiers français
     const depts = departmentsByCountry[selectedCountry] || departmentsByCountry['France'].slice(0, 20);
     
-    // 4 boutons par ligne
+    // Récupérer toutes les boutiques pour ce service et pays pour compter correctement
+    let query = { isActive: true };
+    
+    if (serviceType === 'delivery') {
+      query['services.delivery.enabled'] = true;
+    } else if (serviceType === 'meetup') {
+      query['services.meetup.enabled'] = true;
+    }
+    
+    if (selectedCountry) {
+      query.countries = { $in: [selectedCountry] };
+    }
+    
+    const shopsWithService = await Plug.find(query);
+    console.log(`🔍 Trouvé ${shopsWithService.length} boutiques pour ${serviceType} dans ${selectedCountry || 'tous pays'}`);
+    
+    // 4 boutons par ligne avec VRAI comptage de boutiques
     for (let i = 0; i < depts.length; i += 4) {
       const row = [];
       for (let j = 0; j < 4 && (i + j) < depts.length; j++) {
         const dept = depts[i + j];
+        
+        // Compter les VRAIES boutiques pour ce département
+        const shopsInDept = shopsWithService.filter(shop => {
+          if (serviceType === 'delivery') {
+            return shop.services?.delivery?.departments?.includes(dept);
+          } else if (serviceType === 'meetup') {
+            return shop.services?.meetup?.departments?.includes(dept);
+          }
+          return false;
+        }).length;
+        
+        console.log(`📍 Département ${dept}: ${shopsInDept} boutiques`);
+        
         row.push({
-          text: `${dept} (0)`,
+          text: `${dept} (${shopsInDept})`,
           callback_data: `top_dept_${serviceType}_${dept}${selectedCountry ? `_${selectedCountry}` : ''}`
         });
       }
