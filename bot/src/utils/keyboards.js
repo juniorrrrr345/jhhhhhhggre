@@ -518,6 +518,7 @@ const createPlugsFilterKeyboard = (currentLang = 'fr', customTranslations = null
   ]);
 };
 
+
 module.exports = {
   createMainKeyboard,
   createPlugsFilterKeyboard,

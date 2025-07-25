@@ -6,7 +6,7 @@ const {
   createServicesKeyboard, 
   createCountriesKeyboard,
   createPlugsKeyboard,
-  createPlugKeyboard 
+  createPlugKeyboard
 } = require('../utils/keyboards');
 const { sendMessageWithImage, editMessageWithImage, sendPlugWithImage } = require('../utils/messageHelper');
 const { getTranslation, translateDescription } = require('../utils/translations');

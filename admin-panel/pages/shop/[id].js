@@ -695,14 +695,37 @@ export default function ShopPlugDetail() {
                     padding: '12px',
                     backgroundColor: plug?.services?.delivery?.enabled ? '#0a4a2a' : '#2a2a2a',
                     borderRadius: '8px',
-                    border: plug?.services?.delivery?.enabled ? '1px solid #22c55e' : '1px solid #3a3a3a'
+                    border: plug?.services?.delivery?.enabled ? '1px solid #22c55e' : '1px solid #3a3a3a',
+                    minHeight: '60px'
                   }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                      <span style={{ fontSize: '20px' }}>📦</span>
-                      <div>
-                        <div style={{ fontWeight: '500', color: '#ffffff' }}>{translateService('delivery') || 'Livraison'}</div>
+                    <div style={{ 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      gap: '12px',
+                      flex: '1',
+                      minWidth: '0'
+                    }}>
+                      <span style={{ 
+                        fontSize: '20px',
+                        flexShrink: '0'
+                      }}>📦</span>
+                      <div style={{ minWidth: '0', flex: '1' }}>
+                        <div style={{ 
+                          fontWeight: '500', 
+                          color: '#ffffff',
+                          fontSize: '15px',
+                          lineHeight: '1.3',
+                          wordBreak: 'break-word',
+                          textAlign: 'left'
+                        }}>
+                          {translateService('delivery') || 'Livraison'}
+                        </div>
                         {plug?.services?.delivery?.price && (
-                          <div style={{ fontSize: '13px', color: '#8e8e93' }}>
+                          <div style={{ 
+                            fontSize: '13px', 
+                            color: '#8e8e93',
+                            marginTop: '2px'
+                          }}>
                             {plug.services.delivery.price}
                           </div>
                         )}
@@ -711,7 +734,10 @@ export default function ShopPlugDetail() {
                     <div style={{ 
                       color: plug?.services?.delivery?.enabled ? '#22c55e' : '#ef4444',
                       fontWeight: '500',
-                      fontSize: '14px'
+                      fontSize: '14px',
+                      textAlign: 'center',
+                      minWidth: '100px',
+                      flexShrink: '0'
                     }}>
                       {plug?.services?.delivery?.enabled ? `✓ ${t('available') || 'Disponible'}` : `✗ ${t('not_available') || 'Non disponible'}`}
                     </div>
@@ -725,14 +751,37 @@ export default function ShopPlugDetail() {
                     padding: '12px',
                     backgroundColor: plug?.services?.postal?.enabled ? '#1a3a4a' : '#2a2a2a',
                     borderRadius: '8px',
-                    border: plug?.services?.postal?.enabled ? '1px solid #3b82f6' : '1px solid #3a3a3a'
+                    border: plug?.services?.postal?.enabled ? '1px solid #3b82f6' : '1px solid #3a3a3a',
+                    minHeight: '60px'
                   }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                      <span style={{ fontSize: '20px' }}>📬</span>
-                      <div>
-                        <div style={{ fontWeight: '500', color: '#ffffff' }}>{translateService('postal') || 'Envoi postal'}</div>
+                    <div style={{ 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      gap: '12px',
+                      flex: '1',
+                      minWidth: '0'
+                    }}>
+                      <span style={{ 
+                        fontSize: '20px',
+                        flexShrink: '0'
+                      }}>📬</span>
+                      <div style={{ minWidth: '0', flex: '1' }}>
+                        <div style={{ 
+                          fontWeight: '500', 
+                          color: '#ffffff',
+                          fontSize: '15px',
+                          lineHeight: '1.3',
+                          wordBreak: 'break-word',
+                          textAlign: 'left'
+                        }}>
+                          {translateService('postal') || 'Envoi postal'}
+                        </div>
                         {plug?.services?.postal?.price && (
-                          <div style={{ fontSize: '13px', color: '#8e8e93' }}>
+                          <div style={{ 
+                            fontSize: '13px', 
+                            color: '#8e8e93',
+                            marginTop: '2px'
+                          }}>
                             {plug.services.postal.price}
                           </div>
                         )}
@@ -741,7 +790,10 @@ export default function ShopPlugDetail() {
                     <div style={{ 
                       color: plug?.services?.postal?.enabled ? '#3b82f6' : '#ef4444',
                       fontWeight: '500',
-                      fontSize: '14px'
+                      fontSize: '14px',
+                      textAlign: 'center',
+                      minWidth: '100px',
+                      flexShrink: '0'
                     }}>
                       {plug?.services?.postal?.enabled ? `✓ ${t('available') || 'Disponible'}` : `✗ ${t('not_available') || 'Non disponible'}`}
                     </div>
@@ -755,14 +807,37 @@ export default function ShopPlugDetail() {
                     padding: '12px',
                     backgroundColor: plug?.services?.meetup?.enabled ? '#4a2a1a' : '#2a2a2a',
                     borderRadius: '8px',
-                    border: plug?.services?.meetup?.enabled ? '1px solid #f59e0b' : '1px solid #3a3a3a'
+                    border: plug?.services?.meetup?.enabled ? '1px solid #f59e0b' : '1px solid #3a3a3a',
+                    minHeight: '60px'
                   }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                      <span style={{ fontSize: '20px' }}>🤝</span>
-                      <div>
-                        <div style={{ fontWeight: '500', color: '#ffffff' }}>{translateService('meetup') || 'Meetup'}</div>
+                    <div style={{ 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      gap: '12px',
+                      flex: '1',
+                      minWidth: '0'
+                    }}>
+                      <span style={{ 
+                        fontSize: '20px',
+                        flexShrink: '0'
+                      }}>🤝</span>
+                      <div style={{ minWidth: '0', flex: '1' }}>
+                        <div style={{ 
+                          fontWeight: '500', 
+                          color: '#ffffff',
+                          fontSize: '15px',
+                          lineHeight: '1.3',
+                          wordBreak: 'break-word',
+                          textAlign: 'left'
+                        }}>
+                          {translateService('meetup') || 'Meetup'}
+                        </div>
                         {plug?.services?.meetup?.price && (
-                          <div style={{ fontSize: '13px', color: '#8e8e93' }}>
+                          <div style={{ 
+                            fontSize: '13px', 
+                            color: '#8e8e93',
+                            marginTop: '2px'
+                          }}>
                             {plug.services.meetup.price}
                           </div>
                         )}
@@ -771,7 +846,10 @@ export default function ShopPlugDetail() {
                     <div style={{ 
                       color: plug?.services?.meetup?.enabled ? '#f59e0b' : '#ef4444',
                       fontWeight: '500',
-                      fontSize: '14px'
+                      fontSize: '14px',
+                      textAlign: 'center',
+                      minWidth: '100px',
+                      flexShrink: '0'
                     }}>
                       {plug?.services?.meetup?.enabled ? `✓ ${t('available') || 'Disponible'}` : `✗ ${t('not_available') || 'Non disponible'}`}
                     </div>
