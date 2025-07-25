@@ -33,11 +33,11 @@ const translations = {
       de: 'ℹ️ Informationen'
     },
     'contact_default_text': {
-      fr: 'Contactez-nous pour plus d\'informations !',
-      en: 'Contact us for more information!',
-      it: 'Contattaci per maggiori informazioni!',
-      es: '¡Contáctanos para más información!',
-      de: 'Kontaktieren Sie uns für weitere Informationen!'
+      fr: 'Contactez-nous pour plus d\'informations !\n\nNotre équipe est disponible pour répondre à toutes vos questions et vous accompagner dans vos démarches.',
+      en: 'Contact us for more information!\n\nOur team is available to answer all your questions and assist you with your needs.',
+      it: 'Contattaci per maggiori informazioni!\n\nIl nostro team è disponibile per rispondere a tutte le tue domande e assisterti nelle tue necessità.',
+      es: '¡Contáctanos para más información!\n\nNuestro equipo está disponible para responder todas tus preguntas y ayudarte con tus necesidades.',
+      de: 'Kontaktieren Sie uns für weitere Informationen!\n\nUnser Team steht zur Verfügung, um alle Ihre Fragen zu beantworten und Sie bei Ihren Bedürfnissen zu unterstützen.'
     },
     'contact_us_text': {
       fr: 'Nous contacter',
@@ -47,11 +47,11 @@ const translations = {
       de: 'Kontakt'
     },
     'info_default_text': {
-      fr: 'Découvrez notre plateforme premium.',
-      en: 'Discover our premium platform.',
-      it: 'Scopri la nostra piattaforma premium.',
-      es: 'Descubre nuestra plataforma premium.',
-      de: 'Entdecken Sie unsere Premium-Plattform.'
+      fr: 'Découvrez notre plateforme premium.\n\nNous proposons des services de qualité avec une interface moderne et intuitive. Rejoignez notre communauté pour accéder à des fonctionnalités exclusives.',
+      en: 'Discover our premium platform.\n\nWe offer quality services with a modern and intuitive interface. Join our community to access exclusive features.',
+      it: 'Scopri la nostra piattaforma premium.\n\nOffriamo servizi di qualità con un\'interfaccia moderna e intuitiva. Unisciti alla nostra comunità per accedere a funzionalità esclusive.',
+      es: 'Descubre nuestra plataforma premium.\n\nOfrecemos servicios de calidad con una interfaz moderna e intuitiva. Únete a nuestra comunidad para acceder a funciones exclusivas.',
+      de: 'Entdecken Sie unsere Premium-Plattform.\n\nWir bieten qualitativ hochwertige Dienstleistungen mit einer modernen und intuitiven Benutzeroberfläche. Treten Sie unserer Community bei, um auf exklusive Funktionen zuzugreifen.'
     },
     'menu_becomeDealer': {
       fr: '💼 Devenir Plug',

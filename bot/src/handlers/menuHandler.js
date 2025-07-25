@@ -26,7 +26,13 @@ const handleContact = async (ctx) => {
     // Affichage contact classique avec traductions
     const contactTitle = getTranslation('menu_contact', currentLang, customTranslations);
     const defaultContactText = getTranslation('contact_default_text', currentLang, customTranslations) || 'Contactez-nous pour plus d\'informations !';
-    let message = `${contactTitle}\n\n${config?.buttons?.contact?.content || defaultContactText}`;
+    
+    // Utiliser le contenu traduit par défaut si le contenu personnalisé n'existe pas ou est en français
+    const contactContent = config?.buttons?.contact?.content;
+    const useTranslatedContent = !contactContent || contactContent.includes('Contactez-nous') || contactContent.includes('informations');
+    const finalContactText = useTranslatedContent ? defaultContactText : contactContent;
+    
+    let message = `${contactTitle}\n\n${finalContactText}`;
 
     // Ajouter les réseaux sociaux globaux - PRIORITÉ socialMediaList
     const socialMediaData = config?.socialMediaList || config?.socialMedia || [];
@@ -147,7 +153,13 @@ const handleInfo = async (ctx) => {
     // Affichage info classique avec traductions
     const infoTitle = getTranslation('menu_info', currentLang, customTranslations);
     const defaultInfoText = getTranslation('info_default_text', currentLang, customTranslations) || 'Découvrez notre plateforme premium.';
-    const message = `${infoTitle}\n\n${config?.buttons?.info?.content || defaultInfoText}`;
+    
+    // Utiliser le contenu traduit par défaut si le contenu personnalisé n'existe pas ou est en français
+    const infoContent = config?.buttons?.info?.content;
+    const useTranslatedContent = !infoContent || infoContent.includes('Découvrez') || infoContent.includes('plateforme') || infoContent.includes('premium');
+    const finalInfoText = useTranslatedContent ? defaultInfoText : infoContent;
+    
+    const message = `${infoTitle}\n\n${finalInfoText}`;
 
     const keyboard = createMainKeyboard(config);
 
