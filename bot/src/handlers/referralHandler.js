@@ -132,11 +132,11 @@ const redirectToShopDetails = async (ctx, boutique) => {
     if (boutique.services?.delivery?.enabled) {
       services.push(`🚚 **Livraison**${boutique.services.delivery.description ? `: ${boutique.services.delivery.description}` : ''}`);
     }
-    if (boutique.services?.postal?.enabled) {
-      services.push(`✈️ **Envoi postal**${boutique.services.postal.description ? `: ${boutique.services.postal.description}` : ''}`);
-    }
     if (boutique.services?.meetup?.enabled) {
       services.push(`🏠 **Meetup**${boutique.services.meetup.description ? `: ${boutique.services.meetup.description}` : ''}`);
+    }
+    if (boutique.services?.postal?.enabled) {
+      services.push(`✈️ **Envoi postal**${boutique.services.postal.description ? `: ${boutique.services.postal.description}` : ''}`);
     }
 
     if (services.length > 0) {

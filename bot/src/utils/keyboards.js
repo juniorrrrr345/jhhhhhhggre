@@ -197,8 +197,8 @@ const createServicesKeyboard = (config) => {
   
   return Markup.inlineKeyboard([
     [Markup.button.callback(deliveryText, 'service_delivery')],
-    [Markup.button.callback(postalText, 'service_postal')],
     [Markup.button.callback(meetupText, 'service_meetup')],
+    [Markup.button.callback(postalText, 'service_postal')],
     [Markup.button.callback(backText, 'top_plugs')]
   ]);
 };

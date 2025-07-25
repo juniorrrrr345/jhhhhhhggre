@@ -841,11 +841,11 @@ const handlePlugDetails = async (ctx, plugId, returnContext = 'top_plugs') => {
     if (plug.services?.delivery?.enabled) {
       services.push(`🚚 **Livraison**${plug.services.delivery.description ? `: ${plug.services.delivery.description}` : ''}`);
     }
-    if (plug.services?.postal?.enabled) {
-      services.push(`✈️ **Envoi postal**${plug.services.postal.description ? `: ${plug.services.postal.description}` : ''}`);
-    }
     if (plug.services?.meetup?.enabled) {
       services.push(`🏠 **Meetup**${plug.services.meetup.description ? `: ${plug.services.meetup.description}` : ''}`);
+    }
+    if (plug.services?.postal?.enabled) {
+      services.push(`✈️ **Envoi postal**${plug.services.postal.description ? `: ${plug.services.postal.description}` : ''}`);
     }
 
     if (services.length > 0) {

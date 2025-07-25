@@ -239,6 +239,13 @@ bot.action('select_language', async (ctx) => {
     const message = `🌍 **${getTranslation('menu_language', currentLang, customTranslations)}**\n\nSélectionnez votre langue préférée :`;
     const keyboard = createLanguageKeyboard(currentLang);
     
+    // Vérifier que le clavier est valide avant de l'utiliser
+    if (!keyboard || !keyboard.reply_markup) {
+      console.error('❌ Clavier de langue invalide');
+      await ctx.answerCbQuery('❌ Erreur temporaire, réessayez').catch(() => {});
+      return;
+    }
+    
     // Essayer d'éditer le caption d'abord (pour les messages avec image)
     try {
       await ctx.editMessageCaption(message, {
@@ -247,15 +254,24 @@ bot.action('select_language', async (ctx) => {
       });
     } catch (editError) {
       // Si ça échoue, essayer d'éditer le texte (pour les messages sans image)
-      await ctx.editMessageText(message, {
-        reply_markup: keyboard.reply_markup,
-        parse_mode: 'Markdown'
-      });
+      try {
+        await ctx.editMessageText(message, {
+          reply_markup: keyboard.reply_markup,
+          parse_mode: 'Markdown'
+        });
+      } catch (secondError) {
+        console.error('❌ Impossible d\'éditer le message de langue:', secondError);
+        // Fallback : envoyer un nouveau message
+        await ctx.reply(message, {
+          reply_markup: keyboard.reply_markup,
+          parse_mode: 'Markdown'
+        });
+      }
     }
     
   } catch (error) {
     console.error('❌ Erreur sélecteur langue:', error);
-    await ctx.answerCbQuery('❌ Erreur lors du chargement').catch(() => {});
+    await ctx.answerCbQuery('❌ Erreur lors du chargement des langues').catch(() => {});
   }
 });
 

@@ -68,8 +68,8 @@ const sendRejectionNotification = async (bot, application, reason = '') => {
 const getServicesText = (services) => {
   const servicesList = [];
   if (services.includes('delivery')) servicesList.push('Livraison');
-  if (services.includes('postal')) servicesList.push('Envoi postal');
   if (services.includes('meetup')) servicesList.push('Meetup');
+  if (services.includes('postal')) servicesList.push('Envoi postal');
   return servicesList.length > 0 ? servicesList.join(', ') : 'Aucun service spécifié';
 };
 

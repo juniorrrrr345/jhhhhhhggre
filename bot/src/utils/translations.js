@@ -259,27 +259,46 @@ const getTranslation = (key, language = 'fr', customTranslations = null) => {
 
 // Fonction pour créer le clavier de sélection de langue
 const createLanguageKeyboard = (currentLanguage = 'fr') => {
-  const { Markup } = require('telegraf');
-  const buttons = [];
-  
-  // Première ligne : drapeaux des langues
-  const flagRow = [];
-  Object.entries(translations.languages).forEach(([code, lang]) => {
-    const isSelected = code === currentLanguage;
-    const buttonText = isSelected ? `✅ ${lang.flag}` : lang.flag;
-    flagRow.push(Markup.button.callback(buttonText, `lang_${code}`));
-  });
-  
-  // Grouper par 3 boutons par ligne
-  for (let i = 0; i < flagRow.length; i += 3) {
-    buttons.push(flagRow.slice(i, i + 3));
+  try {
+    const { Markup } = require('telegraf');
+    const buttons = [];
+    
+    // Vérifier que les traductions existent
+    if (!translations || !translations.languages) {
+      console.error('❌ Traductions non disponibles pour le clavier de langue');
+      return null;
+    }
+    
+    // Première ligne : drapeaux des langues
+    const flagRow = [];
+    Object.entries(translations.languages).forEach(([code, lang]) => {
+      if (lang && lang.flag) {
+        const isSelected = code === currentLanguage;
+        const buttonText = isSelected ? `✅ ${lang.flag}` : lang.flag;
+        flagRow.push(Markup.button.callback(buttonText, `lang_${code}`));
+      }
+    });
+    
+    // Vérifier qu'on a au moins un bouton
+    if (flagRow.length === 0) {
+      console.error('❌ Aucune langue disponible pour le clavier');
+      return null;
+    }
+    
+    // Grouper par 3 boutons par ligne
+    for (let i = 0; i < flagRow.length; i += 3) {
+      buttons.push(flagRow.slice(i, i + 3));
+    }
+    
+    // Ligne de retour
+    const backText = getTranslation('filters_back', currentLanguage) || '🔙 Retour';
+    buttons.push([Markup.button.callback(backText, 'back_main')]);
+    
+    return Markup.inlineKeyboard(buttons);
+  } catch (error) {
+    console.error('❌ Erreur création clavier langue:', error);
+    return null;
   }
-  
-  // Ligne de retour
-  const backText = getTranslation('filters_back', currentLanguage);
-  buttons.push([Markup.button.callback(backText, 'back_main')]);
-  
-  return Markup.inlineKeyboard(buttons);
 };
 
 // Fonction pour initialiser les traductions par défaut
