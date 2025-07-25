@@ -1689,12 +1689,33 @@ const handleDepartmentsList = async (ctx, serviceType, selectedCountry = null) =
   try {
     await ctx.answerCbQuery();
     
-    // MESSAGE SIMPLE
+    // VÉRIFICATION PAYS OBLIGATOIRE
+    if (!selectedCountry || selectedCountry.trim() === '') {
+      console.log(`⚠️ Aucun pays sélectionné pour ${serviceType}, affichage du message d'erreur`);
+      
+      const config = await Config.findById('main');
+      const serviceName = serviceType === 'delivery' ? 'Livraison' : 'Meetup';
+      
+      let message = `🚫 **Pays requis**\n\n`;
+      message += `📦 **Service:** ${serviceName}\n\n`;
+      message += `❌ **Vous devez d'abord sélectionner un pays !**\n\n`;
+      message += `💡 *Retournez au menu et choisissez un pays avant de sélectionner ${serviceName}*`;
+      
+      const keyboard = Markup.inlineKeyboard([
+        [{
+          text: '🔙 Retour au menu',
+          callback_data: 'top_plugs'
+        }]
+      ]);
+      
+      await editMessageWithImage(ctx, message, keyboard, config, { parse_mode: 'Markdown' });
+      return;
+    }
+    
+    // MESSAGE AVEC PAYS SÉLECTIONNÉ
     let message = `📍 **DÉPARTEMENTS DISPONIBLES**\n\n`;
     message += `📦 Service: ${serviceType === 'delivery' ? 'Livraison' : 'Meetup'}\n`;
-    if (selectedCountry) {
-      message += `🌍 Pays: 🇫🇷 ${selectedCountry}\n`;
-    }
+    message += `🌍 Pays: ${getCountryFlag(selectedCountry)} ${selectedCountry}\n`;
     message += `\n💡 Cliquez sur un département:\n\n`;
     
     // BOUTONS DÉPARTEMENTS PAR PAYS
