@@ -1047,6 +1047,11 @@ const createTopPlugsKeyboard = (config, countries, selectedCountry, selectedServ
   
   buttons.push(serviceRow);
   
+  // Troisième ligne : Bouton Départements (nouveau)
+  const departmentText = getTranslation('filters_all_departments', currentLang, customTranslations) || '📍 Départements';
+  const departmentButton = Markup.button.callback(departmentText, 'all_departments');
+  buttons.push([departmentButton]);
+  
   // Quatrième ligne : Département (si service delivery ou meetup sélectionné)
   if (selectedService === 'delivery' || selectedService === 'meetup') {
     const deptText = getTranslation('filters_department', currentLang, customTranslations);
@@ -1490,6 +1495,186 @@ const handlePlugDetails = async (ctx, plugId, returnContext = 'top_plugs') => {
 
 // Fonction handlePlugServiceDetails supprimée - les services ont été retirés du menu
 
+// Gestionnaire pour afficher TOUS les départements de TOUS les pays (bouton Département principal)
+const handleAllDepartments = async (ctx) => {
+  try {
+    const userId = ctx.from.id;
+    
+    // 🚫 Prévention spam
+    if (isSpamClick(userId, 'all_departments', 'main')) {
+      await ctx.answerCbQuery('🔄');
+      return;
+    }
+    
+    await ctx.answerCbQuery();
+    
+    const config = await Config.findById('main');
+    const currentLang = config?.languages?.currentLanguage || 'fr';
+    const customTranslations = config?.languages?.translations;
+    
+    // Départements complets par pays - SYSTÈME EXTENSIBLE
+    const departmentsByCountry = {
+      'France': ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '2A', '2B', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31', '32', '33', '34', '35', '36', '37', '38', '39', '40', '41', '42', '43', '44', '45', '46', '47', '48', '49', '50', '51', '52', '53', '54', '55', '56', '57', '58', '59', '60', '61', '62', '63', '64', '65', '66', '67', '68', '69', '70', '71', '72', '73', '74', '75', '76', '77', '78', '79', '80', '81', '82', '83', '84', '85', '86', '87', '88', '89', '90', '91', '92', '93', '94', '95'],
+      'Belgique': ['1000', '1020', '1030', '1040', '1050', '1060', '1070', '1080', '1090', '1120', '1130', '1140', '1150', '1160', '1170', '1180', '1190', '1200', '1210', '1300', '1310', '1320', '1330', '1340', '1350', '1360', '1370', '1380', '1390', '1400', '1410', '1420', '1430', '1440', '1450', '1460', '1470', '1480', '1490', '1500', '1600', '1700', '1800', '1900', '2000', '2100', '2200', '2300', '2400', '2500', '2600', '2700', '2800', '2900', '3000', '3100', '3200', '3300', '3400', '3500', '3600', '3700', '3800', '3900', '4000', '4100', '4200', '4300', '4400', '4500', '4600', '4700', '4800', '4900', '5000', '6000', '6200', '6400', '6600', '6700', '6800', '6900', '7000', '7100', '7200', '7300', '7400', '7500', '7600', '7700', '7800', '7900', '8000', '8200', '8300', '8400', '8500', '8600', '8700', '8800', '8900', '9000', '9100', '9200', '9300', '9400', '9500', '9600', '9700', '9800', '9900'],
+      'Suisse': ['1000', '1200', '1290', '1300', '2000', '2500', '3000', '4000', '5000', '6000', '7000', '8000', '9000'],
+      'Pays-Bas': ['1011', '1012', '1013', '1015', '1016', '1017', '1018', '1019', '2000', '2500', '3000', '4000', '5000', '6000', '7000', '8000', '9000'], 
+      'Italie': ['00100', '10100', '20100', '30100', '40100', '50100', '60100', '70100', '80100', '90100'],
+      'Espagne': ['01000', '02000', '03000', '04000', '05000', '06000', '07000', '08000', '09000', '10000', '11000', '12000', '13000', '14000', '15000', '16000', '17000', '18000', '19000', '20000', '21000', '22000', '23000', '24000', '25000', '26000', '27000', '28000', '29000', '30000', '31000', '32000', '33000', '34000', '35000', '36000', '37000', '38000', '39000', '40000', '41000', '42000', '43000', '44000', '45000', '46000', '47000', '48000', '49000', '50000'],
+      'Maroc': ['10000', '20000', '30000', '40000', '50000', '60000', '70000', '80000', '90000'],
+      'Portugal': ['1000', '2000', '3000', '4000', '5000', '6000', '7000', '8000', '9000'],
+      'Luxembourg': ['1009', '1010', '1011', '1012', '1013', '1014', '1015', '1016', '1017', '1018', '1019', '1020', '1021', '1022', '1023', '1024', '1025', '1026', '1027', '1028', '1029', '1030'],
+      'Allemagne': ['10115', '20095', '30159', '40213', '50667', '60313', '70173', '80331', '90402'],
+      'Canada': ['H1A', 'H1B', 'H1C', 'H2A', 'H2B', 'H2C', 'H3A', 'H3B', 'H3C', 'H4A', 'H4B', 'H4C'],
+      'Autre': ['001', '002', '003', '004', '005', '006', '007', '008', '009', '010']
+    };
+    
+    // Construire le message avec tous les départements organisés par pays
+    let message = `📍 **Tous les départements disponibles**\n\n`;
+    message += `💡 *Cliquez sur un pays pour voir tous ses départements*\n\n`;
+    
+    // Afficher un résumé des pays et nombre de départements
+    Object.keys(departmentsByCountry).forEach(country => {
+      const departmentCount = departmentsByCountry[country].length;
+      message += `${getCountryFlag(country)} **${country}** : ${departmentCount} départements\n`;
+    });
+    
+    // Créer les boutons par pays (2 par ligne)
+    const countryButtons = [];
+    let currentRow = [];
+    
+    Object.keys(departmentsByCountry).forEach(country => {
+      const departmentCount = departmentsByCountry[country].length;
+      currentRow.push({
+        text: `${getCountryFlag(country)} ${country} (${departmentCount})`,
+        callback_data: `all_dept_country_${country}`
+      });
+      
+      if (currentRow.length === 2) {
+        countryButtons.push(currentRow);
+        currentRow = [];
+      }
+    });
+    
+    // Ajouter la dernière ligne si nécessaire
+    if (currentRow.length > 0) {
+      countryButtons.push(currentRow);
+    }
+    
+    // Bouton retour
+    countryButtons.push([{
+      text: '🔙 Retour au menu',
+      callback_data: 'top_plugs'
+    }]);
+    
+    const keyboard = { inline_keyboard: countryButtons };
+    
+    // Éditer le message avec image
+    await editMessageWithImage(ctx, message, keyboard, config, { parse_mode: 'Markdown' });
+    
+  } catch (error) {
+    console.error('❌ Erreur dans handleAllDepartments:', error);
+    await ctx.answerCbQuery('❌ Erreur').catch(() => {});
+  }
+};
+
+// Gestionnaire pour afficher les départements d'un pays spécifique (depuis le menu départements)
+const handleCountryDepartments = async (ctx, country) => {
+  try {
+    await ctx.answerCbQuery();
+    
+    const config = await Config.findById('main');
+    const currentLang = config?.languages?.currentLanguage || 'fr';
+    const customTranslations = config?.languages?.translations;
+    
+    // Départements par pays
+    const departmentsByCountry = {
+      'France': ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '2A', '2B', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31', '32', '33', '34', '35', '36', '37', '38', '39', '40', '41', '42', '43', '44', '45', '46', '47', '48', '49', '50', '51', '52', '53', '54', '55', '56', '57', '58', '59', '60', '61', '62', '63', '64', '65', '66', '67', '68', '69', '70', '71', '72', '73', '74', '75', '76', '77', '78', '79', '80', '81', '82', '83', '84', '85', '86', '87', '88', '89', '90', '91', '92', '93', '94', '95'],
+      'Belgique': ['1000', '1020', '1030', '1040', '1050', '1060', '1070', '1080', '1090', '1120', '1130', '1140', '1150', '1160', '1170', '1180', '1190', '1200', '1210', '1300', '1310', '1320', '1330', '1340', '1350', '1360', '1370', '1380', '1390', '1400', '1410', '1420', '1430', '1440', '1450', '1460', '1470', '1480', '1490', '1500', '1600', '1700', '1800', '1900', '2000', '2100', '2200', '2300', '2400', '2500', '2600', '2700', '2800', '2900', '3000', '3100', '3200', '3300', '3400', '3500', '3600', '3700', '3800', '3900', '4000', '4100', '4200', '4300', '4400', '4500', '4600', '4700', '4800', '4900', '5000', '6000', '6200', '6400', '6600', '6700', '6800', '6900', '7000', '7100', '7200', '7300', '7400', '7500', '7600', '7700', '7800', '7900', '8000', '8200', '8300', '8400', '8500', '8600', '8700', '8800', '8900', '9000', '9100', '9200', '9300', '9400', '9500', '9600', '9700', '9800', '9900'],
+      'Suisse': ['1000', '1200', '1290', '1300', '2000', '2500', '3000', '4000', '5000', '6000', '7000', '8000', '9000'],
+      'Pays-Bas': ['1011', '1012', '1013', '1015', '1016', '1017', '1018', '1019', '2000', '2500', '3000', '4000', '5000', '6000', '7000', '8000', '9000'], 
+      'Italie': ['00100', '10100', '20100', '30100', '40100', '50100', '60100', '70100', '80100', '90100'],
+      'Espagne': ['01000', '02000', '03000', '04000', '05000', '06000', '07000', '08000', '09000', '10000', '11000', '12000', '13000', '14000', '15000', '16000', '17000', '18000', '19000', '20000', '21000', '22000', '23000', '24000', '25000', '26000', '27000', '28000', '29000', '30000', '31000', '32000', '33000', '34000', '35000', '36000', '37000', '38000', '39000', '40000', '41000', '42000', '43000', '44000', '45000', '46000', '47000', '48000', '49000', '50000'],
+      'Maroc': ['10000', '20000', '30000', '40000', '50000', '60000', '70000', '80000', '90000'],
+      'Portugal': ['1000', '2000', '3000', '4000', '5000', '6000', '7000', '8000', '9000'],
+      'Luxembourg': ['1009', '1010', '1011', '1012', '1013', '1014', '1015', '1016', '1017', '1018', '1019', '1020', '1021', '1022', '1023', '1024', '1025', '1026', '1027', '1028', '1029', '1030'],
+      'Allemagne': ['10115', '20095', '30159', '40213', '50667', '60313', '70173', '80331', '90402'],
+      'Canada': ['H1A', 'H1B', 'H1C', 'H2A', 'H2B', 'H2C', 'H3A', 'H3B', 'H3C', 'H4A', 'H4B', 'H4C'],
+      'Autre': ['001', '002', '003', '004', '005', '006', '007', '008', '009', '010']
+    };
+    
+    const departments = departmentsByCountry[country] || [];
+    
+    if (departments.length === 0) {
+      const message = `❌ **Aucun département trouvé pour ${getCountryFlag(country)} ${country}**`;
+      const keyboard = {
+        inline_keyboard: [
+          [{
+            text: '🔙 Retour aux pays',
+            callback_data: 'all_departments'
+          }]
+        ]
+      };
+      
+      await editMessageWithImage(ctx, message, keyboard, config, { parse_mode: 'Markdown' });
+      return;
+    }
+    
+    // Construire le message avec tous les départements
+    let message = `📍 **Départements de ${getCountryFlag(country)} ${country}**\n\n`;
+    message += `**${departments.length} départements disponibles :**\n\n`;
+    
+    // Afficher les départements par groupes de 10 pour une meilleure lisibilité
+    for (let i = 0; i < departments.length; i += 10) {
+      const chunk = departments.slice(i, i + 10);
+      message += `${chunk.join(' • ')}\n`;
+    }
+    
+    message += `\n💡 *Vous pouvez utiliser ces numéros pour filtrer les boutiques*`;
+    
+    // Créer les boutons de départements (5 par ligne)
+    const departmentButtons = [];
+    let currentRow = [];
+    
+    departments.forEach(dept => {
+      currentRow.push({
+        text: dept,
+        callback_data: `search_dept_${dept}_${country}`
+      });
+      
+      if (currentRow.length === 5) {
+        departmentButtons.push(currentRow);
+        currentRow = [];
+      }
+    });
+    
+    // Ajouter la dernière ligne si nécessaire
+    if (currentRow.length > 0) {
+      departmentButtons.push(currentRow);
+    }
+    
+    // Boutons de navigation
+    departmentButtons.push([
+      {
+        text: '🔙 Retour aux pays',
+        callback_data: 'all_departments'
+      },
+      {
+        text: '🏠 Menu principal',
+        callback_data: 'top_plugs'
+      }
+    ]);
+    
+    const keyboard = { inline_keyboard: departmentButtons };
+    
+    // Éditer le message avec image
+    await editMessageWithImage(ctx, message, keyboard, config, { parse_mode: 'Markdown' });
+    
+  } catch (error) {
+    console.error('❌ Erreur dans handleCountryDepartments:', error);
+    await ctx.answerCbQuery('❌ Erreur').catch(() => {});
+  }
+};
+
 // Gestionnaire pour afficher la liste des départements disponibles (ancien système pour le bouton département)
 const handleDepartmentsList = async (ctx, serviceType, selectedCountry = null) => {
   try {
@@ -1851,6 +2036,8 @@ module.exports = {
   handleTopCountryFilter,
   handlePostalCodeFilter,
   handleShopsByPostalCode,
+  handleAllDepartments,
+  handleCountryDepartments,
   getAvailableCountries,
   getAvailableDepartments,
   getCountryFlag

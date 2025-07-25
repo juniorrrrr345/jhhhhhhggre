@@ -38,7 +38,9 @@ const {
   handleTopServiceFilter,
   handleTopCountryFilter,
   handlePostalCodeFilter,
-  handleShopsByPostalCode
+  handleShopsByPostalCode,
+  handleAllDepartments,
+  handleCountryDepartments
 } = require('./src/handlers/plugsHandler');
 const { handleContact, handleInfo, handleIgnoredCallback } = require('./src/handlers/menuHandler');
 const { handleSocialMedia } = require('./src/handlers/socialMediaHandler');
@@ -484,6 +486,23 @@ bot.action('confirm_application', submitApplication);
 bot.action('check_application_status', handleCheckApplicationStatus);
 bot.action(/^cancel_my_application_(.+)$/, handleCancelMyApplication);
 bot.action(/^confirm_cancel_(.+)$/, handleConfirmCancel);
+
+// Handlers pour le menu départements
+bot.action('all_departments', (ctx) => {
+  return handleAllDepartments(ctx);
+});
+
+bot.action(/^all_dept_country_(.+)$/, (ctx) => {
+  const country = ctx.match[1];
+  return handleCountryDepartments(ctx, country);
+});
+
+bot.action(/^search_dept_(.+)_(.+)$/, (ctx) => {
+  const department = ctx.match[1];
+  const country = ctx.match[2];
+  // TODO: Implémenter la recherche par département
+  ctx.answerCbQuery(`Recherche dans ${department} (${country}) - À implémenter`);
+});
 
 // Gestionnaire des services (distinguer formulaire vs filtres)
 bot.action(/^service_(delivery|postal|meetup)$/, async (ctx) => {
