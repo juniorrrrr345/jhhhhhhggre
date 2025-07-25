@@ -6,6 +6,8 @@ import { getProxiedImageUrl } from '../../lib/imageUtils'
 import toast from 'react-hot-toast'
 import Pagination from '../../components/Pagination'
 import ShopCard from '../../components/ShopCard'
+import LanguageSelector, { useTranslation, getCurrentLanguage } from '../../components/LanguageSelector'
+import ShopNavigation from '../../components/ShopNavigation'
 
 export default function ShopVIP() {
   const [vipPlugs, setVipPlugs] = useState([])
@@ -13,14 +15,33 @@ export default function ShopVIP() {
   const [loading, setLoading] = useState(true)
   const [initialLoading, setInitialLoading] = useState(true)
   const [currentPage, setCurrentPage] = useState(1)
+  const [currentLanguage, setCurrentLanguage] = useState('fr')
+  const { t } = useTranslation(currentLanguage)
   const itemsPerPage = 20
 
   useEffect(() => {
+    // Initialiser la langue depuis localStorage
+    if (typeof window !== 'undefined') {
+      setCurrentLanguage(getCurrentLanguage())
+    }
+    
     fetchConfig()
     fetchPlugs()
     
     // Plus de refresh automatique - utiliser le bouton "Actualiser" si besoin
   }, [])
+
+  const handleLanguageChange = (newLanguage) => {
+    setCurrentLanguage(newLanguage)
+    // Re-fetch data when language changes
+    fetchPlugs()
+  }
+
+  useEffect(() => {
+    if (currentLanguage) {
+      fetchPlugs()
+    }
+  }, [currentLanguage])
 
   const fetchConfig = async () => {
     try {
@@ -92,10 +113,12 @@ export default function ShopVIP() {
     }
   }
 
-  const currentPlugs = vipPlugs.slice(
+  const currentPagePlugs = vipPlugs.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   )
+
+  const totalPages = Math.ceil(vipPlugs.length / itemsPerPage)
 
   const getPositionBadge = (index) => {
     if (index === 0) return '🥇'
@@ -125,7 +148,7 @@ export default function ShopVIP() {
     return (
       <>
         <Head>
-          <title>Chargement...</title>
+          <title>{t('loading')} VIP...</title>
           <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
         </Head>
         <div style={{ backgroundColor: '#000000', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -134,12 +157,12 @@ export default function ShopVIP() {
               width: '48px', 
               height: '48px', 
               border: '2px solid transparent',
-              borderTop: '2px solid #ffffff',
+              borderTop: '2px solid #FFD700',
               borderRadius: '50%',
               animation: 'spin 1s linear infinite',
               margin: '0 auto 16px'
             }}></div>
-            <p style={{ color: '#ffffff', fontWeight: '500' }}>Chargement des boutiques VIP...</p>
+            <p style={{ color: '#FFD700', fontWeight: '500' }}>{t('loading')} VIP...</p>
           </div>
         </div>
       </>
@@ -149,8 +172,8 @@ export default function ShopVIP() {
   return (
     <>
       <Head>
-        <title>VIP - {config?.boutique?.name || 'FINDYOURPLUG'}</title>
-        <meta name="description" content="Découvrez notre sélection exclusive de boutiques VIP premium avec services garantis." />
+        <title>{t('vip')} - {config?.boutique?.name || 'FINDYOURPLUG'}</title>
+        <meta name="description" content={`${t('vip_desc') || 'Boutiques VIP exclusives'}`} />
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
       </Head>
 
@@ -165,175 +188,167 @@ export default function ShopVIP() {
         backgroundRepeat: 'no-repeat',
         backgroundAttachment: 'fixed'
       }}>
-        {/* Header Titre Principal VIP */}
-        <div style={{ 
+        {/* Header */}
+        <header style={{ 
           backgroundColor: '#000000',
           padding: '20px',
-          textAlign: 'center'
+          textAlign: 'center',
+          borderBottom: '1px solid #2a2a2a'
         }}>
-          <h2 style={{ 
+          <div style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'space-between',
+            marginBottom: '16px'
+          }}>
+            <div style={{ flex: 1 }}></div>
+            <LanguageSelector 
+              onLanguageChange={handleLanguageChange} 
+              currentLanguage={currentLanguage} 
+              compact={true} 
+            />
+          </div>
+          
+          <h1 style={{ 
             fontSize: '32px', 
             fontWeight: 'bold', 
             margin: '0 0 8px 0',
-            color: '#ffffff',
+            background: 'linear-gradient(135deg, #FFD700, #FFA500)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
             letterSpacing: '2px'
           }}>
-            {config?.boutique?.vipTitle || config?.boutique?.name || 'VIP PLUGS FINDER'}
-          </h2>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-            <span style={{ color: '#ffffff', fontSize: '14px' }}>
-              {config?.boutique?.vipSubtitle || ''}
-            </span>
-            <span style={{ 
-              backgroundColor: '#007AFF', 
-              color: '#ffffff', 
-              padding: '4px 8px', 
-              borderRadius: '12px',
-              fontSize: '12px',
-              fontWeight: 'bold'
-            }}>
-              {config?.boutique?.vipBlueText || 'VIP'}
-            </span>
-          </div>
-        </div>
-
-
+            ⭐ {t('vip')}
+          </h1>
+          <p style={{ 
+            color: '#8e8e93', 
+            fontSize: '16px',
+            margin: '0',
+            fontWeight: '400'
+          }}>
+            {t('vip_desc') || 'Boutiques VIP exclusives'}
+          </p>
+        </header>
 
         {/* Main Content */}
-        <main style={{ padding: '20px', paddingBottom: '90px' }}>
+        <main style={{ padding: '20px', paddingBottom: '90px', minHeight: 'calc(100vh - 200px)' }}>
           {loading ? (
-            <div style={{ textAlign: 'center', padding: '48px 0' }}>
-              <div style={{ 
-                width: '48px', 
-                height: '48px', 
-                border: '2px solid transparent',
-                borderTop: '2px solid #FFD700',
-                borderRadius: '50%',
-                animation: 'spin 1s linear infinite',
-                margin: '0 auto 16px'
-              }}></div>
-              <p style={{ color: '#ffffff' }}>Chargement des boutiques VIP...</p>
-            </div>
-          ) : vipPlugs.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '48px 0' }}>
-              <div style={{ fontSize: '48px', marginBottom: '16px' }}>👑</div>
-              <h3 style={{ color: '#ffffff', fontSize: '20px', fontWeight: '500', marginBottom: '8px' }}>
-                Aucune boutique VIP disponible
-              </h3>
-              <p style={{ color: '#8e8e93', marginBottom: '24px' }}>Les boutiques VIP seront bientôt disponibles.</p>
-              <Link href="/shop" style={{ 
-                color: '#007AFF', 
-                textDecoration: 'none',
-                fontSize: '16px'
-              }}>
-                Retour aux boutiques
-              </Link>
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '200px' }}>
+              <div style={{ textAlign: 'center' }}>
+                <div style={{ 
+                  width: '40px', 
+                  height: '40px', 
+                  border: '2px solid transparent',
+                  borderTop: '2px solid #FFD700',
+                  borderRadius: '50%',
+                  animation: 'spin 1s linear infinite',
+                  margin: '0 auto 16px'
+                }}></div>
+                <p style={{ color: '#8e8e93' }}>{t('loading_vip') || 'Chargement des boutiques VIP'}...</p>
+              </div>
             </div>
           ) : (
             <>
-              {/* Liste des boutiques VIP */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
-                {currentPlugs.map((plug, index) => (
-                  <ShopCard key={plug._id || index} plug={plug} index={index} />
-                ))}
-              </div>
-
-              {/* Pagination */}
-              {vipPlugs.length > itemsPerPage && (
+              {currentPagePlugs.length === 0 ? (
                 <div style={{ 
                   display: 'flex', 
+                  flexDirection: 'column', 
+                  alignItems: 'center', 
                   justifyContent: 'center',
-                  marginTop: '32px'
+                  minHeight: '300px',
+                  textAlign: 'center'
                 }}>
-                  <Pagination
-                    currentPage={currentPage}
-                    totalItems={vipPlugs.length}
-                    itemsPerPage={itemsPerPage}
-                    onPageChange={setCurrentPage}
-                  />
-                </div>
-              )}
-
-              {/* Texte final */}
-              {config?.boutique?.vipFinalText && (
-                <div style={{ 
-                  textAlign: 'center', 
-                  marginTop: '40px',
-                  padding: '20px',
-                  backgroundColor: '#1a1a1a',
-                  borderRadius: '12px',
-                  border: '1px solid #2a2a2a'
-                }}>
+                  <div style={{ fontSize: '80px', marginBottom: '20px' }}>👑</div>
+                  <h3 style={{ 
+                    fontSize: '24px', 
+                    fontWeight: '600', 
+                    marginBottom: '12px',
+                    color: '#FFD700'
+                  }}>
+                    {t('no_vip_shops') || 'Aucune boutique VIP'}
+                  </h3>
                   <p style={{ 
-                    color: '#ffffff', 
-                    fontSize: '16px', 
-                    margin: '0',
+                    color: '#8e8e93', 
+                    fontSize: '16px',
+                    maxWidth: '300px',
                     lineHeight: '1.5'
                   }}>
-                    {config.boutique.vipFinalText}
+                    {t('no_vip_shops_desc') || 'Aucune boutique VIP n\'est disponible pour le moment.'}
                   </p>
                 </div>
+              ) : (
+                <>
+                  {/* Stats */}
+                  <div style={{ 
+                    backgroundColor: '#1a1a1a',
+                    borderRadius: '12px',
+                    padding: '16px',
+                    marginBottom: '20px',
+                    border: '1px solid #FFD700'
+                  }}>
+                    <div style={{ 
+                      display: 'flex', 
+                      justifyContent: 'space-between', 
+                      alignItems: 'center'
+                    }}>
+                      <div>
+                        <div style={{ 
+                          fontSize: '24px', 
+                          fontWeight: 'bold', 
+                          color: '#FFD700',
+                          marginBottom: '4px'
+                        }}>
+                          {vipPlugs.length}
+                        </div>
+                        <div style={{ 
+                          fontSize: '14px', 
+                          color: '#8e8e93'
+                        }}>
+                          {t('vip_shops_available') || 'Boutiques VIP disponibles'}
+                        </div>
+                      </div>
+                      <div style={{ 
+                        fontSize: '32px',
+                        opacity: '0.8'
+                      }}>
+                        👑
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Grid des boutiques */}
+                  <div style={{ 
+                    display: 'grid', 
+                    gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', 
+                    gap: '16px',
+                    marginBottom: '20px'
+                  }}>
+                    {currentPagePlugs.map((plug) => (
+                      <ShopCard 
+                        key={plug._id} 
+                        plug={plug} 
+                        config={config}
+                        currentLanguage={currentLanguage}
+                      />
+                    ))}
+                  </div>
+
+                  {/* Pagination */}
+                  {totalPages > 1 && (
+                    <Pagination
+                      currentPage={currentPage}
+                      totalPages={totalPages}
+                      onPageChange={setCurrentPage}
+                    />
+                  )}
+                </>
               )}
             </>
           )}
         </main>
 
-        {/* Navigation en bas - Style uniforme */}
-        <nav style={{ 
-          position: 'fixed',
-          bottom: '0',
-          left: '0',
-          right: '0',
-          backgroundColor: '#1a1a1a',
-          padding: '12px 20px',
-          borderTop: '1px solid #2a2a2a',
-          zIndex: 1000
-        }}>
-          <div style={{ 
-            display: 'flex', 
-            justifyContent: 'space-around', 
-            alignItems: 'center',
-            maxWidth: '600px',
-            margin: '0 auto'
-          }}>
-            <Link href="/shop" style={{ 
-              color: '#8e8e93', 
-              textDecoration: 'none',
-              fontSize: '10px',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              gap: '4px'
-            }}>
-              <span style={{ fontSize: '20px' }}>🏠</span>
-              Boutiques
-            </Link>
-            <Link href="/shop/search" style={{ 
-              color: '#8e8e93', 
-              textDecoration: 'none',
-              fontSize: '10px',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              gap: '4px'
-            }}>
-              <span style={{ fontSize: '20px' }}>🔍</span>
-              Rechercher
-            </Link>
-            <Link href="/shop/vip" style={{ 
-              color: '#007AFF', 
-              textDecoration: 'none',
-              fontSize: '10px',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              gap: '4px'
-            }}>
-              <span style={{ fontSize: '20px' }}>👑</span>
-              VIP
-            </Link>
-          </div>
-        </nav>
+        {/* Navigation */}
+        <ShopNavigation currentLanguage={currentLanguage} currentPage="vip" />
       </div>
 
       <style jsx>{`

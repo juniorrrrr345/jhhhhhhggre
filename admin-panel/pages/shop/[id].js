@@ -5,6 +5,8 @@ import Link from 'next/link'
 import { simpleApi as api } from '../../lib/api-simple'
 import { getProxiedImageUrl } from '../../lib/imageUtils'
 import toast from 'react-hot-toast'
+import LanguageSelector, { useTranslation, getCurrentLanguage } from '../../components/LanguageSelector'
+import ShopNavigation from '../../components/ShopNavigation'
 
 export default function ShopPlugDetail() {
   const router = useRouter()
@@ -16,6 +18,19 @@ export default function ShopPlugDetail() {
   const [notFound, setNotFound] = useState(false)
   const [likes, setLikes] = useState(0)
   const [isVoting, setIsVoting] = useState(false)
+  const [currentLanguage, setCurrentLanguage] = useState('fr')
+  const { t } = useTranslation(currentLanguage)
+
+  useEffect(() => {
+    // Initialiser la langue depuis localStorage
+    if (typeof window !== 'undefined') {
+      setCurrentLanguage(getCurrentLanguage())
+    }
+  }, [])
+
+  const handleLanguageChange = (newLanguage) => {
+    setCurrentLanguage(newLanguage)
+  }
 
   useEffect(() => {
     if (router.isReady && id) {
@@ -215,25 +230,38 @@ export default function ShopPlugDetail() {
       
       if (response.ok) {
         setLikes(result.likes)
-        toast.success(`Vote ajouté ! ${result.plugName} a maintenant ${result.likes} likes`)
+        toast.success(`${t('vote_added')} ! ${result.plugName} ${t('has_now')} ${result.likes} ${t('likes')}`)
         console.log(`✅ Vote réussi: ${result.plugName} - ${result.likes} likes`)
       } else {
-        toast.error(result.error || 'Erreur lors du vote')
+        toast.error(result.error || t('error_voting'))
         console.error('❌ Erreur vote:', result.error)
       }
     } catch (error) {
-      toast.error('Erreur de connexion')
+      toast.error(t('error_connection'))
       console.error('❌ Erreur lors du vote:', error)
     } finally {
       setIsVoting(false)
     }
   }
 
+  const translateService = (serviceKey) => {
+    const serviceMap = {
+      'delivery': t('delivery'),
+      'postal': t('postal'), 
+      'meetup': t('meetup')
+    }
+    return serviceMap[serviceKey] || serviceKey
+  }
+
+  const getVotesText = () => {
+    return t('votes') || 'Votes'
+  }
+
   if (initialLoading) {
     return (
       <>
         <Head>
-          <title>Chargement...</title>
+          <title>{t('loading') || 'Chargement'}...</title>
           <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
         </Head>
         <div style={{ backgroundColor: '#000000', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -247,7 +275,7 @@ export default function ShopPlugDetail() {
               animation: 'spin 1s linear infinite',
               margin: '0 auto 16px'
             }}></div>
-            <p style={{ color: '#ffffff', fontWeight: '500' }}>Chargement de la boutique...</p>
+            <p style={{ color: '#ffffff', fontWeight: '500' }}>{t('loading_shop') || 'Chargement de la boutique'}...</p>
           </div>
         </div>
       </>
@@ -258,7 +286,7 @@ export default function ShopPlugDetail() {
     return (
       <>
         <Head>
-          <title>Boutique non trouvée</title>
+          <title>{t('shop_not_found') || 'Boutique non trouvée'}</title>
           <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
         </Head>
         <div style={{ 
@@ -273,10 +301,10 @@ export default function ShopPlugDetail() {
           <div style={{ textAlign: 'center', padding: '20px' }}>
             <div style={{ fontSize: '64px', marginBottom: '20px' }}>🏪</div>
             <h3 style={{ fontSize: '24px', fontWeight: '600', marginBottom: '12px', color: '#ffffff' }}>
-              Boutique non trouvée
+              {t('shop_not_found') || 'Boutique non trouvée'}
             </h3>
             <p style={{ color: '#8e8e93', marginBottom: '32px', fontSize: '16px' }}>
-              Cette boutique n'existe pas ou a été supprimée.
+              {t('shop_not_found_desc') || 'Cette boutique n\'existe pas ou a été supprimée.'}
             </p>
             <Link href="/shop" style={{ 
               display: 'inline-block',
@@ -287,7 +315,7 @@ export default function ShopPlugDetail() {
               borderRadius: '8px',
               fontWeight: '500'
             }}>
-              ← Retour aux boutiques
+              ← {t('back_to_shops') || 'Retour aux boutiques'}
             </Link>
           </div>
         </div>
@@ -339,8 +367,13 @@ export default function ShopPlugDetail() {
                 backgroundColor: '#333333'
               }}
             >
-              ← Retour
+              ← {t('back') || 'Retour'}
             </button>
+            <LanguageSelector 
+              onLanguageChange={handleLanguageChange} 
+              currentLanguage={currentLanguage} 
+              compact={true} 
+            />
             {plug.isVip && (
               <div style={{
                 backgroundColor: '#FFD700',
@@ -502,7 +535,7 @@ export default function ShopPlugDetail() {
                 }}>
                   {likes}
                 </div>
-                <div style={{ fontSize: '12px', color: '#8e8e93' }}>Votes</div>
+                <div style={{ fontSize: '12px', color: '#8e8e93' }}>{getVotesText()}</div>
               </div>
               
               <div style={{ textAlign: 'center' }}>
@@ -514,7 +547,7 @@ export default function ShopPlugDetail() {
                 }}>
                   {plug.countries ? plug.countries.length : 0}
                 </div>
-                <div style={{ fontSize: '12px', color: '#8e8e93' }}>Pays</div>
+                <div style={{ fontSize: '12px', color: '#8e8e93' }}>{t('countries') || 'Pays'}</div>
               </div>
 
               <div style={{ textAlign: 'center' }}>
@@ -526,7 +559,7 @@ export default function ShopPlugDetail() {
                 }}>
                   {plug.isVip ? 'VIP' : 'STD'}
                 </div>
-                <div style={{ fontSize: '12px', color: '#8e8e93' }}>Type</div>
+                <div style={{ fontSize: '12px', color: '#8e8e93' }}>{t('type') || 'Type'}</div>
               </div>
             </div>
 
@@ -539,7 +572,7 @@ export default function ShopPlugDetail() {
                   marginBottom: '8px',
                   color: '#ffffff'
                 }}>
-                  📍 Localisation
+                  📍 {t('location') || 'Localisation'}
                 </h3>
                 <p style={{ color: '#8e8e93', fontSize: '15px', margin: '0' }}>
                   {plug.countries.join(', ')}
@@ -561,7 +594,7 @@ export default function ShopPlugDetail() {
               marginBottom: '16px',
               color: '#ffffff'
             }}>
-              🚀 Services disponibles
+              🚀 {t('available_services') || 'Services disponibles'}
             </h3>
             
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -578,7 +611,7 @@ export default function ShopPlugDetail() {
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                   <span style={{ fontSize: '20px' }}>📦</span>
                   <div>
-                    <div style={{ fontWeight: '500', color: '#ffffff' }}>Livraison</div>
+                    <div style={{ fontWeight: '500', color: '#ffffff' }}>{translateService('delivery')}</div>
                     {plug.services?.delivery?.price && (
                       <div style={{ fontSize: '13px', color: '#8e8e93' }}>
                         {plug.services.delivery.price}
@@ -591,7 +624,7 @@ export default function ShopPlugDetail() {
                   fontWeight: '500',
                   fontSize: '14px'
                 }}>
-                  {plug.services?.delivery?.enabled ? '✓ Disponible' : '✗ Non disponible'}
+                  {plug.services?.delivery?.enabled ? `✓ ${t('available') || 'Disponible'}` : `✗ ${t('not_available') || 'Non disponible'}`}
                 </div>
               </div>
 
@@ -608,7 +641,7 @@ export default function ShopPlugDetail() {
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                   <span style={{ fontSize: '20px' }}>📍</span>
                   <div>
-                    <div style={{ fontWeight: '500', color: '#ffffff' }}>Postal</div>
+                    <div style={{ fontWeight: '500', color: '#ffffff' }}>{translateService('postal')}</div>
                     {plug.services?.postal?.price && (
                       <div style={{ fontSize: '13px', color: '#8e8e93' }}>
                         {plug.services.postal.price}
@@ -621,7 +654,7 @@ export default function ShopPlugDetail() {
                   fontWeight: '500',
                   fontSize: '14px'
                 }}>
-                  {plug.services?.postal?.enabled ? '✓ Disponible' : '✗ Non disponible'}
+                  {plug.services?.postal?.enabled ? `✓ ${t('available') || 'Disponible'}` : `✗ ${t('not_available') || 'Non disponible'}`}
                 </div>
               </div>
 
@@ -638,7 +671,7 @@ export default function ShopPlugDetail() {
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                   <span style={{ fontSize: '20px' }}>💰</span>
                   <div>
-                    <div style={{ fontWeight: '500', color: '#ffffff' }}>Meetup</div>
+                    <div style={{ fontWeight: '500', color: '#ffffff' }}>{translateService('meetup')}</div>
                     {plug.services?.meetup?.price && (
                       <div style={{ fontSize: '13px', color: '#8e8e93' }}>
                         {plug.services.meetup.price}
@@ -651,7 +684,7 @@ export default function ShopPlugDetail() {
                   fontWeight: '500',
                   fontSize: '14px'
                 }}>
-                  {plug.services?.meetup?.enabled ? '✓ Disponible' : '✗ Non disponible'}
+                  {plug.services?.meetup?.enabled ? `✓ ${t('available') || 'Disponible'}` : `✗ ${t('not_available') || 'Non disponible'}`}
                 </div>
               </div>
             </div>
@@ -671,7 +704,7 @@ export default function ShopPlugDetail() {
                 marginBottom: '16px',
                 color: '#ffffff'
               }}>
-                🌐 Réseaux sociaux
+                🌐 {t('social_media') || 'Réseaux sociaux'}
               </h3>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 {plug.socialMedia.map((social, index) => (
@@ -718,7 +751,7 @@ export default function ShopPlugDetail() {
                 marginBottom: '12px',
                 color: '#ffffff'
               }}>
-                ℹ️ Informations complémentaires
+                ℹ️ {t('additional_info') || 'Informations complémentaires'}
               </h3>
               <div style={{ 
                 color: '#8e8e93', 
@@ -734,89 +767,7 @@ export default function ShopPlugDetail() {
         </main>
 
         {/* Navigation en bas */}
-        <nav style={{ 
-          position: 'fixed',
-          bottom: '0',
-          left: '0',
-          right: '0',
-          backgroundColor: '#000000',
-          padding: '12px 20px',
-          borderTop: '1px solid #2a2a2a',
-          zIndex: 1000
-        }}>
-          <div style={{ 
-            display: 'flex', 
-            justifyContent: 'center', 
-            gap: '40px'
-          }}>
-            <Link href="/shop" style={{ 
-              display: 'flex', 
-              flexDirection: 'column', 
-              alignItems: 'center', 
-              textDecoration: 'none',
-              color: '#8e8e93'
-            }}>
-              <div style={{ 
-                width: '45px', 
-                height: '45px', 
-                backgroundColor: 'transparent', 
-                borderRadius: '12px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                marginBottom: '6px',
-                fontSize: '22px'
-              }}>
-                🏠
-              </div>
-              <span style={{ fontSize: '13px', color: '#8e8e93', fontWeight: '500' }}>Accueil</span>
-            </Link>
-            <Link href="/shop/search" style={{ 
-              display: 'flex', 
-              flexDirection: 'column', 
-              alignItems: 'center', 
-              textDecoration: 'none',
-              color: '#8e8e93'
-            }}>
-              <div style={{ 
-                width: '45px', 
-                height: '45px', 
-                backgroundColor: 'transparent', 
-                borderRadius: '12px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                marginBottom: '6px',
-                fontSize: '22px'
-              }}>
-                🔍
-              </div>
-              <span style={{ fontSize: '13px', color: '#8e8e93', fontWeight: '500' }}>Recherche</span>
-            </Link>
-            <Link href="/shop/vip" style={{ 
-              display: 'flex', 
-              flexDirection: 'column', 
-              alignItems: 'center', 
-              textDecoration: 'none',
-              color: '#8e8e93'
-            }}>
-              <div style={{ 
-                width: '45px', 
-                height: '45px', 
-                backgroundColor: 'transparent', 
-                borderRadius: '12px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                marginBottom: '6px',
-                fontSize: '22px'
-              }}>
-                ⭐
-              </div>
-              <span style={{ fontSize: '13px', color: '#8e8e93', fontWeight: '500' }}>VIP</span>
-            </Link>
-          </div>
-        </nav>
+        <ShopNavigation currentLanguage={currentLanguage} currentPage="detail" />
       </div>
 
       <style jsx>{`

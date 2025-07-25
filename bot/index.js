@@ -291,7 +291,7 @@ bot.action(/^lang_(.+)$/, async (ctx) => {
     
     const customTranslations = config?.languages?.translations;
     
-    await ctx.answerCbQuery(`✅ ${getTranslation('menu.language', newLanguage, customTranslations)} changée !`);
+    await ctx.answerCbQuery(`✅ ${getTranslation('menu_language', newLanguage, customTranslations)} changée !`);
     
     // Retourner au menu principal avec la nouvelle langue
     return handleStart(ctx);
