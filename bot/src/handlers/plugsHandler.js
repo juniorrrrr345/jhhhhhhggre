@@ -687,6 +687,8 @@ const handleSpecificDepartment = async (ctx, serviceType, department, selectedCo
     // Construire la requête
     let query = { isActive: true };
     
+    console.log(`🔍 handleSpecificDepartment: département recherché = "${department}", service = "${serviceType}", pays = "${selectedCountry}"`);
+    
     if (serviceType === 'delivery') {
       query['services.delivery.enabled'] = true;
       query['services.delivery.departments'] = { $in: [department] };
@@ -699,7 +701,18 @@ const handleSpecificDepartment = async (ctx, serviceType, department, selectedCo
       query.countries = { $in: [selectedCountry] };
     }
     
+    console.log(`🔍 Query MongoDB:`, JSON.stringify(query, null, 2));
+    
     const deptPlugs = await Plug.find(query).sort({ likes: -1, createdAt: -1 });
+    
+    console.log(`🔍 Boutiques trouvées: ${deptPlugs.length}`);
+    if (deptPlugs.length > 0) {
+      console.log(`🔍 Première boutique:`, {
+        name: deptPlugs[0].name,
+        delivery_depts: deptPlugs[0].services?.delivery?.departments,
+        meetup_depts: deptPlugs[0].services?.meetup?.departments
+      });
+    }
     
     const availableCountries = await getAvailableCountries();
     
