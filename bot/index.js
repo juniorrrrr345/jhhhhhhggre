@@ -226,41 +226,7 @@ bot.on('photo', async (ctx) => {
 // Gestionnaires des callbacks
 bot.action('back_main', handleBackMain);
 
-// Retour au menu principal depuis le sélecteur de langue
-bot.action('goto_main_menu', async (ctx) => {
-  try {
-    await ctx.answerCbQuery();
-    
-    // Récupérer la config pour avoir la langue actuelle
-    const config = await Config.findById('main');
-    const currentLang = config?.languages?.currentLanguage || 'fr';
-    const customTranslations = config?.languages?.translations;
-    
-    console.log(`🏠 Retour au menu principal en langue: ${currentLang}`);
-    
-    // Créer le message de bienvenue avec la langue actuelle
-    const welcomeMessage = getTranslation('messages_welcome', currentLang, customTranslations);
-    const keyboard = createMainKeyboard(config);
-    
-    // Mettre à jour l'affichage vers le menu principal
-    try {
-      await ctx.editMessageText(welcomeMessage, {
-        reply_markup: keyboard.reply_markup,
-        parse_mode: 'Markdown'
-      });
-      console.log(`✅ Menu principal affiché en ${currentLang}`);
-    } catch (editError) {
-      console.error('❌ Erreur édition menu principal:', editError);
-      // Fallback : utiliser handleStart
-      const { handleStart } = require('./src/handlers/startHandler');
-      await handleStart(ctx);
-    }
-    
-  } catch (error) {
-    console.error('❌ Erreur retour menu principal:', error);
-    await ctx.answerCbQuery('❌ Erreur lors du retour au menu').catch(() => {});
-  }
-});
+// Handler goto_main_menu supprimé - plus de bouton dans sélecteur langue
 
 // === GESTION DES LANGUES ===
 // Afficher le sélecteur de langue
