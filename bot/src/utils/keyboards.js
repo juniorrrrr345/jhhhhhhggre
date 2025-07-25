@@ -101,6 +101,12 @@ const createMainKeyboard = (config) => {
   // Réseaux sociaux personnalisés en bas du menu - PRIORITÉ socialMediaList
   const socialMediaData = config?.socialMediaList || config?.socialMedia || [];
   
+  console.log('🔍 DEBUG RÉSEAUX SOCIAUX:');
+  console.log('- config existe?', !!config);
+  console.log('- socialMediaList?', !!config?.socialMediaList, 'longueur:', config?.socialMediaList?.length);
+  console.log('- socialMedia?', !!config?.socialMedia, 'longueur:', config?.socialMedia?.length);
+  console.log('- socialMediaData final:', Array.isArray(socialMediaData), 'longueur:', socialMediaData.length);
+  
   if (Array.isArray(socialMediaData) && socialMediaData.length > 0) {
     console.log('🔄 Création des boutons réseaux sociaux personnalisés...');
     
@@ -111,6 +117,11 @@ const createMainKeyboard = (config) => {
     // Filtrer uniquement les réseaux activés
     const activeSocials = socialMediaData.filter(social => social.enabled !== false);
     console.log(`📱 ${activeSocials.length} réseaux sociaux activés trouvés`);
+    
+    // Debug détaillé de chaque réseau social
+    socialMediaData.forEach((social, i) => {
+      console.log(`  [${i}] ${social?.name}: url=${!!social?.url}, enabled=${social?.enabled}`);
+    });
     
     activeSocials.forEach((social, index) => {
       if (social.name && social.url) {

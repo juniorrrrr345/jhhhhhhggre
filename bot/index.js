@@ -1059,6 +1059,50 @@ app.get('/api/public/config/fresh', async (req, res) => {
           backgroundImage: ''
         }
       });
+    } else {
+      // CORRECTION AUTOMATIQUE: Forcer le nom correct et nettoyer les réseaux sociaux
+      let needsUpdate = false;
+      
+      // 1. Forcer le nom FINDYOURPLUG
+      if (!config.boutique) config.boutique = {};
+      if (config.boutique.name !== 'FINDYOURPLUG') {
+        config.boutique.name = 'FINDYOURPLUG';
+        needsUpdate = true;
+        console.log('🔧 Nom boutique corrigé: FINDYOURPLUG');
+      }
+      
+      // 2. Nettoyer socialMedia vide
+      if (config.socialMedia && Array.isArray(config.socialMedia)) {
+        const validSocialMedia = config.socialMedia.filter(social => 
+          social && social.url && social.name && 
+          social.url.trim() !== '' && social.name.trim() !== ''
+        );
+        if (validSocialMedia.length !== config.socialMedia.length) {
+          config.socialMedia = validSocialMedia;
+          needsUpdate = true;
+          console.log('🔧 socialMedia nettoyé:', validSocialMedia.length, 'entrées valides');
+        }
+      }
+      
+      // 3. Nettoyer socialMediaList vide
+      if (config.socialMediaList && Array.isArray(config.socialMediaList)) {
+        const validSocialMediaList = config.socialMediaList.filter(social => 
+          social && social.url && social.name && 
+          social.url.trim() !== '' && social.name.trim() !== ''
+        );
+        if (validSocialMediaList.length !== config.socialMediaList.length) {
+          config.socialMediaList = validSocialMediaList;
+          needsUpdate = true;
+          console.log('🔧 socialMediaList nettoyé:', validSocialMediaList.length, 'entrées valides');
+        }
+      }
+      
+      // Sauvegarder si nécessaire
+      if (needsUpdate) {
+        config.updatedAt = new Date();
+        await config.save();
+        console.log('✅ Configuration automatiquement corrigée');
+      }
     }
 
     const publicConfig = {
