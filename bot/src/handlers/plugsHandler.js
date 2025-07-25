@@ -1712,7 +1712,9 @@ const handleDepartmentsList = async (ctx, serviceType, selectedCountry = null) =
     
     // Si un pays est sélectionné, afficher TOUS les départements de ce pays
     let allDepartments = [];
+    console.log(`🔍 handleDepartmentsList: selectedCountry = "${selectedCountry}"`);
     if (selectedCountry) {
+      console.log(`🔍 handleDepartmentsList: Utilisation des départements complets pour ${selectedCountry}`);
       // Départements complets par pays - SYSTÈME EXTENSIBLE
       const departmentsByCountry = {
         'France': ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '2A', '2B', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31', '32', '33', '34', '35', '36', '37', '38', '39', '40', '41', '42', '43', '44', '45', '46', '47', '48', '49', '50', '51', '52', '53', '54', '55', '56', '57', '58', '59', '60', '61', '62', '63', '64', '65', '66', '67', '68', '69', '70', '71', '72', '73', '74', '75', '76', '77', '78', '79', '80', '81', '82', '83', '84', '85', '86', '87', '88', '89', '90', '91', '92', '93', '94', '95'],
@@ -1745,6 +1747,7 @@ const handleDepartmentsList = async (ctx, serviceType, selectedCountry = null) =
       
       console.log(`📍 Tous les départements de ${selectedCountry}: ${allDepartments.length} départements`);
     } else {
+      console.log(`🔍 handleDepartmentsList: Pas de pays sélectionné, extraction des départements avec boutiques`);
       // Sinon, extraire seulement les départements avec des boutiques
       if (serviceType === 'delivery') {
         allDepartments = [...new Set(shopsWithService.flatMap(shop => 
@@ -1813,6 +1816,9 @@ const handleDepartmentsList = async (ctx, serviceType, selectedCountry = null) =
     message += `\n🏪 **${allDepartments.length} département${allDepartments.length > 1 ? 's' : ''} avec boutiques:**\n\n`;
     message += `💡 *Cliquez sur un département pour voir les boutiques*`;
     
+    console.log(`🔍 handleDepartmentsList: Génération des boutons pour ${allDepartments.length} départements`);
+    console.log(`🔍 Premiers départements:`, allDepartments.slice(0, 5));
+    
     // Créer le clavier avec les départements (2 par ligne)
     const deptButtons = [];
     for (let i = 0; i < allDepartments.length; i += 2) {
@@ -1862,7 +1868,12 @@ const handleDepartmentsList = async (ctx, serviceType, selectedCountry = null) =
       callback_data: 'top_plugs'
     }]);
     
+    console.log(`🔍 handleDepartmentsList: ${deptButtons.length} lignes de boutons générées`);
+    console.log(`🔍 Première ligne de boutons:`, deptButtons[0]);
+    
     const keyboard = { inline_keyboard: deptButtons };
+    
+    console.log(`🔍 handleDepartmentsList: Envoi du clavier avec ${keyboard.inline_keyboard.length} lignes`);
     
     // Éditer le message avec image (compatible avec les messages image + texte)
     await editMessageWithImage(ctx, message, keyboard, config, { parse_mode: 'Markdown' });
