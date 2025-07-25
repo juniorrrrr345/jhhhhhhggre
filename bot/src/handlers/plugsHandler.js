@@ -836,10 +836,10 @@ const handlePlugDetails = async (ctx, plugId, returnContext = 'top_plugs') => {
     let message = `${plug.isVip ? '⭐ ' : ''}**${plug.name}**\n\n`;
     message += `📝 ${plug.description}\n\n`;
 
-    // Services disponibles
+    // Services disponibles avec meilleur formatage
     const services = [];
     if (plug.services?.delivery?.enabled) {
-      services.push(`🚚 **Livraison**${plug.services.delivery.description ? `: ${plug.services.delivery.description}` : ''}`);
+      services.push(`📦 **Livraison**${plug.services.delivery.description ? `: ${plug.services.delivery.description}` : ''}`);
     }
     if (plug.services?.meetup?.enabled) {
       services.push(`🏠 **Meetup**${plug.services.meetup.description ? `: ${plug.services.meetup.description}` : ''}`);
@@ -849,7 +849,7 @@ const handlePlugDetails = async (ctx, plugId, returnContext = 'top_plugs') => {
     }
 
     if (services.length > 0) {
-      message += `🔧 **Services :**\n${services.join('\n')}\n\n`;
+      message += `**🔧 Services disponibles :**\n${services.join('\n')}\n\n`;
     }
 
     // Pays desservis

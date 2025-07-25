@@ -1,5 +1,37 @@
 const { Markup } = require('telegraf');
 const { getTranslation } = require('./translations');
+const Config = require('../models/Config');
+
+// Fonction pour obtenir le drapeau d'un pays
+const getCountryFlag = (country) => {
+  const countryFlags = {
+    'france': '🇫🇷',
+    'belgique': '🇧🇪',
+    'belgium': '🇧🇪',
+    'suisse': '🇨🇭',
+    'switzerland': '🇨🇭',
+    'luxembourg': '🇱🇺',
+    'allemagne': '🇩🇪',
+    'germany': '🇩🇪',
+    'italie': '🇮🇹',
+    'italy': '🇮🇹',
+    'espagne': '🇪🇸',
+    'spain': '🇪🇸',
+    'pays-bas': '🇳🇱',
+    'netherlands': '🇳🇱',
+    'portugal': '🇵🇹',
+    'royaume-uni': '🇬🇧',
+    'uk': '🇬🇧',
+    'canada': '🇨🇦',
+    'maroc': '🇲🇦',
+    'morocco': '🇲🇦'
+  };
+  
+  if (!country) return '🌍';
+  
+  const normalizedCountry = country.toLowerCase().trim();
+  return countryFlags[normalizedCountry] || '🌍';
+};
 
 // Fonction pour valider une URL
 const isValidUrl = (url) => {
@@ -395,20 +427,37 @@ const createPlugListKeyboard = (plugs, page = 0, totalPages = 1, context = 'plug
   const startIndex = page * itemsPerPage;
   const endIndex = Math.min(startIndex + itemsPerPage, plugs.length);
   
-  // Plugs de la page actuelle avec format uniforme comme le screenshot
+  // Plugs de la page actuelle avec format uniforme et bien aligné
   for (let i = startIndex; i < endIndex; i++) {
     const plug = plugs[i];
     
-    // Format optimisé : Pays + Nom + 👍 + Votes (sans troncature)
-    // 🇫🇷 NOM BOUTIQUE 👍12
-    // 📦 📍 🛵 ⭐
+    // Format amélioré pour meilleure lisibilité :
+    // 🇧🇪 NOM BOUTIQUE
+    // 📦 Livraison 📍 Meetup ✈️ Envoi postal
+    // 👍 12 votes
     
-    // Format inspiré d'autres bots : 🇫🇷[NOM COMPLET]👍[VOTES] (+ ⭐ pour VIP)
     const votesCount = plug.likes || 0;
-    // Pas de limite de caractères - noms complets comme "LA FLECHE COFFEE 33"
-    const cardText = plug.isVip ? 
-      `🇫🇷${plug.name.toUpperCase()}👍${votesCount}⭐` :
-      `🇫🇷${plug.name.toUpperCase()}👍${votesCount}`;
+    const voteText = votesCount === 1 ? 'vote' : 'votes';
+    
+    // Première ligne : Pays + Nom (+ VIP si applicable)
+    let cardTitle = `${getCountryFlag(plug.country)} ${plug.name.toUpperCase()}`;
+    if (plug.isVip) {
+      cardTitle += ' ⭐';
+    }
+    
+    // Deuxième ligne : Services disponibles
+    const serviceIcons = [];
+    if (plug.services?.delivery?.enabled) serviceIcons.push('📦');
+    if (plug.services?.meetup?.enabled) serviceIcons.push('🏠'); 
+    if (plug.services?.postal?.enabled) serviceIcons.push('✈️');
+    
+    const servicesLine = serviceIcons.length > 0 ? `\n${serviceIcons.join(' ')}` : '';
+    
+    // Troisième ligne : Votes
+    const votesLine = `\n👍 ${votesCount} ${voteText}`;
+    
+    const cardText = cardTitle + servicesLine + votesLine;
+    
     buttons.push([Markup.button.callback(cardText, `plug_${plug._id}_from_${context}`)]);
   }
   
@@ -436,14 +485,26 @@ const createVIPKeyboard = (vipPlugs) => {
   const buttons = [];
   
   vipPlugs.forEach(plug => {
-    // Format VIP spécial : Pays + Nom + ⭐ + 👍 + Votes
-    // 🇫🇷 NOM BOUTIQUE ⭐ 👍12
-    // 📦 📍 🛵
-    
-    // Format VIP complet : 🇫🇷[NOM COMPLET]👍[VOTES]⭐
+    // Format VIP uniforme avec celui des autres cartes
     const votesCount = plug.likes || 0;
-    // Noms complets pour VIP aussi
-    const cardText = `🇫🇷${plug.name.toUpperCase()}👍${votesCount}⭐`;
+    const voteText = votesCount === 1 ? 'vote' : 'votes';
+    
+    // Première ligne : Pays + Nom + VIP
+    let cardTitle = `${getCountryFlag(plug.country)} ${plug.name.toUpperCase()} ⭐`;
+    
+    // Deuxième ligne : Services disponibles
+    const serviceIcons = [];
+    if (plug.services?.delivery?.enabled) serviceIcons.push('📦');
+    if (plug.services?.meetup?.enabled) serviceIcons.push('🏠'); 
+    if (plug.services?.postal?.enabled) serviceIcons.push('✈️');
+    
+    const servicesLine = serviceIcons.length > 0 ? `\n${serviceIcons.join(' ')}` : '';
+    
+    // Troisième ligne : Votes
+    const votesLine = `\n👍 ${votesCount} ${voteText}`;
+    
+    const cardText = cardTitle + servicesLine + votesLine;
+    
     buttons.push([Markup.button.callback(cardText, `plug_${plug._id}_from_plugs_vip`)]);
   });
   

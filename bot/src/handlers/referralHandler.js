@@ -127,10 +127,10 @@ const redirectToShopDetails = async (ctx, boutique) => {
     let message = `${boutique.isVip ? '⭐ ' : ''}**${boutique.name}**\n\n`;
     message += `📝 ${boutique.description}\n\n`;
 
-    // Services disponibles
+    // Services disponibles avec formatage amélioré
     const services = [];
     if (boutique.services?.delivery?.enabled) {
-      services.push(`🚚 **Livraison**${boutique.services.delivery.description ? `: ${boutique.services.delivery.description}` : ''}`);
+      services.push(`📦 **Livraison**${boutique.services.delivery.description ? `: ${boutique.services.delivery.description}` : ''}`);
     }
     if (boutique.services?.meetup?.enabled) {
       services.push(`🏠 **Meetup**${boutique.services.meetup.description ? `: ${boutique.services.meetup.description}` : ''}`);
@@ -140,7 +140,7 @@ const redirectToShopDetails = async (ctx, boutique) => {
     }
 
     if (services.length > 0) {
-      message += `🔧 **Services :**\n${services.join('\n')}\n\n`;
+      message += `**🔧 Services disponibles :**\n${services.join('\n')}\n\n`;
     }
 
     // Pays desservis
