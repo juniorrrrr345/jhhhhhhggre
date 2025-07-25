@@ -543,10 +543,187 @@ const handleShopsByPostalCode = async (ctx, country, postalCode, serviceType = n
   }
 };
 
-// Gestionnaire pour les départements (delivery et meetup) - DEPRECATED, remplacé par codes postaux
+// Gestionnaire pour les départements (delivery et meetup) - Afficher directement les départements
 const handleDepartmentFilter = async (ctx, serviceType, selectedCountry = null) => {
-  // Rediriger vers le nouveau système de codes postaux
-  return await handlePostalCodeFilter(ctx, serviceType, selectedCountry, 0);
+  try {
+    const userId = ctx.from.id;
+    
+    // 🚫 Prévention spam
+    if (isSpamClick(userId, 'dept', `${serviceType}_${selectedCountry || 'none'}`)) {
+      await ctx.answerCbQuery('🔄');
+      return;
+    }
+    
+    await ctx.answerCbQuery();
+    
+    const config = await Config.findById('main');
+    const currentLang = config?.languages?.currentLanguage || 'fr';
+    const customTranslations = config?.languages?.translations;
+    
+    // Récupérer tous les départements disponibles pour ce service
+    let query = { isActive: true };
+    
+    if (serviceType === 'delivery') {
+      query['services.delivery.enabled'] = true;
+    } else if (serviceType === 'meetup') {
+      query['services.meetup.enabled'] = true;
+    }
+    
+    if (selectedCountry) {
+      query.countries = { $in: [selectedCountry] };
+    }
+    
+    const shopsWithService = await Plug.find(query);
+    
+    // Extraire tous les départements uniques
+    let allDepartments = [];
+    if (serviceType === 'delivery') {
+      allDepartments = [...new Set(shopsWithService.flatMap(shop => 
+        shop.services?.delivery?.departments || []
+      ))];
+    } else if (serviceType === 'meetup') {
+      allDepartments = [...new Set(shopsWithService.flatMap(shop => 
+        shop.services?.meetup?.departments || []
+      ))];
+    }
+    
+    // Trier les départements par numéro
+    allDepartments.sort((a, b) => {
+      const numA = parseInt(a);
+      const numB = parseInt(b);
+      return numA - numB;
+    });
+    
+    if (allDepartments.length === 0) {
+      let message = `❌ **Aucun département disponible**\n\n`;
+      
+      if (serviceType === 'delivery') {
+        const serviceName = getTranslation('service_delivery', currentLang, customTranslations);
+        message += `📦 **Service:** ${serviceName}\n`;
+      } else if (serviceType === 'meetup') {
+        const serviceName = getTranslation('service_meetup', currentLang, customTranslations);
+        message += `🤝 **Service:** ${serviceName}\n`;
+      }
+      
+      if (selectedCountry) {
+        message += `🌍 **Pays:** ${getCountryFlag(selectedCountry)} ${selectedCountry}\n`;
+      }
+      
+      message += `\n💡 *Aucune boutique ne propose ce service actuellement*`;
+      
+      const keyboard = {
+        inline_keyboard: [
+          [{
+            text: '🔙 Retour',
+            callback_data: 'top_plugs'
+          }]
+        ]
+      };
+      
+      // Éditer le message existant
+      try {
+        await ctx.editMessageText(message, {
+          parse_mode: 'Markdown',
+          reply_markup: keyboard
+        });
+      } catch (editError) {
+        console.log('Erreur édition message, tentative avec reply:', editError.message);
+        await ctx.reply(message, {
+          parse_mode: 'Markdown',
+          reply_markup: keyboard
+        });
+      }
+      return;
+    }
+    
+    // Construire le message
+    let message = `📍 **Départements disponibles**\n\n`;
+    
+    if (serviceType === 'delivery') {
+      const serviceName = getTranslation('service_delivery', currentLang, customTranslations);
+      message += `📦 **Service:** ${serviceName}\n`;
+    } else if (serviceType === 'meetup') {
+      const serviceName = getTranslation('service_meetup', currentLang, customTranslations);
+      message += `🤝 **Service:** ${serviceName}\n`;
+    }
+    
+    if (selectedCountry) {
+      message += `🌍 **Pays:** ${getCountryFlag(selectedCountry)} ${selectedCountry}\n`;
+    }
+    
+    message += `\n🏪 **${allDepartments.length} département${allDepartments.length > 1 ? 's' : ''} avec boutiques:**\n\n`;
+    message += `💡 *Cliquez sur un département pour voir les boutiques*`;
+    
+    // Créer le clavier avec les départements (2 par ligne)
+    const deptButtons = [];
+    for (let i = 0; i < allDepartments.length; i += 2) {
+      const row = [];
+      const dept1 = allDepartments[i];
+      const dept2 = allDepartments[i + 1];
+      
+      // Compter les boutiques pour chaque département
+      const shopsInDept1 = shopsWithService.filter(shop => {
+        if (serviceType === 'delivery') {
+          return shop.services?.delivery?.departments?.includes(dept1);
+        } else if (serviceType === 'meetup') {
+          return shop.services?.meetup?.departments?.includes(dept1);
+        }
+        return false;
+      }).length;
+      
+      row.push({
+        text: `${dept1} (${shopsInDept1})`,
+        callback_data: `top_dept_${serviceType}_${dept1}${selectedCountry ? `_${selectedCountry}` : ''}`
+      });
+      
+      if (dept2) {
+        const shopsInDept2 = shopsWithService.filter(shop => {
+          if (serviceType === 'delivery') {
+            return shop.services?.delivery?.departments?.includes(dept2);
+          } else if (serviceType === 'meetup') {
+            return shop.services?.meetup?.departments?.includes(dept2);
+          }
+          return false;
+        }).length;
+        
+        row.push({
+          text: `${dept2} (${shopsInDept2})`,
+          callback_data: `top_dept_${serviceType}_${dept2}${selectedCountry ? `_${selectedCountry}` : ''}`
+        });
+      }
+      
+      deptButtons.push(row);
+    }
+    
+    // Bouton retour
+    deptButtons.push([{
+      text: '🔙 Retour',
+      callback_data: 'top_plugs'
+    }]);
+    
+    const keyboard = { inline_keyboard: deptButtons };
+    
+    // Éditer le message existant
+    try {
+      await ctx.editMessageText(message, {
+        parse_mode: 'Markdown',
+        reply_markup: keyboard
+      });
+    } catch (editError) {
+      console.log('Erreur édition message, tentative avec reply:', editError.message);
+      await ctx.reply(message, {
+        parse_mode: 'Markdown',
+        reply_markup: keyboard
+      });
+    }
+    
+  } catch (error) {
+    console.error('Erreur dans handleDepartmentFilter:', error);
+    const config = await Config.findById('main');
+    const currentLang = config?.languages?.currentLanguage || 'fr';
+    const customTranslations = config?.languages?.translations;
+    await ctx.answerCbQuery(getTranslation('error_filtering', currentLang, customTranslations)).catch(() => {});
+  }
 };
 
 // Gestionnaire pour un département spécifique
@@ -604,7 +781,7 @@ const handleSpecificDepartment = async (ctx, serviceType, department, selectedCo
     let keyboard;
     
     if (deptPlugs.length > 0) {
-      message += `**${deptPlugs.length} boutiques trouvées :**\n\n`;
+      message += `🏪 **${deptPlugs.length} boutique${deptPlugs.length > 1 ? 's' : ''} trouvée${deptPlugs.length > 1 ? 's' : ''} :**\n\n`;
       
       // Ajouter les boutiques au clavier
       const plugButtons = [];
@@ -613,16 +790,56 @@ const handleSpecificDepartment = async (ctx, serviceType, department, selectedCo
         const location = plug.location ? ` ${plug.location}` : '';
         const vipIcon = plug.isVip ? '⭐️ ' : '';
         const buttonText = `${country}${location} ${vipIcon}${plug.name} 👍 ${plug.likes}`;
-        plugButtons.push([Markup.button.callback(buttonText, `plug_${plug._id}_from_top_dept`)]);
+        plugButtons.push([{
+          text: buttonText,
+          callback_data: `plug_${plug._id}_from_top_dept`
+        }]);
       });
       
-      keyboard = createTopPlugsKeyboard(config, availableCountries, selectedCountry, serviceType, plugButtons);
+      // Ajouter bouton retour aux départements
+      plugButtons.push([{
+        text: '🔙 Retour aux départements',
+        callback_data: `top_departments_${serviceType}${selectedCountry ? `_${selectedCountry}` : ''}`
+      }]);
+      
+      // Bouton retour au menu principal
+      plugButtons.push([{
+        text: '🏠 Menu principal',
+        callback_data: 'top_plugs'
+      }]);
+      
+      keyboard = { inline_keyboard: plugButtons };
     } else {
-      message += `❌ Aucun plug disponible dans le département ${department}.`;
-      keyboard = createTopPlugsKeyboard(config, availableCountries, selectedCountry, serviceType, []);
+      message += `❌ **Aucune boutique trouvée**\n\n`;
+      message += `💡 *Aucune boutique ne propose ce service dans le département ${department}*`;
+      
+      keyboard = {
+        inline_keyboard: [
+          [{
+            text: '🔙 Retour aux départements',
+            callback_data: `top_departments_${serviceType}${selectedCountry ? `_${selectedCountry}` : ''}`
+          }],
+          [{
+            text: '🏠 Menu principal',
+            callback_data: 'top_plugs'
+          }]
+        ]
+      };
     }
     
-    await editMessageWithImage(ctx, message, keyboard, config, { parse_mode: 'Markdown' });
+    // Éditer le message existant sans image pour éviter le spam
+    try {
+      await ctx.editMessageText(message, {
+        parse_mode: 'Markdown',
+        reply_markup: keyboard
+      });
+    } catch (editError) {
+      console.log('Erreur édition message, tentative avec reply:', editError.message);
+      await ctx.reply(message, {
+        parse_mode: 'Markdown',
+        reply_markup: keyboard
+      });
+    }
     
   } catch (error) {
     console.error('Erreur dans handleSpecificDepartment:', error);
