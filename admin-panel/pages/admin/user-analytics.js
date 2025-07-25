@@ -137,9 +137,16 @@ export default function UserAnalytics() {
           marginBottom: '30px',
           display: 'flex',
           gap: '10px',
-          flexWrap: 'wrap'
+          flexWrap: 'wrap',
+          alignItems: 'center'
         }}>
-          <h3 style={{ marginRight: '15px', color: '#ffffff' }}>Période :</h3>
+          <h3 style={{ 
+            marginRight: '15px', 
+            color: '#ffffff', 
+            fontSize: '16px',
+            marginBottom: '0',
+            minWidth: 'fit-content'
+          }}>Période :</h3>
           {[
             { value: 'all', label: 'Tout' },
             { value: '30d', label: '30 jours' },
@@ -150,13 +157,16 @@ export default function UserAnalytics() {
               key={option.value}
               onClick={() => setTimeRange(option.value)}
               style={{
-                padding: '8px 16px',
-                borderRadius: '6px',
+                padding: '10px 16px',
+                borderRadius: '8px',
                 border: 'none',
                 backgroundColor: timeRange === option.value ? '#22c55e' : '#374151',
                 color: '#ffffff',
                 cursor: 'pointer',
-                fontSize: '14px'
+                fontSize: '14px',
+                fontWeight: timeRange === option.value ? 'bold' : 'normal',
+                transition: 'all 0.2s ease',
+                minWidth: '80px'
               }}
             >
               {option.label}
@@ -178,29 +188,31 @@ export default function UserAnalytics() {
         {/* Statistiques générales */}
         <div style={{ 
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-          gap: '20px',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+          gap: '15px',
           marginBottom: '30px'
         }}>
           <div style={{
             backgroundColor: '#1f2937',
             padding: '20px',
-            borderRadius: '8px',
-            border: '1px solid #374151'
+            borderRadius: '12px',
+            border: '1px solid #374151',
+            textAlign: 'center'
           }}>
-            <h4 style={{ color: '#22c55e', marginBottom: '10px' }}>👥 Total Utilisateurs</h4>
-            <div style={{ fontSize: '24px', fontWeight: 'bold' }}>{stats.totalUsers}</div>
+            <h4 style={{ color: '#22c55e', marginBottom: '10px', fontSize: '16px' }}>👥 Total Utilisateurs</h4>
+            <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#ffffff' }}>{stats.totalUsers || 0}</div>
           </div>
 
           <div style={{
             backgroundColor: '#1f2937',
             padding: '20px',
-            borderRadius: '8px',
-            border: '1px solid #374151'
+            borderRadius: '12px',
+            border: '1px solid #374151',
+            textAlign: 'center'
           }}>
-            <h4 style={{ color: '#3b82f6', marginBottom: '10px' }}>📍 Localisés</h4>
-            <div style={{ fontSize: '24px', fontWeight: 'bold' }}>{stats.usersWithLocation}</div>
-            <div style={{ fontSize: '12px', color: '#9ca3af' }}>
+            <h4 style={{ color: '#3b82f6', marginBottom: '10px', fontSize: '16px' }}>📍 Localisés</h4>
+            <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#ffffff' }}>{stats.usersWithLocation || 0}</div>
+            <div style={{ fontSize: '14px', color: '#3b82f6', marginTop: '5px' }}>
               {getLocationCoverage()}% de couverture
             </div>
           </div>
@@ -208,11 +220,12 @@ export default function UserAnalytics() {
           <div style={{
             backgroundColor: '#1f2937',
             padding: '20px',
-            borderRadius: '8px',
-            border: '1px solid #374151'
+            borderRadius: '12px',
+            border: '1px solid #374151',
+            textAlign: 'center'
           }}>
-            <h4 style={{ color: '#f59e0b', marginBottom: '10px' }}>🌍 Pays Détectés</h4>
-            <div style={{ fontSize: '24px', fontWeight: 'bold' }}>{stats.countryStats.length}</div>
+            <h4 style={{ color: '#f59e0b', marginBottom: '10px', fontSize: '16px' }}>🌍 Pays Détectés</h4>
+            <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#ffffff' }}>{stats.countryStats?.length || 0}</div>
           </div>
         </div>
 
