@@ -157,9 +157,16 @@ export default function SocialMediaManager() {
 
   const deleteSocialMedia = async (id) => {
     if (confirm('Êtes-vous sûr de vouloir supprimer ce réseau social ?')) {
+      console.log('🗑️ Suppression demandée pour ID:', id)
+      console.log('📝 socialMedias avant suppression:', socialMedias)
+      
       // Supprimer de l'état local
       const updatedSocialMedias = socialMedias.filter(item => item.id !== id)
       const previousSocialMedias = [...socialMedias] // Backup pour restaurer en cas d'erreur
+      
+      console.log('📝 socialMedias après filtrage:', updatedSocialMedias)
+      console.log('📊 Longueur avant/après:', socialMedias.length, '→', updatedSocialMedias.length)
+      
       setSocialMedias(updatedSocialMedias)
       
       // Sauvegarder automatiquement selon le mode
@@ -178,11 +185,12 @@ export default function SocialMediaManager() {
           try {
             const token = localStorage.getItem('adminToken') || 'JuniorAdmon123'
             
-            const configData = {
-              socialMediaList: updatedSocialMedias
-            }
-            
-            await simpleApi.updateConfig(token, configData)
+                         const configData = {
+               socialMediaList: updatedSocialMedias
+             }
+             
+             console.log('📤 Envoi au serveur - configData:', configData)
+             await simpleApi.updateConfig(token, configData)
             console.log('✅ Réseau social supprimé et sauvegardé sur le serveur')
                        } catch (serverError) {
                console.log('Serveur indisponible, sauvegarde locale de secours')
