@@ -176,9 +176,9 @@ const handleTopServiceFilter = async (ctx, serviceType, selectedCountry = null) 
     
     // Pour Livraison et Meetup : rediriger IMMÉDIATEMENT vers le système de départements (ANTI-SPAM)
     if (serviceType === 'delivery' || serviceType === 'meetup') {
-      console.log(`🎯 handleTopServiceFilter: Redirection immédiate vers handleDepartmentFilter pour ${serviceType}, pays=${selectedCountry}`);
+      console.log(`🎯 handleTopServiceFilter: Redirection immédiate vers handleDepartmentsList pour ${serviceType}, pays=${selectedCountry}`);
       console.log(`🔍 Utilisateur: ${ctx.from.id}, Chat: ${ctx.chat.id}`);
-      return await handleDepartmentFilter(ctx, serviceType, selectedCountry);
+      return await handleDepartmentsList(ctx, serviceType, selectedCountry);
     }
     
     await ctx.answerCbQuery();
@@ -1790,19 +1790,8 @@ const handleDepartmentsList = async (ctx, serviceType, selectedCountry = null) =
         ]
       };
       
-      // Éditer le message existant
-      try {
-        await ctx.editMessageText(message, {
-          parse_mode: 'Markdown',
-          reply_markup: keyboard
-        });
-      } catch (editError) {
-        console.log('Erreur édition message, tentative avec reply:', editError.message);
-        await ctx.reply(message, {
-          parse_mode: 'Markdown',
-          reply_markup: keyboard
-        });
-      }
+      // Éditer le message avec image (compatible avec les messages image + texte)
+      await editMessageWithImage(ctx, message, keyboard, config, { parse_mode: 'Markdown' });
       return;
     }
     
@@ -1875,19 +1864,8 @@ const handleDepartmentsList = async (ctx, serviceType, selectedCountry = null) =
     
     const keyboard = { inline_keyboard: deptButtons };
     
-    // Éditer le message existant
-    try {
-      await ctx.editMessageText(message, {
-        parse_mode: 'Markdown',
-        reply_markup: keyboard
-      });
-    } catch (editError) {
-      console.log('Erreur édition message, tentative avec reply:', editError.message);
-      await ctx.reply(message, {
-        parse_mode: 'Markdown',
-        reply_markup: keyboard
-      });
-    }
+    // Éditer le message avec image (compatible avec les messages image + texte)
+    await editMessageWithImage(ctx, message, keyboard, config, { parse_mode: 'Markdown' });
     
   } catch (error) {
     console.error('Erreur dans handleDepartmentsList:', error);
@@ -2041,6 +2019,7 @@ module.exports = {
   handleShopsByPostalCode,
   handleAllDepartments,
   handleCountryDepartments,
+  handleDepartmentsList,
   getAvailableCountries,
   getAvailableDepartments,
   getCountryFlag

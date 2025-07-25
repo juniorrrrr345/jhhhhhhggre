@@ -40,7 +40,8 @@ const {
   handlePostalCodeFilter,
   handleShopsByPostalCode,
   handleAllDepartments,
-  handleCountryDepartments
+  handleCountryDepartments,
+  handleDepartmentsList
 } = require('./src/handlers/plugsHandler');
 const { handleContact, handleInfo, handleIgnoredCallback } = require('./src/handlers/menuHandler');
 const { handleSocialMedia } = require('./src/handlers/socialMediaHandler');
@@ -408,7 +409,7 @@ bot.action(/^top_departments_(.+)$/, (ctx) => {
   const parts = fullMatch.split('_');
   const serviceType = parts[0]; // delivery ou meetup
   const selectedCountry = parts.length > 1 ? parts[1] : null;
-  return handleDepartmentFilter(ctx, serviceType, selectedCountry);
+  return handleDepartmentsList(ctx, serviceType, selectedCountry);
 });
 
 bot.action(/^top_dept_(.+)_(.+)_?(.*)$/, (ctx) => {
