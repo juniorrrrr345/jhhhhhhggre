@@ -969,6 +969,27 @@ app.put('/api/config', authenticateAdmin, async (req, res) => {
         social.name.trim() !== ''
       );
       console.log('✅ socialMedia filtré:', finalData.socialMedia.length, 'entrées valides');
+    } else if (finalData.socialMedia && typeof finalData.socialMedia === 'object') {
+      // Si socialMedia est un objet (ancien format), le convertir en array vide ou le supprimer
+      console.log('🔄 socialMedia est un objet, nettoyage...');
+      const cleanedSocialMedia = {};
+      let hasValidEntries = false;
+      
+      for (const [key, value] of Object.entries(finalData.socialMedia)) {
+        if (value && typeof value === 'string' && value.trim() !== '') {
+          cleanedSocialMedia[key] = value.trim();
+          hasValidEntries = true;
+        }
+      }
+      
+      if (hasValidEntries) {
+        finalData.socialMedia = cleanedSocialMedia;
+        console.log('✅ socialMedia objet nettoyé:', Object.keys(cleanedSocialMedia));
+      } else {
+        // Supprimer complètement socialMedia s'il n'y a pas d'entrées valides
+        delete finalData.socialMedia;
+        console.log('✅ socialMedia objet supprimé (aucune entrée valide)');
+      }
     }
     
     // Validation spécifique pour socialMediaList - retirer les entrées vides
