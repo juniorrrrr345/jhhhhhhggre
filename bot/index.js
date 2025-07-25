@@ -281,6 +281,7 @@ bot.action(/^lang_(.+)$/, async (ctx) => {
         };
       } else {
         config.languages.currentLanguage = newLanguage;
+        config.languages.enabled = true; // S'assurer que les traductions sont activées
       }
       
       await config.save();
@@ -290,11 +291,14 @@ bot.action(/^lang_(.+)$/, async (ctx) => {
     }
     
     const customTranslations = config?.languages?.translations;
+    const languageName = getTranslation('menu_language', newLanguage, customTranslations);
     
-    await ctx.answerCbQuery(`✅ ${getTranslation('menu_language', newLanguage, customTranslations)} changée !`);
+    await ctx.answerCbQuery(`✅ ${languageName} sélectionnée !`);
     
-    // Retourner au menu principal avec la nouvelle langue
-    return handleStart(ctx);
+    // Retourner au menu principal avec la nouvelle langue IMMEDIATEMENT
+    setTimeout(() => {
+      handleStart(ctx);
+    }, 100);
     
   } catch (error) {
     console.error('❌ Erreur changement langue:', error);
