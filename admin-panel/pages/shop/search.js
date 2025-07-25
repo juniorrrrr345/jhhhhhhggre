@@ -201,8 +201,8 @@ export default function ShopSearch() {
   return (
     <>
       <Head>
-        <title>Recherche - {config?.boutique?.name || 'FINDYOURPLUG'}</title>
-        <meta name="description" content="Recherchez vos boutiques préférées par nom, pays ou service." />
+        <title>{t('search')} - {config?.boutique?.name || 'FINDYOURPLUG'}</title>
+        <meta name="description" content={t('search_desc') || 'Recherchez vos boutiques préférées par nom, pays ou service.'} />
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
       </Head>
 
@@ -217,39 +217,47 @@ export default function ShopSearch() {
         backgroundRepeat: 'no-repeat',
         backgroundAttachment: 'fixed'
       }}>
-        {/* Header Titre Principal Recherche */}
-        <div style={{ 
+        {/* Header */}
+        <header style={{ 
           backgroundColor: '#000000',
           padding: '20px',
-          textAlign: 'center'
+          textAlign: 'center',
+          borderBottom: '1px solid #2a2a2a'
         }}>
-          <h2 style={{ 
-            fontSize: '32px', 
+          <div style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'space-between',
+            marginBottom: '16px',
+            flexWrap: 'wrap',
+            gap: '10px'
+          }}>
+            <div style={{ flex: 1 }}></div>
+            <LanguageSelector 
+              onLanguageChange={handleLanguageChange} 
+              currentLanguage={currentLanguage} 
+              compact={true} 
+            />
+          </div>
+          
+          <h1 style={{ 
+            fontSize: 'clamp(24px, 5vw, 32px)', 
             fontWeight: 'bold', 
             margin: '0 0 8px 0',
             color: '#ffffff',
             letterSpacing: '2px'
           }}>
-            {config?.boutique?.searchTitle || config?.boutique?.name || 'RECHERCHE'}
-          </h2>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-            <span style={{ color: '#ffffff', fontSize: '14px' }}>
-              {config?.boutique?.searchSubtitle || ''}
-            </span>
-            <span style={{ 
-              backgroundColor: '#007AFF', 
-              color: '#ffffff', 
-              padding: '4px 8px', 
-              borderRadius: '12px',
-              fontSize: '12px',
-              fontWeight: 'bold'
-            }}>
-              {config?.boutique?.searchBlueText || 'RECHERCHE'}
-            </span>
-          </div>
-        </div>
-
-
+            🔍 {t('search')}
+          </h1>
+          <p style={{ 
+            color: '#8e8e93', 
+            fontSize: '16px',
+            margin: '0',
+            fontWeight: '400'
+          }}>
+            {t('search_desc') || 'Recherchez vos boutiques préférées'}
+          </p>
+        </header>
 
         {/* Section Filtres de recherche */}
         <div style={{ 
@@ -265,7 +273,7 @@ export default function ShopSearch() {
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="🔍 Rechercher une boutique..."
+              placeholder={`🔍 ${t('search_placeholder') || 'Rechercher une boutique'}...`}
               style={{
                 width: '100%',
                 padding: '12px 16px',
@@ -274,7 +282,8 @@ export default function ShopSearch() {
                 borderRadius: '8px',
                 color: '#ffffff',
                 fontSize: '16px',
-                outline: 'none'
+                outline: 'none',
+                boxSizing: 'border-box'
               }}
             />
           </div>
@@ -295,10 +304,11 @@ export default function ShopSearch() {
                 border: '1px solid #3a3a3a',
                 borderRadius: '6px',
                 color: '#ffffff',
-                fontSize: '14px'
+                fontSize: '14px',
+                boxSizing: 'border-box'
               }}
             >
-              <option value="">🌍 Tous pays</option>
+              <option value="">🌍 {t('all_countries') || 'Tous pays'}</option>
               {uniqueCountries.map(country => (
                 <option key={country} value={country}>{country}</option>
               ))}
@@ -313,13 +323,14 @@ export default function ShopSearch() {
                 border: '1px solid #3a3a3a',
                 borderRadius: '6px',
                 color: '#ffffff',
-                fontSize: '14px'
+                fontSize: '14px',
+                boxSizing: 'border-box'
               }}
             >
-              <option value="">🚀 Tous services</option>
-              <option value="delivery">📦 Livraison</option>
-              <option value="postal">📍 Postal</option>
-              <option value="meetup">💰 Meetup</option>
+              <option value="">🚀 {t('all_services') || 'Tous services'}</option>
+              <option value="delivery">📦 {t('delivery') || 'Livraison'}</option>
+              <option value="postal">📍 {t('postal') || 'Postal'}</option>
+              <option value="meetup">💰 {t('meetup') || 'Meetup'}</option>
             </select>
 
             <select
@@ -331,12 +342,13 @@ export default function ShopSearch() {
                 border: '1px solid #3a3a3a',
                 borderRadius: '6px',
                 color: '#ffffff',
-                fontSize: '14px'
+                fontSize: '14px',
+                boxSizing: 'border-box'
               }}
             >
-              <option value="">⭐ Tous types</option>
-              <option value="vip">👑 VIP uniquement</option>
-              <option value="standard">🔹 Standard uniquement</option>
+              <option value="">⭐ {t('all_types') || 'Tous types'}</option>
+              <option value="vip">👑 {t('vip') || 'VIP'} {t('only') || 'uniquement'}</option>
+              <option value="standard">🔹 {t('standard') || 'Standard'} {t('only') || 'uniquement'}</option>
             </select>
           </div>
 
@@ -354,12 +366,12 @@ export default function ShopSearch() {
               fontWeight: '500'
             }}
           >
-            🔄 Réinitialiser
+            🔄 {t('reset') || 'Réinitialiser'}
           </button>
         </div>
 
         {/* Résultats */}
-        <main style={{ padding: '0 20px 90px' }}>
+        <main style={{ padding: '0 20px 90px', maxWidth: '1200px', margin: '0 auto' }}>
           {/* Compteur de résultats */}
           <div style={{ 
             textAlign: 'center', 
@@ -367,40 +379,80 @@ export default function ShopSearch() {
             color: '#8e8e93',
             fontSize: '14px'
           }}>
-            {loading ? 'Recherche en cours...' : `${plugs.length} boutique(s) trouvée(s)`}
+            {loading ? 
+              `${t('searching') || 'Recherche en cours'}...` : 
+              `${plugs.length} ${t('shops') || 'boutique(s)'} ${t('found') || 'trouvée(s)'}`
+            }
           </div>
 
           {loading ? (
-            <div style={{ textAlign: 'center', padding: '48px 0' }}>
-              <div style={{ 
-                width: '48px', 
-                height: '48px', 
-                border: '2px solid transparent',
-                borderTop: '2px solid #007AFF',
-                borderRadius: '50%',
-                animation: 'spin 1s linear infinite',
-                margin: '0 auto 16px'
-              }}></div>
-              <p style={{ color: '#ffffff' }}>Recherche en cours...</p>
+            <div style={{ 
+              display: 'flex', 
+              justifyContent: 'center', 
+              alignItems: 'center', 
+              minHeight: '200px' 
+            }}>
+              <div style={{ textAlign: 'center' }}>
+                <div style={{ 
+                  width: '48px', 
+                  height: '48px', 
+                  border: '2px solid transparent',
+                  borderTop: '2px solid #007AFF',
+                  borderRadius: '50%',
+                  animation: 'spin 1s linear infinite',
+                  margin: '0 auto 16px'
+                }}></div>
+                <p style={{ color: '#ffffff' }}>{t('searching') || 'Recherche en cours'}...</p>
+              </div>
             </div>
           ) : plugs.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '48px 0' }}>
-              <div style={{ fontSize: '48px', marginBottom: '16px' }}>🔍</div>
-              <h3 style={{ color: '#ffffff', fontSize: '20px', fontWeight: '500', marginBottom: '8px' }}>
-                Aucune boutique trouvée
+            <div style={{ 
+              display: 'flex', 
+              flexDirection: 'column', 
+              alignItems: 'center', 
+              justifyContent: 'center',
+              minHeight: '300px',
+              textAlign: 'center'
+            }}>
+              <div style={{ fontSize: '64px', marginBottom: '20px' }}>🔍</div>
+              <h3 style={{ 
+                color: '#ffffff', 
+                fontSize: '24px', 
+                fontWeight: '600', 
+                marginBottom: '12px'
+              }}>
+                {t('no_shops_found') || 'Aucune boutique trouvée'}
               </h3>
-              <p style={{ color: '#8e8e93', marginBottom: '24px' }}>Essayez de modifier vos critères de recherche.</p>
+              <p style={{ 
+                color: '#8e8e93', 
+                marginBottom: '24px',
+                fontSize: '16px',
+                maxWidth: '400px',
+                lineHeight: '1.5'
+              }}>
+                {t('try_different_criteria') || 'Essayez de modifier vos critères de recherche.'}
+              </p>
             </div>
           ) : (
             <>
-              {/* Liste des résultats */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
-                {currentPlugs.map((plug, index) => (
-                  <ShopCard key={plug._id || index} plug={plug} index={index} />
+              {/* Grid des résultats */}
+              <div style={{ 
+                display: 'grid', 
+                gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', 
+                gap: '16px',
+                marginBottom: '20px'
+              }}>
+                {currentPlugs.map((plug) => (
+                  <ShopCard 
+                    key={plug._id} 
+                    plug={plug} 
+                    config={config}
+                    currentLanguage={currentLanguage}
+                  />
                 ))}
               </div>
 
-                            {/* Pagination */}
+              {/* Pagination */}
               {plugs.length > itemsPerPage && (
                 <div style={{ 
                   display: 'flex', 
@@ -419,62 +471,8 @@ export default function ShopSearch() {
           )}
         </main>
 
-        {/* Navigation en bas */}
-        <nav style={{ 
-          position: 'fixed',
-          bottom: '0',
-          left: '0',
-          right: '0',
-          backgroundColor: '#000000',
-          padding: '12px 0',
-          borderTop: '1px solid #2a2a2a',
-          zIndex: 1000
-        }}>
-          <div style={{ 
-            display: 'flex', 
-            justifyContent: 'space-around',
-            alignItems: 'center',
-            width: '100%',
-            maxWidth: '100%'
-          }}>
-            <Link href="/shop" style={{ 
-              color: '#8e8e93', 
-              textDecoration: 'none',
-              fontSize: '10px',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              gap: '4px'
-            }}>
-              <span style={{ fontSize: '20px' }}>🏠</span>
-              Boutiques
-            </Link>
-            <Link href="/shop/search" style={{ 
-              color: '#007AFF', 
-              textDecoration: 'none',
-              fontSize: '10px',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              gap: '4px'
-            }}>
-              <span style={{ fontSize: '20px' }}>🔍</span>
-              Rechercher
-            </Link>
-            <Link href="/shop/vip" style={{ 
-              color: '#8e8e93', 
-              textDecoration: 'none',
-              fontSize: '10px',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              gap: '4px'
-            }}>
-              <span style={{ fontSize: '20px' }}>👑</span>
-              VIP
-            </Link>
-          </div>
-        </nav>
+        {/* Navigation */}
+        <ShopNavigation currentLanguage={currentLanguage} currentPage="search" />
       </div>
 
       <style jsx>{`
@@ -493,6 +491,6 @@ export default function ShopSearch() {
           color: #ffffff !important;
         }
       `}</style>
-         </>
-   )
- }
+    </>
+  )
+}

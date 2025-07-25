@@ -49,7 +49,13 @@ const translations = {
     all_types: 'Tous les types',
     standard: 'Standard',
     found: 'trouvée(s)',
-    shops: 'boutiques'
+    shops: 'boutiques',
+    search_desc: 'Recherchez vos boutiques préférées par nom, pays ou service',
+    search_placeholder: 'Rechercher une boutique',
+    only: 'uniquement',
+    reset: 'Réinitialiser',
+    searching: 'Recherche en cours',
+    try_different_criteria: 'Essayez de modifier vos critères de recherche'
   },
   en: {
     title: 'Language',
@@ -91,7 +97,13 @@ const translations = {
     all_types: 'All types',
     standard: 'Standard',
     found: 'found',
-    shops: 'shops'
+    shops: 'shops',
+    search_desc: 'Search your favorite shops by name, country or service',
+    search_placeholder: 'Search for a shop',
+    only: 'only',
+    reset: 'Reset',
+    searching: 'Searching',
+    try_different_criteria: 'Try modifying your search criteria'
   },
   es: {
     title: 'Idioma',
@@ -133,7 +145,13 @@ const translations = {
     all_types: 'Todos los tipos',
     standard: 'Estándar',
     found: 'encontrada(s)',
-    shops: 'tiendas'
+    shops: 'tiendas',
+    search_desc: 'Busca tus tiendas favoritas por nombre, país o servicio',
+    search_placeholder: 'Buscar una tienda',
+    only: 'solo',
+    reset: 'Restablecer',
+    searching: 'Buscando',
+    try_different_criteria: 'Intenta modificar tus criterios de búsqueda'
   },
   it: {
     title: 'Lingua',
@@ -175,7 +193,13 @@ const translations = {
     all_types: 'Tutti i tipi',
     standard: 'Standard',
     found: 'trovato/i',
-    shops: 'negozi'
+    shops: 'negozi',
+    search_desc: 'Cerca i tuoi negozi preferiti per nome, paese o servizio',
+    search_placeholder: 'Cerca un negozio',
+    only: 'solo',
+    reset: 'Ripristina',
+    searching: 'Ricerca in corso',
+    try_different_criteria: 'Prova a modificare i tuoi criteri di ricerca'
   },
   de: {
     title: 'Sprache',
@@ -217,7 +241,13 @@ const translations = {
     all_types: 'Alle Typen',
     standard: 'Standard',
     found: 'gefunden',
-    shops: 'Shops'
+    shops: 'Shops',
+    search_desc: 'Suchen Sie Ihre Lieblingsshops nach Name, Land oder Service',
+    search_placeholder: 'Nach einem Shop suchen',
+    only: 'nur',
+    reset: 'Zurücksetzen',
+    searching: 'Suche läuft',
+    try_different_criteria: 'Versuchen Sie, Ihre Suchkriterien zu ändern'
   }
 }
 

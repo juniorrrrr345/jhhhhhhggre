@@ -143,6 +143,39 @@ const makeProxyCall = async (endpoint, method = 'GET', token = null, data = null
   }
 };
 
+// Cache optimisé pour performances maximales
+const cache = new Map()
+const CACHE_DURATION = 2000 // Réduit à 2 secondes pour réactivité maximale
+let requestCount = 0
+const MAX_REQUESTS_PER_MINUTE = 30 // Augmenté pour plus de réactivité
+const RATE_LIMIT_WINDOW = 60000 // 1 minute
+
+// Configuration des timeouts optimisés
+const CONFIG = {
+  maxRetries: 1, // Réduit pour réactivité
+  timeout: 4000, // Réduit à 4s pour éviter les délais
+  cacheEnabled: true,
+  retryDelay: 2000, // Réduit
+  fallbackDelay: 0 // Pas de délai pour fallback
+}
+
+// Rate limiting simplifié
+const canMakeRequest = () => {
+  const now = Date.now()
+  const windowStart = now - RATE_LIMIT_WINDOW
+  
+  // Nettoyer les anciens compteurs (implémentation simplifiée)
+  requestCount = Math.max(0, requestCount - 1) // Décrémentation simple
+  
+  if (requestCount >= MAX_REQUESTS_PER_MINUTE) {
+    console.log('⚠️ Rate limit atteint, utilisation du cache')
+    return false
+  }
+  
+  requestCount++
+  return true
+}
+
 // API simple et directe
 export const simpleApi = {
   getConfig: async (token) => {
@@ -267,6 +300,68 @@ export const simpleApi = {
 
   getPublicConfig: async () => {
     return await makeProxyCall('/api/public/config', 'GET', null);
+  },
+
+  // Nouvelle méthode ultra-rapide pour le shop
+  getPublicDataFast: async () => {
+    const cacheKey = 'public_data_fast'
+    const now = Date.now()
+    
+    // Vérifier le cache en premier
+    if (cache.has(cacheKey)) {
+      const { data, timestamp } = cache.get(cacheKey)
+      if (now - timestamp < CACHE_DURATION) {
+        console.log('✅ Cache ultra-rapide utilisé')
+        return data
+      }
+    }
+    
+    try {
+      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_BOT_URL || 'http://localhost:3000'
+      
+      // Essayer direct d'abord
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), CONFIG.timeout)
+      
+      const response = await fetch(`${apiBaseUrl}/api/public/plugs?limit=1000&t=${now}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Cache-Control': 'no-cache',
+          'Accept': 'application/json'
+        },
+        signal: controller.signal
+      })
+      
+      clearTimeout(timeoutId)
+      
+      if (response.ok) {
+        const data = await response.json()
+        
+        // Mettre en cache immédiatement
+        cache.set(cacheKey, { data, timestamp: now })
+        console.log('✅ Données shop récupérées ultra-rapide')
+        return data
+      }
+      
+      throw new Error(`HTTP ${response.status}`)
+      
+    } catch (error) {
+      console.log('⚠️ Erreur shop rapide, fallback cache:', error.message)
+      
+      // Fallback sur cache expiré si disponible
+      if (cache.has(cacheKey)) {
+        const { data } = cache.get(cacheKey)
+        console.log('📦 Utilisation cache expiré en fallback')
+        return data
+      }
+      
+      // Fallback données statiques
+      return {
+        plugs: [],
+        message: 'Données temporairement indisponibles'
+      }
+    }
   },
 
   // Fonction pour nettoyer le cache manuellement

@@ -346,13 +346,16 @@ export default function ShopPlugDetail() {
         <div style={{ 
           backgroundColor: '#000000',
           padding: '20px',
-          textAlign: 'center'
+          textAlign: 'center',
+          position: 'relative'
         }}>
           <div style={{ 
             display: 'flex', 
             alignItems: 'center', 
             justifyContent: 'space-between',
-            marginBottom: '16px'
+            marginBottom: '16px',
+            flexWrap: 'wrap',
+            gap: '10px'
           }}>
             <button 
               onClick={() => router.back()} 
@@ -362,224 +365,273 @@ export default function ShopPlugDetail() {
                 color: '#ffffff',
                 fontSize: '16px',
                 cursor: 'pointer',
-                padding: '8px',
-                borderRadius: '6px',
-                backgroundColor: '#333333'
+                padding: '8px 12px',
+                borderRadius: '8px',
+                backgroundColor: '#333333',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                minWidth: 'fit-content'
               }}
             >
               ← {t('back') || 'Retour'}
             </button>
+            
             <LanguageSelector 
               onLanguageChange={handleLanguageChange} 
               currentLanguage={currentLanguage} 
               compact={true} 
             />
-            {plug.isVip && (
+            
+            {plug && plug.isVip && (
               <div style={{
                 backgroundColor: '#FFD700',
                 color: '#000000',
-                padding: '4px 12px',
-                borderRadius: '12px',
-                fontSize: '10px',
+                padding: '6px 12px',
+                borderRadius: '16px',
+                fontSize: '12px',
                 fontWeight: 'bold',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '4px'
+                gap: '4px',
+                whiteSpace: 'nowrap'
               }}>
                 ⭐ VIP
               </div>
             )}
           </div>
-          <h2 style={{ 
-            fontSize: '32px', 
-            fontWeight: 'bold', 
-            margin: '0 0 8px 0',
-            color: '#ffffff',
-            letterSpacing: '2px'
-          }}>
-            {plug.name}
-          </h2>
-
+          
+          {plug && (
+            <>
+              <h1 style={{ 
+                fontSize: 'clamp(24px, 5vw, 32px)', 
+                fontWeight: 'bold', 
+                margin: '0 0 8px 0',
+                color: '#ffffff',
+                letterSpacing: '1px',
+                wordBreak: 'break-word',
+                lineHeight: '1.2'
+              }}>
+                {plug.name}
+              </h1>
+              
+              {plug.description && (
+                <p style={{ 
+                  color: '#8e8e93', 
+                  fontSize: '14px',
+                  margin: '0',
+                  lineHeight: '1.4',
+                  maxWidth: '600px',
+                  marginLeft: 'auto',
+                  marginRight: 'auto'
+                }}>
+                  {plug.description}
+                </p>
+              )}
+            </>
+          )}
         </div>
 
-
-
         {/* Main Content */}
-        <main style={{ padding: '20px', paddingBottom: '90px' }}>
-          {/* Image principale */}
-          <div style={{ 
-            width: '100%', 
-            height: '240px', 
-            borderRadius: '12px',
-            overflow: 'hidden',
-            backgroundColor: '#2a2a2a',
-            marginBottom: '20px',
-            position: 'relative'
-          }}>
-            {plug.image && plug.image.trim() !== '' ? (
-              <img
-                src={getProxiedImageUrl(plug.image)}
-                alt={plug.name || 'Boutique'}
-                style={{ 
-                  width: '100%', 
-                  height: '100%', 
-                  objectFit: 'cover'
-                }}
-              />
-            ) : (
+        <main style={{ padding: '20px', paddingBottom: '90px', maxWidth: '800px', margin: '0 auto' }}>
+          {plug && (
+            <>
+              {/* Image principale */}
               <div style={{ 
                 width: '100%', 
-                height: '100%', 
-                display: 'flex',
-                alignItems: 'center', 
-                justifyContent: 'center',
-                fontSize: '48px'
+                height: '240px', 
+                borderRadius: '12px',
+                overflow: 'hidden',
+                backgroundColor: '#2a2a2a',
+                marginBottom: '20px',
+                position: 'relative'
               }}>
-                {plug.isVip ? '👑' : '🏪'}
+                {plug.image && plug.image.trim() !== '' ? (
+                  <img
+                    src={getProxiedImageUrl(plug.image)}
+                    alt={plug.name || 'Boutique'}
+                    style={{ 
+                      width: '100%', 
+                      height: '100%', 
+                      objectFit: 'cover'
+                    }}
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                      e.target.parentNode.innerHTML = `
+                        <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 48px;">
+                          ${plug.isVip ? '👑' : '🏪'}
+                        </div>
+                      `;
+                    }}
+                  />
+                ) : (
+                  <div style={{ 
+                    width: '100%', 
+                    height: '100%', 
+                    display: 'flex',
+                    alignItems: 'center', 
+                    justifyContent: 'center',
+                    fontSize: '48px'
+                  }}>
+                    {plug.isVip ? '👑' : '🏪'}
+                  </div>
+                )}
+                
+                {/* Badge VIP overlay */}
+                {plug.isVip && (
+                  <div style={{
+                    position: 'absolute',
+                    top: '12px',
+                    right: '12px',
+                    backgroundColor: '#FFD700',
+                    color: '#000000',
+                    fontSize: '14px',
+                    fontWeight: 'bold',
+                    padding: '6px 12px',
+                    borderRadius: '20px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '4px',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.3)'
+                  }}>
+                    👑 VIP
+                  </div>
+                )}
               </div>
-            )}
-            
-            {/* Badge VIP overlay */}
-            {plug.isVip && (
-              <div style={{
-                position: 'absolute',
-                top: '12px',
-                right: '12px',
-                backgroundColor: '#FFD700',
-                color: '#000000',
-                fontSize: '14px',
-                fontWeight: 'bold',
-                padding: '6px 12px',
-                borderRadius: '20px',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '4px'
-              }}>
-                👑 VIP
-              </div>
-            )}
-          </div>
 
-          {/* Informations principales */}
-          <div style={{ 
-            backgroundColor: '#1a1a1a',
-            borderRadius: '12px',
-            padding: '20px',
-            marginBottom: '16px'
-          }}>
-            {/* Nom et localisation */}
-            <div style={{ marginBottom: '16px' }}>
+              {/* Statistiques principales */}
               <div style={{ 
-                display: 'flex', 
-                alignItems: 'center', 
-                gap: '8px',
-                marginBottom: '8px'
+                backgroundColor: '#1a1a1a',
+                borderRadius: '12px',
+                padding: '20px',
+                marginBottom: '16px',
+                border: plug.isVip ? '2px solid #FFD700' : '1px solid #2a2a2a'
               }}>
-                <span style={{ fontSize: '20px' }}>{getCountryFlag(plug.countries)}</span>
-                <h2 style={{ 
-                  fontSize: '24px',
-                  fontWeight: 'bold',
-                  margin: '0',
-                  color: plug.isVip ? '#FFD700' : '#ffffff'
-                }}>
-                  {plug.name}
-                </h2>
-              </div>
-              <p style={{ 
-                color: '#8e8e93', 
-                fontSize: '16px',
-                margin: '0',
-                lineHeight: '1.4'
-              }}>
-                {plug.description}
-              </p>
-            </div>
-
-            {/* Statistiques */}
-            <div style={{ 
-              display: 'flex', 
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              padding: '12px 0',
-              borderTop: '1px solid #2a2a2a',
-              borderBottom: '1px solid #2a2a2a'
-            }}>
-              <div style={{ textAlign: 'center' }}>
-                <button
-                  onClick={handleVote}
-                  disabled={isVoting}
-                  style={{
-                    background: 'none',
-                    border: 'none',
-                    cursor: isVoting ? 'not-allowed' : 'pointer',
-                    fontSize: '20px',
-                    marginBottom: '4px',
-                    padding: '4px',
-                    borderRadius: '4px',
-                    transition: 'background-color 0.2s ease',
-                    color: '#ffffff'
-                  }}
-                  onMouseEnter={(e) => {
-                    if (!isVoting) e.target.style.backgroundColor = '#333333'
-                  }}
-                  onMouseLeave={(e) => {
-                    e.target.style.backgroundColor = 'transparent'
-                  }}
-                >
-                  {isVoting ? '⏳' : '👍'}
-                </button>
                 <div style={{ 
-                  fontSize: '18px', 
-                  fontWeight: 'bold', 
-                  color: plug.isVip ? '#FFD700' : '#ffffff'
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(80px, 1fr))',
+                  gap: '16px',
+                  textAlign: 'center'
                 }}>
-                  {likes}
-                </div>
-                <div style={{ fontSize: '12px', color: '#8e8e93' }}>{getVotesText()}</div>
-              </div>
-              
-              <div style={{ textAlign: 'center' }}>
-                <div style={{ fontSize: '20px', marginBottom: '4px' }}>📍</div>
-                <div style={{ 
-                  fontSize: '18px', 
-                  fontWeight: 'bold', 
-                  color: '#ffffff'
-                }}>
-                  {plug.countries ? plug.countries.length : 0}
-                </div>
-                <div style={{ fontSize: '12px', color: '#8e8e93' }}>{t('countries') || 'Pays'}</div>
-              </div>
+                  {/* Votes */}
+                  <div style={{ padding: '8px' }}>
+                    <button
+                      onClick={handleVote}
+                      disabled={isVoting}
+                      style={{
+                        background: 'none',
+                        border: 'none',
+                        cursor: isVoting ? 'not-allowed' : 'pointer',
+                        fontSize: '24px',
+                        marginBottom: '8px',
+                        padding: '8px',
+                        borderRadius: '8px',
+                        transition: 'all 0.2s ease',
+                        color: '#ffffff',
+                        width: '100%'
+                      }}
+                      onMouseEnter={(e) => {
+                        if (!isVoting) e.target.style.backgroundColor = '#333333'
+                      }}
+                      onMouseLeave={(e) => {
+                        e.target.style.backgroundColor = 'transparent'
+                      }}
+                    >
+                      {isVoting ? '⏳' : '👍'}
+                    </button>
+                    <div style={{ 
+                      fontSize: 'clamp(18px, 4vw, 24px)', 
+                      fontWeight: 'bold', 
+                      color: plug.isVip ? '#FFD700' : '#ffffff',
+                      marginBottom: '4px'
+                    }}>
+                      {likes}
+                    </div>
+                    <div style={{ 
+                      fontSize: '12px', 
+                      color: '#8e8e93',
+                      wordBreak: 'break-word'
+                    }}>
+                      {getVotesText()}
+                    </div>
+                  </div>
+                  
+                  {/* Pays */}
+                  <div style={{ padding: '8px' }}>
+                    <div style={{ fontSize: '24px', marginBottom: '8px' }}>
+                      {getCountryFlag(plug.countries)}
+                    </div>
+                    <div style={{ 
+                      fontSize: 'clamp(18px, 4vw, 24px)', 
+                      fontWeight: 'bold', 
+                      color: '#ffffff',
+                      marginBottom: '4px'
+                    }}>
+                      {plug.countries ? plug.countries.length : 0}
+                    </div>
+                    <div style={{ 
+                      fontSize: '12px', 
+                      color: '#8e8e93',
+                      wordBreak: 'break-word'
+                    }}>
+                      {t('countries') || 'Pays'}
+                    </div>
+                  </div>
 
-              <div style={{ textAlign: 'center' }}>
-                <div style={{ fontSize: '20px', marginBottom: '4px' }}>⭐</div>
-                <div style={{ 
-                  fontSize: '18px', 
-                  fontWeight: 'bold', 
-                  color: plug.isVip ? '#FFD700' : '#ffffff'
-                }}>
-                  {plug.isVip ? 'VIP' : 'STD'}
+                  {/* Type */}
+                  <div style={{ padding: '8px' }}>
+                    <div style={{ fontSize: '24px', marginBottom: '8px' }}>⭐</div>
+                    <div style={{ 
+                      fontSize: 'clamp(14px, 3vw, 18px)', 
+                      fontWeight: 'bold', 
+                      color: plug.isVip ? '#FFD700' : '#ffffff',
+                      marginBottom: '4px'
+                    }}>
+                      {plug.isVip ? 'VIP' : 'STD'}
+                    </div>
+                    <div style={{ 
+                      fontSize: '12px', 
+                      color: '#8e8e93',
+                      wordBreak: 'break-word'
+                    }}>
+                      {t('type') || 'Type'}
+                    </div>
+                  </div>
                 </div>
-                <div style={{ fontSize: '12px', color: '#8e8e93' }}>{t('type') || 'Type'}</div>
-              </div>
-            </div>
 
-            {/* Localisation */}
-            {plug.countries && plug.countries.length > 0 && (
-              <div style={{ marginTop: '16px' }}>
-                <h3 style={{ 
-                  fontSize: '16px', 
-                  fontWeight: '600', 
-                  marginBottom: '8px',
-                  color: '#ffffff'
-                }}>
-                  📍 {t('location') || 'Localisation'}
-                </h3>
-                <p style={{ color: '#8e8e93', fontSize: '15px', margin: '0' }}>
-                  {plug.countries.join(', ')}
-                </p>
+                {/* Localisation */}
+                {plug.countries && plug.countries.length > 0 && (
+                  <div style={{ 
+                    marginTop: '20px',
+                    paddingTop: '16px',
+                    borderTop: '1px solid #2a2a2a'
+                  }}>
+                    <h3 style={{ 
+                      fontSize: '16px', 
+                      fontWeight: '600', 
+                      marginBottom: '8px',
+                      color: '#ffffff',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px'
+                    }}>
+                      📍 {t('location') || 'Localisation'}
+                    </h3>
+                    <p style={{ 
+                      color: '#8e8e93', 
+                      fontSize: '15px', 
+                      margin: '0',
+                      lineHeight: '1.4',
+                      wordBreak: 'break-word'
+                    }}>
+                      {plug.countries.join(', ')}
+                    </p>
+                  </div>
+                )}
               </div>
-            )}
-          </div>
+            </>
+          )}
+        </main>
 
           {/* Services */}
           <div style={{ 
