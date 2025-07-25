@@ -36,7 +36,9 @@ const {
   handleSpecificDepartment,
   handleResetFilters,
   handleTopServiceFilter,
-  handleTopCountryFilter
+  handleTopCountryFilter,
+  handlePostalCodeFilter,
+  handleShopsByPostalCode
 } = require('./src/handlers/plugsHandler');
 const { handleContact, handleInfo, handleIgnoredCallback } = require('./src/handlers/menuHandler');
 const { handleSocialMedia } = require('./src/handlers/socialMediaHandler');
@@ -416,6 +418,19 @@ bot.action(/^top_dept_(.+)_(.+)_?(.*)$/, (ctx) => {
 
 bot.action('top_reset_filters', handleResetFilters);
 
+// 🗺️ NOUVEAU: Actions pour les codes postaux
+bot.action(/^postal_nav_(.+)_(\d+)$/, (ctx) => {
+  const country = ctx.match[1];
+  const page = parseInt(ctx.match[2]);
+  return handlePostalCodeFilter(ctx, null, country, page);
+});
+
+bot.action(/^postal_(.+)_(.+)$/, (ctx) => {
+  const country = ctx.match[1];
+  const postalCode = ctx.match[2];
+  return handleShopsByPostalCode(ctx, country, postalCode);
+});
+
 // Handlers pour les boutons de boutiques depuis Top des Plugs
 bot.action(/^plug_(.+)_from_top_plugs$/, (ctx) => {
   const plugId = ctx.match[1];
@@ -433,6 +448,11 @@ bot.action(/^plug_(.+)_from_top_service$/, (ctx) => {
 });
 
 bot.action(/^plug_(.+)_from_top_dept$/, (ctx) => {
+  const plugId = ctx.match[1];
+  return handlePlugDetails(ctx, plugId, 'top_plugs');
+});
+
+bot.action(/^plug_(.+)_from_postal$/, (ctx) => {
   const plugId = ctx.match[1];
   return handlePlugDetails(ctx, plugId, 'top_plugs');
 });

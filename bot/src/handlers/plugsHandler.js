@@ -286,13 +286,13 @@ const handleTopServiceFilter = async (ctx, serviceType, selectedCountry = null) 
   }
 };
 
-// Gestionnaire pour les départements (delivery et meetup)
-const handleDepartmentFilter = async (ctx, serviceType, selectedCountry = null) => {
+// 🗺️ NOUVEAU: Gestionnaire pour les codes postaux (remplace départements)
+const handlePostalCodeFilter = async (ctx, serviceType, selectedCountry = null, page = 0) => {
   try {
     const userId = ctx.from.id;
     
     // 🚫 Prévention spam
-    if (isSpamClick(userId, 'department', `${serviceType}_${selectedCountry || 'none'}`)) {
+    if (isSpamClick(userId, 'postal', `${serviceType}_${selectedCountry || 'none'}_${page}`)) {
       await ctx.answerCbQuery('🔄');
       return;
     }
@@ -300,21 +300,17 @@ const handleDepartmentFilter = async (ctx, serviceType, selectedCountry = null) 
     await ctx.answerCbQuery();
     
     const config = await Config.findById('main');
+    const currentLang = config?.languages?.currentLanguage || 'fr';
+    const customTranslations = config?.languages?.translations;
     
-    // Récupérer les départements disponibles selon le service
-    const departments = await getAvailableDepartments(serviceType, selectedCountry);
-    
-    if (departments.length === 0) {
-      const currentLang = config?.languages?.currentLanguage || 'fr';
-      const customTranslations = config?.languages?.translations;
-      await ctx.answerCbQuery(getTranslation('no_departments', currentLang, customTranslations));
+    // Si pas de pays sélectionné, demander d'abord de choisir un pays
+    if (!selectedCountry) {
+      await ctx.answerCbQuery(getTranslation('messages_selectCountry', currentLang, customTranslations));
       return;
     }
     
-    const keyboard = createDepartmentsKeyboard(departments, serviceType, selectedCountry);
-    
-    const currentLang = config?.languages?.currentLanguage || 'fr';
-    const customTranslations = config?.languages?.translations;
+    // Créer le clavier avec les codes postaux du pays
+    const keyboard = postalCodeService.createPostalCodeKeyboard(selectedCountry, page);
     
     let message = `📍 **${getTranslation('filter_department_available', currentLang, customTranslations)}**\n\n`;
     
@@ -328,23 +324,135 @@ const handleDepartmentFilter = async (ctx, serviceType, selectedCountry = null) 
       message += `🤝 **${serviceLabel}:** ${serviceName}\n`;
     }
     
-    if (selectedCountry) {
-      const countryLabel = getTranslation('country_label', currentLang, customTranslations);
-      message += `🌍 **${countryLabel}:** ${getCountryFlag(selectedCountry)} ${selectedCountry}\n`;
-    }
+    const countryLabel = getTranslation('country_label', currentLang, customTranslations);
+    message += `🌍 **${countryLabel}:** ${getCountryFlag(selectedCountry)} ${selectedCountry}\n`;
     
-    const selectDepartmentText = getTranslation('select_department', currentLang, customTranslations);
-    message += `\n${selectDepartmentText}`;
+    const postalCodes = postalCodeService.getPostalCodes(selectedCountry);
+    message += `\n📮 **Codes postaux disponibles:** ${postalCodes.length.toLocaleString()}\n`;
+    message += `📄 **Page:** ${page + 1}\n\n`;
+    message += `💡 *Cliquez sur un code postal pour voir les boutiques disponibles*`;
     
     await editMessageWithImage(ctx, message, keyboard, config, { parse_mode: 'Markdown' });
     
   } catch (error) {
-    console.error('Erreur dans handleDepartmentFilter:', error);
+    console.error('Erreur dans handlePostalCodeFilter:', error);
     const config = await Config.findById('main');
     const currentLang = config?.languages?.currentLanguage || 'fr';
     const customTranslations = config?.languages?.translations;
-    await ctx.answerCbQuery(getTranslation('error_departments', currentLang, customTranslations)).catch(() => {});
+    await ctx.answerCbQuery(getTranslation('error_filtering', currentLang, customTranslations)).catch(() => {});
   }
+};
+
+// 🏪 NOUVEAU: Gestionnaire pour afficher les boutiques par code postal
+const handleShopsByPostalCode = async (ctx, country, postalCode, serviceType = null) => {
+  try {
+    const userId = ctx.from.id;
+    
+    // 🚫 Prévention spam
+    if (isSpamClick(userId, 'shops_postal', `${country}_${postalCode}_${serviceType || 'all'}`)) {
+      await ctx.answerCbQuery('🔄');
+      return;
+    }
+    
+    await ctx.answerCbQuery();
+    
+    const config = await Config.findById('main');
+    const currentLang = config?.languages?.currentLanguage || 'fr';
+    const customTranslations = config?.languages?.translations;
+    
+    // Rechercher les boutiques qui desservent ce code postal
+    let query = { 
+      isActive: true,
+      countries: { $in: [country] }
+    };
+    
+    // Filtrer par service si spécifié
+    if (serviceType === 'delivery') {
+      query['services.delivery.enabled'] = true;
+      query['services.delivery.departments'] = { $in: [postalCode] };
+    } else if (serviceType === 'meetup') {
+      query['services.meetup.enabled'] = true;
+      query['services.meetup.departments'] = { $in: [postalCode] };
+    } else if (serviceType === 'postal') {
+      query['services.postal.enabled'] = true;
+    }
+    
+    const shops = await Plug.find(query).sort({ likes: -1, createdAt: -1 });
+    
+    let message = `📍 **${getCountryFlag(country)} ${country} - ${postalCode}**\n\n`;
+    
+    if (serviceType) {
+      const serviceName = getTranslation(`service_${serviceType}`, currentLang, customTranslations);
+      const serviceLabel = getTranslation('service_label', currentLang, customTranslations);
+      message += `🎯 **${serviceLabel}:** ${serviceName}\n\n`;
+    }
+    
+    if (shops.length === 0) {
+      // Message "Désolé Nous Avons Pas De Plugs 😕"
+      message += `${getTranslation('messages_noPlugsInPostalCode', currentLang, customTranslations)}`;
+      
+      const keyboard = {
+        inline_keyboard: [
+          [{
+            text: '🔙 Retour aux codes postaux',
+            callback_data: `postal_nav_${country}_0`
+          }],
+          [{
+            text: '🔄 Réinitialiser les filtres',
+            callback_data: 'top_reset_filters'
+          }]
+        ]
+      };
+      
+      await editMessageWithImage(ctx, message, keyboard, config, { parse_mode: 'Markdown' });
+      return;
+    }
+    
+    // Afficher les boutiques trouvées
+    const shopsAvailableText = getTranslation('messages_shopsAvailable', currentLang, customTranslations);
+    message += `🏪 **${shops.length} ${shopsAvailableText} :**\n\n`;
+    
+    const keyboard = { inline_keyboard: [] };
+    
+    shops.forEach((shop, index) => {
+      const vipIcon = shop.isVip ? '⭐️ ' : '';
+      const buttonText = `${vipIcon}${shop.name} 👍 ${shop.likes}`;
+      keyboard.inline_keyboard.push([{
+        text: buttonText,
+        callback_data: `plug_${shop._id}_from_postal`
+      }]);
+    });
+    
+    // Boutons de navigation
+    keyboard.inline_keyboard.push([
+      {
+        text: '🔙 Retour aux codes postaux',
+        callback_data: `postal_nav_${country}_0`
+      }
+    ]);
+    
+    keyboard.inline_keyboard.push([
+      {
+        text: '🔄 Réinitialiser les filtres',
+        callback_data: 'top_reset_filters'
+      }
+    ]);
+    
+    await editMessageWithImage(ctx, message, keyboard, config, { parse_mode: 'Markdown' });
+    
+  } catch (error) {
+    console.error('Erreur dans handleShopsByPostalCode:', error);
+    const config = await Config.findById('main');
+    const currentLang = config?.languages?.currentLanguage || 'fr';
+    const customTranslations = config?.languages?.translations;
+    await ctx.answerCbQuery(getTranslation('error_filtering', currentLang, customTranslations)).catch(() => {});
+  }
+};
+
+// Gestionnaire pour les départements (delivery et meetup) - DEPRECATED, remplacé par codes postaux
+const handleDepartmentFilter = async (ctx, serviceType, selectedCountry = null) => {
+  // Rediriger vers le nouveau système de codes postaux
+  return await handlePostalCodeFilter(ctx, serviceType, selectedCountry, 0);
 };
 
 // Gestionnaire pour un département spécifique
@@ -1123,6 +1231,8 @@ module.exports = {
   handleResetFilters,
   handleTopServiceFilter,
   handleTopCountryFilter,
+  handlePostalCodeFilter,
+  handleShopsByPostalCode,
   getAvailableCountries,
   getAvailableDepartments,
   getCountryFlag
