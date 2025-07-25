@@ -168,17 +168,17 @@ const handleTopServiceFilter = async (ctx, serviceType, selectedCountry = null) 
   try {
     const userId = ctx.from.id;
     
-    // 🚫 Prévention spam
-    if (isSpamClick(userId, 'service', `${serviceType}_${selectedCountry || 'none'}`)) {
-      await ctx.answerCbQuery('🔄');
-      return;
-    }
-    
     // Pour Livraison et Meetup : rediriger IMMÉDIATEMENT vers le système de départements (ANTI-SPAM)
     if (serviceType === 'delivery' || serviceType === 'meetup') {
       console.log(`🎯 handleTopServiceFilter: Redirection immédiate vers handleDepartmentsList pour ${serviceType}, pays=${selectedCountry}`);
       console.log(`🔍 Utilisateur: ${ctx.from.id}, Chat: ${ctx.chat.id}`);
       return await handleDepartmentsList(ctx, serviceType, selectedCountry);
+    }
+    
+    // 🚫 Prévention spam (seulement pour postal)
+    if (isSpamClick(userId, 'service', `${serviceType}_${selectedCountry || 'none'}`)) {
+      await ctx.answerCbQuery('🔄');
+      return;
     }
     
     await ctx.answerCbQuery();
@@ -1683,11 +1683,11 @@ const handleDepartmentsList = async (ctx, serviceType, selectedCountry = null) =
   try {
     const userId = ctx.from.id;
     
-    // 🚫 Prévention spam
-    if (isSpamClick(userId, 'dept_list', `${serviceType}_${selectedCountry || 'none'}`)) {
-      await ctx.answerCbQuery('🔄');
-      return;
-    }
+    // 🚫 Prévention spam - TEMPORAIREMENT DÉSACTIVÉ POUR DEBUG
+    // if (isSpamClick(userId, 'dept_list', `${serviceType}_${selectedCountry || 'none'}`)) {
+    //   await ctx.answerCbQuery('🔄');
+    //   return;
+    // }
     
     await ctx.answerCbQuery();
     
