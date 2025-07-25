@@ -2519,6 +2519,62 @@ app.post('/api/reload-users', authenticateAdmin, async (req, res) => {
   }
 });
 
+// ENDPOINT DEBUG: Force reload config et réseaux sociaux
+app.get('/api/debug/config', async (req, res) => {
+  try {
+    console.log('🔧 DEBUG: Force reload configuration...');
+    
+    // Invalider tous les caches
+    configCache = null;
+    plugsCache = null;
+    lastConfigUpdate = 0;
+    lastPlugsUpdate = 0;
+    
+    // Recharger la configuration
+    const config = await Config.findById('main');
+    
+    if (!config) {
+      return res.json({
+        error: 'Aucune configuration trouvée',
+        mongodb_connected: mongoose.connection.readyState === 1,
+        cache_invalidated: true
+      });
+    }
+    
+    // Test création clavier avec debug
+    const { createMainKeyboard } = require('./src/utils/keyboards');
+    process.env.DEBUG_SOCIAL_MEDIA = 'true'; // Activer debug temporaire
+    const keyboard = createMainKeyboard(config);
+    process.env.DEBUG_SOCIAL_MEDIA = 'false'; // Désactiver
+    
+    const urlButtons = keyboard?.reply_markup?.inline_keyboard?.flat()?.filter(btn => btn.url) || [];
+    
+    res.json({
+      success: true,
+      config: {
+        boutique: config.boutique?.name,
+        socialMedia: config.socialMedia?.length || 0,
+        socialMediaList: config.socialMediaList?.length || 0
+      },
+      cache_invalidated: true,
+      mongodb_connected: mongoose.connection.readyState === 1,
+      social_buttons_created: urlButtons.length,
+      social_buttons: urlButtons.map(btn => ({
+        text: btn.text,
+        url: btn.url
+      })),
+      timestamp: new Date().toISOString()
+    });
+    
+  } catch (error) {
+    console.error('❌ Erreur debug config:', error);
+    res.status(500).json({
+      error: error.message,
+      mongodb_connected: mongoose.connection.readyState === 1
+    });
+  }
+});
+
 // API pour les likes - synchronisation temps réel
 app.post('/api/likes/:plugId', async (req, res) => {
   try {
