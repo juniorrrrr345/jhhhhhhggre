@@ -3,6 +3,7 @@ import { useRouter } from 'next/router'
 import Layout from '../../../components/Layout'
 import toast from 'react-hot-toast'
 import { simpleApi } from '../../../lib/api-simple'
+import { getSyncManager } from '../../../lib/sync-manager'
 import {
   PlusIcon,
   MagnifyingGlassIcon,
