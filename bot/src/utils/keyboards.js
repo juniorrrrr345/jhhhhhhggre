@@ -380,14 +380,20 @@ const getReturnAction = (context) => {
 };
 
 // Clavier avec pagination pour les plugs
-const createPlugsKeyboard = (plugs, page = 0, context = 'plugs', itemsPerPage = 8) => {
-  // Récupérer la langue actuelle
-  const Config = require('../models/Config');
+const createPlugsKeyboard = async (plugs, page = 0, context = 'plugs', itemsPerPage = 8) => {
+  // Récupérer la langue actuelle depuis la base de données
   let currentLang = 'fr';
   let customTranslations = null;
   
-  // Fonction asynchrone pour récupérer la config, mais on doit faire du synchrone ici
-  // On utilisera les traductions par défaut
+  try {
+    const Config = require('../models/Config');
+    const config = await Config.findById('main');
+    currentLang = config?.languages?.currentLanguage || 'fr';
+    customTranslations = config?.languages?.translations;
+  } catch (error) {
+    console.log('⚠️ Impossible de récupérer la config pour les traductions, utilisation du français par défaut');
+  }
+  
   const { getTranslation } = require('./translations');
   
   const buttons = [];
@@ -402,7 +408,7 @@ const createPlugsKeyboard = (plugs, page = 0, context = 'plugs', itemsPerPage = 
     
     // Format amélioré pour meilleure lisibilité avec traductions :
     // 🇧🇪 NOM BOUTIQUE
-    // 📦 Livraison 🏠 Meetup ✈️ Envoi postal
+    // 📦 🏠 ✈️
     // 👍 12 votes
     
     const votesCount = plug.likes || 0;

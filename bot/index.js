@@ -333,11 +333,6 @@ bot.action(/^lang_(.+)$/, async (ctx) => {
     
     console.log(`🌍 Changement de langue vers: ${newLanguage}`);
     
-    // Répondre immédiatement à la callback pour éviter le loading
-    const translations = require('./src/utils/translations');
-    const languageName = translations.translations.languages[newLanguage]?.name || newLanguage;
-    await ctx.answerCbQuery(`✅ ${languageName} sélectionnée !`);
-    
     // Mettre à jour la langue dans la config
     const config = await Config.findById('main');
     if (config) {
@@ -368,30 +363,28 @@ bot.action(/^lang_(.+)$/, async (ctx) => {
     const updatedConfig = await Config.findById('main');
     const customTranslations = updatedConfig?.languages?.translations;
     
-    // Retourner au menu principal avec la nouvelle langue
-    const welcomeMessage = getTranslation('messages_welcome', newLanguage, customTranslations);
-    const keyboard = createMainKeyboard(updatedConfig);
+    // Obtenir le nom de la langue pour confirmation
+    const translations = require('./src/utils/translations');
+    const languageName = translations.translations.languages[newLanguage]?.name || newLanguage;
     
-    // Mettre à jour l'affichage vers le menu principal traduit
+    // Réafficher le sélecteur de langue avec la nouvelle langue cochée ✅
+    const message = `🌍 **${getTranslation('menu_language', newLanguage, customTranslations)}**\n\nSélectionnez votre langue préférée :`;
+    const keyboard = createLanguageKeyboard(newLanguage);
+    
+    // Mettre à jour l'affichage du sélecteur avec le ✅ sur la bonne langue
     try {
-      await ctx.editMessageText(welcomeMessage, {
+      await ctx.editMessageText(message, {
         reply_markup: keyboard.reply_markup,
         parse_mode: 'Markdown'
       });
-      console.log(`✅ Menu principal mis à jour en ${newLanguage}`);
+      
+      // Confirmation directe avec popup
+      await ctx.answerCbQuery(`✅ ${languageName} sélectionnée !`);
+      console.log(`✅ Langue ${newLanguage} cochée avec ✅`);
       
     } catch (editError) {
-      console.error('❌ Erreur édition menu principal après changement langue:', editError);
-      
-      // Fallback: utiliser la fonction sendWelcomeMessage
-      try {
-        const { sendWelcomeMessage } = require('./src/utils/messageHelper');
-        await ctx.deleteMessage().catch(() => {});
-        await sendWelcomeMessage(ctx, updatedConfig);
-        console.log(`✅ Menu principal envoyé en fallback en ${newLanguage}`);
-      } catch (fallbackError) {
-        console.error('❌ Erreur fallback:', fallbackError);
-      }
+      console.error('❌ Erreur édition sélecteur langue:', editError);
+      await ctx.answerCbQuery(`✅ ${languageName} sélectionnée !`);
     }
     
   } catch (error) {

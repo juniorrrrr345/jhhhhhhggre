@@ -36,34 +36,17 @@ const handleTopPlugs = async (ctx) => {
     
     if (plugs.length === 0) {
       message += getTranslation('messages_noShops', currentLang, customTranslations);
+      const keyboard = createPlugsFilterKeyboard(currentLang, customTranslations);
+      await editMessageWithImage(ctx, message, keyboard, config, { parse_mode: 'Markdown' });
     } else {
+      // Afficher les boutiques avec notre nouveau système de cartes
+      const keyboard = await createPlugsKeyboard(plugs, 0, 'top_plugs', 8);
+      
       message += `*(${getTranslation('messages_sortedByVotes', currentLang, customTranslations)})*\n\n`;
+      message += `📊 ${getTranslation('total_shops', currentLang, customTranslations)} : ${plugs.length} ${getTranslation('shops_word', currentLang, customTranslations)}`;
       
-      // Statistiques des services avec traductions
-      const deliveryCount = await Plug.countDocuments({
-        isActive: true,
-        'services.delivery.enabled': true
-      });
-      const postalCount = await Plug.countDocuments({
-        isActive: true,
-        'services.postal.enabled': true
-      });
-      const meetupCount = await Plug.countDocuments({
-        isActive: true,
-        'services.meetup.enabled': true
-      });
-      
-      console.log(`📊 Services disponibles: ${getTranslation('service_delivery', currentLang, customTranslations)}(${deliveryCount}), ${getTranslation('service_postal', currentLang, customTranslations)}(${postalCount}), ${getTranslation('service_meetup', currentLang, customTranslations)}(${meetupCount})`);
-      
-      message += `📊 **${getTranslation('services_available', currentLang, customTranslations)} :**\n` +
-        `📦 ${getTranslation('service_delivery', currentLang, customTranslations)}: ${deliveryCount} ${getTranslation('shops_word', currentLang, customTranslations)}\n` +
-        `✈️ ${getTranslation('service_postal', currentLang, customTranslations)}: ${postalCount} ${getTranslation('shops_word', currentLang, customTranslations)}\n` +
-        `🏠 ${getTranslation('service_meetup', currentLang, customTranslations)}: ${meetupCount} ${getTranslation('shops_word', currentLang, customTranslations)}`;
+      await editMessageWithImage(ctx, message, keyboard, config, { parse_mode: 'Markdown' });
     }
-    
-    const keyboard = createPlugsFilterKeyboard(currentLang, customTranslations);
-    
-    await editMessageWithImage(ctx, message, keyboard, config, { parse_mode: 'Markdown' });
   } catch (error) {
     console.error('Erreur dans handleTopPlugs:', error);
     await ctx.answerCbQuery(getTranslation('error_loading', 'fr')).catch(() => {});

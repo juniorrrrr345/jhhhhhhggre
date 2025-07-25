@@ -377,6 +377,13 @@ const translations = {
       es: 'Todas las tiendas',
       de: 'Alle Shops'
     },
+    'messages_shopsAvailable': {
+      fr: 'boutiques disponibles',
+      en: 'shops available',
+      it: 'negozi disponibili',
+      es: 'tiendas disponibles',
+      de: 'Shops verfügbar'
+    },
     'total_shops': {
       fr: 'Total',
       en: 'Total',
