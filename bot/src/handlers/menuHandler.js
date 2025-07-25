@@ -27,10 +27,9 @@ const handleContact = async (ctx) => {
     const contactTitle = getTranslation('menu_contact', currentLang, customTranslations);
     const defaultContactText = getTranslation('contact_default_text', currentLang, customTranslations) || 'Contactez-nous pour plus d\'informations !';
     
-    // Utiliser le contenu traduit par défaut si le contenu personnalisé n'existe pas ou est en français
+    // Utiliser le contenu du panel admin en priorité, sinon traduction par défaut
     const contactContent = config?.buttons?.contact?.content;
-    const useTranslatedContent = !contactContent || contactContent.includes('Contactez-nous') || contactContent.includes('informations');
-    const finalContactText = useTranslatedContent ? defaultContactText : contactContent;
+    const finalContactText = contactContent || defaultContactText;
     
     let message = `${contactTitle}\n\n${finalContactText}`;
 
