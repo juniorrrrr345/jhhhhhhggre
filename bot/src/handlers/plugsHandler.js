@@ -9,6 +9,7 @@ const {
   createPlugKeyboard 
 } = require('../utils/keyboards');
 const { sendMessageWithImage, editMessageWithImage, sendPlugWithImage } = require('../utils/messageHelper');
+const { getTranslation } = require('../utils/translations');
 
 // 🔘 NOUVEAU SYSTÈME - Top des Plugs avec filtres avancés
 const handleTopPlugs = async (ctx) => {
@@ -16,6 +17,8 @@ const handleTopPlugs = async (ctx) => {
     await ctx.answerCbQuery();
     
     const config = await Config.findById('main');
+    const currentLang = config?.languages?.currentLanguage || 'fr';
+    const customTranslations = config?.languages?.translations;
     
     // Récupérer tous les plugs actifs triés par votes
     const allPlugs = await Plug.find({ isActive: true })
@@ -24,8 +27,9 @@ const handleTopPlugs = async (ctx) => {
     // Récupérer les pays disponibles dynamiquement
     const availableCountries = await getAvailableCountries();
     
-    // Message d'affichage initial
-    let message = `🔌 **Liste des Plugs**\n`;
+    // Message d'affichage initial avec traduction
+    const topPlugsTitle = getTranslation('menu.topPlugs', currentLang, customTranslations);
+    let message = `${topPlugsTitle}\n`;
     message += `*(Triés par nombre de votes)*\n\n`;
     
     // Afficher les premiers plugs (top 10 par défaut) - MISE À JOUR pour boutons
@@ -33,14 +37,16 @@ const handleTopPlugs = async (ctx) => {
     let keyboard;
     
     if (topPlugs.length > 0) {
-      message += `**${topPlugs.length} boutiques disponibles :**\n\n`;
+      const shopsAvailableText = getTranslation('messages.shopsAvailable', currentLang, customTranslations);
+      message += `**${topPlugs.length} ${shopsAvailableText} :**\n\n`;
       
       // Ajouter les boutiques au clavier
       const plugButtons = [];
       topPlugs.forEach((plug, index) => {
         const country = getCountryFlag(plug.countries[0]);
         const location = plug.location ? ` ${plug.location}` : '';
-        const buttonText = `${country}${location} ${plug.name} 👍 ${plug.likes}`;
+        const vipIcon = plug.isVip ? '⭐️ ' : '';
+        const buttonText = `${country}${location} ${vipIcon}${plug.name} 👍 ${plug.likes}`;
         plugButtons.push([Markup.button.callback(buttonText, `plug_${plug._id}_from_top_plugs`)]);
       });
       
@@ -90,7 +96,8 @@ const handleTopCountryFilter = async (ctx, country) => {
       countryPlugs.slice(0, 10).forEach((plug, index) => {
         const countryFlag = getCountryFlag(plug.countries[0]);
         const location = plug.location ? ` ${plug.location}` : '';
-        const buttonText = `${countryFlag}${location} ${plug.name} 👍 ${plug.likes}`;
+        const vipIcon = plug.isVip ? '⭐️ ' : '';
+        const buttonText = `${countryFlag}${location} ${vipIcon}${plug.name} 👍 ${plug.likes}`;
         plugButtons.push([Markup.button.callback(buttonText, `plug_${plug._id}_from_top_country`)]);
       });
       
@@ -165,7 +172,8 @@ const handleTopServiceFilter = async (ctx, serviceType, selectedCountry = null) 
       servicePlugs.slice(0, 10).forEach((plug, index) => {
         const country = getCountryFlag(plug.countries[0]);
         const location = plug.location ? ` ${plug.location}` : '';
-        const buttonText = `${country}${location} ${plug.name} 👍 ${plug.likes}`;
+        const vipIcon = plug.isVip ? '⭐️ ' : '';
+        const buttonText = `${country}${location} ${vipIcon}${plug.name} 👍 ${plug.likes}`;
         plugButtons.push([Markup.button.callback(buttonText, `plug_${plug._id}_from_top_service`)]);
       });
       
@@ -276,7 +284,8 @@ const handleSpecificDepartment = async (ctx, serviceType, department, selectedCo
       deptPlugs.slice(0, 10).forEach((plug, index) => {
         const country = getCountryFlag(plug.countries[0]);
         const location = plug.location ? ` ${plug.location}` : '';
-        const buttonText = `${country}${location} ${plug.name} 👍 ${plug.likes}`;
+        const vipIcon = plug.isVip ? '⭐️ ' : '';
+        const buttonText = `${country}${location} ${vipIcon}${plug.name} 👍 ${plug.likes}`;
         plugButtons.push([Markup.button.callback(buttonText, `plug_${plug._id}_from_top_dept`)]);
       });
       
@@ -552,7 +561,7 @@ const handleVipPlugs = async (ctx, page = 0) => {
     
     for (const plug of currentPagePlugs) {
       // Utiliser le contexte 'plugs_vip' pour que le retour fonctionne correctement
-      buttons.push([Markup.button.callback(`👑 ${plug.name}`, `plug_${plug._id}_from_plugs_vip`)]);
+      buttons.push([Markup.button.callback(`👑 ⭐️ ${plug.name}`, `plug_${plug._id}_from_plugs_vip`)]);
     }
 
     // Boutons de navigation
