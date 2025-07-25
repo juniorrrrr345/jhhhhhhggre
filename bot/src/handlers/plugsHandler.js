@@ -538,6 +538,7 @@ const handleDepartmentFilter = async (ctx, serviceType, selectedCountry = null) 
       query.countries = { $in: [selectedCountry] };
     }
     
+    console.log(`🔍 Requête MongoDB:`, JSON.stringify(query));
     const shopsWithService = await Plug.find(query).sort({ likes: -1, isVip: -1 });
     console.log(`📊 Boutiques trouvées: ${shopsWithService.length} pour serviceType=${serviceType}, selectedCountry=${selectedCountry}`);
     
@@ -666,11 +667,25 @@ const handleDepartmentFilter = async (ctx, serviceType, selectedCountry = null) 
     }
     
   } catch (error) {
-    console.error('Erreur dans handleDepartmentFilter:', error);
-    const config = await Config.findById('main');
-    const currentLang = config?.languages?.currentLanguage || 'fr';
-    const customTranslations = config?.languages?.translations;
-    await ctx.answerCbQuery(getTranslation('error_filtering', currentLang, customTranslations)).catch(() => {});
+    console.error('❌ ERREUR CRITIQUE dans handleDepartmentFilter:', error);
+    console.error('❌ Stack trace:', error.stack);
+    
+    // Envoyer un message d'erreur à l'utilisateur
+    try {
+      await ctx.editMessageText('❌ Erreur technique. Veuillez réessayer.', {
+        reply_markup: {
+          inline_keyboard: [[{
+            text: '🔙 Retour au menu',
+            callback_data: 'top_plugs'
+          }]]
+        }
+      });
+    } catch (editError) {
+      console.error('❌ Erreur édition message erreur:', editError);
+      await ctx.reply('❌ Erreur technique. Veuillez réessayer.');
+    }
+    
+    await ctx.answerCbQuery('❌ Erreur').catch(() => {});
   }
 };
 
