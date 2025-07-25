@@ -553,32 +553,17 @@ export default function ShopPlugDetail() {
                   gap: '16px',
                   textAlign: 'center'
                 }}>
-                  {/* Votes */}
+                  {/* Votes - AFFICHAGE SEULEMENT */}
                   <div style={{ padding: '8px' }}>
-                    <button
-                      onClick={handleVote}
-                      disabled={isVoting}
-                      style={{
-                        background: 'none',
-                        border: 'none',
-                        cursor: isVoting ? 'not-allowed' : 'pointer',
-                        fontSize: '24px',
-                        marginBottom: '8px',
-                        padding: '8px',
-                        borderRadius: '8px',
-                        transition: 'all 0.2s ease',
-                        color: '#ffffff',
-                        width: '100%'
-                      }}
-                      onMouseEnter={(e) => {
-                        if (!isVoting) e.target.style.backgroundColor = '#333333'
-                      }}
-                      onMouseLeave={(e) => {
-                        e.target.style.backgroundColor = 'transparent'
-                      }}
-                    >
-                      {isVoting ? '⏳' : '👍'}
-                    </button>
+                    <div style={{
+                      fontSize: '24px',
+                      marginBottom: '8px',
+                      padding: '8px',
+                      color: '#ffffff',
+                      textAlign: 'center'
+                    }}>
+                      👍
+                    </div>
                     <div style={{ 
                       fontSize: 'clamp(18px, 4vw, 24px)', 
                       fontWeight: 'bold', 
