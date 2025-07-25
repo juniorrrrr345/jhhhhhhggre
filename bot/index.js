@@ -226,9 +226,6 @@ bot.on('photo', async (ctx) => {
 // Gestionnaires des callbacks
 bot.action('back_main', handleBackMain);
 
-// Initialiser la référence getFreshConfig dans startHandler
-setGetFreshConfig(getFreshConfig);
-
 // === GESTION DES LANGUES ===
 // Afficher le sélecteur de langue
 bot.action('select_language', async (ctx) => {
@@ -669,6 +666,9 @@ const getFreshConfig = async () => {
     return configCache; // Retourner l'ancienne si erreur
   }
 };
+
+// Initialiser la référence getFreshConfig dans startHandler
+setGetFreshConfig(getFreshConfig);
 
 // Endpoint PUBLIC pour la configuration de la boutique (sans auth)
 app.get('/api/public/config', async (req, res) => {
