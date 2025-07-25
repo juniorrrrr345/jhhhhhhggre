@@ -55,26 +55,34 @@ const handleStart = async (ctx) => {
       }
     }
 
-    // Enregistrer ou mettre à jour l'utilisateur
+    // Enregistrer ou mettre à jour l'utilisateur avec géolocalisation
     const userId = ctx.from.id;
     const username = ctx.from.username || 'Utilisateur sans nom';
     const firstName = ctx.from.first_name || '';
     const lastName = ctx.from.last_name || '';
 
     try {
-      await User.findOneAndUpdate(
-        { userId: userId },
+      const user = await User.findOneAndUpdate(
+        { telegramId: userId },
         {
-          userId: userId,
+          telegramId: userId,
           username: username,
           firstName: firstName,
           lastName: lastName,
-          lastAccess: new Date(),
+          lastActivity: new Date(),
           isActive: true
         },
         { upsert: true, new: true }
       );
+      
       console.log('✅ Utilisateur enregistré/mis à jour:', userId, username);
+      
+      // Détecter la géolocalisation en arrière-plan (non bloquant)
+      const locationService = require('../services/locationService');
+      locationService.detectAndSaveUserLocation(user).catch(error => {
+        console.error('⚠️ Erreur géolocalisation non-critique:', error.message);
+      });
+      
     } catch (userError) {
       console.error('❌ Erreur lors de l\'enregistrement utilisateur:', userError);
       // Continuer même si l'enregistrement utilisateur échoue

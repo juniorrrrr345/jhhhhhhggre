@@ -15,6 +15,7 @@ import {
 const navigation = [
   { name: 'Dashboard', href: '/admin', icon: HomeIcon },
   { name: 'Parrainage', href: '/admin/referrals', icon: UserGroupIcon },
+  { name: 'Analytics Géo', href: '/admin/user-analytics', icon: ChartBarIcon },
   { name: 'Messages', href: '/admin/messages', icon: ChartBarIcon },
   { name: 'Demandes', href: '/admin/applications', icon: ChartBarIcon },
   { name: 'Réseaux Sociaux', href: '/admin/social-media', icon: UserGroupIcon },

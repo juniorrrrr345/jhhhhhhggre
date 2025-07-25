@@ -2918,4 +2918,82 @@ app.get('/api/likes/:plugId/:userId', async (req, res) => {
     console.error('❌ Erreur API GET LIKES:', error);
     res.status(500).json({ error: 'Erreur serveur' });
   }
-  });
+});
+
+// API pour les statistiques de géolocalisation des utilisateurs
+app.post('/api/admin/user-analytics', async (req, res) => {
+  try {
+    const { timeRange, dateFilter } = req.body;
+    
+    console.log(`📊 Génération stats utilisateurs - période: ${timeRange}`);
+    
+    // Filtres de base
+    const userFilter = { ...dateFilter };
+    
+    // Statistiques générales
+    const totalUsers = await User.countDocuments(userFilter);
+    const usersWithLocation = await User.countDocuments({
+      ...userFilter,
+      'location.country': { $exists: true, $ne: null, $ne: 'Unknown' }
+    });
+    
+    // Utiliser le service de géolocalisation pour les statistiques par pays
+    const locationService = require('./src/services/locationService');
+    const countryStats = await locationService.getCountryStats(User);
+    
+    // Filtrer les stats par période si nécessaire
+    let filteredCountryStats = countryStats;
+    if (timeRange !== 'all' && dateFilter.createdAt) {
+      // Re-calculer les stats avec le filtre de date
+      filteredCountryStats = await User.aggregate([
+        {
+          $match: {
+            ...userFilter,
+            'location.country': { $exists: true, $ne: null, $ne: 'Unknown' }
+          }
+        },
+        {
+          $group: {
+            _id: {
+              country: '$location.country',
+              countryCode: '$location.countryCode'
+            },
+            count: { $sum: 1 },
+            latestUser: { $max: '$createdAt' }
+          }
+        },
+        {
+          $sort: { count: -1 }
+        },
+        {
+          $project: {
+            country: '$_id.country',
+            countryCode: '$_id.countryCode',
+            count: 1,
+            latestUser: 1,
+            _id: 0
+          }
+        }
+      ]);
+    }
+    
+    const response = {
+      totalUsers,
+      usersWithLocation,
+      countryStats: filteredCountryStats,
+      timeRange,
+      generatedAt: new Date().toISOString()
+    };
+    
+    console.log(`✅ Stats générées: ${totalUsers} users, ${usersWithLocation} localisés, ${filteredCountryStats.length} pays`);
+    
+    res.json(response);
+    
+  } catch (error) {
+    console.error('❌ Erreur API user-analytics:', error);
+    res.status(500).json({ 
+      error: 'Erreur lors de la génération des statistiques',
+      details: error.message 
+    });
+  }
+});

@@ -53,6 +53,33 @@ const userSchema = new mongoose.Schema({
       default: Date.now
     }
   }],
+  // Géolocalisation et tracking
+  location: {
+    country: {
+      type: String,
+      default: null
+    },
+    countryCode: {
+      type: String,
+      default: null
+    },
+    region: {
+      type: String,
+      default: null
+    },
+    city: {
+      type: String,
+      default: null
+    },
+    ip: {
+      type: String,
+      default: null
+    },
+    detectedAt: {
+      type: Date,
+      default: null
+    }
+  },
   // Statistiques
   totalReferred: {
     type: Number,
