@@ -222,6 +222,30 @@ const configSchema = new mongoose.Schema({
     }
   }],
   
+  // Nouvelle liste de réseaux sociaux (priorité pour le bot)
+  socialMediaList: [{
+    name: {
+      type: String,
+      required: true
+    },
+    emoji: {
+      type: String,
+      required: true
+    },
+    url: {
+      type: String,
+      required: true
+    },
+    enabled: {
+      type: Boolean,
+      default: true
+    },
+    order: {
+      type: Number,
+      default: 0
+    }
+  }],
+  
   updatedAt: {
     type: Date,
     default: Date.now
