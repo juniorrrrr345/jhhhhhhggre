@@ -12,6 +12,7 @@ export default function UserAnalytics() {
     lastUpdate: null
   })
   const [timeRange, setTimeRange] = useState('all') // all, 30d, 7d, 1d
+  const [nextUpdateIn, setNextUpdateIn] = useState(30)
 
   useEffect(() => {
     fetchUserStats()
@@ -20,15 +21,25 @@ export default function UserAnalytics() {
     const interval = setInterval(() => {
       console.log('🔄 Rafraîchissement automatique des stats...')
       fetchUserStats()
+      setNextUpdateIn(30) // Reset le compteur
     }, 30000)
     
-    return () => clearInterval(interval)
+    // Compteur pour la prochaine mise à jour
+    const countdownInterval = setInterval(() => {
+      setNextUpdateIn(prev => prev > 0 ? prev - 1 : 30)
+    }, 1000)
+    
+    return () => {
+      clearInterval(interval)
+      clearInterval(countdownInterval)
+    }
   }, [timeRange])
 
   const fetchUserStats = async () => {
     try {
       console.log(`🔄 Chargement stats utilisateurs pour période: ${timeRange}`)
       setStats(prev => ({ ...prev, loading: true }))
+      setNextUpdateIn(30) // Reset le compteur lors de l'actualisation manuelle
       
       const response = await api.get(`/admin/user-analytics?timeRange=${timeRange}`)
       console.log('📊 Response API user-analytics:', response)
@@ -111,8 +122,19 @@ export default function UserAnalytics() {
             </button>
             
             {stats.lastUpdate && (
-              <div className="text-gray-400 text-sm text-center sm:text-left">
-                📅 MAJ: {stats.lastUpdate.toLocaleTimeString('fr-FR')}
+              <div className="flex flex-col sm:flex-row items-center gap-2">
+                <div className="text-gray-400 text-sm text-center sm:text-left">
+                  📅 MAJ: {stats.lastUpdate.toLocaleTimeString('fr-FR')}
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1">
+                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                    <span className="text-green-400 text-xs font-medium">TEMPS RÉEL</span>
+                  </div>
+                  <div className="text-yellow-400 text-xs">
+                    ⏱️ {nextUpdateIn}s
+                  </div>
+                </div>
               </div>
             )}
           </div>
