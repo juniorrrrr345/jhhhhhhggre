@@ -6,6 +6,7 @@ const { sendMessageWithImage, editMessageWithImage } = require('../utils/message
 const { ensureConnection } = require('../utils/database');
 const { handleReferral } = require('./referralHandler');
 const { getTranslation } = require('../utils/translations');
+const locationService = require('../services/locationService');
 
 // Note: getFreshConfig sera passé comme paramètre ou accessible globalement
 let getFreshConfig = null;
@@ -78,7 +79,6 @@ const handleStart = async (ctx) => {
       console.log('✅ Utilisateur enregistré/mis à jour:', userId, username);
       
       // Détecter la géolocalisation en arrière-plan (non bloquant)
-      const locationService = require('../services/locationService');
       locationService.detectAndSaveUserLocation(user).catch(error => {
         console.error('⚠️ Erreur géolocalisation non-critique:', error.message);
       });

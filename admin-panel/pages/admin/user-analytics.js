@@ -8,30 +8,44 @@ export default function UserAnalytics() {
     countryStats: [],
     totalUsers: 0,
     usersWithLocation: 0,
-    loading: true
+    loading: true,
+    lastUpdate: null
   })
   const [timeRange, setTimeRange] = useState('all') // all, 30d, 7d, 1d
 
   useEffect(() => {
     fetchUserStats()
+    
+    // Rafraîchissement automatique toutes les 30 secondes
+    const interval = setInterval(() => {
+      console.log('🔄 Rafraîchissement automatique des stats...')
+      fetchUserStats()
+    }, 30000)
+    
+    return () => clearInterval(interval)
   }, [timeRange])
 
   const fetchUserStats = async () => {
     try {
+      console.log(`🔄 Chargement stats utilisateurs pour période: ${timeRange}`)
       setStats(prev => ({ ...prev, loading: true }))
       
       const response = await api.get(`/admin/user-analytics?timeRange=${timeRange}`)
+      console.log('📊 Response API user-analytics:', response)
+      
       if (response.ok) {
+        console.log('✅ Stats reçues:', response.data)
         setStats({
           ...response.data,
-          loading: false
+          loading: false,
+          lastUpdate: new Date()
         })
       } else {
-        console.error('Erreur lors du chargement des stats utilisateurs')
+        console.error('❌ Erreur lors du chargement des stats utilisateurs:', response)
         setStats(prev => ({ ...prev, loading: false }))
       }
     } catch (error) {
-      console.error('Erreur stats utilisateurs:', error)
+      console.error('❌ Erreur stats utilisateurs:', error)
       setStats(prev => ({ ...prev, loading: false }))
     }
   }
@@ -82,20 +96,41 @@ export default function UserAnalytics() {
       </Head>
 
       <div style={{ padding: '20px', color: '#ffffff' }}>
-        <h1 style={{ 
-          fontSize: '28px', 
-          fontWeight: 'bold', 
-          marginBottom: '20px',
-          color: '#ffffff',
-          textAlign: 'center',
-          padding: '20px',
-          backgroundColor: '#1f2937',
-          borderRadius: '12px',
-          border: '2px solid #22c55e',
-          textShadow: '2px 2px 4px rgba(0,0,0,0.5)'
-        }}>
-          🌍 📊 ANALYSE GÉOGRAPHIQUE DES UTILISATEURS 🌍
-        </h1>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+          <h1 style={{ 
+            fontSize: '28px', 
+            fontWeight: 'bold', 
+            color: '#ffffff',
+            textAlign: 'center',
+            padding: '20px',
+            backgroundColor: '#1f2937',
+            borderRadius: '12px',
+            border: '2px solid #22c55e',
+            textShadow: '2px 2px 4px rgba(0,0,0,0.5)',
+            flex: 1
+          }}>
+            🌍 📊 ANALYSE GÉOGRAPHIQUE DES UTILISATEURS 🌍
+          </h1>
+          
+          <button
+            onClick={fetchUserStats}
+            disabled={stats.loading}
+            style={{
+              marginLeft: '20px',
+              padding: '12px 20px',
+              backgroundColor: '#22c55e',
+              color: '#ffffff',
+              border: 'none',
+              borderRadius: '8px',
+              cursor: stats.loading ? 'not-allowed' : 'pointer',
+              fontSize: '14px',
+              fontWeight: 'bold',
+              opacity: stats.loading ? 0.5 : 1
+            }}
+          >
+            {stats.loading ? '⏳ Chargement...' : '🔄 Actualiser'}
+          </button>
+        </div>
 
         {/* Filtres temporels */}
         <div style={{ 
@@ -127,6 +162,17 @@ export default function UserAnalytics() {
               {option.label}
             </button>
           ))}
+          
+          {stats.lastUpdate && (
+            <div style={{ 
+              color: '#9ca3af', 
+              fontSize: '12px', 
+              alignSelf: 'center',
+              marginLeft: '20px'
+            }}>
+              📅 Dernière maj: {stats.lastUpdate.toLocaleTimeString('fr-FR')}
+            </div>
+          )}
         </div>
 
         {/* Statistiques générales */}

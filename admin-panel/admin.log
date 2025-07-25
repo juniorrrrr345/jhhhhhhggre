@@ -15,3 +15,50 @@ nohup: ignoring input
 ❌ Erreur API user-analytics: Error: Erreur bot API: 500
     at handler (/workspace/admin-panel/.next/server/pages/api/admin/user-analytics.js:1:988)
     at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+📊 Génération stats utilisateurs pour période: all
+✅ Stats récupérées: 2 utilisateurs, 1 pays
+Invariant: failed to load static page {
+  "page": "/admin/user-analytics",
+  "url": "/admin/user-analytics",
+  "initUrl": "http://localhost:3000/admin/user-analytics",
+  "didRewrite": false
+}
+ ⨯ MissingStaticPage [Error]: Failed to load static file for page: /admin/user-analytics ENOENT: no such file or directory, open '/workspace/admin-panel/.next/server/pages/admin/user-analytics.html'
+    at /workspace/admin-panel/node_modules/next/dist/server/require.js:102:19
+    at async loadComponentsImpl (/workspace/admin-panel/node_modules/next/dist/server/load-components.js:59:26)
+    at async NextNodeServer.findPageComponentsImpl (/workspace/admin-panel/node_modules/next/dist/server/next-server.js:666:36)
+    at async NextNodeServer.renderPageComponent (/workspace/admin-panel/node_modules/next/dist/server/base-server.js:1748:24)
+    at async NextNodeServer.renderToResponseImpl (/workspace/admin-panel/node_modules/next/dist/server/base-server.js:1798:32)
+    at async NextNodeServer.pipeImpl (/workspace/admin-panel/node_modules/next/dist/server/base-server.js:851:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/workspace/admin-panel/node_modules/next/dist/server/next-server.js:266:17)
+    at async NextNodeServer.handleRequestImpl (/workspace/admin-panel/node_modules/next/dist/server/base-server.js:748:17)
+ ⨯ Error: Cannot find module '/workspace/admin-panel/.next/server/pages/_error.js'
+Require stack:
+- /workspace/admin-panel/node_modules/next/dist/server/require.js
+- /workspace/admin-panel/node_modules/next/dist/server/next-server.js
+- /workspace/admin-panel/node_modules/next/dist/server/next.js
+- /workspace/admin-panel/node_modules/next/dist/server/lib/start-server.js
+- /workspace/admin-panel/node_modules/next/dist/cli/next-start.js
+- /workspace/admin-panel/node_modules/next/dist/lib/commands.js
+- /workspace/admin-panel/node_modules/next/dist/bin/next
+    at Function.<anonymous> (node:internal/modules/cjs/loader:1401:15)
+    at /workspace/admin-panel/node_modules/next/dist/server/require-hook.js:54:36
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1057:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1062:22)
+    at Function._load (node:internal/modules/cjs/loader:1211:37)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1487:12)
+    at mod.require (/workspace/admin-panel/node_modules/next/dist/server/require-hook.js:64:28)
+    at require (node:internal/modules/helpers:135:16) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    '/workspace/admin-panel/node_modules/next/dist/server/require.js',
+    '/workspace/admin-panel/node_modules/next/dist/server/next-server.js',
+    '/workspace/admin-panel/node_modules/next/dist/server/next.js',
+    '/workspace/admin-panel/node_modules/next/dist/server/lib/start-server.js',
+    '/workspace/admin-panel/node_modules/next/dist/cli/next-start.js',
+    '/workspace/admin-panel/node_modules/next/dist/lib/commands.js',
+    '/workspace/admin-panel/node_modules/next/dist/bin/next'
+  ]
+}

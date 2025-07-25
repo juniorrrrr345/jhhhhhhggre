@@ -2936,6 +2936,45 @@ app.get('/api/likes/:plugId/:userId', async (req, res) => {
   }
 });
 
+// API pour forcer la géolocalisation de tous les utilisateurs
+app.post('/api/force-geolocate-all', async (req, res) => {
+  try {
+    console.log('🌍 Force géolocalisation de tous les utilisateurs...');
+    
+    const users = await User.find({});
+    console.log(`👥 ${users.length} utilisateurs trouvés`);
+    
+    const locationService = require('./src/services/locationService');
+    let geolocatedCount = 0;
+    
+    for (const user of users) {
+      try {
+        // Forcer la géolocalisation même si elle existe déjà
+        user.location = null;
+        await locationService.detectAndSaveUserLocation(user);
+        geolocatedCount++;
+        console.log(`✅ Géolocalisé: ${user.telegramId}`);
+      } catch (error) {
+        console.error(`❌ Erreur géolocalisation user ${user.telegramId}:`, error.message);
+      }
+    }
+    
+    res.json({
+      success: true,
+      totalUsers: users.length,
+      geolocatedUsers: geolocatedCount,
+      message: `${geolocatedCount}/${users.length} utilisateurs géolocalisés`
+    });
+    
+  } catch (error) {
+    console.error('❌ Erreur force géolocalisation:', error);
+    res.status(500).json({ 
+      error: 'Erreur lors de la géolocalisation forcée',
+      details: error.message 
+    });
+  }
+});
+
 // API pour les statistiques de géolocalisation des utilisateurs
 app.post('/api/admin/user-analytics', async (req, res) => {
   try {
