@@ -135,7 +135,19 @@ export default function SocialMediaManager() {
       return
     }
     
-    const id = newSocialMedia.name.toLowerCase().replace(/[^a-z0-9]/g, '_')
+    // Générer un ID unique basé sur le nom + timestamp pour éviter les doublons
+    let baseId = newSocialMedia.name.toLowerCase().replace(/[^a-z0-9]/g, '_')
+    let id = baseId
+    let counter = 1
+    
+    // Vérifier que l'ID n'existe pas déjà
+    while (socialMedias.some(item => item.id === id)) {
+      id = `${baseId}_${counter}`
+      counter++
+    }
+    
+    console.log('➕ Ajout nouveau réseau social avec ID:', id)
+    
     const newItem = {
       ...newSocialMedia,
       id,
@@ -156,17 +168,44 @@ export default function SocialMediaManager() {
   }
 
   const deleteSocialMedia = async (id) => {
-    if (confirm('Êtes-vous sûr de vouloir supprimer ce réseau social ?')) {
-      console.log('🗑️ Suppression demandée pour ID:', id)
-      console.log('📝 socialMedias avant suppression:', socialMedias)
+    if (!id) {
+      console.error('❌ ID manquant pour la suppression')
+      toast.error('Erreur: ID manquant')
+      return
+    }
+
+    const itemToDelete = socialMedias.find(item => item.id === id)
+    if (!itemToDelete) {
+      console.error('❌ Réseau social non trouvé:', id)
+      toast.error('Réseau social non trouvé')
+      return
+    }
+
+    if (confirm(`Êtes-vous sûr de vouloir supprimer "${itemToDelete.name}" ?`)) {
+      console.log('🗑️ Suppression demandée pour:', { id, name: itemToDelete.name })
+      console.log('📝 socialMedias avant suppression:', socialMedias.map(s => ({ id: s.id, name: s.name })))
       
-      // Supprimer de l'état local
-      const updatedSocialMedias = socialMedias.filter(item => item.id !== id)
+      // Supprimer UNIQUEMENT l'élément avec cet ID
+      const updatedSocialMedias = socialMedias.filter(item => {
+        const keep = item.id !== id
+        if (!keep) {
+          console.log('❌ Suppression de:', { id: item.id, name: item.name })
+        }
+        return keep
+      })
+      
       const previousSocialMedias = [...socialMedias] // Backup pour restaurer en cas d'erreur
       
-      console.log('📝 socialMedias après filtrage:', updatedSocialMedias)
+      console.log('📝 socialMedias après filtrage:', updatedSocialMedias.map(s => ({ id: s.id, name: s.name })))
       console.log('📊 Longueur avant/après:', socialMedias.length, '→', updatedSocialMedias.length)
       
+      if (updatedSocialMedias.length === socialMedias.length) {
+        console.error('❌ ERREUR: Aucun élément supprimé!')
+        toast.error('Erreur: Aucun élément supprimé')
+        return
+      }
+      
+      // Mettre à jour l'état d'abord
       setSocialMedias(updatedSocialMedias)
       
       // Sauvegarder automatiquement selon le mode

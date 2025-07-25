@@ -58,8 +58,12 @@ export default function ShopSearch() {
       const data = await api.getPublicConfig()
       setConfig(data)
     } catch (error) {
-      console.error('❌ Erreur chargement config:', error)
-      toast.error('Erreur de connexion')
+      console.error('Erreur chargement config:', error)
+      // Mode offline : config par défaut au lieu d'erreur
+      setConfig({
+        boutique: { name: 'FINDYOURPLUG', subtitle: 'Mode Offline' }
+      })
+      console.log('📱 Mode offline: Configuration par défaut')
     } finally {
       setInitialLoading(false)
     }
@@ -83,8 +87,24 @@ export default function ShopSearch() {
       console.log('🔍 Plugs recherche chargés:', plugsArray.length, 'boutiques')
       setAllPlugs(plugsArray)
     } catch (error) {
-      console.error('❌ Erreur chargement plugs recherche:', error)
-      setAllPlugs([])
+      console.error('Erreur chargement plugs recherche:', error)
+      // Mode offline : données par défaut
+      const fallbackPlugs = [
+        {
+          _id: 'fallback_search_1',
+          name: 'Boutique Recherche',
+          description: 'Serveur temporairement indisponible',
+          image: 'https://via.placeholder.com/300x200/6366f1/ffffff?text=Recherche',
+          isActive: true,
+          isVip: false,
+          likes: 0,
+          countries: ['France'],
+          services: ['Livraison'],
+          departments: ['75']
+        }
+      ]
+      setAllPlugs(fallbackPlugs)
+      console.log('📱 Mode offline recherche: Données par défaut')
     } finally {
       setLoading(false)
     }
