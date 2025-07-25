@@ -52,6 +52,14 @@ const handleTopPlugs = async (ctx) => {
     let message = `${topPlugsTitle}\n`;
     message += `*(${getTranslation('messages_sortedByVotes', currentLang, customTranslations)})*\n\n`;
     
+    // Message explicatif pour les utilisateurs
+    const helpMessage = getTranslation('messages_topPlugsHelp', currentLang, customTranslations);
+    message += `💡 **${helpMessage}**\n`;
+    message += `• ${getTranslation('messages_selectCountry', currentLang, customTranslations)}\n`;
+    message += `• ${getTranslation('messages_selectService', currentLang, customTranslations)}\n`;
+    message += `• ${getTranslation('messages_selectPostalCode', currentLang, customTranslations)}\n`;
+    message += `• ${getTranslation('messages_findShops', currentLang, customTranslations)}\n\n`;
+    
     // Afficher les premiers plugs (top 10 par défaut)
     const topPlugs = allPlugs.slice(0, 10);
     let keyboard;

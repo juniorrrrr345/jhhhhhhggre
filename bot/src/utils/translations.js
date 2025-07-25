@@ -32,6 +32,48 @@ const translations = {
       es: 'ℹ️ Información',
       de: 'ℹ️ Informationen'
     },
+    'messages_topPlugsHelp': {
+      fr: 'Comment ça marche ?',
+      en: 'How does it work?',
+      it: 'Come funziona?',
+      es: '¿Cómo funciona?',
+      de: 'Wie funktioniert es?'
+    },
+    'messages_selectCountry': {
+      fr: 'Choisissez un pays 🌍',
+      en: 'Choose a country 🌍',
+      it: 'Scegli un paese 🌍',
+      es: 'Elige un país 🌍',
+      de: 'Wählen Sie ein Land 🌍'
+    },
+    'messages_selectService': {
+      fr: 'Sélectionnez un service (Livraison, Meetup, Envoi)',
+      en: 'Select a service (Delivery, Meetup, Shipping)',
+      it: 'Seleziona un servizio (Consegna, Meetup, Spedizione)',
+      es: 'Selecciona un servicio (Entrega, Meetup, Envío)',
+      de: 'Wählen Sie einen Service (Lieferung, Meetup, Versand)'
+    },
+    'messages_selectPostalCode': {
+      fr: 'Cliquez sur "Département" pour voir les codes postaux',
+      en: 'Click "Department" to see postal codes',
+      it: 'Clicca "Dipartimento" per vedere i codici postali',
+      es: 'Haz clic en "Departamento" para ver códigos postales',
+      de: 'Klicken Sie "Abteilung" für Postleitzahlen'
+    },
+    'messages_findShops': {
+      fr: 'Trouvez les boutiques dans votre zone !',
+      en: 'Find shops in your area!',
+      it: 'Trova negozi nella tua zona!',
+      es: '¡Encuentra tiendas en tu zona!',
+      de: 'Finden Sie Geschäfte in Ihrer Nähe!'
+    },
+    'messages_noPlugsInPostalCode': {
+      fr: 'Désolé Nous Avons Pas De Plugs 😕',
+      en: 'Sorry We Have No Plugs 😕',
+      it: 'Spiacenti Non Abbiamo Negozi 😕',
+      es: 'Lo Siento No Tenemos Tiendas 😕',
+      de: 'Entschuldigung Keine Shops 😕'
+    },
     'contact_default_text': {
       fr: 'Contactez-nous pour plus d\'informations !\n\nNotre équipe est disponible pour répondre à toutes vos questions et vous accompagner dans vos démarches.',
       en: 'Contact us for more information!\n\nOur team is available to answer all your questions and assist you with your needs.',
