@@ -246,6 +246,46 @@ const configSchema = new mongoose.Schema({
     }
   }],
   
+  // Configuration des langues et traductions
+  languages: {
+    enabled: {
+      type: Boolean,
+      default: false
+    },
+    currentLanguage: {
+      type: String,
+      enum: ['fr', 'en', 'it', 'es', 'de'],
+      default: 'fr'
+    },
+    availableLanguages: [{
+      code: {
+        type: String,
+        enum: ['fr', 'en', 'it', 'es', 'de'],
+        required: true
+      },
+      name: {
+        type: String,
+        required: true
+      },
+      flag: {
+        type: String,
+        required: true
+      },
+      enabled: {
+        type: Boolean,
+        default: true
+      }
+    }],
+    translations: {
+      type: Map,
+      of: {
+        type: Map,
+        of: String
+      },
+      default: new Map()
+    }
+  },
+  
   updatedAt: {
     type: Date,
     default: Date.now

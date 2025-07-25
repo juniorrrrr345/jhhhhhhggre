@@ -22,6 +22,7 @@ const { connectDB } = require('./src/utils/database');
 
 // Gestionnaires
 const { handleStart, handleBackMain } = require('./src/handlers/startHandler');
+const { getTranslation, createLanguageKeyboard, initializeDefaultTranslations } = require('./src/utils/translations');
 const { 
   handleTopPlugs, 
   handleVipPlugs,
@@ -224,6 +225,74 @@ bot.on('photo', async (ctx) => {
 
 // Gestionnaires des callbacks
 bot.action('back_main', handleBackMain);
+
+// === GESTION DES LANGUES ===
+// Afficher le sélecteur de langue
+bot.action('select_language', async (ctx) => {
+  try {
+    await ctx.answerCbQuery();
+    
+    const config = await Config.findById('main');
+    const currentLang = config?.languages?.currentLanguage || 'fr';
+    const customTranslations = config?.languages?.translations;
+    
+    const message = `🌍 **${getTranslation('menu.language', currentLang, customTranslations)}**\n\nSélectionnez votre langue préférée :`;
+    const keyboard = createLanguageKeyboard(currentLang);
+    
+    await ctx.editMessageText(message, {
+      reply_markup: keyboard.reply_markup,
+      parse_mode: 'Markdown'
+    });
+    
+  } catch (error) {
+    console.error('❌ Erreur sélecteur langue:', error);
+    await ctx.answerCbQuery('❌ Erreur lors du chargement').catch(() => {});
+  }
+});
+
+// Changer de langue
+bot.action(/^lang_(.+)$/, async (ctx) => {
+  try {
+    const newLanguage = ctx.match[1];
+    
+    if (!['fr', 'en', 'it', 'es', 'de'].includes(newLanguage)) {
+      await ctx.answerCbQuery('❌ Langue non supportée');
+      return;
+    }
+    
+    // Mettre à jour la langue dans la config
+    const config = await Config.findById('main');
+    if (config) {
+      if (!config.languages) {
+        config.languages = {
+          enabled: true,
+          currentLanguage: newLanguage,
+          availableLanguages: [],
+          translations: new Map()
+        };
+      } else {
+        config.languages.currentLanguage = newLanguage;
+      }
+      
+      await config.save();
+      
+      // Invalider le cache pour forcer le rechargement
+      configCache = null;
+    }
+    
+    const customTranslations = config?.languages?.translations;
+    
+    await ctx.answerCbQuery(`✅ ${getTranslation('menu.language', newLanguage, customTranslations)} changée !`);
+    
+    // Retourner au menu principal avec la nouvelle langue
+    return handleStart(ctx);
+    
+  } catch (error) {
+    console.error('❌ Erreur changement langue:', error);
+    await ctx.answerCbQuery('❌ Erreur lors du changement').catch(() => {});
+  }
+});
+
 bot.action('top_plugs', handleTopPlugs);
 bot.action('plugs_all', (ctx) => handleAllPlugs(ctx, 0));
 // bot.action('plugs_vip', (ctx) => handleVipPlugs(ctx, 0)); // SUPPRIMÉ - Boutique VIP retirée
@@ -2402,6 +2471,15 @@ const start = async () => {
   try {
     // Connexion à la base de données
     await connectDB();
+    
+    // Initialiser les traductions
+    console.log('🌍 Initialisation des traductions...');
+    try {
+      await initializeDefaultTranslations(Config);
+      console.log('✅ Traductions initialisées');
+    } catch (translationError) {
+      console.error('⚠️ Erreur initialisation traductions:', translationError.message);
+    }
     
     // Migration automatique des réseaux sociaux
     console.log('🔄 Migration automatique des réseaux sociaux...');

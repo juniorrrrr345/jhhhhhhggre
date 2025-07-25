@@ -1,4 +1,5 @@
 const { Markup } = require('telegraf');
+const { getTranslation } = require('./translations');
 
 // Fonction pour valider une URL
 const isValidUrl = (url) => {
@@ -48,6 +49,10 @@ const cleanUrl = (url) => {
 const createMainKeyboard = (config) => {
   const buttons = [];
   
+  // Récupérer la langue actuelle
+  const currentLang = config?.languages?.currentLanguage || 'fr';
+  const customTranslations = config?.languages?.translations;
+  
   // Migration automatique si socialMedia est un objet (ancienne structure)
   if (config?.socialMedia && typeof config.socialMedia === 'object' && !Array.isArray(config.socialMedia)) {
     console.log('🔄 MIGRATION: Conversion objet vers array...');
@@ -82,21 +87,31 @@ const createMainKeyboard = (config) => {
     }
   }
   
-  // Bouton Top Des Plugs
-  const topPlugsText = config?.buttons?.topPlugs?.text || '🔌 Top Des Plugs';
+  // Bouton Top Des Plugs avec traduction
+  const topPlugsText = config?.buttons?.topPlugs?.text || getTranslation('menu.topPlugs', currentLang, customTranslations);
   buttons.push([Markup.button.callback(topPlugsText, 'top_plugs')]);
   
-  // Boutons Contact et Info sur la même ligne
+  // Boutons Contact et Info sur la même ligne avec traductions
   const secondRow = [];
-  const contactText = config?.buttons?.contact?.text || '📞 Contact';
-  const infoText = config?.buttons?.info?.text || 'ℹ️ Info';
+  const contactText = config?.buttons?.contact?.text || getTranslation('menu.contact', currentLang, customTranslations);
+  const infoText = config?.buttons?.info?.text || getTranslation('menu.info', currentLang, customTranslations);
   
   secondRow.push(Markup.button.callback(contactText, 'contact'));
   secondRow.push(Markup.button.callback(infoText, 'info'));
   buttons.push(secondRow);
 
-  // Troisième ligne : Devenir Plug (seul)
-  buttons.push([Markup.button.callback('💼 Devenir Plug', 'start_application')]);
+  // Troisième ligne : Devenir Plug + Langue
+  const thirdRow = [];
+  const becomeDealerText = getTranslation('menu.becomeDealer', currentLang, customTranslations);
+  thirdRow.push(Markup.button.callback(becomeDealerText, 'start_application'));
+  
+  // Bouton langue si activé
+  if (config?.languages?.enabled) {
+    const languageText = getTranslation('menu.language', currentLang, customTranslations);
+    thirdRow.push(Markup.button.callback(languageText, 'select_language'));
+  }
+  
+  buttons.push(thirdRow);
   
   // Réseaux sociaux personnalisés en bas du menu - PRIORITÉ socialMediaList
   const socialMediaData = config?.socialMediaList || config?.socialMedia || [];
