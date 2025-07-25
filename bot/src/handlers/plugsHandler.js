@@ -65,7 +65,10 @@ const handleTopPlugs = async (ctx) => {
     
   } catch (error) {
     console.error('Erreur dans handleTopPlugs:', error);
-    await ctx.answerCbQuery('❌ Erreur lors du chargement').catch(() => {});
+    const config = await Config.findById('main');
+    const currentLang = config?.languages?.currentLanguage || 'fr';
+    const customTranslations = config?.languages?.translations;
+    await ctx.answerCbQuery(getTranslation('error_loading', currentLang, customTranslations)).catch(() => {});
   }
 };
 
@@ -84,8 +87,11 @@ const handleTopCountryFilter = async (ctx, country) => {
 
     const availableCountries = await getAvailableCountries();
     
-    let message = `🔌 **Liste des Plugs**\n`;
-    message += `*(Triés par nombre de votes)*\n\n`;
+    const currentLang = config?.languages?.currentLanguage || 'fr';
+    const customTranslations = config?.languages?.translations;
+    
+    let message = `${getTranslation('list_plugs_title', currentLang, customTranslations)}\n`;
+    message += `*${getTranslation('sorted_by_votes_subtitle', currentLang, customTranslations)}*\n\n`;
     message += `🌍 **Filtre:** ${getCountryFlag(country)} ${country}\n\n`;
     
     let keyboard;
@@ -113,7 +119,10 @@ const handleTopCountryFilter = async (ctx, country) => {
     
   } catch (error) {
     console.error('Erreur dans handleTopCountryFilter:', error);
-    await ctx.answerCbQuery('❌ Erreur lors du filtrage').catch(() => {});
+    const config = await Config.findById('main');
+    const currentLang = config?.languages?.currentLanguage || 'fr';
+    const customTranslations = config?.languages?.translations;
+    await ctx.answerCbQuery(getTranslation('error_filtering', currentLang, customTranslations)).catch(() => {});
   }
 };
 
@@ -148,14 +157,14 @@ const handleTopServiceFilter = async (ctx, serviceType, selectedCountry = null) 
     
     const availableCountries = await getAvailableCountries();
     
-    let message = `🔌 **Liste des Plugs**\n`;
-    message += `*(Triés par nombre de votes)*\n\n`;
+    let message = `${getTranslation('list_plugs_title', currentLang, customTranslations)}\n`;
+    message += `*${getTranslation('sorted_by_votes_subtitle', currentLang, customTranslations)}*\n\n`;
     
-    // Titre selon le service
+    // Titre selon le service avec traductions
     const serviceNames = {
-      delivery: '📦 Afficher les boutiques disponibles pour livraison',
-      meetup: '🤝 Afficher les boutiques disponibles pour meetup',
-      postal: '📬 Boutiques qui font des envois postaux'
+      delivery: getTranslation('filter_delivery_message', currentLang, customTranslations),
+      meetup: getTranslation('filter_meetup_message', currentLang, customTranslations),
+      postal: getTranslation('filter_postal_message', currentLang, customTranslations)
     };
     
     message += `${serviceNames[serviceType]}\n\n`;
@@ -190,7 +199,10 @@ const handleTopServiceFilter = async (ctx, serviceType, selectedCountry = null) 
     
   } catch (error) {
     console.error('Erreur dans handleTopServiceFilter:', error);
-    await ctx.answerCbQuery('❌ Erreur lors du filtrage').catch(() => {});
+    const config = await Config.findById('main');
+    const currentLang = config?.languages?.currentLanguage || 'fr';
+    const customTranslations = config?.languages?.translations;
+    await ctx.answerCbQuery(getTranslation('error_filtering', currentLang, customTranslations)).catch(() => {});
   }
 };
 
@@ -205,18 +217,25 @@ const handleDepartmentFilter = async (ctx, serviceType, selectedCountry = null) 
     const departments = await getAvailableDepartments(serviceType, selectedCountry);
     
     if (departments.length === 0) {
-      await ctx.answerCbQuery('❌ Aucun département disponible');
+      const currentLang = config?.languages?.currentLanguage || 'fr';
+      const customTranslations = config?.languages?.translations;
+      await ctx.answerCbQuery(getTranslation('no_departments', currentLang, customTranslations));
       return;
     }
     
     const keyboard = createDepartmentsKeyboard(departments, serviceType, selectedCountry);
     
-    let message = `📍 **Départements disponibles**\n\n`;
+    const currentLang = config?.languages?.currentLanguage || 'fr';
+    const customTranslations = config?.languages?.translations;
+    
+    let message = `📍 **${getTranslation('filter_department_available', currentLang, customTranslations)}**\n\n`;
     
     if (serviceType === 'delivery') {
-      message += `📦 **Service:** Livraison\n`;
+      const serviceName = getTranslation('service_delivery', currentLang, customTranslations);
+      message += `📦 **Service:** ${serviceName}\n`;
     } else if (serviceType === 'meetup') {
-      message += `🤝 **Service:** Meetup\n`;
+      const serviceName = getTranslation('service_meetup', currentLang, customTranslations);
+      message += `🤝 **Service:** ${serviceName}\n`;
     }
     
     if (selectedCountry) {
@@ -229,7 +248,10 @@ const handleDepartmentFilter = async (ctx, serviceType, selectedCountry = null) 
     
   } catch (error) {
     console.error('Erreur dans handleDepartmentFilter:', error);
-    await ctx.answerCbQuery('❌ Erreur lors du chargement des départements').catch(() => {});
+    const config = await Config.findById('main');
+    const currentLang = config?.languages?.currentLanguage || 'fr';
+    const customTranslations = config?.languages?.translations;
+    await ctx.answerCbQuery(getTranslation('error_departments', currentLang, customTranslations)).catch(() => {});
   }
 };
 
@@ -259,13 +281,18 @@ const handleSpecificDepartment = async (ctx, serviceType, department, selectedCo
     
     const availableCountries = await getAvailableCountries();
     
-    let message = `🔌 **Liste des Plugs**\n`;
-    message += `*(Triés par nombre de votes)*\n\n`;
+    const currentLang = config?.languages?.currentLanguage || 'fr';
+    const customTranslations = config?.languages?.translations;
+    
+    let message = `${getTranslation('list_plugs_title', currentLang, customTranslations)}\n`;
+    message += `*${getTranslation('sorted_by_votes_subtitle', currentLang, customTranslations)}*\n\n`;
     
     if (serviceType === 'delivery') {
-      message += `📦 **Service:** Livraison\n`;
+      const serviceName = getTranslation('service_delivery', currentLang, customTranslations);
+      message += `📦 **Service:** ${serviceName}\n`;
     } else if (serviceType === 'meetup') {
-      message += `🤝 **Service:** Meetup\n`;
+      const serviceName = getTranslation('service_meetup', currentLang, customTranslations);
+      message += `🤝 **Service:** ${serviceName}\n`;
     }
     
     message += `📍 **Département:** ${department}\n`;
@@ -301,19 +328,28 @@ const handleSpecificDepartment = async (ctx, serviceType, department, selectedCo
     
   } catch (error) {
     console.error('Erreur dans handleSpecificDepartment:', error);
-    await ctx.answerCbQuery('❌ Erreur lors du filtrage').catch(() => {});
+    const config = await Config.findById('main');
+    const currentLang = config?.languages?.currentLanguage || 'fr';
+    const customTranslations = config?.languages?.translations;
+    await ctx.answerCbQuery(getTranslation('error_filtering', currentLang, customTranslations)).catch(() => {});
   }
 };
 
 // Gestionnaire pour réinitialiser tous les filtres
 const handleResetFilters = async (ctx) => {
   try {
-    await ctx.answerCbQuery('🔄 Filtres réinitialisés');
+    const config = await Config.findById('main');
+    const currentLang = config?.languages?.currentLanguage || 'fr';
+    const customTranslations = config?.languages?.translations;
+    await ctx.answerCbQuery(getTranslation('filters_reset', currentLang, customTranslations));
     // Retourner à l'affichage initial
     await handleTopPlugs(ctx);
   } catch (error) {
     console.error('Erreur dans handleResetFilters:', error);
-    await ctx.answerCbQuery('❌ Erreur lors de la réinitialisation').catch(() => {});
+    const config = await Config.findById('main');
+    const currentLang = config?.languages?.currentLanguage || 'fr';
+    const customTranslations = config?.languages?.translations;
+    await ctx.answerCbQuery(getTranslation('error_reset', currentLang, customTranslations)).catch(() => {});
   }
 };
 

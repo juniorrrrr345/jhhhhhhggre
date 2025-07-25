@@ -399,6 +399,119 @@ const translations = {
       de: 'Shops'
     },
 
+    // === MESSAGES TOP PLUGS ===
+    'messages_sortedByVotes': {
+      fr: 'Triés par nombre de votes',
+      en: 'Sorted by number of votes',
+      it: 'Ordinati per numero di voti',
+      es: 'Ordenados por número de votos',
+      de: 'Sortiert nach Anzahl der Stimmen'
+    },
+    'messages_welcome': {
+      fr: '👋 Bienvenue sur FindYourPlug !',
+      en: '👋 Welcome to FindYourPlug!',
+      it: '👋 Benvenuto su FindYourPlug!',
+      es: '👋 ¡Bienvenido a FindYourPlug!',
+      de: '👋 Willkommen bei FindYourPlug!'
+    },
+    'messages_noShops': {
+      fr: '❌ Aucune boutique disponible pour le moment.',
+      en: '❌ No shops available at the moment.',
+      it: '❌ Nessun negozio disponibile al momento.',
+      es: '❌ No hay tiendas disponibles en este momento.',
+      de: '❌ Momentan sind keine Shops verfügbar.'
+    },
+    
+    // === FILTRES AVANCÉS ===
+    'filter_delivery_message': {
+      fr: '📦 Afficher les boutiques disponibles pour livraison',
+      en: '📦 Show shops available for delivery',
+      it: '📦 Mostra negozi disponibili per consegna',
+      es: '📦 Mostrar tiendas disponibles para entrega',
+      de: '📦 Shops für Lieferung anzeigen'
+    },
+    'filter_meetup_message': {
+      fr: '🤝 Afficher les boutiques disponibles pour meetup',
+      en: '🤝 Show shops available for meetup',
+      it: '🤝 Mostra negozi disponibili per incontro',
+      es: '🤝 Mostrar tiendas disponibles para encuentro',
+      de: '🤝 Shops für Treffen anzeigen'
+    },
+    'filter_postal_message': {
+      fr: '📬 Boutiques qui font des envois postaux',
+      en: '📬 Shops that do postal shipping',
+      it: '📬 Negozi che fanno spedizioni postali',
+      es: '📬 Tiendas que hacen envíos postales',
+      de: '📬 Shops mit Postversand'
+    },
+    'filter_department_available': {
+      fr: 'Départements disponibles pour',
+      en: 'Available departments for',
+      it: 'Dipartimenti disponibili per',
+      es: 'Departamentos disponibles para',
+      de: 'Verfügbare Bundesländer für'
+    },
+    'filter_shops_in_department': {
+      fr: 'Boutiques en',
+      en: 'Shops in',
+      it: 'Negozi in',
+      es: 'Tiendas en',
+      de: 'Shops in'
+    },
+
+    // === ERREURS ET STATUTS ===
+    'error_filtering': {
+      fr: '❌ Erreur lors du filtrage',
+      en: '❌ Error filtering',
+      it: '❌ Errore nel filtraggio',
+      es: '❌ Error al filtrar',
+      de: '❌ Fehler beim Filtern'
+    },
+    'error_departments': {
+      fr: '❌ Erreur lors du chargement des départements',
+      en: '❌ Error loading departments',
+      it: '❌ Errore nel caricamento dei dipartimenti',
+      es: '❌ Error al cargar departamentos',
+      de: '❌ Fehler beim Laden der Bundesländer'
+    },
+    'error_reset': {
+      fr: '❌ Erreur lors de la réinitialisation',
+      en: '❌ Error resetting',
+      it: '❌ Errore nel reset',
+      es: '❌ Error al reiniciar',
+      de: '❌ Fehler beim Zurücksetzen'
+    },
+    'no_departments': {
+      fr: '❌ Aucun département disponible',
+      en: '❌ No departments available',
+      it: '❌ Nessun dipartimento disponibile',
+      es: '❌ No hay departamentos disponibles',
+      de: '❌ Keine Bundesländer verfügbar'
+    },
+    'filters_reset': {
+      fr: '🔄 Filtres réinitialisés',
+      en: '🔄 Filters reset',
+      it: '🔄 Filtri ripristinati',
+      es: '🔄 Filtros reiniciados',
+      de: '🔄 Filter zurückgesetzt'
+    },
+
+    // === TITRES SYSTÈME ===
+    'list_plugs_title': {
+      fr: '🔌 Liste des Plugs',
+      en: '🔌 Plugs List',
+      it: '🔌 Lista Negozi',
+      es: '🔌 Lista de Tiendas',
+      de: '🔌 Shop-Liste'
+    },
+    'sorted_by_votes_subtitle': {
+      fr: '(Triés par nombre de votes)',
+      en: '(Sorted by number of votes)',
+      it: '(Ordinati per numero di voti)',
+      es: '(Ordenados por número de votos)',
+      de: '(Sortiert nach Anzahl der Stimmen)'
+    },
+
     // === BOUTIQUE WEB ===
     'shop.title': {
       fr: 'FINDYOURPLUG',
