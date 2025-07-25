@@ -229,16 +229,38 @@ const handleParrainageCommand = async (ctx) => {
     
     const userId = ctx.from.id;
     
-    // Vérifier si l'utilisateur a une boutique associée (propriétaire)
-    const userShop = await Plug.findOne({ 
-      $or: [
-        { 'socialMedia.url': { $regex: ctx.from.username, $options: 'i' } },
-        // Ou autre logique pour identifier le propriétaire
-      ]
-    });
+    // 1. Vérifier d'abord si l'utilisateur a une boutique avec ownerId
+    let userShop = await Plug.findOne({ ownerId: userId });
+    
+    // 2. Si pas trouvé, vérifier s'il a une demande approuvée
+    if (!userShop) {
+      const PlugApplication = require('../models/PlugApplication');
+      const approvedApplication = await PlugApplication.findOne({ 
+        userId: userId, 
+        status: 'approved' 
+      });
+      
+      if (approvedApplication) {
+        // Chercher la boutique par nom (lien entre application et boutique)
+        userShop = await Plug.findOne({ name: approvedApplication.name });
+        
+        // Si trouvée, associer l'utilisateur comme propriétaire
+        if (userShop && !userShop.ownerId) {
+          userShop.ownerId = userId;
+          await userShop.save();
+          console.log(`✅ Boutique ${userShop.name} associée au propriétaire ${userId}`);
+        }
+      }
+    }
 
     if (!userShop) {
-      return ctx.reply('❌ Vous n\'avez pas de boutique enregistrée pour le parrainage.');
+      return ctx.reply(`❌ **Aucune boutique trouvée**
+
+Pour avoir accès au système de parrainage, vous devez :
+1️⃣ Avoir une demande de boutique approuvée
+2️⃣ Votre boutique doit être active
+
+💡 Tapez /devenir pour faire une demande si ce n'est pas encore fait.`, { parse_mode: 'Markdown' });
     }
 
     // Générer le lien si pas encore fait
@@ -249,17 +271,41 @@ const handleParrainageCommand = async (ctx) => {
       await userShop.save();
     }
 
+    // Informations détaillées sur les personnes invitées
+    const referredUsers = userShop.referredUsers || [];
+    const lastInvites = referredUsers.slice(-3); // Les 3 dernières personnes invitées
+    
+    let inviteDetails = '';
+    if (lastInvites.length > 0) {
+      inviteDetails = '\n\n📋 **Dernières personnes invitées:**\n';
+      lastInvites.forEach((user, index) => {
+        const date = new Date(user.invitedAt).toLocaleDateString('fr-FR');
+        const username = user.username ? `@${user.username}` : `Utilisateur ${user.telegramId}`;
+        inviteDetails += `${index + 1}. ${username} - ${date}\n`;
+      });
+      
+      if (referredUsers.length > 3) {
+        inviteDetails += `... et ${referredUsers.length - 3} autre${referredUsers.length - 3 > 1 ? 's' : ''}\n`;
+      }
+    }
+
     const message = `🔗 **Votre lien de parrainage**
 
 🏪 **${userShop.name}**
+${userShop.isVip ? '👑 **Boutique VIP**' : ''}
 
 📎 \`${userShop.referralLink}\`
 
-📊 **Statistiques:**
-👥 Personnes invitées: **${userShop.totalReferred}**
-📊 Votes totaux: **${userShop.likes}**
+📊 **Statistiques complètes:**
+👥 Personnes invitées: **${userShop.totalReferred || 0}**
+👍 Votes totaux: **${userShop.likes || 0}**
+📈 Statut: **${userShop.isActive ? 'Actif ✅' : 'Inactif ❌'}**${inviteDetails}
 
-💡 Partagez ce lien pour que les nouveaux utilisateurs découvrent directement votre boutique !`;
+💡 **Comment ça marche ?**
+• Partagez votre lien sur Telegram, réseaux sociaux, etc.
+• Quand quelqu'un clique, il arrive directement sur votre boutique
+• Vous êtes notifié de chaque nouvelle visite
+• Les statistiques se mettent à jour en temps réel !`;
 
     await ctx.reply(message, { 
       parse_mode: 'Markdown',
@@ -268,6 +314,17 @@ const handleParrainageCommand = async (ctx) => {
           [{
             text: '📋 Copier le lien',
             url: userShop.referralLink
+          }],
+          [{
+            text: '👁️ Voir ma boutique',
+            callback_data: `plug_${userShop._id}`
+          }],
+          [{
+            text: '📊 Stats détaillées',
+            callback_data: `referral_stats_${userShop._id}`
+          }, {
+            text: '🔄 Actualiser',
+            callback_data: `refresh_referral_${userShop._id}`
           }]
         ]
       }

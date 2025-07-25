@@ -611,6 +611,64 @@ bot.action(/^like_([a-f\d]{24})$/, async (ctx) => {
 // Callback ignoré (page actuelle)
 bot.action('current_page', handleIgnoredCallback);
 
+// Actions de parrainage
+bot.action(/^refresh_referral_([a-f\d]{24})$/, async (ctx) => {
+  try {
+    await ctx.answerCbQuery('🔄 Actualisation...');
+    // Re-exécuter la commande parrainage
+    await handleParrainageCommand(ctx);
+  } catch (error) {
+    console.error('❌ Erreur refresh referral:', error);
+    await ctx.answerCbQuery('❌ Erreur lors de l\'actualisation');
+  }
+});
+
+bot.action(/^referral_stats_([a-f\d]{24})$/, async (ctx) => {
+  try {
+    const plugId = ctx.match[1];
+    const userId = ctx.from.id;
+    
+    await ensureConnection();
+    const userShop = await Plug.findOne({ _id: plugId, ownerId: userId });
+    
+    if (!userShop) {
+      return ctx.answerCbQuery('❌ Boutique non trouvée');
+    }
+    
+    const referredUsers = userShop.referredUsers || [];
+    let statsMessage = `📊 **Statistiques détaillées - ${userShop.name}**\n\n`;
+    
+    if (referredUsers.length === 0) {
+      statsMessage += '🤷‍♂️ Aucune personne invitée pour le moment.\n\n💡 Partagez votre lien de parrainage pour commencer !';
+    } else {
+      statsMessage += `👥 **Total: ${referredUsers.length} personne${referredUsers.length > 1 ? 's' : ''} invitée${referredUsers.length > 1 ? 's' : ''}**\n\n`;
+      
+      referredUsers.slice().reverse().forEach((user, index) => {
+        const date = new Date(user.invitedAt).toLocaleDateString('fr-FR');
+        const time = new Date(user.invitedAt).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+        const username = user.username ? `@${user.username}` : `Utilisateur ${user.telegramId}`;
+        statsMessage += `${index + 1}. ${username}\n   📅 ${date} à ${time}\n\n`;
+      });
+    }
+    
+    await ctx.editMessageText(statsMessage, {
+      parse_mode: 'Markdown',
+      reply_markup: {
+        inline_keyboard: [
+          [{
+            text: '🔙 Retour',
+            callback_data: `refresh_referral_${plugId}`
+          }]
+        ]
+      }
+    });
+    
+  } catch (error) {
+    console.error('❌ Erreur stats referral:', error);
+    await ctx.answerCbQuery('❌ Erreur lors du chargement des statistiques');
+  }
+});
+
 // Gestion des erreurs du bot
 bot.catch(async (err, ctx) => {
   console.error('❌ Erreur bot détaillée:', {

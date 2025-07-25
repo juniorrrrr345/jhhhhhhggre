@@ -126,6 +126,12 @@ const plugSchema = new mongoose.Schema({
       required: true
     }
   }],
+  // Propriétaire de la boutique
+  ownerId: {
+    type: Number, // Telegram user ID du propriétaire
+    required: false
+  },
+  
   // Système de parrainage par boutique
   referralCode: {
     type: String,
