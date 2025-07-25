@@ -185,12 +185,54 @@ const translations = {
       es: '📝 ¡Comencemos tu registro en FindYourPlug!',
       de: '📝 Beginnen wir deine Anmeldung bei FindYourPlug!'
     },
+    'registration.plugNameQuestion': {
+      fr: 'Quel est ton **nom de Plug** ?',
+      en: 'What is your **Plug name**?',
+      it: 'Qual è il tuo **nome del negozio**?',
+      es: '¿Cuál es tu **nombre de tienda**?',
+      de: 'Wie lautet dein **Shop-Name**?'
+    },
+    'registration.pendingTitle': {
+      fr: '📝 **Demande en cours**',
+      en: '📝 **Application in progress**',
+      it: '📝 **Richiesta in corso**',
+      es: '📝 **Solicitud en curso**',
+      de: '📝 **Antrag in Bearbeitung**'
+    },
+    'registration.pendingMessage': {
+      fr: 'Tu as déjà une demande d\'inscription en cours de traitement.',
+      en: 'You already have a registration request being processed.',
+      it: 'Hai già una richiesta di registrazione in elaborazione.',
+      es: 'Ya tienes una solicitud de registro en proceso.',
+      de: 'Du hast bereits eine Registrierungsanfrage in Bearbeitung.'
+    },
+    'registration.pendingStatus': {
+      fr: 'Statut: ⏳ En attente',
+      en: 'Status: ⏳ Pending',
+      it: 'Stato: ⏳ In attesa',
+      es: 'Estado: ⏳ Pendiente',
+      de: 'Status: ⏳ Ausstehend'
+    },
+    'registration.pendingWait': {
+      fr: 'Merci de patienter pendant que nos équipes examinent ta demande !',
+      en: 'Please wait while our teams review your request!',
+      it: 'Attendi mentre i nostri team esaminano la tua richiesta!',
+      es: '¡Por favor espera mientras nuestros equipos revisan tu solicitud!',
+      de: 'Bitte warte, während unsere Teams deine Anfrage prüfen!'
+    },
     'registration.cancel': {
       fr: '❌ Annuler',
       en: '❌ Cancel',
       it: '❌ Annulla',
       es: '❌ Cancelar',
       de: '❌ Abbrechen'
+    },
+    'registration.backToMenu': {
+      fr: '🔙 Retour au menu',
+      en: '🔙 Back to menu',
+      it: '🔙 Torna al menu',
+      es: '🔙 Volver al menú',
+      de: '🔙 Zurück zum Menü'
     },
 
     // === BOUTIQUE WEB ===

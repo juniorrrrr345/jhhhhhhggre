@@ -116,6 +116,16 @@ const handleStartApplication = async (ctx) => {
     
     const userId = ctx.from.id;
     
+    // Récupérer la langue actuelle de l'utilisateur
+    const Config = require('../models/Config');
+    const { getTranslation } = require('../utils/translations');
+    
+    const config = await Config.findById('main');
+    const currentLang = config?.languages?.currentLanguage || 'fr';
+    const customTranslations = config?.languages?.translations;
+    
+    console.log(`🌍 Formulaire d'inscription en langue: ${currentLang}`);
+    
     // Vérifier si l'utilisateur a déjà une demande en cours
     const existingApplication = await PlugApplication.findOne({ 
       userId: userId, 
@@ -123,14 +133,18 @@ const handleStartApplication = async (ctx) => {
     });
     
     if (existingApplication) {
-      const message = `📝 **Demande en cours**\n\n` +
-        `Tu as déjà une demande d'inscription en cours de traitement.\n` +
-        `Elle a été soumise le ${existingApplication.submittedAt.toLocaleDateString('fr-FR')}\n\n` +
-        `Statut: ⏳ En attente\n\n` +
-        `Merci de patienter pendant que nos équipes examinent ta demande !`;
+      const submittedDate = existingApplication.submittedAt.toLocaleDateString(
+        currentLang === 'en' ? 'en-US' : 'fr-FR'
+      );
+      
+      const message = `${getTranslation('registration.pendingTitle', currentLang, customTranslations)}\n\n` +
+        `${getTranslation('registration.pendingMessage', currentLang, customTranslations)}\n` +
+        `${currentLang === 'fr' ? 'Elle a été soumise le' : 'It was submitted on'} ${submittedDate}\n\n` +
+        `${getTranslation('registration.pendingStatus', currentLang, customTranslations)}\n\n` +
+        `${getTranslation('registration.pendingWait', currentLang, customTranslations)}`;
       
       const keyboard = Markup.inlineKeyboard([
-        [Markup.button.callback('🔙 Retour au menu', 'back_main')]
+        [Markup.button.callback(getTranslation('registration.backToMenu', currentLang, customTranslations), 'back_main')]
       ]);
       
       return await safeEditMessage(ctx, message, {
@@ -150,14 +164,14 @@ const handleStartApplication = async (ctx) => {
       }
     });
     
-    const message = `🛠️ **FORMULAIRE D'INSCRIPTION – FindYourPlug**\n\n` +
+    const message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
       `⸻\n\n` +
-      `🟦 **Étape 1 : Nom de Plug**\n\n` +
-      `📝 Commençons ton inscription sur FindYourPlug !\n\n` +
-      `Quel est ton **nom de Plug** ?`;
+      `${getTranslation('registration.step1', currentLang, customTranslations)}\n\n` +
+      `${getTranslation('registration.letsStart', currentLang, customTranslations)}\n\n` +
+      `${getTranslation('registration.plugNameQuestion', currentLang, customTranslations)}`;
     
     const keyboard = Markup.inlineKeyboard([
-      [Markup.button.callback('❌ Annuler', 'cancel_application')]
+      [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
     ]);
     
     await safeEditMessage(ctx, message, {
