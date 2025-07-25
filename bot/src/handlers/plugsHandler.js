@@ -1720,7 +1720,7 @@ const handleDepartmentsList = async (ctx, serviceType, selectedCountry = null) =
     
     // EDITION AVEC IMAGE (compatible avec messages image + texte)
     const config = await Config.findById('main');
-    const keyboard = { inline_keyboard: buttons };
+    const keyboard = Markup.inlineKeyboard(buttons);
     await editMessageWithImage(ctx, message, keyboard, config, { parse_mode: 'Markdown' });
     
     console.log(`🚨 MESSAGE ENVOYÉ AVEC SUCCÈS`);
