@@ -234,10 +234,10 @@ const handleTopServiceFilter = async (ctx, serviceType, selectedCountry = null) 
         keyboard = createTopPlugsKeyboard(config, availableCountries, selectedCountry, serviceType, []);
       }
     } else {
-      // Pour Livraison et Meetup : si un pays est sélectionné, rediriger vers les départements
-      if (selectedCountry && (serviceType === 'delivery' || serviceType === 'meetup')) {
-        console.log(`🎯 Redirection vers départements pour ${serviceType} dans ${selectedCountry}`);
-        return await handleDepartmentsList(ctx, serviceType, selectedCountry);
+      // Pour Livraison et Meetup : rediriger vers le système de départements
+      if (serviceType === 'delivery' || serviceType === 'meetup') {
+        console.log(`🎯 handleTopServiceFilter: Redirection vers handleDepartmentFilter pour ${serviceType}, pays=${selectedCountry}`);
+        return await handleDepartmentFilter(ctx, serviceType, selectedCountry);
       }
       
       // Sinon afficher les boutiques du service avec bouton département
