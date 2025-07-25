@@ -479,8 +479,42 @@ const handleResetFilters = async (ctx) => {
       keyboard = createTopPlugsKeyboard(config, availableCountries, [], null, null);
     }
     
-    // ÉDITER le message existant au lieu d'en créer un nouveau
-    await editMessageWithImage(ctx, message, keyboard, config, { parse_mode: 'Markdown' });
+    // ÉDITER le message existant au lieu d'en créer un nouveau - FORCER l'édition
+    try {
+      // Essayer d'abord d'éditer avec image
+      if (config?.welcome?.image) {
+        await ctx.editMessageMedia({
+          type: 'photo',
+          media: config.welcome.image || 'https://i.imgur.com/DD5OU6o.jpeg',
+          caption: message,
+          parse_mode: 'Markdown'
+        }, {
+          reply_markup: keyboard.reply_markup
+        });
+      } else {
+        // Éditer seulement le texte si pas d'image
+        await ctx.editMessageText(message, {
+          reply_markup: keyboard.reply_markup,
+          parse_mode: 'Markdown'
+        });
+      }
+    } catch (editError) {
+      console.log('⚠️ Erreur édition directe, tentative édition caption:', editError.message);
+      try {
+        // Fallback : éditer seulement le caption
+        await ctx.editMessageCaption(message, {
+          reply_markup: keyboard.reply_markup,
+          parse_mode: 'Markdown'
+        });
+      } catch (captionError) {
+        console.log('⚠️ Erreur édition caption, tentative édition texte:', captionError.message);
+        // Dernier fallback : éditer seulement le texte
+        await ctx.editMessageText(message, {
+          reply_markup: keyboard.reply_markup,
+          parse_mode: 'Markdown'
+        });
+      }
+    }
     
   } catch (error) {
     console.error('Erreur dans handleResetFilters:', error);
