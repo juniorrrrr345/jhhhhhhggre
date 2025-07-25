@@ -359,33 +359,14 @@ bot.action(/^lang_(.+)$/, async (ctx) => {
       }
     }
 
-    // Recharger la config mise à jour
-    const updatedConfig = await Config.findById('main');
-    const customTranslations = updatedConfig?.languages?.translations;
-    
-    // Obtenir le nom de la langue pour confirmation
+    // Confirmation et retour au menu principal avec la nouvelle langue
     const translations = require('./src/utils/translations');
     const languageName = translations.translations.languages[newLanguage]?.name || newLanguage;
+    await ctx.answerCbQuery(`✅ ${languageName} sélectionnée !`);
     
-    // Réafficher le sélecteur de langue avec la nouvelle langue cochée ✅
-    const message = `🌍 **${getTranslation('menu_language', newLanguage, customTranslations)}**\n\nSélectionnez votre langue préférée :`;
-    const keyboard = createLanguageKeyboard(newLanguage);
-    
-    // Mettre à jour l'affichage du sélecteur avec le ✅ sur la bonne langue
-    try {
-      await ctx.editMessageText(message, {
-        reply_markup: keyboard.reply_markup,
-        parse_mode: 'Markdown'
-      });
-      
-      // Confirmation directe avec popup
-      await ctx.answerCbQuery(`✅ ${languageName} sélectionnée !`);
-      console.log(`✅ Langue ${newLanguage} cochée avec ✅`);
-      
-    } catch (editError) {
-      console.error('❌ Erreur édition sélecteur langue:', editError);
-      await ctx.answerCbQuery(`✅ ${languageName} sélectionnée !`);
-    }
+    // Appeler handleBackMain pour retourner au menu avec la nouvelle langue
+    const { handleBackMain } = require('./src/handlers/startHandler');
+    await handleBackMain(ctx);
     
   } catch (error) {
     console.error('❌ Erreur changement langue:', error);
