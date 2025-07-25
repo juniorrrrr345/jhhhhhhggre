@@ -5,13 +5,13 @@ import { fallbackApi } from './fallback-api';
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 const makeProxyCall = async (endpoint, method = 'GET', token = null, data = null, retryCount = 0) => {
-  const maxRetries = 3;
+  const maxRetries = 2; // Réduit de 3 à 2 retries
   const cacheKey = `${method}:${endpoint}:${token?.substring(0,10) || 'no-token'}`;
   const fallbackKey = `${method}_${endpoint.replace(/[^a-zA-Z0-9]/g, '_')}`;
   
   // Vérifier le cache d'abord (sauf pour les mutations)
   if (method === 'GET') {
-    const cached = apiCache.get(cacheKey, 30000); // 30 secondes pour GET
+    const cached = apiCache.get(cacheKey, 45000); // Augmenté à 45 secondes pour réduire les requêtes
     if (cached) {
       console.log(`💾 Cache hit pour: ${endpoint}`);
       // Sauvegarder en fallback aussi
@@ -20,10 +20,10 @@ const makeProxyCall = async (endpoint, method = 'GET', token = null, data = null
     }
   }
   
-  // Vérifier l'anti-spam seulement pour le premier essai
+  // Vérifier l'anti-spam - délai plus long pour espacer les requêtes
   if (retryCount === 0 && !apiCache.canMakeCall(cacheKey)) {
     console.log(`⏳ Rate limit local - attente pour: ${endpoint}`);
-    await sleep(3000); // Attendre 3 secondes
+    await sleep(5000); // Augmenté à 5 secondes
   }
   
   console.log(`🔄 Simple Proxy Call (tentative ${retryCount + 1}): ${method} ${endpoint}`);
@@ -36,9 +36,9 @@ const makeProxyCall = async (endpoint, method = 'GET', token = null, data = null
     // Marquer l'appel pour l'anti-spam
     apiCache.markCall(cacheKey);
     
-    // Timeout de 8 secondes pour éviter le chargement infini
+    // Timeout réduit à 6 secondes pour éviter les erreurs 502
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 8000);
+    const timeoutId = setTimeout(() => controller.abort(), 6000);
     
     const response = await fetch('/api/cors-proxy', {
       method: 'POST',
@@ -59,41 +59,33 @@ const makeProxyCall = async (endpoint, method = 'GET', token = null, data = null
     if (!response.ok) {
       const errorData = await response.json();
       
-      // Gestion spéciale pour 429 avec fallback intelligent - PLUS AGRESSIF
-      if (response.status === 429) {
-        console.log(`🚫 Erreur 429 détectée pour ${endpoint} - tentative ${retryCount + 1}`);
+      // Gestion spéciale pour 429 ET 502 avec fallback IMMÉDIAT
+      if (response.status === 429 || response.status === 502) {
+        console.log(`🚫 Erreur ${response.status} détectée pour ${endpoint} - tentative ${retryCount + 1}`);
         
-        // Pour les erreurs 429, utiliser IMMÉDIATEMENT le fallback si disponible
+        // Pour les erreurs 429/502, utiliser IMMÉDIATEMENT le fallback si disponible
         if (method === 'GET') {
           const fallbackData = fallbackApi.get(fallbackKey);
           if (fallbackData) {
-            console.log(`💾 Utilisation IMMÉDIATE fallback pour ${endpoint} (429)`);
+            console.log(`💾 Utilisation IMMÉDIATE fallback pour ${endpoint} (${response.status})`);
             return fallbackData;
           }
         }
         
-        // Aucun retry pour 429 - retour immédiat avec fallback
+        // AUCUN retry pour 429/502 - retour immédiat avec fallback ou erreur
         const fallbackData = fallbackApi.get(fallbackKey);
         if (fallbackData && method === 'GET') {
           console.log(`💾 Utilisation fallback immédiate pour ${endpoint}`);
           return fallbackData;
         } else {
-          // Arrêter immédiatement après 1 retry
-          if (method === 'GET') {
-            const fallbackData = fallbackApi.get(fallbackKey);
-            if (fallbackData) {
-              console.log(`💾 Utilisation fallback FINAL pour ${endpoint}`);
-              return fallbackData;
-            }
-          }
-          console.log(`🚫 ABANDON après 1 retry pour ${endpoint} - serveur surchargé`);
-          throw new Error('Serveur temporairement surchargé. Veuillez réessayer dans quelques minutes.');
+          console.log(`🚫 ABANDON immédiat pour ${endpoint} - serveur indisponible`);
+          throw new Error(`Serveur temporairement indisponible (${response.status}). Mode local activé.`);
         }
       }
       
-      // Autres erreurs serveur avec retry
-      if (response.status >= 500 && retryCount < maxRetries) {
-        const retryDelay = 3000; // 3 secondes pour erreurs serveur
+      // Autres erreurs serveur avec retry réduit
+      if (response.status >= 500 && retryCount < 1) { // Réduit le retry pour 500+
+        const retryDelay = 4000; // Augmenté à 4 secondes pour éviter la surcharge
         console.log(`🔄 Erreur ${response.status} - Retry dans ${retryDelay}ms`);
         await sleep(retryDelay);
         return makeProxyCall(endpoint, method, token, data, retryCount + 1);
@@ -118,7 +110,7 @@ const makeProxyCall = async (endpoint, method = 'GET', token = null, data = null
     
     // Gestion spéciale pour timeout
     if (error.name === 'AbortError') {
-      console.log(`⏱️ Timeout (15s) pour ${endpoint}`);
+      console.log(`⏱️ Timeout (6s) pour ${endpoint}`);
       // Utiliser fallback immédiatement en cas de timeout
       if (method === 'GET') {
         const fallbackData = fallbackApi.get(fallbackKey);
@@ -131,7 +123,7 @@ const makeProxyCall = async (endpoint, method = 'GET', token = null, data = null
     }
     
     // Essayer le fallback pour les erreurs de réseau sur GET
-    if (method === 'GET' && retryCount === maxRetries) {
+    if (method === 'GET' && retryCount >= 1) { // Réduit le seuil de fallback
       const fallbackData = fallbackApi.get(fallbackKey);
       if (fallbackData) {
         console.log(`💾 Utilisation fallback pour erreur réseau: ${endpoint}`);
@@ -139,9 +131,9 @@ const makeProxyCall = async (endpoint, method = 'GET', token = null, data = null
       }
     }
     
-    // Retry pour les erreurs de réseau
-    if (error.name === 'TypeError' && retryCount < maxRetries) {
-      const retryDelay = 2000;
+    // Retry réduit pour les erreurs de réseau
+    if (error.name === 'TypeError' && retryCount < 1) { // Réduit les retries
+      const retryDelay = 3000; // Augmenté le délai
       console.log(`🔄 Erreur réseau - Retry dans ${retryDelay}ms`);
       await sleep(retryDelay);
       return makeProxyCall(endpoint, method, token, data, retryCount + 1);

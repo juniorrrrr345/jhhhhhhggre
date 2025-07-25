@@ -7,8 +7,9 @@ class RobustSync {
     this.isProcessing = false
     this.lastSync = null
     this.retryCount = 0
-    this.maxRetries = 3
-    this.baseDelay = 5000 // 5 secondes
+    this.maxRetries = 2 // Réduit de 3 à 2
+    this.baseDelay = 8000 // Augmenté de 5 à 8 secondes
+    this.minInterval = 15000 // Intervalle minimum entre syncs de 15 secondes
     
     if (this.isClient) {
       this.init()
@@ -16,9 +17,9 @@ class RobustSync {
   }
 
   init() {
-    console.log('🔄 RobustSync initialisé')
-    // Traiter la queue toutes les 10 secondes
-    setInterval(() => this.processQueue(), 10000)
+    console.log('🔄 RobustSync initialisé avec délais optimisés')
+    // Traiter la queue toutes les 20 secondes (moins agressif)
+    setInterval(() => this.processQueue(), 20000)
   }
 
   // Ajouter une opération à synchroniser
@@ -35,9 +36,9 @@ class RobustSync {
     this.syncQueue.push(operation)
     console.log(`📝 Opération ajoutée: ${type}`, { id: operation.id, priority })
 
-    // Si c'est haute priorité, traiter immédiatement
+    // Même pour haute priorité, attendre un minimum
     if (priority === 'high') {
-      setTimeout(() => this.processQueue(), 100)
+      setTimeout(() => this.processQueue(), 2000) // Augmenté de 100ms à 2s
     }
 
     return operation.id
@@ -46,6 +47,12 @@ class RobustSync {
   // Traiter la queue de synchronisation
   async processQueue() {
     if (this.isProcessing || this.syncQueue.length === 0) {
+      return
+    }
+
+    // Vérifier l'intervalle minimum entre les syncs
+    if (this.lastSync && (Date.now() - this.lastSync) < this.minInterval) {
+      console.log('⏳ Intervalle minimum non respecté, report de la sync')
       return
     }
 
