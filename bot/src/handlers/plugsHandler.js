@@ -1436,19 +1436,27 @@ const handlePlugDetails = async (ctx, plugId, returnContext = 'top_plugs') => {
     const translatedDescription = translateDescription(plug.description, currentLang);
     message += `${getTranslation('shop_description_label', currentLang, customTranslations)} ${translatedDescription}\n\n`;
 
-    // Services disponibles avec traductions
+    // Services disponibles avec départements pour livraison/meetup et descriptions pour postal
     const services = [];
     if (plug.services?.delivery?.enabled) {
       const serviceName = getTranslation('service_delivery', currentLang, customTranslations);
-      const serviceDesc = plug.services.delivery.description ? 
-        `: ${translateDescription(plug.services.delivery.description, currentLang)}` : '';
-      services.push(`📦 **${serviceName}**${serviceDesc}`);
+      const departments = plug.services.delivery.departments || [];
+      if (departments.length > 0) {
+        const departmentsText = departments.sort((a, b) => parseInt(a) - parseInt(b)).join(', ');
+        services.push(`📦 **${serviceName}** : ${departmentsText}`);
+      } else {
+        services.push(`📦 **${serviceName}** : Tous départements`);
+      }
     }
     if (plug.services?.meetup?.enabled) {
       const serviceName = getTranslation('service_meetup', currentLang, customTranslations);
-      const serviceDesc = plug.services.meetup.description ? 
-        `: ${translateDescription(plug.services.meetup.description, currentLang)}` : '';
-      services.push(`🤝 **${serviceName}**${serviceDesc}`);
+      const departments = plug.services.meetup.departments || [];
+      if (departments.length > 0) {
+        const departmentsText = departments.sort((a, b) => parseInt(a) - parseInt(b)).join(', ');
+        services.push(`🤝 **${serviceName}** : ${departmentsText}`);
+      } else {
+        services.push(`🤝 **${serviceName}** : Tous départements`);
+      }
     }
     if (plug.services?.postal?.enabled) {
       const serviceName = getTranslation('service_postal', currentLang, customTranslations);
