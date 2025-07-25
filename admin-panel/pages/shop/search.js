@@ -6,6 +6,8 @@ import { getProxiedImageUrl } from '../../lib/imageUtils'
 import toast from 'react-hot-toast'
 import Pagination from '../../components/Pagination'
 import ShopCard from '../../components/ShopCard'
+import LanguageSelector, { useTranslation, getCurrentLanguage } from '../../components/LanguageSelector'
+import ShopNavigation from '../../components/ShopNavigation'
 
 export default function ShopSearch() {
   const [plugs, setPlugs] = useState([])
@@ -18,36 +20,26 @@ export default function ShopSearch() {
   const [serviceFilter, setServiceFilter] = useState('')
   const [vipFilter, setVipFilter] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
+  const [currentLanguage, setCurrentLanguage] = useState('fr')
+  const { t } = useTranslation(currentLanguage)
   const itemsPerPage = 20
 
   useEffect(() => {
+    // Initialiser la langue depuis localStorage
+    if (typeof window !== 'undefined') {
+      setCurrentLanguage(getCurrentLanguage())
+    }
+    
     fetchConfig()
     fetchPlugs()
     
-    // Plus de refresh automatique - utiliser le bouton "Actualiser" si besoin
-    
-    const handleStorageChange = (event) => {
-      if (event?.key === 'boutique_sync_signal' || event?.key === 'global_sync_signal') {
-        console.log('🔄 Signal de synchronisation reçu:', event.key)
-        setTimeout(() => {
-          fetchConfig()
-          fetchPlugs()
-        }, 500)
-        if (typeof toast !== 'undefined') {
-          toast.success('🔄 Données synchronisées!', {
-            duration: 2000,
-            icon: '🔄'
-          })
-        }
-      }
-    }
-
-    window.addEventListener('storage', handleStorageChange)
-    
-    return () => {
-      window.removeEventListener('storage', handleStorageChange)
-    }
+    // Marquer les boutiques comme chargées
+    setTimeout(() => setInitialLoading(false), 1000)
   }, [])
+
+  const handleLanguageChange = (newLanguage) => {
+    setCurrentLanguage(newLanguage)
+  }
 
   useEffect(() => {
     filterPlugs()

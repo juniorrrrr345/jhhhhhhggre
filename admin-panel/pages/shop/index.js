@@ -7,6 +7,7 @@ import toast from 'react-hot-toast'
 import Pagination from '../../components/Pagination'
 import ShopCard from '../../components/ShopCard'
 import LanguageSelector, { useTranslation, getCurrentLanguage } from '../../components/LanguageSelector'
+import ShopNavigation from '../../components/ShopNavigation'
 
 export default function ShopHome() {
   const [plugs, setPlugs] = useState([])
@@ -177,6 +178,7 @@ export default function ShopHome() {
             <LanguageSelector 
               currentLanguage={currentLanguage}
               onLanguageChange={handleLanguageChange}
+              compact={true}
             />
           </div>
           
@@ -217,8 +219,14 @@ export default function ShopHome() {
               color: '#8e8e93'
             }}>
               <div style={{ fontSize: '48px', marginBottom: '16px' }}>🏪</div>
-              <h3 style={{ fontSize: '18px', marginBottom: '8px' }}>Aucune boutique disponible</h3>
-              <p style={{ fontSize: '14px' }}>Revenez bientôt pour découvrir nos partenaires !</p>
+              <h3 style={{ fontSize: '18px', marginBottom: '8px' }}>{t('noShops')}</h3>
+              <p style={{ fontSize: '14px' }}>
+                {currentLanguage === 'fr' && 'Revenez bientôt pour découvrir nos partenaires !'}
+                {currentLanguage === 'en' && 'Come back soon to discover our partners!'}
+                {currentLanguage === 'it' && 'Torna presto per scoprire i nostri partner!'}
+                {currentLanguage === 'es' && '¡Vuelve pronto para descubrir nuestros socios!'}
+                {currentLanguage === 'de' && 'Kommen Sie bald zurück, um unsere Partner zu entdecken!'}
+              </p>
             </div>
           ) : (
             <>
@@ -244,61 +252,7 @@ export default function ShopHome() {
         </div>
 
         {/* Navigation en bas - Style uniforme */}
-        <nav style={{ 
-          position: 'fixed',
-          bottom: '0',
-          left: '0',
-          right: '0',
-          backgroundColor: '#1a1a1a',
-          padding: '12px 20px',
-          borderTop: '1px solid #2a2a2a',
-          zIndex: 1000
-        }}>
-          <div style={{ 
-            display: 'flex', 
-            justifyContent: 'space-around',
-            alignItems: 'center',
-            maxWidth: '600px',
-            margin: '0 auto'
-          }}>
-            <Link href="/shop" style={{ 
-              color: '#007AFF', 
-              textDecoration: 'none',
-              fontSize: '10px',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              gap: '4px'
-            }}>
-              <span style={{ fontSize: '20px' }}>🏠</span>
-              Boutiques
-            </Link>
-            <Link href="/shop/search" style={{ 
-              color: '#8e8e93', 
-              textDecoration: 'none',
-              fontSize: '10px',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              gap: '4px'
-            }}>
-              <span style={{ fontSize: '20px' }}>🔍</span>
-              Rechercher
-            </Link>
-            <Link href="/shop/vip" style={{ 
-              color: '#8e8e93', 
-              textDecoration: 'none',
-              fontSize: '10px',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              gap: '4px'
-            }}>
-              <span style={{ fontSize: '20px' }}>👑</span>
-              VIP
-            </Link>
-          </div>
-        </nav>
+        <ShopNavigation currentLanguage={currentLanguage} />
       </div>
 
       <style jsx>{`

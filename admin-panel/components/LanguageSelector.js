@@ -57,10 +57,73 @@ const translations = {
     it: 'Nessun negozio disponibile',
     es: 'No hay tiendas disponibles',
     de: 'Keine Shops verfügbar'
+  },
+  shops: {
+    fr: 'boutiques',
+    en: 'shops',
+    it: 'negozi',
+    es: 'tiendas',
+    de: 'shops'
+  },
+  available: {
+    fr: 'disponibles',
+    en: 'available',
+    it: 'disponibili',
+    es: 'disponibles',
+    de: 'verfügbar'
+  },
+  delivery: {
+    fr: 'Livraison',
+    en: 'Delivery',
+    it: 'Consegna',
+    es: 'Entrega',
+    de: 'Lieferung'
+  },
+  meetup: {
+    fr: 'Meetup',
+    en: 'Meetup',
+    it: 'Incontro',
+    es: 'Encuentro',
+    de: 'Treffen'
+  },
+  postal: {
+    fr: 'Envoi postal',
+    en: 'Postal shipping',
+    it: 'Spedizione postale',
+    es: 'Envío postal',
+    de: 'Postversand'
+  },
+  likes: {
+    fr: 'votes',
+    en: 'votes',
+    it: 'voti',
+    es: 'votos',
+    de: 'Stimmen'
+  },
+  viewShop: {
+    fr: 'Voir la boutique',
+    en: 'View shop',
+    it: 'Vedi negozio',
+    es: 'Ver tienda',
+    de: 'Shop ansehen'
+  },
+  contact: {
+    fr: 'Contacter',
+    en: 'Contact',
+    it: 'Contatta',
+    es: 'Contactar',
+    de: 'Kontakt'
+  },
+  description: {
+    fr: 'Description',
+    en: 'Description',
+    it: 'Descrizione',
+    es: 'Descripción',
+    de: 'Beschreibung'
   }
 }
 
-export default function LanguageSelector({ onLanguageChange, currentLanguage = 'fr' }) {
+export default function LanguageSelector({ onLanguageChange, currentLanguage = 'fr', compact = false }) {
   const [isOpen, setIsOpen] = useState(false)
 
   const handleLanguageSelect = (langCode) => {
@@ -71,6 +134,48 @@ export default function LanguageSelector({ onLanguageChange, currentLanguage = '
     if (onLanguageChange) {
       onLanguageChange(langCode)
     }
+  }
+
+  if (compact) {
+    // Version compacte pour le shop
+    return (
+      <div className="relative">
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className="flex items-center space-x-1 px-2 py-1 bg-black/20 border border-white/20 rounded-md text-white/80 hover:bg-black/30 hover:text-white transition-all duration-200 text-xs"
+        >
+          <span className="text-sm">{languages[currentLanguage]?.flag}</span>
+          <svg 
+            className={`w-3 h-3 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+            fill="none" 
+            stroke="currentColor" 
+            viewBox="0 0 24 24"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+
+        {isOpen && (
+          <div className="absolute top-full right-0 mt-1 w-28 bg-black/90 border border-white/20 rounded-md shadow-lg z-50 backdrop-blur-sm">
+            {Object.entries(languages).map(([code, lang]) => (
+              <button
+                key={code}
+                onClick={() => handleLanguageSelect(code)}
+                className={`w-full flex items-center space-x-2 px-2 py-1.5 text-xs hover:bg-white/10 transition-colors first:rounded-t-md last:rounded-b-md ${
+                  code === currentLanguage ? 'bg-white/20 text-white' : 'text-white/80'
+                }`}
+              >
+                <span className="text-sm">{lang.flag}</span>
+                <span className="text-xs">{lang.name}</span>
+                {code === currentLanguage && (
+                  <span className="ml-auto text-white text-xs">✓</span>
+                )}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+    )
   }
 
   return (
