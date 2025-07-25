@@ -2,14 +2,53 @@ import Link from 'next/link'
 import { useState } from 'react'
 import { getProxiedImageUrl } from '../lib/imageUtils'
 
-export default function ShopCard({ plug, index, layout = 'grid' }) {
+export default function ShopCard({ plug, index, layout = 'grid', currentLanguage = 'fr' }) {
   const [likes, setLikes] = useState(plug.likes || 0)
   const [isVoting, setIsVoting] = useState(false)
+  
   const getPositionBadge = (position) => {
     if (position === 0) return '🥇'
     if (position === 1) return '🥈'
     if (position === 2) return '🥉'
     return null
+  }
+
+  const translateService = (service) => {
+    const translations = {
+      'delivery': {
+        fr: 'Livraison',
+        en: 'Delivery',
+        it: 'Consegna',
+        es: 'Entrega',
+        de: 'Lieferung'
+      },
+      'meetup': {
+        fr: 'Meetup',
+        en: 'Meetup',
+        it: 'Incontro',
+        es: 'Encuentro',
+        de: 'Treffen'
+      },
+      'postal': {
+        fr: 'Envoi postal',
+        en: 'Postal shipping',
+        it: 'Spedizione postale',
+        es: 'Envío postal',
+        de: 'Postversand'
+      }
+    }
+    return translations[service]?.[currentLanguage] || service
+  }
+
+  const getVotesText = () => {
+    const translations = {
+      fr: 'votes',
+      en: 'votes',
+      it: 'voti',
+      es: 'votos',
+      de: 'Stimmen'
+    }
+    return translations[currentLanguage] || 'votes'
   }
 
   const getCountryFlag = (countries) => {
@@ -180,7 +219,7 @@ export default function ShopCard({ plug, index, layout = 'grid' }) {
                 color: '#ffffff'
               }}>
                 <span>📦</span>
-                <span>Livraison</span>
+                <span>{translateService('delivery')}</span>
               </div>
             )}
             {plug.services?.postal?.enabled && (
@@ -192,7 +231,7 @@ export default function ShopCard({ plug, index, layout = 'grid' }) {
                 color: '#ffffff'
               }}>
                 <span>📍</span>
-                <span>Postal</span>
+                <span>{translateService('postal')}</span>
               </div>
             )}
             {plug.services?.meetup?.enabled && (
@@ -204,7 +243,7 @@ export default function ShopCard({ plug, index, layout = 'grid' }) {
                 color: '#ffffff'
               }}>
                 <span>💰</span>
-                <span>Meetup</span>
+                <span>{translateService('meetup')}</span>
               </div>
             )}
           </div>
@@ -252,7 +291,7 @@ export default function ShopCard({ plug, index, layout = 'grid' }) {
               fontWeight: '600',
               color: plug.isVip ? '#FFD700' : '#ffffff'
             }}>
-              {likes}
+              {likes} {getVotesText()}
             </span>
           </div>
         </div>

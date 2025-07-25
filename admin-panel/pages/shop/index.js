@@ -36,6 +36,14 @@ export default function ShopHome() {
     // Config loaded silently
   }, [config])
 
+  // Recharger les données quand la langue change
+  useEffect(() => {
+    if (currentLanguage) {
+      // Recharger les données pour s'assurer qu'elles sont à jour
+      fetchPlugs()
+    }
+  }, [currentLanguage])
+
   const handleLanguageChange = (newLanguage) => {
     setCurrentLanguage(newLanguage)
   }
@@ -76,19 +84,51 @@ export default function ShopHome() {
     } catch (error) {
       console.error('Erreur chargement boutiques:', error)
       
-      // Mode offline : afficher des données par défaut au lieu d'une erreur
+      // Mode offline : afficher des données par défaut traduites
       const fallbackPlugs = [
         {
           _id: 'fallback_1',
-          name: 'Boutique Exemple',
-          description: 'Serveur temporairement indisponible',
-          image: 'https://via.placeholder.com/300x200/6366f1/ffffff?text=Boutique',
+          name: currentLanguage === 'fr' ? 'Boutique Example' : 
+                currentLanguage === 'en' ? 'Example Shop' :
+                currentLanguage === 'it' ? 'Negozio Esempio' :
+                currentLanguage === 'es' ? 'Tienda Ejemplo' :
+                'Beispiel Shop',
+          description: currentLanguage === 'fr' ? 'Service temporairement indisponible - Données de test' :
+                      currentLanguage === 'en' ? 'Service temporarily unavailable - Test data' :
+                      currentLanguage === 'it' ? 'Servizio temporaneamente non disponibile - Dati di test' :
+                      currentLanguage === 'es' ? 'Servicio temporalmente no disponible - Datos de prueba' :
+                      'Service vorübergehend nicht verfügbar - Testdaten',
+          image: 'https://via.placeholder.com/300x200/6366f1/ffffff?text=Shop',
           isActive: true,
           isVip: false,
-          likes: 0,
+          likes: 15,
           countries: ['France'],
-          services: ['Livraison'],
-          departments: ['75']
+          services: ['delivery'],
+          departments: ['75'],
+          telegram: '@example_shop',
+          location: 'Paris'
+        },
+        {
+          _id: 'fallback_2',
+          name: currentLanguage === 'fr' ? 'Boutique Premium' : 
+                currentLanguage === 'en' ? 'Premium Shop' :
+                currentLanguage === 'it' ? 'Negozio Premium' :
+                currentLanguage === 'es' ? 'Tienda Premium' :
+                'Premium Shop',
+          description: currentLanguage === 'fr' ? 'Boutique VIP - Mode hors ligne' :
+                      currentLanguage === 'en' ? 'VIP Shop - Offline mode' :
+                      currentLanguage === 'it' ? 'Negozio VIP - Modalità offline' :
+                      currentLanguage === 'es' ? 'Tienda VIP - Modo fuera de línea' :
+                      'VIP Shop - Offline-Modus',
+          image: 'https://via.placeholder.com/300x200/f59e0b/ffffff?text=VIP',
+          isActive: true,
+          isVip: true,
+          likes: 42,
+          countries: ['Spain'],
+          services: ['meetup'],
+          departments: ['28'],
+          telegram: '@premium_shop',
+          location: 'Madrid'
         }
       ]
       
@@ -237,7 +277,7 @@ export default function ShopHome() {
                 marginBottom: '20px'
               }}>
                 {currentPlugs.map((plug, index) => (
-                  <ShopCard key={plug._id} plug={plug} index={index} />
+                  <ShopCard key={plug._id} plug={plug} index={index} currentLanguage={currentLanguage} />
                 ))}
               </div>
 
