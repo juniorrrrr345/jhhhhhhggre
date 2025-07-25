@@ -46,6 +46,20 @@ const translations = {
       es: '🌍 Idioma',
       de: '🌍 Sprache'
     },
+    'menu.translation': {
+      fr: '🌍 Traduction',
+      en: '🌍 Translation',
+      it: '🌍 Traduzione',
+      es: '🌍 Traducción',
+      de: '🌍 Übersetzung'
+    },
+    'menu.delivery': {
+      fr: '🚚 Livraison',
+      en: '🚚 Delivery',
+      it: '🚚 Consegna',
+      es: '🚚 Entrega',
+      de: '🚚 Lieferung'
+    },
 
     // === FILTRES TOP PLUGS ===
     'filters.delivery': {

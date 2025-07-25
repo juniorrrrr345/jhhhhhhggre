@@ -100,18 +100,20 @@ const createMainKeyboard = (config) => {
   secondRow.push(Markup.button.callback(infoText, 'info'));
   buttons.push(secondRow);
 
-  // Troisième ligne : Devenir Plug + Langue
+  // Troisième ligne : Devenir Plug + Traduction
   const thirdRow = [];
   const becomeDealerText = getTranslation('menu.becomeDealer', currentLang, customTranslations);
   thirdRow.push(Markup.button.callback(becomeDealerText, 'start_application'));
   
-  // Bouton langue si activé
-  if (config?.languages?.enabled) {
-    const languageText = getTranslation('menu.language', currentLang, customTranslations);
-    thirdRow.push(Markup.button.callback(languageText, 'select_language'));
-  }
+  // Bouton Traduction (toujours affiché)
+  const translationText = getTranslation('menu.translation', currentLang, customTranslations);
+  thirdRow.push(Markup.button.callback(translationText, 'select_language'));
   
   buttons.push(thirdRow);
+  
+  // Quatrième ligne : Bouton Livraison (regroupe Envoi et Meetup)
+  const deliveryText = getTranslation('menu.delivery', currentLang, customTranslations);
+  buttons.push([Markup.button.callback(deliveryText, 'delivery_options')]);
   
   // Réseaux sociaux personnalisés en bas du menu - PRIORITÉ socialMediaList
   const socialMediaData = config?.socialMediaList || config?.socialMedia || [];
@@ -174,6 +176,24 @@ const createMainKeyboard = (config) => {
   }
   
   return Markup.inlineKeyboard(buttons);
+};
+
+// Clavier des options de livraison (regroupe Envoi et Meetup)
+const createDeliveryOptionsKeyboard = (config) => {
+  const currentLang = config?.languages?.currentLanguage || 'fr';
+  const customTranslations = config?.languages?.translations;
+  
+  const deliveryText = getTranslation('filters.delivery', currentLang, customTranslations);
+  const postalText = getTranslation('filters.postal', currentLang, customTranslations);
+  const meetupText = getTranslation('filters.meetup', currentLang, customTranslations);
+  const backText = getTranslation('filters.back', currentLang, customTranslations);
+  
+  return Markup.inlineKeyboard([
+    [Markup.button.callback(`📦 ${deliveryText}`, 'service_delivery')],
+    [Markup.button.callback(`📬 ${postalText}`, 'service_postal')],
+    [Markup.button.callback(`🤝 ${meetupText}`, 'service_meetup')],
+    [Markup.button.callback(backText, 'back_main')]
+  ]);
 };
 
 // Clavier des filtres de plugs
