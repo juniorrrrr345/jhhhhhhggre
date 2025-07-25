@@ -24,3 +24,66 @@ nohup: ignoring input
 📊 Cache: 3 plugs, config: OK
 🔄 Rafraîchissement du cache...
 ✅ Cache mis à jour - 3 plugs, config: OK
+🔄 Rafraîchissement du cache...
+✅ Cache mis à jour - 3 plugs, config: OK
+🔄 Rafraîchissement du cache...
+✅ Cache mis à jour - 3 plugs, config: OK
+🚀 Commande /start reçue de: 7670522278
+❌ Erreur lors de l'enregistrement utilisateur: StrictModeError: Path "userId" is not in schema, strict mode is `true`, and upsert is `true`.
+    at cast (/workspace/bot/node_modules/mongoose/lib/cast.js:305:17)
+    at Query.cast (/workspace/bot/node_modules/mongoose/lib/query.js:5055:12)
+    at Query._castConditions (/workspace/bot/node_modules/mongoose/lib/query.js:2351:10)
+    at model.Query._findOneAndUpdate (/workspace/bot/node_modules/mongoose/lib/query.js:3454:8)
+    at model.Query.exec (/workspace/bot/node_modules/mongoose/lib/query.js:4604:80)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async handleStart (/workspace/bot/src/handlers/startHandler.js:65:7)
+    at async execute (/workspace/bot/node_modules/telegraf/lib/composer.js:518:17)
+    at async /workspace/bot/node_modules/telegraf/lib/composer.js:519:21
+    at async execute (/workspace/bot/node_modules/telegraf/lib/composer.js:518:17) {
+  isImmutableError: false,
+  path: 'userId'
+}
+🔄 Config rechargée depuis la DB
+🌍 Menu principal affiché en langue: de
+📸 Envoi message avec image: https://i.imgur.com/leViC3R.jpeg
+✅ Message avec image envoyé
+🔄 Callback reçu: info
+👤 User ID: 7670522278, Chat ID: 7670522278
+📝 Message ID: 5786
+🔄 Callback reçu: contact
+👤 User ID: 7670522278, Chat ID: 7670522278
+📝 Message ID: 5786
+🔄 Rafraîchissement du cache...
+✅ Cache mis à jour - 3 plugs, config: OK
+🔄 Rafraîchissement du cache...
+✅ Cache mis à jour - 3 plugs, config: OK
+🚀 Commande /start reçue de: 7670522278
+❌ Erreur lors de l'enregistrement utilisateur: StrictModeError: Path "userId" is not in schema, strict mode is `true`, and upsert is `true`.
+    at cast (/workspace/bot/node_modules/mongoose/lib/cast.js:305:17)
+    at Query.cast (/workspace/bot/node_modules/mongoose/lib/query.js:5055:12)
+    at Query._castConditions (/workspace/bot/node_modules/mongoose/lib/query.js:2351:10)
+    at model.Query._findOneAndUpdate (/workspace/bot/node_modules/mongoose/lib/query.js:3454:8)
+    at model.Query.exec (/workspace/bot/node_modules/mongoose/lib/query.js:4604:80)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async handleStart (/workspace/bot/src/handlers/startHandler.js:65:7)
+    at async execute (/workspace/bot/node_modules/telegraf/lib/composer.js:518:17)
+    at async /workspace/bot/node_modules/telegraf/lib/composer.js:519:21
+    at async execute (/workspace/bot/node_modules/telegraf/lib/composer.js:518:17) {
+  isImmutableError: false,
+  path: 'userId'
+}
+🔄 Config rechargée depuis la DB
+🌍 Menu principal affiché en langue: de
+📸 Envoi message avec image: https://i.imgur.com/leViC3R.jpeg
+✅ Message avec image envoyé
+🔄 Callback reçu: top_plugs
+👤 User ID: 7670522278, Chat ID: 7670522278
+📝 Message ID: 5788
+📍 Context updated to: top_plugs
+🔝 Top Plugs affiché en langue: de
+🔄 Rafraîchissement du cache...
+🖼️ Images: plug=false, welcome=true, isPlugDetails=false, using=true
+🖼️ Modification avec image: https://i.imgur.com/leViC3R.jpeg
+✅ Cache mis à jour - 3 plugs, config: OK
+🔄 Rafraîchissement du cache...
+✅ Cache mis à jour - 3 plugs, config: OK
