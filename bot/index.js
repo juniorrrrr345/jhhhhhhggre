@@ -414,12 +414,13 @@ bot.action(/^top_departments_(.+)$/, (ctx) => {
   return handleDepartmentsList(ctx, serviceType, selectedCountry);
 });
 
-bot.action(/^top_dept_(.+)_(.+)_?(.*)$/, (ctx) => {
-  console.log(`🔥 CALLBACK top_dept parse: match[1]="${ctx.match[1]}", match[2]="${ctx.match[2]}", match[3]="${ctx.match[3]}"`);
+bot.action(/^top_dept_([^_]+)_([^_]+)(?:_(.+))?$/, (ctx) => {
+  console.log(`🔥 CALLBACK COMPLET: "${ctx.match[0]}"`);
+  console.log(`🔥 CALLBACK top_dept parse: match[1]="${ctx.match[1]}", match[2]="${ctx.match[2]}", match[3]="${ctx.match[3] || 'undefined'}"`);
   const serviceType = ctx.match[1]; // delivery ou meetup
-  const department = ctx.match[2];
-  const selectedCountry = ctx.match[3] || null;
-  console.log(`🔥 Parameters: serviceType="${serviceType}", department="${department}", selectedCountry="${selectedCountry}"`);
+  const department = ctx.match[2]; // 92, 75, etc.
+  const selectedCountry = ctx.match[3] || null; // France, Belgique, etc.
+  console.log(`🔥 Parameters FINAL: serviceType="${serviceType}", department="${department}", selectedCountry="${selectedCountry}"`);
   return handleSpecificDepartment(ctx, serviceType, department, selectedCountry);
 });
 
