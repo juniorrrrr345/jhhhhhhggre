@@ -12,7 +12,7 @@ export default function Dashboard() {
     vipPlugs: 0,
     totalUsers: 0
   })
-  const [recentShops, setRecentShops] = useState([])
+
   const [loading, setLoading] = useState(true)
   const router = useRouter()
 
@@ -56,7 +56,6 @@ export default function Dashboard() {
           
           if (data.plugs && data.plugs.length > 0) {
             console.log(`🎉 SUCCÈS: ${data.plugs.length} boutiques chargées !`)
-            setRecentShops(data.plugs)
             
             // Récupérer les stats utilisateurs en temps réel
             let totalUsers = 0
@@ -150,7 +149,7 @@ export default function Dashboard() {
           }
         ]
         
-        setRecentShops(realFallbackShops)
+
         setStats({
           totalPlugs: 2,
           activePlugs: 2,
@@ -161,27 +160,6 @@ export default function Dashboard() {
       
     } catch (error) {
       console.error('❌ Global error:', error)
-      // Ce fallback garantit que des boutiques s'affichent TOUJOURS
-      setRecentShops([
-        {
-          _id: '687e233151eb51ad38c5b9e7',
-          name: 'Plugs pour tester',
-          description: 'Plug de test pour les likes',
-          image: 'https://i.imgur.com/DD5OU6o.jpeg',
-          isVip: true,
-          isActive: true,
-          likes: 5
-        },
-        {
-          _id: '687e2227792aa1be313ead28',
-          name: 'Boutique Teste2',
-          description: 'Description du plugs ci nécessaire',
-          image: 'https://i.imgur.com/DD5OU6o.jpeg',
-          isVip: true,
-          isActive: true,
-          likes: 5
-        }
-      ])
       setStats({
         totalPlugs: 2,
         activePlugs: 2,
@@ -260,20 +238,7 @@ export default function Dashboard() {
       emoji: '📢',
       color: 'bg-indigo-500'
     },
-    {
-      name: 'Test Connectivité',
-      description: 'Diagnostiquer les problèmes de connexion',
-      href: '/admin/test-connection',
-      emoji: '🔧',
-      color: 'bg-yellow-500'
-    },
-    {
-      name: 'Langues',
-      description: 'Configuration multilingue',
-      href: '/admin/languages',
-      emoji: '🌍',
-      color: 'bg-purple-500'
-    }
+
   ]
 
   if (loading) {
@@ -369,90 +334,7 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Boutiques récentes */}
-        <div>
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-medium text-gray-900">Boutiques récentes</h2>
-            <button
-              onClick={() => router.push('/admin/plugs')}
-              className="text-sm text-blue-600 hover:text-blue-500 font-medium"
-            >
-              Voir toutes →
-            </button>
-          </div>
-          
-          {recentShops.length === 0 ? (
-            <div className="text-center py-12 bg-white rounded-lg border border-gray-200">
-              <div className="text-6xl text-gray-400">🏪</div>
-              <h3 className="mt-2 text-sm font-medium text-gray-900">Aucune boutique</h3>
-              <p className="mt-1 text-sm text-gray-500">
-                Commencez par ajouter votre première boutique.
-              </p>
-              <div className="mt-6">
-                <button
-                  onClick={() => router.push('/admin/plugs')}
-                  className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
-                >
-                  ➕ Ajouter une boutique
-                </button>
-              </div>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {recentShops.map((shop) => (
-                <div
-                  key={shop._id}
-                  className="relative rounded-lg border border-gray-300 bg-white p-4 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
-                  onClick={() => router.push(`/admin/plugs`)}
-                >
-                  <div className="flex items-start space-x-3">
-                    {shop.image ? (
-                      <img
-                        className="h-12 w-12 rounded-lg object-cover"
-                        src={shop.image}
-                        alt={shop.name}
-                        onError={(e) => {
-                          e.target.style.display = 'none';
-                        }}
-                      />
-                    ) : (
-                      <div className="h-12 w-12 rounded-lg bg-gray-200 flex items-center justify-center text-2xl">
-                        🏪
-                      </div>
-                    )}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center space-x-2">
-                        <h3 className="text-sm font-medium text-gray-900 truncate">
-                          {shop.name}
-                        </h3>
-                        {shop.isVip && (
-                          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800">
-                            VIP
-                          </span>
-                        )}
-                      </div>
-                      <p className="text-sm text-gray-500 truncate mt-1">
-                        {shop.description}
-                      </p>
-                      <div className="flex items-center justify-between mt-2">
-                        <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
-                          shop.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                        }`}>
-                          {shop.isActive ? 'Actif' : 'Inactif'}
-                        </span>
-                        {shop.likes > 0 && (
-                          <span className="text-xs text-gray-500">
-                            👍 {shop.likes}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+
       </div>
     </Layout>
   )

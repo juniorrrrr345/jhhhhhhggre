@@ -18,6 +18,7 @@ const navigation = [
   { name: 'Analytics Géo', href: '/admin/user-analytics', icon: ChartBarIcon },
   { name: 'Messages', href: '/admin/messages', icon: ChartBarIcon },
   { name: 'Demandes', href: '/admin/applications', icon: ChartBarIcon },
+  { name: 'Boutons Bot', href: '/admin/buttons', icon: CogIcon },
   { name: 'Réseaux Sociaux', href: '/admin/social-media', icon: UserGroupIcon },
   { name: 'Configuration', href: '/admin/config', icon: CogIcon }
 ]
