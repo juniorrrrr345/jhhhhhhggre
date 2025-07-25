@@ -318,10 +318,6 @@ ${userShop.isVip ? '👑 **Boutique VIP**' : ''}
           [{
             text: '👁️ Voir ma boutique',
             callback_data: `plug_${userShop._id}`
-          }],
-          [{
-            text: '📊 Stats détaillées',
-            callback_data: `referral_stats_${userShop._id}`
           }, {
             text: '🔄 Actualiser',
             callback_data: `refresh_referral_${userShop._id}`
