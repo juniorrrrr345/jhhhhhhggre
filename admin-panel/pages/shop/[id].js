@@ -549,9 +549,10 @@ export default function ShopPlugDetail() {
               }}>
                 <div style={{ 
                   display: 'grid',
-                  gridTemplateColumns: 'repeat(auto-fit, minmax(80px, 1fr))',
-                  gap: '16px',
-                  textAlign: 'center'
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(100px, 1fr))',
+                  gap: '20px',
+                  textAlign: 'center',
+                  alignItems: 'start'
                 }}>
                   {/* Votes - AFFICHAGE SEULEMENT */}
                   <div style={{ padding: '8px' }}>
