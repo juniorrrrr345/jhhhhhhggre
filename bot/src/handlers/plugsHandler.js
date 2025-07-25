@@ -511,19 +511,26 @@ const handleShopsByPostalCode = async (ctx, country, postalCode, serviceType = n
 const handleDepartmentFilter = async (ctx, serviceType, selectedCountry = null) => {
   try {
     console.log(`🔍 handleDepartmentFilter appelé: serviceType=${serviceType}, selectedCountry=${selectedCountry}`);
+    console.log(`🔍 Étape 1: Récupération userId`);
     const userId = ctx.from.id;
+    console.log(`🔍 Étape 2: userId=${userId}`);
     
-    // 🚫 Prévention spam
-    if (isSpamClick(userId, 'service', `${serviceType}_${selectedCountry || 'none'}`)) {
-      await ctx.answerCbQuery('🔄');
-      return;
-    }
+    // 🚫 Prévention spam - TEMPORAIREMENT DÉSACTIVÉ POUR DEBUG
+    console.log(`🔍 Étape 3: Vérification spam (DÉSACTIVÉ)`);
+    // if (isSpamClick(userId, 'service', `${serviceType}_${selectedCountry || 'none'}`)) {
+    //   await ctx.answerCbQuery('🔄');
+    //   return;
+    // }
     
+    console.log(`🔍 Étape 4: Answer callback query`);
     await ctx.answerCbQuery();
     
+    console.log(`🔍 Étape 5: Récupération config`);
     const config = await Config.findById('main');
+    console.log(`🔍 Étape 6: Config récupérée`);
     const currentLang = config?.languages?.currentLanguage || 'fr';
     const customTranslations = config?.languages?.translations;
+    console.log(`🔍 Étape 7: Langue=${currentLang}`);
     
     // Récupérer toutes les boutiques pour ce service
     let query = { isActive: true };
