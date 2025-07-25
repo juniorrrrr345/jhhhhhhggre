@@ -134,7 +134,7 @@ export default function BotConfiguration() {
           toast.success('⚠️ Configuration sauvegardée (mode dégradé - serveur bot lent)')
         }
       } else {
-        toast.success('Configuration sauvegardée avec succès !')
+        // toast.success('Configuration sauvegardée avec succès !') // Supprimé pour éviter le spam
               }
         
       } catch (error) {

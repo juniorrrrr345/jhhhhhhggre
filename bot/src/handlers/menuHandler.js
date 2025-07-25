@@ -21,15 +21,18 @@ const handleContact = async (ctx) => {
     // Affichage contact classique
     let message = `📞 **Contact**\n\n${config?.buttons?.contact?.content || 'Contactez-nous pour plus d\'informations !'}`;
 
-    // Ajouter les réseaux sociaux globaux
-    if (config?.socialMedia && Array.isArray(config.socialMedia) && config.socialMedia.length > 0) {
+    // Ajouter les réseaux sociaux globaux - PRIORITÉ socialMediaList
+    const socialMediaData = config?.socialMediaList || config?.socialMedia || [];
+    const activeSocials = socialMediaData.filter(social => 
+      social && social.name && social.url && social.enabled !== false
+    );
+    
+    if (activeSocials.length > 0) {
       message += '\n\n📱 **Nous contacter :**\n';
       
-      config.socialMedia.forEach(social => {
-        if (social.name && social.url) {
-          const emoji = social.emoji || '🌐';
-          message += `• ${emoji} ${social.name} : ${social.url}\n`;
-        }
+      activeSocials.forEach(social => {
+        const emoji = social.emoji || '🌐';
+        message += `• ${emoji} ${social.name} : ${social.url}\n`;
       });
     }
 

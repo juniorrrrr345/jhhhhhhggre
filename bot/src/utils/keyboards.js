@@ -101,14 +101,19 @@ const createMainKeyboard = (config) => {
   // Réseaux sociaux personnalisés en bas du menu - PRIORITÉ socialMediaList
   const socialMediaData = config?.socialMediaList || config?.socialMedia || [];
   
-  console.log('🔍 DEBUG RÉSEAUX SOCIAUX:');
-  console.log('- config existe?', !!config);
-  console.log('- socialMediaList?', !!config?.socialMediaList, 'longueur:', config?.socialMediaList?.length);
-  console.log('- socialMedia?', !!config?.socialMedia, 'longueur:', config?.socialMedia?.length);
-  console.log('- socialMediaData final:', Array.isArray(socialMediaData), 'longueur:', socialMediaData.length);
+  // Debug réseaux sociaux (activé uniquement si nécessaire)
+  if (process.env.DEBUG_SOCIAL_MEDIA === 'true') {
+    console.log('🔍 DEBUG RÉSEAUX SOCIAUX:');
+    console.log('- config existe?', !!config);
+    console.log('- socialMediaList?', !!config?.socialMediaList, 'longueur:', config?.socialMediaList?.length);
+    console.log('- socialMedia?', !!config?.socialMedia, 'longueur:', config?.socialMedia?.length);
+    console.log('- socialMediaData final:', Array.isArray(socialMediaData), 'longueur:', socialMediaData.length);
+  }
   
   if (Array.isArray(socialMediaData) && socialMediaData.length > 0) {
-    console.log('🔄 Création des boutons réseaux sociaux personnalisés...');
+    if (process.env.DEBUG_SOCIAL_MEDIA === 'true') {
+      console.log('🔄 Création des boutons réseaux sociaux personnalisés...');
+    }
     
     // Grouper les réseaux sociaux par rangées de 2 boutons max
     const socialButtons = [];
@@ -116,12 +121,13 @@ const createMainKeyboard = (config) => {
     
     // Filtrer uniquement les réseaux activés
     const activeSocials = socialMediaData.filter(social => social.enabled !== false);
-    console.log(`📱 ${activeSocials.length} réseaux sociaux activés trouvés`);
-    
-    // Debug détaillé de chaque réseau social
-    socialMediaData.forEach((social, i) => {
-      console.log(`  [${i}] ${social?.name}: url=${!!social?.url}, enabled=${social?.enabled}`);
-    });
+    if (process.env.DEBUG_SOCIAL_MEDIA === 'true') {
+      console.log(`📱 ${activeSocials.length} réseaux sociaux activés trouvés`);
+      // Debug détaillé de chaque réseau social
+      socialMediaData.forEach((social, i) => {
+        console.log(`  [${i}] ${social?.name}: url=${!!social?.url}, enabled=${social?.enabled}`);
+      });
+    }
     
     activeSocials.forEach((social, index) => {
       if (social.name && social.url) {
@@ -131,7 +137,9 @@ const createMainKeyboard = (config) => {
           const buttonText = `${emoji} ${social.name}`;
           
           socialButtons.push(Markup.button.url(buttonText, cleanedUrl));
-          console.log(`📱 Bouton réseau social créé: ${buttonText} -> ${cleanedUrl}`);
+          if (process.env.DEBUG_SOCIAL_MEDIA === 'true') {
+            console.log(`📱 Bouton réseau social créé: ${buttonText} -> ${cleanedUrl}`);
+          }
           
           // Créer une nouvelle rangée tous les 2 boutons
           if (socialButtons.length === 2 || index === activeSocials.length - 1) {

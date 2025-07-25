@@ -265,7 +265,7 @@ export default function EditPlug() {
       
       if (response.ok) {
         const result = await response.json()
-        console.log('✅ Sauvegarde réussie:', result)
+        // console.log('✅ Sauvegarde réussie:', result) // Debug supprimé
         
         clearTimeout(globalTimeout)
         setSaving(false)

@@ -82,7 +82,7 @@ export default function SocialMediaManager() {
       if (result._degraded) {
         toast.success('⚠️ Réseaux sociaux sauvegardés (mode dégradé)')
       } else {
-        toast.success('✅ Réseaux sociaux sauvegardés avec succès !')
+        // toast.success('✅ Réseaux sociaux sauvegardés avec succès !') // Supprimé pour éviter le spam
       }
       
     } catch (error) {
