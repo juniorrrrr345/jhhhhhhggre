@@ -2608,12 +2608,48 @@ app.patch('/api/applications/:id', authenticateAdmin, async (req, res) => {
       { new: true }
     );
 
-    // Envoyer notification si le statut a changé
+    // Actions spéciales lors du changement de statut
     if (oldApplication.status !== status) {
       try {
         if (status === 'approved') {
+          // 1. Envoyer notification d'approbation
           await sendApprovalNotification(bot, application);
           console.log(`✅ Notification d'approbation envoyée pour ${application.name}`);
+          
+          // 2. Créer automatiquement l'association parrainage
+          try {
+            const Plug = require('./src/models/Plug');
+            
+            // Chercher une boutique avec le même nom que l'application
+            const matchingShop = await Plug.findOne({ 
+              name: { $regex: new RegExp(`^${application.name}$`, 'i') } // Recherche insensible à la casse
+            });
+            
+            if (matchingShop && !matchingShop.ownerId) {
+              // Associer la boutique à l'utilisateur approuvé
+              matchingShop.ownerId = application.userId;
+              
+              // Générer le code et lien de parrainage si pas déjà fait
+              if (!matchingShop.referralCode) {
+                matchingShop.referralCode = matchingShop.generateReferralCode();
+              }
+              if (!matchingShop.referralLink) {
+                const botInfo = await bot.telegram.getMe();
+                matchingShop.referralLink = matchingShop.generateReferralLink(botInfo.username);
+              }
+              
+              await matchingShop.save();
+              console.log(`🔗 Association parrainage créée automatiquement: ${application.name} → User ${application.userId}`);
+              console.log(`📎 Lien de parrainage: ${matchingShop.referralLink}`);
+            } else if (matchingShop && matchingShop.ownerId) {
+              console.log(`⚠️ Boutique ${application.name} déjà associée à un autre utilisateur (${matchingShop.ownerId})`);
+            } else {
+              console.log(`ℹ️ Aucune boutique trouvée pour ${application.name} - créez-la manuellement puis elle sera automatiquement associée`);
+            }
+          } catch (referralError) {
+            console.error('⚠️ Erreur création association parrainage:', referralError.message);
+            // Ne pas faire échouer l'approbation pour une erreur de parrainage
+          }
         } else if (status === 'rejected') {
           await sendRejectionNotification(bot, application, adminNotes);
           console.log(`✅ Notification de rejet envoyée pour ${application.name}`);
