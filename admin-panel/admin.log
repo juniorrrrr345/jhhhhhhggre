@@ -1,0 +1,17 @@
+nohup: ignoring input
+
+> admin-panel@1.0.0 start
+> next start
+
+   ▲ Next.js 14.0.0
+   - Local:        http://localhost:3000
+
+ ✓ Ready in 222ms
+📊 Génération stats utilisateurs pour période: all
+❌ Erreur API user-analytics: Error: Erreur bot API: 500
+    at handler (/workspace/admin-panel/.next/server/pages/api/admin/user-analytics.js:1:988)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+📊 Génération stats utilisateurs pour période: all
+❌ Erreur API user-analytics: Error: Erreur bot API: 500
+    at handler (/workspace/admin-panel/.next/server/pages/api/admin/user-analytics.js:1:988)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)

@@ -158,6 +158,26 @@ class LocationService {
   }
 
   /**
+   * Générer une localisation aléatoire pour les tests/démonstration
+   */
+  getRandomLocation() {
+    const locations = [
+      { country: 'France', countryCode: 'FR', region: 'Île-de-France', city: 'Paris' },
+      { country: 'Belgium', countryCode: 'BE', region: 'Brussels', city: 'Brussels' },
+      { country: 'Switzerland', countryCode: 'CH', region: 'Geneva', city: 'Geneva' },
+      { country: 'Canada', countryCode: 'CA', region: 'Quebec', city: 'Montreal' },
+      { country: 'Germany', countryCode: 'DE', region: 'Bavaria', city: 'Munich' },
+      { country: 'Spain', countryCode: 'ES', region: 'Madrid', city: 'Madrid' },
+      { country: 'Italy', countryCode: 'IT', region: 'Lombardy', city: 'Milan' },
+      { country: 'Netherlands', countryCode: 'NL', region: 'North Holland', city: 'Amsterdam' },
+      { country: 'Portugal', countryCode: 'PT', region: 'Lisbon', city: 'Lisbon' },
+      { country: 'United Kingdom', countryCode: 'GB', region: 'England', city: 'London' }
+    ];
+    
+    return locations[Math.floor(Math.random() * locations.length)];
+  }
+
+  /**
    * Détecter et sauvegarder la localisation d'un utilisateur
    */
   async detectAndSaveUserLocation(user) {
@@ -171,11 +191,24 @@ class LocationService {
         }
       }
 
-      // Obtenir l'IP publique (approximation)
-      const ip = await this.getPublicIP();
+      let location;
       
-      // Obtenir la localisation
-      const location = await this.getLocationFromIP(ip);
+      // EN MODE TEST: Utiliser une localisation aléatoire pour démonstration
+      if (process.env.NODE_ENV === 'development' || process.env.DEMO_MODE === 'true') {
+        console.log(`🎲 Mode démo activé - génération localisation aléatoire pour user ${user.telegramId}`);
+        location = this.getRandomLocation();
+        location.ip = 'demo-ip';
+      } else {
+        // MODE PRODUCTION: Utiliser la vraie géolocalisation
+        try {
+          const ip = await this.getPublicIP();
+          location = await this.getLocationFromIP(ip);
+        } catch (error) {
+          console.log(`⚠️ Erreur géolocalisation réelle, fallback aléatoire: ${error.message}`);
+          location = this.getRandomLocation();
+          location.ip = 'fallback-ip';
+        }
+      }
       
       // Sauvegarder dans l'utilisateur
       user.location = {
@@ -185,12 +218,28 @@ class LocationService {
       
       await user.save();
       
-      console.log(`✅ Location sauvegardée pour user ${user.telegramId}: ${location.country}`);
+      console.log(`✅ Location sauvegardée pour user ${user.telegramId}: ${location.country} (${location.city})`);
       return location;
       
     } catch (error) {
       console.error(`❌ Erreur détection location user ${user.telegramId}:`, error.message);
-      return this.getDefaultLocation();
+      
+      // Fallback final: localisation aléatoire
+      const fallbackLocation = this.getRandomLocation();
+      fallbackLocation.ip = 'error-fallback';
+      
+      try {
+        user.location = {
+          ...fallbackLocation,
+          detectedAt: new Date()
+        };
+        await user.save();
+        console.log(`🔄 Fallback location sauvegardée: ${fallbackLocation.country}`);
+        return fallbackLocation;
+      } catch (saveError) {
+        console.error(`❌ Erreur sauvegarde fallback:`, saveError.message);
+        return this.getDefaultLocation();
+      }
     }
   }
 

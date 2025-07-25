@@ -83,12 +83,18 @@ export default function UserAnalytics() {
 
       <div style={{ padding: '20px', color: '#ffffff' }}>
         <h1 style={{ 
-          fontSize: '24px', 
+          fontSize: '28px', 
           fontWeight: 'bold', 
           marginBottom: '20px',
-          color: '#ffffff'
+          color: '#ffffff',
+          textAlign: 'center',
+          padding: '20px',
+          backgroundColor: '#1f2937',
+          borderRadius: '12px',
+          border: '2px solid #22c55e',
+          textShadow: '2px 2px 4px rgba(0,0,0,0.5)'
         }}>
-          📊 Analyse Géographique des Utilisateurs
+          🌍 📊 ANALYSE GÉOGRAPHIQUE DES UTILISATEURS 🌍
         </h1>
 
         {/* Filtres temporels */}
