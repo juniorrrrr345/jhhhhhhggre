@@ -168,12 +168,9 @@ const handleTopServiceFilter = async (ctx, serviceType, selectedCountry = null) 
   try {
     const userId = ctx.from.id;
     
-    // Pour Livraison et Meetup : rediriger IMMÉDIATEMENT vers le système de départements (ANTI-SPAM)
-    if (serviceType === 'delivery' || serviceType === 'meetup') {
-      console.log(`🎯 handleTopServiceFilter: Redirection immédiate vers handleDepartmentsList pour ${serviceType}, pays=${selectedCountry}`);
-      console.log(`🔍 Utilisateur: ${ctx.from.id}, Chat: ${ctx.chat.id}`);
-      return await handleDepartmentsList(ctx, serviceType, selectedCountry);
-    }
+    // Pour Livraison et Meetup : NE PAS rediriger immédiatement, afficher le menu avec bouton Département
+    // (La redirection automatique empêchait l'affichage du bouton Département)
+    console.log(`🎯 handleTopServiceFilter: Affichage du menu ${serviceType} avec bouton Département, pays=${selectedCountry}`);
     
     // 🚫 Prévention spam (seulement pour postal)
     if (isSpamClick(userId, 'service', `${serviceType}_${selectedCountry || 'none'}`)) {

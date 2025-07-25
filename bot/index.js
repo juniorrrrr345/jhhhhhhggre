@@ -405,10 +405,12 @@ bot.action(/^top_service_(.+)$/, (ctx) => {
 });
 
 bot.action(/^top_departments_(.+)$/, (ctx) => {
+  console.log(`🔥 CALLBACK top_departments_ DÉCLENCHÉ! Match: ${ctx.match[1]}`);
   const fullMatch = ctx.match[1];
   const parts = fullMatch.split('_');
   const serviceType = parts[0]; // delivery ou meetup
   const selectedCountry = parts.length > 1 ? parts[1] : null;
+  console.log(`🔥 Parsed: serviceType=${serviceType}, selectedCountry=${selectedCountry}`);
   return handleDepartmentsList(ctx, serviceType, selectedCountry);
 });
 
