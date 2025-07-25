@@ -2115,11 +2115,25 @@ app.post('/api/public/plugs/:id/like', async (req, res) => {
 // Modèle simple pour stocker les utilisateurs avec persistance améliorée
 const userStorage = new Set();
 
-// Charger les utilisateurs existants depuis la base (applications plugs)
+// Charger les utilisateurs existants depuis la base (modèle User + applications)
 const loadExistingUsers = async () => {
   try {
+    console.log('📊 Chargement des utilisateurs existants...');
+    
+    // Charger depuis le modèle User (tous les utilisateurs qui ont démarré le bot)
+    const users = await User.find({ isActive: true }, 'telegramId').lean();
+    console.log(`👥 Trouvé ${users.length} utilisateurs actifs dans User`);
+    
+    users.forEach(user => {
+      if (user.telegramId) {
+        userStorage.add(user.telegramId);
+      }
+    });
+    
+    // Charger aussi depuis PlugApplication pour compatibilité
     const PlugApplication = require('./src/models/PlugApplication');
     const applications = await PlugApplication.find({}, 'userId').lean();
+    console.log(`📝 Trouvé ${applications.length} demandes dans PlugApplication`);
     
     applications.forEach(app => {
       if (app.userId) {
@@ -2127,9 +2141,10 @@ const loadExistingUsers = async () => {
       }
     });
     
-    console.log(`📊 Loaded ${userStorage.size} existing users from database`);
+    console.log(`✅ Chargé ${userStorage.size} utilisateurs uniques pour broadcast`);
+    console.log(`📋 Premiers utilisateurs:`, Array.from(userStorage).slice(0, 5));
   } catch (error) {
-    console.error('⚠️ Error loading existing users:', error.message);
+    console.error('❌ Erreur chargement utilisateurs:', error.message);
   }
 };
 
