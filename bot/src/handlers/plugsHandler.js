@@ -174,6 +174,12 @@ const handleTopServiceFilter = async (ctx, serviceType, selectedCountry = null) 
       return;
     }
     
+    // Pour Livraison et Meetup : rediriger IMMÉDIATEMENT vers le système de départements (ANTI-SPAM)
+    if (serviceType === 'delivery' || serviceType === 'meetup') {
+      console.log(`🎯 handleTopServiceFilter: Redirection immédiate vers handleDepartmentFilter pour ${serviceType}, pays=${selectedCountry}`);
+      return await handleDepartmentFilter(ctx, serviceType, selectedCountry);
+    }
+    
     await ctx.answerCbQuery();
     
     const config = await Config.findById('main');
@@ -187,8 +193,6 @@ const handleTopServiceFilter = async (ctx, serviceType, selectedCountry = null) 
     
     // Message spécifique selon le service avec traductions complètes
     const serviceMessages = {
-      delivery: getTranslation('filter_delivery_message', currentLang, customTranslations),
-      meetup: getTranslation('filter_meetup_message', currentLang, customTranslations),
       postal: getTranslation('filter_postal_message', currentLang, customTranslations)
     };
     
@@ -233,52 +237,8 @@ const handleTopServiceFilter = async (ctx, serviceType, selectedCountry = null) 
         message += `❌ ${noShopsLabel}`;
         keyboard = createTopPlugsKeyboard(config, availableCountries, selectedCountry, serviceType, []);
       }
-    } else {
-      // Pour Livraison et Meetup : rediriger vers le système de départements
-      if (serviceType === 'delivery' || serviceType === 'meetup') {
-        console.log(`🎯 handleTopServiceFilter: Redirection vers handleDepartmentFilter pour ${serviceType}, pays=${selectedCountry}`);
-        return await handleDepartmentFilter(ctx, serviceType, selectedCountry);
-      }
-      
-      // Sinon afficher les boutiques du service avec bouton département
-      const query = { 
-        isActive: true,
-        [`services.${serviceType}.enabled`]: true
-      };
-      
-      if (selectedCountry) {
-        query.countries = { $in: [selectedCountry] };
-      }
-      
-      const servicePlugs = await Plug.find(query).sort({ likes: -1, createdAt: -1 });
-      
-      if (servicePlugs.length > 0) {
-        const shopsFoundLabel = serviceType === 'delivery' 
-          ? getTranslation('shops_found_delivery', currentLang, customTranslations)
-          : getTranslation('shops_found_meetup', currentLang, customTranslations);
-        message += `**${servicePlugs.length} ${shopsFoundLabel} :**\n\n`;
-        
-        // Ajouter instruction pour filtre département en bas
-        const instructionLabel = getTranslation('click_department_instruction', currentLang, customTranslations);
-        message += `ℹ️ ${instructionLabel}\n\n`;
-        
-        const plugButtons = [];
-        servicePlugs.slice(0, 10).forEach((plug) => {
-          const country = getCountryFlag(plug.countries[0]);
-          const location = plug.location ? ` ${plug.location}` : '';
-          const vipIcon = plug.isVip ? '⭐️ ' : '';
-          const buttonText = `${country}${location} ${vipIcon}${plug.name} 👍 ${plug.likes}`;
-          plugButtons.push([Markup.button.callback(buttonText, `plug_${plug._id}_from_top_service`)]);
-        });
-        
-        keyboard = createTopPlugsKeyboard(config, availableCountries, selectedCountry, serviceType, plugButtons);
-      } else {
-        const noShopsLabel = serviceType === 'delivery' 
-          ? getTranslation('no_shops_delivery', currentLang, customTranslations)
-          : getTranslation('no_shops_meetup', currentLang, customTranslations);
-        message += `❌ ${noShopsLabel}`;
-        keyboard = createTopPlugsKeyboard(config, availableCountries, selectedCountry, serviceType, []);
-      }
+    }
+
     }
     
     // Éditer le message existant pour éviter le spam
