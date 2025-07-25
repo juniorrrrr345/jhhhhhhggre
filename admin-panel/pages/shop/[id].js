@@ -716,64 +716,65 @@ export default function ShopPlugDetail() {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                   {/* Livraison */}
                   <div style={{ 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    justifyContent: 'space-between',
-                    padding: '12px',
+                    display: 'grid',
+                    gridTemplateColumns: '40px 1fr 140px',
+                    alignItems: 'center',
+                    gap: '16px',
+                    padding: '16px',
                     backgroundColor: plug?.services?.delivery?.enabled ? '#0a4a2a' : '#2a2a2a',
                     borderRadius: '8px',
                     border: plug?.services?.delivery?.enabled ? '1px solid #22c55e' : '1px solid #3a3a3a',
-                    minHeight: '60px'
+                    minHeight: '70px'
                   }}>
-                    <div style={{ 
-                      display: 'flex', 
-                      alignItems: 'center', 
-                      gap: '16px',
-                      flex: '1',
-                      minWidth: '0'
+                    {/* Emoji */}
+                    <div style={{
+                      fontSize: '22px',
+                      textAlign: 'center',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
                     }}>
-                      <span style={{ 
-                        fontSize: '20px',
-                        flexShrink: '0',
-                        minWidth: '24px',
-                        textAlign: 'center'
-                      }}>📦</span>
-                      <div style={{ 
-                        minWidth: '0', 
-                        flex: '1',
-                        padding: '4px 8px'
-                      }}>
-                        <div style={{ 
-                          fontWeight: '500', 
-                          color: '#ffffff',
-                          fontSize: '15px',
-                          lineHeight: '1.4',
-                          wordBreak: 'break-word',
-                          textAlign: 'center',
-                          minHeight: '21px'
-                        }}>
-                          {translateService('delivery') || 'Livraison'}
-                        </div>
-                        {plug?.services?.delivery?.price && (
-                          <div style={{ 
-                            fontSize: '13px', 
-                            color: '#8e8e93',
-                            marginTop: '2px'
-                          }}>
-                            {plug.services.delivery.price}
-                          </div>
-                        )}
-                      </div>
+                      📦
                     </div>
+                    
+                    {/* Texte service centré */}
+                    <div style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      textAlign: 'center',
+                      minHeight: '40px'
+                    }}>
+                      <div style={{ 
+                        fontWeight: '600', 
+                        color: '#ffffff',
+                        fontSize: '16px',
+                        lineHeight: '1.3',
+                        wordBreak: 'break-word',
+                        marginBottom: '4px'
+                      }}>
+                        {translateService('delivery') || 'Livraison'}
+                      </div>
+                      {plug?.services?.delivery?.price && (
+                        <div style={{ 
+                          fontSize: '12px', 
+                          color: '#8e8e93',
+                          lineHeight: '1.2'
+                        }}>
+                          {plug.services.delivery.price}
+                        </div>
+                      )}
+                    </div>
+                    
+                    {/* Statut */}
                     <div style={{ 
                       color: plug?.services?.delivery?.enabled ? '#22c55e' : '#ef4444',
-                      fontWeight: '500',
-                      fontSize: '14px',
+                      fontWeight: '600',
+                      fontSize: '13px',
                       textAlign: 'center',
-                      minWidth: '120px',
-                      flexShrink: '0',
-                      padding: '4px 8px',
-                      lineHeight: '1.3'
+                      lineHeight: '1.2',
+                      padding: '8px 4px'
                     }}>
                       {plug?.services?.delivery?.enabled ? `✓ ${t('available') || 'Disponible'}` : `✗ ${t('not_available') || 'Non disponible'}`}
                     </div>
@@ -781,64 +782,65 @@ export default function ShopPlugDetail() {
 
                   {/* Postal */}
                   <div style={{ 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    justifyContent: 'space-between',
-                    padding: '12px',
+                    display: 'grid',
+                    gridTemplateColumns: '40px 1fr 140px',
+                    alignItems: 'center',
+                    gap: '16px',
+                    padding: '16px',
                     backgroundColor: plug?.services?.postal?.enabled ? '#1a3a4a' : '#2a2a2a',
                     borderRadius: '8px',
                     border: plug?.services?.postal?.enabled ? '1px solid #3b82f6' : '1px solid #3a3a3a',
-                    minHeight: '60px'
+                    minHeight: '70px'
                   }}>
-                    <div style={{ 
-                      display: 'flex', 
-                      alignItems: 'center', 
-                      gap: '16px',
-                      flex: '1',
-                      minWidth: '0'
+                    {/* Emoji */}
+                    <div style={{
+                      fontSize: '22px',
+                      textAlign: 'center',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
                     }}>
-                      <span style={{ 
-                        fontSize: '20px',
-                        flexShrink: '0',
-                        minWidth: '24px',
-                        textAlign: 'center'
-                      }}>📬</span>
-                      <div style={{ 
-                        minWidth: '0', 
-                        flex: '1',
-                        padding: '4px 8px'
-                      }}>
-                        <div style={{ 
-                          fontWeight: '500', 
-                          color: '#ffffff',
-                          fontSize: '15px',
-                          lineHeight: '1.4',
-                          wordBreak: 'break-word',
-                          textAlign: 'center',
-                          minHeight: '21px'
-                        }}>
-                          {translateService('postal') || 'Envoi postal'}
-                        </div>
-                        {plug?.services?.postal?.price && (
-                          <div style={{ 
-                            fontSize: '13px', 
-                            color: '#8e8e93',
-                            marginTop: '2px'
-                          }}>
-                            {plug.services.postal.price}
-                          </div>
-                        )}
-                      </div>
+                      📬
                     </div>
+                    
+                    {/* Texte service centré */}
+                    <div style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      textAlign: 'center',
+                      minHeight: '40px'
+                    }}>
+                      <div style={{ 
+                        fontWeight: '600', 
+                        color: '#ffffff',
+                        fontSize: '16px',
+                        lineHeight: '1.3',
+                        wordBreak: 'break-word',
+                        marginBottom: '4px'
+                      }}>
+                        {translateService('postal') || 'Envoi postal'}
+                      </div>
+                      {plug?.services?.postal?.price && (
+                        <div style={{ 
+                          fontSize: '12px', 
+                          color: '#8e8e93',
+                          lineHeight: '1.2'
+                        }}>
+                          {plug.services.postal.price}
+                        </div>
+                      )}
+                    </div>
+                    
+                    {/* Statut */}
                     <div style={{ 
                       color: plug?.services?.postal?.enabled ? '#3b82f6' : '#ef4444',
-                      fontWeight: '500',
-                      fontSize: '14px',
+                      fontWeight: '600',
+                      fontSize: '13px',
                       textAlign: 'center',
-                      minWidth: '120px',
-                      flexShrink: '0',
-                      padding: '4px 8px',
-                      lineHeight: '1.3'
+                      lineHeight: '1.2',
+                      padding: '8px 4px'
                     }}>
                       {plug?.services?.postal?.enabled ? `✓ ${t('available') || 'Disponible'}` : `✗ ${t('not_available') || 'Non disponible'}`}
                     </div>
@@ -846,64 +848,65 @@ export default function ShopPlugDetail() {
 
                   {/* Meetup */}
                   <div style={{ 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    justifyContent: 'space-between',
-                    padding: '12px',
+                    display: 'grid',
+                    gridTemplateColumns: '40px 1fr 140px',
+                    alignItems: 'center',
+                    gap: '16px',
+                    padding: '16px',
                     backgroundColor: plug?.services?.meetup?.enabled ? '#4a2a1a' : '#2a2a2a',
                     borderRadius: '8px',
                     border: plug?.services?.meetup?.enabled ? '1px solid #f59e0b' : '1px solid #3a3a3a',
-                    minHeight: '60px'
+                    minHeight: '70px'
                   }}>
-                    <div style={{ 
-                      display: 'flex', 
-                      alignItems: 'center', 
-                      gap: '16px',
-                      flex: '1',
-                      minWidth: '0'
+                    {/* Emoji */}
+                    <div style={{
+                      fontSize: '22px',
+                      textAlign: 'center',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
                     }}>
-                      <span style={{ 
-                        fontSize: '20px',
-                        flexShrink: '0',
-                        minWidth: '24px',
-                        textAlign: 'center'
-                      }}>🤝</span>
-                      <div style={{ 
-                        minWidth: '0', 
-                        flex: '1',
-                        padding: '4px 8px'
-                      }}>
-                        <div style={{ 
-                          fontWeight: '500', 
-                          color: '#ffffff',
-                          fontSize: '15px',
-                          lineHeight: '1.4',
-                          wordBreak: 'break-word',
-                          textAlign: 'center',
-                          minHeight: '21px'
-                        }}>
-                          {translateService('meetup') || 'Meetup'}
-                        </div>
-                        {plug?.services?.meetup?.price && (
-                          <div style={{ 
-                            fontSize: '13px', 
-                            color: '#8e8e93',
-                            marginTop: '2px'
-                          }}>
-                            {plug.services.meetup.price}
-                          </div>
-                        )}
-                      </div>
+                      🤝
                     </div>
+                    
+                    {/* Texte service centré */}
+                    <div style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      textAlign: 'center',
+                      minHeight: '40px'
+                    }}>
+                      <div style={{ 
+                        fontWeight: '600', 
+                        color: '#ffffff',
+                        fontSize: '16px',
+                        lineHeight: '1.3',
+                        wordBreak: 'break-word',
+                        marginBottom: '4px'
+                      }}>
+                        {translateService('meetup') || 'Meetup'}
+                      </div>
+                      {plug?.services?.meetup?.price && (
+                        <div style={{ 
+                          fontSize: '12px', 
+                          color: '#8e8e93',
+                          lineHeight: '1.2'
+                        }}>
+                          {plug.services.meetup.price}
+                        </div>
+                      )}
+                    </div>
+                    
+                    {/* Statut */}
                     <div style={{ 
                       color: plug?.services?.meetup?.enabled ? '#f59e0b' : '#ef4444',
-                      fontWeight: '500',
-                      fontSize: '14px',
+                      fontWeight: '600',
+                      fontSize: '13px',
                       textAlign: 'center',
-                      minWidth: '120px',
-                      flexShrink: '0',
-                      padding: '4px 8px',
-                      lineHeight: '1.3'
+                      lineHeight: '1.2',
+                      padding: '8px 4px'
                     }}>
                       {plug?.services?.meetup?.enabled ? `✓ ${t('available') || 'Disponible'}` : `✗ ${t('not_available') || 'Non disponible'}`}
                     </div>
