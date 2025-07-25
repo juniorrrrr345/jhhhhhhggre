@@ -171,28 +171,7 @@ const createMainKeyboard = (config) => {
   return Markup.inlineKeyboard(buttons);
 };
 
-// Clavier des options de livraison (regroupe Envoi et Meetup)
-const createDeliveryOptionsKeyboard = (config) => {
-  const currentLang = config?.languages?.currentLanguage || 'fr';
-  const customTranslations = config?.languages?.translations;
-  
-  const deliveryText = getTranslation('filters_delivery', currentLang, customTranslations);
-  const postalText = getTranslation('filters_postal', currentLang, customTranslations);
-  const meetupText = getTranslation('filters_meetup', currentLang, customTranslations);
-  const backText = getTranslation('filters_back', currentLang, customTranslations);
-  
-  return Markup.inlineKeyboard([
-    // Première ligne : Meetup à gauche, Envoi à droite
-    [
-      Markup.button.callback(`🤝 ${meetupText}`, 'service_meetup'),
-      Markup.button.callback(`📬 ${postalText}`, 'service_postal')
-    ],
-    // Deuxième ligne : Livraison en bas
-    [Markup.button.callback(`📦 ${deliveryText}`, 'service_delivery')],
-    // Troisième ligne : Retour
-    [Markup.button.callback(backText, 'back_main')]
-  ]);
-};
+
 
 // Clavier des filtres de plugs
 const createPlugsFilterKeyboard = (config) => {
@@ -476,7 +455,6 @@ const createVIPKeyboard = (vipPlugs) => {
 
 module.exports = {
   createMainKeyboard,
-  createDeliveryOptionsKeyboard,
   createPlugsFilterKeyboard,
   createServicesKeyboard,
   createCountriesKeyboard,

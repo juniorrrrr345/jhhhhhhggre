@@ -381,27 +381,6 @@ bot.action('check_application_status', handleCheckApplicationStatus);
 bot.action(/^cancel_my_application_(.+)$/, handleCancelMyApplication);
 bot.action(/^confirm_cancel_(.+)$/, handleConfirmCancel);
 
-// Handler pour les options de livraison
-bot.action('delivery_options', async (ctx) => {
-  try {
-    const config = await Config.findById('main');
-    const currentLang = config?.languages?.currentLanguage || 'fr';
-    const customTranslations = config?.languages?.translations;
-    
-    const deliveryTitle = getTranslation('menu_delivery', currentLang, customTranslations);
-    const deliveryMessage = `${deliveryTitle}\n\nChoisissez votre mode de livraison :`;
-    
-    await ctx.editMessageText(deliveryMessage, {
-      reply_markup: createDeliveryOptionsKeyboard(config).reply_markup
-    });
-    
-    await ctx.answerCbQuery();
-  } catch (error) {
-    console.error('❌ Erreur delivery_options:', error);
-    await ctx.answerCbQuery('❌ Erreur lors du chargement des options de livraison');
-  }
-});
-
 // Gestionnaire des services (distinguer formulaire vs filtres)
 bot.action(/^service_(delivery|postal|meetup)$/, async (ctx) => {
   const userId = ctx.from.id;
@@ -2671,7 +2650,7 @@ app.get('/api/debug/config', async (req, res) => {
     }
     
     // Test création clavier avec debug
-    const { createMainKeyboard, createDeliveryOptionsKeyboard } = require('./src/utils/keyboards');
+    const { createMainKeyboard } = require('./src/utils/keyboards');
     process.env.DEBUG_SOCIAL_MEDIA = 'true'; // Activer debug temporaire
     const keyboard = createMainKeyboard(config);
     process.env.DEBUG_SOCIAL_MEDIA = 'false'; // Désactiver

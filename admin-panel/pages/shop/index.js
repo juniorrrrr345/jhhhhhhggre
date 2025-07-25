@@ -103,7 +103,9 @@ export default function ShopHome() {
           isVip: false,
           likes: 15,
           countries: ['France'],
-          services: ['delivery'],
+          services: {
+            delivery: { enabled: true }
+          },
           departments: ['75'],
           telegram: '@example_shop',
           location: 'Paris'
@@ -125,7 +127,10 @@ export default function ShopHome() {
           isVip: true,
           likes: 42,
           countries: ['Spain'],
-          services: ['meetup'],
+          services: {
+            meetup: { enabled: true },
+            postal: { enabled: true }
+          },
           departments: ['28'],
           telegram: '@premium_shop',
           location: 'Madrid'
