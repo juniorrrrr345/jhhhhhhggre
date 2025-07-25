@@ -10,6 +10,7 @@ const {
 } = require('../utils/keyboards');
 const { sendMessageWithImage, editMessageWithImage, sendPlugWithImage } = require('../utils/messageHelper');
 const { getTranslation, translateDescription } = require('../utils/translations');
+const postalCodeService = require('../services/postalCodeService');
 
 // 🚫 PRÉVENTION SPAM - Stockage des derniers états
 const lastUserState = new Map();
