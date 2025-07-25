@@ -606,10 +606,7 @@ const handleDepartmentFilter = async (ctx, serviceType, selectedCountry = null) 
         ]
       };
       
-      await ctx.editMessageText(message, {
-        parse_mode: 'Markdown',
-        reply_markup: keyboard
-      });
+      await editMessageWithImage(ctx, message, keyboard, config, { parse_mode: 'Markdown' });
       return;
     }
     
@@ -660,25 +657,21 @@ const handleDepartmentFilter = async (ctx, serviceType, selectedCountry = null) 
     
     const keyboard = { inline_keyboard: departmentButtons };
     
-    // Éditer le message existant (ANTI-SPAM)
-    await ctx.editMessageText(message, {
-      parse_mode: 'Markdown',
-      reply_markup: keyboard
-    });
+    // Éditer le message avec image (compatible avec les messages image + texte)
+    await editMessageWithImage(ctx, message, keyboard, config, { parse_mode: 'Markdown' });
     
   } catch (error) {
     console.error('❌ Erreur dans handleDepartmentFilter:', error);
     await ctx.answerCbQuery('❌ Erreur').catch(() => {});
     
     try {
-      await ctx.editMessageText('❌ Erreur technique. Veuillez réessayer.', {
-        reply_markup: {
-          inline_keyboard: [[{
-            text: '🔙 Retour au menu',
-            callback_data: 'top_plugs'
-          }]]
-        }
-      });
+      const errorKeyboard = {
+        inline_keyboard: [[{
+          text: '🔙 Retour au menu',
+          callback_data: 'top_plugs'
+        }]]
+      };
+      await editMessageWithImage(ctx, '❌ Erreur technique. Veuillez réessayer.', errorKeyboard, config, { parse_mode: 'Markdown' });
     } catch (editError) {
       console.error('❌ Erreur édition message erreur:', editError);
     }
