@@ -411,7 +411,19 @@ const handlePostalCodeFilter = async (ctx, serviceType, selectedCountry = null, 
     message += `📄 **Page:** ${page + 1}\n\n`;
     message += `💡 *Cliquez sur un code postal pour voir les boutiques disponibles*`;
     
-    await editMessageWithImage(ctx, message, keyboard, config, { parse_mode: 'Markdown' });
+    // Éditer le message directement sans image pour les codes postaux
+    try {
+      await ctx.editMessageText(message, {
+        parse_mode: 'Markdown',
+        reply_markup: keyboard
+      });
+    } catch (editError) {
+      console.log('Erreur édition message, tentative avec reply:', editError.message);
+      await ctx.reply(message, {
+        parse_mode: 'Markdown',
+        reply_markup: keyboard
+      });
+    }
     
   } catch (error) {
     console.error('Erreur dans handlePostalCodeFilter:', error);
