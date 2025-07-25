@@ -47,43 +47,29 @@ export default function ReferralsPage() {
       setLoading(true)
       
       // Charger toutes les boutiques via l'API simple
-      const plugsData = await simpleApi.getPlugs(token)
+      const plugsResponse = await simpleApi.getPlugs(token)
+      console.log('📊 Réponse API plugs:', plugsResponse)
+      
+      // L'API renvoie {plugs: [...]}
+      const plugsData = plugsResponse?.plugs || plugsResponse || []
       console.log('📊 Boutiques chargées:', plugsData?.length || 0)
       
       if (plugsData && Array.isArray(plugsData)) {
         const plugsWithReferrals = []
         let totalReferred = 0
 
-        // Pour chaque boutique, récupérer ses données de parrainage
+        // Les boutiques ont déjà les données de parrainage dans l'API
         for (const plug of plugsData) {
-          try {
-            // Essayer de récupérer les données de parrainage
-            const response = await fetch('/api/cors-proxy', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-              },
-              body: JSON.stringify({
-                endpoint: `/api/plugs/${plug._id}/referral`,
-                method: 'GET'
-              })
-            })
-
-            if (response.ok) {
-              const referralData = await response.json()
-              plugsWithReferrals.push({
-                ...plug,
-                ...referralData
-              })
-              totalReferred += referralData.totalReferred || 0
-            } else {
-              // Si pas de données de parrainage, ajouter la boutique sans ces données
-              plugsWithReferrals.push({
-                ...plug,
-                referralLink: null,
-                referralCode: null,
-                totalReferred: 0,
+          // Les données sont déjà présentes dans l'objet plug
+          plugsWithReferrals.push({
+            ...plug,
+            totalReferred: plug.totalReferred || 0,
+            referredUsers: plug.referredUsers || [],
+            referralLink: plug.referralLink || null,
+            referralCode: plug.referralCode || null
+          })
+          totalReferred += plug.totalReferred || 0
+        }
                 referredUsers: []
               })
             }
