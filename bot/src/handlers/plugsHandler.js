@@ -1047,11 +1047,7 @@ const createTopPlugsKeyboard = (config, countries, selectedCountry, selectedServ
   
   buttons.push(serviceRow);
   
-  // Troisième ligne : Bouton Départements (nouveau)
-  const departmentButton = Markup.button.callback('📍 Départements', 'all_departments');
-  buttons.push([departmentButton]);
-  
-  // Quatrième ligne : Département (si service delivery ou meetup sélectionné)
+  // Troisième ligne : Département (si service delivery ou meetup sélectionné)
   if (selectedService === 'delivery' || selectedService === 'meetup') {
     const deptText = getTranslation('filters_department', currentLang, customTranslations);
     const deptButton = Markup.button.callback(deptText, `top_departments_${selectedService}${selectedCountry ? `_${selectedCountry}` : ''}`);
