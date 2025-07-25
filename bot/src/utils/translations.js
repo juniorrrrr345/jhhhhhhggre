@@ -141,6 +141,20 @@ const translations = {
       es: 'tiendas disponibles',
       de: 'Shops verfügbar'
     },
+    'messages_sortedByVotes': {
+      fr: 'Triés par nombre de votes',
+      en: 'Sorted by number of votes',
+      it: 'Ordinati per numero di voti',
+      es: 'Ordenados por número de votos',
+      de: 'Sortiert nach Anzahl der Stimmen'
+    },
+    'messages_noShops': {
+      fr: '❌ Aucun plug disponible pour le moment.',
+      en: '❌ No plugs available at the moment.',
+      it: '❌ Nessun negozio disponibile al momento.',
+      es: '❌ No hay tiendas disponibles en este momento.',
+      de: '❌ Momentan sind keine Shops verfügbar.'
+    },
 
     // === INSCRIPTION ===
     'registration.title': {

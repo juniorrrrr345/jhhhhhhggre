@@ -281,13 +281,17 @@ bot.action(/^lang_(.+)$/, async (ctx) => {
         };
       } else {
         config.languages.currentLanguage = newLanguage;
-        config.languages.enabled = true; // S'assurer que les traductions sont activées
+        config.languages.enabled = true;
       }
       
       await config.save();
       
-      // Invalider le cache pour forcer le rechargement
+      // INVALIDER TOUS LES CACHES pour mise à jour instantanée
       configCache = null;
+      plugsCache = null;
+      if (typeof clearAllCaches === 'function') {
+        clearAllCaches();
+      }
     }
     
     const customTranslations = config?.languages?.translations;
@@ -295,10 +299,24 @@ bot.action(/^lang_(.+)$/, async (ctx) => {
     
     await ctx.answerCbQuery(`✅ ${languageName} sélectionnée !`);
     
-    // Retourner au menu principal avec la nouvelle langue IMMEDIATEMENT
-    setTimeout(() => {
-      handleStart(ctx);
-    }, 100);
+    // Éditer le message IMMÉDIATEMENT avec la nouvelle langue
+    try {
+      // Recréer le menu principal avec la nouvelle langue
+      const welcomeMessage = getTranslation('messages_welcome', newLanguage, customTranslations);
+      const keyboard = await createMainKeyboard(config);
+      
+      // Essayer d'éditer le message existant
+      await ctx.editMessageText(welcomeMessage, {
+        reply_markup: keyboard.reply_markup,
+        parse_mode: 'Markdown'
+      });
+    } catch (editError) {
+      console.log('⚠️ Impossible d\'éditer le message, envoi d\'un nouveau');
+      // Si l'édition échoue, appeler handleStart
+      setTimeout(() => {
+        handleStart(ctx);
+      }, 100);
+    }
     
   } catch (error) {
     console.error('❌ Erreur changement langue:', error);
@@ -614,21 +632,38 @@ const authenticateAdmin = (req, res, next) => {
 
 // ===== ROUTES CONFIGURATION =====
 
-// Cache de configuration
+// Cache global pour les configurations
 let configCache = null;
-let lastConfigUpdate = 0;
+let plugsCache = null;
+let cacheTimestamp = 0;
+const CACHE_DURATION = 30000; // 30 secondes
 
-// Fonction pour recharger la configuration
-const reloadBotConfig = async () => {
+// Fonction pour vider tous les caches
+const clearAllCaches = () => {
+  configCache = null;
+  plugsCache = null;
+  cacheTimestamp = 0;
+  console.log('🧹 Tous les caches vidés');
+};
+
+// Fonction pour obtenir la config fraîche avec gestion du cache
+const getFreshConfig = async () => {
+  const now = Date.now();
+  
+  // Si on a une config en cache et qu'elle n'est pas expirée
+  if (configCache && (now - cacheTimestamp) < CACHE_DURATION) {
+    return configCache;
+  }
+  
+  // Recharger depuis la base de données
   try {
-    console.log('🔄 Rechargement de la configuration du bot...');
     configCache = await Config.findById('main');
-    lastConfigUpdate = Date.now();
-    console.log('✅ Configuration rechargée avec succès');
+    cacheTimestamp = now;
+    console.log('🔄 Config rechargée depuis la DB');
     return configCache;
   } catch (error) {
-    console.error('❌ Erreur lors du rechargement de la config:', error);
-    throw error;
+    console.error('❌ Erreur chargement config fraîche:', error);
+    return configCache; // Retourner l'ancienne si erreur
   }
 };
 
@@ -2833,3 +2868,47 @@ app.get('/api/likes/:plugId/:userId', async (req, res) => {
     res.status(500).json({ error: 'Erreur serveur' });
   }
 });
+
+// Gestion du /start et du menu principal
+const handleStart = async (ctx) => {
+  try {
+    // Obtenir la config fraîche avec traductions
+    const config = await getFreshConfig();
+    const currentLang = config?.languages?.currentLanguage || 'fr';
+    const customTranslations = config?.languages?.translations;
+    
+    console.log(`🌍 Menu principal affiché en langue: ${currentLang}`);
+    
+    // Message de bienvenue traduit
+    const welcomeMessage = getTranslation('messages_welcome', currentLang, customTranslations);
+    
+    // Créer le clavier principal avec traductions
+    const keyboard = await createMainKeyboard(config);
+    
+    // Envoyer ou éditer le message avec l'image
+    try {
+      if (ctx.callbackQuery) {
+        // Si c'est un callback, éditer le message existant
+        await editMessageWithImage(ctx, welcomeMessage, keyboard, config, { 
+          parse_mode: 'Markdown' 
+        });
+      } else {
+        // Si c'est un nouveau /start, envoyer un nouveau message
+        await sendMessageWithImage(ctx, welcomeMessage, keyboard, config, { 
+          parse_mode: 'Markdown' 
+        });
+      }
+    } catch (error) {
+      console.error('❌ Erreur affichage menu principal:', error);
+      // Fallback sans image
+      await ctx.reply(welcomeMessage, {
+        reply_markup: keyboard.reply_markup,
+        parse_mode: 'Markdown'
+      });
+    }
+    
+  } catch (error) {
+    console.error('❌ Erreur dans handleStart:', error);
+    await ctx.reply('❌ Erreur lors du chargement du menu').catch(() => {});
+  }
+};

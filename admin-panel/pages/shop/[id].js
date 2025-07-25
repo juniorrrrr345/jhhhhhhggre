@@ -814,7 +814,6 @@ export default function ShopPlugDetail() {
               </div>
             </div>
           )}
-          )}
         </main>
 
         {/* Navigation en bas */}

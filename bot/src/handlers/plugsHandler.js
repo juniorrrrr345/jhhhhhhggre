@@ -16,9 +16,12 @@ const handleTopPlugs = async (ctx) => {
   try {
     await ctx.answerCbQuery();
     
+    // TOUJOURS recharger la config fraîche pour les traductions
     const config = await Config.findById('main');
     const currentLang = config?.languages?.currentLanguage || 'fr';
     const customTranslations = config?.languages?.translations;
+    
+    console.log(`🌍 Top Plugs affiché en langue: ${currentLang}`);
     
     // Récupérer tous les plugs actifs triés par votes
     const allPlugs = await Plug.find({ isActive: true })
@@ -30,7 +33,7 @@ const handleTopPlugs = async (ctx) => {
     // Message d'affichage initial avec traduction
     const topPlugsTitle = getTranslation('menu_topPlugs', currentLang, customTranslations);
     let message = `${topPlugsTitle}\n`;
-    message += `*(Triés par nombre de votes)*\n\n`;
+    message += `*(${getTranslation('messages_sortedByVotes', currentLang, customTranslations)})*\n\n`;
     
     // Afficher les premiers plugs (top 10 par défaut) - MISE À JOUR pour boutons
     const topPlugs = allPlugs.slice(0, 10);
@@ -50,13 +53,12 @@ const handleTopPlugs = async (ctx) => {
         plugButtons.push([Markup.button.callback(buttonText, `plug_${plug._id}_from_top_plugs`)]);
       });
       
-      // Créer le clavier avec les boutons de boutiques
-      keyboard = createTopPlugsKeyboard(availableCountries, null, null, plugButtons);
-      
+      keyboard = createTopPlugsKeyboard(config, availableCountries, [], null, null);
+      keyboard.reply_markup.inline_keyboard = plugButtons.concat(keyboard.reply_markup.inline_keyboard);
     } else {
-      message += `❌ Aucun plug disponible pour le moment.`;
-      // Créer un clavier basique sans boutiques
-      keyboard = createTopPlugsKeyboard(availableCountries, null, null);
+      const noShopsText = getTranslation('messages_noShops', currentLang, customTranslations);
+      message += noShopsText;
+      keyboard = createTopPlugsKeyboard(config, availableCountries, [], null, null);
     }
     
     await editMessageWithImage(ctx, message, keyboard, config, { parse_mode: 'Markdown' });
@@ -407,7 +409,7 @@ const getCountryFlag = (country) => {
 };
 
 // Créer le clavier principal Top des Plugs
-const createTopPlugsKeyboard = (countries, selectedCountry, selectedService, plugButtons = []) => {
+const createTopPlugsKeyboard = (config, countries, selectedCountry, selectedService, plugButtons = [], departments = []) => {
   const buttons = [];
   
   // Première ligne : Pays (affichage intelligent)
@@ -469,6 +471,14 @@ const createTopPlugsKeyboard = (countries, selectedCountry, selectedService, plu
   if (plugButtons && plugButtons.length > 0) {
     plugButtons.forEach(plugButtonRow => {
       buttons.push(plugButtonRow);
+    });
+  }
+
+  // Ajouter les boutons de départements s'il y en a
+  if (departments && departments.length > 0) {
+    departments.forEach(dept => {
+      const deptButton = Markup.button.callback(`📍 ${dept}`, `top_dept_${selectedService}${selectedCountry ? `_${selectedCountry}` : ''}_${dept}`);
+      buttons.push([deptButton]);
     });
   }
   
