@@ -255,7 +255,7 @@ class PostalCodeService {
   }
 
   // Créer un clavier avec les codes postaux (paginé pour Telegram)
-  createPostalCodeKeyboard(country, page = 0, itemsPerPage = 20) {
+  createPostalCodeKeyboard(country, page = 0, itemsPerPage = 16) {
     const codes = this.getPostalCodes(country);
     const startIndex = page * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
@@ -263,12 +263,24 @@ class PostalCodeService {
     
     const keyboard = [];
     
-    // Organiser en lignes de 4 codes postaux
-    for (let i = 0; i < currentPageCodes.length; i += 4) {
-      const row = currentPageCodes.slice(i, i + 4).map(code => ({
-        text: code,
-        callback_data: `postal_${country}_${code}`
-      }));
+    // Organiser en lignes de 2 codes postaux (style menu Telegram)
+    for (let i = 0; i < currentPageCodes.length; i += 2) {
+      const row = [];
+      const code1 = currentPageCodes[i];
+      const code2 = currentPageCodes[i + 1];
+      
+      row.push({
+        text: code1,
+        callback_data: `postal_${country}_${code1}`
+      });
+      
+      if (code2) {
+        row.push({
+          text: code2,
+          callback_data: `postal_${country}_${code2}`
+        });
+      }
+      
       keyboard.push(row);
     }
     
