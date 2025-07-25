@@ -6,6 +6,7 @@ import { getProxiedImageUrl } from '../../lib/imageUtils'
 import toast from 'react-hot-toast'
 import Pagination from '../../components/Pagination'
 import ShopCard from '../../components/ShopCard'
+import LanguageSelector, { useTranslation, getCurrentLanguage } from '../../components/LanguageSelector'
 
 export default function ShopHome() {
   const [plugs, setPlugs] = useState([])
@@ -13,9 +14,16 @@ export default function ShopHome() {
   const [loading, setLoading] = useState(true)
   const [currentPage, setCurrentPage] = useState(1)
   const [likesSync, setLikesSync] = useState({}) // Pour synchroniser les likes en temps réel
+  const [currentLanguage, setCurrentLanguage] = useState('fr')
+  const { t } = useTranslation(currentLanguage)
   const itemsPerPage = 50
 
   useEffect(() => {
+    // Initialiser la langue depuis localStorage
+    if (typeof window !== 'undefined') {
+      setCurrentLanguage(getCurrentLanguage())
+    }
+    
     fetchConfig()
     fetchPlugs()
     
@@ -26,6 +34,10 @@ export default function ShopHome() {
   useEffect(() => {
     // Config loaded silently
   }, [config])
+
+  const handleLanguageChange = (newLanguage) => {
+    setCurrentLanguage(newLanguage)
+  }
 
   const fetchConfig = async () => {
     try {
@@ -154,34 +166,43 @@ export default function ShopHome() {
         <div style={{ 
           backgroundColor: '#000000',
           padding: '20px',
-          textAlign: 'center'
+          position: 'relative'
         }}>
-          <h2 style={{ 
-            fontSize: '32px', 
-            fontWeight: 'bold', 
-            margin: '0 0 8px 0',
-            color: '#ffffff',
-            letterSpacing: '2px'
+          {/* Sélecteur de langue en haut à droite */}
+          <div style={{ 
+            position: 'absolute',
+            top: '20px',
+            right: '20px'
           }}>
-            {config?.boutique?.name || 'FINDYOURPLUG'}
-          </h2>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-            <span style={{ color: '#ffffff', fontSize: '14px' }}>
-              {config?.boutique?.subtitle || ''}
-            </span>
-            <span style={{ 
-              backgroundColor: '#007AFF', 
-              color: '#ffffff', 
-              padding: '4px 8px', 
-              borderRadius: '12px',
-              fontSize: '12px',
-              fontWeight: 'bold'
+            <LanguageSelector 
+              currentLanguage={currentLanguage}
+              onLanguageChange={handleLanguageChange}
+            />
+          </div>
+          
+          {/* Titre centré */}
+          <div style={{ textAlign: 'center' }}>
+            <h2 style={{ 
+              fontSize: '32px', 
+              fontWeight: 'bold', 
+              margin: '0 0 8px 0',
+              color: '#ffffff',
+              letterSpacing: '2px'
             }}>
-              {config?.boutique?.taglineHighlight || 'MINI-APP TELEGRAM'}
-            </span>
-            <span style={{ color: '#ffffff', fontSize: '14px' }}>
-              {config?.boutique?.tagline2 || 'CHILL'}
-            </span>
+              {t('findyourplug')}
+            </h2>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+              <span style={{ 
+                backgroundColor: '#007AFF', 
+                color: '#ffffff', 
+                padding: '4px 8px', 
+                borderRadius: '12px',
+                fontSize: '12px',
+                fontWeight: 'bold'
+              }}>
+                TELEGRAM
+              </span>
+            </div>
           </div>
         </div>
 
