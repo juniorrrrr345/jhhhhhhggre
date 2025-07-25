@@ -303,9 +303,35 @@ const handlePostalCodeFilter = async (ctx, serviceType, selectedCountry = null, 
     const currentLang = config?.languages?.currentLanguage || 'fr';
     const customTranslations = config?.languages?.translations;
     
-    // Si pas de pays sélectionné, afficher la liste des pays disponibles
+    // Si pas de pays sélectionné, afficher seulement les pays avec des boutiques pour ce service
     if (!selectedCountry) {
-      const availableCountries = await getAvailableCountries();
+      // Récupérer seulement les pays avec des boutiques actives pour ce service
+      let query = { isActive: true };
+      
+      if (serviceType === 'delivery') {
+        query['services.delivery.enabled'] = true;
+      } else if (serviceType === 'meetup') {
+        query['services.meetup.enabled'] = true;
+      }
+      
+      const shopsWithService = await Plug.find(query);
+      const countriesWithShops = [...new Set(shopsWithService.flatMap(shop => shop.countries))];
+      
+      if (countriesWithShops.length === 0) {
+        message += `❌ ${getTranslation('messages_noPlugsInPostalCode', currentLang, customTranslations)}`;
+        
+        const keyboard = {
+          inline_keyboard: [
+            [{
+              text: '🔙 Retour',
+              callback_data: 'top_plugs'
+            }]
+          ]
+        };
+        
+        await editMessageWithImage(ctx, message, keyboard, config, { parse_mode: 'Markdown' });
+        return;
+      }
       
       let message = `📍 **${getTranslation('filter_department_available', currentLang, customTranslations)}**\n\n`;
       
@@ -320,20 +346,20 @@ const handlePostalCodeFilter = async (ctx, serviceType, selectedCountry = null, 
       }
       
       message += `\n${getTranslation('messages_selectCountry', currentLang, customTranslations)}\n`;
-      message += `📮 **Codes postaux disponibles par pays:**\n`;
+      message += `🏪 **Pays avec boutiques disponibles:**\n`;
       
-      // Afficher le nombre de codes postaux par pays
-      availableCountries.forEach(country => {
-        const codes = postalCodeService.getPostalCodes(country);
-        message += `${getCountryFlag(country)} ${country}: ${codes.length.toLocaleString()}\n`;
+      // Afficher seulement les pays avec des boutiques
+      countriesWithShops.forEach(country => {
+        const shopsInCountry = shopsWithService.filter(shop => shop.countries.includes(country));
+        message += `${getCountryFlag(country)} ${country}: ${shopsInCountry.length} boutique${shopsInCountry.length > 1 ? 's' : ''}\n`;
       });
       
-      // Créer clavier avec les pays
+      // Créer clavier avec seulement les pays ayant des boutiques
       const countryButtons = [];
-      for (let i = 0; i < availableCountries.length; i += 2) {
+      for (let i = 0; i < countriesWithShops.length; i += 2) {
         const row = [];
-        const country1 = availableCountries[i];
-        const country2 = availableCountries[i + 1];
+        const country1 = countriesWithShops[i];
+        const country2 = countriesWithShops[i + 1];
         
         row.push({
           text: `${getCountryFlag(country1)} ${country1}`,
