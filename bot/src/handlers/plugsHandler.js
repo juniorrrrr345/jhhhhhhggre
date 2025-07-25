@@ -582,10 +582,10 @@ const handleDepartmentFilter = async (ctx, serviceType, selectedCountry = null) 
       return;
     }
     
-    // Si un pays est déjà sélectionné, afficher directement toutes les boutiques de ce pays
+    // Si un pays est déjà sélectionné, afficher la liste des départements de ce pays
     if (selectedCountry) {
-      console.log(`🎯 Redirection vers handleCountryServiceShops pour ${selectedCountry}`);
-      return await handleCountryServiceShops(ctx, serviceType, selectedCountry);
+      console.log(`🎯 Redirection vers handleDepartmentsList pour ${selectedCountry}`);
+      return await handleDepartmentsList(ctx, serviceType, selectedCountry);
     }
     
     // Grouper les boutiques par pays
@@ -1509,24 +1509,40 @@ const handleDepartmentsList = async (ctx, serviceType, selectedCountry = null) =
     
     const shopsWithService = await Plug.find(query);
     
-    // Extraire tous les départements uniques
+    // Si un pays est sélectionné, afficher TOUS les départements de ce pays
     let allDepartments = [];
-    if (serviceType === 'delivery') {
-      allDepartments = [...new Set(shopsWithService.flatMap(shop => 
-        shop.services?.delivery?.departments || []
-      ))];
-    } else if (serviceType === 'meetup') {
-      allDepartments = [...new Set(shopsWithService.flatMap(shop => 
-        shop.services?.meetup?.departments || []
-      ))];
+    if (selectedCountry) {
+      // Départements complets par pays
+      const departmentsByCountry = {
+        'France': ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '2A', '2B', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31', '32', '33', '34', '35', '36', '37', '38', '39', '40', '41', '42', '43', '44', '45', '46', '47', '48', '49', '50', '51', '52', '53', '54', '55', '56', '57', '58', '59', '60', '61', '62', '63', '64', '65', '66', '67', '68', '69', '70', '71', '72', '73', '74', '75', '76', '77', '78', '79', '80', '81', '82', '83', '84', '85', '86', '87', '88', '89', '90', '91', '92', '93', '94', '95'],
+        'Belgique': ['10', '11', '12', '13', '20', '21', '23', '24', '25', '30', '31', '32', '33', '34', '35', '36', '37', '38', '40', '41', '42', '43', '44', '45', '46', '50', '51', '52', '53', '54', '55', '56', '57', '60', '61', '62', '63', '64', '65', '70', '71', '72', '73', '74', '80', '81', '82', '83', '84', '85', '86', '87', '88', '90', '91', '92', '93', '94', '95', '96', '97', '98', '99'],
+        'Suisse': ['1000', '1200', '1300', '2000', '2500', '3000', '4000', '5000', '6000', '7000', '8000', '9000'],
+        'Italie': ['00100', '10100', '20100', '30100', '40100', '50100', '60100', '70100', '80100', '90100'],
+        'Espagne': ['01000', '02000', '03000', '04000', '05000', '06000', '07000', '08000', '09000', '10000', '11000', '12000', '13000', '14000', '15000', '16000', '17000', '18000', '19000', '20000', '21000', '22000', '23000', '24000', '25000', '26000', '27000', '28000', '29000', '30000', '31000', '32000', '33000', '34000', '35000', '36000', '37000', '38000', '39000', '40000', '41000', '42000', '43000', '44000', '45000', '46000', '47000', '48000', '49000', '50000'],
+        'Maroc': ['10000', '20000', '30000', '40000', '50000', '60000', '70000', '80000', '90000']
+      };
+      
+      allDepartments = departmentsByCountry[selectedCountry] || [];
+      console.log(`📍 Tous les départements de ${selectedCountry}: ${allDepartments.length} départements`);
+    } else {
+      // Sinon, extraire seulement les départements avec des boutiques
+      if (serviceType === 'delivery') {
+        allDepartments = [...new Set(shopsWithService.flatMap(shop => 
+          shop.services?.delivery?.departments || []
+        ))];
+      } else if (serviceType === 'meetup') {
+        allDepartments = [...new Set(shopsWithService.flatMap(shop => 
+          shop.services?.meetup?.departments || []
+        ))];
+      }
+      
+      // Trier les départements par numéro
+      allDepartments.sort((a, b) => {
+        const numA = parseInt(a);
+        const numB = parseInt(b);
+        return numA - numB;
+      });
     }
-    
-    // Trier les départements par numéro
-    allDepartments.sort((a, b) => {
-      const numA = parseInt(a);
-      const numB = parseInt(b);
-      return numA - numB;
-    });
     
     if (allDepartments.length === 0) {
       let message = `❌ **Aucun département disponible**\n\n`;
@@ -1595,7 +1611,7 @@ const handleDepartmentsList = async (ctx, serviceType, selectedCountry = null) =
       const dept1 = allDepartments[i];
       const dept2 = allDepartments[i + 1];
       
-      // Compter les boutiques pour chaque département
+      // Compter les boutiques pour chaque département (peut être 0)
       const shopsInDept1 = shopsWithService.filter(shop => {
         if (serviceType === 'delivery') {
           return shop.services?.delivery?.departments?.includes(dept1);
@@ -1605,6 +1621,7 @@ const handleDepartmentsList = async (ctx, serviceType, selectedCountry = null) =
         return false;
       }).length;
       
+      // Afficher même si 0 boutiques
       row.push({
         text: `${dept1} (${shopsInDept1})`,
         callback_data: `top_dept_${serviceType}_${dept1}${selectedCountry ? `_${selectedCountry}` : ''}`
@@ -1620,6 +1637,7 @@ const handleDepartmentsList = async (ctx, serviceType, selectedCountry = null) =
           return false;
         }).length;
         
+        // Afficher même si 0 boutiques
         row.push({
           text: `${dept2} (${shopsInDept2})`,
           callback_data: `top_dept_${serviceType}_${dept2}${selectedCountry ? `_${selectedCountry}` : ''}`
