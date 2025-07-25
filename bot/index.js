@@ -399,6 +399,17 @@ bot.action(/^like_([a-f\d]{24})$/, async (ctx) => {
     
     console.log(`✅ LIKE réussi: ${result.plugName} - ${result.likes} likes`);
     
+    // IMPORTANT: Forcer rafraîchissement cache pour synchronisation web
+    try {
+      await fetch(`${process.env.API_BASE_URL || 'http://localhost:3000'}/api/cache/refresh`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      });
+      console.log('🔄 Cache rafraîchi après vote pour sync web');
+    } catch (refreshError) {
+      console.log('⚠️ Erreur rafraîchissement cache:', refreshError.message);
+    }
+    
     // Notification du vote ajouté
     await ctx.answerCbQuery(`👍 Vous avez voté pour ${result.plugName} ! (${result.likes} votes)`);
     
