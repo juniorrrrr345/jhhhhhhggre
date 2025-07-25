@@ -280,6 +280,13 @@ const translations = {
       es: 'Detalles de la tienda',
       de: 'Shop-Details'
     },
+    'shop_description_label': {
+      fr: '📝',
+      en: '📝',
+      it: '📝',
+      es: '📝',
+      de: '📝'
+    },
     'vote_for_shop': {
       fr: 'Voter Pour ce Plug',
       en: 'Vote for this Plug',
@@ -495,6 +502,13 @@ const translations = {
       es: '🔄 Filtros reiniciados',
       de: '🔄 Filter zurückgesetzt'
     },
+    'filters_reset_button': {
+      fr: '🔁 Réinitialiser les filtres',
+      en: '🔁 Reset filters',
+      it: '🔁 Ripristina filtri',
+      es: '🔁 Reiniciar filtros',
+      de: '🔁 Filter zurücksetzen'
+    },
 
     // === TITRES SYSTÈME ===
     'list_plugs_title': {
@@ -706,10 +720,126 @@ const initializeDefaultTranslations = async (Config) => {
   }
 };
 
+// Fonction pour traduire automatiquement les descriptions
+const translateDescription = (description, language = 'fr') => {
+  if (!description || language === 'fr') {
+    return description; // Retourner tel quel si français ou vide
+  }
+
+  // Dictionnaire de traductions pour mots/phrases communes
+  const translations = {
+    en: {
+      'livraison': 'delivery',
+      'meetup': 'meetup', 
+      'envoi postal': 'postal shipping',
+      'rapide': 'fast',
+      'qualité': 'quality',
+      'service': 'service',
+      'disponible': 'available',
+      'partout': 'everywhere',
+      'partout en': 'everywhere in',
+      'en france': 'in france',
+      'et belgique': 'and belgium',
+      'vers la': 'to',
+      'france': 'france',
+      'belgique': 'belgium',
+      'suisse': 'switzerland',
+      'luxembourg': 'luxembourg',
+      'boutique': 'shop',
+      'produits': 'products',
+      'commande': 'order',
+      'professionnel': 'professional'
+    },
+    it: {
+      'livraison': 'consegna',
+      'meetup': 'incontro',
+      'envoi postal': 'spedizione postale',
+      'rapide': 'veloce',
+      'qualité': 'qualità',
+      'service': 'servizio',
+      'disponible': 'disponibile',
+      'partout': 'ovunque',
+      'partout en': 'ovunque in',
+      'en france': 'in francia',
+      'et belgique': 'e belgio',
+      'vers la': 'verso la',
+      'france': 'francia',
+      'belgique': 'belgio',
+      'suisse': 'svizzera',
+      'luxembourg': 'lussemburgo',
+      'boutique': 'negozio',
+      'prodotti': 'prodotti',
+      'commande': 'ordine',
+      'professionnel': 'professionale'
+    },
+    es: {
+      'livraison': 'entrega',
+      'meetup': 'encuentro',
+      'envoi postal': 'envío postal',
+      'rapide': 'rápido',
+      'qualité': 'calidad',
+      'service': 'servicio',
+      'disponible': 'disponible',
+      'partout': 'en todas partes',
+      'partout en': 'en todas partes de',
+      'en france': 'en francia',
+      'et belgique': 'y bélgica',
+      'vers la': 'hacia',
+      'france': 'francia',
+      'belgique': 'bélgica',
+      'suisse': 'suiza',
+      'luxembourg': 'luxemburgo',
+      'boutique': 'tienda',
+      'produits': 'productos',
+      'commande': 'pedido',
+      'professionnel': 'profesional'
+    },
+    de: {
+      'livraison': 'lieferung',
+      'meetup': 'treffen',
+      'envoi postal': 'postversand',
+      'rapide': 'schnell',
+      'qualité': 'qualität',
+      'service': 'service',
+      'disponible': 'verfügbar',
+      'partout': 'überall',
+      'partout en': 'überall in',
+      'en france': 'in frankreich',
+      'et belgique': 'und belgien',
+      'vers la': 'nach',
+      'france': 'frankreich',
+      'belgique': 'belgien',
+      'suisse': 'schweiz',
+      'luxembourg': 'luxemburg',
+      'boutique': 'shop',
+      'produits': 'produkte',
+      'commande': 'bestellung',
+      'professionnel': 'professionell'
+    }
+  };
+
+  if (!translations[language]) {
+    return description; // Langue non supportée
+  }
+
+  let translatedText = description.toLowerCase();
+  const langDict = translations[language];
+
+  // Remplacer chaque mot/phrase
+  Object.entries(langDict).forEach(([french, translated]) => {
+    const regex = new RegExp(`\\b${french}\\b`, 'gi');
+    translatedText = translatedText.replace(regex, translated);
+  });
+
+  // Capitaliser la première lettre
+  return translatedText.charAt(0).toUpperCase() + translatedText.slice(1);
+};
+
 // Export
 module.exports = {
   translations,
   getTranslation,
   createLanguageKeyboard,
-  initializeDefaultTranslations
+  initializeDefaultTranslations,
+  translateDescription
 };

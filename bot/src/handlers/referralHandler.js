@@ -1,8 +1,10 @@
 const User = require('../models/User');
 const Plug = require('../models/Plug');
+const Config = require('../models/Config');
 const { ensureConnection } = require('../utils/database');
 const { createMainKeyboard, createPlugKeyboard } = require('../utils/keyboards');
 const { handlePlugDetails } = require('./plugsHandler');
+const { getTranslation, translateDescription } = require('../utils/translations');
 
 // Gestionnaire pour les liens de parrainage
 const handleReferral = async (ctx, referralCode) => {
@@ -118,29 +120,41 @@ const redirectToShopDetails = async (ctx, boutique) => {
     console.log('🔍 Boutique VIP:', boutique.isVip);
     
     // Afficher directement les détails de la boutique avec bouton de retour approprié
-    const Config = require('../models/Config');
     const { createPlugKeyboard } = require('../utils/keyboards');
     const { sendMessageWithImage } = require('../utils/messageHelper');
     
     const config = await Config.findById('main');
+    const currentLang = config?.languages?.currentLanguage || 'fr';
+    const customTranslations = config?.languages?.translations;
 
     let message = `${boutique.isVip ? '⭐ ' : ''}**${boutique.name}**\n\n`;
-    message += `📝 ${boutique.description}\n\n`;
+    const translatedDescription = translateDescription(boutique.description, currentLang);
+    message += `${getTranslation('shop_description_label', currentLang, customTranslations)} ${translatedDescription}\n\n`;
 
-    // Services disponibles avec formatage amélioré
+    // Services disponibles avec formatage amélioré et traductions
     const services = [];
     if (boutique.services?.delivery?.enabled) {
-      services.push(`📦 **Livraison**${boutique.services.delivery.description ? `: ${boutique.services.delivery.description}` : ''}`);
+      const serviceName = getTranslation('service_delivery', currentLang, customTranslations);
+      const serviceDesc = boutique.services.delivery.description ? 
+        `: ${translateDescription(boutique.services.delivery.description, currentLang)}` : '';
+      services.push(`📦 **${serviceName}**${serviceDesc}`);
     }
     if (boutique.services?.meetup?.enabled) {
-      services.push(`🏠 **Meetup**${boutique.services.meetup.description ? `: ${boutique.services.meetup.description}` : ''}`);
+      const serviceName = getTranslation('service_meetup', currentLang, customTranslations);
+      const serviceDesc = boutique.services.meetup.description ? 
+        `: ${translateDescription(boutique.services.meetup.description, currentLang)}` : '';
+      services.push(`🤝 **${serviceName}**${serviceDesc}`);
     }
     if (boutique.services?.postal?.enabled) {
-      services.push(`✈️ **Envoi postal**${boutique.services.postal.description ? `: ${boutique.services.postal.description}` : ''}`);
+      const serviceName = getTranslation('service_postal', currentLang, customTranslations);
+      const serviceDesc = boutique.services.postal.description ? 
+        `: ${translateDescription(boutique.services.postal.description, currentLang)}` : '';
+      services.push(`📬 **${serviceName}**${serviceDesc}`);
     }
 
     if (services.length > 0) {
-      message += `**🔧 Services disponibles :**\n${services.join('\n')}\n\n`;
+      const servicesTitle = getTranslation('services_available', currentLang, customTranslations);
+      message += `**🔧 ${servicesTitle} :**\n${services.join('\n')}\n\n`;
     }
 
     // Pays desservis

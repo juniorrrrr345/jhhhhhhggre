@@ -9,7 +9,7 @@ const {
   createPlugKeyboard 
 } = require('../utils/keyboards');
 const { sendMessageWithImage, editMessageWithImage, sendPlugWithImage } = require('../utils/messageHelper');
-const { getTranslation } = require('../utils/translations');
+const { getTranslation, translateDescription } = require('../utils/translations');
 
 // 🔘 SYSTÈME TOP PLUGS - Bouton principal avec pays, filtres et liste
 const handleTopPlugs = async (ctx) => {
@@ -438,6 +438,10 @@ const getAvailableDepartments = async (serviceType, selectedCountry = null) => {
 const createTopPlugsKeyboard = (config, countries, selectedCountry, selectedService, plugButtons = [], departments = []) => {
   const buttons = [];
   
+  // Récupérer les traductions
+  const currentLang = config?.languages?.currentLanguage || 'fr';
+  const customTranslations = config?.languages?.translations;
+  
   // Première ligne : Pays (affichage intelligent)
   if (countries.length > 0) {
     const countryButtons = [];
@@ -474,12 +478,16 @@ const createTopPlugsKeyboard = (config, countries, selectedCountry, selectedServ
     }
   }
   
-  // Deuxième ligne : Filtres de services
+  // Deuxième ligne : Filtres de services avec traductions
   const serviceRow = [];
   
-  const deliveryText = selectedService === 'delivery' ? '✅ 📦 Livraison' : '📦 Livraison';
-  const meetupText = selectedService === 'meetup' ? '✅ 🤝 Meetup' : '🤝 Meetup';
-  const postalText = selectedService === 'postal' ? '✅ 📬 Envoi Postal' : '📬 Envoi Postal';
+  const deliveryName = getTranslation('filters_delivery', currentLang, customTranslations);
+  const meetupName = getTranslation('filters_meetup', currentLang, customTranslations);
+  const postalName = getTranslation('filters_postal', currentLang, customTranslations);
+  
+  const deliveryText = selectedService === 'delivery' ? `✅ ${deliveryName}` : deliveryName;
+  const meetupText = selectedService === 'meetup' ? `✅ ${meetupName}` : meetupName;
+  const postalText = selectedService === 'postal' ? `✅ ${postalName}` : postalName;
   
   serviceRow.push(Markup.button.callback(deliveryText, `top_service_delivery${selectedCountry ? `_${selectedCountry}` : ''}`));
   serviceRow.push(Markup.button.callback(meetupText, `top_service_meetup${selectedCountry ? `_${selectedCountry}` : ''}`));
@@ -489,7 +497,8 @@ const createTopPlugsKeyboard = (config, countries, selectedCountry, selectedServ
   
   // Quatrième ligne : Département (si service delivery ou meetup sélectionné)
   if (selectedService === 'delivery' || selectedService === 'meetup') {
-    const deptButton = Markup.button.callback('📍 Département 🔁', `top_departments_${selectedService}${selectedCountry ? `_${selectedCountry}` : ''}`);
+    const deptText = getTranslation('filters_department', currentLang, customTranslations);
+    const deptButton = Markup.button.callback(deptText, `top_departments_${selectedService}${selectedCountry ? `_${selectedCountry}` : ''}`);
     buttons.push([deptButton]);
   }
   
@@ -508,10 +517,12 @@ const createTopPlugsKeyboard = (config, countries, selectedCountry, selectedServ
     });
   }
   
-  // Dernière ligne : Réinitialiser + Retour
+  // Dernière ligne : Réinitialiser + Retour avec traductions
   const actionRow = [];
-  actionRow.push(Markup.button.callback('🔁 Réinitialiser les filtres', 'top_reset_filters'));
-  actionRow.push(Markup.button.callback('🔙 Retour au menu', 'back_main'));
+  const resetText = getTranslation('filters_reset_button', currentLang, customTranslations);
+  const backText = getTranslation('back_to_menu', currentLang, customTranslations);
+  actionRow.push(Markup.button.callback(resetText, 'top_reset_filters'));
+  actionRow.push(Markup.button.callback(backText, 'back_main'));
   buttons.push(actionRow);
   
   return Markup.inlineKeyboard(buttons);
@@ -862,21 +873,28 @@ const handlePlugDetails = async (ctx, plugId, returnContext = 'top_plugs') => {
     const customTranslations = config?.languages?.translations;
 
     let message = `${plug.isVip ? '⭐ ' : ''}**${plug.name}**\n\n`;
-    message += `📝 ${plug.description}\n\n`;
+    const translatedDescription = translateDescription(plug.description, currentLang);
+    message += `${getTranslation('shop_description_label', currentLang, customTranslations)} ${translatedDescription}\n\n`;
 
     // Services disponibles avec traductions
     const services = [];
     if (plug.services?.delivery?.enabled) {
       const serviceName = getTranslation('service_delivery', currentLang, customTranslations);
-      services.push(`📦 **${serviceName}**${plug.services.delivery.description ? `: ${plug.services.delivery.description}` : ''}`);
+      const serviceDesc = plug.services.delivery.description ? 
+        `: ${translateDescription(plug.services.delivery.description, currentLang)}` : '';
+      services.push(`📦 **${serviceName}**${serviceDesc}`);
     }
     if (plug.services?.meetup?.enabled) {
       const serviceName = getTranslation('service_meetup', currentLang, customTranslations);
-      services.push(`🏠 **${serviceName}**${plug.services.meetup.description ? `: ${plug.services.meetup.description}` : ''}`);
+      const serviceDesc = plug.services.meetup.description ? 
+        `: ${translateDescription(plug.services.meetup.description, currentLang)}` : '';
+      services.push(`🤝 **${serviceName}**${serviceDesc}`);
     }
     if (plug.services?.postal?.enabled) {
       const serviceName = getTranslation('service_postal', currentLang, customTranslations);
-      services.push(`✈️ **${serviceName}**${plug.services.postal.description ? `: ${plug.services.postal.description}` : ''}`);
+      const serviceDesc = plug.services.postal.description ? 
+        `: ${translateDescription(plug.services.postal.description, currentLang)}` : '';
+      services.push(`📬 **${serviceName}**${serviceDesc}`);
     }
 
     if (services.length > 0) {
