@@ -441,8 +441,47 @@ const handleResetFilters = async (ctx) => {
     // Effacer l'état utilisateur pour permettre une nouvelle sélection
     lastUserState.delete(userId);
     
-    // Retourner à l'affichage initial (remplace le message existant)
-    await handleTopPlugs(ctx);
+    // REMPLACER le message existant au lieu de créer un nouveau
+    // Récupérer tous les plugs actifs triés par votes
+    const allPlugs = await Plug.find({ isActive: true })
+      .sort({ likes: -1, createdAt: -1 });
+
+    // Récupérer les pays disponibles dynamiquement
+    const availableCountries = await getAvailableCountries();
+    
+    // Message d'affichage initial avec traduction
+    const topPlugsTitle = getTranslation('menu_topPlugs', currentLang, customTranslations);
+    let message = `${topPlugsTitle}\n`;
+    message += `*(${getTranslation('messages_sortedByVotes', currentLang, customTranslations)})*\n\n`;
+    
+    // Afficher les premiers plugs (top 10 par défaut)
+    const topPlugs = allPlugs.slice(0, 10);
+    let keyboard;
+    
+    if (topPlugs.length > 0) {
+      const shopsAvailableText = getTranslation('messages_shopsAvailable', currentLang, customTranslations);
+      message += `**${topPlugs.length} ${shopsAvailableText} :**\n\n`;
+      
+      // Ajouter les boutiques au clavier
+      const plugButtons = [];
+      topPlugs.forEach((plug, index) => {
+        const country = getCountryFlag(plug.countries[0]);
+        const location = plug.location ? ` ${plug.location}` : '';
+        const vipIcon = plug.isVip ? '⭐️ ' : '';
+        const buttonText = `${country}${location} ${vipIcon}${plug.name} 👍 ${plug.likes}`;
+        plugButtons.push([Markup.button.callback(buttonText, `plug_${plug._id}_from_top_plugs`)]);
+      });
+      
+      keyboard = createTopPlugsKeyboard(config, availableCountries, [], null, plugButtons);
+    } else {
+      const noShopsText = getTranslation('messages_noShops', currentLang, customTranslations);
+      message += noShopsText;
+      keyboard = createTopPlugsKeyboard(config, availableCountries, [], null, null);
+    }
+    
+    // ÉDITER le message existant au lieu d'en créer un nouveau
+    await editMessageWithImage(ctx, message, keyboard, config, { parse_mode: 'Markdown' });
+    
   } catch (error) {
     console.error('Erreur dans handleResetFilters:', error);
     const config = await Config.findById('main');
