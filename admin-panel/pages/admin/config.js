@@ -24,16 +24,31 @@ export default function BotConfiguration() {
         content: 'Informations sur notre plateforme.',
         enabled: true
       }
+    },
+    // Configuration des langues
+    languages: {
+      enabled: false,
+      currentLanguage: 'fr',
+      availableLanguages: [],
+      translations: new Map()
     }
-    // Réseaux sociaux supprimés
   })
 
-  // États supprimés : messages diffusion et réseaux sociaux non utilisés
-  
+  // États pour la gestion multi-langue
+  const [selectedLanguage, setSelectedLanguage] = useState('fr')
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState(null)
   const router = useRouter()
+  
+  // Langues supportées
+  const supportedLanguages = [
+    { code: 'fr', name: 'Français', flag: '🇫🇷' },
+    { code: 'en', name: 'English', flag: '🇬🇧' },
+    { code: 'it', name: 'Italiano', flag: '🇮🇹' },
+    { code: 'es', name: 'Español', flag: '🇪🇸' },
+    { code: 'de', name: 'Deutsch', flag: '🇩🇪' }
+  ]
 
   useEffect(() => {
     const token = localStorage.getItem('adminToken')
@@ -72,8 +87,15 @@ export default function BotConfiguration() {
               content: data.buttons?.info?.content || 'Informations sur notre plateforme.',
               enabled: data.buttons?.info?.enabled !== false
             }
-          }
-        })
+          },
+        // Configuration des langues
+        languages: {
+          enabled: data.languages?.enabled || false,
+          currentLanguage: data.languages?.currentLanguage || 'fr',
+          availableLanguages: data.languages?.availableLanguages || [],
+          translations: data.languages?.translations || new Map()
+        }
+      })
         
         // Configuration chargée silencieusement
       } catch (error) {
@@ -122,7 +144,8 @@ export default function BotConfiguration() {
       
       const configData = {
         welcome: config.welcome,
-        buttons: config.buttons
+        buttons: config.buttons,
+        languages: config.languages
       }
       
       const result = await simpleApi.updateConfig(token, configData)
@@ -173,6 +196,30 @@ export default function BotConfiguration() {
         }
       }
     }))
+  }
+  
+  // Fonctions utilitaires pour les traductions
+  const getTranslation = (key, lang) => {
+    const translations = config.languages?.translations || {}
+    return translations[key]?.[lang] || ''
+  }
+  
+  const setTranslation = (key, lang, value) => {
+    setConfig(prev => {
+      const newTranslations = {...(prev.languages?.translations || {})}
+      if (!newTranslations[key]) {
+        newTranslations[key] = {}
+      }
+      newTranslations[key][lang] = value
+      
+      return {
+        ...prev,
+        languages: {
+          ...prev.languages,
+          translations: newTranslations
+        }
+      }
+    })
   }
 
   // Fonctions supprimées : updateSocialMedia et sendBroadcast
@@ -237,6 +284,34 @@ export default function BotConfiguration() {
                 >
                   {saving ? 'Sauvegarde...' : '💾 Sauvegarder'}
                 </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Sélecteur de langue */}
+          <div className="bg-white shadow rounded-lg mb-6">
+            <div className="px-4 py-5 sm:p-6">
+              <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">
+                🌍 Langue de Configuration
+              </h3>
+              <p className="text-sm text-gray-500 mb-4">
+                Choisissez la langue pour configurer les textes. Les modifications seront appliquées dans toutes les langues configurées.
+              </p>
+              
+              <div className="flex flex-wrap gap-2">
+                {supportedLanguages.map(lang => (
+                  <button
+                    key={lang.code}
+                    onClick={() => setSelectedLanguage(lang.code)}
+                    className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                      selectedLanguage === lang.code
+                        ? 'bg-blue-600 text-white'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    {lang.flag} {lang.name}
+                  </button>
+                ))}
               </div>
             </div>
           </div>
