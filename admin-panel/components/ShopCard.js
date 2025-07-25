@@ -181,13 +181,17 @@ export default function ShopCard({ plug, index, layout = 'grid', currentLanguage
         </div>
 
         {/* Contenu principal */}
-        <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ 
+          flex: 1, 
+          minWidth: 0,
+          marginRight: '12px'  // Espace pour éviter collision avec les likes
+        }}>
           {/* Nom et drapeau */}
           <div style={{ 
             display: 'flex', 
             alignItems: 'center', 
             gap: '8px',
-            marginBottom: '4px'
+            marginBottom: '6px'
           }}>
             <span style={{ fontSize: '16px' }}>{getCountryFlag(plug.countries)}</span>
             <h3 style={{ 
@@ -203,20 +207,26 @@ export default function ShopCard({ plug, index, layout = 'grid', currentLanguage
             </h3>
           </div>
 
-          {/* Services */}
+          {/* Services - Structure améliorée */}
           <div style={{ 
             display: 'flex', 
-            alignItems: 'center', 
-            gap: '8px',
-            marginBottom: '4px'
+            flexWrap: 'wrap',
+            gap: '6px',
+            alignItems: 'center',
+            maxWidth: '100%'
           }}>
             {plug.services?.delivery?.enabled && (
               <div style={{ 
                 display: 'flex', 
                 alignItems: 'center', 
-                gap: '4px',
-                fontSize: '12px',
-                color: '#ffffff'
+                gap: '3px',
+                fontSize: '11px',
+                color: '#ffffff',
+                backgroundColor: '#0a4a2a',
+                padding: '2px 6px',
+                borderRadius: '4px',
+                whiteSpace: 'nowrap',
+                border: '1px solid #22c55e'
               }}>
                 <span>📦</span>
                 <span>{translateService('delivery')}</span>
@@ -226,11 +236,16 @@ export default function ShopCard({ plug, index, layout = 'grid', currentLanguage
               <div style={{ 
                 display: 'flex', 
                 alignItems: 'center', 
-                gap: '4px',
-                fontSize: '12px',
-                color: '#ffffff'
+                gap: '3px',
+                fontSize: '11px',
+                color: '#ffffff',
+                backgroundColor: '#1a3a4a',
+                padding: '2px 6px',
+                borderRadius: '4px',
+                whiteSpace: 'nowrap',
+                border: '1px solid #3b82f6'
               }}>
-                <span>📍</span>
+                <span>📬</span>
                 <span>{translateService('postal')}</span>
               </div>
             )}
@@ -238,60 +253,66 @@ export default function ShopCard({ plug, index, layout = 'grid', currentLanguage
               <div style={{ 
                 display: 'flex', 
                 alignItems: 'center', 
-                gap: '4px',
-                fontSize: '12px',
-                color: '#ffffff'
+                gap: '3px',
+                fontSize: '11px',
+                color: '#ffffff',
+                backgroundColor: '#4a2a1a',
+                padding: '2px 6px',
+                borderRadius: '4px',
+                whiteSpace: 'nowrap',
+                border: '1px solid #f59e0b'
               }}>
-                <span>💰</span>
+                <span>🤝</span>
                 <span>{translateService('meetup')}</span>
               </div>
             )}
           </div>
         </div>
 
-        {/* Likes et badge position VIP */}
+        {/* Likes et badge position - Version compacte */}
         <div style={{ 
           display: 'flex', 
           flexDirection: 'column', 
-          alignItems: 'flex-end',
-          gap: '4px'
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: '4px',
+          flexShrink: 0,
+          minWidth: '80px',
+          textAlign: 'center'
         }}>
           {getPositionBadge(index) && (
-            <span style={{ fontSize: '20px' }}>{getPositionBadge(index)}</span>
+            <span style={{ fontSize: '18px' }}>{getPositionBadge(index)}</span>
           )}
+          
+          {/* Section vote compacte */}
           <div style={{ 
             display: 'flex', 
-            alignItems: 'center', 
-            gap: '4px'
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: '2px'
           }}>
-            <button
-              onClick={handleVote}
-              disabled={isVoting}
-              style={{
-                background: 'none',
-                border: 'none',
-                cursor: isVoting ? 'not-allowed' : 'pointer',
-                fontSize: '16px',
-                padding: '4px',
-                borderRadius: '4px',
-                transition: 'background-color 0.2s ease',
-                color: '#ffffff'
-              }}
-              onMouseEnter={(e) => {
-                if (!isVoting) e.target.style.backgroundColor = '#333333'
-              }}
-              onMouseLeave={(e) => {
-                e.target.style.backgroundColor = 'transparent'
-              }}
-            >
-              {isVoting ? '⏳' : '👍'}
-            </button>
-            <span style={{ 
-              fontSize: '16px',
-              fontWeight: '600',
-              color: plug.isVip ? '#FFD700' : '#ffffff'
+            {/* Affichage likes seulement - PAS de bouton vote */}
+            <div style={{
+              fontSize: '14px',
+              color: '#ffffff',
+              textAlign: 'center'
             }}>
-              {likes} {getVotesText()}
+              👍
+            </div>
+            <span style={{ 
+              fontSize: '14px',
+              fontWeight: '600',
+              color: plug.isVip ? '#FFD700' : '#ffffff',
+              lineHeight: '1.2'
+            }}>
+              {likes}
+            </span>
+            <span style={{ 
+              fontSize: '10px',
+              color: '#8e8e93',
+              lineHeight: '1'
+            }}>
+              {getVotesText()}
             </span>
           </div>
         </div>
