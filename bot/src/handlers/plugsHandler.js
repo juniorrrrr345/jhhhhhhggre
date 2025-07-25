@@ -1048,8 +1048,7 @@ const createTopPlugsKeyboard = (config, countries, selectedCountry, selectedServ
   buttons.push(serviceRow);
   
   // Troisième ligne : Bouton Départements (nouveau)
-  const departmentText = getTranslation('filters_all_departments', currentLang, customTranslations) || '📍 Départements';
-  const departmentButton = Markup.button.callback(departmentText, 'all_departments');
+  const departmentButton = Markup.button.callback('📍 Départements', 'all_departments');
   buttons.push([departmentButton]);
   
   // Quatrième ligne : Département (si service delivery ou meetup sélectionné)
@@ -1498,14 +1497,17 @@ const handlePlugDetails = async (ctx, plugId, returnContext = 'top_plugs') => {
 // Gestionnaire pour afficher TOUS les départements de TOUS les pays (bouton Département principal)
 const handleAllDepartments = async (ctx) => {
   try {
+    console.log('🔍 handleAllDepartments appelé');
     const userId = ctx.from.id;
     
     // 🚫 Prévention spam
     if (isSpamClick(userId, 'all_departments', 'main')) {
+      console.log('🔄 Spam détecté dans handleAllDepartments');
       await ctx.answerCbQuery('🔄');
       return;
     }
     
+    console.log('✅ handleAllDepartments: Pas de spam, continue...');
     await ctx.answerCbQuery();
     
     const config = await Config.findById('main');
@@ -1568,8 +1570,12 @@ const handleAllDepartments = async (ctx) => {
     
     const keyboard = { inline_keyboard: countryButtons };
     
+    console.log('📤 handleAllDepartments: Envoi du message avec', countryButtons.length, 'lignes de boutons');
+    
     // Éditer le message avec image
     await editMessageWithImage(ctx, message, keyboard, config, { parse_mode: 'Markdown' });
+    
+    console.log('✅ handleAllDepartments: Message envoyé avec succès');
     
   } catch (error) {
     console.error('❌ Erreur dans handleAllDepartments:', error);
@@ -1580,6 +1586,7 @@ const handleAllDepartments = async (ctx) => {
 // Gestionnaire pour afficher les départements d'un pays spécifique (depuis le menu départements)
 const handleCountryDepartments = async (ctx, country) => {
   try {
+    console.log(`🔍 handleCountryDepartments appelé pour ${country}`);
     await ctx.answerCbQuery();
     
     const config = await Config.findById('main');
