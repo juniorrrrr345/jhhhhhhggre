@@ -238,8 +238,6 @@ const handleTopServiceFilter = async (ctx, serviceType, selectedCountry = null) 
         keyboard = createTopPlugsKeyboard(config, availableCountries, selectedCountry, serviceType, []);
       }
     }
-
-    }
     
     // Éditer le message existant pour éviter le spam
     try {
