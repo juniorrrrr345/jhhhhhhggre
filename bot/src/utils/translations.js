@@ -343,6 +343,13 @@ const translations = {
       es: '❌ Proporciona un enlace válido que comience con https://. Inténtalo de nuevo:',
       de: '❌ Bitte geben Sie einen gültigen Link an, der mit https:// beginnt. Versuchen Sie es erneut:'
     },
+    'registration.error.general': {
+      fr: '❌ Une erreur est survenue. Réessaie ou tape /start pour recommencer.',
+      en: '❌ An error occurred. Try again or type /start to restart.',
+      it: '❌ Si è verificato un errore. Riprova o digita /start per ricominciare.',
+      es: '❌ Ocurrió un error. Inténtalo de nuevo o escribe /start para reiniciar.',
+      de: '❌ Ein Fehler ist aufgetreten. Versuchen Sie es erneut oder geben Sie /start ein, um neu zu beginnen.'
+    },
 
     // === SERVICES ===
     'service_delivery': {

@@ -1,6 +1,7 @@
 const PlugApplication = require('../models/PlugApplication');
 const { Markup } = require('telegraf');
 const { sendAdminNotification } = require('./notificationHandler');
+const { getTranslation } = require('../utils/translations');
 
 // Stockage temporaire des données du formulaire par utilisateur
 const userForms = new Map();
@@ -261,7 +262,7 @@ const handleFormMessage = async (ctx) => {
         
               case 'potato':
           if (!text.startsWith('https://')) {
-            return await ctx.reply('❌ Merci de fournir un lien Potato valide commençant par https://. Réessaie :');
+            return await ctx.reply(getTranslation('registration.error.urlFormat', currentLang, customTranslations));
           }
 
           userForm.data.potato = text;
@@ -273,7 +274,7 @@ const handleFormMessage = async (ctx) => {
         
       case 'snapchat':
         if (!text.startsWith('https://')) {
-          return await ctx.reply('❌ Merci de fournir un lien Snapchat valide commençant par https://. Réessaie :');
+          return await ctx.reply(getTranslation('registration.error.urlFormat', currentLang, customTranslations));
         }
 
         userForm.data.snapchat = text;
@@ -284,7 +285,7 @@ const handleFormMessage = async (ctx) => {
         
       case 'whatsapp':
         if (!text.startsWith('https://')) {
-          return await ctx.reply('❌ Merci de fournir un lien WhatsApp valide commençant par https://. Réessaie :');
+          return await ctx.reply(getTranslation('registration.error.urlFormat', currentLang, customTranslations));
         }
 
         userForm.data.whatsapp = text;
@@ -295,7 +296,7 @@ const handleFormMessage = async (ctx) => {
         
       case 'signal':
         if (!text.startsWith('https://')) {
-          return await ctx.reply('❌ Merci de fournir un lien Signal valide commençant par https://. Réessaie :');
+          return await ctx.reply(getTranslation('registration.error.urlFormat', currentLang, customTranslations));
         }
 
         userForm.data.signal = text;
@@ -317,7 +318,7 @@ const handleFormMessage = async (ctx) => {
         
       case 'threema':
         if (!text.startsWith('https://')) {
-          return await ctx.reply('❌ Merci de fournir un lien Threema valide commençant par https://. Réessaie :');
+          return await ctx.reply(getTranslation('registration.error.urlFormat', currentLang, customTranslations));
         }
 
         userForm.data.threema = text;
@@ -374,7 +375,17 @@ const handleFormMessage = async (ctx) => {
     
   } catch (error) {
     console.error('Erreur dans handleFormMessage:', error);
-    await ctx.reply('❌ Une erreur est survenue. Réessaie ou tape /start pour recommencer.');
+    // Récupérer la langue pour les erreurs
+    try {
+      const Config = require('../models/Config');
+      const config = await Config.findById('main');
+      const currentLang = config?.languages?.currentLanguage || 'fr';
+      const customTranslations = config?.languages?.translations;
+      await ctx.reply(getTranslation('registration.error.general', currentLang, customTranslations));
+    } catch (langError) {
+      // Fallback en français si erreur de récupération de langue
+      await ctx.reply('❌ Une erreur est survenue. Réessaie ou tape /start pour recommencer.');
+    }
   }
 };
 
