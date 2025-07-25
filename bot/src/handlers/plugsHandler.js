@@ -1813,53 +1813,51 @@ const handleDepartmentsList = async (ctx, serviceType, selectedCountry = null) =
       message += `🌍 **Pays:** ${getCountryFlag(selectedCountry)} ${selectedCountry}\n`;
     }
     
-    message += `\n🏪 **${allDepartments.length} département${allDepartments.length > 1 ? 's' : ''} avec boutiques:**\n\n`;
+    message += `\n🏪 **${allDepartments.length} département${allDepartments.length > 1 ? 's' : ''} disponible${allDepartments.length > 1 ? 's' : ''}:**\n\n`;
     message += `💡 *Cliquez sur un département pour voir les boutiques*`;
     
     console.log(`🔍 handleDepartmentsList: Génération des boutons pour ${allDepartments.length} départements`);
     console.log(`🔍 Premiers départements:`, allDepartments.slice(0, 5));
     
-    // Créer le clavier avec les départements (2 par ligne)
+    // Créer le clavier avec les départements (4 par ligne pour économiser l'espace)
     const deptButtons = [];
-    for (let i = 0; i < allDepartments.length; i += 2) {
+    
+    // Limiter à 80 départements maximum pour éviter les limites Telegram (20 lignes max)
+    const maxDepartments = Math.min(allDepartments.length, 80);
+    console.log(`🔍 handleDepartmentsList: Affichage des ${maxDepartments} premiers départements sur ${allDepartments.length}`);
+    
+    for (let i = 0; i < maxDepartments; i += 4) {
       const row = [];
-      const dept1 = allDepartments[i];
-      const dept2 = allDepartments[i + 1];
       
-      // Compter les boutiques pour chaque département (peut être 0)
-      const shopsInDept1 = shopsWithService.filter(shop => {
-        if (serviceType === 'delivery') {
-          return shop.services?.delivery?.departments?.includes(dept1);
-        } else if (serviceType === 'meetup') {
-          return shop.services?.meetup?.departments?.includes(dept1);
-        }
-        return false;
-      }).length;
-      
-      // Afficher même si 0 boutiques
-      row.push({
-        text: `${dept1} (${shopsInDept1})`,
-        callback_data: `top_dept_${serviceType}_${dept1}${selectedCountry ? `_${selectedCountry}` : ''}`
-      });
-      
-      if (dept2) {
-        const shopsInDept2 = shopsWithService.filter(shop => {
+      for (let j = 0; j < 4 && (i + j) < maxDepartments; j++) {
+        const dept = allDepartments[i + j];
+        
+        // Compter les boutiques pour ce département (peut être 0)
+        const shopsInDept = shopsWithService.filter(shop => {
           if (serviceType === 'delivery') {
-            return shop.services?.delivery?.departments?.includes(dept2);
+            return shop.services?.delivery?.departments?.includes(dept);
           } else if (serviceType === 'meetup') {
-            return shop.services?.meetup?.departments?.includes(dept2);
+            return shop.services?.meetup?.departments?.includes(dept);
           }
           return false;
         }).length;
         
         // Afficher même si 0 boutiques
         row.push({
-          text: `${dept2} (${shopsInDept2})`,
-          callback_data: `top_dept_${serviceType}_${dept2}${selectedCountry ? `_${selectedCountry}` : ''}`
+          text: `${dept} (${shopsInDept})`,
+          callback_data: `top_dept_${serviceType}_${dept}${selectedCountry ? `_${selectedCountry}` : ''}`
         });
       }
       
       deptButtons.push(row);
+    }
+    
+    // Si plus de 80 départements, ajouter un message
+    if (allDepartments.length > 80) {
+      deptButtons.push([{
+        text: `📋 ... et ${allDepartments.length - 80} autres départements`,
+        callback_data: 'no_action'
+      }]);
     }
     
     // Bouton retour
