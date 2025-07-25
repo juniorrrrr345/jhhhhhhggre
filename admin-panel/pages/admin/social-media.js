@@ -3,6 +3,7 @@ import { useRouter } from 'next/router'
 import Head from 'next/head'
 import Layout from '../../components/Layout'
 import { simpleApi } from '../../lib/api-simple'
+import { localApi } from '../../lib/local-storage-api'
 import toast from 'react-hot-toast'
 
 export default function SocialMediaManager() {
@@ -16,6 +17,7 @@ export default function SocialMediaManager() {
     url: '',
     enabled: true
   })
+  const [isLocalMode, setIsLocalMode] = useState(false)
   const router = useRouter()
 
   useEffect(() => {
@@ -30,32 +32,45 @@ export default function SocialMediaManager() {
   const fetchSocialMedias = async () => {
     try {
       setLoading(true)
-      const token = localStorage.getItem('adminToken') || 'JuniorAdmon123'
+      setIsLocalMode(false)
       
-      // Récupérer la config qui contient les réseaux sociaux
+      // Essayer d'abord le serveur
+      const token = localStorage.getItem('adminToken') || 'JuniorAdmon123'
       const config = await simpleApi.getConfig(token)
       
-      // Convertir la config en format array pour l'interface
-      const socialArray = config.socialMediaList || [
-        { id: 'telegram', name: 'Telegram', emoji: '📱', url: config.socialMedia?.telegram || '', enabled: true },
-        { id: 'whatsapp', name: 'WhatsApp', emoji: '💬', url: config.socialMedia?.whatsapp || '', enabled: true },
-        { id: 'discord', name: 'Discord', emoji: '🎮', url: '', enabled: false }
-      ]
-      
-      setSocialMedias(socialArray)
-    } catch (error) {
-      console.error('❌ Erreur chargement réseaux sociaux:', error)
-      if (error.message.includes('Timeout') || error.message.includes('429') || error.message.includes('surchargé')) {
-        // Mode dégradé avec données par défaut
-        setSocialMedias([
-          { id: 'telegram', name: 'Telegram', emoji: '📱', url: '', enabled: true },
-          { id: 'whatsapp', name: 'WhatsApp', emoji: '💬', url: '', enabled: true },
-          { id: 'discord', name: 'Discord', emoji: '🎮', url: '', enabled: false },
-          { id: 'instagram', name: 'Instagram', emoji: '📸', url: '', enabled: false }
-        ])
-        // Mode dégradé silencieux
+      if (config && config.socialMediaList) {
+        setSocialMedias(config.socialMediaList)
+        console.log('✅ Réseaux sociaux chargés depuis le serveur')
       } else {
-        toast.error('Erreur lors du chargement')
+        throw new Error('Configuration serveur vide')
+      }
+      
+    } catch (error) {
+      console.error('Serveur indisponible, basculement en mode local:', error)
+      
+      // Basculer en mode local
+      setIsLocalMode(true)
+      
+      try {
+        const localConfig = await localApi.getConfig()
+        if (localConfig && localConfig.socialMediaList) {
+          setSocialMedias(localConfig.socialMediaList)
+          console.log('📁 Réseaux sociaux chargés depuis le stockage local')
+        } else {
+          // Initialiser avec des données par défaut
+          const defaultSocialMedias = [
+            { id: 'telegram', name: 'Telegram', emoji: '📱', url: '', enabled: true },
+            { id: 'whatsapp', name: 'WhatsApp', emoji: '💬', url: '', enabled: true },
+            { id: 'discord', name: 'Discord', emoji: '🎮', url: '', enabled: false },
+            { id: 'instagram', name: 'Instagram', emoji: '📸', url: '', enabled: false }
+          ]
+          setSocialMedias(defaultSocialMedias)
+          await localApi.updateSocialMedia(defaultSocialMedias)
+          console.log('🔧 Réseaux sociaux initialisés en mode local')
+        }
+      } catch (localError) {
+        console.error('Erreur mode local:', localError)
+        toast.error('Erreur de stockage local')
       }
     } finally {
       setLoading(false)
@@ -65,23 +80,37 @@ export default function SocialMediaManager() {
   const saveSocialMedias = async () => {
     try {
       setSaving(true)
-      const token = localStorage.getItem('adminToken') || 'JuniorAdmon123'
       
-      const configData = {
-        socialMediaList: socialMedias,
-        // Maintenir compatibilité avec ancien format
-        socialMedia: {
-          telegram: socialMedias.find(s => s.id === 'telegram')?.url || '',
-          whatsapp: socialMedias.find(s => s.id === 'whatsapp')?.url || ''
+      if (isLocalMode) {
+        // Mode local : sauvegarde directe
+        await localApi.updateSocialMedia(socialMedias)
+        console.log('💾 Réseaux sociaux sauvegardés localement')
+      } else {
+        // Mode serveur : essayer de sauvegarder sur le serveur
+        try {
+          const token = localStorage.getItem('adminToken') || 'JuniorAdmon123'
+          
+          const configData = {
+            socialMediaList: socialMedias,
+            // Maintenir compatibilité avec l'ancien format
+            socialMedia: {
+              telegram: socialMedias.find(s => s.id === 'telegram')?.url || '',
+              whatsapp: socialMedias.find(s => s.id === 'whatsapp')?.url || ''
+            }
+          }
+          
+          await simpleApi.updateConfig(token, configData)
+          console.log('✅ Réseaux sociaux sauvegardés sur le serveur')
+        } catch (serverError) {
+          console.log('Serveur indisponible, sauvegarde locale de secours')
+          // Fallback en mode local
+          setIsLocalMode(true)
+          await localApi.updateSocialMedia(socialMedias)
         }
       }
       
-      const result = await simpleApi.updateConfig(token, configData)
-      
-      // Sauvegarde silencieuse
-      
     } catch (error) {
-      console.error('❌ Erreur sauvegarde:', error)
+      console.error('Erreur sauvegarde:', error)
       toast.error('Erreur lors de la sauvegarde')
     } finally {
       setSaving(false)
@@ -118,23 +147,39 @@ export default function SocialMediaManager() {
     if (confirm('Êtes-vous sûr de vouloir supprimer ce réseau social ?')) {
       // Supprimer de l'état local
       const updatedSocialMedias = socialMedias.filter(item => item.id !== id)
+      const previousSocialMedias = [...socialMedias] // Backup pour restaurer en cas d'erreur
       setSocialMedias(updatedSocialMedias)
       
-      // Sauvegarder automatiquement
+      // Sauvegarder automatiquement selon le mode
       try {
         setSaving(true)
-        const token = localStorage.getItem('adminToken') || 'JuniorAdmon123'
         
-        const configData = {
-          socialMediaList: updatedSocialMedias
+        if (isLocalMode) {
+          // Mode local : sauvegarde directe
+          await localApi.updateSocialMedia(updatedSocialMedias)
+          console.log('💾 Réseau social supprimé et sauvegardé localement')
+        } else {
+          // Mode serveur : essayer de sauvegarder sur le serveur
+          try {
+            const token = localStorage.getItem('adminToken') || 'JuniorAdmon123'
+            
+            const configData = {
+              socialMediaList: updatedSocialMedias
+            }
+            
+            await simpleApi.updateConfig(token, configData)
+            console.log('✅ Réseau social supprimé et sauvegardé sur le serveur')
+          } catch (serverError) {
+            console.log('Serveur indisponible, sauvegarde locale de secours')
+            // Fallback en mode local
+            setIsLocalMode(true)
+            await localApi.updateSocialMedia(updatedSocialMedias)
+          }
         }
-        
-        await simpleApi.updateConfig(token, configData)
-        // Suppression et sauvegarde silencieuses
       } catch (error) {
         console.error('Erreur suppression:', error)
         // Restaurer l'état en cas d'erreur
-        setSocialMedias(socialMedias)
+        setSocialMedias(previousSocialMedias)
         toast.error('Erreur lors de la suppression')
       } finally {
         setSaving(false)
@@ -181,7 +226,31 @@ export default function SocialMediaManager() {
                 Gérez les réseaux sociaux affichés dans le bot Telegram
               </p>
             </div>
-            <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
+            <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none space-x-2">
+              {isLocalMode && (
+                <button
+                  onClick={async () => {
+                    try {
+                      setSaving(true)
+                      const synced = await localApi.syncWithServer(simpleApi)
+                      if (synced) {
+                        setIsLocalMode(false)
+                        toast.success('✅ Synchronisé avec le serveur')
+                      } else {
+                        toast.error('Serveur encore indisponible')
+                      }
+                    } catch (error) {
+                      toast.error('Erreur de synchronisation')
+                    } finally {
+                      setSaving(false)
+                    }
+                  }}
+                  disabled={saving}
+                  className="inline-flex items-center px-3 py-2 border border-orange-300 rounded-md shadow-sm text-sm font-medium text-orange-700 bg-orange-100 hover:bg-orange-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:opacity-50"
+                >
+                  🔄 Synchroniser
+                </button>
+              )}
               <button
                 onClick={saveSocialMedias}
                 disabled={saving}
@@ -196,9 +265,17 @@ export default function SocialMediaManager() {
             {/* Liste des réseaux sociaux existants */}
             <div className="bg-white shadow rounded-lg">
               <div className="px-4 py-5 sm:p-6">
-                <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">
-                  📱 Réseaux Sociaux Actuels
-                </h3>
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg leading-6 font-medium text-gray-900">
+                    📱 Réseaux Sociaux Actuels
+                  </h3>
+                  {isLocalMode && (
+                    <div className="flex items-center text-orange-600 text-sm bg-orange-100 px-2 py-1 rounded-md">
+                      <span className="mr-1">📁</span>
+                      Mode Local
+                    </div>
+                  )}
+                </div>
                 
                 <div className="space-y-4">
                   {socialMedias.map((social, index) => (
