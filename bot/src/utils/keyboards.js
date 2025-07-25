@@ -189,9 +189,14 @@ const createDeliveryOptionsKeyboard = (config) => {
   const backText = getTranslation('filters.back', currentLang, customTranslations);
   
   return Markup.inlineKeyboard([
+    // Première ligne : Meetup à gauche, Envoi à droite
+    [
+      Markup.button.callback(`🤝 ${meetupText}`, 'service_meetup'),
+      Markup.button.callback(`📬 ${postalText}`, 'service_postal')
+    ],
+    // Deuxième ligne : Livraison en bas
     [Markup.button.callback(`📦 ${deliveryText}`, 'service_delivery')],
-    [Markup.button.callback(`📬 ${postalText}`, 'service_postal')],
-    [Markup.button.callback(`🤝 ${meetupText}`, 'service_meetup')],
+    // Troisième ligne : Retour
     [Markup.button.callback(backText, 'back_main')]
   ]);
 };
@@ -478,6 +483,7 @@ const createVIPKeyboard = (vipPlugs) => {
 
 module.exports = {
   createMainKeyboard,
+  createDeliveryOptionsKeyboard,
   createPlugsFilterKeyboard,
   createServicesKeyboard,
   createCountriesKeyboard,
