@@ -8,7 +8,6 @@
       "maxDuration": 15
     }
   },
-
   "headers": [
     {
       "source": "/admin/messages",
@@ -47,6 +46,16 @@
     }
   ],
   "env": {
-    "NODE_ENV": "production"
+    "NODE_ENV": "production",
+    "BOT_API_URL": "https://jsjshsheejdbot.onrender.com",
+    "NEXT_PUBLIC_BOT_URL": "https://jsjshsheejdbot.onrender.com",
+    "NEXT_PUBLIC_API_URL": "https://jsjshsheejdbot.onrender.com"
+  },
+  "build": {
+    "env": {
+      "BOT_API_URL": "https://jsjshsheejdbot.onrender.com",
+      "NEXT_PUBLIC_BOT_URL": "https://jsjshsheejdbot.onrender.com",
+      "NEXT_PUBLIC_API_URL": "https://jsjshsheejdbot.onrender.com"
+    }
   }
 }

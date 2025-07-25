@@ -43,7 +43,7 @@ export default async function handler(req, res) {
 
   try {
     const { endpoint, method = 'GET', token, data } = req.body || {}
-    const apiUrl = 'https://jhhhhhhggre.onrender.com'
+    const apiUrl = process.env.BOT_API_URL || 'http://localhost:3020'
     
     console.log(`🔄 Proxy request: ${method} ${endpoint}`)
     console.log(`🔑 Token provided: ${token ? 'Yes' : 'No'}`)
