@@ -415,9 +415,11 @@ bot.action(/^top_departments_(.+)$/, (ctx) => {
 });
 
 bot.action(/^top_dept_(.+)_(.+)_?(.*)$/, (ctx) => {
+  console.log(`🔥 CALLBACK top_dept parse: match[1]="${ctx.match[1]}", match[2]="${ctx.match[2]}", match[3]="${ctx.match[3]}"`);
   const serviceType = ctx.match[1]; // delivery ou meetup
   const department = ctx.match[2];
   const selectedCountry = ctx.match[3] || null;
+  console.log(`🔥 Parameters: serviceType="${serviceType}", department="${department}", selectedCountry="${selectedCountry}"`);
   return handleSpecificDepartment(ctx, serviceType, department, selectedCountry);
 });
 
