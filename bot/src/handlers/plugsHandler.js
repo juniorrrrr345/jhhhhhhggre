@@ -1872,9 +1872,22 @@ const handleDepartmentsList = async (ctx, serviceType, selectedCountry = null) =
     const keyboard = { inline_keyboard: deptButtons };
     
     console.log(`🔍 handleDepartmentsList: Envoi du clavier avec ${keyboard.inline_keyboard.length} lignes`);
+    console.log(`🔍 Structure du clavier:`, JSON.stringify(keyboard, null, 2));
     
-    // Éditer le message avec image (compatible avec les messages image + texte)
-    await editMessageWithImage(ctx, message, keyboard, config, { parse_mode: 'Markdown' });
+    // Essayer d'abord editMessageText, puis editMessageWithImage en fallback
+    try {
+      console.log(`🔍 handleDepartmentsList: Tentative editMessageText`);
+      await ctx.editMessageText(message, {
+        parse_mode: 'Markdown',
+        reply_markup: keyboard
+      });
+      console.log(`✅ handleDepartmentsList: editMessageText réussi`);
+    } catch (editError) {
+      console.log(`⚠️ editMessageText échoué:`, editError.message);
+      console.log(`🔍 handleDepartmentsList: Tentative editMessageWithImage en fallback`);
+      await editMessageWithImage(ctx, message, keyboard, config, { parse_mode: 'Markdown' });
+      console.log(`✅ handleDepartmentsList: editMessageWithImage réussi`);
+    }
     
   } catch (error) {
     console.error('Erreur dans handleDepartmentsList:', error);
