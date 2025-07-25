@@ -234,7 +234,13 @@ const handleTopServiceFilter = async (ctx, serviceType, selectedCountry = null) 
         keyboard = createTopPlugsKeyboard(config, availableCountries, selectedCountry, serviceType, []);
       }
     } else {
-      // Pour Livraison et Meetup : afficher directement toutes les boutiques de ce service
+      // Pour Livraison et Meetup : si un pays est sélectionné, rediriger vers les départements
+      if (selectedCountry && (serviceType === 'delivery' || serviceType === 'meetup')) {
+        console.log(`🎯 Redirection vers départements pour ${serviceType} dans ${selectedCountry}`);
+        return await handleDepartmentsList(ctx, serviceType, selectedCountry);
+      }
+      
+      // Sinon afficher les boutiques du service avec bouton département
       const query = { 
         isActive: true,
         [`services.${serviceType}.enabled`]: true
