@@ -50,7 +50,7 @@ export default function BroadcastMessages() {
           failed: data.failed || 0,
           total: data.total || 0
         })
-        toast.success(`Message envoyé à ${data.sent} utilisateurs !`)
+        toast.success(`Message envoyé à ${data.sent} utilisateurs`)
         setMessage('')
         setImage('')
       } else {

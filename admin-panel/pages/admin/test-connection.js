@@ -92,12 +92,12 @@ export default function TestConnection() {
     
     setTesting(false)
     setCurrentTest('')
-    toast.success('Tests terminés !')
+    toast.success('Tests terminés')
   }
 
   const clearCache = () => {
     simpleApi.clearCache()
-    toast.success('Cache nettoyé !')
+    toast.success('Cache nettoyé')
   }
 
   return (

@@ -93,11 +93,11 @@ const translations = {
 
     // === MESSAGES ===
     'messages.welcome': {
-      fr: 'Bienvenue sur FindYourPlug! Explorez nos services.',
-      en: 'Welcome to FindYourPlug! Explore our services.',
-      it: 'Benvenuti su FindYourPlug! Esplorate i nostri servizi.',
-      es: '¡Bienvenido a FindYourPlug! Explora nuestros servicios.',
-      de: 'Willkommen bei FindYourPlug! Entdecken Sie unsere Dienste.'
+      fr: 'FINDYOURPLUG\nMINI-APP TELEGRAM\nCHILL',
+      en: 'FINDYOURPLUG\nTELEGRAM MINI-APP\nCHILL',
+      it: 'FINDYOURPLUG\nMINI-APP TELEGRAM\nCHILL',
+      es: 'FINDYOURPLUG\nMINI-APP TELEGRAM\nCHILL',
+      de: 'FINDYOURPLUG\nTELEGRAM MINI-APP\nCHILL'
     },
     'messages.contactUs': {
       fr: 'Contactez-nous pour plus d\'informations.',

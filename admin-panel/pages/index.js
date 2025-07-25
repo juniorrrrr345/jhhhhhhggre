@@ -48,8 +48,8 @@ export default function Login() {
           // COURT-CIRCUITER COMPLÈTEMENT - pas d'await, pas d'API
           console.log('✅ Login offline réussi immédiatement');
           
-          // Vérifier le mode de connexion
-          toast.success('🔑 Connexion réussie ! (Mode hors ligne - serveur indisponible)');
+          // Message simple
+          toast.success('Connexion réussie');
           
           // Stocker le token
           localStorage.setItem('adminToken', password);
@@ -71,16 +71,8 @@ export default function Login() {
         const config = await Promise.race([loginPromise, timeoutPromise]);
         console.log('✅ Login proxy réussi');
         
-        // Vérifier le mode de connexion
-        if (config._fallback) {
-          if (config._reason === 'server_overloaded') {
-            toast.success('🔑 Connexion réussie ! (Mode dégradé - serveur surchargé)');
-          } else {
-            toast.success('🔑 Connexion réussie ! (Mode dégradé - serveur lent)');
-          }
-        } else {
-          toast.success('Connexion réussie !');
-        }
+        // Message simple unique
+        toast.success('Connexion réussie');
         
         // Stocker le token
         localStorage.setItem('adminToken', password);
@@ -97,29 +89,29 @@ export default function Login() {
         if (directError.message.includes('Proxy error: 401') || directError.message.includes('401')) {
           toast.error('Mot de passe incorrect');
         } else if (directError.message.includes('Timeout')) {
-          toast.error('Le serveur met trop de temps à répondre. Vérifiez que le serveur bot est démarré.');
+          toast.error('Connexion trop lente');
         } else if (directError.message.includes('429') || directError.message.includes('surchargé')) {
-          toast.error('🚫 Serveur surchargé. Attendez 2-3 minutes avant de vous reconnecter.');
+          toast.error('Serveur surchargé');
         } else {
-          toast.error('Erreur de connexion. Vérifiez votre mot de passe.');
+          toast.error('Erreur de connexion');
         }
       }
     } catch (error) {
       console.error('💥 Login error final:', error);
       
-      // Message d'erreur plus spécifique
+      // Messages d'erreur simplifiés
       if (error.message.includes('401') || error.message.includes('incorrect')) {
         toast.error('Mot de passe incorrect');
       } else if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
-        toast.error('Impossible de contacter le serveur. Vérifiez que le serveur bot est démarré.');
+        toast.error('Serveur indisponible');
       } else if (error.message.includes('démarrage')) {
-        toast.error('Le serveur bot est en cours de démarrage. Veuillez patienter et réessayer dans quelques secondes.');
+        toast.error('Serveur en démarrage');
       } else if (error.message.includes('429') || error.message.includes('surchargé')) {
-        toast.error('🚫 Serveur temporairement surchargé. Attendez quelques minutes.');
+        toast.error('Serveur surchargé');
       } else if (error.message.includes('Timeout')) {
-        toast.error('⏱️ Connexion trop lente. Le serveur met trop de temps à répondre.');
+        toast.error('Connexion trop lente');
       } else {
-        toast.error(`Erreur de connexion: ${error.message}`);
+        toast.error('Erreur de connexion');
       }
     } finally {
       setLoading(false);

@@ -109,9 +109,9 @@ export default function Applications() {
       
       // Toast de succès
       if (action === 'approved') {
-        toast.success('✅ Demande approuvée avec succès !');
+        toast.success('Demande approuvée');
       } else {
-        toast.success('❌ Demande refusée avec succès !');
+        toast.success('Demande refusée');
       }
       
       setError('');
