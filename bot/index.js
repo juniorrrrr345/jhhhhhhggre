@@ -239,10 +239,19 @@ bot.action('select_language', async (ctx) => {
     const message = `🌍 **${getTranslation('menu_language', currentLang, customTranslations)}**\n\nSélectionnez votre langue préférée :`;
     const keyboard = createLanguageKeyboard(currentLang);
     
-    await ctx.editMessageText(message, {
-      reply_markup: keyboard.reply_markup,
-      parse_mode: 'Markdown'
-    });
+    // Essayer d'éditer le caption d'abord (pour les messages avec image)
+    try {
+      await ctx.editMessageCaption(message, {
+        reply_markup: keyboard.reply_markup,
+        parse_mode: 'Markdown'
+      });
+    } catch (editError) {
+      // Si ça échoue, essayer d'éditer le texte (pour les messages sans image)
+      await ctx.editMessageText(message, {
+        reply_markup: keyboard.reply_markup,
+        parse_mode: 'Markdown'
+      });
+    }
     
   } catch (error) {
     console.error('❌ Erreur sélecteur langue:', error);
@@ -375,11 +384,11 @@ bot.action(/^confirm_cancel_(.+)$/, handleConfirmCancel);
 // Handler pour les options de livraison
 bot.action('delivery_options', async (ctx) => {
   try {
-    const config = await getConfig();
+    const config = await Config.findById('main');
     const currentLang = config?.languages?.currentLanguage || 'fr';
     const customTranslations = config?.languages?.translations;
     
-    const deliveryTitle = getTranslation('menu.delivery', currentLang, customTranslations);
+    const deliveryTitle = getTranslation('menu_delivery', currentLang, customTranslations);
     const deliveryMessage = `${deliveryTitle}\n\nChoisissez votre mode de livraison :`;
     
     await ctx.editMessageText(deliveryMessage, {
