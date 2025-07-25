@@ -151,7 +151,7 @@ const handleStartApplication = async (ctx) => {
       return await safeEditMessage(ctx, message, {
         reply_markup: keyboard.reply_markup,
         parse_mode: 'Markdown'
-      });
+      }, true); // keepWelcomeImage = true
     }
     
     // Initialiser le formulaire
@@ -178,7 +178,7 @@ const handleStartApplication = async (ctx) => {
     await safeEditMessage(ctx, message, {
       reply_markup: keyboard.reply_markup,
       parse_mode: 'Markdown'
-    });
+    }, true); // keepWelcomeImage = true
     
   } catch (error) {
     console.error('Erreur dans handleStartApplication:', error);
