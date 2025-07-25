@@ -303,9 +303,62 @@ const handlePostalCodeFilter = async (ctx, serviceType, selectedCountry = null, 
     const currentLang = config?.languages?.currentLanguage || 'fr';
     const customTranslations = config?.languages?.translations;
     
-    // Si pas de pays sélectionné, demander d'abord de choisir un pays
+    // Si pas de pays sélectionné, afficher la liste des pays disponibles
     if (!selectedCountry) {
-      await ctx.answerCbQuery(getTranslation('messages_selectCountry', currentLang, customTranslations));
+      const availableCountries = await getAvailableCountries();
+      
+      let message = `📍 **${getTranslation('filter_department_available', currentLang, customTranslations)}**\n\n`;
+      
+      if (serviceType === 'delivery') {
+        const serviceName = getTranslation('service_delivery', currentLang, customTranslations);
+        const serviceLabel = getTranslation('service_label', currentLang, customTranslations);
+        message += `📦 **${serviceLabel}:** ${serviceName}\n`;
+      } else if (serviceType === 'meetup') {
+        const serviceName = getTranslation('service_meetup', currentLang, customTranslations);
+        const serviceLabel = getTranslation('service_label', currentLang, customTranslations);
+        message += `🤝 **${serviceLabel}:** ${serviceName}\n`;
+      }
+      
+      message += `\n${getTranslation('messages_selectCountry', currentLang, customTranslations)}\n`;
+      message += `📮 **Codes postaux disponibles par pays:**\n`;
+      
+      // Afficher le nombre de codes postaux par pays
+      availableCountries.forEach(country => {
+        const codes = postalCodeService.getPostalCodes(country);
+        message += `${getCountryFlag(country)} ${country}: ${codes.length.toLocaleString()}\n`;
+      });
+      
+      // Créer clavier avec les pays
+      const countryButtons = [];
+      for (let i = 0; i < availableCountries.length; i += 2) {
+        const row = [];
+        const country1 = availableCountries[i];
+        const country2 = availableCountries[i + 1];
+        
+        row.push({
+          text: `${getCountryFlag(country1)} ${country1}`,
+          callback_data: `postal_country_${serviceType}_${country1}`
+        });
+        
+        if (country2) {
+          row.push({
+            text: `${getCountryFlag(country2)} ${country2}`,
+            callback_data: `postal_country_${serviceType}_${country2}`
+          });
+        }
+        
+        countryButtons.push(row);
+      }
+      
+      // Bouton retour
+      countryButtons.push([{
+        text: '🔙 Retour',
+        callback_data: 'top_plugs'
+      }]);
+      
+      const keyboard = { inline_keyboard: countryButtons };
+      
+      await editMessageWithImage(ctx, message, keyboard, config, { parse_mode: 'Markdown' });
       return;
     }
     

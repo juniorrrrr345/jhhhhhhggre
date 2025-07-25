@@ -419,10 +419,17 @@ bot.action(/^top_dept_(.+)_(.+)_?(.*)$/, (ctx) => {
 bot.action('top_reset_filters', handleResetFilters);
 
 // 🗺️ NOUVEAU: Actions pour les codes postaux
+// ORDRE IMPORTANT: Plus spécifique en premier !
 bot.action(/^postal_nav_(.+)_(\d+)$/, (ctx) => {
   const country = ctx.match[1];
   const page = parseInt(ctx.match[2]);
   return handlePostalCodeFilter(ctx, null, country, page);
+});
+
+bot.action(/^postal_country_(.+)_(.+)$/, (ctx) => {
+  const serviceType = ctx.match[1];
+  const country = ctx.match[2];
+  return handlePostalCodeFilter(ctx, serviceType, country, 0);
 });
 
 bot.action(/^postal_(.+)_(.+)$/, (ctx) => {
