@@ -439,19 +439,22 @@ const handleShopsByPostalCode = async (ctx, country, postalCode, serviceType = n
     const currentLang = config?.languages?.currentLanguage || 'fr';
     const customTranslations = config?.languages?.translations;
     
-    // Rechercher les boutiques qui desservent ce code postal
+    // Rechercher les boutiques qui desservent ce code postal (avec diminutif)
     let query = { 
       isActive: true,
       countries: { $in: [country] }
     };
     
+    // Créer regex pour rechercher les codes qui commencent par le diminutif
+    const postalCodeRegex = new RegExp(`^${postalCode}`);
+    
     // Filtrer par service si spécifié
     if (serviceType === 'delivery') {
       query['services.delivery.enabled'] = true;
-      query['services.delivery.departments'] = { $in: [postalCode] };
+      query['services.delivery.departments'] = { $regex: postalCodeRegex };
     } else if (serviceType === 'meetup') {
       query['services.meetup.enabled'] = true;
-      query['services.meetup.departments'] = { $in: [postalCode] };
+      query['services.meetup.departments'] = { $regex: postalCodeRegex };
     } else if (serviceType === 'postal') {
       query['services.postal.enabled'] = true;
     }

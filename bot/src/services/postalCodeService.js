@@ -257,9 +257,76 @@ class PostalCodeService {
   // Créer un clavier avec les codes postaux (paginé pour Telegram)
   createPostalCodeKeyboard(country, page = 0, itemsPerPage = 16) {
     const codes = this.getPostalCodes(country);
+    
+    // Créer des diminutifs par pays
+    let diminutifs = [];
+    
+    if (country === 'France') {
+      // France: 01, 02, 03... 95 (départements)
+      for (let i = 1; i <= 95; i++) {
+        if (i === 20) continue; // Corse = 2A/2B
+        diminutifs.push(i.toString().padStart(2, '0'));
+      }
+      diminutifs.push('2A', '2B'); // Corse
+      diminutifs.push('971', '972', '973', '974', '976'); // DOM-TOM
+    } else if (country === 'Espagne') {
+      // Espagne: 01, 02, 03... 52 (provinces)
+      for (let i = 1; i <= 52; i++) {
+        diminutifs.push(i.toString().padStart(2, '0'));
+      }
+    } else if (country === 'Allemagne') {
+      // Allemagne: 01, 02, 03... 99 (zones principales)
+      for (let i = 1; i <= 99; i++) {
+        diminutifs.push(i.toString().padStart(2, '0'));
+      }
+    } else if (country === 'Pays-Bas') {
+      // Pays-Bas: 10, 11, 12... 99 (zones)
+      for (let i = 10; i <= 99; i++) {
+        diminutifs.push(i.toString());
+      }
+    } else if (country === 'Belgique') {
+      // Belgique: 10, 11, 12... 99
+      for (let i = 10; i <= 99; i++) {
+        diminutifs.push(i.toString());
+      }
+    } else if (country === 'Suisse') {
+      // Suisse: 10, 11, 12... 99
+      for (let i = 10; i <= 99; i++) {
+        diminutifs.push(i.toString());
+      }
+    } else if (country === 'Italie') {
+      // Italie: 00, 01, 02... 99 (zones)
+      for (let i = 0; i <= 99; i++) {
+        diminutifs.push(i.toString().padStart(2, '0'));
+      }
+    } else if (country === 'Royaume-Uni') {
+      // UK: Zones alphabétiques simplifiées
+      diminutifs = ['SW', 'W', 'EC', 'WC', 'E', 'N', 'SE', 'NW', 'M', 'B', 'L', 'LS', 'S', 'G', 'CF', 'EH'];
+    } else if (country === 'États-Unis') {
+      // USA: États (codes à 2 lettres)
+      diminutifs = ['AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA', 'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MD', 'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ', 'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC', 'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY'];
+    } else if (country === 'Canada') {
+      // Canada: Provinces
+      diminutifs = ['AB', 'BC', 'MB', 'NB', 'NL', 'NS', 'NT', 'NU', 'ON', 'PE', 'QC', 'SK', 'YT'];
+    } else if (country === 'Thaïlande') {
+      // Thaïlande: 10, 11, 12... 99
+      for (let i = 10; i <= 99; i++) {
+        diminutifs.push(i.toString());
+      }
+    } else if (country === 'Maroc') {
+      // Maroc: 10, 11, 12... 99
+      for (let i = 10; i <= 99; i++) {
+        diminutifs.push(i.toString());
+      }
+    } else {
+      // Fallback: utiliser les premiers caractères des codes
+      const uniquePrefixes = [...new Set(codes.map(code => code.substring(0, 2)))];
+      diminutifs = uniquePrefixes.slice(0, 50); // Limiter à 50 pour la performance
+    }
+    
     const startIndex = page * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
-    const currentPageCodes = codes.slice(startIndex, endIndex);
+    const currentPageCodes = diminutifs.slice(startIndex, endIndex);
     
     const keyboard = [];
     
@@ -284,7 +351,7 @@ class PostalCodeService {
       keyboard.push(row);
     }
     
-    // Boutons de navigation
+    // Boutons de navigation (basés sur les diminutifs, pas les codes complets)
     const navButtons = [];
     if (page > 0) {
       navButtons.push({
@@ -292,7 +359,7 @@ class PostalCodeService {
         callback_data: `postal_nav_${country}_${page - 1}`
       });
     }
-    if (endIndex < codes.length) {
+    if (endIndex < diminutifs.length) {
       navButtons.push({
         text: 'Suivant ➡️',
         callback_data: `postal_nav_${country}_${page + 1}`
