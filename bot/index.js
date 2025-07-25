@@ -21,7 +21,7 @@ const adminLimiter = limits.auth; // Utilise le rate limiter d'auth plus strict
 const { connectDB } = require('./src/utils/database');
 
 // Gestionnaires
-const { handleStart, handleBackMain } = require('./src/handlers/startHandler');
+const { handleStart, handleBackMain, setGetFreshConfig } = require('./src/handlers/startHandler');
 const { getTranslation, createLanguageKeyboard, initializeDefaultTranslations } = require('./src/utils/translations');
 const { 
   handleTopPlugs, 
@@ -225,6 +225,9 @@ bot.on('photo', async (ctx) => {
 
 // Gestionnaires des callbacks
 bot.action('back_main', handleBackMain);
+
+// Initialiser la référence getFreshConfig dans startHandler
+setGetFreshConfig(getFreshConfig);
 
 // === GESTION DES LANGUES ===
 // Afficher le sélecteur de langue
@@ -2868,47 +2871,3 @@ app.get('/api/likes/:plugId/:userId', async (req, res) => {
     res.status(500).json({ error: 'Erreur serveur' });
   }
 });
-
-// Gestion du /start et du menu principal
-const handleStart = async (ctx) => {
-  try {
-    // Obtenir la config fraîche avec traductions
-    const config = await getFreshConfig();
-    const currentLang = config?.languages?.currentLanguage || 'fr';
-    const customTranslations = config?.languages?.translations;
-    
-    console.log(`🌍 Menu principal affiché en langue: ${currentLang}`);
-    
-    // Message de bienvenue traduit
-    const welcomeMessage = getTranslation('messages_welcome', currentLang, customTranslations);
-    
-    // Créer le clavier principal avec traductions
-    const keyboard = await createMainKeyboard(config);
-    
-    // Envoyer ou éditer le message avec l'image
-    try {
-      if (ctx.callbackQuery) {
-        // Si c'est un callback, éditer le message existant
-        await editMessageWithImage(ctx, welcomeMessage, keyboard, config, { 
-          parse_mode: 'Markdown' 
-        });
-      } else {
-        // Si c'est un nouveau /start, envoyer un nouveau message
-        await sendMessageWithImage(ctx, welcomeMessage, keyboard, config, { 
-          parse_mode: 'Markdown' 
-        });
-      }
-    } catch (error) {
-      console.error('❌ Erreur affichage menu principal:', error);
-      // Fallback sans image
-      await ctx.reply(welcomeMessage, {
-        reply_markup: keyboard.reply_markup,
-        parse_mode: 'Markdown'
-      });
-    }
-    
-  } catch (error) {
-    console.error('❌ Erreur dans handleStart:', error);
-    await ctx.reply('❌ Erreur lors du chargement du menu').catch(() => {});
-  }
-};

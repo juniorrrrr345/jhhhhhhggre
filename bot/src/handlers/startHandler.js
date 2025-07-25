@@ -5,6 +5,15 @@ const { createMainKeyboard, createVIPKeyboard } = require('../utils/keyboards');
 const { sendMessageWithImage, editMessageWithImage } = require('../utils/messageHelper');
 const { ensureConnection } = require('../utils/database');
 const { handleReferral } = require('./referralHandler');
+const { getTranslation } = require('../utils/translations');
+
+// Note: getFreshConfig sera passé comme paramètre ou accessible globalement
+let getFreshConfig = null;
+
+// Fonction pour définir la référence à getFreshConfig
+const setGetFreshConfig = (fn) => {
+  getFreshConfig = fn;
+};
 
 const handleStart = async (ctx) => {
   try {
@@ -48,94 +57,67 @@ const handleStart = async (ctx) => {
 
     // Enregistrer ou mettre à jour l'utilisateur
     const userId = ctx.from.id;
-    const username = ctx.from.username;
-    const firstName = ctx.from.first_name;
-    const lastName = ctx.from.last_name;
+    const username = ctx.from.username || 'Utilisateur sans nom';
+    const firstName = ctx.from.first_name || '';
+    const lastName = ctx.from.last_name || '';
 
     try {
-      let user = await User.findOne({ telegramId: userId });
-      if (!user) {
-        user = new User({
-          telegramId: userId,
+      await User.findOneAndUpdate(
+        { userId: userId },
+        {
+          userId: userId,
           username: username,
           firstName: firstName,
-          lastName: lastName
-        });
-        console.log('👤 Nouvel utilisateur créé:', username);
-      } else {
-        // Mettre à jour les infos si elles ont changé
-        user.username = username;
-        user.firstName = firstName;
-        user.lastName = lastName;
-        user.lastActivity = new Date();
-      }
-      await user.save();
+          lastName: lastName,
+          lastAccess: new Date(),
+          isActive: true
+        },
+        { upsert: true, new: true }
+      );
+      console.log('✅ Utilisateur enregistré/mis à jour:', userId, username);
     } catch (userError) {
-      console.error('⚠️ Erreur gestion utilisateur:', userError);
-      // Continuer même si la sauvegarde utilisateur échoue
+      console.error('❌ Erreur lors de l\'enregistrement utilisateur:', userError);
+      // Continuer même si l'enregistrement utilisateur échoue
     }
+
+    // Obtenir la config fraîche avec traductions
+    const config = getFreshConfig ? await getFreshConfig() : await Config.findById('main');
+    const currentLang = config?.languages?.currentLanguage || 'fr';
+    const customTranslations = config?.languages?.translations;
     
-    // Récupérer la configuration avec fallback (toujours fresh)
-    let config;
+    console.log(`🌍 Menu principal affiché en langue: ${currentLang}`);
+    
+    // Message de bienvenue traduit
+    const welcomeMessage = getTranslation('messages_welcome', currentLang, customTranslations);
+    
+    // Créer le clavier principal avec traductions
+    const keyboard = await createMainKeyboard(config);
+    
+    // Envoyer ou éditer le message avec l'image
     try {
-      config = await Config.findById('main');
-      console.log('📋 Config trouvée:', !!config);
-      
-      // Vérifier que la config a bien les bonnes propriétés
-      if (config && !config.welcome) {
-        config.welcome = { text: '🌟 Bienvenue sur notre bot !' };
-      }
-      if (config && !config.buttons) {
-        config.buttons = {};
+      if (ctx.callbackQuery) {
+        // Si c'est un callback, éditer le message existant
+        await editMessageWithImage(ctx, welcomeMessage, keyboard, config, { 
+          parse_mode: 'Markdown' 
+        });
+      } else {
+        // Si c'est un nouveau /start, envoyer un nouveau message
+        await sendMessageWithImage(ctx, welcomeMessage, keyboard, config, { 
+          parse_mode: 'Markdown' 
+        });
       }
     } catch (error) {
-      console.error('❌ Erreur récupération config:', error);
-      config = null;
+      console.error('❌ Erreur affichage menu principal:', error);
+      // Fallback sans image
+      await ctx.reply(welcomeMessage, {
+        reply_markup: keyboard.reply_markup,
+        parse_mode: 'Markdown'
+      });
     }
     
-    if (!config) {
-      console.log('⚠️ Pas de config, utilisation des valeurs par défaut');
-      return ctx.reply('🌟 Bienvenue sur notre bot !\n\nConfiguration en cours...\n\nVeuillez réessayer dans quelques instants.');
-    }
-
-    // Vérifications de sécurité
-    const welcomeText = config.welcome?.text || '🌟 Bienvenue sur notre bot !';
-    const welcomeImage = config.welcome?.image || null;
-    
-    console.log('📝 Message d\'accueil préparé:', welcomeText.substring(0, 50) + '...');
-
-    // Construire le message d'accueil (les réseaux sociaux sont maintenant en boutons)
-    let welcomeMessage = welcomeText;
-
-    // Créer le clavier principal
-    const keyboard = createMainKeyboard(config);
-
-    // Envoyer le message avec image si disponible
-    if (welcomeImage) {
-      try {
-        console.log('📸 Envoi avec image:', welcomeImage);
-        await ctx.replyWithPhoto(welcomeImage, {
-          caption: welcomeMessage,
-          reply_markup: keyboard.reply_markup,
-          parse_mode: 'HTML'
-        });
-        console.log('✅ Message avec image envoyé');
-      } catch (error) {
-        console.error('❌ Erreur envoi photo:', error);
-        // Fallback sans image
-        console.log('🔄 Fallback vers message texte');
-        await ctx.reply(welcomeMessage, keyboard);
-      }
-    } else {
-      console.log('📝 Envoi message texte simple');
-      await ctx.reply(welcomeMessage, keyboard);
-    }
-    
-    console.log('✅ Commande /start terminée avec succès');
-
   } catch (error) {
-    console.error('Erreur dans handleStart:', error);
-    await ctx.reply('❌ Une erreur est survenue, veuillez réessayer.');
+    console.error('❌ Erreur dans handleStart:', error);
+    await ctx.reply('❌ Erreur lors du chargement du menu').catch(() => {});
   }
 };
 
@@ -180,5 +162,6 @@ const handleBackMain = async (ctx) => {
 
 module.exports = {
   handleStart,
-  handleBackMain
+  handleBackMain,
+  setGetFreshConfig
 };
