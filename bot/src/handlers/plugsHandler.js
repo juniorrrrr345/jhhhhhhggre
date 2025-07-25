@@ -1716,11 +1716,10 @@ const handleDepartmentsList = async (ctx, serviceType, selectedCountry = null) =
     console.log(`🚨 MESSAGE CRÉÉ, ${buttons.length} lignes de boutons`);
     console.log(`🚨 Première ligne:`, buttons[0]);
     
-    // EDITION DIRECTE
-    await ctx.editMessageText(message, {
-      parse_mode: 'Markdown',
-      reply_markup: { inline_keyboard: buttons }
-    });
+    // EDITION AVEC IMAGE (compatible avec messages image + texte)
+    const config = await Config.findById('main');
+    const keyboard = { inline_keyboard: buttons };
+    await editMessageWithImage(ctx, message, keyboard, config, { parse_mode: 'Markdown' });
     
     console.log(`🚨 MESSAGE ENVOYÉ AVEC SUCCÈS`);
     
