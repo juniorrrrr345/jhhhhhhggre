@@ -43,3 +43,163 @@ nohup: ignoring input
 🌍 Menu principal affiché en langue: de
 📸 Envoi message avec image: https://i.imgur.com/leViC3R.jpeg
 ✅ Message avec image envoyé
+🔄 Callback reçu: start_application
+👤 User ID: 7670522278, Chat ID: 7670522278
+📝 Message ID: 5710
+🌍 Formulaire d'inscription en langue: de
+⚠️ editMessageText échoué: 400: Bad Request: there is no text in the message to edit
+🚀 Commande /start reçue de: 7670522278
+❌ Erreur lors de l'enregistrement utilisateur: StrictModeError: Path "userId" is not in schema, strict mode is `true`, and upsert is `true`.
+    at cast (/workspace/bot/node_modules/mongoose/lib/cast.js:305:17)
+    at Query.cast (/workspace/bot/node_modules/mongoose/lib/query.js:5055:12)
+    at Query._castConditions (/workspace/bot/node_modules/mongoose/lib/query.js:2351:10)
+    at model.Query._findOneAndUpdate (/workspace/bot/node_modules/mongoose/lib/query.js:3454:8)
+    at model.Query.exec (/workspace/bot/node_modules/mongoose/lib/query.js:4604:80)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async handleStart (/workspace/bot/src/handlers/startHandler.js:65:7)
+    at async execute (/workspace/bot/node_modules/telegraf/lib/composer.js:518:17)
+    at async /workspace/bot/node_modules/telegraf/lib/composer.js:519:21
+    at async execute (/workspace/bot/node_modules/telegraf/lib/composer.js:518:17) {
+  isImmutableError: false,
+  path: 'userId'
+}
+🌍 Menu principal affiché en langue: de
+📸 Envoi message avec image: https://i.imgur.com/leViC3R.jpeg
+✅ Message avec image envoyé
+🔄 Callback reçu: select_language
+👤 User ID: 7670522278, Chat ID: 7670522278
+📝 Message ID: 5713
+🌍 Affichage sélecteur langue, langue actuelle: de
+🌍 Création clavier langue, langue actuelle: de
+🔤 Langue fr: 🇫🇷 Français (sélectionnée: false)
+🔤 Langue en: 🇬🇧 English (sélectionnée: false)
+🔤 Langue it: 🇮🇹 Italiano (sélectionnée: false)
+🔤 Langue es: 🇪🇸 Español (sélectionnée: false)
+🔤 Langue de: ✅ 🇩🇪 Deutsch (sélectionnée: true)
+✅ Clavier langue créé avec 5 langues
+✅ Message avec image modifié pour sélection langue
+🔄 Callback reçu: lang_es
+👤 User ID: 7670522278, Chat ID: 7670522278
+📝 Message ID: 5713
+🌍 Changement de langue vers: es
+✅ Langue sauvegardée: es
+🧹 Tous les caches vidés
+❌ Erreur changement langue: ReferenceError: createMainKeyboard is not defined
+    at /workspace/bot/index.js:373:22
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async execute (/workspace/bot/node_modules/telegraf/lib/composer.js:518:17)
+    at async /workspace/bot/node_modules/telegraf/lib/composer.js:519:21
+    at async execute (/workspace/bot/node_modules/telegraf/lib/composer.js:518:17)
+    at async /workspace/bot/node_modules/telegraf/lib/composer.js:519:21
+    at async execute (/workspace/bot/node_modules/telegraf/lib/composer.js:518:17)
+    at async /workspace/bot/node_modules/telegraf/lib/composer.js:519:21
+    at async execute (/workspace/bot/node_modules/telegraf/lib/composer.js:518:17)
+    at async /workspace/bot/node_modules/telegraf/lib/composer.js:519:21
+🔄 Callback reçu: lang_es
+👤 User ID: 7670522278, Chat ID: 7670522278
+📝 Message ID: 5713
+🌍 Changement de langue vers: es
+✅ Langue sauvegardée: es
+🧹 Tous les caches vidés
+❌ Erreur changement langue: ReferenceError: createMainKeyboard is not defined
+    at /workspace/bot/index.js:373:22
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async execute (/workspace/bot/node_modules/telegraf/lib/composer.js:518:17)
+    at async /workspace/bot/node_modules/telegraf/lib/composer.js:519:21
+    at async execute (/workspace/bot/node_modules/telegraf/lib/composer.js:518:17)
+    at async /workspace/bot/node_modules/telegraf/lib/composer.js:519:21
+    at async execute (/workspace/bot/node_modules/telegraf/lib/composer.js:518:17)
+    at async /workspace/bot/node_modules/telegraf/lib/composer.js:519:21
+    at async execute (/workspace/bot/node_modules/telegraf/lib/composer.js:518:17)
+    at async /workspace/bot/node_modules/telegraf/lib/composer.js:519:21
+🔄 Callback reçu: lang_it
+👤 User ID: 7670522278, Chat ID: 7670522278
+📝 Message ID: 5713
+🌍 Changement de langue vers: it
+✅ Langue sauvegardée: it
+🧹 Tous les caches vidés
+❌ Erreur changement langue: ReferenceError: createMainKeyboard is not defined
+    at /workspace/bot/index.js:373:22
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async execute (/workspace/bot/node_modules/telegraf/lib/composer.js:518:17)
+    at async /workspace/bot/node_modules/telegraf/lib/composer.js:519:21
+    at async execute (/workspace/bot/node_modules/telegraf/lib/composer.js:518:17)
+    at async /workspace/bot/node_modules/telegraf/lib/composer.js:519:21
+    at async execute (/workspace/bot/node_modules/telegraf/lib/composer.js:518:17)
+    at async /workspace/bot/node_modules/telegraf/lib/composer.js:519:21
+    at async execute (/workspace/bot/node_modules/telegraf/lib/composer.js:518:17)
+    at async /workspace/bot/node_modules/telegraf/lib/composer.js:519:21
+🔄 Callback reçu: back_main
+👤 User ID: 7670522278, Chat ID: 7670522278
+📝 Message ID: 5713
+🔙 Retour au menu principal demandé
+📋 Configuration récupérée pour le retour
+🌍 Langue actuelle pour le retour: it
+📝 Message d'accueil préparé pour le retour avec traduction
+🖼️ Images: plug=false, welcome=true, isPlugDetails=false, using=true
+📸 URL image utilisée: https://i.imgur.com/leViC3R.jpeg...
+✅ Message édité avec image (welcome)
+✅ Retour au menu principal terminé
+🔄 Callback reçu: select_language
+👤 User ID: 7670522278, Chat ID: 7670522278
+📝 Message ID: 5713
+🌍 Affichage sélecteur langue, langue actuelle: it
+🌍 Création clavier langue, langue actuelle: it
+🔤 Langue fr: 🇫🇷 Français (sélectionnée: false)
+🔤 Langue en: 🇬🇧 English (sélectionnée: false)
+🔤 Langue it: ✅ 🇮🇹 Italiano (sélectionnée: true)
+🔤 Langue es: 🇪🇸 Español (sélectionnée: false)
+🔤 Langue de: 🇩🇪 Deutsch (sélectionnée: false)
+✅ Clavier langue créé avec 5 langues
+✅ Message avec image modifié pour sélection langue
+🔄 Callback reçu: back_main
+👤 User ID: 7670522278, Chat ID: 7670522278
+📝 Message ID: 5713
+🔙 Retour au menu principal demandé
+📋 Configuration récupérée pour le retour
+🌍 Langue actuelle pour le retour: it
+📝 Message d'accueil préparé pour le retour avec traduction
+🖼️ Images: plug=false, welcome=true, isPlugDetails=false, using=true
+📸 URL image utilisée: https://i.imgur.com/leViC3R.jpeg...
+✅ Message édité avec image (welcome)
+✅ Retour au menu principal terminé
+🔄 Callback reçu: top_plugs
+👤 User ID: 7670522278, Chat ID: 7670522278
+📝 Message ID: 5713
+📍 Context updated to: top_plugs
+🔝 Top Plugs: 3 plugs trouvés
+📊 Services disponibles: Consegna(3), Spedizione postale(3), Incontro(3)
+🖼️ Images: plug=false, welcome=true, isPlugDetails=false, using=true
+📸 URL image utilisée: https://i.imgur.com/leViC3R.jpeg...
+✅ Message édité avec image (welcome)
+🔄 Callback reçu: all_plugs
+👤 User ID: 7670522278, Chat ID: 7670522278
+📝 Message ID: 5713
+🔄 Callback reçu: filter_service
+👤 User ID: 7670522278, Chat ID: 7670522278
+📝 Message ID: 5713
+🔍 Affichage du menu des services
+📊 Services disponibles: Livraison(3), Postal(3), Meetup(3)
+🖼️ Images: plug=false, welcome=true, isPlugDetails=false, using=true
+📸 URL image utilisée: https://i.imgur.com/leViC3R.jpeg...
+✅ Message édité avec image (welcome)
+🔄 Callback reçu: service_delivery
+👤 User ID: 7670522278, Chat ID: 7670522278
+📝 Message ID: 5713
+🔍 Recherche de plugs avec service: delivery
+📋 Requête MongoDB: { isActive: true, "services.delivery.enabled": true }
+✅ Plugs trouvés pour delivery: 3
+🖼️ Images: plug=false, welcome=true, isPlugDetails=false, using=true
+📸 URL image utilisée: https://i.imgur.com/leViC3R.jpeg...
+✅ Message édité avec image (welcome)
+🔄 Callback reçu: top_plugs
+👤 User ID: 7670522278, Chat ID: 7670522278
+📝 Message ID: 5713
+📍 Context updated to: top_plugs
+🔝 Top Plugs: 3 plugs trouvés
+📊 Services disponibles: Consegna(3), Spedizione postale(3), Incontro(3)
+🖼️ Images: plug=false, welcome=true, isPlugDetails=false, using=true
+📸 URL image utilisée: https://i.imgur.com/leViC3R.jpeg...
+✅ Message édité avec image (welcome)
+🔄 Rafraîchissement du cache...
+✅ Cache mis à jour - 3 plugs, config: OK
