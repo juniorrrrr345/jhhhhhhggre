@@ -342,7 +342,7 @@ export default function ShopPlugDetail() {
         backgroundRepeat: 'no-repeat',
         backgroundAttachment: 'fixed'
       }}>
-        {/* Header Titre Principal */}
+        {/* Header */}
         <div style={{ 
           backgroundColor: '#000000',
           padding: '20px',
@@ -629,194 +629,193 @@ export default function ShopPlugDetail() {
                   </div>
                 )}
               </div>
+
+              {/* Services */}
+              <div style={{ 
+                backgroundColor: '#1a1a1a',
+                borderRadius: '12px',
+                padding: '20px',
+                marginBottom: '16px'
+              }}>
+                <h3 style={{ 
+                  fontSize: '18px', 
+                  fontWeight: '600', 
+                  marginBottom: '16px',
+                  color: '#ffffff'
+                }}>
+                  🚀 {t('available_services') || 'Services disponibles'}
+                </h3>
+                
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  {/* Livraison */}
+                  <div style={{ 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'space-between',
+                    padding: '12px',
+                    backgroundColor: plug.services?.delivery?.enabled ? '#0a4a2a' : '#2a2a2a',
+                    borderRadius: '8px',
+                    border: plug.services?.delivery?.enabled ? '1px solid #22c55e' : '1px solid #3a3a3a'
+                  }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <span style={{ fontSize: '20px' }}>📦</span>
+                      <div>
+                        <div style={{ fontWeight: '500', color: '#ffffff' }}>{translateService('delivery')}</div>
+                        {plug.services?.delivery?.price && (
+                          <div style={{ fontSize: '13px', color: '#8e8e93' }}>
+                            {plug.services.delivery.price}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    <div style={{ 
+                      color: plug.services?.delivery?.enabled ? '#22c55e' : '#ef4444',
+                      fontWeight: '500',
+                      fontSize: '14px'
+                    }}>
+                      {plug.services?.delivery?.enabled ? `✓ ${t('available') || 'Disponible'}` : `✗ ${t('not_available') || 'Non disponible'}`}
+                    </div>
+                  </div>
+
+                  {/* Postal */}
+                  <div style={{ 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'space-between',
+                    padding: '12px',
+                    backgroundColor: plug.services?.postal?.enabled ? '#1a3a4a' : '#2a2a2a',
+                    borderRadius: '8px',
+                    border: plug.services?.postal?.enabled ? '1px solid #3b82f6' : '1px solid #3a3a3a'
+                  }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <span style={{ fontSize: '20px' }}>📍</span>
+                      <div>
+                        <div style={{ fontWeight: '500', color: '#ffffff' }}>{translateService('postal')}</div>
+                        {plug.services?.postal?.price && (
+                          <div style={{ fontSize: '13px', color: '#8e8e93' }}>
+                            {plug.services.postal.price}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    <div style={{ 
+                      color: plug.services?.postal?.enabled ? '#3b82f6' : '#ef4444',
+                      fontWeight: '500',
+                      fontSize: '14px'
+                    }}>
+                      {plug.services?.postal?.enabled ? `✓ ${t('available') || 'Disponible'}` : `✗ ${t('not_available') || 'Non disponible'}`}
+                    </div>
+                  </div>
+
+                  {/* Meetup */}
+                  <div style={{ 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'space-between',
+                    padding: '12px',
+                    backgroundColor: plug.services?.meetup?.enabled ? '#4a2a1a' : '#2a2a2a',
+                    borderRadius: '8px',
+                    border: plug.services?.meetup?.enabled ? '1px solid #f59e0b' : '1px solid #3a3a3a'
+                  }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <span style={{ fontSize: '20px' }}>💰</span>
+                      <div>
+                        <div style={{ fontWeight: '500', color: '#ffffff' }}>{translateService('meetup')}</div>
+                        {plug.services?.meetup?.price && (
+                          <div style={{ fontSize: '13px', color: '#8e8e93' }}>
+                            {plug.services.meetup.price}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    <div style={{ 
+                      color: plug.services?.meetup?.enabled ? '#f59e0b' : '#ef4444',
+                      fontWeight: '500',
+                      fontSize: '14px'
+                    }}>
+                      {plug.services?.meetup?.enabled ? `✓ ${t('available') || 'Disponible'}` : `✗ ${t('not_available') || 'Non disponible'}`}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Réseaux sociaux */}
+              {plug.socialMedia && plug.socialMedia.length > 0 && (
+                <div style={{ 
+                  backgroundColor: '#1a1a1a',
+                  borderRadius: '12px',
+                  padding: '20px',
+                  marginBottom: '16px'
+                }}>
+                  <h3 style={{ 
+                    fontSize: '18px', 
+                    fontWeight: '600', 
+                    marginBottom: '16px',
+                    color: '#ffffff'
+                  }}>
+                    🌐 {t('social_media') || 'Réseaux sociaux'}
+                  </h3>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    {plug.socialMedia.map((social, index) => (
+                      <a
+                        key={index}
+                        href={social.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '12px',
+                          padding: '12px',
+                          backgroundColor: '#2a2a2a',
+                          borderRadius: '8px',
+                          textDecoration: 'none',
+                          color: '#ffffff',
+                          border: '1px solid #3a3a3a',
+                          transition: 'background-color 0.2s ease'
+                        }}
+                        onMouseEnter={(e) => e.target.style.backgroundColor = '#3a3a3a'}
+                        onMouseLeave={(e) => e.target.style.backgroundColor = '#2a2a2a'}
+                      >
+                        <span style={{ fontSize: '20px' }}>{social.emoji}</span>
+                        <span style={{ fontWeight: '500' }}>{social.name}</span>
+                        <span style={{ marginLeft: 'auto', color: '#8e8e93' }}>→</span>
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Informations complémentaires */}
+              {plug.additionalInfo && (
+                <div style={{ 
+                  backgroundColor: '#1a1a1a',
+                  borderRadius: '12px',
+                  padding: '20px',
+                  marginBottom: '16px'
+                }}>
+                  <h3 style={{ 
+                    fontSize: '18px', 
+                    fontWeight: '600', 
+                    marginBottom: '12px',
+                    color: '#ffffff'
+                  }}>
+                    ℹ️ {t('additional_info') || 'Informations complémentaires'}
+                  </h3>
+                  <div style={{ 
+                    color: '#8e8e93', 
+                    fontSize: '15px',
+                    lineHeight: '1.5'
+                  }}>
+                    {formatText(plug.additionalInfo)}
+                  </div>
+                </div>
+              )}
             </>
           )}
         </main>
 
-          {/* Services */}
-          <div style={{ 
-            backgroundColor: '#1a1a1a',
-            borderRadius: '12px',
-            padding: '20px',
-            marginBottom: '16px'
-          }}>
-            <h3 style={{ 
-              fontSize: '18px', 
-              fontWeight: '600', 
-              marginBottom: '16px',
-              color: '#ffffff'
-            }}>
-              🚀 {t('available_services') || 'Services disponibles'}
-            </h3>
-            
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              {/* Livraison */}
-              <div style={{ 
-                display: 'flex', 
-                alignItems: 'center', 
-                justifyContent: 'space-between',
-                padding: '12px',
-                backgroundColor: plug.services?.delivery?.enabled ? '#0a4a2a' : '#2a2a2a',
-                borderRadius: '8px',
-                border: plug.services?.delivery?.enabled ? '1px solid #22c55e' : '1px solid #3a3a3a'
-              }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <span style={{ fontSize: '20px' }}>📦</span>
-                  <div>
-                    <div style={{ fontWeight: '500', color: '#ffffff' }}>{translateService('delivery')}</div>
-                    {plug.services?.delivery?.price && (
-                      <div style={{ fontSize: '13px', color: '#8e8e93' }}>
-                        {plug.services.delivery.price}
-                      </div>
-                    )}
-                  </div>
-                </div>
-                <div style={{ 
-                  color: plug.services?.delivery?.enabled ? '#22c55e' : '#ef4444',
-                  fontWeight: '500',
-                  fontSize: '14px'
-                }}>
-                  {plug.services?.delivery?.enabled ? `✓ ${t('available') || 'Disponible'}` : `✗ ${t('not_available') || 'Non disponible'}`}
-                </div>
-              </div>
-
-              {/* Postal */}
-              <div style={{ 
-                display: 'flex', 
-                alignItems: 'center', 
-                justifyContent: 'space-between',
-                padding: '12px',
-                backgroundColor: plug.services?.postal?.enabled ? '#1a3a4a' : '#2a2a2a',
-                borderRadius: '8px',
-                border: plug.services?.postal?.enabled ? '1px solid #3b82f6' : '1px solid #3a3a3a'
-              }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <span style={{ fontSize: '20px' }}>📍</span>
-                  <div>
-                    <div style={{ fontWeight: '500', color: '#ffffff' }}>{translateService('postal')}</div>
-                    {plug.services?.postal?.price && (
-                      <div style={{ fontSize: '13px', color: '#8e8e93' }}>
-                        {plug.services.postal.price}
-                      </div>
-                    )}
-                  </div>
-                </div>
-                <div style={{ 
-                  color: plug.services?.postal?.enabled ? '#3b82f6' : '#ef4444',
-                  fontWeight: '500',
-                  fontSize: '14px'
-                }}>
-                  {plug.services?.postal?.enabled ? `✓ ${t('available') || 'Disponible'}` : `✗ ${t('not_available') || 'Non disponible'}`}
-                </div>
-              </div>
-
-              {/* Meetup */}
-              <div style={{ 
-                display: 'flex', 
-                alignItems: 'center', 
-                justifyContent: 'space-between',
-                padding: '12px',
-                backgroundColor: plug.services?.meetup?.enabled ? '#4a2a1a' : '#2a2a2a',
-                borderRadius: '8px',
-                border: plug.services?.meetup?.enabled ? '1px solid #f59e0b' : '1px solid #3a3a3a'
-              }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <span style={{ fontSize: '20px' }}>💰</span>
-                  <div>
-                    <div style={{ fontWeight: '500', color: '#ffffff' }}>{translateService('meetup')}</div>
-                    {plug.services?.meetup?.price && (
-                      <div style={{ fontSize: '13px', color: '#8e8e93' }}>
-                        {plug.services.meetup.price}
-                      </div>
-                    )}
-                  </div>
-                </div>
-                <div style={{ 
-                  color: plug.services?.meetup?.enabled ? '#f59e0b' : '#ef4444',
-                  fontWeight: '500',
-                  fontSize: '14px'
-                }}>
-                  {plug.services?.meetup?.enabled ? `✓ ${t('available') || 'Disponible'}` : `✗ ${t('not_available') || 'Non disponible'}`}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Réseaux sociaux */}
-          {plug.socialMedia && plug.socialMedia.length > 0 && (
-            <div style={{ 
-              backgroundColor: '#1a1a1a',
-              borderRadius: '12px',
-              padding: '20px',
-              marginBottom: '16px'
-            }}>
-              <h3 style={{ 
-                fontSize: '18px', 
-                fontWeight: '600', 
-                marginBottom: '16px',
-                color: '#ffffff'
-              }}>
-                🌐 {t('social_media') || 'Réseaux sociaux'}
-              </h3>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                {plug.socialMedia.map((social, index) => (
-                  <a
-                    key={index}
-                    href={social.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '12px',
-                      padding: '12px',
-                      backgroundColor: '#2a2a2a',
-                      borderRadius: '8px',
-                      textDecoration: 'none',
-                      color: '#ffffff',
-                      border: '1px solid #3a3a3a',
-                      transition: 'background-color 0.2s ease'
-                    }}
-                    onMouseEnter={(e) => e.target.style.backgroundColor = '#3a3a3a'}
-                    onMouseLeave={(e) => e.target.style.backgroundColor = '#2a2a2a'}
-                  >
-                    <span style={{ fontSize: '20px' }}>{social.emoji}</span>
-                    <span style={{ fontWeight: '500' }}>{social.name}</span>
-                    <span style={{ marginLeft: 'auto', color: '#8e8e93' }}>→</span>
-                  </a>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Informations complémentaires */}
-          {plug.additionalInfo && (
-            <div style={{ 
-              backgroundColor: '#1a1a1a',
-              borderRadius: '12px',
-              padding: '20px',
-              marginBottom: '16px'
-            }}>
-              <h3 style={{ 
-                fontSize: '18px', 
-                fontWeight: '600', 
-                marginBottom: '12px',
-                color: '#ffffff'
-              }}>
-                ℹ️ {t('additional_info') || 'Informations complémentaires'}
-              </h3>
-              <div style={{ 
-                color: '#8e8e93', 
-                fontSize: '15px',
-                lineHeight: '1.5'
-              }}>
-                {formatText(plug.additionalInfo)}
-              </div>
-            </div>
-          )}
-        </main>
-
-        {/* Navigation en bas */}
+        {/* Navigation */}
         <ShopNavigation currentLanguage={currentLanguage} currentPage="detail" />
       </div>
 
