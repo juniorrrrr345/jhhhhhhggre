@@ -303,9 +303,9 @@ const showMainMenuInLanguage = async (ctx, config, language) => {
     
     console.log(`🌍 Affichage menu principal en langue: ${currentLang}`);
     
-    // Message de bienvenue traduit
+    // Message de bienvenue du panel admin ou traduit en fallback
     const { getTranslation } = require('./src/utils/translations');
-    const welcomeMessage = getTranslation('messages_welcome', currentLang, customTranslations);
+    const welcomeMessage = freshConfig?.welcome?.text || getTranslation('messages_welcome', currentLang, customTranslations);
     
     // Créer le clavier principal avec traductions (AVEC le bouton langue)
     const { createMainKeyboard } = require('./src/utils/keyboards');
@@ -3223,5 +3223,36 @@ app.post('/api/admin/user-analytics', async (req, res) => {
       error: 'Erreur lors de la génération des statistiques',
       details: error.message 
     });
+  }
+});
+
+// DEBUG: Endpoint pour forcer reload config et afficher debug
+app.get('/api/debug/config-reload', async (req, res) => {
+  try {
+    console.log('🔧 DEBUG: Force reload config demandé');
+    
+    // Invalider tous les caches
+    const { invalidateConfigCache } = require('./src/utils/configHelper');
+    invalidateConfigCache();
+    configCache = null;
+    cacheTimestamp = 0;
+    
+    // Recharger immédiatement
+    const freshConfig = await Config.findById('main');
+    console.log('📝 DEBUG Welcome text:', freshConfig?.welcome?.text || 'NON DÉFINI');
+    console.log('📞 DEBUG Contact content:', freshConfig?.buttons?.contact?.content || 'NON DÉFINI');
+    console.log('ℹ️ DEBUG Info content:', freshConfig?.buttons?.info?.content || 'NON DÉFINI');
+    
+    res.json({
+      success: true,
+      debug: {
+        welcomeText: freshConfig?.welcome?.text || 'NON DÉFINI',
+        contactContent: freshConfig?.buttons?.contact?.content || 'NON DÉFINI',
+        infoContent: freshConfig?.buttons?.info?.content || 'NON DÉFINI'
+      }
+    });
+  } catch (error) {
+    console.error('❌ DEBUG ERROR:', error);
+    res.status(500).json({ error: error.message });
   }
 });
