@@ -138,15 +138,21 @@ const handleBackMain = async (ctx) => {
 
     console.log('📋 Configuration récupérée pour le retour');
 
-    // Utiliser le même message d'accueil que dans handleStart (les réseaux sociaux sont en boutons)
-    let welcomeMessage = config.welcome?.text || '🌟 Bienvenue sur notre bot !';
+    // Récupérer la langue actuelle et les traductions
+    const currentLang = config?.languages?.currentLanguage || 'fr';
+    const customTranslations = config?.languages?.translations;
+    
+    console.log(`🌍 Langue actuelle pour le retour: ${currentLang}`);
+
+    // Utiliser le message d'accueil traduit
+    const welcomeMessage = getTranslation('messages_welcome', currentLang, customTranslations);
     
     const keyboard = createMainKeyboard(config);
     
-    console.log('📝 Message d\'accueil préparé pour le retour');
+    console.log('📝 Message d\'accueil préparé pour le retour avec traduction');
     
     // Utiliser la fonction helper pour gérer l'image de façon cohérente
-    await editMessageWithImage(ctx, welcomeMessage, keyboard, config, { parse_mode: 'HTML' });
+    await editMessageWithImage(ctx, welcomeMessage, keyboard, config, { parse_mode: 'Markdown' });
     
     console.log('✅ Retour au menu principal terminé');
   } catch (error) {

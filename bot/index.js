@@ -236,6 +236,8 @@ bot.action('select_language', async (ctx) => {
     const currentLang = config?.languages?.currentLanguage || 'fr';
     const customTranslations = config?.languages?.translations;
     
+    console.log(`🌍 Affichage sélecteur langue, langue actuelle: ${currentLang}`);
+    
     const message = `🌍 **${getTranslation('menu_language', currentLang, customTranslations)}**\n\nSélectionnez votre langue préférée :`;
     const keyboard = createLanguageKeyboard(currentLang);
     
@@ -252,6 +254,7 @@ bot.action('select_language', async (ctx) => {
         reply_markup: keyboard.reply_markup,
         parse_mode: 'Markdown'
       });
+      console.log('✅ Message avec image modifié pour sélection langue');
     } catch (editError) {
       // Si ça échoue, essayer d'éditer le texte (pour les messages sans image)
       try {
@@ -259,13 +262,20 @@ bot.action('select_language', async (ctx) => {
           reply_markup: keyboard.reply_markup,
           parse_mode: 'Markdown'
         });
+        console.log('✅ Message texte modifié pour sélection langue');
       } catch (secondError) {
         console.error('❌ Impossible d\'éditer le message de langue:', secondError);
         // Fallback : envoyer un nouveau message
-        await ctx.reply(message, {
-          reply_markup: keyboard.reply_markup,
-          parse_mode: 'Markdown'
-        });
+        try {
+          await ctx.reply(message, {
+            reply_markup: keyboard.reply_markup,
+            parse_mode: 'Markdown'
+          });
+          console.log('✅ Nouveau message envoyé pour sélection langue');
+        } catch (replyError) {
+          console.error('❌ Impossible d\'envoyer le message de langue:', replyError);
+          await ctx.answerCbQuery('❌ Erreur lors du chargement des langues').catch(() => {});
+        }
       }
     }
     
@@ -278,12 +288,16 @@ bot.action('select_language', async (ctx) => {
 // Changer de langue
 bot.action(/^lang_(.+)$/, async (ctx) => {
   try {
+    await ctx.answerCbQuery(); // Répondre immédiatement pour éviter le loading
+    
     const newLanguage = ctx.match[1];
     
     if (!['fr', 'en', 'it', 'es', 'de'].includes(newLanguage)) {
       await ctx.answerCbQuery('❌ Langue non supportée');
       return;
     }
+    
+    console.log(`🌍 Changement de langue vers: ${newLanguage}`);
     
     // Mettre à jour la langue dans la config
     const config = await Config.findById('main');
@@ -301,6 +315,7 @@ bot.action(/^lang_(.+)$/, async (ctx) => {
       }
       
       await config.save();
+      console.log(`✅ Langue sauvegardée: ${newLanguage}`);
       
       // INVALIDER TOUS LES CACHES pour mise à jour instantanée
       configCache = null;
@@ -309,34 +324,51 @@ bot.action(/^lang_(.+)$/, async (ctx) => {
         clearAllCaches();
       }
     }
+
+    // Recharger la config mise à jour
+    const updatedConfig = await Config.findById('main');
+    const customTranslations = updatedConfig?.languages?.translations;
     
-    const customTranslations = config?.languages?.translations;
-    const languageName = getTranslation('menu_language', newLanguage, customTranslations);
+    // Obtenir le nom de la langue pour confirmation
+    const translations = require('./src/utils/translations');
+    const languageName = translations.translations.languages[newLanguage]?.name || newLanguage;
     
-    await ctx.answerCbQuery(`✅ ${languageName} sélectionnée !`);
+    // Créer le message de bienvenue avec la nouvelle langue
+    const welcomeMessage = getTranslation('messages_welcome', newLanguage, customTranslations);
+    const keyboard = createMainKeyboard(updatedConfig);
     
-    // Éditer le message IMMÉDIATEMENT avec la nouvelle langue
+    // Essayer d'éditer le message existant avec la nouvelle langue
     try {
-      // Recréer le menu principal avec la nouvelle langue
-      const welcomeMessage = getTranslation('messages_welcome', newLanguage, customTranslations);
-      const keyboard = await createMainKeyboard(config);
-      
-      // Essayer d'éditer le message existant
       await ctx.editMessageText(welcomeMessage, {
         reply_markup: keyboard.reply_markup,
         parse_mode: 'Markdown'
       });
+      
+      // Confirmation de changement de langue
+      await ctx.answerCbQuery(`✅ ${languageName} sélectionnée !`);
+      console.log(`✅ Interface mise à jour en ${newLanguage}`);
+      
     } catch (editError) {
       console.log('⚠️ Impossible d\'éditer le message, envoi d\'un nouveau');
-      // Si l'édition échoue, appeler handleStart
-      setTimeout(() => {
-        handleStart(ctx);
-      }, 100);
+      
+      // Si l'édition échoue, supprimer l'ancien message et en envoyer un nouveau
+      try {
+        await ctx.deleteMessage();
+      } catch (deleteError) {
+        console.log('⚠️ Impossible de supprimer l\'ancien message');
+      }
+      
+      // Envoyer un nouveau message avec la nouvelle langue
+      const { sendWelcomeMessage } = require('./src/utils/messageHelper');
+      await sendWelcomeMessage(ctx, updatedConfig);
+      
+      // Confirmation de changement de langue
+      await ctx.answerCbQuery(`✅ ${languageName} sélectionnée !`);
     }
     
   } catch (error) {
     console.error('❌ Erreur changement langue:', error);
-    await ctx.answerCbQuery('❌ Erreur lors du changement').catch(() => {});
+    await ctx.answerCbQuery('❌ Erreur lors du changement de langue').catch(() => {});
   }
 });
 

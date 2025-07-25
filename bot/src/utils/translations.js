@@ -266,38 +266,59 @@ const createLanguageKeyboard = (currentLanguage = 'fr') => {
     // Vérifier que les traductions existent
     if (!translations || !translations.languages) {
       console.error('❌ Traductions non disponibles pour le clavier de langue');
-      return null;
+      // Retourner un clavier minimal en cas d'erreur
+      return Markup.inlineKeyboard([
+        [Markup.button.callback('🇫🇷 Français', 'lang_fr')],
+        [Markup.button.callback('🇬🇧 English', 'lang_en')],
+        [Markup.button.callback('🔙 Retour', 'back_main')]
+      ]);
     }
+    
+    console.log(`🌍 Création clavier langue, langue actuelle: ${currentLanguage}`);
     
     // Première ligne : drapeaux des langues
     const flagRow = [];
     Object.entries(translations.languages).forEach(([code, lang]) => {
-      if (lang && lang.flag) {
+      if (lang && lang.flag && lang.name) {
         const isSelected = code === currentLanguage;
-        const buttonText = isSelected ? `✅ ${lang.flag}` : lang.flag;
+        // Format: ✅ 🇫🇷 Français ou 🇫🇷 Français
+        const buttonText = isSelected ? `✅ ${lang.flag} ${lang.name}` : `${lang.flag} ${lang.name}`;
         flagRow.push(Markup.button.callback(buttonText, `lang_${code}`));
+        console.log(`🔤 Langue ${code}: ${buttonText} (sélectionnée: ${isSelected})`);
       }
     });
     
     // Vérifier qu'on a au moins un bouton
     if (flagRow.length === 0) {
       console.error('❌ Aucune langue disponible pour le clavier');
-      return null;
+      // Retourner un clavier minimal en cas d'erreur
+      return Markup.inlineKeyboard([
+        [Markup.button.callback('🇫🇷 Français', 'lang_fr')],
+        [Markup.button.callback('🇬🇧 English', 'lang_en')],
+        [Markup.button.callback('🔙 Retour', 'back_main')]
+      ]);
     }
     
-    // Grouper par 3 boutons par ligne
-    for (let i = 0; i < flagRow.length; i += 3) {
-      buttons.push(flagRow.slice(i, i + 3));
+    // Grouper par 2 boutons par ligne pour plus de lisibilité
+    for (let i = 0; i < flagRow.length; i += 2) {
+      buttons.push(flagRow.slice(i, i + 2));
     }
     
     // Ligne de retour
     const backText = getTranslation('filters_back', currentLanguage) || '🔙 Retour';
     buttons.push([Markup.button.callback(backText, 'back_main')]);
     
+    console.log(`✅ Clavier langue créé avec ${flagRow.length} langues`);
     return Markup.inlineKeyboard(buttons);
+    
   } catch (error) {
     console.error('❌ Erreur création clavier langue:', error);
-    return null;
+    // Retourner un clavier minimal en cas d'erreur
+    return Markup.inlineKeyboard([
+      [Markup.button.callback('🇫🇷 Français', 'lang_fr')],
+      [Markup.button.callback('🇬🇧 English', 'lang_en')],
+      [Markup.button.callback('🔙 Retour', 'back_main')]
+    ]);
   }
 };
 
