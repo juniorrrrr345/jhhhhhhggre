@@ -555,10 +555,17 @@ export default function ShopPlugDetail() {
                   alignItems: 'start'
                 }}>
                   {/* Votes - AFFICHAGE SEULEMENT */}
-                  <div style={{ padding: '8px' }}>
+                  <div style={{ 
+                    padding: '12px',
+                    minWidth: '120px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'flex-start'
+                  }}>
                     <div style={{
                       fontSize: '24px',
-                      marginBottom: '8px',
+                      marginBottom: '12px',
                       padding: '8px',
                       color: '#ffffff',
                       textAlign: 'center'
@@ -569,56 +576,90 @@ export default function ShopPlugDetail() {
                       fontSize: 'clamp(18px, 4vw, 24px)', 
                       fontWeight: 'bold', 
                       color: plug.isVip ? '#FFD700' : '#ffffff',
-                      marginBottom: '4px'
+                      marginBottom: '8px',
+                      textAlign: 'center'
                     }}>
                       {likes}
                     </div>
                     <div style={{ 
                       fontSize: '12px', 
                       color: '#8e8e93',
-                      wordBreak: 'break-word'
+                      wordBreak: 'break-word',
+                      textAlign: 'center',
+                      lineHeight: '1.4',
+                      minHeight: '20px'
                     }}>
                       {getVotesText()}
                     </div>
                   </div>
                   
                   {/* Pays */}
-                  <div style={{ padding: '8px' }}>
-                    <div style={{ fontSize: '24px', marginBottom: '8px' }}>
+                  <div style={{ 
+                    padding: '12px',
+                    minWidth: '120px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'flex-start'
+                  }}>
+                    <div style={{ 
+                      fontSize: '24px', 
+                      marginBottom: '12px',
+                      textAlign: 'center'
+                    }}>
                       {getCountryFlag(plug.countries)}
                     </div>
                     <div style={{ 
                       fontSize: 'clamp(18px, 4vw, 24px)', 
                       fontWeight: 'bold', 
                       color: '#ffffff',
-                      marginBottom: '4px'
+                      marginBottom: '8px',
+                      textAlign: 'center'
                     }}>
                       {plug.countries ? plug.countries.length : 0}
                     </div>
                     <div style={{ 
                       fontSize: '12px', 
                       color: '#8e8e93',
-                      wordBreak: 'break-word'
+                      wordBreak: 'break-word',
+                      textAlign: 'center',
+                      lineHeight: '1.4',
+                      minHeight: '20px'
                     }}>
                       {t('countries') || 'Pays'}
                     </div>
                   </div>
 
                   {/* Type */}
-                  <div style={{ padding: '8px' }}>
-                    <div style={{ fontSize: '24px', marginBottom: '8px' }}>⭐</div>
+                  <div style={{ 
+                    padding: '12px',
+                    minWidth: '120px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'flex-start'
+                  }}>
+                    <div style={{ 
+                      fontSize: '24px', 
+                      marginBottom: '12px',
+                      textAlign: 'center'
+                    }}>⭐</div>
                     <div style={{ 
                       fontSize: 'clamp(14px, 3vw, 18px)', 
                       fontWeight: 'bold', 
                       color: plug.isVip ? '#FFD700' : '#ffffff',
-                      marginBottom: '4px'
+                      marginBottom: '8px',
+                      textAlign: 'center'
                     }}>
                       {plug.isVip ? 'VIP' : 'STD'}
                     </div>
                     <div style={{ 
                       fontSize: '12px', 
                       color: '#8e8e93',
-                      wordBreak: 'break-word'
+                      wordBreak: 'break-word',
+                      textAlign: 'center',
+                      lineHeight: '1.4',
+                      minHeight: '20px'
                     }}>
                       {t('type') || 'Type'}
                     </div>
@@ -672,7 +713,7 @@ export default function ShopPlugDetail() {
                   🚀 {t('available_services') || 'Services disponibles'}
                 </h3>
                 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                   {/* Livraison */}
                   <div style={{ 
                     display: 'flex', 
@@ -687,22 +728,29 @@ export default function ShopPlugDetail() {
                     <div style={{ 
                       display: 'flex', 
                       alignItems: 'center', 
-                      gap: '12px',
+                      gap: '16px',
                       flex: '1',
                       minWidth: '0'
                     }}>
                       <span style={{ 
                         fontSize: '20px',
-                        flexShrink: '0'
+                        flexShrink: '0',
+                        minWidth: '24px',
+                        textAlign: 'center'
                       }}>📦</span>
-                      <div style={{ minWidth: '0', flex: '1' }}>
+                      <div style={{ 
+                        minWidth: '0', 
+                        flex: '1',
+                        padding: '4px 8px'
+                      }}>
                         <div style={{ 
                           fontWeight: '500', 
                           color: '#ffffff',
                           fontSize: '15px',
-                          lineHeight: '1.3',
+                          lineHeight: '1.4',
                           wordBreak: 'break-word',
-                          textAlign: 'center'
+                          textAlign: 'center',
+                          minHeight: '21px'
                         }}>
                           {translateService('delivery') || 'Livraison'}
                         </div>
@@ -722,8 +770,10 @@ export default function ShopPlugDetail() {
                       fontWeight: '500',
                       fontSize: '14px',
                       textAlign: 'center',
-                      minWidth: '100px',
-                      flexShrink: '0'
+                      minWidth: '120px',
+                      flexShrink: '0',
+                      padding: '4px 8px',
+                      lineHeight: '1.3'
                     }}>
                       {plug?.services?.delivery?.enabled ? `✓ ${t('available') || 'Disponible'}` : `✗ ${t('not_available') || 'Non disponible'}`}
                     </div>
@@ -743,22 +793,29 @@ export default function ShopPlugDetail() {
                     <div style={{ 
                       display: 'flex', 
                       alignItems: 'center', 
-                      gap: '12px',
+                      gap: '16px',
                       flex: '1',
                       minWidth: '0'
                     }}>
                       <span style={{ 
                         fontSize: '20px',
-                        flexShrink: '0'
+                        flexShrink: '0',
+                        minWidth: '24px',
+                        textAlign: 'center'
                       }}>📬</span>
-                      <div style={{ minWidth: '0', flex: '1' }}>
+                      <div style={{ 
+                        minWidth: '0', 
+                        flex: '1',
+                        padding: '4px 8px'
+                      }}>
                         <div style={{ 
                           fontWeight: '500', 
                           color: '#ffffff',
                           fontSize: '15px',
-                          lineHeight: '1.3',
+                          lineHeight: '1.4',
                           wordBreak: 'break-word',
-                          textAlign: 'center'
+                          textAlign: 'center',
+                          minHeight: '21px'
                         }}>
                           {translateService('postal') || 'Envoi postal'}
                         </div>
@@ -778,8 +835,10 @@ export default function ShopPlugDetail() {
                       fontWeight: '500',
                       fontSize: '14px',
                       textAlign: 'center',
-                      minWidth: '100px',
-                      flexShrink: '0'
+                      minWidth: '120px',
+                      flexShrink: '0',
+                      padding: '4px 8px',
+                      lineHeight: '1.3'
                     }}>
                       {plug?.services?.postal?.enabled ? `✓ ${t('available') || 'Disponible'}` : `✗ ${t('not_available') || 'Non disponible'}`}
                     </div>
@@ -799,22 +858,29 @@ export default function ShopPlugDetail() {
                     <div style={{ 
                       display: 'flex', 
                       alignItems: 'center', 
-                      gap: '12px',
+                      gap: '16px',
                       flex: '1',
                       minWidth: '0'
                     }}>
                       <span style={{ 
                         fontSize: '20px',
-                        flexShrink: '0'
+                        flexShrink: '0',
+                        minWidth: '24px',
+                        textAlign: 'center'
                       }}>🤝</span>
-                      <div style={{ minWidth: '0', flex: '1' }}>
+                      <div style={{ 
+                        minWidth: '0', 
+                        flex: '1',
+                        padding: '4px 8px'
+                      }}>
                         <div style={{ 
                           fontWeight: '500', 
                           color: '#ffffff',
                           fontSize: '15px',
-                          lineHeight: '1.3',
+                          lineHeight: '1.4',
                           wordBreak: 'break-word',
-                          textAlign: 'center'
+                          textAlign: 'center',
+                          minHeight: '21px'
                         }}>
                           {translateService('meetup') || 'Meetup'}
                         </div>
@@ -834,8 +900,10 @@ export default function ShopPlugDetail() {
                       fontWeight: '500',
                       fontSize: '14px',
                       textAlign: 'center',
-                      minWidth: '100px',
-                      flexShrink: '0'
+                      minWidth: '120px',
+                      flexShrink: '0',
+                      padding: '4px 8px',
+                      lineHeight: '1.3'
                     }}>
                       {plug?.services?.meetup?.enabled ? `✓ ${t('available') || 'Disponible'}` : `✗ ${t('not_available') || 'Non disponible'}`}
                     </div>
