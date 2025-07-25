@@ -543,13 +543,13 @@ const handleShopsByPostalCode = async (ctx, country, postalCode, serviceType = n
   }
 };
 
-// Gestionnaire pour les départements (delivery et meetup) - Afficher directement les départements
+// Gestionnaire pour les services (delivery et meetup) - Afficher exemples de boutiques par pays
 const handleDepartmentFilter = async (ctx, serviceType, selectedCountry = null) => {
   try {
     const userId = ctx.from.id;
     
     // 🚫 Prévention spam
-    if (isSpamClick(userId, 'dept', `${serviceType}_${selectedCountry || 'none'}`)) {
+    if (isSpamClick(userId, 'service', `${serviceType}_${selectedCountry || 'none'}`)) {
       await ctx.answerCbQuery('🔄');
       return;
     }
@@ -560,7 +560,7 @@ const handleDepartmentFilter = async (ctx, serviceType, selectedCountry = null) 
     const currentLang = config?.languages?.currentLanguage || 'fr';
     const customTranslations = config?.languages?.translations;
     
-    // Récupérer tous les départements disponibles pour ce service
+    // Récupérer toutes les boutiques pour ce service
     let query = { isActive: true };
     
     if (serviceType === 'delivery') {
@@ -573,29 +573,10 @@ const handleDepartmentFilter = async (ctx, serviceType, selectedCountry = null) 
       query.countries = { $in: [selectedCountry] };
     }
     
-    const shopsWithService = await Plug.find(query);
+    const shopsWithService = await Plug.find(query).sort({ likes: -1, isVip: -1 });
     
-    // Extraire tous les départements uniques
-    let allDepartments = [];
-    if (serviceType === 'delivery') {
-      allDepartments = [...new Set(shopsWithService.flatMap(shop => 
-        shop.services?.delivery?.departments || []
-      ))];
-    } else if (serviceType === 'meetup') {
-      allDepartments = [...new Set(shopsWithService.flatMap(shop => 
-        shop.services?.meetup?.departments || []
-      ))];
-    }
-    
-    // Trier les départements par numéro
-    allDepartments.sort((a, b) => {
-      const numA = parseInt(a);
-      const numB = parseInt(b);
-      return numA - numB;
-    });
-    
-    if (allDepartments.length === 0) {
-      let message = `❌ **Aucun département disponible**\n\n`;
+    if (shopsWithService.length === 0) {
+      let message = `❌ **Aucune boutique disponible**\n\n`;
       
       if (serviceType === 'delivery') {
         const serviceName = getTranslation('service_delivery', currentLang, customTranslations);
@@ -605,16 +586,12 @@ const handleDepartmentFilter = async (ctx, serviceType, selectedCountry = null) 
         message += `🤝 **Service:** ${serviceName}\n`;
       }
       
-      if (selectedCountry) {
-        message += `🌍 **Pays:** ${getCountryFlag(selectedCountry)} ${selectedCountry}\n`;
-      }
-      
       message += `\n💡 *Aucune boutique ne propose ce service actuellement*`;
       
       const keyboard = {
         inline_keyboard: [
           [{
-            text: '🔙 Retour',
+            text: '🔙 Retour au menu',
             callback_data: 'top_plugs'
           }]
         ]
@@ -636,72 +613,67 @@ const handleDepartmentFilter = async (ctx, serviceType, selectedCountry = null) 
       return;
     }
     
+    // Grouper les boutiques par pays
+    const shopsByCountry = {};
+    shopsWithService.forEach(shop => {
+      shop.countries.forEach(country => {
+        if (!shopsByCountry[country]) {
+          shopsByCountry[country] = [];
+        }
+        shopsByCountry[country].push(shop);
+      });
+    });
+    
     // Construire le message
-    let message = `📍 **Départements disponibles**\n\n`;
+    let message = `🏪 **Boutiques disponibles**\n\n`;
     
     if (serviceType === 'delivery') {
       const serviceName = getTranslation('service_delivery', currentLang, customTranslations);
-      message += `📦 **Service:** ${serviceName}\n`;
+      message += `📦 **Service:** ${serviceName}\n\n`;
     } else if (serviceType === 'meetup') {
       const serviceName = getTranslation('service_meetup', currentLang, customTranslations);
-      message += `🤝 **Service:** ${serviceName}\n`;
+      message += `🤝 **Service:** ${serviceName}\n\n`;
     }
     
-    if (selectedCountry) {
-      message += `🌍 **Pays:** ${getCountryFlag(selectedCountry)} ${selectedCountry}\n`;
-    }
-    
-    message += `\n🏪 **${allDepartments.length} département${allDepartments.length > 1 ? 's' : ''} avec boutiques:**\n\n`;
-    message += `💡 *Cliquez sur un département pour voir les boutiques*`;
-    
-    // Créer le clavier avec les départements (2 par ligne)
-    const deptButtons = [];
-    for (let i = 0; i < allDepartments.length; i += 2) {
-      const row = [];
-      const dept1 = allDepartments[i];
-      const dept2 = allDepartments[i + 1];
+    // Afficher les pays avec exemples de boutiques
+    const countryButtons = [];
+    Object.keys(shopsByCountry).sort().forEach(country => {
+      const shopsInCountry = shopsByCountry[country];
+      const topShops = shopsInCountry.slice(0, 2); // 2 exemples max
       
-      // Compter les boutiques pour chaque département
-      const shopsInDept1 = shopsWithService.filter(shop => {
-        if (serviceType === 'delivery') {
-          return shop.services?.delivery?.departments?.includes(dept1);
-        } else if (serviceType === 'meetup') {
-          return shop.services?.meetup?.departments?.includes(dept1);
-        }
-        return false;
-      }).length;
+      // Créer le texte d'exemple
+      let exampleText = topShops.map(shop => {
+        const vipIcon = shop.isVip ? '⭐' : '';
+        return `${vipIcon}${shop.name}`;
+      }).join(', ');
       
-      row.push({
-        text: `${dept1} (${shopsInDept1})`,
-        callback_data: `top_dept_${serviceType}_${dept1}${selectedCountry ? `_${selectedCountry}` : ''}`
-      });
-      
-      if (dept2) {
-        const shopsInDept2 = shopsWithService.filter(shop => {
-          if (serviceType === 'delivery') {
-            return shop.services?.delivery?.departments?.includes(dept2);
-          } else if (serviceType === 'meetup') {
-            return shop.services?.meetup?.departments?.includes(dept2);
-          }
-          return false;
-        }).length;
-        
-        row.push({
-          text: `${dept2} (${shopsInDept2})`,
-          callback_data: `top_dept_${serviceType}_${dept2}${selectedCountry ? `_${selectedCountry}` : ''}`
-        });
+      if (shopsInCountry.length > 2) {
+        exampleText += `... (+${shopsInCountry.length - 2})`;
       }
       
-      deptButtons.push(row);
-    }
+      message += `${getCountryFlag(country)} **${country}** (${shopsInCountry.length})\n`;
+      message += `   ${exampleText}\n\n`;
+      
+      // Bouton pour ce pays (2 par ligne)
+      if (countryButtons.length === 0 || countryButtons[countryButtons.length - 1].length === 2) {
+        countryButtons.push([]);
+      }
+      
+      countryButtons[countryButtons.length - 1].push({
+        text: `${getCountryFlag(country)} ${country} (${shopsInCountry.length})`,
+        callback_data: `service_country_${serviceType}_${country}`
+      });
+    });
+    
+    message += `💡 *Cliquez sur un pays pour voir toutes les boutiques*`;
     
     // Bouton retour
-    deptButtons.push([{
-      text: '🔙 Retour',
+    countryButtons.push([{
+      text: '🔙 Retour au menu',
       callback_data: 'top_plugs'
     }]);
     
-    const keyboard = { inline_keyboard: deptButtons };
+    const keyboard = { inline_keyboard: countryButtons };
     
     // Éditer le message existant
     try {
@@ -1530,6 +1502,131 @@ const handlePlugDetails = async (ctx, plugId, returnContext = 'top_plugs') => {
 
 // Fonction handlePlugServiceDetails supprimée - les services ont été retirés du menu
 
+// Gestionnaire pour afficher toutes les boutiques d'un pays pour un service spécifique
+const handleCountryServiceShops = async (ctx, serviceType, country) => {
+  try {
+    const userId = ctx.from.id;
+    
+    // 🚫 Prévention spam
+    if (isSpamClick(userId, 'country_service', `${serviceType}_${country}`)) {
+      await ctx.answerCbQuery('🔄');
+      return;
+    }
+    
+    await ctx.answerCbQuery();
+    
+    const config = await Config.findById('main');
+    const currentLang = config?.languages?.currentLanguage || 'fr';
+    const customTranslations = config?.languages?.translations;
+    
+    // Récupérer toutes les boutiques du pays pour ce service
+    let query = { 
+      isActive: true,
+      countries: { $in: [country] }
+    };
+    
+    if (serviceType === 'delivery') {
+      query['services.delivery.enabled'] = true;
+    } else if (serviceType === 'meetup') {
+      query['services.meetup.enabled'] = true;
+    }
+    
+    const shops = await Plug.find(query).sort({ likes: -1, isVip: -1 });
+    
+    // Construire le message
+    let message = `${getCountryFlag(country)} **${country}**\n\n`;
+    
+    if (serviceType === 'delivery') {
+      const serviceName = getTranslation('service_delivery', currentLang, customTranslations);
+      message += `📦 **Service:** ${serviceName}\n\n`;
+    } else if (serviceType === 'meetup') {
+      const serviceName = getTranslation('service_meetup', currentLang, customTranslations);
+      message += `🤝 **Service:** ${serviceName}\n\n`;
+    }
+    
+    if (shops.length === 0) {
+      message += `❌ **Aucune boutique trouvée**\n\n`;
+      message += `💡 *Aucune boutique ne propose ce service dans ce pays*`;
+      
+      const keyboard = {
+        inline_keyboard: [
+          [{
+            text: '🔙 Retour aux pays',
+            callback_data: `service_${serviceType}`
+          }],
+          [{
+            text: '🏠 Menu principal',
+            callback_data: 'top_plugs'
+          }]
+        ]
+      };
+      
+      // Éditer le message existant
+      try {
+        await ctx.editMessageText(message, {
+          parse_mode: 'Markdown',
+          reply_markup: keyboard
+        });
+      } catch (editError) {
+        console.log('Erreur édition message, tentative avec reply:', editError.message);
+        await ctx.reply(message, {
+          parse_mode: 'Markdown',
+          reply_markup: keyboard
+        });
+      }
+      return;
+    }
+    
+    message += `🏪 **${shops.length} boutique${shops.length > 1 ? 's' : ''} trouvée${shops.length > 1 ? 's' : ''} :**\n\n`;
+    
+    // Créer les boutons pour chaque boutique
+    const shopButtons = [];
+    shops.forEach(shop => {
+      const vipIcon = shop.isVip ? '⭐' : '';
+      const location = shop.location ? ` ${shop.location}` : '';
+      const buttonText = `${vipIcon}${shop.name}${location} 👍 ${shop.likes}`;
+      shopButtons.push([{
+        text: buttonText,
+        callback_data: `plug_${shop._id}_from_country_service`
+      }]);
+    });
+    
+    // Boutons de navigation
+    shopButtons.push([{
+      text: '🔙 Retour aux pays',
+      callback_data: `service_${serviceType}`
+    }]);
+    
+    shopButtons.push([{
+      text: '🏠 Menu principal',
+      callback_data: 'top_plugs'
+    }]);
+    
+    const keyboard = { inline_keyboard: shopButtons };
+    
+    // Éditer le message existant
+    try {
+      await ctx.editMessageText(message, {
+        parse_mode: 'Markdown',
+        reply_markup: keyboard
+      });
+    } catch (editError) {
+      console.log('Erreur édition message, tentative avec reply:', editError.message);
+      await ctx.reply(message, {
+        parse_mode: 'Markdown',
+        reply_markup: keyboard
+      });
+    }
+    
+  } catch (error) {
+    console.error('Erreur dans handleCountryServiceShops:', error);
+    const config = await Config.findById('main');
+    const currentLang = config?.languages?.currentLanguage || 'fr';
+    const customTranslations = config?.languages?.translations;
+    await ctx.answerCbQuery(getTranslation('error_filtering', currentLang, customTranslations)).catch(() => {});
+  }
+};
+
 module.exports = {
   handleTopPlugs,
   handleVipPlugs,
@@ -1546,6 +1643,7 @@ module.exports = {
   handleTopCountryFilter,
   handlePostalCodeFilter,
   handleShopsByPostalCode,
+  handleCountryServiceShops,
   getAvailableCountries,
   getAvailableDepartments,
   getCountryFlag

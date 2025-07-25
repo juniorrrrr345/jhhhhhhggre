@@ -38,7 +38,8 @@ const {
   handleTopServiceFilter,
   handleTopCountryFilter,
   handlePostalCodeFilter,
-  handleShopsByPostalCode
+  handleShopsByPostalCode,
+  handleCountryServiceShops
 } = require('./src/handlers/plugsHandler');
 const { handleContact, handleInfo, handleIgnoredCallback } = require('./src/handlers/menuHandler');
 const { handleSocialMedia } = require('./src/handlers/socialMediaHandler');
@@ -436,6 +437,13 @@ bot.action(/^postal_(.+)_(.+)$/, (ctx) => {
   const country = ctx.match[1];
   const postalCode = ctx.match[2];
   return handleShopsByPostalCode(ctx, country, postalCode);
+});
+
+// Gestionnaire pour service_country_ (boutiques par pays pour un service)
+bot.action(/^service_country_(.+)_(.+)$/, (ctx) => {
+  const serviceType = ctx.match[1];
+  const country = ctx.match[2];
+  return handleCountryServiceShops(ctx, serviceType, country);
 });
 
 // Handlers pour les boutons de boutiques depuis Top des Plugs
