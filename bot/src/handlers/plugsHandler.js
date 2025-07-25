@@ -53,8 +53,8 @@ const handleTopPlugs = async (ctx) => {
         plugButtons.push([Markup.button.callback(buttonText, `plug_${plug._id}_from_top_plugs`)]);
       });
       
-      keyboard = createTopPlugsKeyboard(config, availableCountries, [], null, null);
-      keyboard.reply_markup.inline_keyboard = plugButtons.concat(keyboard.reply_markup.inline_keyboard);
+      keyboard = createTopPlugsKeyboard(config, availableCountries, [], null, plugButtons);
+      // Les filtres sont maintenant en haut, les boutiques en bas via la fonction createTopPlugsKeyboard
     } else {
       const noShopsText = getTranslation('messages_noShops', currentLang, customTranslations);
       message += noShopsText;
@@ -109,10 +109,10 @@ const handleTopCountryFilter = async (ctx, country) => {
         plugButtons.push([Markup.button.callback(buttonText, `plug_${plug._id}_from_top_country`)]);
       });
       
-      keyboard = createTopPlugsKeyboard(availableCountries, country, null, plugButtons);
+      keyboard = createTopPlugsKeyboard(config, availableCountries, country, null, plugButtons);
     } else {
       message += `❌ Aucun plug disponible pour ${country}.`;
-      keyboard = createTopPlugsKeyboard(availableCountries, country, null);
+              keyboard = createTopPlugsKeyboard(config, availableCountries, country, null, []);
     }
     
     await editMessageWithImage(ctx, message, keyboard, config, { parse_mode: 'Markdown' });
@@ -188,11 +188,11 @@ const handleTopServiceFilter = async (ctx, serviceType, selectedCountry = null) 
         plugButtons.push([Markup.button.callback(buttonText, `plug_${plug._id}_from_top_service`)]);
       });
       
-      keyboard = createTopPlugsKeyboard(availableCountries, selectedCountry, serviceType, plugButtons);
+      keyboard = createTopPlugsKeyboard(config, availableCountries, selectedCountry, serviceType, plugButtons);
     } else {
       const serviceName = serviceNames[serviceType].toLowerCase();
       message += `❌ Aucun plug disponible pour ${serviceName}.`;
-      keyboard = createTopPlugsKeyboard(availableCountries, selectedCountry, serviceType);
+      keyboard = createTopPlugsKeyboard(config, availableCountries, selectedCountry, serviceType, []);
     }
     
     await editMessageWithImage(ctx, message, keyboard, config, { parse_mode: 'Markdown' });
@@ -318,10 +318,10 @@ const handleSpecificDepartment = async (ctx, serviceType, department, selectedCo
         plugButtons.push([Markup.button.callback(buttonText, `plug_${plug._id}_from_top_dept`)]);
       });
       
-      keyboard = createTopPlugsKeyboard(availableCountries, selectedCountry, serviceType, plugButtons);
+      keyboard = createTopPlugsKeyboard(config, availableCountries, selectedCountry, serviceType, plugButtons);
     } else {
       message += `❌ Aucun plug disponible dans le département ${department}.`;
-      keyboard = createTopPlugsKeyboard(availableCountries, selectedCountry, serviceType);
+      keyboard = createTopPlugsKeyboard(config, availableCountries, selectedCountry, serviceType, []);
     }
     
     await editMessageWithImage(ctx, message, keyboard, config, { parse_mode: 'Markdown' });
