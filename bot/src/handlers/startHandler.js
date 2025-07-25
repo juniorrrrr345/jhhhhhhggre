@@ -80,44 +80,62 @@ const handleStart = async (ctx) => {
       // Continuer même si l'enregistrement utilisateur échoue
     }
 
-    // Obtenir la config fraîche avec traductions
+    // Obtenir la config
     const config = getFreshConfig ? await getFreshConfig() : await Config.findById('main');
-    const currentLang = config?.languages?.currentLanguage || 'fr';
-    const customTranslations = config?.languages?.translations;
     
-    console.log(`🌍 Menu principal affiché en langue: ${currentLang}`);
-    
-    // Message de bienvenue traduit
-    const welcomeMessage = getTranslation('messages_welcome', currentLang, customTranslations);
-    
-    // Créer le clavier principal avec traductions
-    const keyboard = await createMainKeyboard(config);
-    
-    // Envoyer ou éditer le message avec l'image
-    try {
-      if (ctx.callbackQuery) {
-        // Si c'est un callback, éditer le message existant
-        await editMessageWithImage(ctx, welcomeMessage, keyboard, config, { 
-          parse_mode: 'Markdown' 
-        });
-      } else {
-        // Si c'est un nouveau /start, envoyer un nouveau message
-        await sendMessageWithImage(ctx, welcomeMessage, keyboard, config, { 
-          parse_mode: 'Markdown' 
-        });
-      }
-    } catch (error) {
-      console.error('❌ Erreur affichage menu principal:', error);
-      // Fallback sans image
-      await ctx.reply(welcomeMessage, {
-        reply_markup: keyboard.reply_markup,
-        parse_mode: 'Markdown'
-      });
-    }
+    // NOUVEAU : Proposer directement les langues au /start
+    await showLanguageSelection(ctx, config);
     
   } catch (error) {
     console.error('❌ Erreur dans handleStart:', error);
     await ctx.reply('❌ Erreur lors du chargement du menu').catch(() => {});
+  }
+};
+
+// Nouvelle fonction pour afficher directement la sélection de langue
+const showLanguageSelection = async (ctx, config) => {
+  try {
+    const { createLanguageKeyboard } = require('../utils/translations');
+    
+    // Message de bienvenue en multilingue
+    const welcomeText = `🌍 *Welcome! Bienvenue! Bienvenido! Benvenuto! Willkommen!*\n\n` +
+                       `Please select your language / Sélectionnez votre langue / Elige tu idioma / Seleziona la tua lingua / Wählen Sie Ihre Sprache:`;
+    
+    // Créer le clavier de sélection de langue
+    const languageKeyboard = createLanguageKeyboard('fr', null); // Pas de langue sélectionnée au départ
+    
+    // Envoyer avec l'image d'accueil
+    try {
+      if (ctx.callbackQuery) {
+        await editMessageWithImage(ctx, welcomeText, languageKeyboard, config, { 
+          parse_mode: 'Markdown' 
+        });
+      } else {
+        await sendMessageWithImage(ctx, welcomeText, languageKeyboard, config, { 
+          parse_mode: 'Markdown' 
+        });
+      }
+    } catch (error) {
+      console.error('❌ Erreur affichage sélection langue:', error);
+      // Fallback sans image
+      await ctx.reply(welcomeText, {
+        reply_markup: languageKeyboard.reply_markup,
+        parse_mode: 'Markdown'
+      });
+    }
+    
+    console.log('🌍 Sélection de langue affichée au /start');
+  } catch (error) {
+    console.error('❌ Erreur dans showLanguageSelection:', error);
+    // Fallback vers l'ancien comportement
+    const currentLang = config?.languages?.currentLanguage || 'fr';
+    const customTranslations = config?.languages?.translations;
+    const welcomeMessage = getTranslation('messages_welcome', currentLang, customTranslations);
+    const keyboard = await createMainKeyboard(config);
+    
+    await sendMessageWithImage(ctx, welcomeMessage, keyboard, config, { 
+      parse_mode: 'Markdown' 
+    });
   }
 };
 
