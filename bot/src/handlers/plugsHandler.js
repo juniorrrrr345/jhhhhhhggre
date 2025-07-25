@@ -235,6 +235,7 @@ const handleTopServiceFilter = async (ctx, serviceType, selectedCountry = null) 
       }
     } else {
       // Pour Livraison et Meetup : rediriger vers le nouveau système d'exemples par pays
+      console.log(`🎯 handleTopServiceFilter: Redirection vers handleDepartmentFilter pour ${serviceType}, pays=${selectedCountry}`);
       return await handleDepartmentFilter(ctx, serviceType, selectedCountry);
     }
     
