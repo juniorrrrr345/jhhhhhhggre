@@ -36,9 +36,9 @@ const makeProxyCall = async (endpoint, method = 'GET', token = null, data = null
     // Marquer l'appel pour l'anti-spam
     apiCache.markCall(cacheKey);
     
-    // Timeout de 15 secondes pour éviter le chargement infini
+    // Timeout de 8 secondes pour éviter le chargement infini
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 15000);
+    const timeoutId = setTimeout(() => controller.abort(), 8000);
     
     const response = await fetch('/api/cors-proxy', {
       method: 'POST',
@@ -72,12 +72,11 @@ const makeProxyCall = async (endpoint, method = 'GET', token = null, data = null
           }
         }
         
-        // Réduire drastiquement les retries pour 429 (1 seul retry au lieu de 3)
-        if (retryCount < 1) { // Seulement 1 retry au lieu de maxRetries
-          const backoffDelay = 10000; // Délai fixe de 10 secondes au lieu d'exponentiel
-          console.log(`🔄 Erreur 429 - SEUL retry dans ${backoffDelay}ms`);
-          await sleep(backoffDelay);
-          return makeProxyCall(endpoint, method, token, data, retryCount + 1);
+        // Aucun retry pour 429 - retour immédiat avec fallback
+        const fallbackData = fallbackApi.get(fallbackKey);
+        if (fallbackData && method === 'GET') {
+          console.log(`💾 Utilisation fallback immédiate pour ${endpoint}`);
+          return fallbackData;
         } else {
           // Arrêter immédiatement après 1 retry
           if (method === 'GET') {

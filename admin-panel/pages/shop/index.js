@@ -19,33 +19,20 @@ export default function ShopHome() {
     fetchConfig()
     fetchPlugs()
     
-    // Debug logs
-    console.log('🔄 Boutique initialisée')
-    
-    // Plus de refresh automatique - utiliser le bouton "Actualiser" si besoin
+    // Boutique initialisée
   }, [])
 
-  // Debug: afficher la config quand elle change
+  // Config mise à jour
   useEffect(() => {
-    if (config) {
-      console.log('📊 Config reçue:', {
-        boutique: config.boutique,
-        hasName: !!config.boutique?.name,
-        hasSubtitle: !!config.boutique?.subtitle
-      })
-    }
+    // Config loaded silently
   }, [config])
 
   const fetchConfig = async () => {
     try {
       const data = await api.getPublicConfig()
-      console.log('✅ Config boutique chargée:', {
-        name: data.boutique?.name,
-        subtitle: data.boutique?.subtitle
-      })
       setConfig(data)
     } catch (error) {
-      console.error('❌ Erreur chargement config:', error)
+      console.error('Erreur chargement config:', error)
     }
   }
 
@@ -69,23 +56,21 @@ export default function ShopHome() {
           }
         })
         setLikesSync(likesData)
-        console.log('🔄 Likes synchronisés:', Object.keys(likesData).length, 'boutiques')
       } else {
-        console.log('⚠️ Aucune boutique trouvée dans la réponse')
         setPlugs([])
       }
       
     } catch (error) {
-      console.error('❌ Erreur chargement boutiques:', error)
+      console.error('Erreur chargement boutiques:', error)
       setPlugs([])
       
-      // Message d'erreur plus informatif selon le type d'erreur
+      // Affichage d'erreur silencieux pour éviter le spam
       if (error.message.includes('Timeout')) {
-        toast.error('Le serveur met trop de temps à répondre. Veuillez réessayer.')
+        // Timeout silencieux - on affiche juste les données vides
       } else if (error.message.includes('429')) {
-        toast.error('Serveur surchargé. Utilisation des données en cache.')
+        // Rate limit silencieux
       } else {
-        toast.error('Erreur lors du chargement des boutiques')
+        toast.error('Erreur de chargement')
       }
     } finally {
       setLoading(false)

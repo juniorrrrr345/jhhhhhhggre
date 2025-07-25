@@ -43,7 +43,6 @@ export default function SocialMediaManager() {
       ]
       
       setSocialMedias(socialArray)
-      toast.success('Réseaux sociaux chargés')
     } catch (error) {
       console.error('❌ Erreur chargement réseaux sociaux:', error)
       if (error.message.includes('Timeout') || error.message.includes('429') || error.message.includes('surchargé')) {
@@ -54,9 +53,9 @@ export default function SocialMediaManager() {
           { id: 'discord', name: 'Discord', emoji: '🎮', url: '', enabled: false },
           { id: 'instagram', name: 'Instagram', emoji: '📸', url: '', enabled: false }
         ])
-        toast.success('⚠️ Réseaux sociaux chargés (mode dégradé)')
+        // Mode dégradé silencieux
       } else {
-        toast.error('Erreur lors du chargement: ' + error.message)
+        toast.error('Erreur lors du chargement')
       }
     } finally {
       setLoading(false)
@@ -79,19 +78,11 @@ export default function SocialMediaManager() {
       
       const result = await simpleApi.updateConfig(token, configData)
       
-      if (result._degraded) {
-        toast.success('⚠️ Réseaux sociaux sauvegardés (mode dégradé)')
-      } else {
-        // toast.success('✅ Réseaux sociaux sauvegardés avec succès !') // Supprimé pour éviter le spam
-      }
+      // Sauvegarde silencieuse
       
     } catch (error) {
       console.error('❌ Erreur sauvegarde:', error)
-      if (error.message.includes('500') || error.message.includes('429')) {
-        toast.success('⚠️ Sauvegarde en mode dégradé - modifications conservées')
-      } else {
-        toast.error('Erreur lors de la sauvegarde: ' + error.message)
-      }
+      toast.error('Erreur lors de la sauvegarde')
     } finally {
       setSaving(false)
     }
@@ -114,7 +105,7 @@ export default function SocialMediaManager() {
     
     setSocialMedias([...socialMedias, newItem])
     setNewSocialMedia({ name: '', emoji: '', url: '', enabled: true })
-    toast.success('✅ Réseau social ajouté')
+          // Ajout silencieux
   }
 
   const updateSocialMedia = (id, field, value) => {
@@ -126,7 +117,7 @@ export default function SocialMediaManager() {
   const deleteSocialMedia = (id) => {
     if (confirm('Êtes-vous sûr de vouloir supprimer ce réseau social ?')) {
       setSocialMedias(socialMedias.filter(item => item.id !== id))
-      toast.success('🗑️ Réseau social supprimé')
+      // Suppression silencieuse
     }
   }
 

@@ -71,10 +71,8 @@ export default function LanguagesAdmin() {
         body: JSON.stringify(config)
       })
 
-      if (response.ok) {
-        toast.success('✅ Configuration des langues sauvegardée !')
-      } else {
-        toast.error('❌ Erreur lors de la sauvegarde')
+      if (!response.ok) {
+        toast.error('Erreur lors de la sauvegarde')
       }
     } catch (error) {
       toast.error('❌ Erreur de connexion')

@@ -97,15 +97,9 @@ export default function Dashboard() {
           throw new Error(`API responded with ${response.status}`)
         }
       } catch (apiError) {
-        console.error('❌ Bot API failed:', apiError)
+        console.error('Bot API failed:', apiError)
         
-        // Gestion spéciale pour timeout
-        if (apiError.name === 'AbortError') {
-          console.log('⏱️ Timeout dashboard - utilisation des données de fallback')
-          toast.error('Le serveur met trop de temps à répondre. Affichage des données de secours.')
-        } else {
-          toast.error('Erreur de connexion au serveur bot')
-        }
+        // Gestion silencieuse des timeouts
         
         // FALLBACK avec VOS vraies boutiques récupérées plus tôt
         console.log('🔄 Using REAL fallback data from your actual bot...')
@@ -202,11 +196,10 @@ export default function Dashboard() {
   const handleClearCache = () => {
     try {
       simpleApi.clearCache()
-      toast.success('Cache API nettoyé avec succès !')
-      // Recharger les données
+      // Cache nettoyé silencieusement
       fetchDashboardData()
     } catch (error) {
-      toast.error('Erreur lors du nettoyage du cache')
+      toast.error('Erreur de nettoyage')
     }
   }
 
@@ -273,6 +266,13 @@ export default function Dashboard() {
       href: '/admin/test-connection',
       emoji: '🔧',
       color: 'bg-yellow-500'
+    },
+    {
+      name: 'Langues',
+      description: 'Configuration multilingue',
+      href: '/admin/languages',
+      emoji: '🌍',
+      color: 'bg-purple-500'
     }
   ]
 

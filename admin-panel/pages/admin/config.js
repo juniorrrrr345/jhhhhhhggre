@@ -74,9 +74,9 @@ export default function BotConfiguration() {
           }
         })
         
-        toast.success('Configuration chargée')
+        // Configuration chargée silencieusement
       } catch (error) {
-        console.error('❌ Erreur chargement config:', error)
+        console.error('Erreur chargement config:', error)
         setError(error.message)
         if (error.message.includes('429')) {
           toast.error('Trop de tentatives. Veuillez patienter quelques secondes.')
@@ -105,7 +105,7 @@ export default function BotConfiguration() {
           }
           })
         } else {
-          toast.error('Erreur lors du chargement de la configuration: ' + error.message)
+          toast.error('Erreur de chargement')
         }
       } finally {
         setLoading(false)
@@ -125,20 +125,12 @@ export default function BotConfiguration() {
       }
       
       const result = await simpleApi.updateConfig(token, configData)
-      console.log('✅ Configuration bot sauvegardée')
+      // Configuration sauvegardée
       
-      if (result._degraded) {
-        if (result._reason === 'server_overloaded') {
-          toast.success('⚠️ Configuration sauvegardée (mode dégradé - serveur surchargé)')
-        } else {
-          toast.success('⚠️ Configuration sauvegardée (mode dégradé - serveur bot lent)')
-        }
-      } else {
-        // toast.success('Configuration sauvegardée avec succès !') // Supprimé pour éviter le spam
-              }
+      // Sauvegarde silencieuse sans message
         
-      } catch (error) {
-        console.error('❌ Erreur sauvegarde:', error)
+              } catch (error) {
+        console.error('Erreur sauvegarde:', error)
         if (error.message.includes('401')) {
         toast.error('Session expirée. Veuillez vous reconnecter.')
         router.push('/')
@@ -226,7 +218,7 @@ export default function BotConfiguration() {
                   onClick={() => {
                     simpleApi.clearCache()
                     fetchConfig()
-                    toast.success('Cache nettoyé et configuration rechargée')
+                    // Cache nettoyé
                   }}
                   className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
                 >
