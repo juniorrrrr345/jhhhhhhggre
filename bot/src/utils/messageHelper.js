@@ -34,82 +34,62 @@ const sendMessageWithImage = async (ctx, text, keyboard, config, options = {}) =
   }
 };
 
-const editMessageWithImage = async (ctx, text, keyboard, config, options = {}) => {
-  // CORRECTION: Prioriser l'image du plug si disponible, sinon image de bienvenue
-  // MAIS seulement utiliser l'image d'accueil si on n'est PAS dans les détails d'un plug
-  const plugImage = options.plugImage || null;
-  const welcomeImage = config?.welcome?.image || null;
-  const isPlugDetails = options.isPlugDetails || false;
-  
-  // Si c'est les détails d'un plug, utiliser SEULEMENT l'image du plug
-  // Pour tous les autres menus/sous-menus, utiliser l'image d'accueil en fallback
-  const imageToUse = plugImage || (!isPlugDetails ? welcomeImage : null);
-  
-  console.log(`🖼️ Images: plug=${!!plugImage}, welcome=${!!welcomeImage}, isPlugDetails=${isPlugDetails}, using=${!!imageToUse}`);
-  if (imageToUse) {
-    console.log(`📸 URL image utilisée: ${imageToUse.substring(0, 50)}...`);
-  }
-  
+const editMessageWithImage = async (ctx, message, keyboard, config, options = {}) => {
   try {
-    if (imageToUse && imageToUse.trim() !== '') {
-      // Vérifier que l'URL est valide
-      if (!imageToUse.startsWith('http')) {
-        console.log('❌ URL d\'image invalide, fallback texte');
-        throw new Error('URL invalide');
-      }
+    const { plugImage, isPlugDetails = false } = options;
+    const welcomeImage = config?.welcome?.image || 'https://i.imgur.com/DD5OU6o.jpeg'; // Image FindYourPlug par défaut
+    
+    // Priorité: 1. Image du plug 2. Image d'accueil (sauf pour les détails de plug)
+    const imageToUse = plugImage || (!isPlugDetails ? welcomeImage : null);
+    
+    console.log(`🖼️ Images: plug=${!!plugImage}, welcome=${!!welcomeImage}, isPlugDetails=${isPlugDetails}, using=${!!imageToUse}`);
+    
+    if (imageToUse) {
+      console.log('🖼️ Modification avec image:', imageToUse);
       
       try {
-        // Essayer d'éditer avec une nouvelle image
         await ctx.editMessageMedia({
           type: 'photo',
           media: imageToUse,
-          caption: text,
+          caption: message,
           parse_mode: options.parse_mode || 'Markdown'
         }, {
-          reply_markup: keyboard?.reply_markup || keyboard
+          reply_markup: keyboard.reply_markup
         });
-        console.log(`✅ Message édité avec image ${plugImage ? '(plug)' : '(welcome)'}`);
       } catch (editError) {
-        console.log(`⚠️ Édition image échouée (${editError.message}), deletion + recreation...`);
-        
-        // Supprimer et recréer avec l'image
-        await ctx.deleteMessage();
-        await ctx.replyWithPhoto(imageToUse, {
-          caption: text,
-          reply_markup: keyboard?.reply_markup || keyboard,
-          parse_mode: options.parse_mode || 'Markdown',
-          ...options
+        console.log('⚠️ Impossible de modifier l\'image, fallback vers édition caption');
+        await ctx.editMessageCaption(message, {
+          reply_markup: keyboard.reply_markup,
+          parse_mode: options.parse_mode || 'Markdown'
         });
-        console.log(`✅ Message recréé avec image ${plugImage ? '(plug)' : '(welcome)'}`);
       }
     } else {
-      // Pas d'image, édition normale du texte
-      console.log('📝 Pas d\'image, édition texte seulement');
-      await ctx.editMessageText(text, {
-        reply_markup: keyboard?.reply_markup || keyboard,
-        parse_mode: options.parse_mode || 'Markdown',
-        ...options
+      console.log('📝 Modification texte simple (sans image)');
+      await ctx.editMessageText(message, {
+        reply_markup: keyboard.reply_markup,
+        parse_mode: options.parse_mode || 'Markdown'
       });
     }
+    
   } catch (error) {
-    console.error('❌ Erreur édition message:', error.message);
-    // Fallback complet vers texte simple
+    console.error('❌ Erreur modification message avec image:', error);
+    
+    // Fallback : envoyer un nouveau message
     try {
-      await ctx.editMessageText(text, {
-        reply_markup: keyboard?.reply_markup || keyboard,
-        parse_mode: options.parse_mode || 'Markdown',
-        ...options
-      });
-      console.log('✅ Fallback texte réussi');
+      if (config?.welcome?.image || 'https://i.imgur.com/DD5OU6o.jpeg') {
+        await ctx.replyWithPhoto(config?.welcome?.image || 'https://i.imgur.com/DD5OU6o.jpeg', {
+          caption: message,
+          reply_markup: keyboard.reply_markup,
+          parse_mode: options.parse_mode || 'Markdown'
+        });
+      } else {
+        await ctx.reply(message, {
+          reply_markup: keyboard.reply_markup,
+          parse_mode: options.parse_mode || 'Markdown'
+        });
+      }
     } catch (fallbackError) {
-      console.error('❌ Fallback texte échoué:', fallbackError.message);
-      // Dernier recours
-      await ctx.deleteMessage().catch(() => {});
-      await ctx.reply(text, {
-        reply_markup: keyboard?.reply_markup || keyboard,
-        parse_mode: options.parse_mode || 'Markdown',
-        ...options
-      }).catch(() => {});
+      console.error('❌ Erreur fallback:', fallbackError);
     }
   }
 };
@@ -151,8 +131,26 @@ const sendPlugWithImage = async (ctx, text, keyboard, plug, options = {}) => {
   }
 };
 
+const sendWelcomeMessage = async (ctx, config) => {
+  const welcomeImage = config?.welcome?.image || 'https://i.imgur.com/DD5OU6o.jpeg'; // Image FindYourPlug par défaut
+  
+  if (welcomeImage) {
+    console.log('📸 Envoi message avec image:', welcomeImage);
+    await ctx.replyWithPhoto(welcomeImage, {
+      caption: config?.welcome?.text || '🌟 Bienvenue sur notre bot !',
+      parse_mode: 'HTML'
+    });
+  } else {
+    console.log('📝 Envoi message texte simple');
+    await ctx.reply(config?.welcome?.text || '🌟 Bienvenue sur notre bot !', {
+      parse_mode: 'HTML'
+    });
+  }
+};
+
 module.exports = {
   sendMessageWithImage,
   editMessageWithImage,
-  sendPlugWithImage
+  sendPlugWithImage,
+  sendWelcomeMessage
 };
