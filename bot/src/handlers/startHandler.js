@@ -1,7 +1,7 @@
 const Config = require('../models/Config');
 const Plug = require('../models/Plug');
 const User = require('../models/User');
-const { createMainKeyboard, createVIPKeyboard } = require('../utils/keyboards');
+const { createMainKeyboard, createVIPKeyboard, createPlugsFilterKeyboard } = require('../utils/keyboards');
 const { sendMessageWithImage, editMessageWithImage } = require('../utils/messageHelper');
 const { ensureConnection } = require('../utils/database');
 const { handleReferral } = require('./referralHandler');

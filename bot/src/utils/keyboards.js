@@ -205,20 +205,7 @@ const createMainKeyboard = (config) => {
 
 
 
-// Clavier des filtres de plugs
-const createPlugsFilterKeyboard = (config) => {
-  const allText = config?.filters?.all || 'Tous les plugs';
-  const serviceText = config?.filters?.byService || 'Par service';
-  const countryText = config?.filters?.byCountry || 'Par pays';
-  const backText = config?.botTexts?.backButtonText || '🔙 Retour';
-  
-  return Markup.inlineKeyboard([
-    [Markup.button.callback(allText, 'plugs_all')],
-    [Markup.button.callback(serviceText, 'filter_service')],
-    [Markup.button.callback(countryText, 'filter_country')],
-    [Markup.button.callback(backText, 'back_main')]
-  ]);
-};
+// Fonction supprimée - remplacée par la version avec traductions plus bas
 
 // Clavier des services
 const createServicesKeyboard = (config) => {
@@ -253,116 +240,88 @@ const createCountriesKeyboard = (countries) => {
   return Markup.inlineKeyboard(buttons);
 };
 
-// Clavier pour un plug individuel avec contexte de retour
-const createPlugKeyboard = (plug, returnContext = 'top_plugs', userId = null) => {
+// Clavier pour un plug spécifique
+const createPlugKeyboard = (plug, returnContext = 'top_plugs', userId = null, currentLang = 'fr', customTranslations = null) => {
   const buttons = [];
   
-  // Services disponibles - SUPPRIMÉS (postal, meetup, livraison)
-  // Les boutons de services ont été retirés selon la demande
+  // Import de getTranslation si pas déjà disponible
+  const { getTranslation } = require('./translations');
   
-  // Lien Telegram optionnel
-  if (plug.telegramLink) {
-    const cleanedTelegramUrl = cleanUrl(plug.telegramLink);
-    if (cleanedTelegramUrl) {
-      buttons.push([Markup.button.url('📱 Telegram', cleanedTelegramUrl)]);
-      console.log(`📱 Bouton Telegram du plug créé: ${cleanedTelegramUrl}`);
-    } else {
-      console.warn(`🚫 URL Telegram invalide pour le plug ${plug.name}:`, plug.telegramLink);
-    }
-  }
-  
-  // Réseaux sociaux personnalisés du plug - CORRECTION
-  console.log(`🔧 Réseaux sociaux du plug ${plug.name}:`, plug.socialMedia);
-  if (plug.socialMedia && Array.isArray(plug.socialMedia) && plug.socialMedia.length > 0) {
-    // Filtrer les réseaux sociaux valides avec validation d'URL
-    const validSocialMedia = plug.socialMedia.filter(social => {
-      if (!social || !social.name || !social.emoji || !social.url) {
-        console.warn(`🚫 Réseau social incomplet pour ${plug.name}:`, social);
-        return false;
-      }
-      
-      const cleanedUrl = cleanUrl(social.url);
-      if (!cleanedUrl) {
-        console.warn(`🚫 URL invalide pour le réseau social ${social.name} du plug ${plug.name}:`, social.url);
-        return false;
-      }
-      
-      // Mettre à jour l'URL nettoyée
-      social.url = cleanedUrl;
-      return true;
-    });
+  // Première ligne : Bouton de vote avec traduction
+  if (userId) {
+    const User = require('../models/User');
     
-    console.log(`✅ ${validSocialMedia.length}/${plug.socialMedia.length} réseaux sociaux valides pour ${plug.name}`);
-    
-    // Grouper les réseaux sociaux par lignes de 2
-    for (let i = 0; i < validSocialMedia.length; i += 2) {
-      const socialRow = [];
-      const social1 = validSocialMedia[i];
-      
-      try {
-        socialRow.push(Markup.button.url(`${social1.emoji} ${social1.name}`, social1.url));
-        console.log(`📱 Bouton créé: ${social1.emoji} ${social1.name} -> ${social1.url}`);
+    User.findOne({ userId: userId })
+      .then(user => {
+        const hasVoted = user?.votedPlugs?.includes(plug._id.toString());
+        const votesCount = plug.likes || 0;
+        const voteText = votesCount === 1 ? 
+          getTranslation('vote_count_singular', currentLang, customTranslations) : 
+          getTranslation('vote_count_plural', currentLang, customTranslations);
         
-        if (validSocialMedia[i + 1]) {
-          const social2 = validSocialMedia[i + 1];
-          socialRow.push(Markup.button.url(`${social2.emoji} ${social2.name}`, social2.url));
-          console.log(`📱 Bouton créé: ${social2.emoji} ${social2.name} -> ${social2.url}`);
+        let voteButtonText;
+        if (hasVoted) {
+          const cooldownDate = user.lastVoteDate ? new Date(user.lastVoteDate) : new Date(0);
+          const now = new Date();
+          const timeDiff = now - cooldownDate;
+          const hours = Math.floor(timeDiff / (1000 * 60 * 60));
+          const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+          
+          const alreadyVotedText = getTranslation('already_voted', currentLang, customTranslations);
+          voteButtonText = `👍 ${alreadyVotedText} (${votesCount}) - ${hours}h${minutes}m`;
+        } else {
+          const voteForShopText = getTranslation('vote_for_shop', currentLang, customTranslations);
+          voteButtonText = `👍 ${voteForShopText} (${votesCount})`;
         }
         
-        buttons.push(socialRow);
-      } catch (error) {
-        console.error(`❌ Erreur création bouton social:`, error);
-      }
-    }
-  } else {
-    console.log(`⚠️ Aucun réseau social configuré pour ${plug.name}`);
+        return voteButtonText;
+      })
+      .catch(err => {
+        console.error('Erreur récupération user pour vote:', err);
+        const votesCount = plug.likes || 0;
+        const voteText = votesCount === 1 ? 
+          getTranslation('vote_count_singular', currentLang, customTranslations) : 
+          getTranslation('vote_count_plural', currentLang, customTranslations);
+        const voteForShopText = getTranslation('vote_for_shop', currentLang, customTranslations);
+        return `👍 ${voteForShopText} (${votesCount})`;
+      });
   }
   
-  // Bouton vote interactif avec nombre de likes en temps réel
+  // Afficher le nombre de votes actuel avec traduction
+  const votesCount = plug.likes || 0;
+  const voteText = votesCount === 1 ? 
+    getTranslation('vote_count_singular', currentLang, customTranslations) : 
+    getTranslation('vote_count_plural', currentLang, customTranslations);
+  
   let voteButtonText;
   
-  // Vérification robuste qui gère les types number et string
-  const hasVoted = userId && plug.likedBy && plug.likedBy.some(id => 
-    id == userId || id === userId || String(id) === String(userId)
-  );
-  
-  // Afficher le nombre de votes actuel
-  const votesCount = plug.likes || 0;
-  
-  if (hasVoted) {
-    // Trouver l'historique de vote de cet utilisateur
-    const userVoteHistory = plug.likeHistory?.find(h => 
-      h.userId == userId || h.userId === userId || String(h.userId) === String(userId)
-    );
-    
-    if (userVoteHistory) {
-      const lastVoteTime = new Date(userVoteHistory.timestamp);
-      const now = new Date();
-      const timeDiff = now - lastVoteTime;
-      const cooldownTime = 2 * 60 * 60 * 1000; // 2 heures
-      
-      if (timeDiff < cooldownTime) {
-        const remainingTime = cooldownTime - timeDiff;
-        const hours = Math.floor(remainingTime / (60 * 60 * 1000));
-        const minutes = Math.floor((remainingTime % (60 * 60 * 1000)) / (60 * 1000));
-        
-        voteButtonText = `👍 Déjà voté (${votesCount}) - ${hours}h${minutes}m`;
-      } else {
-        voteButtonText = `👍 Voter Pour ce Plug (${votesCount})`;
-      }
-    } else {
-      voteButtonText = `👍 Voter Pour ce Plug (${votesCount})`;
-    }
+  if (userId) {
+    // Vérification simplifiée pour l'affichage immédiat
+    const voteForShopText = getTranslation('vote_for_shop', currentLang, customTranslations);
+    voteButtonText = `👍 ${voteForShopText} (${votesCount})`;
   } else {
-    voteButtonText = `👍 Voter Pour ce Plug (${votesCount})`;
+    const voteForShopText = getTranslation('vote_for_shop', currentLang, customTranslations);
+    voteButtonText = `👍 ${voteForShopText} (${votesCount})`;
   }
   
   buttons.push([Markup.button.callback(voteButtonText, `like_${plug._id}`)]);
   
-  // Bouton retour intelligent selon le contexte
-  const returnText = getReturnButtonText(returnContext);
-  const returnAction = getReturnAction(returnContext);
-  buttons.push([Markup.button.callback(returnText, returnAction)]);
+  // Deuxième ligne : Bouton de retour avec traduction
+  let backButtonText;
+  let backAction;
+  
+  if (returnContext === 'top_plugs') {
+    backButtonText = getTranslation('back_to_filters', currentLang, customTranslations);
+    backAction = 'top_plugs';
+  } else if (returnContext === 'referral') {
+    backButtonText = getTranslation('back_to_menu', currentLang, customTranslations);
+    backAction = 'back_main';
+  } else {
+    backButtonText = getTranslation('back_to_filters', currentLang, customTranslations);
+    backAction = 'top_plugs';
+  }
+  
+  buttons.push([Markup.button.callback(`🔙 ${backButtonText}`, backAction)]);
   
   return Markup.inlineKeyboard(buttons);
 };
@@ -420,10 +379,20 @@ const getReturnAction = (context) => {
   }
 };
 
-// Clavier pour la liste des plugs
-const createPlugListKeyboard = (plugs, page = 0, totalPages = 1, context = 'plugs_all') => {
+// Clavier avec pagination pour les plugs
+const createPlugsKeyboard = (plugs, page = 0, context = 'plugs', itemsPerPage = 8) => {
+  // Récupérer la langue actuelle
+  const Config = require('../models/Config');
+  let currentLang = 'fr';
+  let customTranslations = null;
+  
+  // Fonction asynchrone pour récupérer la config, mais on doit faire du synchrone ici
+  // On utilisera les traductions par défaut
+  const { getTranslation } = require('./translations');
+  
   const buttons = [];
-  const itemsPerPage = 5;
+  
+  const totalPages = Math.ceil(plugs.length / itemsPerPage);
   const startIndex = page * itemsPerPage;
   const endIndex = Math.min(startIndex + itemsPerPage, plugs.length);
   
@@ -431,13 +400,15 @@ const createPlugListKeyboard = (plugs, page = 0, totalPages = 1, context = 'plug
   for (let i = startIndex; i < endIndex; i++) {
     const plug = plugs[i];
     
-    // Format amélioré pour meilleure lisibilité :
+    // Format amélioré pour meilleure lisibilité avec traductions :
     // 🇧🇪 NOM BOUTIQUE
-    // 📦 Livraison 📍 Meetup ✈️ Envoi postal
+    // 📦 Livraison 🏠 Meetup ✈️ Envoi postal
     // 👍 12 votes
     
     const votesCount = plug.likes || 0;
-    const voteText = votesCount === 1 ? 'vote' : 'votes';
+    const voteText = votesCount === 1 ? 
+      getTranslation('vote_count_singular', currentLang, customTranslations) : 
+      getTranslation('vote_count_plural', currentLang, customTranslations);
     
     // Première ligne : Pays + Nom (+ VIP si applicable)
     let cardTitle = `${getCountryFlag(plug.country)} ${plug.name.toUpperCase()}`;
@@ -453,7 +424,7 @@ const createPlugListKeyboard = (plugs, page = 0, totalPages = 1, context = 'plug
     
     const servicesLine = serviceIcons.length > 0 ? `\n${serviceIcons.join(' ')}` : '';
     
-    // Troisième ligne : Votes
+    // Troisième ligne : Votes avec traduction
     const votesLine = `\n👍 ${votesCount} ${voteText}`;
     
     const cardText = cardTitle + servicesLine + votesLine;
@@ -461,33 +432,42 @@ const createPlugListKeyboard = (plugs, page = 0, totalPages = 1, context = 'plug
     buttons.push([Markup.button.callback(cardText, `plug_${plug._id}_from_${context}`)]);
   }
   
-  // Navigation
+  // Navigation avec traductions
   if (totalPages > 1) {
     const navButtons = [];
     if (page > 0) {
       navButtons.push(Markup.button.callback('⬅️', `page_${context}_${page - 1}`));
     }
-    navButtons.push(Markup.button.callback(`${page + 1}/${totalPages}`, 'current_page'));
+    const pageText = getTranslation('page_info', currentLang, customTranslations);
+    navButtons.push(Markup.button.callback(`${pageText} ${page + 1}/${totalPages}`, 'current_page'));
     if (page < totalPages - 1) {
       navButtons.push(Markup.button.callback('➡️', `page_${context}_${page + 1}`));
     }
     buttons.push(navButtons);
   }
   
-  // Retour vers le menu des filtres (Tous les plugs, Par service, Par pays)
-  buttons.push([Markup.button.callback('🔙 Retour aux filtres', 'top_plugs')]);
+  // Retour vers le menu des filtres avec traduction
+  const backText = getTranslation('back_to_filters', currentLang, customTranslations);
+  buttons.push([Markup.button.callback(`🔙 ${backText}`, 'top_plugs')]);
   
   return Markup.inlineKeyboard(buttons);
 };
 
 // Clavier VIP pour la section VIP
 const createVIPKeyboard = (vipPlugs) => {
+  // Récupérer la langue actuelle  
+  const { getTranslation } = require('./translations');
+  let currentLang = 'fr';
+  let customTranslations = null;
+  
   const buttons = [];
   
   vipPlugs.forEach(plug => {
-    // Format VIP uniforme avec celui des autres cartes
+    // Format VIP uniforme avec celui des autres cartes et traductions
     const votesCount = plug.likes || 0;
-    const voteText = votesCount === 1 ? 'vote' : 'votes';
+    const voteText = votesCount === 1 ? 
+      getTranslation('vote_count_singular', currentLang, customTranslations) : 
+      getTranslation('vote_count_plural', currentLang, customTranslations);
     
     // Première ligne : Pays + Nom + VIP
     let cardTitle = `${getCountryFlag(plug.country)} ${plug.name.toUpperCase()} ⭐`;
@@ -500,7 +480,7 @@ const createVIPKeyboard = (vipPlugs) => {
     
     const servicesLine = serviceIcons.length > 0 ? `\n${serviceIcons.join(' ')}` : '';
     
-    // Troisième ligne : Votes
+    // Troisième ligne : Votes avec traduction
     const votesLine = `\n👍 ${votesCount} ${voteText}`;
     
     const cardText = cardTitle + servicesLine + votesLine;
@@ -508,10 +488,28 @@ const createVIPKeyboard = (vipPlugs) => {
     buttons.push([Markup.button.callback(cardText, `plug_${plug._id}_from_plugs_vip`)]);
   });
   
-  // Retour vers le menu principal pour VIP
-  buttons.push([Markup.button.callback('🔙 Retour au menu', 'back_main')]);
+  // Retour vers le menu principal pour VIP avec traduction
+  const backText = getTranslation('back_to_menu', currentLang, customTranslations);
+  buttons.push([Markup.button.callback(`🔙 ${backText}`, 'back_main')]);
   
   return Markup.inlineKeyboard(buttons);
+};
+
+// Clavier principal des filtres pour les plugs avec traductions
+const createPlugsFilterKeyboard = (currentLang = 'fr', customTranslations = null) => {
+  const { getTranslation } = require('./translations');
+  
+  const allShopsText = getTranslation('all_shops', currentLang, customTranslations);
+  const filterServiceText = getTranslation('filter_by_service', currentLang, customTranslations);
+  const filterCountryText = getTranslation('filter_by_country', currentLang, customTranslations);
+  const backText = getTranslation('back_to_menu', currentLang, customTranslations);
+  
+  return Markup.inlineKeyboard([
+    [Markup.button.callback(`📋 ${allShopsText}`, 'all_plugs')],
+    [Markup.button.callback(`🔧 ${filterServiceText}`, 'filter_service')],
+    [Markup.button.callback(`🌍 ${filterCountryText}`, 'filter_country')],
+    [Markup.button.callback(`🔙 ${backText}`, 'back_main')]
+  ]);
 };
 
 module.exports = {
@@ -520,6 +518,6 @@ module.exports = {
   createServicesKeyboard,
   createCountriesKeyboard,
   createPlugKeyboard,
-  createPlugListKeyboard,
+  createPlugsKeyboard,
   createVIPKeyboard
 };

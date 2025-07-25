@@ -235,6 +235,163 @@ const translations = {
       de: '🔙 Zurück zum Menü'
     },
 
+    // === SERVICES ===
+    'service_delivery': {
+      fr: 'Livraison',
+      en: 'Delivery',
+      it: 'Consegna',
+      es: 'Entrega',
+      de: 'Lieferung'
+    },
+    'service_meetup': {
+      fr: 'Meetup',
+      en: 'Meetup',
+      it: 'Incontro',
+      es: 'Encuentro',
+      de: 'Treffen'
+    },
+    'service_postal': {
+      fr: 'Envoi postal',
+      en: 'Postal shipping',
+      it: 'Spedizione postale',
+      es: 'Envío postal',
+      de: 'Postversand'
+    },
+    'services_available': {
+      fr: 'Services disponibles',
+      en: 'Available services',
+      it: 'Servizi disponibili',
+      es: 'Servicios disponibles',
+      de: 'Verfügbare Services'
+    },
+    'countries_served': {
+      fr: 'Pays desservis',
+      en: 'Countries served',
+      it: 'Paesi serviti',
+      es: 'Países servidos',
+      de: 'Bediente Länder'
+    },
+
+    // === BOUTIQUES ===
+    'shop_details': {
+      fr: 'Détails de la boutique',
+      en: 'Shop details',
+      it: 'Dettagli del negozio',
+      es: 'Detalles de la tienda',
+      de: 'Shop-Details'
+    },
+    'vote_for_shop': {
+      fr: 'Voter Pour ce Plug',
+      en: 'Vote for this Plug',
+      it: 'Vota per questo negozio',
+      es: 'Votar por esta tienda',
+      de: 'Für diesen Shop stimmen'
+    },
+    'already_voted': {
+      fr: 'Déjà voté',
+      en: 'Already voted',
+      it: 'Già votato',
+      es: 'Ya votado',
+      de: 'Bereits abgestimmt'
+    },
+    'vote_count_singular': {
+      fr: 'vote',
+      en: 'vote',
+      it: 'voto',
+      es: 'voto',
+      de: 'Stimme'
+    },
+    'vote_count_plural': {
+      fr: 'votes',
+      en: 'votes',
+      it: 'voti',
+      es: 'votos',
+      de: 'Stimmen'
+    },
+
+    // === NAVIGATION ===
+    'back_to_filters': {
+      fr: 'Retour aux filtres',
+      en: 'Back to filters',
+      it: 'Torna ai filtri',
+      es: 'Volver a filtros',
+      de: 'Zurück zu Filtern'
+    },
+    'back_to_menu': {
+      fr: 'Retour au menu',
+      en: 'Back to menu',
+      it: 'Torna al menu',
+      es: 'Volver al menú',
+      de: 'Zurück zum Menü'
+    },
+    'page_info': {
+      fr: 'Page',
+      en: 'Page',
+      it: 'Pagina',
+      es: 'Página',
+      de: 'Seite'
+    },
+
+    // === MESSAGES D'ÉTAT ===
+    'loading': {
+      fr: 'Chargement...',
+      en: 'Loading...',
+      it: 'Caricamento...',
+      es: 'Cargando...',
+      de: 'Laden...'
+    },
+    'error_loading': {
+      fr: 'Erreur lors du chargement',
+      en: 'Error loading',
+      it: 'Errore durante il caricamento',
+      es: 'Error al cargar',
+      de: 'Fehler beim Laden'
+    },
+    'shop_not_found': {
+      fr: 'Boutique non trouvée ou inactive',
+      en: 'Shop not found or inactive',
+      it: 'Negozio non trovato o inattivo',
+      es: 'Tienda no encontrada o inactiva',
+      de: 'Shop nicht gefunden oder inaktiv'
+    },
+
+    // === FILTRES ===
+    'filter_by_service': {
+      fr: 'Filtrer par service',
+      en: 'Filter by service',
+      it: 'Filtra per servizio',
+      es: 'Filtrar por servicio',
+      de: 'Nach Service filtern'
+    },
+    'filter_by_country': {
+      fr: 'Filtrer par pays',
+      en: 'Filter by country',
+      it: 'Filtra per paese',
+      es: 'Filtrar por país',
+      de: 'Nach Land filtern'
+    },
+    'all_shops': {
+      fr: 'Toutes les boutiques',
+      en: 'All shops',
+      it: 'Tutti i negozi',
+      es: 'Todas las tiendas',
+      de: 'Alle Shops'
+    },
+    'total_shops': {
+      fr: 'Total',
+      en: 'Total',
+      it: 'Totale',
+      es: 'Total',
+      de: 'Gesamt'
+    },
+    'shops_word': {
+      fr: 'boutiques',
+      en: 'shops',
+      it: 'negozi',
+      es: 'tiendas',
+      de: 'Shops'
+    },
+
     // === BOUTIQUE WEB ===
     'shop.title': {
       fr: 'FINDYOURPLUG',

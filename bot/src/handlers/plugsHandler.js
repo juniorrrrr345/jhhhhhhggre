@@ -5,7 +5,7 @@ const {
   createPlugsFilterKeyboard, 
   createServicesKeyboard, 
   createCountriesKeyboard,
-  createPlugListKeyboard,
+  createPlugsKeyboard,
   createPlugKeyboard 
 } = require('../utils/keyboards');
 const { sendMessageWithImage, editMessageWithImage, sendPlugWithImage } = require('../utils/messageHelper');
@@ -16,56 +16,57 @@ const handleTopPlugs = async (ctx) => {
   try {
     await ctx.answerCbQuery();
     
-    // TOUJOURS recharger la config fraîche pour les traductions
+    // Récupérer la langue actuelle
     const config = await Config.findById('main');
     const currentLang = config?.languages?.currentLanguage || 'fr';
     const customTranslations = config?.languages?.translations;
     
-    console.log(`🌍 Top Plugs affiché en langue: ${currentLang}`);
-    
     // Récupérer tous les plugs actifs triés par votes
-    const allPlugs = await Plug.find({ isActive: true })
-      .sort({ likes: -1, createdAt: -1 });
-
-    // Récupérer les pays disponibles dynamiquement
-    const availableCountries = await getAvailableCountries();
+    const plugs = await Plug.find({ 
+      isActive: true 
+    }).sort({ 
+      isVip: -1,
+      likes: -1,
+      createdAt: -1 
+    });
     
-    // Message d'affichage initial avec traduction
-    const topPlugsTitle = getTranslation('menu_topPlugs', currentLang, customTranslations);
-    let message = `${topPlugsTitle}\n`;
-    message += `*(${getTranslation('messages_sortedByVotes', currentLang, customTranslations)})*\n\n`;
+    console.log(`🔝 Top Plugs: ${plugs.length} plugs trouvés`);
     
-    // Afficher les premiers plugs (top 10 par défaut) - MISE À JOUR pour boutons
-    const topPlugs = allPlugs.slice(0, 10);
-    let keyboard;
+    let message = `🔝 **${getTranslation('menu_topPlugs', currentLang, customTranslations)}**\n\n`;
     
-    if (topPlugs.length > 0) {
-      const shopsAvailableText = getTranslation('messages_shopsAvailable', currentLang, customTranslations);
-      message += `**${topPlugs.length} ${shopsAvailableText} :**\n\n`;
+    if (plugs.length === 0) {
+      message += getTranslation('messages_noShops', currentLang, customTranslations);
+    } else {
+      message += `*(${getTranslation('messages_sortedByVotes', currentLang, customTranslations)})*\n\n`;
       
-      // Ajouter les boutiques au clavier
-      const plugButtons = [];
-      topPlugs.forEach((plug, index) => {
-        const country = getCountryFlag(plug.countries[0]);
-        const location = plug.location ? ` ${plug.location}` : '';
-        const vipIcon = plug.isVip ? '⭐️ ' : '';
-        const buttonText = `${country}${location} ${vipIcon}${plug.name} 👍 ${plug.likes}`;
-        plugButtons.push([Markup.button.callback(buttonText, `plug_${plug._id}_from_top_plugs`)]);
+      // Statistiques des services avec traductions
+      const deliveryCount = await Plug.countDocuments({
+        isActive: true,
+        'services.delivery.enabled': true
+      });
+      const postalCount = await Plug.countDocuments({
+        isActive: true,
+        'services.postal.enabled': true
+      });
+      const meetupCount = await Plug.countDocuments({
+        isActive: true,
+        'services.meetup.enabled': true
       });
       
-      keyboard = createTopPlugsKeyboard(config, availableCountries, [], null, null);
-      keyboard.reply_markup.inline_keyboard = plugButtons.concat(keyboard.reply_markup.inline_keyboard);
-    } else {
-      const noShopsText = getTranslation('messages_noShops', currentLang, customTranslations);
-      message += noShopsText;
-      keyboard = createTopPlugsKeyboard(config, availableCountries, [], null, null);
+      console.log(`📊 Services disponibles: ${getTranslation('service_delivery', currentLang, customTranslations)}(${deliveryCount}), ${getTranslation('service_postal', currentLang, customTranslations)}(${postalCount}), ${getTranslation('service_meetup', currentLang, customTranslations)}(${meetupCount})`);
+      
+      message += `📊 **${getTranslation('services_available', currentLang, customTranslations)} :**\n` +
+        `📦 ${getTranslation('service_delivery', currentLang, customTranslations)}: ${deliveryCount} ${getTranslation('shops_word', currentLang, customTranslations)}\n` +
+        `✈️ ${getTranslation('service_postal', currentLang, customTranslations)}: ${postalCount} ${getTranslation('shops_word', currentLang, customTranslations)}\n` +
+        `🏠 ${getTranslation('service_meetup', currentLang, customTranslations)}: ${meetupCount} ${getTranslation('shops_word', currentLang, customTranslations)}`;
     }
     
-    await editMessageWithImage(ctx, message, keyboard, config, { parse_mode: 'Markdown' });
+    const keyboard = createPlugsFilterKeyboard(currentLang, customTranslations);
     
+    await editMessageWithImage(ctx, message, keyboard, config, { parse_mode: 'Markdown' });
   } catch (error) {
     console.error('Erreur dans handleTopPlugs:', error);
-    await ctx.answerCbQuery('❌ Erreur lors du chargement').catch(() => {});
+    await ctx.answerCbQuery(getTranslation('error_loading', 'fr')).catch(() => {});
   }
 };
 
@@ -629,7 +630,7 @@ const handleAllPlugs = async (ctx, page = 0) => {
 
     const itemsPerPage = 5;
     const totalPages = Math.ceil(plugs.length / itemsPerPage);
-    const keyboard = createPlugListKeyboard(plugs, page, totalPages, 'all');
+    const keyboard = createPlugsKeyboard(plugs, page, totalPages, 'all');
 
     let message = `${config.botTexts?.allPlugsTitle || 'Tous Nos Plugs Certifié 🔌'}\n`;
     
@@ -738,7 +739,7 @@ const handleServiceFilter = async (ctx, serviceType, page = 0) => {
     const totalPages = Math.ceil(plugs.length / itemsPerPage);
     
     // Utiliser le contexte 'service_TYPE' pour que le retour fonctionne correctement
-    const keyboard = createPlugListKeyboard(plugs, page, totalPages, `service_${serviceType}`);
+    const keyboard = createPlugsKeyboard(plugs, page, totalPages, `service_${serviceType}`);
 
     const serviceNames = {
       delivery: '🚚 Livraison',
@@ -804,7 +805,7 @@ const handleCountryFilter = async (ctx, country, page = 0) => {
 
     const itemsPerPage = 5;
     const totalPages = Math.ceil(plugs.length / itemsPerPage);
-    const keyboard = createPlugListKeyboard(plugs, page, totalPages, `country_${country.toLowerCase()}`);
+    const keyboard = createPlugsKeyboard(plugs, page, totalPages, `country_${country.toLowerCase()}`);
 
     let message = `🌍 **Plugs en ${country.charAt(0).toUpperCase() + country.slice(1)} :**\n\n`;
     message += `📊 Total : ${plugs.length} plugs\n`;
@@ -827,40 +828,45 @@ const handlePlugDetails = async (ctx, plugId, returnContext = 'top_plugs') => {
     
     if (!plug || !plug.isActive) {
       console.log('❌ Plug non trouvé ou inactif');
-      return ctx.answerCbQuery('❌ Plug non trouvé ou inactif');
+      return ctx.answerCbQuery(getTranslation('shop_not_found', 'fr')); // Fallback en français si pas de config
     }
 
-    // Récupérer la config pour les textes personnalisés
+    // Récupérer la config pour les textes personnalisés et la langue
     const config = await Config.findById('main');
+    const currentLang = config?.languages?.currentLanguage || 'fr';
+    const customTranslations = config?.languages?.translations;
 
     let message = `${plug.isVip ? '⭐ ' : ''}**${plug.name}**\n\n`;
     message += `📝 ${plug.description}\n\n`;
 
-    // Services disponibles avec meilleur formatage
+    // Services disponibles avec traductions
     const services = [];
     if (plug.services?.delivery?.enabled) {
-      services.push(`📦 **Livraison**${plug.services.delivery.description ? `: ${plug.services.delivery.description}` : ''}`);
+      const serviceName = getTranslation('service_delivery', currentLang, customTranslations);
+      services.push(`📦 **${serviceName}**${plug.services.delivery.description ? `: ${plug.services.delivery.description}` : ''}`);
     }
     if (plug.services?.meetup?.enabled) {
-      services.push(`🏠 **Meetup**${plug.services.meetup.description ? `: ${plug.services.meetup.description}` : ''}`);
+      const serviceName = getTranslation('service_meetup', currentLang, customTranslations);
+      services.push(`🏠 **${serviceName}**${plug.services.meetup.description ? `: ${plug.services.meetup.description}` : ''}`);
     }
     if (plug.services?.postal?.enabled) {
-      services.push(`✈️ **Envoi postal**${plug.services.postal.description ? `: ${plug.services.postal.description}` : ''}`);
+      const serviceName = getTranslation('service_postal', currentLang, customTranslations);
+      services.push(`✈️ **${serviceName}**${plug.services.postal.description ? `: ${plug.services.postal.description}` : ''}`);
     }
 
     if (services.length > 0) {
-      message += `**🔧 Services disponibles :**\n${services.join('\n')}\n\n`;
+      const servicesTitle = getTranslation('services_available', currentLang, customTranslations);
+      message += `**🔧 ${servicesTitle} :**\n${services.join('\n')}\n\n`;
     }
 
-    // Pays desservis
+    // Pays desservis avec traduction
     if (plug.countries && plug.countries.length > 0) {
-      message += `🌍 **Pays desservis :** ${plug.countries.join(', ')}\n\n`;
+      const countriesTitle = getTranslation('countries_served', currentLang, customTranslations);
+      message += `🌍 **${countriesTitle} :** ${plug.countries.join(', ')}\n\n`;
     }
-
-    // Likes supprimés de la description - affichés uniquement sur le bouton
 
     // Utiliser la fonction createPlugKeyboard qui gère déjà tout (avec userId pour l'état du bouton like)
-    const keyboard = createPlugKeyboard(plug, returnContext, ctx.from?.id);
+    const keyboard = createPlugKeyboard(plug, returnContext, ctx.from?.id, currentLang, customTranslations);
 
     // Utiliser la fonction helper pour afficher avec image du plug
     await editMessageWithImage(ctx, message, keyboard, config, { 
@@ -873,7 +879,7 @@ const handlePlugDetails = async (ctx, plugId, returnContext = 'top_plugs') => {
     await ctx.answerCbQuery();
   } catch (error) {
     console.error('Erreur dans handlePlugDetails:', error);
-    await ctx.answerCbQuery('❌ Erreur lors du chargement');
+    await ctx.answerCbQuery(getTranslation('error_loading', 'fr')).catch(() => {}); // Fallback en français
   }
 };
 
