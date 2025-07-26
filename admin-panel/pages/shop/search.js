@@ -61,21 +61,29 @@ export default function ShopSearch() {
   const getAvailableDepartments = () => {
     const departments = new Set()
     allPlugs.forEach(plug => {
-      // Départements de livraison
-      if (plug.services?.delivery?.departments && Array.isArray(plug.services.delivery.departments)) {
-        plug.services.delivery.departments.forEach(dept => {
-          if (dept && dept.trim() !== '') {
-            departments.add(dept)
-          }
-        })
-      }
-      // Départements de meetup
-      if (plug.services?.meetup?.departments && Array.isArray(plug.services.meetup.departments)) {
-        plug.services.meetup.departments.forEach(dept => {
-          if (dept && dept.trim() !== '') {
-            departments.add(dept)
-          }
-        })
+      // Filtrer par pays sélectionné
+      const matchesCountryFilter = countryFilter === '' || 
+        (plug.countries && plug.countries.some(country => 
+          country.toLowerCase().includes(countryFilter.toLowerCase())
+        ))
+      
+      if (matchesCountryFilter) {
+        // Départements de livraison
+        if (plug.services?.delivery?.departments && Array.isArray(plug.services.delivery.departments)) {
+          plug.services.delivery.departments.forEach(dept => {
+            if (dept && dept.trim() !== '') {
+              departments.add(dept)
+            }
+          })
+        }
+        // Départements de meetup
+        if (plug.services?.meetup?.departments && Array.isArray(plug.services.meetup.departments)) {
+          plug.services.meetup.departments.forEach(dept => {
+            if (dept && dept.trim() !== '') {
+              departments.add(dept)
+            }
+          })
+        }
       }
     })
     return Array.from(departments).sort((a, b) => a.localeCompare(b, undefined, { numeric: true }))
@@ -84,6 +92,16 @@ export default function ShopSearch() {
   useEffect(() => {
     filterPlugs()
   }, [search, countryFilter, serviceFilter, departmentFilter, vipFilter, allPlugs])
+
+  // Réinitialiser le filtre département si le pays change et que le département n'est plus disponible
+  useEffect(() => {
+    if (departmentFilter && countryFilter) {
+      const availableDepartments = getAvailableDepartments()
+      if (!availableDepartments.includes(departmentFilter)) {
+        setDepartmentFilter('')
+      }
+    }
+  }, [countryFilter, allPlugs])
 
   const fetchConfig = async () => {
     try {
@@ -399,7 +417,12 @@ export default function ShopSearch() {
                 boxSizing: 'border-box'
               }}
             >
-              <option value="">🗺️ {t('all_departments') || 'Tous départements'}</option>
+              <option value="">
+                🗺️ {countryFilter ? 
+                  `Tous départements (${countryFilter})` : 
+                  (t('all_departments') || 'Tous départements')
+                }
+              </option>
               {getAvailableDepartments().map(department => (
                 <option key={department} value={department}>{department}</option>
               ))}
