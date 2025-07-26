@@ -695,13 +695,7 @@ const handleFormMessage = async (ctx) => {
         userForm.data.meetupPostalCodes[meetupCurrentCountry] = text;
         userForms.set(userId, userForm);
         
-        const Config = require('../models/Config');
-        const config = await Config.findById('main');
-        const currentLang = config?.languages?.currentLanguage || 'fr';
-        const customTranslations = config?.languages?.translations;
-        
-        await ctx.reply(getTranslation('registration.postalCodeValidated', currentLang, customTranslations) || 
-          `✅ Code postal ${text} validé pour ${meetupCurrentCountry}`);
+        await ctx.reply(`✅ Code postal ${text} validé pour ${meetupCurrentCountry}`);
         await askMeetupPostalForCountry(ctx, meetupCountryIndex + 1);
         break;
         
@@ -716,13 +710,7 @@ const handleFormMessage = async (ctx) => {
         userForm.data.deliveryPostalCodes[deliveryCurrentCountry] = text;
         userForms.set(userId, userForm);
         
-        const Config = require('../models/Config');
-        const config = await Config.findById('main');
-        const currentLang = config?.languages?.currentLanguage || 'fr';
-        const customTranslations = config?.languages?.translations;
-        
-        await ctx.reply(getTranslation('registration.postalCodeValidated', currentLang, customTranslations) || 
-          `✅ Code postal ${text} validé pour ${deliveryCurrentCountry}`);
+        await ctx.reply(`✅ Code postal ${text} validé pour ${deliveryCurrentCountry}`);
         await askDeliveryPostalForCountry(ctx, deliveryCountryIndex + 1);
         break;
     }
