@@ -21,29 +21,19 @@ class PostalCodeService {
     };
   }
 
-  // 🇫🇷 FRANCE - Tous les départements
+  // 🇫🇷 FRANCE - Départements principaux seulement (OPTIMISÉ)
   generateFrenchPostalCodes() {
     const codes = [];
-    // Métropole: 01-95 (sauf 20)
+    // Seulement les départements principaux (pas tous les codes postaux)
     for (let dept = 1; dept <= 95; dept++) {
       if (dept === 20) continue; // Corse = 2A/2B
       const deptStr = dept.toString().padStart(2, '0');
-      // Générer codes postaux par département (000-999)
-      for (let city = 0; city <= 999; city++) {
-        const cityStr = city.toString().padStart(3, '0');
-        codes.push(`${deptStr}${cityStr}`);
-      }
+      codes.push(deptStr); // Juste le numéro de département, pas tous les codes
     }
-    // Corse 2A (20100-20299) et 2B (20600-20999)
-    for (let i = 100; i <= 299; i++) codes.push(`20${i}`);
-    for (let i = 600; i <= 999; i++) codes.push(`20${i}`);
-    // DOM-TOM: 971-976, 984, 986-988
-    const domTom = ['971', '972', '973', '974', '976', '984', '986', '987', '988'];
-    domTom.forEach(dept => {
-      for (let city = 0; city <= 99; city++) {
-        codes.push(`${dept}${city.toString().padStart(2, '0')}`);
-      }
-    });
+    // Corse
+    codes.push('2A', '2B');
+    // DOM-TOM principaux
+    codes.push('971', '972', '973', '974', '976');
     return codes.sort();
   }
 
@@ -60,10 +50,11 @@ class PostalCodeService {
     return codes.sort();
   }
 
-  // 🇨🇭 SUISSE
+  // 🇨🇭 SUISSE - Zones principales (OPTIMISÉ)
   generateSwissPostalCodes() {
     const codes = [];
-    for (let i = 1000; i <= 9999; i++) {
+    // Principales zones seulement
+    for (let i = 10; i <= 99; i++) {
       codes.push(i.toString());
     }
     return codes;
@@ -87,19 +78,21 @@ class PostalCodeService {
     return codes;
   }
 
-  // 🇧🇪 BELGIQUE
+  // 🇧🇪 BELGIQUE - Zones principales (OPTIMISÉ)
   generateBelgianPostalCodes() {
     const codes = [];
-    for (let i = 1000; i <= 9999; i++) {
+    // Principales zones seulement
+    for (let i = 10; i <= 99; i++) {
       codes.push(i.toString());
     }
     return codes;
   }
 
-  // 🇳🇱 PAYS-BAS
+  // 🇳🇱 PAYS-BAS - Zones principales (OPTIMISÉ)
   generateDutchPostalCodes() {
     const codes = [];
-    for (let i = 1000; i <= 9999; i++) {
+    // Principales zones seulement
+    for (let i = 10; i <= 99; i++) {
       codes.push(i.toString());
     }
     return codes;
@@ -367,12 +360,12 @@ class PostalCodeService {
     return codes;
   }
 
-  // Générer des codes génériques pour "Autre"
+  // Générer des codes génériques pour "Autre" (OPTIMISÉ)
   generateGenericPostalCodes() {
     const codes = [];
-    // Codes génériques simples
-    for (let i = 1; i <= 999; i++) {
-      codes.push(i.toString().padStart(3, '0'));
+    // Codes génériques très simples
+    for (let i = 1; i <= 50; i++) {
+      codes.push(i.toString().padStart(2, '0'));
     }
     return codes;
   }
