@@ -99,11 +99,12 @@ const safeEditMessage = async (ctx, message, options = {}, keepWelcomeImage = fa
     
   } catch (error) {
     console.error('❌ Erreur safeEditMessage:', error.message);
-    // Dernier fallback: message simple sans formatage
+    // Dernier fallback: envoyer le message original sans formatage
     try {
-      await ctx.reply('✅ Ta demande a été soumise avec succès ! Tu recevras une réponse prochainement.', {
+      const sentMessage = await ctx.reply(message, {
         reply_markup: options.reply_markup
       });
+      lastBotMessages.set(userId, sentMessage.message_id);
     } catch (finalError) {
       console.error('❌ Même le fallback final a échoué:', finalError.message);
     }
