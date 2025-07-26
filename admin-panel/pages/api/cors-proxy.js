@@ -63,14 +63,20 @@ export default async function handler(req, res) {
       'User-Agent': 'Admin-Panel-Proxy/1.0'
     }
     
-    // Ajouter l'autorisation avec le token du body ou du header
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`
-    } else if (req.headers.authorization) {
-      headers['Authorization'] = req.headers.authorization
-    }
+    // Ajouter l'autorisation SEULEMENT si token fourni ET endpoint privé
+    const isPublicEndpoint = endpoint && (endpoint.startsWith('/api/public/') || endpoint === '/api/public/config');
     
-    console.log(`🔑 Token utilisé: ${headers.Authorization ? 'Oui' : 'Non'}`)
+    if (!isPublicEndpoint) {
+      // Endpoints privés : token requis
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`
+      } else if (req.headers.authorization) {
+        headers['Authorization'] = req.headers.authorization
+      }
+    }
+    // Endpoints publics : pas de token nécessaire
+    
+    console.log(`🔑 Endpoint ${isPublicEndpoint ? 'PUBLIC' : 'PRIVÉ'} - Token utilisé: ${headers.Authorization ? 'Oui' : 'Non'}`)
     
     // Faire la requête vers l'API distante
     const fetchOptions = {
