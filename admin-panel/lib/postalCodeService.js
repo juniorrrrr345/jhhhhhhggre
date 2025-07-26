@@ -14,7 +14,10 @@ class PostalCodeService {
       Suisse: this.generateSwissPostalCodes(),
       
       // 🇳🇱 PAYS-BAS (1000-9999)
-      'Pays-Bas': this.generateDutchPostalCodes()
+      'Pays-Bas': this.generateDutchPostalCodes(),
+      
+      // 🏴 AUTRE (codes génériques)
+      'Autre': this.generateGenericPostalCodes()
     };
   }
 
@@ -383,14 +386,9 @@ class PostalCodeService {
     return this.postalCodes[country] || [];
   }
 
-  // Récupérer les pays disponibles (inclut "Autre" si nécessaire)
+  // Récupérer les pays disponibles (seulement ceux définis)
   getAvailableCountries() {
-    const countries = Object.keys(this.postalCodes);
-    // Ajouter "Autre" s'il n'est pas déjà présent
-    if (!countries.includes('Autre')) {
-      countries.push('Autre');
-    }
-    return countries.sort();
+    return Object.keys(this.postalCodes);
   }
 
   // Créer un clavier avec les codes postaux (paginé pour Telegram)
