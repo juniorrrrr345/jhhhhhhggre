@@ -1552,13 +1552,17 @@ bot.action('go_back_telegram_bot', async (ctx) => {
 // Handler pour revenir à l'étape photo (logo)
 bot.action('go_back_photo', async (ctx) => {
   try {
+    console.log('🔙 go_back_photo handler appelé');
     await ctx.answerCbQuery();
     const userId = ctx.from.id;
     const userForm = userForms.get(userId);
     
     if (!userForm) {
+      console.log('❌ Pas de userForm trouvé pour userId:', userId);
       return await ctx.answerCbQuery('❌ Session expirée');
     }
+    
+    console.log('📝 UserForm actuel step:', userForm.step);
     
     const Config = require('./src/models/Config');
     const config = await Config.findById('main');
@@ -1569,13 +1573,14 @@ bot.action('go_back_photo', async (ctx) => {
     // Retourner à l'étape photo
     userForm.step = 'photo';
     userForms.set(userId, userForm);
+    console.log('✅ Step changé vers: photo');
     
-    // Afficher l'étape 11 : Logo de boutique
-    const photoMessage = `🛠️ FORMULAIRE D'INSCRIPTION – FindYourPlug\n\n` +
+    // Utiliser les traductions pour le message
+    const photoMessage = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
       `⸻\n\n` +
-      `🟦 Étape 11 : Logo de boutique\n\n` +
-      `📸 Envoie le logo de ta boutique\n\n` +
-      `(Photo de présentation de tes produits ou de ton espace de vente)`;
+      `${getTranslation('registration.step11Photo', currentLang, customTranslations)}\n\n` +
+      `${getTranslation('registration.shopPhotoQuestion', currentLang, customTranslations)}\n\n` +
+      `${getTranslation('registration.shopPhotoInstruction', currentLang, customTranslations)}`;
     
     const photoKeyboard = Markup.inlineKeyboard([
       [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_photo')],
@@ -1583,11 +1588,14 @@ bot.action('go_back_photo', async (ctx) => {
       [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
     ]);
     
+    console.log('📝 Message préparé, longueur:', photoMessage.length);
+    
     const { editLastFormMessage } = require('./src/handlers/applicationHandler');
     await editLastFormMessage(ctx, userId, photoMessage, photoKeyboard);
+    console.log('✅ editLastFormMessage appelé avec succès');
     
   } catch (error) {
-    console.error('Erreur go_back_photo:', error);
+    console.error('❌ Erreur go_back_photo:', error);
     await ctx.answerCbQuery('❌ Une erreur temporaire est survenue.');
   }
 });

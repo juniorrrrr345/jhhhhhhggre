@@ -267,27 +267,36 @@ const deleteLastBotMessage = async (ctx, userId) => {
 
 // Fonction utilitaire pour éditer le dernier message du formulaire
 const editLastFormMessage = async (ctx, userId, message, keyboard) => {
+  console.log('🔧 editLastFormMessage appelé pour userId:', userId);
   const lastBotMessageId = lastBotMessages.get(userId);
+  console.log('📝 lastBotMessageId trouvé:', lastBotMessageId);
+  
   if (lastBotMessageId) {
     // Toujours supprimer l'ancien message (même avec image) et créer un nouveau
     try {
+      console.log('🗑️ Tentative suppression message:', lastBotMessageId);
       await ctx.telegram.deleteMessage(ctx.chat.id, lastBotMessageId);
+      console.log('✅ Message supprimé avec succès');
     } catch (deleteError) {
       console.log('⚠️ Erreur suppression message:', deleteError.message);
     }
     
     // Créer un nouveau message texte sans image
+    console.log('📤 Création nouveau message...');
     const sentMessage = await ctx.reply(message, {
       reply_markup: keyboard ? keyboard.reply_markup : undefined,
       disable_web_page_preview: true
     });
+    console.log('✅ Nouveau message créé avec ID:', sentMessage.message_id);
     lastBotMessages.set(userId, sentMessage.message_id);
   } else {
     // Pas de message précédent, créer un nouveau
+    console.log('📤 Pas de message précédent, création nouveau message...');
     const sentMessage = await ctx.reply(message, {
       reply_markup: keyboard ? keyboard.reply_markup : undefined,
       disable_web_page_preview: true
     });
+    console.log('✅ Nouveau message créé avec ID:', sentMessage.message_id);
     lastBotMessages.set(userId, sentMessage.message_id);
   }
 };
