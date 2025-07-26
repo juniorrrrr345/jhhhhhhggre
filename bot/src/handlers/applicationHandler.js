@@ -1022,20 +1022,25 @@ const handleServicesDone = async (ctx) => {
 
 // Demander la photo
 const askPhoto = async (ctx) => {
-  const message = `🛠️ **FORMULAIRE D'INSCRIPTION – FindYourPlug**\n\n` +
+  const Config = require('../models/Config');
+  const config = await Config.findById('main');
+  const currentLang = config?.languages?.currentLanguage || 'fr';
+  const customTranslations = config?.languages?.translations;
+
+  const message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
     `⸻\n\n` +
-    `🟦 **Étape 15 : Envoi du logo**\n\n` +
-    `🖼️ Envoie ton **logo** (obligatoire pour finaliser ton inscription)\n\n` +
-    `⚠️ Tu peux envoyer une image ici.`;
+    `${getTranslation('registration.step15', currentLang, customTranslations)}\n\n` +
+    `${getTranslation('registration.logoQuestion', currentLang, customTranslations)}\n\n` +
+    `${getTranslation('registration.logoInstruction', currentLang, customTranslations)}`;
   
   const keyboard = Markup.inlineKeyboard([
-    [Markup.button.callback('❌ Annuler', 'cancel_application')]
+    [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
   ]);
   
   await safeEditMessage(ctx, message, {
     reply_markup: keyboard.reply_markup,
     parse_mode: 'Markdown'
-  });
+  }, true);
 };
 
 // Demander la confirmation
