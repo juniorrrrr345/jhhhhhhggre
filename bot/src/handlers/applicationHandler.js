@@ -288,6 +288,7 @@ const handleFormMessage = async (ctx) => {
             `${getTranslation('registration.telegramQuestion', currentLang, customTranslations)}`;
           
           const telegramKeyboard = Markup.inlineKeyboard([
+            [Markup.button.callback(getTranslation('registration.goBack', currentLang, customTranslations), 'go_back_name')],
             [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
           ]);
           
@@ -312,6 +313,7 @@ const handleFormMessage = async (ctx) => {
           
           const snapchatKeyboard = Markup.inlineKeyboard([
             [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_snapchat')],
+            [Markup.button.callback(getTranslation('registration.goBack', currentLang, customTranslations), 'go_back_telegram')],
             [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
           ]);
           
@@ -336,6 +338,7 @@ const handleFormMessage = async (ctx) => {
         
         const potatoKeyboard = Markup.inlineKeyboard([
           [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_potato')],
+          [Markup.button.callback(getTranslation('registration.goBack', currentLang, customTranslations), 'go_back_snapchat')],
           [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
         ]);
         
@@ -455,7 +458,7 @@ const handleFormMessage = async (ctx) => {
         // Éditer le message existant pour montrer l'étape suivante
         const instagramFromSessionMessage = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
           `⸻\n\n` +
-          `${getTranslation('registration.step4', currentLang, customTranslations)}\n\n` +
+          `${getTranslation('registration.step9', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.instagramQuestion', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
         
