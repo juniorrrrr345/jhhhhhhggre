@@ -495,6 +495,19 @@ bot.action(/^validate_delivery_postal_(\d+)$/, async (ctx) => {
   return await handleValidateDeliveryPostal(ctx, countryIndex);
 });
 
+// Gestionnaires pour retour au pays précédent
+bot.action(/^go_back_meetup_postal_(\d+)$/, async (ctx) => {
+  const countryIndex = parseInt(ctx.match[1]);
+  const { askMeetupPostalForCountry } = require('./src/handlers/applicationHandler');
+  return await askMeetupPostalForCountry(ctx, countryIndex);
+});
+
+bot.action(/^go_back_delivery_postal_(\d+)$/, async (ctx) => {
+  const countryIndex = parseInt(ctx.match[1]);
+  const { askDeliveryPostalForCountry } = require('./src/handlers/applicationHandler');
+  return await askDeliveryPostalForCountry(ctx, countryIndex);
+});
+
 // === NOUVEAUX HANDLERS TOP DES PLUGS ===
 bot.action(/^top_country_(.+)$/, (ctx) => {
   const country = ctx.match[1];

@@ -3017,7 +3017,10 @@ const askMeetupPostalForCountry = async (ctx, countryIndex) => {
   
   const keyboard = Markup.inlineKeyboard([
     [Markup.button.callback('✅ Valider le code postal', `validate_meetup_postal_${countryIndex}`)],
-    [Markup.button.callback('🔙 Retour aux services', 'go_back_service_selection')],
+    // Si c'est le premier pays, retour aux services, sinon retour au pays précédent
+    countryIndex === 0 ? 
+      [Markup.button.callback('🔙 Retour aux services', 'go_back_service_selection')] :
+      [Markup.button.callback('🔙 Pays précédent', `go_back_meetup_postal_${countryIndex - 1}`)],
     [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
   ]);
   
@@ -3065,7 +3068,10 @@ const askDeliveryPostalForCountry = async (ctx, countryIndex) => {
   
   const keyboard = Markup.inlineKeyboard([
     [Markup.button.callback('✅ Valider le code postal', `validate_delivery_postal_${countryIndex}`)],
-    [Markup.button.callback('🔙 Retour aux services', 'go_back_service_selection')],
+    // Si c'est le premier pays, retour aux services, sinon retour au pays précédent
+    countryIndex === 0 ? 
+      [Markup.button.callback('🔙 Retour aux services', 'go_back_service_selection')] :
+      [Markup.button.callback('🔙 Pays précédent', `go_back_delivery_postal_${countryIndex - 1}`)],
     [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
   ]);
   
@@ -3319,7 +3325,10 @@ const handleValidateMeetupPostal = async (ctx, countryIndex) => {
       `Exemple : 75001, 13001, etc.`;
     
     const keyboard = Markup.inlineKeyboard([
-      [Markup.button.callback('🔙 Retour aux services', 'go_back_service_selection')],
+      // Si c'est le premier pays, retour aux services, sinon retour au pays précédent
+      countryIndex === 0 ? 
+        [Markup.button.callback('🔙 Retour aux services', 'go_back_service_selection')] :
+        [Markup.button.callback('🔙 Pays précédent', `go_back_meetup_postal_${countryIndex - 1}`)],
       [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
     ]);
     
@@ -3366,7 +3375,10 @@ const handleValidateDeliveryPostal = async (ctx, countryIndex) => {
       `Exemple : 75001, 13001, etc.`;
     
     const keyboard = Markup.inlineKeyboard([
-      [Markup.button.callback('🔙 Retour aux services', 'go_back_service_selection')],
+      // Si c'est le premier pays, retour aux services, sinon retour au pays précédent
+      countryIndex === 0 ? 
+        [Markup.button.callback('🔙 Retour aux services', 'go_back_service_selection')] :
+        [Markup.button.callback('🔙 Pays précédent', `go_back_delivery_postal_${countryIndex - 1}`)],
       [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
     ]);
     
