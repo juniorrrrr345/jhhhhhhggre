@@ -1067,8 +1067,8 @@ const askPhoto = async (ctx) => {
   const message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
     `⸻\n\n` +
     `${getTranslation('registration.step15', currentLang, customTranslations)}\n\n` +
-    `${getTranslation('registration.logoQuestion', currentLang, customTranslations)}\n\n` +
-    `${getTranslation('registration.logoInstruction', currentLang, customTranslations)}`;
+    `${getTranslation('registration.shopPhotoQuestion', currentLang, customTranslations)}\n\n` +
+    `${getTranslation('registration.shopPhotoInstruction', currentLang, customTranslations)}`;
   
   const keyboard = Markup.inlineKeyboard([
     [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
@@ -1145,7 +1145,7 @@ const handlePhoto = async (ctx) => {
     const userId = ctx.from.id;
     const userForm = userForms.get(userId);
     
-    if (!userForm || (userForm.step !== 'photo' && userForm.step !== 'shop_photo')) {
+    if (!userForm || userForm.step !== 'photo') {
       return;
     }
     
@@ -1157,38 +1157,20 @@ const handlePhoto = async (ctx) => {
     // Récupérer la photo de meilleure qualité
     const photo = ctx.message.photo[ctx.message.photo.length - 1];
     
-    if (userForm.step === 'photo') {
-      // Logo de boutique
-      userForm.data.photo = {
-        fileId: photo.file_id,
-        fileSize: photo.file_size,
-        width: photo.width,
-        height: photo.height
-      };
-      
-      userForm.step = 'shop_photo';
-      userForms.set(userId, userForm);
-      
-      // Confirmer réception et passer à la photo de boutique
-      await ctx.reply('✅ Logo reçu !');
-      await askShopPhoto(ctx);
-      
-    } else if (userForm.step === 'shop_photo') {
-      // Photo de boutique
-      userForm.data.shopPhoto = {
-        fileId: photo.file_id,
-        fileSize: photo.file_size,
-        width: photo.width,
-        height: photo.height
-      };
-      
-      userForm.step = 'confirmation';
-      userForms.set(userId, userForm);
-      
-      // Confirmer réception et passer à la confirmation
-      await ctx.reply('✅ Photo de boutique reçue !');
-      await askConfirmation(ctx);
-    }
+    // Photo de boutique du CLIENT
+    userForm.data.photo = {
+      fileId: photo.file_id,
+      fileSize: photo.file_size,
+      width: photo.width,
+      height: photo.height
+    };
+    
+    userForm.step = 'confirmation';
+    userForms.set(userId, userForm);
+    
+    // Confirmer réception et passer à la confirmation
+    await ctx.reply('✅ Photo de boutique reçue !');
+    await askConfirmation(ctx);
     
   } catch (error) {
     console.error('Erreur dans handlePhoto:', error);
