@@ -157,10 +157,14 @@ const handleStartApplication = async (ctx) => {
         [Markup.button.callback(getTranslation('registration.backToMenu', currentLang, customTranslations), 'back_main')]
       ]);
       
-      return await safeEditMessage(ctx, message, {
+      await safeEditMessage(ctx, message, {
         reply_markup: keyboard.reply_markup,
         parse_mode: 'Markdown'
       }, true); // keepWelcomeImage = true
+      
+      // Sauvegarder l'ID du message actuel pour permettre l'édition ultérieure
+      lastBotMessages.set(userId, ctx.callbackQuery.message.message_id);
+      return;
     }
     
     // Initialiser le formulaire
@@ -189,6 +193,9 @@ const handleStartApplication = async (ctx) => {
       parse_mode: 'Markdown'
     }, true); // keepWelcomeImage = true
     
+    // Sauvegarder l'ID du message actuel pour permettre l'édition ultérieure
+    lastBotMessages.set(userId, ctx.callbackQuery.message.message_id);
+    
   } catch (error) {
     console.error('Erreur dans handleStartApplication:', error);
     await ctx.answerCbQuery('❌ Erreur lors du démarrage').catch(() => {});
@@ -213,34 +220,23 @@ const deleteLastBotMessage = async (ctx, userId) => {
 const editLastFormMessage = async (ctx, userId, message, keyboard) => {
   const lastBotMessageId = lastBotMessages.get(userId);
   if (lastBotMessageId) {
+    // Toujours supprimer l'ancien message (même avec image) et créer un nouveau
     try {
-      // Éditer le dernier message du bot
-      await ctx.telegram.editMessageText(ctx.chat.id, lastBotMessageId, null, message, {
-        reply_markup: keyboard ? keyboard.reply_markup : undefined,
-        parse_mode: 'Markdown',
-        disable_web_page_preview: true
-      });
-    } catch (error) {
-      console.log('⚠️ Erreur édition message:', error.message);
-      // Fallback: supprimer et créer nouveau message
-      try {
-        await ctx.telegram.deleteMessage(ctx.chat.id, lastBotMessageId);
-      } catch (deleteError) {
-        // Ignorer l'erreur de suppression
-      }
-      
-      const sentMessage = await ctx.reply(message, {
-        reply_markup: keyboard ? keyboard.reply_markup : undefined,
-        parse_mode: 'Markdown',
-        disable_web_page_preview: true
-      });
-      lastBotMessages.set(userId, sentMessage.message_id);
+      await ctx.telegram.deleteMessage(ctx.chat.id, lastBotMessageId);
+    } catch (deleteError) {
+      console.log('⚠️ Erreur suppression message:', deleteError.message);
     }
+    
+    // Créer un nouveau message texte sans image
+    const sentMessage = await ctx.reply(message, {
+      reply_markup: keyboard ? keyboard.reply_markup : undefined,
+      disable_web_page_preview: true
+    });
+    lastBotMessages.set(userId, sentMessage.message_id);
   } else {
     // Pas de message précédent, créer un nouveau
     const sentMessage = await ctx.reply(message, {
       reply_markup: keyboard ? keyboard.reply_markup : undefined,
-      parse_mode: 'Markdown',
       disable_web_page_preview: true
     });
     lastBotMessages.set(userId, sentMessage.message_id);
