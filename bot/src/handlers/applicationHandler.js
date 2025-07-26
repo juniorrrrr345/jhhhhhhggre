@@ -3078,7 +3078,7 @@ const showFinalConfirmation = async (ctx) => {
     `👆 Confirmer votre plugin ?`;
   
   const keyboard = Markup.inlineKeyboard([
-    [Markup.button.callback('🚀 Soumettre le plugin', 'submit_final_application')],
+    [Markup.button.callback('🚀 Soumettre le Formulaire', 'submit_final_application')],
     [Markup.button.callback('🔙 Retour aux services', 'go_back_service_selection')],
     [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
   ]);
