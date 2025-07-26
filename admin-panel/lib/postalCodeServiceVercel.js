@@ -24,25 +24,15 @@ class PostalCodeServiceVercel {
       const countryDepartments = {};
 
       if (data.plugs && Array.isArray(data.plugs)) {
-        // Filtrer les boutiques de test
-        const realPlugs = data.plugs.filter(plug => {
-          // Exclure les boutiques de test basées sur le nom
-          const testNames = ['test', 'haha', 'demo', 'exemple', 'fake'];
-          const isTestPlug = testNames.some(testName => 
-            plug.name.toLowerCase().includes(testName)
-          );
-          
-          // Exclure les boutiques avec trop de pays (probablement des tests)
-          const tooManyCountries = plug.countries && plug.countries.length > 10;
-          
-          // Garder seulement les vraies boutiques actives
-          return plug.isActive && !isTestPlug && !tooManyCountries;
-        });
+        // Prendre TOUTES les boutiques actives du bot Telegram
+        const activePlugs = data.plugs.filter(plug => plug.isActive === true);
 
-        console.log(`🔍 Filtrage: ${data.plugs.length} boutiques totales → ${realPlugs.length} vraies boutiques`);
+        console.log(`🔍 Chargement: ${data.plugs.length} boutiques totales → ${activePlugs.length} boutiques actives du Telegram`);
         
-        realPlugs.forEach(plug => {
-          // Extraire les pays de cette boutique RÉELLE
+        activePlugs.forEach(plug => {
+          console.log(`📍 Boutique: ${plug.name} (Pays: ${plug.countries ? plug.countries.join(', ') : 'Aucun'})`);
+          
+          // Extraire les pays de cette boutique ACTIVE
           if (plug.countries && Array.isArray(plug.countries)) {
             plug.countries.forEach(country => {
               if (!countryDepartments[country]) {
