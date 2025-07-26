@@ -117,10 +117,10 @@ const handleTopCountryFilter = async (ctx, country) => {
       countries: { $in: [country] }
     }).sort({ likes: -1, createdAt: -1 });
 
-    const availableCountries = await getAvailableCountries();
-    
+    const config = await Config.findById('main');
     const currentLang = config?.languages?.currentLanguage || 'fr';
     const customTranslations = config?.languages?.translations;
+    const availableCountries = await getAvailableCountries(currentLang);
     
     let message = `${getTranslation('list_plugs_title', currentLang, customTranslations)}\n`;
     message += `*${getTranslation('sorted_by_votes_subtitle', currentLang, customTranslations)}*\n\n`;
@@ -185,7 +185,7 @@ const handleTopServiceFilter = async (ctx, serviceType, selectedCountry = null) 
     const currentLang = config?.languages?.currentLanguage || 'fr';
     const customTranslations = config?.languages?.translations;
     
-    const availableCountries = await getAvailableCountries();
+    const availableCountries = await getAvailableCountries(currentLang);
     
     let message = `${getTranslation('list_plugs_title', currentLang, customTranslations)}\n`;
     message += `*${getTranslation('sorted_by_votes_subtitle', currentLang, customTranslations)}*\n\n`;
@@ -717,7 +717,7 @@ const handleSpecificDepartment = async (ctx, serviceType, department, selectedCo
       });
     }
     
-    const availableCountries = await getAvailableCountries();
+    const availableCountries = await getAvailableCountries(currentLang);
     
     let message = `${getTranslation('list_plugs_title', currentLang, customTranslations)}\n`;
     message += `*${getTranslation('sorted_by_votes_subtitle', currentLang, customTranslations)}*\n\n`;
@@ -826,7 +826,7 @@ const handleResetFilters = async (ctx) => {
       .sort({ likes: -1, createdAt: -1 });
 
     // Récupérer les pays disponibles dynamiquement
-    const availableCountries = await getAvailableCountries();
+    const availableCountries = await getAvailableCountries(currentLang);
     
     // Message d'affichage initial avec traduction
     const topPlugsTitle = getTranslation('menu_topPlugs', currentLang, customTranslations);
@@ -951,44 +951,19 @@ const getCountryNameByLanguage = (countryKey, lang) => {
   return countryMapping[key]?.[lang] || countryKey;
 };
 
-// 🔍 FILTRER LES BOUTIQUES SELON LA LANGUE ACTUELLE
+// 🔍 RÉCUPÉRER TOUTES LES BOUTIQUES (INTERFACE TRADUITE SEULEMENT)
 const getPlugsByLanguage = async (filters = {}, lang = 'fr') => {
   try {
-    // Récupérer tous les plugs actifs
+    // TOUTES les boutiques doivent s'afficher dans TOUTES les langues
+    // Seule l'interface est traduite, pas le contenu filtré
     const baseQuery = { isActive: true, ...filters };
-    let plugs = await Plug.find(baseQuery).sort({ likes: -1, createdAt: -1 });
+    const plugs = await Plug.find(baseQuery).sort({ likes: -1, createdAt: -1 });
     
-    // Si français, retourner tout (langue de référence)
-    if (lang === 'fr') {
-      return plugs;
-    }
-    
-    // Pour autres langues, filtrer par pays traduits
-    const availableCountriesInFrench = await Plug.distinct('countries', { isActive: true });
-    const countriesForLang = [];
-    
-    // Mapper les pays français vers la langue cible
-    availableCountriesInFrench.forEach(frenchCountry => {
-      const translatedCountry = getCountryNameByLanguage(frenchCountry.toLowerCase(), lang);
-      if (translatedCountry !== frenchCountry) {
-        countriesForLang.push(frenchCountry); // Garder les pays qui ont une traduction
-      }
-    });
-    
-    // Filtrer les plugs qui ont des pays traduits dans la langue cible
-    if (countriesForLang.length > 0) {
-      plugs = plugs.filter(plug => 
-        plug.countries.some(country => 
-          countriesForLang.includes(country)
-        )
-      );
-    }
-    
-    console.log(`🌍 ${plugs.length} boutiques trouvées pour langue ${lang}`);
+    console.log(`🌍 ${plugs.length} boutiques trouvées (TOUTES affichées en ${lang})`);
     return plugs;
     
   } catch (error) {
-    console.error('Erreur récupération plugs par langue:', error);
+    console.error('Erreur récupération plugs:', error);
     return [];
   }
 };
@@ -2083,5 +2058,7 @@ module.exports = {
   handleDepartmentsList,
   getAvailableCountries,
   getAvailableDepartments,
-  getCountryFlag
+  getCountryFlag,
+  getCountryNameByLanguage,
+  getPlugsByLanguage
 };
