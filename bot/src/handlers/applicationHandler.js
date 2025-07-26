@@ -714,7 +714,7 @@ const askWhatsApp = async (ctx) => {
 
   const message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
     `⸻\n\n` +
-    `${getTranslation('registration.step7', currentLang, customTranslations)}\n\n` +
+    `${getTranslation('registration.step6', currentLang, customTranslations)}\n\n` +
     `${getTranslation('registration.whatsappQuestion', currentLang, customTranslations)}\n\n` +
     `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
   
@@ -738,7 +738,7 @@ const askSignal = async (ctx) => {
 
   const message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
     `⸻\n\n` +
-    `${getTranslation('registration.step8', currentLang, customTranslations)}\n\n` +
+    `${getTranslation('registration.step5', currentLang, customTranslations)}\n\n` +
     `${getTranslation('registration.signalQuestion', currentLang, customTranslations)}\n\n` +
     `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
   
@@ -762,7 +762,7 @@ const askSession = async (ctx) => {
 
   const message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
     `⸻\n\n` +
-    `${getTranslation('registration.step9', currentLang, customTranslations)}\n\n` +
+    `${getTranslation('registration.step8', currentLang, customTranslations)}\n\n` +
     `${getTranslation('registration.sessionQuestion', currentLang, customTranslations)}\n\n` +
     `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
   
@@ -786,7 +786,7 @@ const askThreema = async (ctx) => {
 
   const message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
     `⸻\n\n` +
-    `${getTranslation('registration.step10', currentLang, customTranslations)}\n\n` +
+    `${getTranslation('registration.step7', currentLang, customTranslations)}\n\n` +
     `${getTranslation('registration.threemaQuestion', currentLang, customTranslations)}\n\n` +
     `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
   
@@ -810,7 +810,7 @@ const askTelegramBot = async (ctx) => {
 
   const message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
     `⸻\n\n` +
-    `${getTranslation('registration.step11', currentLang, customTranslations)}\n\n` +
+    `${getTranslation('registration.step9', currentLang, customTranslations)}\n\n` +
     `${getTranslation('registration.telegramBotQuestion', currentLang, customTranslations)}\n\n` +
     `${getTranslation('registration.telegramBotExample', currentLang, customTranslations)}\n\n` +
     `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
@@ -1048,7 +1048,7 @@ const askPhoto = async (ctx) => {
 
   const message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
     `⸻\n\n` +
-    `${getTranslation('registration.step15', currentLang, customTranslations)}\n\n` +
+    `${getTranslation('registration.step10', currentLang, customTranslations)}\n\n` +
     `${getTranslation('registration.shopPhotoQuestion', currentLang, customTranslations)}\n\n` +
     `${getTranslation('registration.shopPhotoInstruction', currentLang, customTranslations)}`;
   
@@ -1059,7 +1059,7 @@ const askPhoto = async (ctx) => {
   await safeEditMessage(ctx, message, {
     reply_markup: keyboard.reply_markup,
     parse_mode: 'Markdown'
-  }, true);
+  });
 };
 
 
@@ -1073,16 +1073,18 @@ const askConfirmation = async (ctx) => {
   const userForm = userForms.get(ctx.from.id);
   const message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
     `⸻\n\n` +
-    `${getTranslation('registration.step17', currentLang, customTranslations)}\n\n` +
+    `${getTranslation('registration.step11', currentLang, customTranslations)}\n\n` +
     `✅ Voici le récapitulatif final :\n\n` +
-    `• Nom de Plug : ${userForm.data.name}\n` +
-    `• Telegram : ${userForm.data.telegram}\n` +
-    `• Pays : ${userForm.data.country}\n` +
-    `• Services : ${getServicesText(userForm.data.services)}\n` +
-    `${userForm.data.departmentsMeetup ? `• Meetup : ${userForm.data.departmentsMeetup}\n` : ''}` +
-    `${userForm.data.departmentsDelivery ? `• Livraison : ${userForm.data.departmentsDelivery}\n` : ''}` +
-    `${userForm.data.telegramBot ? `• Bot Telegram : ${userForm.data.telegramBot}\n` : ''}` +
-    `• Photo de boutique : ✔️ Reçu\n\n` +
+    `• **Nom de Plug** : ${userForm.data.name}\n` +
+    `• **Telegram** : ${userForm.data.telegram}\n` +
+    `${userForm.data.snapchat ? `• **Snapchat** : ${userForm.data.snapchat}\n` : ''}` +
+    `${userForm.data.potato ? `• **Potato** : ${userForm.data.potato}\n` : ''}` +
+    `${userForm.data.signal ? `• **Signal** : ${userForm.data.signal}\n` : ''}` +
+    `${userForm.data.whatsapp ? `• **WhatsApp** : ${userForm.data.whatsapp}\n` : ''}` +
+    `${userForm.data.threema ? `• **Threema** : ${userForm.data.threema}\n` : ''}` +
+    `${userForm.data.session ? `• **Session** : ${userForm.data.session}\n` : ''}` +
+    `${userForm.data.telegramBot ? `• **Bot Telegram** : ${userForm.data.telegramBot}\n` : ''}` +
+    `• **Photo de boutique** : ✔️ Reçu\n\n` +
     `Confirmer l'inscription ?`;
   
   const keyboard = Markup.inlineKeyboard([
