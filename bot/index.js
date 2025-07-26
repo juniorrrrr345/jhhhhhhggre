@@ -437,20 +437,39 @@ bot.action(/^delivery_postal_(.+)$/, async (ctx) => {
 
 // Boutons retour pour le nouveau flux
 bot.action('go_back_working_countries', async (ctx) => {
-  const { askWorkingCountries } = require('./src/handlers/applicationHandler');
-  return await askWorkingCountries(ctx);
+  try {
+    await ctx.answerCbQuery();
+    const { askWorkingCountries } = require('./src/handlers/applicationHandler');
+    const userId = ctx.from.id;
+    const { userForms } = require('./src/handlers/applicationHandler');
+    const userForm = userForms.get(userId);
+    if (userForm) {
+      userForm.step = 'working_countries';
+      userForms.set(userId, userForm);
+    }
+    return await askWorkingCountries(ctx);
+  } catch (error) {
+    console.error('Erreur go_back_working_countries:', error);
+    await ctx.answerCbQuery('❌ Erreur de retour').catch(() => {});
+  }
 });
 
 bot.action('go_back_service_selection', async (ctx) => {
-  const { askServices } = require('./src/handlers/applicationHandler');
-  const userId = ctx.from.id;
-  const { userForms } = require('./src/handlers/applicationHandler');
-  const userForm = userForms.get(userId);
-  if (userForm) {
-    userForm.step = 'service_selection';
-    userForms.set(userId, userForm);
+  try {
+    await ctx.answerCbQuery();
+    const { askServices } = require('./src/handlers/applicationHandler');
+    const userId = ctx.from.id;
+    const { userForms } = require('./src/handlers/applicationHandler');
+    const userForm = userForms.get(userId);
+    if (userForm) {
+      userForm.step = 'service_selection';
+      userForms.set(userId, userForm);
+    }
+    return await askServices(ctx);
+  } catch (error) {
+    console.error('Erreur go_back_service_selection:', error);
+    await ctx.answerCbQuery('❌ Erreur de retour').catch(() => {});
   }
-  return await askServices(ctx);
 });
 
 bot.action('submit_final_application', async (ctx) => {
