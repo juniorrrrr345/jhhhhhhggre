@@ -2869,14 +2869,6 @@ const askMeetupPostalForCountry = async (ctx, countryIndex) => {
     userForm.step = 'service_selection';
     userForms.set(userId, userForm);
     
-    const Config = require('../models/Config');
-    const config = await Config.findById('main');
-    const currentLang = config?.languages?.currentLanguage || 'fr';
-    const customTranslations = config?.languages?.translations;
-    
-    await ctx.reply(getTranslation('registration.meetupServiceCompleted', currentLang, customTranslations) || 
-      '✅ Service "Meet Up" configuré avec succès !');
-    
     await askServices(ctx);
     return;
   }
@@ -2927,14 +2919,6 @@ const askDeliveryPostalForCountry = async (ctx, countryIndex) => {
     // Tous les pays traités pour Livraison, retourner à la sélection des services
     userForm.step = 'service_selection';
     userForms.set(userId, userForm);
-    
-    const Config = require('../models/Config');
-    const config = await Config.findById('main');
-    const currentLang = config?.languages?.currentLanguage || 'fr';
-    const customTranslations = config?.languages?.translations;
-    
-    await ctx.reply(getTranslation('registration.deliveryServiceCompleted', currentLang, customTranslations) || 
-      '✅ Service "Livraison" configuré avec succès !');
     
     await askServices(ctx);
     return;
