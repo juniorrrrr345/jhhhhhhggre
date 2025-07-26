@@ -41,7 +41,8 @@ export default function UserAnalytics() {
       setStats(prev => ({ ...prev, loading: true }))
       setNextUpdateIn(30) // Reset le compteur lors de l'actualisation manuelle
       
-      const response = await api.get(`/admin/user-analytics?timeRange=${timeRange}`)
+      const token = localStorage.getItem('adminToken') || 'ADMIN_TOKEN_F3F3FC574B8A95875449DBD68128C434CE3D7FB3F054567B0D3EAD3D9F1B01B1'
+      const response = await api.get(`/admin/user-analytics?timeRange=${timeRange}`, token)
       console.log('📊 Response API user-analytics:', response)
       
       if (response.ok) {

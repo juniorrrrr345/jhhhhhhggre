@@ -364,6 +364,25 @@ export const simpleApi = {
     }
   },
 
+  // Méthode GET générique pour les analytics
+  get: async (endpoint, token = null) => {
+    try {
+      console.log(`🔄 GET request: ${endpoint}`);
+      const response = await makeProxyCall(endpoint, 'GET', token);
+      console.log(`✅ GET response:`, response);
+      return { 
+        ok: true, 
+        data: response 
+      };
+    } catch (error) {
+      console.error(`❌ GET error ${endpoint}:`, error);
+      return { 
+        ok: false, 
+        error: error.message 
+      };
+    }
+  },
+
   // Fonction pour nettoyer le cache manuellement
   clearCache: () => {
     apiCache.clear();
