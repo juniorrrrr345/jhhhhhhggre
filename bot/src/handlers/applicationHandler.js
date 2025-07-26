@@ -684,7 +684,7 @@ const askPotato = async (ctx) => {
   await safeEditMessage(ctx, message, {
     reply_markup: keyboard.reply_markup,
     parse_mode: 'Markdown'
-  });
+  }, true);
 };
 
 // Demander Snapchat
