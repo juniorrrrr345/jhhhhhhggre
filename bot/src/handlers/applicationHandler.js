@@ -3411,6 +3411,44 @@ const handleValidateDeliveryPostal = async (ctx, countryIndex) => {
   }
 };
 
+// Gestionnaire pour les photos
+const handlePhoto = async (ctx) => {
+  try {
+    const userId = ctx.from.id;
+    const userForm = userForms.get(userId);
+    
+    if (!userForm || userForm.step !== 'photo') {
+      console.log(`❌ PHOTO: User ${userId} not in photo step or no form`);
+      return;
+    }
+    
+    // Récupérer la plus grande photo
+    const photos = ctx.message.photo;
+    const largestPhoto = photos[photos.length - 1];
+    
+    // Sauvegarder l'ID de la photo
+    userForm.data.shopPhoto = largestPhoto.file_id;
+    userForm.step = 'working_countries';
+    userForms.set(userId, userForm);
+    
+    // Supprimer le message photo de l'utilisateur pour garder le chat propre
+    try {
+      await ctx.deleteMessage();
+    } catch (error) {
+      // Ignorer l'erreur si on ne peut pas supprimer
+    }
+    
+    console.log(`📸 PHOTO: Photo reçue pour user ${userId}, transition vers working_countries`);
+    
+    // Passer directement à la sélection des pays de travail
+    await askWorkingCountries(ctx);
+    
+  } catch (error) {
+    console.error('Erreur dans handlePhoto:', error);
+    await ctx.reply('❌ Erreur lors du traitement de la photo');
+  }
+};
+
 module.exports = {
   handleStartApplication,
   handleFormMessage,
