@@ -1536,8 +1536,7 @@ const handleSkipStep = async (ctx, step) => {
         ]);
         
         await safeEditMessage(ctx, threemaFromWhatsappMessage, {
-          reply_markup: threemaFromWhatsappKeyboard.reply_markup,
-          parse_mode: 'Markdown'
+          reply_markup: threemaFromWhatsappKeyboard.reply_markup
         });
         break;
         

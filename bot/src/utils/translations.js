@@ -370,25 +370,25 @@ const translations = {
       de: '🟦 Schritt 4: Potato Chat'
     },
     'registration.telegramQuestion': {
-      fr: '🔗 Entrez votre lien Telegram (format : @username ou https://t.me/username)',
-      en: '🔗 Enter your Telegram link (format: @username or https://t.me/username)',
-      it: '🔗 Inserisci il tuo link Telegram (formato: @username o https://t.me/username)',
-      es: '🔗 Introduce tu enlace de Telegram (formato: @username o https://t.me/username)',
-      de: '🔗 Geben Sie Ihren Telegram-Link ein (Format: @username oder https://t.me/username)'
+      fr: '🔗 Entrez votre lien Telegram (format : @username)',
+      en: '🔗 Enter your Telegram link (format: @username)',
+      it: '🔗 Inserisci il tuo link Telegram (formato: @username)',
+      es: '🔗 Introduce tu enlace de Telegram (formato: @username)',
+      de: '🔗 Geben Sie Ihren Telegram-Link ein (Format: @username)'
     },
     'registration.telegramChannelQuestion': {
-      fr: '🔗 Entrez le lien de votre **canal Telegram** (format : https://t.me/username)',
-      en: '🔗 Enter your **Telegram channel** link (format: https://t.me/username)',
-      it: '🔗 Inserisci il link del tuo **canale Telegram** (formato: https://t.me/username)',
-      es: '🔗 Introduce el enlace de tu **canal de Telegram** (formato: https://t.me/username)',
-      de: '🔗 Geben Sie den Link zu Ihrem **Telegram-Kanal** ein (Format: https://t.me/username)'
+      fr: '🔗 Entrez le lien de votre canal Telegram',
+      en: '🔗 Enter your Telegram channel link',
+      it: '🔗 Inserisci il link del tuo canale Telegram',
+      es: '🔗 Introduce el enlace de tu canal de Telegram',
+      de: '🔗 Geben Sie den Link zu Ihrem Telegram-Kanal ein'
     },
     'registration.instagramQuestion': {
-      fr: '📸 Entrez votre lien Instagram (https://www.instagram.com/username)',
-      en: '📸 Enter your Instagram link (https://www.instagram.com/username)',
-      it: '📸 Inserisci il tuo link Instagram (https://www.instagram.com/username)',
-      es: '📸 Introduce tu enlace de Instagram (https://www.instagram.com/username)',
-      de: '📸 Geben Sie Ihren Instagram-Link ein (https://www.instagram.com/username)'
+      fr: '📸 Entrez votre lien Instagram',
+      en: '📸 Enter your Instagram link',
+      it: '📸 Inserisci il tuo link Instagram',
+      es: '📸 Introduce tu enlace de Instagram',
+      de: '📸 Geben Sie Ihren Instagram-Link ein'
     },
     'registration.skipStep': {
       fr: '⏭️ Passer cette étape',
@@ -595,25 +595,25 @@ const translations = {
 
     // === QUESTIONS DÉTAILLÉES ===
     'registration.potatoQuestion': {
-      fr: '🥔 Entrez votre lien Potato Chat (https://potato.chat/username)',
-      en: '🥔 Enter your Potato Chat link (https://potato.chat/username)',
-      it: '🥔 Inserisci il tuo link Potato Chat (https://potato.chat/username)',
-      es: '🥔 Introduce tu enlace de Potato Chat (https://potato.chat/username)',
-      de: '🥔 Geben Sie Ihren Potato Chat-Link ein (https://potato.chat/username)'
+      fr: '🥔 Entrez votre lien Potato Chat',
+      en: '🥔 Enter your Potato Chat link',
+      it: '🥔 Inserisci il tuo link Potato Chat',
+      es: '🥔 Introduce tu enlace de Potato Chat',
+      de: '🥔 Geben Sie Ihren Potato Chat-Link ein'
     },
     'registration.snapchatQuestion': {
-      fr: '👻 Entrez votre lien Snapchat (https://www.snapchat.com/add/username)',
-      en: '👻 Enter your Snapchat link (https://www.snapchat.com/add/username)',
-      it: '👻 Inserisci il tuo link Snapchat (https://www.snapchat.com/add/username)',
-      es: '👻 Introduce tu enlace de Snapchat (https://www.snapchat.com/add/username)',
-      de: '👻 Geben Sie Ihren Snapchat-Link ein (https://www.snapchat.com/add/username)'
+      fr: '👻 Entrez votre lien Snapchat',
+      en: '👻 Enter your Snapchat link',
+      it: '👻 Inserisci il tuo link Snapchat',
+      es: '👻 Introduce tu enlace de Snapchat',
+      de: '👻 Geben Sie Ihren Snapchat-Link ein'
     },
     'registration.whatsappQuestion': {
-      fr: '💬 Entrez votre lien WhatsApp (https://wa.me/votre_numero)',
-      en: '💬 Enter your WhatsApp link (https://wa.me/your_number)',
-      it: '💬 Inserisci il tuo link WhatsApp (https://wa.me/tuo_numero)',
-      es: '💬 Introduce tu enlace de WhatsApp (https://wa.me/tu_numero)',
-      de: '💬 Geben Sie Ihren WhatsApp-Link ein (https://wa.me/ihre_nummer)'
+      fr: '💬 Entrez votre lien WhatsApp',
+      en: '💬 Enter your WhatsApp link',
+      it: '💬 Inserisci il tuo link WhatsApp',
+      es: '💬 Introduce tu enlace de WhatsApp',
+      de: '💬 Geben Sie Ihren WhatsApp-Link ein'
     },
     'registration.signalQuestion': {
       fr: '🔒 Entrez votre lien Signal ou nom d\'utilisateur Signal',
@@ -630,11 +630,11 @@ const translations = {
       de: '🛡️ Geben Sie Ihre Session-ID ein'
     },
     'registration.threemaQuestion': {
-      fr: '🔐 Entrez votre lien Threema (https://threema.id/votre_id)',
-      en: '🔐 Enter your Threema link (https://threema.id/your_id)',
-      it: '🔐 Inserisci il tuo link Threema (https://threema.id/tuo_id)',
-      es: '🔐 Introduce tu enlace de Threema (https://threema.id/tu_id)',
-      de: '🔐 Geben Sie Ihren Threema-Link ein (https://threema.id/ihre_id)'
+      fr: '🔐 Entrez votre lien Threema',
+      en: '🔐 Enter your Threema link',
+      it: '🔐 Inserisci il tuo link Threema',
+      es: '🔐 Introduce tu enlace de Threema',
+      de: '🔐 Geben Sie Ihren Threema-Link ein'
     },
     'registration.telegramBotQuestion': {
       fr: '🤖 Entrez votre bot Telegram (@username ou t.me/botname)',
