@@ -497,6 +497,7 @@ const handleFormMessage = async (ctx) => {
         
         const sessionKeyboard = Markup.inlineKeyboard([
           [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_session')],
+          [Markup.button.callback(getTranslation('registration.goBack', currentLang, customTranslations), 'go_back_threema')],
           [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
         ]);
         
@@ -3003,12 +3004,12 @@ const askMeetupPostalForCountry = async (ctx, countryIndex) => {
   const currentLang = config?.languages?.currentLanguage || 'fr';
   const customTranslations = config?.languages?.translations;
   
-  const message = `🛠️ **FORMULAIRE D'INSCRIPTION – FindYourPlug**\n\n` +
+  const message = `🛠️ FORMULAIRE D'INSCRIPTION – FindYourPlug\n\n` +
     `⸻\n\n` +
-    `🤝 **Service "Meet Up" - Codes postaux**\n\n` +
-    `📍 **Pays actuel :** ${currentCountry}\n` +
-    `📊 **Progression :** ${countryIndex + 1}/${countries.length}\n\n` +
-    `Entrez le code postal pour **${currentCountry}** :\n\n` +
+    `🤝 Service "Meet Up" - Codes postaux\n\n` +
+    `📍 Pays actuel : ${currentCountry}\n` +
+    `📊 Progression : ${countryIndex + 1}/${countries.length}\n\n` +
+    `Entrez le code postal pour ${currentCountry} :\n\n` +
     `Ensuite, cliquez sur "valider"`;
   
   userForm.step = 'waiting_meetup_postal';
@@ -3054,12 +3055,12 @@ const askDeliveryPostalForCountry = async (ctx, countryIndex) => {
   const currentLang = config?.languages?.currentLanguage || 'fr';
   const customTranslations = config?.languages?.translations;
   
-  const message = `🛠️ **FORMULAIRE D'INSCRIPTION – FindYourPlug**\n\n` +
+  const message = `🛠️ FORMULAIRE D'INSCRIPTION – FindYourPlug\n\n` +
     `⸻\n\n` +
-    `🚚 **Service "Livraison" - Codes postaux**\n\n` +
-    `📍 **Pays actuel :** ${currentCountry}\n` +
-    `📊 **Progression :** ${countryIndex + 1}/${countries.length}\n\n` +
-    `Entrez le code postal pour **${currentCountry}** :\n\n` +
+    `🚚 Service "Livraison" - Codes postaux\n\n` +
+    `📍 Pays actuel : ${currentCountry}\n` +
+    `📊 Progression : ${countryIndex + 1}/${countries.length}\n\n` +
+    `Entrez le code postal pour ${currentCountry} :\n\n` +
     `Ensuite, cliquez sur "valider"`;
   
   userForm.step = 'waiting_delivery_postal';
@@ -3329,11 +3330,11 @@ const handleValidateMeetupPostal = async (ctx, countryIndex) => {
     userForms.set(userId, userForm);
     
     // Mettre à jour le message pour montrer qu'on attend la saisie
-    const message = `🛠️ **FORMULAIRE D'INSCRIPTION – FindYourPlug**\n\n` +
+    const message = `🛠️ FORMULAIRE D'INSCRIPTION – FindYourPlug\n\n` +
       `⸻\n\n` +
-      `🤝 **Service "Meet Up" - Saisie du code postal**\n\n` +
-      `📍 **Pays :** ${currentCountry}\n\n` +
-      `💬 **Tapez maintenant le code postal pour ${currentCountry} :**\n\n` +
+      `🤝 Service "Meet Up" - Saisie du code postal\n\n` +
+      `📍 Pays : ${currentCountry}\n\n` +
+      `💬 Tapez maintenant le code postal pour ${currentCountry} :\n\n` +
       `Exemple : 75001, 13001, etc.`;
     
     const keyboard = Markup.inlineKeyboard([
@@ -3379,11 +3380,11 @@ const handleValidateDeliveryPostal = async (ctx, countryIndex) => {
     userForms.set(userId, userForm);
     
     // Mettre à jour le message pour montrer qu'on attend la saisie
-    const message = `🛠️ **FORMULAIRE D'INSCRIPTION – FindYourPlug**\n\n` +
+    const message = `🛠️ FORMULAIRE D'INSCRIPTION – FindYourPlug\n\n` +
       `⸻\n\n` +
-      `🚚 **Service "Livraison" - Saisie du code postal**\n\n` +
-      `📍 **Pays :** ${currentCountry}\n\n` +
-      `💬 **Tapez maintenant le code postal pour ${currentCountry} :**\n\n` +
+      `🚚 Service "Livraison" - Saisie du code postal\n\n` +
+      `📍 Pays : ${currentCountry}\n\n` +
+      `💬 Tapez maintenant le code postal pour ${currentCountry} :\n\n` +
       `Exemple : 75001, 13001, etc.`;
     
     const keyboard = Markup.inlineKeyboard([

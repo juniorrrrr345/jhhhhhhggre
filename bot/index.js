@@ -60,7 +60,19 @@ const {
   handleSkipStep,
   submitApplication,
   handleGoBack,
-  userForms
+  userForms,
+  askWorkingCountries,
+  handleWorkingCountrySelection,
+  handleConfirmWorkingCountries,
+  handleNewServiceMeetup,
+  handleNewServiceDelivery,
+  handleNewServiceShipping,
+  handleValidateMeetupPostal,
+  handleValidateDeliveryPostal,
+  askMeetupPostalForCountry,
+  askDeliveryPostalForCountry,
+  askServices,
+  handleFinishServicesSelection
 } = require('./src/handlers/applicationHandler');
 const {
   handleCheckApplicationStatus,
@@ -1202,6 +1214,99 @@ bot.catch(async (err, ctx) => {
     console.error('❌ Impossible de répondre à l\'erreur:', replyError.message);
   }
 });
+
+// ============================================
+// NOUVEAUX HANDLERS POUR FORMULAIRE D'INSCRIPTION MULTI-ÉTAPES
+// ============================================
+
+// Handlers pour les pays de travail
+bot.action(/^working_country_(.+)$/, handleWorkingCountrySelection);
+bot.action('confirm_working_countries', handleConfirmWorkingCountries);
+bot.action('go_back_working_countries', askWorkingCountries);
+
+// Handlers pour les services
+bot.action('new_service_meetup', handleNewServiceMeetup);
+bot.action('new_service_delivery', handleNewServiceDelivery);
+bot.action('new_service_shipping', handleNewServiceShipping);
+bot.action('go_back_service_selection', async (ctx) => {
+  try {
+    await ctx.answerCbQuery();
+    const userId = ctx.from.id;
+    const userForm = userForms.get(userId);
+    if (userForm) {
+      userForm.step = 'services';
+      userForms.set(userId, userForm);
+    }
+    await askServices(ctx);
+  } catch (error) {
+    console.error('Erreur go_back_service_selection:', error);
+    await ctx.answerCbQuery('❌ Une erreur temporaire est survenue.');
+  }
+});
+
+// Handlers pour les codes postaux Meet Up
+bot.action(/^validate_meetup_postal_(\d+)$/, handleValidateMeetupPostal);
+bot.action(/^go_back_meetup_postal_(\d+)$/, async (ctx) => {
+  try {
+    await ctx.answerCbQuery();
+    const countryIndex = parseInt(ctx.match[1]);
+    const userId = ctx.from.id;
+    const userForm = userForms.get(userId);
+    
+    if (!userForm) {
+      return await ctx.answerCbQuery('❌ Session expirée');
+    }
+    
+    if (countryIndex === 0) {
+      // Premier pays - retour aux services ou décocher le service
+      userForm.data.selectedServices = userForm.data.selectedServices.filter(s => s !== 'meetup');
+      userForm.step = 'services';
+      userForms.set(userId, userForm);
+      await askServices(ctx);
+    } else {
+      // Pays suivant - retour au pays précédent
+      await askMeetupPostalForCountry(ctx, countryIndex - 1);
+    }
+  } catch (error) {
+    console.error('Erreur go_back_meetup_postal:', error);
+    await ctx.answerCbQuery('❌ Une erreur temporaire est survenue.');
+  }
+});
+
+// Handlers pour les codes postaux Livraison
+bot.action(/^validate_delivery_postal_(\d+)$/, handleValidateDeliveryPostal);
+bot.action(/^go_back_delivery_postal_(\d+)$/, async (ctx) => {
+  try {
+    await ctx.answerCbQuery();
+    const countryIndex = parseInt(ctx.match[1]);
+    const userId = ctx.from.id;
+    const userForm = userForms.get(userId);
+    
+    if (!userForm) {
+      return await ctx.answerCbQuery('❌ Session expirée');
+    }
+    
+    if (countryIndex === 0) {
+      // Premier pays - retour aux services ou décocher le service
+      userForm.data.selectedServices = userForm.data.selectedServices.filter(s => s !== 'delivery');
+      userForm.step = 'services';
+      userForms.set(userId, userForm);
+      await askServices(ctx);
+    } else {
+      // Pays suivant - retour au pays précédent
+      await askDeliveryPostalForCountry(ctx, countryIndex - 1);
+    }
+  } catch (error) {
+    console.error('Erreur go_back_delivery_postal:', error);
+    await ctx.answerCbQuery('❌ Une erreur temporaire est survenue.');
+  }
+});
+
+// Handler pour terminer la sélection des services
+bot.action('finish_services_selection', handleFinishServicesSelection);
+
+// Handler pour le début de l'application
+bot.action('start_application', handleStartApplication);
 
 // ============================================
 // API REST POUR LE PANEL ADMIN
