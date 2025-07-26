@@ -695,7 +695,13 @@ const handleFormMessage = async (ctx) => {
         userForm.data.meetupPostalCodes[meetupCurrentCountry] = text;
         userForms.set(userId, userForm);
         
-        await ctx.reply(`✅ Code postal ${text} validé pour ${meetupCurrentCountry}`);
+        // Supprimer le message de l'utilisateur pour garder le chat propre
+        try {
+          await ctx.deleteMessage();
+        } catch (error) {
+          // Ignorer l'erreur si on ne peut pas supprimer
+        }
+        
         await askMeetupPostalForCountry(ctx, meetupCountryIndex + 1);
         break;
         
@@ -710,7 +716,13 @@ const handleFormMessage = async (ctx) => {
         userForm.data.deliveryPostalCodes[deliveryCurrentCountry] = text;
         userForms.set(userId, userForm);
         
-        await ctx.reply(`✅ Code postal ${text} validé pour ${deliveryCurrentCountry}`);
+        // Supprimer le message de l'utilisateur pour garder le chat propre
+        try {
+          await ctx.deleteMessage();
+        } catch (error) {
+          // Ignorer l'erreur si on ne peut pas supprimer
+        }
+        
         await askDeliveryPostalForCountry(ctx, deliveryCountryIndex + 1);
         break;
     }
