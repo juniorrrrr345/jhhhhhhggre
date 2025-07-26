@@ -545,8 +545,8 @@ const replyWithStep = async (ctx, step) => {
         `\t•\tSession (identifiant libre)\n` +
         `\t•\tThreema`;
       keyboard = Markup.inlineKeyboard([
-        [Markup.button.callback('⏭️ Passer cette étape', 'skip_potato')],
-        [Markup.button.callback('❌ Annuler', 'cancel_application')]
+        [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_potato')],
+        [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
       ]);
       break;
       
@@ -558,8 +558,8 @@ const replyWithStep = async (ctx, step) => {
         `Entrez votre lien **Snapchat** (commençant par https://)\n\n` +
         `Plateformes restantes : Snapchat, WhatsApp, Signal, Session, Threema`;
       keyboard = Markup.inlineKeyboard([
-        [Markup.button.callback('⏭️ Passer cette étape', 'skip_snapchat')],
-        [Markup.button.callback('❌ Annuler', 'cancel_application')]
+        [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_snapchat')],
+        [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
       ]);
       break;
       
@@ -571,8 +571,8 @@ const replyWithStep = async (ctx, step) => {
         `Entrez votre lien **WhatsApp** (commençant par https://)\n\n` +
         `Plateformes restantes : WhatsApp, Signal, Session, Threema`;
       keyboard = Markup.inlineKeyboard([
-        [Markup.button.callback('⏭️ Passer cette étape', 'skip_whatsapp')],
-        [Markup.button.callback('❌ Annuler', 'cancel_application')]
+        [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_whatsapp')],
+        [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
       ]);
       break;
       
@@ -584,8 +584,8 @@ const replyWithStep = async (ctx, step) => {
         `Entrez votre lien **Signal** (commençant par https://)\n\n` +
         `Plateformes restantes : Signal, Session, Threema`;
       keyboard = Markup.inlineKeyboard([
-        [Markup.button.callback('⏭️ Passer cette étape', 'skip_signal')],
-        [Markup.button.callback('❌ Annuler', 'cancel_application')]
+        [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_signal')],
+        [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
       ]);
       break;
       
@@ -597,8 +597,8 @@ const replyWithStep = async (ctx, step) => {
         `Entrez votre **Session** (identifiant libre)\n\n` +
         `Plateformes restantes : Session, Threema`;
       keyboard = Markup.inlineKeyboard([
-        [Markup.button.callback('⏭️ Passer cette étape', 'skip_session')],
-        [Markup.button.callback('❌ Annuler', 'cancel_application')]
+        [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_session')],
+        [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
       ]);
       break;
       
@@ -610,8 +610,8 @@ const replyWithStep = async (ctx, step) => {
         `Entrez votre lien **Threema** (commençant par https://)\n\n` +
         `Dernière plateforme !`;
       keyboard = Markup.inlineKeyboard([
-        [Markup.button.callback('⏭️ Passer cette étape', 'skip_threema')],
-        [Markup.button.callback('❌ Annuler', 'cancel_application')]
+        [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_threema')],
+        [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
       ]);
       break;
       
@@ -689,8 +689,8 @@ const askTelegramChannel = async (ctx) => {
     `⚠️ Tu peux aussi passer cette étape.`;
   
   const keyboard = Markup.inlineKeyboard([
-    [Markup.button.callback('⏭️ Passer cette étape', 'skip_telegram_channel')],
-    [Markup.button.callback('❌ Annuler', 'cancel_application')]
+            [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_telegram_channel')],
+    [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
   ]);
   
   await safeEditMessage(ctx, message, {
@@ -708,8 +708,8 @@ const askInstagram = async (ctx) => {
     `⚠️ Tu peux aussi passer cette étape.`;
   
   const keyboard = Markup.inlineKeyboard([
-    [Markup.button.callback('⏭️ Passer cette étape', 'skip_instagram')],
-    [Markup.button.callback('❌ Annuler', 'cancel_application')]
+            [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_instagram')],
+    [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
   ]);
   
   await safeEditMessage(ctx, message, {
@@ -1528,6 +1528,50 @@ const getServicesText = (services) => {
   return servicesList.join(', ');
 };
 
+// Demander départements pour Meetup
+const askDepartmentsMeetup = async (ctx) => {
+  const Config = require('../models/Config');
+  const config = await Config.findById('main');
+  const currentLang = config?.languages?.currentLanguage || 'fr';
+  const customTranslations = config?.languages?.translations;
+
+  const message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
+    `⸻\n\n` +
+    `${getTranslation('registration.step13', currentLang, customTranslations)}\n\n` +
+    `${getTranslation('registration.departmentsMeetupQuestion', currentLang, customTranslations)}`;
+  
+  const keyboard = Markup.inlineKeyboard([
+    [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
+  ]);
+  
+  await safeEditMessage(ctx, message, {
+    reply_markup: keyboard.reply_markup,
+    parse_mode: 'Markdown'
+  });
+};
+
+// Demander départements pour Livraison
+const askDepartmentsDelivery = async (ctx) => {
+  const Config = require('../models/Config');
+  const config = await Config.findById('main');
+  const currentLang = config?.languages?.currentLanguage || 'fr';
+  const customTranslations = config?.languages?.translations;
+
+  const message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
+    `⸻\n\n` +
+    `${getTranslation('registration.step14', currentLang, customTranslations)}\n\n` +
+    `${getTranslation('registration.departmentsDeliveryQuestion', currentLang, customTranslations)}`;
+  
+  const keyboard = Markup.inlineKeyboard([
+    [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
+  ]);
+  
+  await safeEditMessage(ctx, message, {
+    reply_markup: keyboard.reply_markup,
+    parse_mode: 'Markdown'
+  });
+};
+
 module.exports = {
   handleStartApplication,
   handleFormMessage,
@@ -1539,6 +1583,8 @@ module.exports = {
   handleCancelApplication,
   submitApplication,
   askTelegramBot,
+  askDepartmentsMeetup,
+  askDepartmentsDelivery,
   userForms,
   lastBotMessages
 };
