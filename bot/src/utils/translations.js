@@ -887,6 +887,22 @@ const translations = {
       de: 'ℹ️ Die Vorabgenehmigung kann 24 bis 48 Stunden dauern.\nDu wirst automatisch über die Entscheidung benachrichtigt.'
     },
 
+    // === DÉPARTEMENTS ===
+    'registration.departmentsMeetupQuestion': {
+      fr: '📍 Indique les départements pour le **Meetup** (ex: 75, 92, 93) :',
+      en: '📍 Indicate the departments for **Meetup** (ex: 75, 92, 93):',
+      it: '📍 Indica i dipartimenti per **Meetup** (es: 75, 92, 93):',
+      es: '📍 Indica los departamentos para **Meetup** (ej: 75, 92, 93):',
+      de: '📍 Geben Sie die Departements für **Meetup** an (z.B.: 75, 92, 93):'
+    },
+    'registration.departmentsDeliveryQuestion': {
+      fr: '🚚 Indique les départements pour la **Livraison** (ex: 75, 94...) :',
+      en: '🚚 Indicate the departments for **Delivery** (ex: 75, 94...):',
+      it: '🚚 Indica i dipartimenti per la **Consegna** (es: 75, 94...):',
+      es: '🚚 Indica los departamentos para **Entrega** (ej: 75, 94...):',
+      de: '🚚 Geben Sie die Departements für **Lieferung** an (z.B.: 75, 94...):'
+    },
+
     // === SERVICES ===
     'service_delivery': {
       fr: 'Livraison',

@@ -247,7 +247,7 @@ const handleFormMessage = async (ctx) => {
           userForm.step = 'telegram';
           userForms.set(userId, userForm);
           
-          await askTelegramReply(ctx);
+          await askTelegram(ctx);
           break;
         
               case 'telegram':
@@ -376,7 +376,7 @@ const handleFormMessage = async (ctx) => {
           userForm.step = 'departments_delivery';
           userForms.set(userId, userForm);
           
-          await replyWithStep(ctx, 'departments_delivery');
+          await askDepartmentsDelivery(ctx);
         } else {
           // Sinon passer directement à la photo
           userForm.step = 'photo';
@@ -651,6 +651,28 @@ const replyWithStep = async (ctx, step) => {
     console.error('Aucun message généré pour l\'étape:', step);
     throw new Error(`Étape non supportée: ${step}`);
   }
+};
+
+// Demander Telegram
+const askTelegram = async (ctx) => {
+  const Config = require('../models/Config');
+  const config = await Config.findById('main');
+  const currentLang = config?.languages?.currentLanguage || 'fr';
+  const customTranslations = config?.languages?.translations;
+
+  const message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
+    `⸻\n\n` +
+    `${getTranslation('registration.step2', currentLang, customTranslations)}\n\n` +
+    `${getTranslation('registration.telegramQuestion', currentLang, customTranslations)}`;
+  
+  const keyboard = Markup.inlineKeyboard([
+    [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
+  ]);
+  
+  await safeEditMessage(ctx, message, {
+    reply_markup: keyboard.reply_markup,
+    parse_mode: 'Markdown'
+  });
 };
 
 // Version reply pour éviter les conflits d'édition (supprime l'ancien message)
@@ -1077,18 +1099,18 @@ const handleServicesDone = async (ctx) => {
       return await ctx.answerCbQuery('❌ Tu dois sélectionner au moins un service');
     }
     
-    // Si meetup est sélectionné, demander les départements meetup
-    if (services.meetup.enabled) {
-      userForm.step = 'departments_meetup';
-      userForms.set(userId, userForm);
-      
-      await replyWithStep(ctx, 'departments_meetup');
-    } else {
-      // Sinon passer directement à la photo
-      userForm.step = 'photo';
-      userForms.set(userId, userForm);
-      await askPhoto(ctx);
-    }
+            // Si meetup est sélectionné, demander les départements meetup
+        if (services.meetup.enabled) {
+          userForm.step = 'departments_meetup';
+          userForms.set(userId, userForm);
+          
+          await askDepartmentsMeetup(ctx);
+        } else {
+          // Sinon passer directement à la photo
+          userForm.step = 'photo';
+          userForms.set(userId, userForm);
+          await askPhoto(ctx);
+        }
     
     await ctx.answerCbQuery();
     
