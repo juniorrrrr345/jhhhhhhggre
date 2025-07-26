@@ -41,38 +41,8 @@ export default function UserAnalytics() {
       setStats(prev => ({ ...prev, loading: true }))
       setNextUpdateIn(30) // Reset le compteur lors de l'actualisation manuelle
       
-      // DIRECT fetch avec gestion CORS complète
-      console.log('🚀 Tentative direct fetch...')
-      
-      const response = await fetch('https://jhhhhhhggre.onrender.com/api/admin/user-analytics?timeRange=' + timeRange, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        },
-        mode: 'cors',
-        credentials: 'omit'
-      })
-      
-      console.log(`📡 Response status: ${response.status}`)
-      console.log(`📡 Response headers:`, response.headers)
-      
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`)
-      }
-      
-      const data = await response.json()
-      console.log('✅ RAW API DATA:', JSON.stringify(data, null, 2))
-      
-      // Vérification des données
-      if (!data || typeof data !== 'object') {
-        throw new Error('Données invalides reçues')
-      }
-      
-      const apiResponse = {
-        ok: true,
-        data: data
-      }
+      const adminToken = localStorage.getItem('adminToken')
+      const apiResponse = await api.get(`admin/user-analytics?timeRange=${timeRange}`, adminToken)
       console.log('📊 Response API user-analytics:', apiResponse)
         
         if (apiResponse.ok && apiResponse.data) {
