@@ -1157,8 +1157,8 @@ const askInstagram = async (ctx) => {
     `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
   
   const keyboard = Markup.inlineKeyboard([
-    [Markup.button.callback(getTranslation('registration.goBack', currentLang, customTranslations), 'go_back_session')],
     [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_instagram')],
+    [Markup.button.callback(getTranslation('registration.goBack', currentLang, customTranslations), 'go_back_session')],
     [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
   ]);
   
@@ -1209,8 +1209,8 @@ const askSnapchat = async (ctx) => {
     `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
   
   const keyboard = Markup.inlineKeyboard([
-    [Markup.button.callback(getTranslation('registration.goBack', currentLang, customTranslations), 'go_back_telegram')],
     [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_snapchat')],
+    [Markup.button.callback(getTranslation('registration.goBack', currentLang, customTranslations), 'go_back_telegram')],
     [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
   ]);
   
@@ -1239,11 +1239,11 @@ const askWhatsApp = async (ctx) => {
     
     console.log(`📝 askWhatsApp: Message prepared, length=${message.length}`);
     
-    const keyboard = Markup.inlineKeyboard([
-      [Markup.button.callback(getTranslation('registration.goBack', currentLang, customTranslations), 'go_back_signal')],
-      [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_whatsapp')],
-      [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
-    ]);
+      const keyboard = Markup.inlineKeyboard([
+    [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_whatsapp')],
+    [Markup.button.callback(getTranslation('registration.goBack', currentLang, customTranslations), 'go_back_signal')],
+    [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
+  ]);
     
     console.log(`⌨️ askWhatsApp: Keyboard created`);
     
@@ -1274,8 +1274,8 @@ const askSignal = async (ctx) => {
     `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
   
   const keyboard = Markup.inlineKeyboard([
-    [Markup.button.callback(getTranslation('registration.goBack', currentLang, customTranslations), 'go_back_potato')],
     [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_signal')],
+    [Markup.button.callback(getTranslation('registration.goBack', currentLang, customTranslations), 'go_back_potato')],
     [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
   ]);
   
@@ -1300,8 +1300,8 @@ const askSession = async (ctx) => {
     `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
   
   const keyboard = Markup.inlineKeyboard([
-    [Markup.button.callback(getTranslation('registration.goBack', currentLang, customTranslations), 'go_back_threema')],
     [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_session')],
+    [Markup.button.callback(getTranslation('registration.goBack', currentLang, customTranslations), 'go_back_threema')],
     [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
   ]);
   
@@ -1326,8 +1326,8 @@ const askThreema = async (ctx) => {
     `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
   
   const keyboard = Markup.inlineKeyboard([
-    [Markup.button.callback(getTranslation('registration.goBack', currentLang, customTranslations), 'go_back_whatsapp')],
     [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_threema')],
+    [Markup.button.callback(getTranslation('registration.goBack', currentLang, customTranslations), 'go_back_whatsapp')],
     [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
   ]);
   
@@ -1353,8 +1353,8 @@ const askTelegramBot = async (ctx) => {
     `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
   
   const keyboard = Markup.inlineKeyboard([
-    [Markup.button.callback(getTranslation('registration.goBack', currentLang, customTranslations), 'go_back_instagram')],
     [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_telegram_bot')],
+    [Markup.button.callback(getTranslation('registration.goBack', currentLang, customTranslations), 'go_back_instagram')],
     [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
   ]);
   
