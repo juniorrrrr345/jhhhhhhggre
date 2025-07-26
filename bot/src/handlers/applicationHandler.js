@@ -231,34 +231,10 @@ const handleFormMessage = async (ctx) => {
           }
 
           userForm.data.telegram = text;
-          userForm.step = 'telegram_channel';
-          userForms.set(userId, userForm);
-          
-          await replyWithStep(ctx, 'telegram_channel');
-          break;
-          
-        case 'telegram_channel':
-          if (!text.includes('t.me/')) {
-            return await ctx.reply(getTranslation('registration.error.telegramChannelFormat', currentLang, customTranslations));
-          }
-
-          userForm.data.telegramChannel = text;
-          userForm.step = 'instagram';
-          userForms.set(userId, userForm);
-          
-          await replyWithStep(ctx, 'instagram');
-          break;
-        
-              case 'instagram':
-          if (!text.startsWith('https://www.instagram.com/') && !text.startsWith('@')) {
-            return await ctx.reply(getTranslation('registration.error.instagramFormat', currentLang, customTranslations));
-          }
-
-          userForm.data.instagram = text;
           userForm.step = 'potato';
           userForms.set(userId, userForm);
           
-          await replyWithStep(ctx, 'potato');
+          await askPotato(ctx);
           break;
         
               case 'potato':
@@ -323,17 +299,6 @@ const handleFormMessage = async (ctx) => {
         }
 
         userForm.data.threema = text;
-        userForm.step = 'telegram_bot';
-        
-        await askTelegramBot(ctx);
-        break;
-
-      case 'telegram_bot':
-        if (text.length < 2) {
-          return await ctx.reply(getTranslation('registration.error.telegramBotFormat', currentLang, customTranslations));
-        }
-
-        userForm.data.telegramBot = text;
         userForm.step = 'country';
         
         await askCountry(ctx);
