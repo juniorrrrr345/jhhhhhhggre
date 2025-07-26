@@ -57,7 +57,6 @@ const COUNTRIES = [
   { code: 'CH', name: 'Suisse', flag: '🇨🇭' },
   { code: 'SE', name: 'Suède', flag: '🇸🇪' },
   { code: 'UA', name: 'Ukraine', flag: '🇺🇦' },
-  { code: 'VA', name: 'Vatican', flag: '🇻🇦' },
   
   // PAYS SPÉCIAUX (hors Europe)
   { code: 'CA', name: 'Canada', flag: '🇨🇦' },
