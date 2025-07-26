@@ -530,18 +530,25 @@ const translations = {
       de: '🟦 Schritt 8: Session'
     },
     'registration.step9': {
-      fr: '🟦 Étape 9 : Bot Telegram',
-      en: '🟦 Step 9: Telegram Bot',
-      it: '🟦 Fase 9: Bot Telegram',
-      es: '🟦 Paso 9: Bot Telegram',
-      de: '🟦 Schritt 9: Telegram Bot'
+      fr: '🟦 Étape 9 : Instagram',
+      en: '🟦 Step 9: Instagram',
+      it: '🟦 Fase 9: Instagram',
+      es: '🟦 Paso 9: Instagram',
+      de: '🟦 Schritt 9: Instagram'
+    },
+    'registration.step9Bot': {
+      fr: '🟦 Étape 10 : Bot Telegram',
+      en: '🟦 Step 10: Telegram Bot',
+      it: '🟦 Fase 10: Bot Telegram',
+      es: '🟦 Paso 10: Bot Telegram',
+      de: '🟦 Schritt 10: Telegram Bot'
     },
     'registration.step10': {
-      fr: '🟦 Étape 10 : Logo de boutique',
-      en: '🟦 Step 10: Shop logo',
-      it: '🟦 Fase 10: Logo del negozio',
-      es: '🟦 Paso 10: Logo de la tienda',
-      de: '🟦 Schritt 10: Shop-Logo'
+      fr: '🟦 Étape 11 : Logo de boutique',
+      en: '🟦 Step 11: Shop logo',
+      it: '🟦 Fase 11: Logo del negozio',
+      es: '🟦 Paso 11: Logo de la tienda',
+      de: '🟦 Schritt 11: Shop-Logo'
     },
     'registration.step11': {
       fr: '🟦 Étape 11 : Confirmation',

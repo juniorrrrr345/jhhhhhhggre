@@ -483,7 +483,7 @@ const handleFormMessage = async (ctx) => {
         // Éditer le message existant pour montrer l'étape suivante
         const telegramBotFromInstagramMessage = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
           `⸻\n\n` +
-          `${getTranslation('registration.step9', currentLang, customTranslations)}\n\n` +
+          `${getTranslation('registration.step9Bot', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.telegramBotQuestion', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.telegramBotExample', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
@@ -514,6 +514,7 @@ const handleFormMessage = async (ctx) => {
           `${getTranslation('registration.shopPhotoInstruction', currentLang, customTranslations)}`;
         
         const photoFromTelegramBotKeyboard = Markup.inlineKeyboard([
+          [Markup.button.callback(getTranslation('registration.goBack', currentLang, customTranslations), 'go_back_telegram_bot')],
           [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
         ]);
         
