@@ -8,7 +8,7 @@ import Pagination from '../../components/Pagination'
 import ShopCard from '../../components/ShopCard'
 import LanguageSelector, { useTranslation, getCurrentLanguage } from '../../components/LanguageSelector'
 import ShopNavigation from '../../components/ShopNavigation'
-import postalCodeService from '../../lib/postalCodeService'
+import postalCodeService from '../../lib/postalCodeServiceVercel'
 
 export default function ShopSearch() {
   const [plugs, setPlugs] = useState([])

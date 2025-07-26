@@ -4,7 +4,7 @@ import Layout from '../../../components/Layout'
 import toast from 'react-hot-toast'
 import { simpleApi } from '../../../lib/api-simple'
 import { getRobustSync } from '../../../lib/robust-sync'
-import postalCodeService from '../../../lib/postalCodeService'
+import postalCodeService from '../../../lib/postalCodeServiceVercel'
 import {
   PlusIcon,
   PhotoIcon,
