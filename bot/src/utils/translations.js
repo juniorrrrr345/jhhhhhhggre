@@ -750,6 +750,34 @@ const translations = {
       es: '❌ Proporciona un enlace de Threema válido (ej: https://threema.id/TUID). Inténtalo de nuevo:',
       de: '❌ Bitte geben Sie einen gültigen Threema-Link an (z.B.: https://threema.id/IHREID). Versuchen Sie es erneut:'
     },
+    'registration.error.technical': {
+      fr: 'Erreur technique',
+      en: 'Technical error',
+      it: 'Errore tecnico',
+      es: 'Error técnico',
+      de: 'Technischer Fehler'
+    },
+    'registration.error.submissionFailed': {
+      fr: 'Une erreur s\'est produite lors de l\'envoi de ta demande.',
+      en: 'An error occurred while sending your request.',
+      it: 'Si è verificato un errore durante l\'invio della richiesta.',
+      es: 'Se produjo un error al enviar tu solicitud.',
+      de: 'Beim Senden Ihrer Anfrage ist ein Fehler aufgetreten.'
+    },
+    'registration.error.tryAgainLater': {
+      fr: 'Tu peux réessayer dans quelques minutes.',
+      en: 'You can try again in a few minutes.',
+      it: 'Puoi riprovare tra qualche minuto.',
+      es: 'Puedes intentarlo de nuevo en unos minutos.',
+      de: 'Sie können es in ein paar Minuten erneut versuchen.'
+    },
+    'registration.error.contactSupport': {
+      fr: 'Si le problème persiste, contacte le support.',
+      en: 'If the problem persists, contact support.',
+      it: 'Se il problema persiste, contatta il supporto.',
+      es: 'Si el problema persiste, contacta al soporte.',
+      de: 'Wenn das Problem weiterhin besteht, wenden Sie sich an den Support.'
+    },
     'registration.error.telegramBotFormat': {
       fr: '❌ Merci de fournir un nom ou lien de bot Telegram valide (ex: @monbot_bot). Réessaie :',
       en: '❌ Please provide a valid Telegram bot name or link (ex: @mybot_bot). Try again:',
