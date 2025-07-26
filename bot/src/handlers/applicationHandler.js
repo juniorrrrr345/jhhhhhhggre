@@ -204,14 +204,15 @@ const handleFormMessage = async (ctx) => {
     // Ignorer l'erreur si on ne peut pas supprimer
   }
   
+  // Récupérer la langue pour les erreurs (en dehors du switch)
+  const Config = require('../models/Config');
+  const config = await Config.findById('main');
+  const currentLang = config?.languages?.currentLanguage || 'fr';
+  const customTranslations = config?.languages?.translations;
+
   try {
     switch (userForm.step) {
               case 'name':
-          // Récupérer la langue pour les erreurs
-          const Config = require('../models/Config');
-          const config = await Config.findById('main');
-          const currentLang = config?.languages?.currentLanguage || 'fr';
-          const customTranslations = config?.languages?.translations;
           
           if (text.length < 2) {
             return await ctx.reply(getTranslation('registration.error.nameLength', currentLang, customTranslations));
@@ -322,6 +323,17 @@ const handleFormMessage = async (ctx) => {
         }
 
         userForm.data.threema = text;
+        userForm.step = 'telegram_bot';
+        
+        await askTelegramBot(ctx);
+        break;
+
+      case 'telegram_bot':
+        if (text.length < 2) {
+          return await ctx.reply(getTranslation('registration.error.telegramBotFormat', currentLang, customTranslations));
+        }
+
+        userForm.data.telegramBot = text;
         userForm.step = 'country';
         
         await askCountry(ctx);
@@ -702,13 +714,13 @@ const askSnapchat = async (ctx) => {
   
   const keyboard = Markup.inlineKeyboard([
     [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_snapchat')],
-    [Markup.button.callback('❌ Annuler', 'cancel_application')]
+    [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
   ]);
   
   await safeEditMessage(ctx, message, {
     reply_markup: keyboard.reply_markup,
     parse_mode: 'Markdown'
-  });
+  }, true);
 };
 
 // Demander WhatsApp
@@ -732,7 +744,7 @@ const askWhatsApp = async (ctx) => {
   await safeEditMessage(ctx, message, {
     reply_markup: keyboard.reply_markup,
     parse_mode: 'Markdown'
-  });
+  }, true);
 };
 
 // Demander Signal
@@ -756,7 +768,7 @@ const askSignal = async (ctx) => {
   await safeEditMessage(ctx, message, {
     reply_markup: keyboard.reply_markup,
     parse_mode: 'Markdown'
-  });
+  }, true);
 };
 
 // Demander Session
@@ -780,7 +792,7 @@ const askSession = async (ctx) => {
   await safeEditMessage(ctx, message, {
     reply_markup: keyboard.reply_markup,
     parse_mode: 'Markdown'
-  });
+  }, true);
 };
 
 // Demander Threema
@@ -1068,12 +1080,40 @@ const askPhoto = async (ctx) => {
   }, true);
 };
 
+// Demander la photo de boutique
+const askShopPhoto = async (ctx) => {
+  const Config = require('../models/Config');
+  const config = await Config.findById('main');
+  const currentLang = config?.languages?.currentLanguage || 'fr';
+  const customTranslations = config?.languages?.translations;
+
+  const message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
+    `⸻\n\n` +
+    `${getTranslation('registration.step16', currentLang, customTranslations)}\n\n` +
+    `${getTranslation('registration.shopPhotoQuestion', currentLang, customTranslations)}\n\n` +
+    `${getTranslation('registration.shopPhotoInstruction', currentLang, customTranslations)}`;
+  
+  const keyboard = Markup.inlineKeyboard([
+    [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
+  ]);
+  
+  await safeEditMessage(ctx, message, {
+    reply_markup: keyboard.reply_markup,
+    parse_mode: 'Markdown'
+  }, true);
+};
+
 // Demander la confirmation
 const askConfirmation = async (ctx) => {
+  const Config = require('../models/Config');
+  const config = await Config.findById('main');
+  const currentLang = config?.languages?.currentLanguage || 'fr';
+  const customTranslations = config?.languages?.translations;
+  
   const userForm = userForms.get(ctx.from.id);
-  const message = `🛠️ **FORMULAIRE D'INSCRIPTION – FindYourPlug**\n\n` +
+  const message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
     `⸻\n\n` +
-    `🟢 **Étape 16 : Confirmation**\n\n` +
+    `${getTranslation('registration.step17', currentLang, customTranslations)}\n\n` +
     `✅ Voici le récapitulatif final :\n\n` +
     `• Nom de Plug : ${userForm.data.name}\n` +
     `• Telegram : ${userForm.data.telegram}\n` +
@@ -1081,7 +1121,9 @@ const askConfirmation = async (ctx) => {
     `• Services : ${getServicesText(userForm.data.services)}\n` +
     `${userForm.data.departmentsMeetup ? `• Meetup : ${userForm.data.departmentsMeetup}\n` : ''}` +
     `${userForm.data.departmentsDelivery ? `• Livraison : ${userForm.data.departmentsDelivery}\n` : ''}` +
-    `• Logo : ✔️ Reçu\n\n` +
+    `${userForm.data.telegramBot ? `• Bot Telegram : ${userForm.data.telegramBot}\n` : ''}` +
+    `• Logo : ✔️ Reçu\n` +
+    `• Photo boutique : ✔️ Reçu\n\n` +
     `Confirmer l'inscription ?`;
   
   const keyboard = Markup.inlineKeyboard([
@@ -1094,7 +1136,7 @@ const askConfirmation = async (ctx) => {
   await safeEditMessage(ctx, message, {
     reply_markup: keyboard.reply_markup,
     parse_mode: 'Markdown'
-  });
+  }, true);
 };
 
 // Gestionnaire pour les photos
@@ -1103,7 +1145,7 @@ const handlePhoto = async (ctx) => {
     const userId = ctx.from.id;
     const userForm = userForms.get(userId);
     
-    if (!userForm || userForm.step !== 'photo') {
+    if (!userForm || (userForm.step !== 'photo' && userForm.step !== 'shop_photo')) {
       return;
     }
     
@@ -1115,22 +1157,38 @@ const handlePhoto = async (ctx) => {
     // Récupérer la photo de meilleure qualité
     const photo = ctx.message.photo[ctx.message.photo.length - 1];
     
-    // Sauvegarder les infos de la photo
-    userForm.data.photo = {
-      fileId: photo.file_id,
-      fileSize: photo.file_size,
-      width: photo.width,
-      height: photo.height
-    };
-    
-    userForm.step = 'confirmation';
-    userForms.set(userId, userForm);
-    
-    // Confirmer réception et passer à la confirmation
-    await ctx.reply('✅ Photo reçue !');
-    
-    // Passer à l'étape de confirmation
-    await askConfirmation(ctx);
+    if (userForm.step === 'photo') {
+      // Logo de boutique
+      userForm.data.photo = {
+        fileId: photo.file_id,
+        fileSize: photo.file_size,
+        width: photo.width,
+        height: photo.height
+      };
+      
+      userForm.step = 'shop_photo';
+      userForms.set(userId, userForm);
+      
+      // Confirmer réception et passer à la photo de boutique
+      await ctx.reply('✅ Logo reçu !');
+      await askShopPhoto(ctx);
+      
+    } else if (userForm.step === 'shop_photo') {
+      // Photo de boutique
+      userForm.data.shopPhoto = {
+        fileId: photo.file_id,
+        fileSize: photo.file_size,
+        width: photo.width,
+        height: photo.height
+      };
+      
+      userForm.step = 'confirmation';
+      userForms.set(userId, userForm);
+      
+      // Confirmer réception et passer à la confirmation
+      await ctx.reply('✅ Photo de boutique reçue !');
+      await askConfirmation(ctx);
+    }
     
   } catch (error) {
     console.error('Erreur dans handlePhoto:', error);
@@ -1206,9 +1264,15 @@ const handleSkipStep = async (ctx, step) => {
         await askThreema(ctx);
         break;
       case 'threema':
+        userForm.step = 'telegram_bot';
+        userForms.set(userId, userForm);
+        console.log('➡️ Skip threema → telegram_bot');
+        await askTelegramBot(ctx);
+        break;
+      case 'telegram_bot':
         userForm.step = 'country';
         userForms.set(userId, userForm);
-        console.log('➡️ Skip threema → country');
+        console.log('➡️ Skip telegram_bot → country');
         await askCountry(ctx);
         break;
       default:
@@ -1460,6 +1524,8 @@ module.exports = {
   handleSkipStep,
   handleCancelApplication,
   submitApplication,
+  askTelegramBot,
+  askShopPhoto,
   userForms,
   lastBotMessages
 };
