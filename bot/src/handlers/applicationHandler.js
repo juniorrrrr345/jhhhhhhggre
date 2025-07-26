@@ -261,8 +261,8 @@ const handleFormMessage = async (ctx) => {
           break;
         
               case 'potato':
-          if (!text.startsWith('https://')) {
-            return await ctx.reply(getTranslation('registration.error.urlFormat', currentLang, customTranslations));
+          if (!text.startsWith('https://potato.chat/') && !text.startsWith('https://')) {
+            return await ctx.reply(getTranslation('registration.error.potatoFormat', currentLang, customTranslations));
           }
 
           userForm.data.potato = text;
@@ -273,8 +273,8 @@ const handleFormMessage = async (ctx) => {
           break;
         
       case 'snapchat':
-        if (!text.startsWith('https://')) {
-          return await ctx.reply(getTranslation('registration.error.urlFormat', currentLang, customTranslations));
+        if (!text.startsWith('https://www.snapchat.com/') && !text.startsWith('https://')) {
+          return await ctx.reply(getTranslation('registration.error.snapchatFormat', currentLang, customTranslations));
         }
 
         userForm.data.snapchat = text;
@@ -284,8 +284,8 @@ const handleFormMessage = async (ctx) => {
         break;
         
       case 'whatsapp':
-        if (!text.startsWith('https://')) {
-          return await ctx.reply(getTranslation('registration.error.urlFormat', currentLang, customTranslations));
+        if (!text.startsWith('https://wa.me/') && !text.startsWith('https://')) {
+          return await ctx.reply(getTranslation('registration.error.whatsappFormat', currentLang, customTranslations));
         }
 
         userForm.data.whatsapp = text;
@@ -295,8 +295,8 @@ const handleFormMessage = async (ctx) => {
         break;
         
       case 'signal':
-        if (!text.startsWith('https://')) {
-          return await ctx.reply(getTranslation('registration.error.urlFormat', currentLang, customTranslations));
+        if (text.length < 2) {
+          return await ctx.reply(getTranslation('registration.error.signalFormat', currentLang, customTranslations));
         }
 
         userForm.data.signal = text;
@@ -307,7 +307,7 @@ const handleFormMessage = async (ctx) => {
         
       case 'session':
         if (text.length < 2) {
-          return await ctx.reply('❌ L\'identifiant Session doit faire au moins 2 caractères. Réessaie :');
+          return await ctx.reply(getTranslation('registration.error.sessionFormat', currentLang, customTranslations));
         }
 
         userForm.data.session = text;
@@ -329,7 +329,7 @@ const handleFormMessage = async (ctx) => {
         
       case 'city':
         if (text.length < 2) {
-          return await ctx.reply('❌ La ville doit faire au moins 2 caractères. Réessaie :');
+          return await ctx.reply(getTranslation('registration.error.cityLength', currentLang, customTranslations));
         }
         
         userForm.data.city = text;
@@ -340,7 +340,7 @@ const handleFormMessage = async (ctx) => {
         
       case 'departments_meetup':
         if (text.length < 2) {
-          return await ctx.reply('❌ Les départements doivent faire au moins 2 caractères. Réessaie :');
+          return await ctx.reply(getTranslation('registration.error.departmentsLength', currentLang, customTranslations));
         }
         
         userForm.data.departmentsMeetup = text;
@@ -665,21 +665,20 @@ const askInstagram = async (ctx) => {
 
 // Demander Potato
 const askPotato = async (ctx) => {
-  const message = `🛠️ **FORMULAIRE D'INSCRIPTION – FindYourPlug**\n\n` +
+  const Config = require('../models/Config');
+  const config = await Config.findById('main');
+  const currentLang = config?.languages?.currentLanguage || 'fr';
+  const customTranslations = config?.languages?.translations;
+
+  const message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
     `⸻\n\n` +
-    `🟦 **Étapes Réseaux supplémentaires :**\n\n` +
-    `Entrez votre lien **Potato** (commençant par https://)\n\n` +
-    `Plateformes :\n` +
-    `\t•\tPotato\n` +
-    `\t•\tSnapchat\n` +
-    `\t•\tWhatsApp\n` +
-    `\t•\tSignal\n` +
-    `\t•\tSession (identifiant libre)\n` +
-    `\t•\tThreema`;
+    `${getTranslation('registration.step5', currentLang, customTranslations)}\n\n` +
+    `${getTranslation('registration.potatoQuestion', currentLang, customTranslations)}\n\n` +
+    `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
   
   const keyboard = Markup.inlineKeyboard([
-    [Markup.button.callback('⏭️ Passer cette étape', 'skip_potato')],
-    [Markup.button.callback('❌ Annuler', 'cancel_application')]
+    [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_potato')],
+    [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
   ]);
   
   await safeEditMessage(ctx, message, {
@@ -690,14 +689,19 @@ const askPotato = async (ctx) => {
 
 // Demander Snapchat
 const askSnapchat = async (ctx) => {
-  const userForm = userForms.get(ctx.from.id);
-  const message = `📝 **Récapitulatif de votre inscription :**\n\n` +
-    `📝 Nom de Plug: ${userForm.data.name}\n` +
-    `🔗 Telegram: ${userForm.data.telegram}\n\n` +
-    `Entrez votre lien Snapchat (commençant par https://):`;
+  const Config = require('../models/Config');
+  const config = await Config.findById('main');
+  const currentLang = config?.languages?.currentLanguage || 'fr';
+  const customTranslations = config?.languages?.translations;
+
+  const message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
+    `⸻\n\n` +
+    `${getTranslation('registration.step6', currentLang, customTranslations)}\n\n` +
+    `${getTranslation('registration.snapchatQuestion', currentLang, customTranslations)}\n\n` +
+    `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
   
   const keyboard = Markup.inlineKeyboard([
-    [Markup.button.callback('➡️ Passer cette étape', 'skip_snapchat')],
+    [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_snapchat')],
     [Markup.button.callback('❌ Annuler', 'cancel_application')]
   ]);
   
@@ -709,15 +713,20 @@ const askSnapchat = async (ctx) => {
 
 // Demander WhatsApp
 const askWhatsApp = async (ctx) => {
-  const userForm = userForms.get(ctx.from.id);
-  const message = `📝 **Récapitulatif de votre inscription :**\n\n` +
-    `📝 Nom de Plug: ${userForm.data.name}\n` +
-    `🔗 Telegram: ${userForm.data.telegram}\n\n` +
-    `Entrez votre lien WhatsApp (commençant par https://):`;
+  const Config = require('../models/Config');
+  const config = await Config.findById('main');
+  const currentLang = config?.languages?.currentLanguage || 'fr';
+  const customTranslations = config?.languages?.translations;
+
+  const message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
+    `⸻\n\n` +
+    `${getTranslation('registration.step7', currentLang, customTranslations)}\n\n` +
+    `${getTranslation('registration.whatsappQuestion', currentLang, customTranslations)}\n\n` +
+    `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
   
   const keyboard = Markup.inlineKeyboard([
-    [Markup.button.callback('➡️ Passer cette étape', 'skip_whatsapp')],
-    [Markup.button.callback('❌ Annuler', 'cancel_application')]
+    [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_whatsapp')],
+    [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
   ]);
   
   await safeEditMessage(ctx, message, {

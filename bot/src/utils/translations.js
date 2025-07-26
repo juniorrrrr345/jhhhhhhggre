@@ -444,6 +444,194 @@ const translations = {
       de: 'Anfrage abgebrochen'
     },
 
+    // === ÉTAPES RÉSEAUX SOCIAUX COMPLETS ===
+    'registration.step5': {
+      fr: '🟦 Étape 5 : Potato Chat',
+      en: '🟦 Step 5: Potato Chat',
+      it: '🟦 Fase 5: Potato Chat',
+      es: '🟦 Paso 5: Potato Chat',
+      de: '🟦 Schritt 5: Potato Chat'
+    },
+    'registration.step6': {
+      fr: '🟦 Étape 6 : Snapchat',
+      en: '🟦 Step 6: Snapchat',
+      it: '🟦 Fase 6: Snapchat',
+      es: '🟦 Paso 6: Snapchat',
+      de: '🟦 Schritt 6: Snapchat'
+    },
+    'registration.step7': {
+      fr: '🟦 Étape 7 : WhatsApp',
+      en: '🟦 Step 7: WhatsApp',
+      it: '🟦 Fase 7: WhatsApp',
+      es: '🟦 Paso 7: WhatsApp',
+      de: '🟦 Schritt 7: WhatsApp'
+    },
+    'registration.step8': {
+      fr: '🟦 Étape 8 : Signal',
+      en: '🟦 Step 8: Signal',
+      it: '🟦 Fase 8: Signal',
+      es: '🟦 Paso 8: Signal',
+      de: '🟦 Schritt 8: Signal'
+    },
+    'registration.step9': {
+      fr: '🟦 Étape 9 : Session',
+      en: '🟦 Step 9: Session',
+      it: '🟦 Fase 9: Session',
+      es: '🟦 Paso 9: Session',
+      de: '🟦 Schritt 9: Session'
+    },
+    'registration.step10': {
+      fr: '🟦 Étape 10 : Threema',
+      en: '🟦 Step 10: Threema',
+      it: '🟦 Fase 10: Threema',
+      es: '🟦 Paso 10: Threema',
+      de: '🟦 Schritt 10: Threema'
+    },
+    'registration.step11': {
+      fr: '🟦 Étape 11 : Pays de service',
+      en: '🟦 Step 11: Service country',
+      it: '🟦 Fase 11: Paese di servizio',
+      es: '🟦 Paso 11: País de servicio',
+      de: '🟦 Schritt 11: Service-Land'
+    },
+    'registration.step12': {
+      fr: '🟦 Étape 12 : Ville',
+      en: '🟦 Step 12: City',
+      it: '🟦 Fase 12: Città',
+      es: '🟦 Paso 12: Ciudad',
+      de: '🟦 Schritt 12: Stadt'
+    },
+    'registration.step13': {
+      fr: '🟦 Étape 13 : Services proposés',
+      en: '🟦 Step 13: Services offered',
+      it: '🟦 Fase 13: Servizi offerti',
+      es: '🟦 Paso 13: Servicios ofrecidos',
+      de: '🟦 Schritt 13: Angebotene Services'
+    },
+
+    // === QUESTIONS DÉTAILLÉES ===
+    'registration.potatoQuestion': {
+      fr: '🥔 Entrez votre lien Potato Chat (https://potato.chat/username)',
+      en: '🥔 Enter your Potato Chat link (https://potato.chat/username)',
+      it: '🥔 Inserisci il tuo link Potato Chat (https://potato.chat/username)',
+      es: '🥔 Introduce tu enlace de Potato Chat (https://potato.chat/username)',
+      de: '🥔 Geben Sie Ihren Potato Chat-Link ein (https://potato.chat/username)'
+    },
+    'registration.snapchatQuestion': {
+      fr: '👻 Entrez votre lien Snapchat (https://www.snapchat.com/add/username)',
+      en: '👻 Enter your Snapchat link (https://www.snapchat.com/add/username)',
+      it: '👻 Inserisci il tuo link Snapchat (https://www.snapchat.com/add/username)',
+      es: '👻 Introduce tu enlace de Snapchat (https://www.snapchat.com/add/username)',
+      de: '👻 Geben Sie Ihren Snapchat-Link ein (https://www.snapchat.com/add/username)'
+    },
+    'registration.whatsappQuestion': {
+      fr: '💬 Entrez votre lien WhatsApp (https://wa.me/votre_numero)',
+      en: '💬 Enter your WhatsApp link (https://wa.me/your_number)',
+      it: '💬 Inserisci il tuo link WhatsApp (https://wa.me/tuo_numero)',
+      es: '💬 Introduce tu enlace de WhatsApp (https://wa.me/tu_numero)',
+      de: '💬 Geben Sie Ihren WhatsApp-Link ein (https://wa.me/ihre_nummer)'
+    },
+    'registration.signalQuestion': {
+      fr: '🔒 Entrez votre lien Signal ou nom d\'utilisateur Signal',
+      en: '🔒 Enter your Signal link or Signal username',
+      it: '🔒 Inserisci il tuo link Signal o nome utente Signal',
+      es: '🔒 Introduce tu enlace de Signal o nombre de usuario de Signal',
+      de: '🔒 Geben Sie Ihren Signal-Link oder Signal-Benutzernamen ein'
+    },
+    'registration.sessionQuestion': {
+      fr: '🛡️ Entrez votre identifiant Session',
+      en: '🛡️ Enter your Session ID',
+      it: '🛡️ Inserisci il tuo ID Session',
+      es: '🛡️ Introduce tu ID de Session',
+      de: '🛡️ Geben Sie Ihre Session-ID ein'
+    },
+    'registration.threemaQuestion': {
+      fr: '🔐 Entrez votre lien Threema (https://threema.id/votre_id)',
+      en: '🔐 Enter your Threema link (https://threema.id/your_id)',
+      it: '🔐 Inserisci il tuo link Threema (https://threema.id/tuo_id)',
+      es: '🔐 Introduce tu enlace de Threema (https://threema.id/tu_id)',
+      de: '🔐 Geben Sie Ihren Threema-Link ein (https://threema.id/ihre_id)'
+    },
+    'registration.countryQuestion': {
+      fr: '🌍 Dans quel pays exerces-tu principalement ?',
+      en: '🌍 In which country do you mainly operate?',
+      it: '🌍 In che paese operi principalmente?',
+      es: '🌍 ¿En qué país operas principalmente?',
+      de: '🌍 In welchem Land sind Sie hauptsächlich tätig?'
+    },
+    'registration.cityQuestion': {
+      fr: '🏙️ Dans quelle ville exerces-tu principalement ?',
+      en: '🏙️ In which city do you mainly operate?',
+      it: '🏙️ In che città operi principalmente?',
+      es: '🏙️ ¿En qué ciudad operas principalmente?',
+      de: '🏙️ In welcher Stadt sind Sie hauptsächlich tätig?'
+    },
+    'registration.servicesQuestion': {
+      fr: '🚚 Quels services proposes-tu ?',
+      en: '🚚 What services do you offer?',
+      it: '🚚 Quali servizi offri?',
+      es: '🚚 ¿Qué servicios ofreces?',
+      de: '🚚 Welche Services bieten Sie an?'
+    },
+
+    // === ERREURS SPÉCIFIQUES RÉSEAUX ===
+    'registration.error.potatoFormat': {
+      fr: '❌ Merci de fournir un lien Potato Chat valide (ex: https://potato.chat/username). Réessaie :',
+      en: '❌ Please provide a valid Potato Chat link (ex: https://potato.chat/username). Try again:',
+      it: '❌ Fornisci un link Potato Chat valido (es: https://potato.chat/username). Riprova:',
+      es: '❌ Proporciona un enlace de Potato Chat válido (ej: https://potato.chat/username). Inténtalo de nuevo:',
+      de: '❌ Bitte geben Sie einen gültigen Potato Chat-Link an (z.B.: https://potato.chat/username). Versuchen Sie es erneut:'
+    },
+    'registration.error.snapchatFormat': {
+      fr: '❌ Merci de fournir un lien Snapchat valide (ex: https://www.snapchat.com/add/username). Réessaie :',
+      en: '❌ Please provide a valid Snapchat link (ex: https://www.snapchat.com/add/username). Try again:',
+      it: '❌ Fornisci un link Snapchat valido (es: https://www.snapchat.com/add/username). Riprova:',
+      es: '❌ Proporciona un enlace de Snapchat válido (ej: https://www.snapchat.com/add/username). Inténtalo de nuevo:',
+      de: '❌ Bitte geben Sie einen gültigen Snapchat-Link an (z.B.: https://www.snapchat.com/add/username). Versuchen Sie es erneut:'
+    },
+    'registration.error.whatsappFormat': {
+      fr: '❌ Merci de fournir un lien WhatsApp valide (ex: https://wa.me/33123456789). Réessaie :',
+      en: '❌ Please provide a valid WhatsApp link (ex: https://wa.me/33123456789). Try again:',
+      it: '❌ Fornisci un link WhatsApp valido (es: https://wa.me/33123456789). Riprova:',
+      es: '❌ Proporciona un enlace de WhatsApp válido (ej: https://wa.me/33123456789). Inténtalo de nuevo:',
+      de: '❌ Bitte geben Sie einen gültigen WhatsApp-Link an (z.B.: https://wa.me/33123456789). Versuchen Sie es erneut:'
+    },
+    'registration.error.signalFormat': {
+      fr: '❌ Merci de fournir un identifiant Signal valide ou un lien. Réessaie :',
+      en: '❌ Please provide a valid Signal ID or link. Try again:',
+      it: '❌ Fornisci un ID Signal valido o un link. Riprova:',
+      es: '❌ Proporciona un ID de Signal válido o un enlace. Inténtalo de nuevo:',
+      de: '❌ Bitte geben Sie eine gültige Signal-ID oder einen Link an. Versuchen Sie es erneut:'
+    },
+    'registration.error.sessionFormat': {
+      fr: '❌ L\'identifiant Session doit faire au moins 2 caractères. Réessaie :',
+      en: '❌ Session ID must be at least 2 characters. Try again:',
+      it: '❌ L\'ID Session deve essere di almeno 2 caratteri. Riprova:',
+      es: '❌ El ID de Session debe tener al menos 2 caracteres. Inténtalo de nuevo:',
+      de: '❌ Session-ID muss mindestens 2 Zeichen haben. Versuchen Sie es erneut:'
+    },
+    'registration.error.threemaFormat': {
+      fr: '❌ Merci de fournir un lien Threema valide (ex: https://threema.id/VOTRID). Réessaie :',
+      en: '❌ Please provide a valid Threema link (ex: https://threema.id/YOURID). Try again:',
+      it: '❌ Fornisci un link Threema valido (es: https://threema.id/TUOID). Riprova:',
+      es: '❌ Proporciona un enlace de Threema válido (ej: https://threema.id/TUID). Inténtalo de nuevo:',
+      de: '❌ Bitte geben Sie einen gültigen Threema-Link an (z.B.: https://threema.id/IHREID). Versuchen Sie es erneut:'
+    },
+    'registration.error.cityLength': {
+      fr: '❌ La ville doit faire au moins 2 caractères. Réessaie :',
+      en: '❌ City must be at least 2 characters. Try again:',
+      it: '❌ La città deve essere di almeno 2 caratteri. Riprova:',
+      es: '❌ La ciudad debe tener al menos 2 caracteres. Inténtalo de nuevo:',
+      de: '❌ Stadt muss mindestens 2 Zeichen haben. Versuchen Sie es erneut:'
+    },
+    'registration.error.departmentsLength': {
+      fr: '❌ Les départements doivent faire au moins 2 caractères. Réessaie :',
+      en: '❌ Departments must be at least 2 characters. Try again:',
+      it: '❌ I dipartimenti devono essere di almeno 2 caratteri. Riprova:',
+      es: '❌ Los departamentos deben tener al menos 2 caracteres. Inténtalo de nuevo:',
+      de: '❌ Departements müssen mindestens 2 Zeichen haben. Versuchen Sie es erneut:'
+    },
+
     // === SERVICES ===
     'service_delivery': {
       fr: 'Livraison',
