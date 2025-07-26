@@ -101,8 +101,8 @@ const showLanguageSelection = async (ctx, config) => {
     const { createLanguageKeyboard } = require('../utils/translations');
     
     // Message de bienvenue en multilingue
-    const welcomeText = `🌍 *Welcome! Bienvenue! Bienvenido! Benvenuto! Willkommen!*\n\n` +
-                       `Please select your language / Sélectionnez votre langue / Elige tu idioma / Seleziona la tua lingua / Wählen Sie Ihre Sprache:`;
+      const welcomeText = `🌍 Welcome! Bienvenue! Bienvenido! Benvenuto! Willkommen!\n\n` +
+    `Please select your language / Sélectionnez votre langue / Elige tu idioma / Seleziona la tua lingua / Wählen Sie Ihre Sprache:`;
     
     // Créer le clavier de sélection de langue
     const languageKeyboard = createLanguageKeyboard('fr', null); // Pas de langue sélectionnée au départ
@@ -134,8 +134,8 @@ const showLanguageSelection = async (ctx, config) => {
     const currentLang = config?.languages?.currentLanguage || 'fr';
     const customTranslations = config?.languages?.translations;
     
-    // Utiliser le texte d'accueil personnalisé du panel admin ou traduction par défaut
-    const welcomeMessage = config?.welcome?.text || getTranslation('messages_welcome', currentLang, customTranslations);
+    // Utiliser directement les traductions pour que le message change selon la langue
+    const welcomeMessage = getTranslation('messages_welcome', currentLang, customTranslations);
     console.log('📝 Message d\'accueil (fallback) utilisé:', welcomeMessage);
     const keyboard = await createMainKeyboard(config);
     
@@ -168,8 +168,8 @@ const handleBackMain = async (ctx) => {
     
     console.log(`🌍 Langue actuelle pour le retour: ${currentLang}`);
 
-    // Utiliser le texte d'accueil personnalisé du panel admin ou traduction par défaut
-    const welcomeMessage = config?.welcome?.text || getTranslation('messages_welcome', currentLang, customTranslations);
+    // Utiliser directement les traductions pour que le message change selon la langue
+    const welcomeMessage = getTranslation('messages_welcome', currentLang, customTranslations);
     console.log('📝 Message d\'accueil (retour menu) utilisé:', welcomeMessage);
     
     const keyboard = createMainKeyboard(config);

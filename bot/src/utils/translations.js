@@ -46,6 +46,13 @@ const translations = {
       es: '🗣️ Cambiar idioma',
       de: '🗣️ Sprache ändern'
     },
+    'menu_selectLanguage': {
+      fr: 'Sélectionnez votre langue préférée :',
+      en: 'Select your preferred language:',
+      it: 'Seleziona la tua lingua preferita:',
+      es: 'Selecciona tu idioma preferido:',
+      de: 'Wählen Sie Ihre bevorzugte Sprache:'
+    },
     'messages_topPlugsHelp': {
       fr: 'Comment ça marche ?',
       en: 'How does it work?',
@@ -191,11 +198,11 @@ const translations = {
 
     // === MESSAGES ===
     'messages_welcome': {
-      fr: 'FINDYOURPLUG\nMINI-APP TELEGRAM\nCHILL',
-      en: 'FINDYOURPLUG\nTELEGRAM MINI-APP\nCHILL',
-      it: 'FINDYOURPLUG\nMINI-APP TELEGRAM\nCHILL',
-      es: 'FINDYOURPLUG\nMINI-APP TELEGRAM\nCHILL',
-      de: 'FINDYOURPLUG\nTELEGRAM MINI-APP\nCHILL'
+      fr: 'Bienvenue sur FindYourPlug! Explorez nos services.',
+      en: 'Welcome to FindYourPlug! Explore our services.',
+      it: 'Benvenuto su FindYourPlug! Esplora i nostri servizi.',
+      es: 'Bienvenido a FindYourPlug! Explora nuestros servicios.',
+      de: 'Willkommen bei FindYourPlug! Entdecken Sie unsere Services.'
     },
     'messages_contactUs': {
       fr: 'Contactez-nous pour plus d\'informations.',

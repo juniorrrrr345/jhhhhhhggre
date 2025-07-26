@@ -247,7 +247,7 @@ bot.action('select_language', async (ctx) => {
     
     console.log(`🌍 Affichage sélecteur langue, langue actuelle: ${currentLang}`);
     
-    const message = `🌍 **${getTranslation('menu_language', currentLang, customTranslations)}**\n\nSélectionnez votre langue préférée :`;
+    const message = `🌍 ${getTranslation('menu_language', currentLang, customTranslations)}\n\n${getTranslation('menu_selectLanguage', currentLang, customTranslations)}`;
     const keyboard = createLanguageKeyboard(currentLang);
     
     // Vérifier que le clavier est valide avant de l'utiliser
