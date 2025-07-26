@@ -14,13 +14,7 @@ class PostalCodeService {
       Suisse: this.generateSwissPostalCodes(),
       
       // 🇳🇱 PAYS-BAS (1000-9999)
-      'Pays-Bas': this.generateDutchPostalCodes(),
-      
-      // 🏴 AUTRE (codes génériques)
-      Autre: this.generateGenericPostalCodes()
-      
-      // 🇯🇵 JAPON (100-0000 to 999-9999)
-      Japon: this.generateJapanesePostalCodes()
+      'Pays-Bas': this.generateDutchPostalCodes()
     };
   }
 
@@ -370,14 +364,33 @@ class PostalCodeService {
     return codes;
   }
 
+  // Générer des codes génériques pour "Autre"
+  generateGenericPostalCodes() {
+    const codes = [];
+    // Codes génériques simples
+    for (let i = 1; i <= 999; i++) {
+      codes.push(i.toString().padStart(3, '0'));
+    }
+    return codes;
+  }
+
   // Récupérer les codes postaux d'un pays
   getPostalCodes(country) {
+    // Si le pays n'existe pas dans notre service, générer des codes génériques
+    if (!this.postalCodes[country] && country === 'Autre') {
+      return this.generateGenericPostalCodes();
+    }
     return this.postalCodes[country] || [];
   }
 
-  // Récupérer les pays disponibles
+  // Récupérer les pays disponibles (inclut "Autre" si nécessaire)
   getAvailableCountries() {
-    return Object.keys(this.postalCodes);
+    const countries = Object.keys(this.postalCodes);
+    // Ajouter "Autre" s'il n'est pas déjà présent
+    if (!countries.includes('Autre')) {
+      countries.push('Autre');
+    }
+    return countries.sort();
   }
 
   // Créer un clavier avec les codes postaux (paginé pour Telegram)
