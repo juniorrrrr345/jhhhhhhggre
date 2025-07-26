@@ -211,6 +211,8 @@ const handleFormMessage = async (ctx) => {
   const customTranslations = config?.languages?.translations;
 
   try {
+    console.log(`🔄 FORM DEBUG: User ${userId} at step '${userForm.step}' with text: '${text}'`);
+    
     switch (userForm.step) {
               case 'name':
           
@@ -262,10 +264,14 @@ const handleFormMessage = async (ctx) => {
           break;
 
       case 'signal':
+        console.log(`🔍 SIGNAL DEBUG: Input '${text}', validation: https check=${text.startsWith('https://')}, length=${text.length}`);
+        
         if (!text.startsWith('https://') && text.length < 3) {
+          console.log(`❌ SIGNAL VALIDATION FAILED`);
           return await ctx.reply(getTranslation('registration.error.signalFormat', currentLang, customTranslations));
         }
 
+        console.log(`✅ SIGNAL OK, saving and moving to WhatsApp`);
         userForm.data.signal = text;
         userForm.step = 'whatsapp';
         userForms.set(userId, userForm);

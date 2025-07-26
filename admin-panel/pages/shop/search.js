@@ -42,19 +42,26 @@ export default function ShopSearch() {
     setCurrentLanguage(newLanguage)
   }
 
-  // Récupérer les pays disponibles dynamiquement depuis les boutiques
+  // Récupérer TOUS les pays européens + extras (même s'il n'y a pas de boutiques)
   const getAvailableCountries = () => {
-    const countries = new Set()
+    // D'abord, récupérer tous les pays définis dans departmentsByCountry
+    const allDefinedCountries = Object.keys(departmentsByCountry)
+    
+    // Ensuite, ajouter les pays des boutiques existantes
+    const shopsCountries = new Set()
     allPlugs.forEach(plug => {
       if (plug.countries && Array.isArray(plug.countries)) {
         plug.countries.forEach(country => {
           if (country && country.trim() !== '' && country.toLowerCase() !== 'autre') {
-            countries.add(country)
+            shopsCountries.add(country)
           }
         })
       }
     })
-    return Array.from(countries).sort()
+    
+    // Combiner les deux listes et supprimer les doublons
+    const allCountries = new Set([...allDefinedCountries, ...Array.from(shopsCountries)])
+    return Array.from(allCountries).sort()
   }
 
   // Définition des départements corrects par pays (TOUS LES PAYS EUROPÉENS + EXTRA - même que le bot)
