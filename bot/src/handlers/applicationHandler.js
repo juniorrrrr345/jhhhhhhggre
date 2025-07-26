@@ -1399,12 +1399,22 @@ const handlePhoto = async (ctx) => {
     userForms.set(userId, userForm);
     
     // Confirmer réception et passer à la confirmation
-    await ctx.reply('✅ Photo de boutique reçue !');
+    const Config = require('../models/Config');
+    const config = await Config.findById('main');
+    const currentLang = config?.languages?.currentLanguage || 'fr';
+    const customTranslations = config?.languages?.translations;
+    
+    await ctx.reply(getTranslation('registration.photoReceived', currentLang, customTranslations));
     await askConfirmation(ctx);
     
   } catch (error) {
     console.error('Erreur dans handlePhoto:', error);
-    await ctx.reply('❌ Erreur lors du traitement de la photo. Réessaie.');
+    const Config = require('../models/Config');
+    const config = await Config.findById('main');
+    const currentLang = config?.languages?.currentLanguage || 'fr';
+    const customTranslations = config?.languages?.translations;
+    
+    await ctx.reply(getTranslation('registration.error.photoProcessing', currentLang, customTranslations));
   }
 };
 
@@ -1793,21 +1803,26 @@ const submitApplication = async (ctx) => {
     userForms.delete(userId);
     lastBotMessages.delete(userId);
     
-    // Message d'erreur plus user-friendly
+    // Message d'erreur traduit dans la langue choisie
+    const Config = require('../models/Config');
+    const config = await Config.findById('main');
+    const currentLang = config?.languages?.currentLanguage || 'fr';
+    const customTranslations = config?.languages?.translations;
+    
     const keyboard = Markup.inlineKeyboard([
-      [Markup.button.callback('🔙 Retour au menu', 'back_main')]
+      [Markup.button.callback(getTranslation('registration.backToMenu', currentLang, customTranslations), 'back_main')]
     ]);
     
+    const errorMessage = `❌ ${getTranslation('registration.error.technical', currentLang, customTranslations)}\n\n` +
+      `${getTranslation('registration.error.submissionFailed', currentLang, customTranslations)}\n\n` +
+      `🔄 ${getTranslation('registration.error.tryAgainLater', currentLang, customTranslations)}\n\n` +
+      `💡 ${getTranslation('registration.error.contactSupport', currentLang, customTranslations)}`;
+    
     try {
-      await ctx.reply(
-        '❌ **Erreur technique**\n\n' +
-        'Une erreur s\'est produite lors de l\'envoi de ta demande.\n\n' +
-        '🔄 Tu peux réessayer dans quelques minutes.\n\n' +
-        '💡 Si le problème persiste, contacte le support.',
-        {
-          parse_mode: 'Markdown',
-          reply_markup: keyboard.reply_markup
-        }
+      await ctx.reply(errorMessage, {
+        reply_markup: keyboard.reply_markup
+        // Pas de parse_mode pour éviter les erreurs
+      }
       );
     } catch (replyError) {
       // Fallback ultime sans formatage
