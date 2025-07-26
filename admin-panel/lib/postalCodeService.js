@@ -59,14 +59,60 @@ class PostalCodeService {
     return codes.sort();
   }
 
-  // 🇪🇸 ESPAGNE - Toutes les provinces
+  // 🇪🇸 ESPAGNE - Vrais codes postaux par villes principales
   generateSpanishPostalCodes() {
     const codes = [];
-    // Provinces 01-52
-    for (let prov = 1; prov <= 52; prov++) {
-      const provStr = prov.toString().padStart(2, '0');
-      codes.push(provStr);
+    
+    // Madrid (28001-28080)
+    for (let i = 28001; i <= 28080; i++) {
+      codes.push(i.toString());
     }
+    
+    // Barcelone (08001-08080)
+    for (let i = 8001; i <= 8080; i++) {
+      codes.push(i.toString().padStart(5, '0'));
+    }
+    
+    // Valence (46001-46080)
+    for (let i = 46001; i <= 46080; i++) {
+      codes.push(i.toString());
+    }
+    
+    // Séville (41001-41020)
+    for (let i = 41001; i <= 41020; i++) {
+      codes.push(i.toString());
+    }
+    
+    // Bilbao (48001-48015)
+    for (let i = 48001; i <= 48015; i++) {
+      codes.push(i.toString());
+    }
+    
+    // Saragosse (50001-50020)
+    for (let i = 50001; i <= 50020; i++) {
+      codes.push(i.toString());
+    }
+    
+    // Malaga (29001-29018)
+    for (let i = 29001; i <= 29018; i++) {
+      codes.push(i.toString());
+    }
+    
+    // Palma de Majorque (07001-07015)
+    for (let i = 7001; i <= 7015; i++) {
+      codes.push(i.toString().padStart(5, '0'));
+    }
+    
+    // Las Palmas Canaries (35001-35020)
+    for (let i = 35001; i <= 35020; i++) {
+      codes.push(i.toString());
+    }
+    
+    // Santa Cruz de Tenerife (38001-38111)
+    for (let i = 38001; i <= 38111; i++) {
+      codes.push(i.toString());
+    }
+    
     return codes.sort();
   }
 
