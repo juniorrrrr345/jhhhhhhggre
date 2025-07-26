@@ -41,7 +41,22 @@ export default function UserAnalytics() {
       setStats(prev => ({ ...prev, loading: true }))
       setNextUpdateIn(30) // Reset le compteur lors de l'actualisation manuelle
       
-      const apiResponse = await api.get(`admin/user-analytics?timeRange=${timeRange}`, adminToken)
+      // Bypass du proxy - appel direct à l'API bot (solution qui fonctionne)
+      const botApiUrl = 'https://jhhhhhhggre.onrender.com'
+      const response = await fetch(`${botApiUrl}/api/admin/user-analytics?timeRange=${timeRange}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      
+      const data = await response.json()
+      console.log('📊 Response direct API:', data)
+      
+      const apiResponse = {
+        ok: response.ok,
+        data: data
+      }
       console.log('📊 Response API user-analytics:', apiResponse)
         
         if (apiResponse.ok) {
@@ -112,22 +127,32 @@ export default function UserAnalytics() {
             </h1>
           </div>
           
-          {stats.lastUpdate && (
-            <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
-              <div className="text-black bg-white rounded px-3 py-2 text-sm font-medium text-center">
-                📅 MAJ: {stats.lastUpdate.toLocaleTimeString('fr-FR')}
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="flex items-center gap-1 bg-white rounded px-2 py-1 border border-black">
-                  <div className="w-2 h-2 bg-black rounded-full animate-pulse"></div>
-                  <span className="text-black text-xs font-medium">TEMPS RÉEL</span>
+          <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
+            <button
+              onClick={fetchUserStats}
+              disabled={stats.loading}
+              className="px-4 py-2 bg-black hover:bg-gray-800 disabled:opacity-50 text-white font-semibold rounded-lg transition-colors border-2 border-white"
+            >
+              {stats.loading ? '⏳ Chargement...' : '🔄 Actualiser'}
+            </button>
+            
+            {stats.lastUpdate && (
+              <>
+                <div className="text-black bg-white rounded px-3 py-2 text-sm font-medium text-center">
+                  📅 MAJ: {stats.lastUpdate.toLocaleTimeString('fr-FR')}
                 </div>
-                <div className="text-white bg-black rounded px-2 py-1 text-xs font-medium border border-white">
-                  ⏱️ {nextUpdateIn}s
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1 bg-white rounded px-2 py-1 border border-black">
+                    <div className="w-2 h-2 bg-black rounded-full animate-pulse"></div>
+                    <span className="text-black text-xs font-medium">TEMPS RÉEL</span>
+                  </div>
+                  <div className="text-white bg-black rounded px-2 py-1 text-xs font-medium border border-white">
+                    ⏱️ {nextUpdateIn}s
+                  </div>
                 </div>
-              </div>
-            </div>
-          )}
+              </>
+            )}
+          </div>
         </div>
 
         {/* Filtres temporels - Mobile Responsive */}
