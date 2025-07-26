@@ -254,6 +254,15 @@ const handleFormMessage = async (ctx) => {
   
   const text = ctx.message.text.trim();
   
+  // Protection contre le double traitement
+  const messageId = ctx.message.message_id;
+  if (userForm.lastProcessedMessageId === messageId) {
+    console.log(`⚠️ MESSAGE ALREADY PROCESSED: ${messageId} for user ${userId}`);
+    return;
+  }
+  userForm.lastProcessedMessageId = messageId;
+  userForms.set(userId, userForm);
+  
   // Supprimer le message de l'utilisateur pour garder le chat propre
   try {
     await ctx.deleteMessage();
@@ -269,6 +278,7 @@ const handleFormMessage = async (ctx) => {
 
   try {
     console.log(`🔄 FORM DEBUG: User ${userId} at step '${userForm.step}' with text: '${text}'`);
+    console.log(`📊 FORM STATE BEFORE: ${JSON.stringify({step: userForm.step, services: userForm.data.services, messageId: ctx.message.message_id})}`);
     
     switch (userForm.step) {
               case 'name':
@@ -645,6 +655,7 @@ const handleFormMessage = async (ctx) => {
           userForms.set(userId, userForm);
           await askConfirmation(ctx);
         }
+        console.log(`✅ MEETUP CASE FINISHED for user ${userId}`);
         break;
 
       case 'departments_shipping':
@@ -1774,7 +1785,7 @@ const handleSkipStep = async (ctx, step) => {
         
         const telegramBotMessage = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
           `⸻\n\n` +
-          `${getTranslation('registration.step9', currentLang, customTranslations)}\n\n` +
+          `${getTranslation('registration.step10Bot', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.telegramBotQuestion', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.telegramBotExample', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
@@ -1787,7 +1798,7 @@ const handleSkipStep = async (ctx, step) => {
         
         await safeEditMessage(ctx, telegramBotMessage, {
           reply_markup: telegramBotKeyboard.reply_markup,
-          parse_mode: 'Markdown'
+          disable_web_page_preview: true
         });
         break;
         
