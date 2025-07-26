@@ -553,8 +553,17 @@ const handleFormMessage = async (ctx) => {
         
         userForm.data.departmentsMeetup = text;
         
+        // Passer directement à departments_shipping (flux simplifié)
+        userForm.step = 'departments_shipping';
+        userForms.set(userId, userForm);
+        
+        console.log('✅ MEETUP CASE FINISHED: Going to departments_shipping');
+        await askDepartmentsShipping(ctx);
+        break;
+        
+        /* OLD CODE - À SUPPRIMER
         // Si livraison est aussi sélectionné, demander les départements livraison
-        if (userForm.data.services.delivery.enabled) {
+        if (userForm.data.services && userForm.data.services.delivery && userForm.data.services.delivery.enabled) {
           userForm.step = 'departments_delivery';
           userForms.set(userId, userForm);
           
