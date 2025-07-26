@@ -37,8 +37,7 @@ const {
   handleResetFilters,
   handleTopServiceFilter,
   handleTopCountryFilter,
-  handlePostalCodeFilter,
-  handleShopsByPostalCode,
+  // Services postaux supprimés
   handleAllDepartments,
   handleCountryDepartments,
   handleDepartmentsList

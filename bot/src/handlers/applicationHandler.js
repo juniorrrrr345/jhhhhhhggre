@@ -9,17 +9,61 @@ const userForms = new Map();
 // Stockage des derniers messages du bot (pour les supprimer avant nouvelle question)
 const lastBotMessages = new Map();
 
-// Liste des pays disponibles avec emojis
+// Liste des pays disponibles avec emojis - TOUS LES PAYS D'EUROPE + PAYS SPÉCIAUX
 const COUNTRIES = [
-  { code: 'FR', name: 'France', flag: '🇫🇷' },
-  { code: 'BE', name: 'Belgique', flag: '🇧🇪' },
-  { code: 'CH', name: 'Suisse', flag: '🇨🇭' },
-  { code: 'ES', name: 'Espagne', flag: '🇪🇸' },
-  { code: 'IT', name: 'Italie', flag: '🇮🇹' },
+  // PAYS D'EUROPE (ordre alphabétique)
+  { code: 'AL', name: 'Albanie', flag: '🇦🇱' },
   { code: 'DE', name: 'Allemagne', flag: '🇩🇪' },
+  { code: 'AD', name: 'Andorre', flag: '🇦🇩' },
+  { code: 'AT', name: 'Autriche', flag: '🇦🇹' },
+  { code: 'BE', name: 'Belgique', flag: '🇧🇪' },
+  { code: 'BY', name: 'Biélorussie', flag: '🇧🇾' },
+  { code: 'BA', name: 'Bosnie-Herzégovine', flag: '🇧🇦' },
+  { code: 'BG', name: 'Bulgarie', flag: '🇧🇬' },
+  { code: 'CY', name: 'Chypre', flag: '🇨🇾' },
+  { code: 'HR', name: 'Croatie', flag: '🇭🇷' },
+  { code: 'DK', name: 'Danemark', flag: '🇩🇰' },
+  { code: 'ES', name: 'Espagne', flag: '🇪🇸' },
+  { code: 'EE', name: 'Estonie', flag: '🇪🇪' },
+  { code: 'FI', name: 'Finlande', flag: '🇫🇮' },
+  { code: 'FR', name: 'France', flag: '🇫🇷' },
+  { code: 'GR', name: 'Grèce', flag: '🇬🇷' },
+  { code: 'HU', name: 'Hongrie', flag: '🇭🇺' },
+  { code: 'IE', name: 'Irlande', flag: '🇮🇪' },
+  { code: 'IS', name: 'Islande', flag: '🇮🇸' },
+  { code: 'IT', name: 'Italie', flag: '🇮🇹' },
+  { code: 'XK', name: 'Kosovo', flag: '🇽🇰' },
+  { code: 'LV', name: 'Lettonie', flag: '🇱🇻' },
+  { code: 'LI', name: 'Liechtenstein', flag: '🇱🇮' },
+  { code: 'LT', name: 'Lituanie', flag: '🇱🇹' },
+  { code: 'LU', name: 'Luxembourg', flag: '🇱🇺' },
+  { code: 'MK', name: 'Macédoine du Nord', flag: '🇲🇰' },
+  { code: 'MT', name: 'Malte', flag: '🇲🇹' },
+  { code: 'MD', name: 'Moldavie', flag: '🇲🇩' },
+  { code: 'MC', name: 'Monaco', flag: '🇲🇨' },
+  { code: 'ME', name: 'Monténégro', flag: '🇲🇪' },
+  { code: 'NO', name: 'Norvège', flag: '🇳🇴' },
   { code: 'NL', name: 'Pays-Bas', flag: '🇳🇱' },
+  { code: 'PL', name: 'Pologne', flag: '🇵🇱' },
+  { code: 'PT', name: 'Portugal', flag: '🇵🇹' },
+  { code: 'CZ', name: 'République tchèque', flag: '🇨🇿' },
+  { code: 'RO', name: 'Roumanie', flag: '🇷🇴' },
+  { code: 'GB', name: 'Royaume-Uni', flag: '🇬🇧' },
+  { code: 'RU', name: 'Russie', flag: '🇷🇺' },
+  { code: 'SM', name: 'Saint-Marin', flag: '🇸🇲' },
+  { code: 'RS', name: 'Serbie', flag: '🇷🇸' },
+  { code: 'SK', name: 'Slovaquie', flag: '🇸🇰' },
+  { code: 'SI', name: 'Slovénie', flag: '🇸🇮' },
+  { code: 'CH', name: 'Suisse', flag: '🇨🇭' },
+  { code: 'SE', name: 'Suède', flag: '🇸🇪' },
+  { code: 'UA', name: 'Ukraine', flag: '🇺🇦' },
+  { code: 'VA', name: 'Vatican', flag: '🇻🇦' },
+  
+  // PAYS SPÉCIAUX (hors Europe)
+  { code: 'CA', name: 'Canada', flag: '🇨🇦' },
+  { code: 'US', name: 'États-Unis', flag: '🇺🇸' },
   { code: 'MA', name: 'Maroc', flag: '🇲🇦' },
-  { code: 'OTHER', name: 'Autre', flag: '🌍' }
+  { code: 'TH', name: 'Thaïlande', flag: '🇹🇭' }
 ];
 
 // Fonction utilitaire pour éditer les messages avec gestion robuste des erreurs et désactivation des aperçus de liens
