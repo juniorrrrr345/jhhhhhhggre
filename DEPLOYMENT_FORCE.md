@@ -1,11 +1,11 @@
 # Force Deployment
 
-This file is used to force a new deployment to ensure the latest commit is used.
+Ce fichier sert à forcer un nouveau déploiement sur Render.
 
-Last update: 2024-12-28 - Force deployment of commit 67db110
+**Dernière mise à jour :** 2024-01-XX - Ajout boutons retour sur TOUTES les questions du formulaire
 
-## Changes in this deployment:
-- Fixed handleServiceToggle error 
-- Added department validation
-- Fixed form flow and translations
-- Added go back buttons
+## Changements récents
+- ✅ Boutons "retour" ajoutés sur toutes les questions du formulaire d'inscription
+- ✅ Fonction handleGoBack complétée pour tous les cas de retour
+- ✅ Navigation complète possible dans tout le formulaire
+- ✅ Cohérence des boutons retour/passer/annuler sur toutes les étapes
