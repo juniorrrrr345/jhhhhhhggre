@@ -3259,9 +3259,18 @@ const handleUserAnalytics = async (req, res) => {
   }
 };
 
-// Routes pour user analytics (GET et POST)
+// Routes pour user analytics (GET et POST) - sans auth pour debug
 app.get('/api/admin/user-analytics', handleUserAnalytics);
 app.post('/api/admin/user-analytics', handleUserAnalytics);
+
+// Test endpoint pour vérifier le proxy
+app.get('/api/test-proxy', (req, res) => {
+  res.json({ 
+    success: true, 
+    message: 'Proxy fonctionne!', 
+    timestamp: new Date().toISOString() 
+  });
+});
 
 // DEBUG: Endpoint pour vérifier les utilisateurs dans la DB
 app.get('/api/debug/users-check', async (req, res) => {
