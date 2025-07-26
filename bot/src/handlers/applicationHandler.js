@@ -582,21 +582,56 @@ const handleFormMessage = async (ctx) => {
         }
         
         userForm.data.departmentsDelivery = text;
-        userForm.step = 'photo';
         userForms.set(userId, userForm);
         
-        // Éditer le message existant pour montrer l'étape suivante
-        const photoFromDeliveryMessage = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
-          `⸻\n\n` +
-          `${getTranslation('registration.step10', currentLang, customTranslations)}\n\n` +
-          `${getTranslation('registration.shopPhotoQuestion', currentLang, customTranslations)}\n\n` +
-          `${getTranslation('registration.shopPhotoInstruction', currentLang, customTranslations)}`;
+        // Passer au service suivant selon ce qui est activé
+        const services = userForm.data.services;
+        if (services.meetup.enabled) {
+          userForm.step = 'departments_meetup';
+          userForms.set(userId, userForm);
+          await askDepartmentsMeetup(ctx);
+        } else if (services.shipping.enabled) {
+          userForm.step = 'departments_shipping';
+          userForms.set(userId, userForm);
+          await askDepartmentsShipping(ctx);
+        } else {
+          userForm.step = 'confirmation';
+          userForms.set(userId, userForm);
+          await askConfirmation(ctx);
+        }
+        break;
+
+      case 'departments_meetup':
+        if (text.length < 2) {
+          return await ctx.reply(getTranslation('registration.error.departmentsLength', currentLang, customTranslations));
+        }
         
-        const photoFromDeliveryKeyboard = Markup.inlineKeyboard([
-          [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
-        ]);
+        userForm.data.departmentsMeetup = text;
+        userForms.set(userId, userForm);
         
-        await editLastFormMessage(ctx, userId, photoFromDeliveryMessage, photoFromDeliveryKeyboard);
+        // Passer au service suivant selon ce qui est activé
+        const servicesAfterMeetup = userForm.data.services;
+        if (servicesAfterMeetup.shipping.enabled) {
+          userForm.step = 'departments_shipping';
+          userForms.set(userId, userForm);
+          await askDepartmentsShipping(ctx);
+        } else {
+          userForm.step = 'confirmation';
+          userForms.set(userId, userForm);
+          await askConfirmation(ctx);
+        }
+        break;
+
+      case 'departments_shipping':
+        if (text.length < 2) {
+          return await ctx.reply(getTranslation('registration.error.departmentsLength', currentLang, customTranslations));
+        }
+        
+        userForm.data.departmentsShipping = text;
+        userForm.step = 'confirmation';
+        userForms.set(userId, userForm);
+        
+        await askConfirmation(ctx);
         break;
     }
     
@@ -1175,24 +1210,89 @@ const askServices = async (ctx) => {
 
   const message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
     `⸻\n\n` +
-    `${getTranslation('registration.step13', currentLang, customTranslations)}\n\n` +
-    `${getTranslation('registration.servicesQuestion', currentLang, customTranslations)}\n` +
-    `${getTranslation('registration.selectServices', currentLang, customTranslations)}\n\n` +
-    `${getTranslation('registration.servicesAvailable', currentLang, customTranslations)}`;
+    `${getTranslation('registration.step11Services', currentLang, customTranslations)}\n\n` +
+    `${getTranslation('registration.servicesQuestion', currentLang, customTranslations)}\n\n` +
+    `${getTranslation('registration.servicesInstruction', currentLang, customTranslations)}`;
   
   const keyboard = Markup.inlineKeyboard([
     [
-      Markup.button.callback(`📍 ${getTranslation('service_meetup', currentLang, customTranslations)}`, 'service_meetup'),
-      Markup.button.callback(`🚚 ${getTranslation('service_delivery', currentLang, customTranslations)}`, 'service_delivery')
+      Markup.button.callback(getTranslation('registration.serviceMeetup', currentLang, customTranslations), 'service_meetup'),
+      Markup.button.callback(getTranslation('registration.serviceDelivery', currentLang, customTranslations), 'service_delivery')
     ],
-    [Markup.button.callback(`✈️ ${getTranslation('service_postal', currentLang, customTranslations)}`, 'service_postal')],
-    [Markup.button.callback(`✅ ${getTranslation('registration.finishSelection', currentLang, customTranslations)}`, 'services_done')],
+    [Markup.button.callback(getTranslation('registration.serviceShipping', currentLang, customTranslations), 'service_shipping')],
+    [Markup.button.callback(getTranslation('registration.continueToNext', currentLang, customTranslations), 'services_done')],
     [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
   ]);
   
   await safeEditMessage(ctx, message, {
     reply_markup: keyboard.reply_markup,
     parse_mode: 'Markdown'
+  });
+};
+
+// Demander les départements pour la livraison
+const askDepartmentsDelivery = async (ctx) => {
+  const Config = require('../models/Config');
+  const config = await Config.findById('main');
+  const currentLang = config?.languages?.currentLanguage || 'fr';
+  const customTranslations = config?.languages?.translations;
+
+  const message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
+    `⸻\n\n` +
+    `${getTranslation('registration.step12Delivery', currentLang, customTranslations)}\n\n` +
+    `${getTranslation('registration.departmentsDeliveryQuestion', currentLang, customTranslations)}\n\n` +
+    `${getTranslation('registration.departmentsInstruction', currentLang, customTranslations)}`;
+  
+  const keyboard = Markup.inlineKeyboard([
+    [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
+  ]);
+  
+  await safeEditMessage(ctx, message, {
+    reply_markup: keyboard.reply_markup
+  });
+};
+
+// Demander les départements pour le meetup
+const askDepartmentsMeetup = async (ctx) => {
+  const Config = require('../models/Config');
+  const config = await Config.findById('main');
+  const currentLang = config?.languages?.currentLanguage || 'fr';
+  const customTranslations = config?.languages?.translations;
+
+  const message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
+    `⸻\n\n` +
+    `${getTranslation('registration.step13Meetup', currentLang, customTranslations)}\n\n` +
+    `${getTranslation('registration.departmentsMeetupQuestion', currentLang, customTranslations)}\n\n` +
+    `${getTranslation('registration.departmentsInstruction', currentLang, customTranslations)}`;
+  
+  const keyboard = Markup.inlineKeyboard([
+    [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
+  ]);
+  
+  await safeEditMessage(ctx, message, {
+    reply_markup: keyboard.reply_markup
+  });
+};
+
+// Demander les départements pour l'envoi
+const askDepartmentsShipping = async (ctx) => {
+  const Config = require('../models/Config');
+  const config = await Config.findById('main');
+  const currentLang = config?.languages?.currentLanguage || 'fr';
+  const customTranslations = config?.languages?.translations;
+
+  const message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
+    `⸻\n\n` +
+    `${getTranslation('registration.step14Shipping', currentLang, customTranslations)}\n\n` +
+    `${getTranslation('registration.departmentsShippingQuestion', currentLang, customTranslations)}\n\n` +
+    `${getTranslation('registration.departmentsInstruction', currentLang, customTranslations)}`;
+  
+  const keyboard = Markup.inlineKeyboard([
+    [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
+  ]);
+  
+  await safeEditMessage(ctx, message, {
+    reply_markup: keyboard.reply_markup
   });
 };
 
@@ -1211,7 +1311,7 @@ const handleServiceToggle = async (ctx) => {
     if (!userForm.data.services) {
       userForm.data.services = {
         delivery: { enabled: false },
-        postal: { enabled: false },
+        shipping: { enabled: false },
         meetup: { enabled: false }
       };
     }
@@ -1281,22 +1381,28 @@ const handleServicesDone = async (ctx) => {
     }
     
     const services = userForm.data.services;
-    if (!services.delivery.enabled && !services.postal.enabled && !services.meetup.enabled) {
+    if (!services.delivery.enabled && !services.shipping.enabled && !services.meetup.enabled) {
       return await ctx.answerCbQuery('❌ Tu dois sélectionner au moins un service');
     }
     
-            // Si meetup est sélectionné, demander les départements meetup
-        if (services.meetup.enabled) {
-          userForm.step = 'departments_meetup';
-          userForms.set(userId, userForm);
-          
-          await askDepartmentsMeetup(ctx);
-        } else {
-          // Sinon passer directement à la photo
-          userForm.step = 'photo';
-          userForms.set(userId, userForm);
-          await askPhoto(ctx);
-        }
+    // Ordre : Livraison → Meetup → Envoi → Confirmation
+    if (services.delivery.enabled) {
+      userForm.step = 'departments_delivery';
+      userForms.set(userId, userForm);
+      await askDepartmentsDelivery(ctx);
+    } else if (services.meetup.enabled) {
+      userForm.step = 'departments_meetup';
+      userForms.set(userId, userForm);
+      await askDepartmentsMeetup(ctx);
+    } else if (services.shipping.enabled) {
+      userForm.step = 'departments_shipping';
+      userForms.set(userId, userForm);
+      await askDepartmentsShipping(ctx);
+    } else {
+      userForm.step = 'confirmation';
+      userForms.set(userId, userForm);
+      await askConfirmation(ctx);
+    }
     
     await ctx.answerCbQuery();
     
@@ -1341,7 +1447,7 @@ const askConfirmation = async (ctx) => {
   const userForm = userForms.get(ctx.from.id);
   const message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
     `⸻\n\n` +
-    `${getTranslation('registration.step11', currentLang, customTranslations)}\n\n` +
+    `${getTranslation('registration.step15Confirmation', currentLang, customTranslations)}\n\n` +
     `${getTranslation('registration.finalSummary', currentLang, customTranslations)}\n\n` +
     `• ${getTranslation('registration.plugName', currentLang, customTranslations)} : ${userForm.data.name}\n` +
     `• Telegram : ${userForm.data.telegram}\n` +
@@ -1353,8 +1459,11 @@ const askConfirmation = async (ctx) => {
     `${userForm.data.session ? `• Session : ${userForm.data.session}\n` : ''}` +
     `${userForm.data.instagram ? `• Instagram : ${userForm.data.instagram}\n` : ''}` +
     `${userForm.data.telegramBot ? `• Bot Telegram : ${userForm.data.telegramBot}\n` : ''}` +
-    `• Photo de boutique : ✔️ Reçu\n\n` +
-    `${getTranslation('registration.confirmInscription', currentLang, customTranslations)}`;
+    `• Photo de boutique : ✔️ Reçu\n` +
+    `${userForm.data.services && userForm.data.services.delivery.enabled ? `• Livraison : ${userForm.data.departmentsDelivery || 'Non spécifiés'}\n` : ''}` +
+    `${userForm.data.services && userForm.data.services.meetup.enabled ? `• Meetup : ${userForm.data.departmentsMeetup || 'Non spécifiés'}\n` : ''}` +
+    `${userForm.data.services && userForm.data.services.shipping.enabled ? `• Envoi : ${userForm.data.departmentsShipping || 'Non spécifiés'}\n` : ''}` +
+    `\n${getTranslation('registration.confirmInscription', currentLang, customTranslations)}`;
   
   const keyboard = Markup.inlineKeyboard([
     [
@@ -1395,17 +1504,17 @@ const handlePhoto = async (ctx) => {
       height: photo.height
     };
     
-    userForm.step = 'confirmation';
+    userForm.step = 'services';
     userForms.set(userId, userForm);
     
-    // Confirmer réception et passer à la confirmation
+    // Confirmer réception et passer aux services
     const Config = require('../models/Config');
     const config = await Config.findById('main');
     const currentLang = config?.languages?.currentLanguage || 'fr';
     const customTranslations = config?.languages?.translations;
     
     await ctx.reply(getTranslation('registration.photoReceived', currentLang, customTranslations));
-    await askConfirmation(ctx);
+    await askServices(ctx);
     
   } catch (error) {
     console.error('Erreur dans handlePhoto:', error);
@@ -1669,8 +1778,11 @@ const submitApplication = async (ctx) => {
       return;
     }
     
-    // Services par défaut (le formulaire actuel ne collecte pas cette info)
-    const servicesArray = ['delivery', 'meetup']; // Services par défaut
+    // Convertir les services sélectionnés en array
+    const servicesArray = [];
+    if (userForm.data.services?.delivery?.enabled) servicesArray.push('delivery');
+    if (userForm.data.services?.meetup?.enabled) servicesArray.push('meetup');
+    if (userForm.data.services?.shipping?.enabled) servicesArray.push('shipping');
     
     console.log('📋 SUBMIT DEBUG: Creating application with data:', {
       userId: userForm.data.userId,
@@ -1712,6 +1824,11 @@ const submitApplication = async (ctx) => {
         session: userForm.data.session || '',
         threema: userForm.data.threema || '',
         other: ''
+      },
+      departments: {
+        delivery: userForm.data.departmentsDelivery || '',
+        meetup: userForm.data.departmentsMeetup || '',
+        shipping: userForm.data.departmentsShipping || ''
       },
       photo: userForm.data.photo ? userForm.data.photo.fileId : null, // Juste le fileId
       photoUrl: userForm.data.photo ? userForm.data.photo.fileId : null

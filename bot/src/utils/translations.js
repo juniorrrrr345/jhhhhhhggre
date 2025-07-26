@@ -557,12 +557,40 @@ const translations = {
       es: '🟦 Paso 11: Logo de la tienda',
       de: '🟦 Schritt 11: Shop-Logo'
     },
-    'registration.step11': {
-      fr: '🟦 Étape 11 : Confirmation',
-      en: '🟦 Step 11: Confirmation',
-      it: '🟦 Fase 11: Conferma',
-      es: '🟦 Paso 11: Confirmación',
-      de: '🟦 Schritt 11: Bestätigung'
+    'registration.step11Services': {
+      fr: '🟦 Étape 12 : Services',
+      en: '🟦 Step 12: Services',
+      it: '🟦 Fase 12: Servizi',
+      es: '🟦 Paso 12: Servicios',
+      de: '🟦 Schritt 12: Services'
+    },
+    'registration.step12Delivery': {
+      fr: '🟦 Étape 13 : Départements Livraison',
+      en: '🟦 Step 13: Delivery Departments',
+      it: '🟦 Fase 13: Dipartimenti Consegna',
+      es: '🟦 Paso 13: Departamentos Entrega',
+      de: '🟦 Schritt 13: Lieferung Departements'
+    },
+    'registration.step13Meetup': {
+      fr: '🟦 Étape 14 : Départements Meetup',
+      en: '🟦 Step 14: Meetup Departments',
+      it: '🟦 Fase 14: Dipartimenti Meetup',
+      es: '🟦 Paso 14: Departamentos Meetup',
+      de: '🟦 Schritt 14: Meetup Departements'
+    },
+    'registration.step14Shipping': {
+      fr: '🟦 Étape 15 : Départements Envoi',
+      en: '🟦 Step 15: Shipping Departments',
+      it: '🟦 Fase 15: Dipartimenti Spedizione',
+      es: '🟦 Paso 15: Departamentos Envío',
+      de: '🟦 Schritt 15: Versand Departements'
+    },
+    'registration.step15Confirmation': {
+      fr: '🟦 Étape 16 : Confirmation',
+      en: '🟦 Step 16: Confirmation',
+      it: '🟦 Fase 16: Conferma',
+      es: '🟦 Paso 16: Confirmación',
+      de: '🟦 Schritt 16: Bestätigung'
     },
     'registration.step12': {
       fr: '🟦 Étape 12 : Pays de service',
@@ -712,6 +740,69 @@ const translations = {
       it: '🚚 Quali servizi offri?',
       es: '🚚 ¿Qué servicios ofreces?',
       de: '🚚 Welche Services bieten Sie an?'
+    },
+    'registration.serviceDelivery': {
+      fr: '🚚 Livraison',
+      en: '🚚 Delivery',
+      it: '🚚 Consegna',
+      es: '🚚 Entrega',
+      de: '🚚 Lieferung'
+    },
+    'registration.serviceMeetup': {
+      fr: '🤝 Meetup',
+      en: '🤝 Meetup',
+      it: '🤝 Meetup',
+      es: '🤝 Meetup',
+      de: '🤝 Meetup'
+    },
+    'registration.serviceShipping': {
+      fr: '📦 Envoi',
+      en: '📦 Shipping',
+      it: '📦 Spedizione',
+      es: '📦 Envío',
+      de: '📦 Versand'
+    },
+    'registration.servicesInstruction': {
+      fr: 'Sélectionne tous les services que tu proposes :',
+      en: 'Select all services you offer:',
+      it: 'Seleziona tutti i servizi che offri:',
+      es: 'Selecciona todos los servicios que ofreces:',
+      de: 'Wählen Sie alle Services aus, die Sie anbieten:'
+    },
+    'registration.departmentsDeliveryQuestion': {
+      fr: '🚚 Dans quels départements fais-tu de la LIVRAISON ?',
+      en: '🚚 In which departments do you do DELIVERY?',
+      it: '🚚 In quali dipartimenti fai CONSEGNA?',
+      es: '🚚 ¿En qué departamentos haces ENTREGA?',
+      de: '🚚 In welchen Departements machen Sie LIEFERUNG?'
+    },
+    'registration.departmentsMeetupQuestion': {
+      fr: '🤝 Dans quels départements fais-tu du MEETUP ?',
+      en: '🤝 In which departments do you do MEETUP?',
+      it: '🤝 In quali dipartimenti fai MEETUP?',
+      es: '🤝 ¿En qué departamentos haces MEETUP?',
+      de: '🤝 In welchen Departements machen Sie MEETUP?'
+    },
+    'registration.departmentsShippingQuestion': {
+      fr: '📦 Dans quels départements fais-tu de l\'ENVOI ?',
+      en: '📦 In which departments do you do SHIPPING?',
+      it: '📦 In quali dipartimenti fai SPEDIZIONE?',
+      es: '📦 ¿En qué departamentos haces ENVÍO?',
+      de: '📦 In welchen Departements machen Sie VERSAND?'
+    },
+    'registration.departmentsInstruction': {
+      fr: 'Écris les départements séparés par des virgules (ex: 75, 92, 93)',
+      en: 'Write departments separated by commas (ex: 75, 92, 93)',
+      it: 'Scrivi i dipartimenti separati da virgole (es: 75, 92, 93)',
+      es: 'Escribe los departamentos separados por comas (ej: 75, 92, 93)',
+      de: 'Schreiben Sie Departements getrennt durch Kommas (z.B: 75, 92, 93)'
+    },
+    'registration.continueToNext': {
+      fr: '➡️ Continuer',
+      en: '➡️ Continue',
+      it: '➡️ Continua',
+      es: '➡️ Continuar',
+      de: '➡️ Weiter'
     },
 
     // === ERREURS SPÉCIFIQUES RÉSEAUX ===
