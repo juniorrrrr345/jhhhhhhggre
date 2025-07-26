@@ -385,14 +385,7 @@ export default function EditPlug() {
     }))
   }
 
-  const toggleCountry = (country) => {
-    setFormData(prev => ({
-      ...prev,
-      countries: prev.countries.includes(country)
-        ? prev.countries.filter(c => c !== country)
-        : [...prev.countries, country]
-    }))
-  }
+
 
   const hasChanges = () => {
     return JSON.stringify(formData) !== JSON.stringify(originalData)
