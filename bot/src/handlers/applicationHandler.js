@@ -1504,9 +1504,9 @@ const askConfirmation = async (ctx) => {
     `${userForm.data.instagram ? `• Instagram : ${userForm.data.instagram}\n` : ''}` +
     `${userForm.data.telegramBot ? `• Bot Telegram : ${userForm.data.telegramBot}\n` : ''}` +
     `• Photo de boutique : ✔️ Reçu\n` +
-    `${userForm.data.services && userForm.data.services.delivery && userForm.data.services.delivery.enabled ? `• Livraison : ${userForm.data.departmentsDelivery || 'Non spécifiés'}\n` : ''}` +
-    `${userForm.data.services && userForm.data.services.meetup && userForm.data.services.meetup.enabled ? `• Meetup : ${userForm.data.departmentsMeetup || 'Non spécifiés'}\n` : ''}` +
-    `${userForm.data.services && userForm.data.services.shipping && userForm.data.services.shipping.enabled ? `• Envoi : ${userForm.data.shippingCountries || 'Non spécifiés'}\n` : ''}` +
+    `${userForm.data.departmentsDelivery ? `• Livraison : ${userForm.data.departmentsDelivery}\n` : ''}` +
+    `${userForm.data.departmentsMeetup ? `• Meetup : ${userForm.data.departmentsMeetup}\n` : ''}` +
+    `${userForm.data.shippingCountries ? `• Envoi : ${userForm.data.shippingCountries}\n` : ''}` +
     `\n${getTranslation('registration.confirmInscription', currentLang, customTranslations)}`;
   
   const keyboard = Markup.inlineKeyboard([
