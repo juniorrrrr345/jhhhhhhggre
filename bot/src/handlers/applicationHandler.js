@@ -1320,13 +1320,15 @@ const submitApplication = async (ctx) => {
       services: servicesArray, // Format array au lieu d'object
       contact: {
         telegram: userForm.data.telegram,
-        instagram: userForm.data.instagram,
-        potato: userForm.data.potato,
-        snapchat: userForm.data.snapchat,
-        whatsapp: userForm.data.whatsapp,
-        signal: userForm.data.signal,
-        session: userForm.data.session,
-        threema: userForm.data.threema,
+        telegramChannel: userForm.data.telegramChannel || '',
+        telegramBot: userForm.data.telegramBot || '',
+        instagram: userForm.data.instagram || '',
+        potato: userForm.data.potato || '',
+        snapchat: userForm.data.snapchat || '',
+        whatsapp: userForm.data.whatsapp || '',
+        signal: userForm.data.signal || '',
+        session: userForm.data.session || '',
+        threema: userForm.data.threema || '',
         other: ''
       },
       photo: userForm.data.photo ? userForm.data.photo.fileId : null, // Juste le fileId

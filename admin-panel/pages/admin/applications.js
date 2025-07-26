@@ -536,9 +536,81 @@ export default function Applications() {
                     </div>
                   </div>
 
+                  {/* Contacts et réseaux sociaux */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">Contact Telegram</label>
-                    <p className="text-sm text-gray-900">{selectedApp.telegramContact}</p>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Contacts et réseaux sociaux</label>
+                    <div className="space-y-2">
+                      {selectedApp.contact?.telegram && (
+                        <div className="flex items-center space-x-2">
+                          <span className="text-blue-600 font-medium">📱 Telegram:</span>
+                          <span className="text-sm text-gray-900">{selectedApp.contact.telegram}</span>
+                        </div>
+                      )}
+                      {selectedApp.contact?.telegramChannel && (
+                        <div className="flex items-center space-x-2">
+                          <span className="text-blue-600 font-medium">📢 Canal Telegram:</span>
+                          <span className="text-sm text-gray-900">{selectedApp.contact.telegramChannel}</span>
+                        </div>
+                      )}
+                      {selectedApp.contact?.telegramBot && (
+                        <div className="flex items-center space-x-2">
+                          <span className="text-blue-600 font-medium">🤖 Bot Telegram:</span>
+                          <span className="text-sm text-gray-900">{selectedApp.contact.telegramBot}</span>
+                        </div>
+                      )}
+                      {selectedApp.contact?.instagram && (
+                        <div className="flex items-center space-x-2">
+                          <span className="text-pink-600 font-medium">📷 Instagram:</span>
+                          <span className="text-sm text-gray-900">{selectedApp.contact.instagram}</span>
+                        </div>
+                      )}
+                      {selectedApp.contact?.potato && (
+                        <div className="flex items-center space-x-2">
+                          <span className="text-yellow-600 font-medium">🥔 Potato:</span>
+                          <span className="text-sm text-gray-900">{selectedApp.contact.potato}</span>
+                        </div>
+                      )}
+                      {selectedApp.contact?.snapchat && (
+                        <div className="flex items-center space-x-2">
+                          <span className="text-yellow-500 font-medium">👻 Snapchat:</span>
+                          <span className="text-sm text-gray-900">{selectedApp.contact.snapchat}</span>
+                        </div>
+                      )}
+                      {selectedApp.contact?.whatsapp && (
+                        <div className="flex items-center space-x-2">
+                          <span className="text-green-600 font-medium">💬 WhatsApp:</span>
+                          <span className="text-sm text-gray-900">{selectedApp.contact.whatsapp}</span>
+                        </div>
+                      )}
+                      {selectedApp.contact?.signal && (
+                        <div className="flex items-center space-x-2">
+                          <span className="text-blue-700 font-medium">🔒 Signal:</span>
+                          <span className="text-sm text-gray-900">{selectedApp.contact.signal}</span>
+                        </div>
+                      )}
+                      {selectedApp.contact?.session && (
+                        <div className="flex items-center space-x-2">
+                          <span className="text-purple-600 font-medium">🛡️ Session:</span>
+                          <span className="text-sm text-gray-900">{selectedApp.contact.session}</span>
+                        </div>
+                      )}
+                      {selectedApp.contact?.threema && (
+                        <div className="flex items-center space-x-2">
+                          <span className="text-green-700 font-medium">🔐 Threema:</span>
+                          <span className="text-sm text-gray-900">{selectedApp.contact.threema}</span>
+                        </div>
+                      )}
+                      {!selectedApp.contact?.telegram && !selectedApp.telegramContact && (
+                        <div className="text-gray-500 text-sm">Aucune information de contact disponible</div>
+                      )}
+                      {/* Fallback pour ancienne structure */}
+                      {selectedApp.telegramContact && !selectedApp.contact?.telegram && (
+                        <div className="flex items-center space-x-2">
+                          <span className="text-blue-600 font-medium">📱 Telegram:</span>
+                          <span className="text-sm text-gray-900">{selectedApp.telegramContact}</span>
+                        </div>
+                      )}
+                    </div>
                   </div>
 
                   {(selectedApp.photo || selectedApp.photoUrl) && (

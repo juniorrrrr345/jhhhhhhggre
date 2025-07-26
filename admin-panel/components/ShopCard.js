@@ -207,7 +207,7 @@ export default function ShopCard({ plug, index, layout = 'grid', currentLanguage
             </h3>
           </div>
 
-          {/* Services - Structure améliorée */}
+          {/* Services avec départements - Structure améliorée */}
           <div style={{ 
             display: 'flex', 
             flexWrap: 'wrap',
@@ -230,6 +230,11 @@ export default function ShopCard({ plug, index, layout = 'grid', currentLanguage
               }}>
                 <span>📦</span>
                 <span>{translateService('delivery')}</span>
+                {plug.services?.delivery?.departments && plug.services.delivery.departments.length > 0 && (
+                  <span style={{ opacity: 0.8, marginLeft: '2px' }}>
+                    ({plug.services.delivery.departments.sort((a, b) => a.localeCompare(b, undefined, { numeric: true })).slice(0, 3).join(', ')}{plug.services.delivery.departments.length > 3 ? '...' : ''})
+                  </span>
+                )}
               </div>
             )}
             {plug.services?.postal?.enabled && (
@@ -264,6 +269,11 @@ export default function ShopCard({ plug, index, layout = 'grid', currentLanguage
               }}>
                 <span>🤝</span>
                 <span>{translateService('meetup')}</span>
+                {plug.services?.meetup?.departments && plug.services.meetup.departments.length > 0 && (
+                  <span style={{ opacity: 0.8, marginLeft: '2px' }}>
+                    ({plug.services.meetup.departments.sort((a, b) => a.localeCompare(b, undefined, { numeric: true })).slice(0, 3).join(', ')}{plug.services.meetup.departments.length > 3 ? '...' : ''})
+                  </span>
+                )}
               </div>
             )}
           </div>

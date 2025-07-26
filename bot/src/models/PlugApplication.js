@@ -49,11 +49,56 @@ const plugApplicationSchema = new mongoose.Schema({
     default: []
   },
   
-  // Contact
+  // Contact et réseaux sociaux
   contact: {
     telegram: {
       type: String,
       required: true,
+      trim: true
+    },
+    telegramChannel: {
+      type: String,
+      default: '',
+      trim: true
+    },
+    telegramBot: {
+      type: String,
+      default: '',
+      trim: true
+    },
+    instagram: {
+      type: String,
+      default: '',
+      trim: true
+    },
+    potato: {
+      type: String,
+      default: '',
+      trim: true
+    },
+    snapchat: {
+      type: String,
+      default: '',
+      trim: true
+    },
+    whatsapp: {
+      type: String,
+      default: '',
+      trim: true
+    },
+    signal: {
+      type: String,
+      default: '',
+      trim: true
+    },
+    session: {
+      type: String,
+      default: '',
+      trim: true
+    },
+    threema: {
+      type: String,
+      default: '',
       trim: true
     },
     other: {
