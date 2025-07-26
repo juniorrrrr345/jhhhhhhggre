@@ -1589,9 +1589,11 @@ bot.action('go_back_photo', async (ctx) => {
     
     console.log('📝 Message préparé, longueur:', photoMessage.length);
     
-    const { editLastFormMessage } = require('./src/handlers/applicationHandler');
-    await editLastFormMessage(ctx, userId, photoMessage, photoKeyboard);
-    console.log('✅ editLastFormMessage appelé avec succès');
+    await safeEditMessage(ctx, photoMessage, {
+      reply_markup: photoKeyboard.reply_markup,
+      parse_mode: 'Markdown'
+    });
+    console.log('✅ safeEditMessage appelé avec succès');
     
   } catch (error) {
     console.error('❌ Erreur go_back_photo:', error);
