@@ -563,38 +563,7 @@ const handleFormMessage = async (ctx) => {
         
         /* OLD CODE - À SUPPRIMER
         // Si livraison est aussi sélectionné, demander les départements livraison
-        if (userForm.data.services && userForm.data.services.delivery && userForm.data.services.delivery.enabled) {
-          userForm.step = 'departments_delivery';
-          userForms.set(userId, userForm);
-          
-          const deliveryDeptMessage = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
-            `⸻\n\n` +
-            `${getTranslation('registration.step14', currentLang, customTranslations)}\n\n` +
-            `${getTranslation('registration.departmentsDeliveryQuestion', currentLang, customTranslations)}`;
-          
-          const deliveryDeptKeyboard = Markup.inlineKeyboard([
-            [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
-          ]);
-          
-          await editLastFormMessage(ctx, userId, deliveryDeptMessage, deliveryDeptKeyboard);
-        } else {
-          // Sinon passer directement à la photo
-          userForm.step = 'photo';
-          userForms.set(userId, userForm);
-          
-          const photoFromMeetupMessage = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
-            `⸻\n\n` +
-            `${getTranslation('registration.step11Photo', currentLang, customTranslations)}\n\n` +
-            `${getTranslation('registration.shopPhotoQuestion', currentLang, customTranslations)}\n\n` +
-            `${getTranslation('registration.shopPhotoInstruction', currentLang, customTranslations)}`;
-          
-          const photoFromMeetupKeyboard = Markup.inlineKeyboard([
-            [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
-          ]);
-          
-          await editLastFormMessage(ctx, userId, photoFromMeetupMessage, photoFromMeetupKeyboard);
-        }
-        break;
+                 */
         
       case 'departments_delivery':
         console.log(`🔵 ENTERING case 'departments_delivery' for user ${userId}`);
@@ -768,7 +737,7 @@ const replyWithStep = async (ctx, step) => {
       message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
         `${summary}` +
         `⸻\n\n` +
-        `${getTranslation('registration.step4', currentLang, customTranslations)}\n\n` +
+        `${getTranslation('registration.step9', currentLang, customTranslations)}\n\n` +
         `${getTranslation('registration.instagramQuestion', currentLang, customTranslations)}\n\n` +
         `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
       keyboard = Markup.inlineKeyboard([
@@ -1769,7 +1738,7 @@ const handleSkipStep = async (ctx, step) => {
         
         const instagramMessage = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
           `⸻\n\n` +
-          `${getTranslation('registration.step4', currentLang, customTranslations)}\n\n` +
+          `${getTranslation('registration.step9', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.instagramQuestion', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
         
