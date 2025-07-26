@@ -556,6 +556,102 @@ bot.action('confirm_shipping_countries', async (ctx) => {
   }
 });
 
+// Handlers pour la sélection des pays de livraison
+bot.action(/^delivery_country_(.+)$/, async (ctx) => {
+  try {
+    const country = ctx.match[1];
+    const userId = ctx.from.id;
+    const userForm = userForms.get(userId);
+    
+    if (!userForm || userForm.step !== 'countries_delivery') {
+      return await ctx.answerCbQuery('❌ Session expirée');
+    }
+
+    // Initialiser la liste des pays sélectionnés si elle n'existe pas
+    if (!userForm.selectedDeliveryCountries) {
+      userForm.selectedDeliveryCountries = [];
+    }
+
+    // Toggle du pays (ajouter/supprimer)
+    const index = userForm.selectedDeliveryCountries.indexOf(country);
+    if (index > -1) {
+      // Supprimer le pays
+      userForm.selectedDeliveryCountries.splice(index, 1);
+      await ctx.answerCbQuery(`❌ ${country} supprimé`);
+    } else {
+      // Ajouter le pays
+      userForm.selectedDeliveryCountries.push(country);
+      await ctx.answerCbQuery(`✅ ${country} ajouté`);
+    }
+
+    userForms.set(userId, userForm);
+    
+    // Mettre à jour l'affichage
+    const { askCountriesDelivery } = require('./src/handlers/applicationHandler');
+    const departments = userForm.data.departmentsDelivery.split(', ');
+    await askCountriesDelivery(ctx, departments);
+    
+  } catch (error) {
+    console.error('Erreur sélection pays de livraison:', error);
+    await ctx.answerCbQuery('❌ Erreur lors de la sélection');
+  }
+});
+
+bot.action('confirm_delivery_countries', async (ctx) => {
+  try {
+    const userId = ctx.from.id;
+    const userForm = userForms.get(userId);
+    
+    if (!userForm || userForm.step !== 'countries_delivery') {
+      return await ctx.answerCbQuery('❌ Session expirée');
+    }
+
+    if (!userForm.selectedDeliveryCountries || userForm.selectedDeliveryCountries.length === 0) {
+      return await ctx.answerCbQuery('❌ Veuillez sélectionner au moins un pays');
+    }
+
+    // Sauvegarder les pays sélectionnés dans countries
+    userForm.data.countries = userForm.selectedDeliveryCountries;
+    userForm.step = 'departments_meetup';
+    userForms.set(userId, userForm);
+
+    await ctx.answerCbQuery('✅ Pays de livraison confirmés');
+    
+    // Passer à l'étape meetup
+    const { askDepartmentsMeetup } = require('./src/handlers/applicationHandler');
+    await askDepartmentsMeetup(ctx);
+    
+  } catch (error) {
+    console.error('Erreur confirmation pays de livraison:', error);
+    await ctx.answerCbQuery('❌ Erreur lors de la confirmation');
+  }
+});
+
+bot.action('retry_departments_delivery', async (ctx) => {
+  try {
+    const userId = ctx.from.id;
+    const userForm = userForms.get(userId);
+    
+    if (!userForm) {
+      return await ctx.answerCbQuery('❌ Session expirée');
+    }
+
+    // Retourner à la saisie des départements
+    userForm.step = 'departments_delivery';
+    userForm.selectedDeliveryCountries = [];
+    userForms.set(userId, userForm);
+
+    await ctx.answerCbQuery('🔄 Retour à la saisie');
+    
+    const { askDepartmentsDelivery } = require('./src/handlers/applicationHandler');
+    await askDepartmentsDelivery(ctx);
+    
+  } catch (error) {
+    console.error('Erreur retour départements livraison:', error);
+    await ctx.answerCbQuery('❌ Erreur lors du retour');
+  }
+});
+
 // Handlers pour les boutons "Retour"
 bot.action('go_back_name', handleGoBack);
 bot.action('go_back_telegram', handleGoBack);

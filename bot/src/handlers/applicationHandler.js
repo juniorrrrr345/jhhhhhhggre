@@ -615,7 +615,7 @@ const handleFormMessage = async (ctx) => {
         }
         
         // Validation: vérifier que seuls des chiffres et virgules sont utilisés
-        const departmentPattern = /^[\d\s,]+$/;
+        const departmentPattern = /^[\d\s,A-Za-z]+$/;
         if (!departmentPattern.test(text)) {
           // Envoyer message d'erreur temporaire puis redemander
           await ctx.reply(getTranslation('registration.error.departmentsNumbers', currentLang, customTranslations));
@@ -623,14 +623,15 @@ const handleFormMessage = async (ctx) => {
           return;
         }
         
-        userForm.data.departmentsDelivery = text;
+        // Parser les départements
+        const departments = text.split(',').map(d => d.trim()).filter(d => d.length > 0);
+        userForm.data.departmentsDelivery = departments.join(', ');
+        userForm.selectedDeliveryCountries = []; // Réinitialiser les pays sélectionnés
+        userForm.step = 'countries_delivery'; // Nouvelle étape pour sélection pays
         userForms.set(userId, userForm);
         
-        // Toujours passer à meetup maintenant
-        console.log('✅ DELIVERY DONE: Going to departments_meetup');
-        userForm.step = 'departments_meetup';
-        userForms.set(userId, userForm);
-        await askDepartmentsMeetup(ctx);
+        console.log('✅ DELIVERY DEPARTMENTS: Going to countries_delivery');
+        await askCountriesDelivery(ctx, departments);
         break;
 
       case 'departments_meetup':
@@ -1296,7 +1297,7 @@ const askServices = async (ctx) => {
   });
 };
 
-// Demander les départements pour la livraison
+// Demander les départements pour la livraison (Étape 1: saisie départements)
 const askDepartmentsDelivery = async (ctx) => {
   const Config = require('../models/Config');
   const config = await Config.findById('main');
@@ -1314,6 +1315,67 @@ const askDepartmentsDelivery = async (ctx) => {
     [Markup.button.callback(getTranslation('registration.goBack', currentLang, customTranslations), 'go_back_photo')],
     [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
   ]);
+  
+  await editLastFormMessage(ctx, ctx.from.id, message, keyboard);
+};
+
+// Demander les pays pour la livraison (Étape 2: sélection pays basée sur départements)
+const askCountriesDelivery = async (ctx, departments) => {
+  const Config = require('../models/Config');
+  const config = await Config.findById('main');
+  const currentLang = config?.languages?.currentLanguage || 'fr';
+  const customTranslations = config?.languages?.translations;
+
+  const { getSuggestedCountries } = require('../utils/departmentCountryMapping');
+  const userId = ctx.from.id;
+  const userForm = userForms.get(userId);
+  
+  // Obtenir les pays suggérés basés sur les départements
+  const suggestedCountries = getSuggestedCountries(departments);
+  const selectedCountries = userForm?.selectedDeliveryCountries || [];
+
+  const message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
+    `⸻\n\n` +
+    `🚚 Étape 13b : Pays de Livraison\n\n` +
+    `📦 Départements saisis : ${departments.join(', ')}\n\n` +
+    `🌍 Sélectionnez les PAYS où vous livrez :\n\n` +
+    (selectedCountries.length > 0 ? 
+      `✅ Pays sélectionnés : ${selectedCountries.join(', ')}\n\n` : 
+      `⚪ Aucun pays sélectionné\n\n`);
+
+  // Créer les boutons de pays (2 par ligne)
+  const countryButtons = [];
+  for (let i = 0; i < suggestedCountries.length; i += 2) {
+    const row = [];
+    
+    const country1 = suggestedCountries[i];
+    const isSelected1 = selectedCountries.includes(country1);
+    const text1 = `${isSelected1 ? '✅' : '⚪'} ${country1}`;
+    row.push(Markup.button.callback(text1, `delivery_country_${country1}`));
+    
+    if (i + 1 < suggestedCountries.length) {
+      const country2 = suggestedCountries[i + 1];
+      const isSelected2 = selectedCountries.includes(country2);
+      const text2 = `${isSelected2 ? '✅' : '⚪'} ${country2}`;
+      row.push(Markup.button.callback(text2, `delivery_country_${country2}`));
+    }
+    
+    countryButtons.push(row);
+  }
+
+  // Boutons d'action
+  const actionButtons = [];
+  
+  if (selectedCountries.length > 0) {
+    actionButtons.push([Markup.button.callback('✅ Confirmer les pays', 'confirm_delivery_countries')]);
+  }
+  
+  actionButtons.push(
+    [Markup.button.callback('🔙 Retaper les départements', 'retry_departments_delivery')],
+    [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
+  );
+
+  const keyboard = Markup.inlineKeyboard([...countryButtons, ...actionButtons]);
   
   await editLastFormMessage(ctx, ctx.from.id, message, keyboard);
 };
@@ -2455,6 +2517,7 @@ module.exports = {
   askTelegramBot,
   askDepartmentsMeetup,
   askDepartmentsDelivery,
+  askCountriesDelivery,
   askDepartmentsShipping,
   handleGoBack,
   userForms,
