@@ -96,11 +96,11 @@ const translations = {
       de: 'Entdecken Sie unsere Premium-Plattform.\n\nWir bieten qualitativ hochwertige Dienstleistungen mit einer modernen und intuitiven Benutzeroberfläche. Treten Sie unserer Community bei, um auf exklusive Funktionen zuzugreifen.'
     },
     'menu_becomeDealer': {
-      fr: '📝 Inscription',
-      en: '📝 Registration',
-      it: '📝 Registrazione',
-      es: '📝 Registro',
-      de: '📝 Registrierung'
+      fr: '📋 Inscription',
+      en: '📋 Registration',
+      it: '📋 Registrazione',
+      es: '📋 Registro',
+      de: '📋 Registrierung'
     },
     'menu_language': {
       fr: '🌍 Langue',

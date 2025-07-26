@@ -16,10 +16,10 @@ const handleCheckApplicationStatus = async (ctx) => {
     if (!application) {
       const message = `📋 **Aucune demande trouvée**\n\n` +
         `Tu n'as actuellement aucune demande d'inscription en cours.\n\n` +
-        `📝 Veux-tu t'inscrire ? Clique sur le bouton ci-dessous !`;
+        `📋 Veux-tu t'inscrire ? Clique sur le bouton ci-dessous !`;
       
       const keyboard = Markup.inlineKeyboard([
-        [Markup.button.callback('📝 Inscription', 'start_application')],
+        [Markup.button.callback('📋 Inscription', 'start_application')],
         [Markup.button.callback('🔙 Retour au menu', 'back_main')]
       ]);
       
