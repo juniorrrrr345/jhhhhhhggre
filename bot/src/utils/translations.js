@@ -797,6 +797,27 @@ const translations = {
       es: 'Escribe los NÚMEROS de departamentos separados por comas (ejemplo: 75, 92, 93, 94)',
       de: 'Schreiben Sie die Departement-NUMMERN getrennt durch Kommas (Beispiel: 75, 92, 93, 94)'
     },
+    'registration.shippingCountriesQuestion': {
+      fr: '📦 Dans quels PAYS fais-tu de l\'ENVOI ?',
+      en: '📦 In which COUNTRIES do you do SHIPPING?',
+      it: '📦 In quali PAESI fai SPEDIZIONE?',
+      es: '📦 ¿En qué PAÍSES haces ENVÍO?',
+      de: '📦 In welchen LÄNDERN machen Sie VERSAND?'
+    },
+    'registration.shippingCountriesInstruction': {
+      fr: 'Écris les noms des pays séparés par des virgules (exemple: France, Espagne, Italie)',
+      en: 'Write the country names separated by commas (example: France, Spain, Italy)',
+      it: 'Scrivi i nomi dei paesi separati da virgole (esempio: Francia, Spagna, Italia)',
+      es: 'Escribe los nombres de los países separados por comas (ejemplo: Francia, España, Italia)',
+      de: 'Schreiben Sie die Ländernamen getrennt durch Kommas (Beispiel: Frankreich, Spanien, Italien)'
+    },
+    'registration.error.departmentsNumbers': {
+      fr: '❌ Veuillez saisir uniquement des chiffres et des virgules (exemple: 75, 92, 93)',
+      en: '❌ Please enter only numbers and commas (example: 75, 92, 93)',
+      it: '❌ Inserisci solo numeri e virgole (esempio: 75, 92, 93)',
+      es: '❌ Ingresa solo números y comas (ejemplo: 75, 92, 93)',
+      de: '❌ Bitte geben Sie nur Zahlen und Kommas ein (Beispiel: 75, 92, 93)'
+    },
     'registration.continueToNext': {
       fr: '➡️ Continuer',
       en: '➡️ Continue',
