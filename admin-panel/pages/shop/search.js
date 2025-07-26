@@ -455,23 +455,26 @@ export default function ShopSearch() {
             <select
               value={departmentFilter}
               onChange={(e) => setDepartmentFilter(e.target.value)}
+              disabled={!countryFilter}
               style={{
                 padding: '8px 12px',
-                backgroundColor: '#2a2a2a',
-                border: '1px solid #3a3a3a',
+                backgroundColor: countryFilter ? '#2a2a2a' : '#1a1a1a',
+                border: `1px solid ${countryFilter ? '#3a3a3a' : '#2a2a2a'}`,
                 borderRadius: '6px',
-                color: '#ffffff',
+                color: countryFilter ? '#ffffff' : '#666666',
                 fontSize: '14px',
-                boxSizing: 'border-box'
+                boxSizing: 'border-box',
+                cursor: countryFilter ? 'pointer' : 'not-allowed',
+                opacity: countryFilter ? 1 : 0.6
               }}
             >
               <option value="">
                 🗺️ {countryFilter ? 
                   `Département (${countryFilter})` : 
-                  'Département 🗺️'
+                  'Sélectionnez un pays d\'abord'
                 }
               </option>
-              {getAvailableDepartments().map(department => (
+              {countryFilter && getAvailableDepartments().map(department => (
                 <option key={department} value={department}>{department}</option>
               ))}
             </select>
