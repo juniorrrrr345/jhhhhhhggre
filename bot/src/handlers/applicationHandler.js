@@ -458,7 +458,7 @@ const handleFormMessage = async (ctx) => {
         userForm.step = 'instagram';
         userForms.set(userId, userForm);
         
-        // Éditer le message existant pour montrer l'étape suivante
+        // Éditer le message existant pour montrer l'étape suivante (ÉTAPE 9 = INSTAGRAM)
         const instagramFromSessionMessage = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
           `⸻\n\n` +
           `${getTranslation('registration.step9', currentLang, customTranslations)}\n\n` +
@@ -483,7 +483,7 @@ const handleFormMessage = async (ctx) => {
         userForm.step = 'telegram_bot';
         userForms.set(userId, userForm);
         
-        // Éditer le message existant pour montrer l'étape suivante
+        // Éditer le message existant pour montrer l'étape suivante (ÉTAPE 10 = BOT TELEGRAM)
         const telegramBotFromInstagramMessage = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
           `⸻\n\n` +
           `${getTranslation('registration.step9Bot', currentLang, customTranslations)}\n\n` +
