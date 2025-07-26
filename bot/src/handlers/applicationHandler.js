@@ -286,16 +286,16 @@ const handleFormMessage = async (ctx) => {
           userForms.set(userId, userForm);
           
           // Éditer le message existant pour montrer l'étape suivante
-          const message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
+          const telegramMessage = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
             `⸻\n\n` +
             `${getTranslation('registration.step2', currentLang, customTranslations)}\n\n` +
             `${getTranslation('registration.telegramQuestion', currentLang, customTranslations)}`;
           
-          const keyboard = Markup.inlineKeyboard([
+          const telegramKeyboard = Markup.inlineKeyboard([
             [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
           ]);
           
-          await editLastFormMessage(ctx, userId, message, keyboard);
+          await editLastFormMessage(ctx, userId, telegramMessage, telegramKeyboard);
           break;
         
               case 'telegram':
@@ -308,18 +308,18 @@ const handleFormMessage = async (ctx) => {
           userForms.set(userId, userForm);
           
           // Éditer le message existant pour montrer l'étape suivante
-          const message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
+          const snapchatMessage = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
             `⸻\n\n` +
             `${getTranslation('registration.step3', currentLang, customTranslations)}\n\n` +
             `${getTranslation('registration.snapchatQuestion', currentLang, customTranslations)}\n\n` +
             `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
           
-          const keyboard = Markup.inlineKeyboard([
+          const snapchatKeyboard = Markup.inlineKeyboard([
             [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_snapchat')],
             [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
           ]);
           
-          await editLastFormMessage(ctx, userId, message, keyboard);
+          await editLastFormMessage(ctx, userId, snapchatMessage, snapchatKeyboard);
           break;
         
       case 'snapchat':
@@ -332,18 +332,18 @@ const handleFormMessage = async (ctx) => {
         userForms.set(userId, userForm);
         
         // Éditer le message existant pour montrer l'étape suivante
-        const message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
+        const potatoMessage = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
           `⸻\n\n` +
           `${getTranslation('registration.step4', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.potatoQuestion', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
         
-        const keyboard = Markup.inlineKeyboard([
+        const potatoKeyboard = Markup.inlineKeyboard([
           [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_potato')],
           [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
         ]);
         
-        await editLastFormMessage(ctx, userId, message, keyboard);
+        await editLastFormMessage(ctx, userId, potatoMessage, potatoKeyboard);
         break;
         
               case 'potato':
@@ -356,18 +356,18 @@ const handleFormMessage = async (ctx) => {
         userForms.set(userId, userForm);
         
         // Éditer le message existant pour montrer l'étape suivante
-        const message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
+        const signalMessage = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
           `⸻\n\n` +
           `${getTranslation('registration.step5', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.signalQuestion', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
         
-        const keyboard = Markup.inlineKeyboard([
+        const signalKeyboard = Markup.inlineKeyboard([
           [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_signal')],
           [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
         ]);
         
-        await editLastFormMessage(ctx, userId, message, keyboard);
+        await editLastFormMessage(ctx, userId, signalMessage, signalKeyboard);
           break;
 
       case 'signal':
@@ -409,18 +409,18 @@ const handleFormMessage = async (ctx) => {
         userForms.set(userId, userForm);
         
         // Éditer le message existant pour montrer l'étape suivante
-        const message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
+        const threemaMessage = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
           `⸻\n\n` +
           `${getTranslation('registration.step7', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.threemaQuestion', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
         
-        const keyboard = Markup.inlineKeyboard([
+        const threemaKeyboard = Markup.inlineKeyboard([
           [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_threema')],
           [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
         ]);
         
-        await editLastFormMessage(ctx, userId, message, keyboard);
+        await editLastFormMessage(ctx, userId, threemaMessage, threemaKeyboard);
         break;
         
       case 'threema':
@@ -433,18 +433,18 @@ const handleFormMessage = async (ctx) => {
         userForms.set(userId, userForm);
         
         // Éditer le message existant pour montrer l'étape suivante
-        const message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
+        const sessionMessage = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
           `⸻\n\n` +
           `${getTranslation('registration.step8', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.sessionQuestion', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
         
-        const keyboard = Markup.inlineKeyboard([
+        const sessionKeyboard = Markup.inlineKeyboard([
           [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_session')],
           [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
         ]);
         
-        await editLastFormMessage(ctx, userId, message, keyboard);
+        await editLastFormMessage(ctx, userId, sessionMessage, sessionKeyboard);
         break;
         
       case 'session':
@@ -482,20 +482,20 @@ const handleFormMessage = async (ctx) => {
         userForms.set(userId, userForm);
         
         // Éditer le message existant pour montrer l'étape suivante
-        const message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
+        const telegramBotFromInstagramMessage = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
           `⸻\n\n` +
           `${getTranslation('registration.step9', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.telegramBotQuestion', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.telegramBotExample', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
         
-        const keyboard = Markup.inlineKeyboard([
+        const telegramBotFromInstagramKeyboard = Markup.inlineKeyboard([
           [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_telegram_bot')],
           [Markup.button.callback(getTranslation('registration.goBack', currentLang, customTranslations), 'go_back_instagram')],
           [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
         ]);
         
-        await editLastFormMessage(ctx, userId, message, keyboard);
+        await editLastFormMessage(ctx, userId, telegramBotFromInstagramMessage, telegramBotFromInstagramKeyboard);
         break;
 
       case 'telegram_bot':
@@ -508,17 +508,17 @@ const handleFormMessage = async (ctx) => {
         userForms.set(userId, userForm);
         
         // Éditer le message existant pour montrer l'étape suivante
-        const message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
+        const photoFromTelegramBotMessage = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
           `⸻\n\n` +
           `${getTranslation('registration.step10', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.shopPhotoQuestion', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.shopPhotoInstruction', currentLang, customTranslations)}`;
         
-        const keyboard = Markup.inlineKeyboard([
+        const photoFromTelegramBotKeyboard = Markup.inlineKeyboard([
           [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
         ]);
         
-        await editLastFormMessage(ctx, userId, message, keyboard);
+        await editLastFormMessage(ctx, userId, photoFromTelegramBotMessage, photoFromTelegramBotKeyboard);
         break;
         
       case 'city':
@@ -544,32 +544,32 @@ const handleFormMessage = async (ctx) => {
           userForm.step = 'departments_delivery';
           userForms.set(userId, userForm);
           
-          const message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
+          const deliveryDeptMessage = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
             `⸻\n\n` +
             `${getTranslation('registration.step14', currentLang, customTranslations)}\n\n` +
             `${getTranslation('registration.departmentsDeliveryQuestion', currentLang, customTranslations)}`;
           
-          const keyboard = Markup.inlineKeyboard([
+          const deliveryDeptKeyboard = Markup.inlineKeyboard([
             [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
           ]);
           
-          await editLastFormMessage(ctx, userId, message, keyboard);
+          await editLastFormMessage(ctx, userId, deliveryDeptMessage, deliveryDeptKeyboard);
         } else {
           // Sinon passer directement à la photo
           userForm.step = 'photo';
           userForms.set(userId, userForm);
           
-          const message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
+          const photoFromMeetupMessage = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
             `⸻\n\n` +
             `${getTranslation('registration.step10', currentLang, customTranslations)}\n\n` +
             `${getTranslation('registration.shopPhotoQuestion', currentLang, customTranslations)}\n\n` +
             `${getTranslation('registration.shopPhotoInstruction', currentLang, customTranslations)}`;
           
-          const keyboard = Markup.inlineKeyboard([
+          const photoFromMeetupKeyboard = Markup.inlineKeyboard([
             [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
           ]);
           
-          await editLastFormMessage(ctx, userId, message, keyboard);
+          await editLastFormMessage(ctx, userId, photoFromMeetupMessage, photoFromMeetupKeyboard);
         }
         break;
         
@@ -583,17 +583,17 @@ const handleFormMessage = async (ctx) => {
         userForms.set(userId, userForm);
         
         // Éditer le message existant pour montrer l'étape suivante
-        const message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
+        const photoFromDeliveryMessage = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
           `⸻\n\n` +
           `${getTranslation('registration.step10', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.shopPhotoQuestion', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.shopPhotoInstruction', currentLang, customTranslations)}`;
         
-        const keyboard = Markup.inlineKeyboard([
+        const photoFromDeliveryKeyboard = Markup.inlineKeyboard([
           [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
         ]);
         
-        await editLastFormMessage(ctx, userId, message, keyboard);
+        await editLastFormMessage(ctx, userId, photoFromDeliveryMessage, photoFromDeliveryKeyboard);
         break;
     }
     
