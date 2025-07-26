@@ -37,7 +37,39 @@ class PostalCodeService {
       Thaïlande: this.generateThaiPostalCodes(),
       
       // 🇲🇦 MAROC (10000-99999)
-      Maroc: this.generateMoroccanPostalCodes()
+      Maroc: this.generateMoroccanPostalCodes(),
+      
+      // 🇹🇳 TUNISIE (1000-9999)
+      Tunisie: this.generateTunisianPostalCodes(),
+      
+      // 🇸🇳 SÉNÉGAL (10000-99999)
+      Sénégal: this.generateSenegalesePostalCodes(),
+      
+      // 🇩🇿 ALGÉRIE (01000-99999)
+      Algérie: this.generateAlgerianPostalCodes(),
+      
+      // 🇨🇲 CAMEROUN (P.O.Box system + modern codes)
+      Cameroun: this.generateCameroonianPostalCodes(),
+      
+      // 🇨🇮 CÔTE D'IVOIRE (Traditional + modern system)
+      "Côte d'Ivoire": this.generateIvorianPostalCodes(),
+      
+      // 🇲🇬 MADAGASCAR (101-999)
+      Madagascar: this.generateMalagasyPostalCodes(),
+      
+      // 🇵🇹 PORTUGAL (1000-9999)
+      Portugal: this.generatePortuguesePostalCodes(),
+      
+      // 🇳🇱 PAYS-BAS (already implemented above)
+      
+      // 🇦🇺 AUSTRALIE (0000-9999)
+      Australie: this.generateAustralianPostalCodes(),
+      
+      // 🇧🇷 BRÉSIL (01000-999999)
+      Brésil: this.generateBrazilianPostalCodes(),
+      
+      // 🇯🇵 JAPON (100-0000 to 999-9999)
+      Japon: this.generateJapanesePostalCodes()
     };
   }
 
@@ -244,6 +276,149 @@ class PostalCodeService {
     return codes;
   }
 
+  // 🇹🇳 TUNISIE
+  generateTunisianPostalCodes() {
+    const codes = [];
+    // Tunisie utilise un système à 4 chiffres (1000-9999)
+    for (let i = 1000; i <= 9999; i++) {
+      codes.push(i.toString());
+    }
+    return codes;
+  }
+
+  // 🇸🇳 SÉNÉGAL
+  generateSenegalesePostalCodes() {
+    const codes = [];
+    // Sénégal utilise un système à 5 chiffres (10000-99999)
+    for (let i = 10000; i <= 99999; i++) {
+      codes.push(i.toString());
+    }
+    return codes;
+  }
+
+  // 🇩🇿 ALGÉRIE
+  generateAlgerianPostalCodes() {
+    const codes = [];
+    // Algérie utilise un système à 5 chiffres (01000-99999)
+    for (let i = 1000; i <= 99999; i++) {
+      codes.push(i.toString().padStart(5, '0'));
+    }
+    return codes;
+  }
+
+  // 🇨🇲 CAMEROUN
+  generateCameroonianPostalCodes() {
+    const codes = [];
+    // Cameroun utilise principalement des P.O. Box mais aussi des codes modernes
+    // Codes principaux des grandes villes
+    const mainCities = [
+      // Yaoundé
+      '999', '1000', '1001', '1002', '1003', '1004', '1005',
+      // Douala
+      '2000', '2001', '2002', '2003', '2004', '2005', '2006',
+      // Bamenda
+      '3000', '3001', '3002', '3003',
+      // Bafoussam
+      '4000', '4001', '4002',
+      // Garoua
+      '5000', '5001', '5002',
+      // Maroua
+      '6000', '6001', '6002',
+      // Ngaoundéré
+      '7000', '7001', '7002',
+      // Bertoua
+      '8000', '8001',
+      // Ebolowa
+      '9000', '9001'
+    ];
+    
+    codes.push(...mainCities);
+    
+    // Ajouter des codes génériques pour les autres zones
+    for (let i = 100; i <= 999; i++) {
+      codes.push(i.toString());
+    }
+    
+    return codes.sort();
+  }
+
+  // 🇨🇮 CÔTE D'IVOIRE
+  generateIvorianPostalCodes() {
+    const codes = [];
+    // Côte d'Ivoire utilise des codes postaux modernes
+    // Abidjan et districts
+    const abidjanCodes = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20'];
+    
+    abidjanCodes.forEach(code => {
+      codes.push(`01 BP ${code}`);
+      codes.push(`02 BP ${code}`);
+      codes.push(`03 BP ${code}`);
+      codes.push(`04 BP ${code}`);
+      codes.push(`05 BP ${code}`);
+    });
+    
+    // Autres grandes villes avec codes simplifiés
+    for (let i = 100; i <= 999; i++) {
+      codes.push(i.toString());
+    }
+    
+    return codes.sort();
+  }
+
+  // 🇲🇬 MADAGASCAR
+  generateMalagasyPostalCodes() {
+    const codes = [];
+    // Madagascar utilise un système à 3 chiffres (101-999)
+    for (let i = 101; i <= 999; i++) {
+      codes.push(i.toString());
+    }
+    return codes;
+  }
+
+  // 🇵🇹 PORTUGAL
+  generatePortuguesePostalCodes() {
+    const codes = [];
+    // Portugal utilise un système à 4 chiffres (1000-9999) + 3 chiffres extension
+    for (let i = 1000; i <= 9999; i++) {
+      for (let j = 0; j <= 999; j += 100) { // Sample avec pas de 100 pour performance
+        codes.push(`${i}-${j.toString().padStart(3, '0')}`);
+      }
+    }
+    return codes;
+  }
+
+  // 🇦🇺 AUSTRALIE
+  generateAustralianPostalCodes() {
+    const codes = [];
+    // Australie utilise un système à 4 chiffres (0000-9999)
+    for (let i = 1000; i <= 9999; i++) {
+      codes.push(i.toString());
+    }
+    return codes;
+  }
+
+  // 🇧🇷 BRÉSIL
+  generateBrazilianPostalCodes() {
+    const codes = [];
+    // Brésil utilise CEP: 01000-000 to 99999-999
+    for (let i = 1000; i <= 99999; i += 10) { // Sample avec pas de 10 pour performance
+      codes.push(`${i.toString().padStart(5, '0')}-000`);
+    }
+    return codes;
+  }
+
+  // 🇯🇵 JAPON
+  generateJapanesePostalCodes() {
+    const codes = [];
+    // Japon utilise le format: 100-0000 to 999-9999
+    for (let i = 100; i <= 999; i++) {
+      for (let j = 0; j <= 9999; j += 100) { // Sample avec pas de 100 pour performance
+        codes.push(`${i}-${j.toString().padStart(4, '0')}`);
+      }
+    }
+    return codes;
+  }
+
   // Récupérer les codes postaux d'un pays
   getPostalCodes(country) {
     return this.postalCodes[country] || [];
@@ -318,6 +493,46 @@ class PostalCodeService {
       for (let i = 10; i <= 99; i++) {
         diminutifs.push(i.toString());
       }
+    } else if (country === 'Tunisie') {
+      // Tunisie: 10, 11, 12... 99 (zones principales)
+      for (let i = 10; i <= 99; i++) {
+        diminutifs.push(i.toString());
+      }
+    } else if (country === 'Sénégal') {
+      // Sénégal: 10, 11, 12... 99
+      for (let i = 10; i <= 99; i++) {
+        diminutifs.push(i.toString());
+      }
+    } else if (country === 'Algérie') {
+      // Algérie: 01, 02, 03... 99
+      for (let i = 1; i <= 99; i++) {
+        diminutifs.push(i.toString().padStart(2, '0'));
+      }
+    } else if (country === 'Cameroun') {
+      // Cameroun: Zones principales + codes villes
+      diminutifs = ['10', '20', '30', '40', '50', '60', '70', '80', '90', '99', '100', '200', '300', '400', '500', '600', '700', '800', '900'];
+    } else if (country === 'Côte d\'Ivoire') {
+      // Côte d'Ivoire: BP districts + zones
+      diminutifs = ['01', '02', '03', '04', '05', '10', '11', '12', '13', '14', '15', '20', '21', '22', '23', '24', '25'];
+    } else if (country === 'Madagascar') {
+      // Madagascar: 10, 11, 12... 99
+      for (let i = 10; i <= 99; i++) {
+        diminutifs.push(i.toString());
+      }
+    } else if (country === 'Portugal') {
+      // Portugal: 10, 11, 12... 99 (zones principales)
+      for (let i = 10; i <= 99; i++) {
+        diminutifs.push(i.toString());
+      }
+    } else if (country === 'Australie') {
+      // Australie: États/Territoires
+      diminutifs = ['NSW', 'VIC', 'QLD', 'WA', 'SA', 'TAS', 'ACT', 'NT', '10', '20', '30', '40', '50', '60', '70', '80', '90'];
+    } else if (country === 'Brésil') {
+      // Brésil: États principaux
+      diminutifs = ['SP', 'RJ', 'MG', 'RS', 'PR', 'SC', 'BA', 'GO', 'ES', 'PE', 'CE', 'PA', 'DF', 'MT', 'MS', 'PB', 'RN', 'AL', 'PI', 'SE'];
+    } else if (country === 'Japon') {
+      // Japon: Préfectures principales
+      diminutifs = ['100', '101', '102', '103', '104', '105', '106', '107', '108', '109', '110', '111', '112', '113', '114', '115', '150', '160', '170', '180'];
     } else {
       // Fallback: utiliser les premiers caractères des codes
       const uniquePrefixes = [...new Set(codes.map(code => code.substring(0, 2)))];
