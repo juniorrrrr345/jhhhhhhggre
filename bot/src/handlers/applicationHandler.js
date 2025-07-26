@@ -1210,7 +1210,7 @@ const askServices = async (ctx) => {
 
   const message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
     `⸻\n\n` +
-    `${getTranslation('registration.step11Services', currentLang, customTranslations)}\n\n` +
+    `${getTranslation('registration.step12Services', currentLang, customTranslations)}\n\n` +
     `${getTranslation('registration.servicesQuestion', currentLang, customTranslations)}\n\n` +
     `${getTranslation('registration.servicesInstruction', currentLang, customTranslations)}`;
   
@@ -1239,7 +1239,7 @@ const askDepartmentsDelivery = async (ctx) => {
 
   const message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
     `⸻\n\n` +
-    `${getTranslation('registration.step12Delivery', currentLang, customTranslations)}\n\n` +
+    `${getTranslation('registration.step13Delivery', currentLang, customTranslations)}\n\n` +
     `${getTranslation('registration.departmentsDeliveryQuestion', currentLang, customTranslations)}\n\n` +
     `${getTranslation('registration.departmentsInstruction', currentLang, customTranslations)}`;
   
