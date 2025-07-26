@@ -1308,6 +1308,48 @@ bot.action('finish_services_selection', handleFinishServicesSelection);
 // Handler pour le début de l'application
 bot.action('start_application', handleStartApplication);
 
+// Handler pour revenir à l'étape photo (logo)
+bot.action('go_back_photo', async (ctx) => {
+  try {
+    await ctx.answerCbQuery();
+    const userId = ctx.from.id;
+    const userForm = userForms.get(userId);
+    
+    if (!userForm) {
+      return await ctx.answerCbQuery('❌ Session expirée');
+    }
+    
+    const Config = require('./src/models/Config');
+    const config = await Config.findById('main');
+    const currentLang = config?.languages?.currentLanguage || 'fr';
+    const { getTranslation } = require('./src/utils/translations');
+    const customTranslations = config?.languages?.translations;
+    
+    // Retourner à l'étape photo
+    userForm.step = 'photo';
+    userForms.set(userId, userForm);
+    
+    // Afficher l'étape 11 : Logo de boutique
+    const photoMessage = `🛠️ FORMULAIRE D'INSCRIPTION – FindYourPlug\n\n` +
+      `⸻\n\n` +
+      `🟦 Étape 11 : Logo de boutique\n\n` +
+      `📸 Envoie le logo de ta boutique\n\n` +
+      `(Photo de présentation de tes produits ou de ton espace de vente)`;
+    
+    const photoKeyboard = Markup.inlineKeyboard([
+      [Markup.button.callback(getTranslation('registration.goBack', currentLang, customTranslations), 'go_back_telegram_bot')],
+      [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
+    ]);
+    
+    const { editLastFormMessage } = require('./src/handlers/applicationHandler');
+    await editLastFormMessage(ctx, userId, photoMessage, photoKeyboard);
+    
+  } catch (error) {
+    console.error('Erreur go_back_photo:', error);
+    await ctx.answerCbQuery('❌ Une erreur temporaire est survenue.');
+  }
+});
+
 // ============================================
 // API REST POUR LE PANEL ADMIN
 // ============================================

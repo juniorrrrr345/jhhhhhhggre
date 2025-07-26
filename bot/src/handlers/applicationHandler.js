@@ -3411,6 +3411,90 @@ const handleValidateDeliveryPostal = async (ctx, countryIndex) => {
   }
 };
 
+// Fonction pour demander les pays de travail
+const askWorkingCountries = async (ctx) => {
+  try {
+    const userId = ctx.from.id;
+    const userForm = userForms.get(userId);
+    
+    if (!userForm) {
+      console.log(`❌ WORKING_COUNTRIES: No form for user ${userId}`);
+      return;
+    }
+    
+    const Config = require('../models/Config');
+    const config = await Config.findById('main');
+    const currentLang = config?.languages?.currentLanguage || 'fr';
+    const customTranslations = config?.languages?.translations;
+    
+    const selectedCountries = userForm.data.workingCountries || [];
+    
+    let message = `🛠️ FORMULAIRE D'INSCRIPTION – FindYourPlug\n\n` +
+      `⸻\n\n` +
+      `🌍 Étape 12 : Pays de travail\n\n` +
+      `Il choisit un ou plusieurs pays où vous travaillez ou où le service est disponible.\n\n`;
+    
+    if (selectedCountries.length === 0) {
+      message += `⚪ Aucun pays sélectionné\n\n`;
+    } else {
+      message += `✅ Pays sélectionnés : ${selectedCountries.join(', ')}\n\n`;
+    }
+    
+    message += `👆 Sélectionnez vos pays de travail :`;
+    
+    // Créer les boutons de pays (45 européens + 4 spéciaux)
+    const countries = [
+      'France', 'Allemagne', 'Espagne', 'Italie', 'Royaume-Uni', 'Portugal', 'Pays-Bas', 'Belgique', 
+      'Suisse', 'Autriche', 'Suède', 'Norvège', 'Danemark', 'Finlande', 'Islande', 'Irlande',
+      'Grèce', 'Pologne', 'République tchèque', 'Hongrie', 'Slovaquie', 'Slovénie', 'Croatie',
+      'Bulgarie', 'Roumanie', 'Estonie', 'Lettonie', 'Lituanie', 'Luxembourg', 'Malte', 'Chypre',
+      'Bosnie-Herzégovine', 'Serbie', 'Monténégro', 'Macédoine du Nord', 'Albanie', 'Kosovo',
+      'Moldova', 'Ukraine', 'Biélorussie', 'Russie', 'Géorgie', 'Arménie', 'Azerbaïdjan', 'Turquie',
+      'USA', 'Canada', 'Thaïlande', 'Maroc'
+    ];
+    
+    const buttons = [];
+    
+    // Créer les boutons en lignes de 2
+    for (let i = 0; i < countries.length; i += 2) {
+      const row = [];
+      
+      const country1 = countries[i];
+      const isSelected1 = selectedCountries.includes(country1);
+      row.push(Markup.button.callback(
+        (isSelected1 ? '✅ ' : '') + country1,
+        `working_country_${country1.replace(/\s/g, '_').replace(/-/g, '_')}`
+      ));
+      
+      if (i + 1 < countries.length) {
+        const country2 = countries[i + 1];
+        const isSelected2 = selectedCountries.includes(country2);
+        row.push(Markup.button.callback(
+          (isSelected2 ? '✅ ' : '') + country2,
+          `working_country_${country2.replace(/\s/g, '_').replace(/-/g, '_')}`
+        ));
+      }
+      
+      buttons.push(row);
+    }
+    
+    // Ajouter les boutons de contrôle
+    if (selectedCountries.length > 0) {
+      buttons.push([Markup.button.callback('✅ Confirmer les pays sélectionnés', 'confirm_working_countries')]);
+    }
+    buttons.push([Markup.button.callback('🔙 Retour (Logo)', 'go_back_photo')]);
+    buttons.push([Markup.button.callback('❌ Annuler', 'cancel_application')]);
+    
+    const keyboard = Markup.inlineKeyboard(buttons);
+    
+    await editLastFormMessage(ctx, userId, message, keyboard);
+    
+  } catch (error) {
+    console.error('Erreur dans askWorkingCountries:', error);
+    await ctx.reply('❌ Erreur lors de l\'affichage des pays');
+  }
+};
+
 // Gestionnaire pour les photos
 const handlePhoto = async (ctx) => {
   try {
@@ -3446,6 +3530,79 @@ const handlePhoto = async (ctx) => {
   } catch (error) {
     console.error('Erreur dans handlePhoto:', error);
     await ctx.reply('❌ Erreur lors du traitement de la photo');
+  }
+};
+
+// Gestionnaire pour la sélection des pays de travail
+const handleWorkingCountrySelection = async (ctx) => {
+  try {
+    await ctx.answerCbQuery();
+    
+    const userId = ctx.from.id;
+    const userForm = userForms.get(userId);
+    
+    if (!userForm || userForm.step !== 'working_countries') {
+      return await ctx.answerCbQuery('❌ Erreur de formulaire');
+    }
+    
+    const countryCode = ctx.callbackQuery.data.replace('working_country_', '').replace(/_/g, ' ');
+    const countryName = countryCode.replace(/République_tchèque/g, 'République tchèque')
+                                  .replace(/Macédoine_du_Nord/g, 'Macédoine du Nord')
+                                  .replace(/Bosnie_Herzégovine/g, 'Bosnie-Herzégovine');
+    
+    if (!userForm.data.workingCountries) {
+      userForm.data.workingCountries = [];
+    }
+    
+    // Toggle du pays
+    const index = userForm.data.workingCountries.indexOf(countryName);
+    if (index > -1) {
+      userForm.data.workingCountries.splice(index, 1);
+      await ctx.answerCbQuery(`❌ ${countryName} supprimé`);
+    } else {
+      userForm.data.workingCountries.push(countryName);
+      await ctx.answerCbQuery(`✅ ${countryName} ajouté`);
+    }
+    
+    userForms.set(userId, userForm);
+    
+    // Mettre à jour l'affichage
+    await askWorkingCountries(ctx);
+    
+  } catch (error) {
+    console.error('Erreur dans handleWorkingCountrySelection:', error);
+    await ctx.answerCbQuery('❌ Erreur lors de la sélection');
+  }
+};
+
+// Gestionnaire pour confirmer les pays de travail
+const handleConfirmWorkingCountries = async (ctx) => {
+  try {
+    await ctx.answerCbQuery();
+    
+    const userId = ctx.from.id;
+    const userForm = userForms.get(userId);
+    
+    if (!userForm || userForm.step !== 'working_countries') {
+      return await ctx.answerCbQuery('❌ Erreur de formulaire');
+    }
+    
+    if (!userForm.data.workingCountries || userForm.data.workingCountries.length === 0) {
+      return await ctx.answerCbQuery('❌ Veuillez sélectionner au moins un pays');
+    }
+    
+    userForm.step = 'service_selection';
+    userForm.data.selectedServices = []; // Initialiser les services
+    userForms.set(userId, userForm);
+    
+    await ctx.answerCbQuery('✅ Pays confirmés');
+    
+    // Passer à la sélection des services
+    await askServices(ctx);
+    
+  } catch (error) {
+    console.error('Erreur dans handleConfirmWorkingCountries:', error);
+    await ctx.answerCbQuery('❌ Erreur lors de la confirmation');
   }
 };
 
