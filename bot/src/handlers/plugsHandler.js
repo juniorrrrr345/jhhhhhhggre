@@ -1653,8 +1653,136 @@ const handleAllDepartments = async (ctx) => {
       'Belgique': ['1000', '1020', '1030', '1040', '1050', '1060', '1070', '1080', '1090', '1120', '1130', '1140', '1150', '1160', '1170', '1180', '1190', '1200', '1210', '1300', '1310', '1320', '1330', '1340', '1350', '1360', '1370', '1380', '1390', '1400', '1410', '1420', '1430', '1440', '1450', '1460', '1470', '1480', '1490', '1500', '1600', '1700', '1800', '1900', '2000', '2100', '2200', '2300', '2400', '2500', '2600', '2700', '2800', '2900', '3000', '3100', '3200', '3300', '3400', '3500', '3600', '3700', '3800', '3900', '4000', '4100', '4200', '4300', '4400', '4500', '4600', '4700', '4800', '4900', '5000', '6000', '6200', '6400', '6600', '6700', '6800', '6900', '7000', '7100', '7200', '7300', '7400', '7500', '7600', '7700', '7800', '7900', '8000', '8200', '8300', '8400', '8500', '8600', '8700', '8800', '8900', '9000', '9100', '9200', '9300', '9400', '9500', '9600', '9700', '9800', '9900'],
       'Suisse': ['1000', '1200', '1290', '1300', '2000', '2500', '3000', '4000', '5000', '6000', '7000', '8000', '9000'],
       'Pays-Bas': ['1011', '1012', '1013', '1015', '1016', '1017', '1018', '1019', '2000', '2500', '3000', '4000', '5000', '6000', '7000', '8000', '9000'], 
-      'Italie': ['00100', '10100', '20100', '30100', '40100', '50100', '60100', '70100', '80100', '90100'],
-      'Espagne': ['01000', '02000', '03000', '04000', '05000', '06000', '07000', '08000', '09000', '10000', '11000', '12000', '13000', '14000', '15000', '16000', '17000', '18000', '19000', '20000', '21000', '22000', '23000', '24000', '25000', '26000', '27000', '28000', '29000', '30000', '31000', '32000', '33000', '34000', '35000', '36000', '37000', '38000', '39000', '40000', '41000', '42000', '43000', '44000', '45000', '46000', '47000', '48000', '49000', '50000'],
+      'Italie': [
+        // Italie du Nord
+        '00100', // Rome (Latium)
+        '10100', // Turin (Piémont)
+        '16100', // Gênes (Ligurie)
+        '20100', // Milan (Lombardie)
+        '25100', // Brescia (Lombardie)
+        '30100', // Venise (Vénétie)
+        '33100', // Udine (Frioul-Vénétie julienne)
+        '34100', // Trieste (Frioul-Vénétie julienne)
+        '35100', // Padoue (Vénétie)
+        '37100', // Vérone (Vénétie)
+        '38100', // Trente (Trentin-Haut-Adige)
+        '39100', // Bolzano (Trentin-Haut-Adige)
+        '40100', // Bologne (Émilie-Romagne)
+        '41100', // Modène (Émilie-Romagne)
+        '43100', // Parme (Émilie-Romagne)
+        '44100', // Ferrare (Émilie-Romagne)
+        '47100', // Forlì (Émilie-Romagne)
+        '48100', // Ravenne (Émilie-Romagne)
+        // Italie centrale
+        '50100', // Florence (Toscane)
+        '51100', // Pistoia (Toscane)
+        '52100', // Arezzo (Toscane)
+        '53100', // Sienne (Toscane)
+        '55100', // Lucques (Toscane)
+        '56100', // Pise (Toscane)
+        '57100', // Livourne (Toscane)
+        '58100', // Grosseto (Toscane)
+        '59100', // Prato (Toscane)
+        '60100', // Ancône (Marches)
+        '61100', // Pesaro (Marches)
+        '62100', // Macerata (Marches)
+        '63100', // Ascoli Piceno (Marches)
+        '06100', // Pérouse (Ombrie)
+        '05100', // Terni (Ombrie)
+        // Italie du Sud et îles
+        '65100', // Pescara (Abruzzes)
+        '66100', // Chieti (Abruzzes)
+        '67100', // L'Aquila (Abruzzes)
+        '64100', // Teramo (Abruzzes)
+        '70100', // Bari (Pouilles)
+        '71100', // Foggia (Pouilles)
+        '72100', // Brindisi (Pouilles)
+        '73100', // Lecce (Pouilles)
+        '74100', // Tarente (Pouilles)
+        '75100', // Matera (Basilicate)
+        '85100', // Potenza (Basilicate)
+        '80100', // Naples (Campanie)
+        '81100', // Caserte (Campanie)
+        '82100', // Bénévent (Campanie)
+        '83100', // Avellino (Campanie)
+        '84100', // Salerne (Campanie)
+        '86100', // Campobasso (Molise)
+        '88100', // Catanzaro (Calabre)
+        '87100', // Cosenza (Calabre)
+        '89100', // Reggio de Calabre (Calabre)
+        '90100', // Palerme (Sicile)
+        '91100', // Trapani (Sicile)
+        '92100', // Agrigente (Sicile)
+        '93100', // Caltanissetta (Sicile)
+        '94100', // Enna (Sicile)
+        '95100', // Catane (Sicile)
+        '96100', // Syracuse (Sicile)
+        '97100', // Raguse (Sicile)
+        '98100', // Messine (Sicile)
+        // Sardaigne
+        '07100', // Sassari (Sardaigne)
+        '08100', // Nuoro (Sardaigne)
+        '09100', // Cagliari (Sardaigne)
+        '09123', // Cagliari centre (Sardaigne)
+        '09124', // Cagliari quartiers (Sardaigne)
+        '09125', // Cagliari périphérie (Sardaigne)
+        '07026'  // Olbia (Sardaigne)
+      ],
+      'Espagne': [
+        // Espagne péninsulaire (par provinces selon ordre alphabétique)
+        '01', // Álava
+        '02', // Albacete
+        '03', // Alicante
+        '04', // Almería
+        '05', // Ávila
+        '06', // Badajoz
+        '07', // Illes Balears (Mallorca, Ibiza, Formentera, Menorca)
+        '08', // Barcelona
+        '09', // Burgos
+        '10', // Cáceres
+        '11', // Cádiz
+        '12', // Castellón
+        '13', // Ciudad Real
+        '14', // Córdoba
+        '15', // A Coruña
+        '16', // Cuenca
+        '17', // Girona
+        '18', // Granada
+        '19', // Guadalajara
+        '20', // Gipuzkoa
+        '21', // Huelva
+        '22', // Huesca
+        '23', // Jaén
+        '24', // León
+        '25', // Lleida
+        '26', // La Rioja
+        '27', // Lugo
+        '28', // Madrid
+        '29', // Málaga
+        '30', // Murcia
+        '31', // Navarra
+        '32', // Ourense
+        '33', // Asturias
+        '34', // Palencia
+        '35', // Las Palmas (Gran Canaria, Lanzarote, Fuerteventura)
+        '36', // Pontevedra
+        '37', // Salamanca
+        '38', // Santa Cruz de Tenerife (Tenerife, La Gomera, El Hierro, La Palma)
+        '39', // Cantabria
+        '40', // Segovia
+        '41', // Sevilla
+        '42', // Soria
+        '43', // Tarragona
+        '44', // Teruel
+        '45', // Toledo
+        '46', // Valencia
+        '47', // Valladolid
+        '48', // Bizkaia
+        '49', // Zamora
+        '50', // Zaragoza
+        '51', // Ceuta
+        '52'  // Melilla
+      ],
       'Maroc': ['10000', '20000', '30000', '40000', '50000', '60000', '70000', '80000', '90000'],
       'Portugal': ['1000', '2000', '3000', '4000', '5000', '6000', '7000', '8000', '9000'],
       'Luxembourg': ['1009', '1010', '1011', '1012', '1013', '1014', '1015', '1016', '1017', '1018', '1019', '1020', '1021', '1022', '1023', '1024', '1025', '1026', '1027', '1028', '1029', '1030'],
@@ -1732,8 +1860,136 @@ const handleCountryDepartments = async (ctx, country) => {
       'Belgique': ['1000', '1020', '1030', '1040', '1050', '1060', '1070', '1080', '1090', '1120', '1130', '1140', '1150', '1160', '1170', '1180', '1190', '1200', '1210', '1300', '1310', '1320', '1330', '1340', '1350', '1360', '1370', '1380', '1390', '1400', '1410', '1420', '1430', '1440', '1450', '1460', '1470', '1480', '1490', '1500', '1600', '1700', '1800', '1900', '2000', '2100', '2200', '2300', '2400', '2500', '2600', '2700', '2800', '2900', '3000', '3100', '3200', '3300', '3400', '3500', '3600', '3700', '3800', '3900', '4000', '4100', '4200', '4300', '4400', '4500', '4600', '4700', '4800', '4900', '5000', '6000', '6200', '6400', '6600', '6700', '6800', '6900', '7000', '7100', '7200', '7300', '7400', '7500', '7600', '7700', '7800', '7900', '8000', '8200', '8300', '8400', '8500', '8600', '8700', '8800', '8900', '9000', '9100', '9200', '9300', '9400', '9500', '9600', '9700', '9800', '9900'],
       'Suisse': ['1000', '1200', '1290', '1300', '2000', '2500', '3000', '4000', '5000', '6000', '7000', '8000', '9000'],
       'Pays-Bas': ['1011', '1012', '1013', '1015', '1016', '1017', '1018', '1019', '2000', '2500', '3000', '4000', '5000', '6000', '7000', '8000', '9000'], 
-      'Italie': ['00100', '10100', '20100', '30100', '40100', '50100', '60100', '70100', '80100', '90100'],
-      'Espagne': ['01000', '02000', '03000', '04000', '05000', '06000', '07000', '08000', '09000', '10000', '11000', '12000', '13000', '14000', '15000', '16000', '17000', '18000', '19000', '20000', '21000', '22000', '23000', '24000', '25000', '26000', '27000', '28000', '29000', '30000', '31000', '32000', '33000', '34000', '35000', '36000', '37000', '38000', '39000', '40000', '41000', '42000', '43000', '44000', '45000', '46000', '47000', '48000', '49000', '50000'],
+      'Italie': [
+        // Italie du Nord
+        '00100', // Rome (Latium)
+        '10100', // Turin (Piémont)
+        '16100', // Gênes (Ligurie)
+        '20100', // Milan (Lombardie)
+        '25100', // Brescia (Lombardie)
+        '30100', // Venise (Vénétie)
+        '33100', // Udine (Frioul-Vénétie julienne)
+        '34100', // Trieste (Frioul-Vénétie julienne)
+        '35100', // Padoue (Vénétie)
+        '37100', // Vérone (Vénétie)
+        '38100', // Trente (Trentin-Haut-Adige)
+        '39100', // Bolzano (Trentin-Haut-Adige)
+        '40100', // Bologne (Émilie-Romagne)
+        '41100', // Modène (Émilie-Romagne)
+        '43100', // Parme (Émilie-Romagne)
+        '44100', // Ferrare (Émilie-Romagne)
+        '47100', // Forlì (Émilie-Romagne)
+        '48100', // Ravenne (Émilie-Romagne)
+        // Italie centrale
+        '50100', // Florence (Toscane)
+        '51100', // Pistoia (Toscane)
+        '52100', // Arezzo (Toscane)
+        '53100', // Sienne (Toscane)
+        '55100', // Lucques (Toscane)
+        '56100', // Pise (Toscane)
+        '57100', // Livourne (Toscane)
+        '58100', // Grosseto (Toscane)
+        '59100', // Prato (Toscane)
+        '60100', // Ancône (Marches)
+        '61100', // Pesaro (Marches)
+        '62100', // Macerata (Marches)
+        '63100', // Ascoli Piceno (Marches)
+        '06100', // Pérouse (Ombrie)
+        '05100', // Terni (Ombrie)
+        // Italie du Sud et îles
+        '65100', // Pescara (Abruzzes)
+        '66100', // Chieti (Abruzzes)
+        '67100', // L'Aquila (Abruzzes)
+        '64100', // Teramo (Abruzzes)
+        '70100', // Bari (Pouilles)
+        '71100', // Foggia (Pouilles)
+        '72100', // Brindisi (Pouilles)
+        '73100', // Lecce (Pouilles)
+        '74100', // Tarente (Pouilles)
+        '75100', // Matera (Basilicate)
+        '85100', // Potenza (Basilicate)
+        '80100', // Naples (Campanie)
+        '81100', // Caserte (Campanie)
+        '82100', // Bénévent (Campanie)
+        '83100', // Avellino (Campanie)
+        '84100', // Salerne (Campanie)
+        '86100', // Campobasso (Molise)
+        '88100', // Catanzaro (Calabre)
+        '87100', // Cosenza (Calabre)
+        '89100', // Reggio de Calabre (Calabre)
+        '90100', // Palerme (Sicile)
+        '91100', // Trapani (Sicile)
+        '92100', // Agrigente (Sicile)
+        '93100', // Caltanissetta (Sicile)
+        '94100', // Enna (Sicile)
+        '95100', // Catane (Sicile)
+        '96100', // Syracuse (Sicile)
+        '97100', // Raguse (Sicile)
+        '98100', // Messine (Sicile)
+        // Sardaigne
+        '07100', // Sassari (Sardaigne)
+        '08100', // Nuoro (Sardaigne)
+        '09100', // Cagliari (Sardaigne)
+        '09123', // Cagliari centre (Sardaigne)
+        '09124', // Cagliari quartiers (Sardaigne)
+        '09125', // Cagliari périphérie (Sardaigne)
+        '07026'  // Olbia (Sardaigne)
+      ],
+      'Espagne': [
+        // Espagne péninsulaire (par provinces selon ordre alphabétique)
+        '01', // Álava
+        '02', // Albacete
+        '03', // Alicante
+        '04', // Almería
+        '05', // Ávila
+        '06', // Badajoz
+        '07', // Illes Balears (Mallorca, Ibiza, Formentera, Menorca)
+        '08', // Barcelona
+        '09', // Burgos
+        '10', // Cáceres
+        '11', // Cádiz
+        '12', // Castellón
+        '13', // Ciudad Real
+        '14', // Córdoba
+        '15', // A Coruña
+        '16', // Cuenca
+        '17', // Girona
+        '18', // Granada
+        '19', // Guadalajara
+        '20', // Gipuzkoa
+        '21', // Huelva
+        '22', // Huesca
+        '23', // Jaén
+        '24', // León
+        '25', // Lleida
+        '26', // La Rioja
+        '27', // Lugo
+        '28', // Madrid
+        '29', // Málaga
+        '30', // Murcia
+        '31', // Navarra
+        '32', // Ourense
+        '33', // Asturias
+        '34', // Palencia
+        '35', // Las Palmas (Gran Canaria, Lanzarote, Fuerteventura)
+        '36', // Pontevedra
+        '37', // Salamanca
+        '38', // Santa Cruz de Tenerife (Tenerife, La Gomera, El Hierro, La Palma)
+        '39', // Cantabria
+        '40', // Segovia
+        '41', // Sevilla
+        '42', // Soria
+        '43', // Tarragona
+        '44', // Teruel
+        '45', // Toledo
+        '46', // Valencia
+        '47', // Valladolid
+        '48', // Bizkaia
+        '49', // Zamora
+        '50', // Zaragoza
+        '51', // Ceuta
+        '52'  // Melilla
+      ],
       'Maroc': ['10000', '20000', '30000', '40000', '50000', '60000', '70000', '80000', '90000'],
       'Portugal': ['1000', '2000', '3000', '4000', '5000', '6000', '7000', '8000', '9000'],
       'Luxembourg': ['1009', '1010', '1011', '1012', '1013', '1014', '1015', '1016', '1017', '1018', '1019', '1020', '1021', '1022', '1023', '1024', '1025', '1026', '1027', '1028', '1029', '1030'],
@@ -1873,8 +2129,136 @@ const handleDepartmentsList = async (ctx, serviceType, selectedCountry = null) =
       // Europe Occidentale
       'France': ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '2A', '2B', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31', '32', '33', '34', '35', '36', '37', '38', '39', '40', '41', '42', '43', '44', '45', '46', '47', '48', '49', '50', '51', '52', '53', '54', '55', '56', '57', '58', '59', '60', '61', '62', '63', '64', '65', '66', '67', '68', '69', '70', '71', '72', '73', '74', '75', '76', '77', '78', '79', '80', '81', '82', '83', '84', '85', '86', '87', '88', '89', '90', '91', '92', '93', '94', '95'],
       'Allemagne': ['01000', '10000', '20000', '30000', '40000', '50000', '60000', '70000', '80000', '90000', '12000', '13000', '14000', '15000', '16000', '17000', '18000', '19000', '21000', '22000', '23000', '24000', '25000', '26000', '27000', '28000', '29000', '31000', '32000', '33000'],
-      'Espagne': ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31', '32', '33', '34', '35', '36', '37', '38', '39', '40', '41', '42', '43', '44', '45', '46', '47', '48', '49', '50'],
-      'Italie': ['00100', '10100', '20100', '30100', '40100', '50100', '60100', '70100', '80100', '90100', '16100', '37100', '43100', '56100', '70200', '80200', '95100', '98100', '00200', '35100', '84100', '87100', '73100', '63100', '47100', '55100', '67100'],
+      'Espagne': [
+        // Espagne péninsulaire (par provinces selon ordre alphabétique)
+        '01', // Álava
+        '02', // Albacete
+        '03', // Alicante
+        '04', // Almería
+        '05', // Ávila
+        '06', // Badajoz
+        '07', // Illes Balears (Mallorca, Ibiza, Formentera, Menorca)
+        '08', // Barcelona
+        '09', // Burgos
+        '10', // Cáceres
+        '11', // Cádiz
+        '12', // Castellón
+        '13', // Ciudad Real
+        '14', // Córdoba
+        '15', // A Coruña
+        '16', // Cuenca
+        '17', // Girona
+        '18', // Granada
+        '19', // Guadalajara
+        '20', // Gipuzkoa
+        '21', // Huelva
+        '22', // Huesca
+        '23', // Jaén
+        '24', // León
+        '25', // Lleida
+        '26', // La Rioja
+        '27', // Lugo
+        '28', // Madrid
+        '29', // Málaga
+        '30', // Murcia
+        '31', // Navarra
+        '32', // Ourense
+        '33', // Asturias
+        '34', // Palencia
+        '35', // Las Palmas (Gran Canaria, Lanzarote, Fuerteventura)
+        '36', // Pontevedra
+        '37', // Salamanca
+        '38', // Santa Cruz de Tenerife (Tenerife, La Gomera, El Hierro, La Palma)
+        '39', // Cantabria
+        '40', // Segovia
+        '41', // Sevilla
+        '42', // Soria
+        '43', // Tarragona
+        '44', // Teruel
+        '45', // Toledo
+        '46', // Valencia
+        '47', // Valladolid
+        '48', // Bizkaia
+        '49', // Zamora
+        '50', // Zaragoza
+        '51', // Ceuta
+        '52'  // Melilla
+      ],
+      'Italie': [
+        // Italie du Nord
+        '00100', // Rome (Latium)
+        '10100', // Turin (Piémont)
+        '16100', // Gênes (Ligurie)
+        '20100', // Milan (Lombardie)
+        '25100', // Brescia (Lombardie)
+        '30100', // Venise (Vénétie)
+        '33100', // Udine (Frioul-Vénétie julienne)
+        '34100', // Trieste (Frioul-Vénétie julienne)
+        '35100', // Padoue (Vénétie)
+        '37100', // Vérone (Vénétie)
+        '38100', // Trente (Trentin-Haut-Adige)
+        '39100', // Bolzano (Trentin-Haut-Adige)
+        '40100', // Bologne (Émilie-Romagne)
+        '41100', // Modène (Émilie-Romagne)
+        '43100', // Parme (Émilie-Romagne)
+        '44100', // Ferrare (Émilie-Romagne)
+        '47100', // Forlì (Émilie-Romagne)
+        '48100', // Ravenne (Émilie-Romagne)
+        // Italie centrale
+        '50100', // Florence (Toscane)
+        '51100', // Pistoia (Toscane)
+        '52100', // Arezzo (Toscane)
+        '53100', // Sienne (Toscane)
+        '55100', // Lucques (Toscane)
+        '56100', // Pise (Toscane)
+        '57100', // Livourne (Toscane)
+        '58100', // Grosseto (Toscane)
+        '59100', // Prato (Toscane)
+        '60100', // Ancône (Marches)
+        '61100', // Pesaro (Marches)
+        '62100', // Macerata (Marches)
+        '63100', // Ascoli Piceno (Marches)
+        '06100', // Pérouse (Ombrie)
+        '05100', // Terni (Ombrie)
+        // Italie du Sud et îles
+        '65100', // Pescara (Abruzzes)
+        '66100', // Chieti (Abruzzes)
+        '67100', // L'Aquila (Abruzzes)
+        '64100', // Teramo (Abruzzes)
+        '70100', // Bari (Pouilles)
+        '71100', // Foggia (Pouilles)
+        '72100', // Brindisi (Pouilles)
+        '73100', // Lecce (Pouilles)
+        '74100', // Tarente (Pouilles)
+        '75100', // Matera (Basilicate)
+        '85100', // Potenza (Basilicate)
+        '80100', // Naples (Campanie)
+        '81100', // Caserte (Campanie)
+        '82100', // Bénévent (Campanie)
+        '83100', // Avellino (Campanie)
+        '84100', // Salerne (Campanie)
+        '86100', // Campobasso (Molise)
+        '88100', // Catanzaro (Calabre)
+        '87100', // Cosenza (Calabre)
+        '89100', // Reggio de Calabre (Calabre)
+        '90100', // Palerme (Sicile)
+        '91100', // Trapani (Sicile)
+        '92100', // Agrigente (Sicile)
+        '93100', // Caltanissetta (Sicile)
+        '94100', // Enna (Sicile)
+        '95100', // Catane (Sicile)
+        '96100', // Syracuse (Sicile)
+        '97100', // Raguse (Sicile)
+        '98100', // Messine (Sicile)
+        // Sardaigne
+        '07100', // Sassari (Sardaigne)
+        '08100', // Nuoro (Sardaigne)
+        '09100', // Cagliari (Sardaigne)
+        '09123', // Cagliari centre (Sardaigne)
+        '09124', // Cagliari quartiers (Sardaigne)
+        '09125', // Cagliari périphérie (Sardaigne)
+        '07026'  // Olbia (Sardaigne)
+      ],
       'Royaume-Uni': ['B1', 'B2', 'B3', 'B4', 'B5', 'B6', 'B7', 'B8', 'B9', 'B10', 'B11', 'B12', 'B13', 'B14', 'B15', 'B16', 'B17', 'B18', 'B19', 'B20', 'B21', 'B22', 'B23', 'B24', 'B25', 'B26', 'B27', 'B28', 'B29', 'B30'],
       'Pays-Bas': ['1000', '2000', '3000', '4000', '5000', '6000', '7000', '8000', '9000', '1100', '1200', '1300', '1400', '1500', '2100', '2200', '2300', '2400', '2500', '3100', '3200', '3300', '3400', '3500', '4100', '4200', '4300', '4400', '4500'],
       'Belgique': ['1000', '2000', '3000', '4000', '5000', '6000', '7000', '8000', '9000', '1500', '1200', '1400', '1300', '1600', '1800', '2500', '3500', '4500', '5500', '6500', '7500', '8500', '9500'],
