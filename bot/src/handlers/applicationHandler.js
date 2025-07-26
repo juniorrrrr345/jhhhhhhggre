@@ -940,20 +940,26 @@ const askTelegramChannel = async (ctx) => {
 
 // Demander Instagram
 const askInstagram = async (ctx) => {
-  const message = `🛠️ **FORMULAIRE D'INSCRIPTION – FindYourPlug**\n\n` +
+  const Config = require('../models/Config');
+  const config = await Config.findById('main');
+  const currentLang = config?.languages?.currentLanguage || 'fr';
+  const customTranslations = config?.languages?.translations;
+
+  const message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
     `⸻\n\n` +
-    `🟦 **Étape 4 : Lien Instagram**\n\n` +
-    `📸 Entrez votre lien Instagram (https://www.instagram.com/username)\n\n` +
-    `⚠️ Tu peux aussi passer cette étape.`;
+    `${getTranslation('registration.step9', currentLang, customTranslations)}\n\n` +
+    `${getTranslation('registration.instagramQuestion', currentLang, customTranslations)}\n\n` +
+    `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
   
   const keyboard = Markup.inlineKeyboard([
-            [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_instagram')],
+    [Markup.button.callback(getTranslation('registration.goBack', currentLang, customTranslations), 'go_back_session')],
+    [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_instagram')],
     [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
   ]);
   
   await safeEditMessage(ctx, message, {
     reply_markup: keyboard.reply_markup,
-    parse_mode: 'Markdown'
+    disable_web_page_preview: true
   });
 };
 
@@ -972,13 +978,14 @@ const askPotato = async (ctx) => {
     `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
   
   const keyboard = Markup.inlineKeyboard([
+    [Markup.button.callback(getTranslation('registration.goBack', currentLang, customTranslations), 'go_back_snapchat')],
     [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_potato')],
     [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
   ]);
   
   await safeEditMessage(ctx, message, {
     reply_markup: keyboard.reply_markup,
-    parse_mode: 'Markdown'
+    disable_web_page_preview: true
   });
 };
 
@@ -997,13 +1004,14 @@ const askSnapchat = async (ctx) => {
     `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
   
   const keyboard = Markup.inlineKeyboard([
+    [Markup.button.callback(getTranslation('registration.goBack', currentLang, customTranslations), 'go_back_telegram')],
     [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_snapchat')],
     [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
   ]);
   
   await safeEditMessage(ctx, message, {
     reply_markup: keyboard.reply_markup,
-    parse_mode: 'Markdown'
+    disable_web_page_preview: true
   });
 };
 
@@ -1027,6 +1035,7 @@ const askWhatsApp = async (ctx) => {
     console.log(`📝 askWhatsApp: Message prepared, length=${message.length}`);
     
     const keyboard = Markup.inlineKeyboard([
+      [Markup.button.callback(getTranslation('registration.goBack', currentLang, customTranslations), 'go_back_signal')],
       [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_whatsapp')],
       [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
     ]);
@@ -1060,6 +1069,7 @@ const askSignal = async (ctx) => {
     `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
   
   const keyboard = Markup.inlineKeyboard([
+    [Markup.button.callback(getTranslation('registration.goBack', currentLang, customTranslations), 'go_back_potato')],
     [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_signal')],
     [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
   ]);
@@ -1085,6 +1095,7 @@ const askSession = async (ctx) => {
     `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
   
   const keyboard = Markup.inlineKeyboard([
+    [Markup.button.callback(getTranslation('registration.goBack', currentLang, customTranslations), 'go_back_threema')],
     [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_session')],
     [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
   ]);
@@ -1110,6 +1121,7 @@ const askThreema = async (ctx) => {
     `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
   
   const keyboard = Markup.inlineKeyboard([
+    [Markup.button.callback(getTranslation('registration.goBack', currentLang, customTranslations), 'go_back_whatsapp')],
     [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_threema')],
     [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
   ]);
@@ -1136,6 +1148,7 @@ const askTelegramBot = async (ctx) => {
     `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
   
   const keyboard = Markup.inlineKeyboard([
+    [Markup.button.callback(getTranslation('registration.goBack', currentLang, customTranslations), 'go_back_instagram')],
     [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_telegram_bot')],
     [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
   ]);
@@ -1479,6 +1492,7 @@ const askPhoto = async (ctx) => {
     `${getTranslation('registration.shopPhotoInstruction', currentLang, customTranslations)}`;
   
   const keyboard = Markup.inlineKeyboard([
+    [Markup.button.callback(getTranslation('registration.goBack', currentLang, customTranslations), 'go_back_telegram_bot')],
     [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
   ]);
   
@@ -2223,6 +2237,121 @@ const handleGoBack = async (ctx) => {
       await safeEditMessage(ctx, potatoBackMessage, {
         reply_markup: potatoBackKeyboard.reply_markup,
         parse_mode: 'Markdown'
+      });
+      break;
+
+    case 'signal':
+      const signalBackMessage = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
+        `⸻\n\n` +
+        `${getTranslation('registration.step5', currentLang, customTranslations)}\n\n` +
+        `${getTranslation('registration.signalQuestion', currentLang, customTranslations)}\n\n` +
+        `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
+      
+      const signalBackKeyboard = Markup.inlineKeyboard([
+        [Markup.button.callback(getTranslation('registration.goBack', currentLang, customTranslations), 'go_back_potato')],
+        [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_signal')],
+        [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
+      ]);
+
+      await safeEditMessage(ctx, signalBackMessage, {
+        reply_markup: signalBackKeyboard.reply_markup,
+        disable_web_page_preview: true
+      });
+      break;
+
+    case 'whatsapp':
+      const whatsappBackMessage = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
+        `⸻\n\n` +
+        `${getTranslation('registration.step6', currentLang, customTranslations)}\n\n` +
+        `${getTranslation('registration.whatsappQuestion', currentLang, customTranslations)}\n\n` +
+        `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
+      
+      const whatsappBackKeyboard = Markup.inlineKeyboard([
+        [Markup.button.callback(getTranslation('registration.goBack', currentLang, customTranslations), 'go_back_signal')],
+        [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_whatsapp')],
+        [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
+      ]);
+
+      await safeEditMessage(ctx, whatsappBackMessage, {
+        reply_markup: whatsappBackKeyboard.reply_markup,
+        disable_web_page_preview: true
+      });
+      break;
+
+    case 'threema':
+      const threemaBackMessage = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
+        `⸻\n\n` +
+        `${getTranslation('registration.step7', currentLang, customTranslations)}\n\n` +
+        `${getTranslation('registration.threemaQuestion', currentLang, customTranslations)}\n\n` +
+        `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
+      
+      const threemaBackKeyboard = Markup.inlineKeyboard([
+        [Markup.button.callback(getTranslation('registration.goBack', currentLang, customTranslations), 'go_back_whatsapp')],
+        [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_threema')],
+        [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
+      ]);
+
+      await safeEditMessage(ctx, threemaBackMessage, {
+        reply_markup: threemaBackKeyboard.reply_markup,
+        disable_web_page_preview: true
+      });
+      break;
+
+    case 'session':
+      const sessionBackMessage = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
+        `⸻\n\n` +
+        `${getTranslation('registration.step8', currentLang, customTranslations)}\n\n` +
+        `${getTranslation('registration.sessionQuestion', currentLang, customTranslations)}\n\n` +
+        `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
+      
+      const sessionBackKeyboard = Markup.inlineKeyboard([
+        [Markup.button.callback(getTranslation('registration.goBack', currentLang, customTranslations), 'go_back_threema')],
+        [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_session')],
+        [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
+      ]);
+
+      await safeEditMessage(ctx, sessionBackMessage, {
+        reply_markup: sessionBackKeyboard.reply_markup,
+        disable_web_page_preview: true
+      });
+      break;
+
+    case 'instagram':
+      const instagramBackMessage = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
+        `⸻\n\n` +
+        `${getTranslation('registration.step9', currentLang, customTranslations)}\n\n` +
+        `${getTranslation('registration.instagramQuestion', currentLang, customTranslations)}\n\n` +
+        `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
+      
+      const instagramBackKeyboard = Markup.inlineKeyboard([
+        [Markup.button.callback(getTranslation('registration.goBack', currentLang, customTranslations), 'go_back_session')],
+        [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_instagram')],
+        [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
+      ]);
+
+      await safeEditMessage(ctx, instagramBackMessage, {
+        reply_markup: instagramBackKeyboard.reply_markup,
+        disable_web_page_preview: true
+      });
+      break;
+
+    case 'telegram_bot':
+      const telegramBotBackMessage = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
+        `⸻\n\n` +
+        `${getTranslation('registration.step10Bot', currentLang, customTranslations)}\n\n` +
+        `${getTranslation('registration.telegramBotQuestion', currentLang, customTranslations)}\n\n` +
+        `${getTranslation('registration.telegramBotExample', currentLang, customTranslations)}\n\n` +
+        `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
+      
+      const telegramBotBackKeyboard = Markup.inlineKeyboard([
+        [Markup.button.callback(getTranslation('registration.goBack', currentLang, customTranslations), 'go_back_instagram')],
+        [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_telegram_bot')],
+        [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
+      ]);
+
+      await safeEditMessage(ctx, telegramBotBackMessage, {
+        reply_markup: telegramBotBackKeyboard.reply_markup,
+        disable_web_page_preview: true
       });
       break;
 
