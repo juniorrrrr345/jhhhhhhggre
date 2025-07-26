@@ -3259,6 +3259,73 @@ const handleUserAnalytics = async (req, res) => {
 app.get('/api/admin/user-analytics', handleUserAnalytics);
 app.post('/api/admin/user-analytics', handleUserAnalytics);
 
+// DEBUG: Endpoint pour vérifier les utilisateurs dans la DB
+app.get('/api/debug/users-check', async (req, res) => {
+  try {
+    console.log('🔍 DEBUG: Vérification utilisateurs dans la base de données');
+    
+    // Compter les utilisateurs total
+    const totalUsers = await User.countDocuments({});
+    console.log(`📊 Total utilisateurs trouvés: ${totalUsers}`);
+    
+    // Utilisateurs récents (24h)
+    const recentUsers = await User.countDocuments({
+      createdAt: { $gte: new Date(Date.now() - 24 * 60 * 60 * 1000) }
+    });
+    console.log(`📅 Utilisateurs dernières 24h: ${recentUsers}`);
+    
+    // Échantillon d'utilisateurs
+    const sampleUsers = await User.find({})
+      .sort({ createdAt: -1 })
+      .limit(5)
+      .select('telegramId username firstName lastName location createdAt');
+    console.log(`👥 Échantillon utilisateurs:`, sampleUsers);
+    
+    // Utilisateurs avec géolocalisation
+    const usersWithLocation = await User.countDocuments({
+      'location.country': { $exists: true, $ne: null, $ne: 'Unknown' }
+    });
+    console.log(`📍 Utilisateurs avec localisation: ${usersWithLocation}`);
+    
+    // Stats par pays
+    const countryStats = await User.aggregate([
+      {
+        $match: {
+          'location.country': { $exists: true, $ne: null, $ne: 'Unknown' }
+        }
+      },
+      {
+        $group: {
+          _id: '$location.country',
+          count: { $sum: 1 }
+        }
+      },
+      { $sort: { count: -1 } },
+      { $limit: 5 }
+    ]);
+    console.log(`🌍 Top pays:`, countryStats);
+    
+    res.json({
+      success: true,
+      debug: {
+        totalUsers,
+        recentUsers,
+        usersWithLocation,
+        sampleUsers,
+        countryStats,
+        dbConnected: true,
+        userModelExists: !!User
+      }
+    });
+  } catch (error) {
+    console.error('❌ DEBUG ERROR:', error);
+    res.status(500).json({ 
+      error: error.message,
+      stack: error.stack 
+    });
+  }
+});
+
 // DEBUG: Endpoint pour forcer reload config et afficher debug
 app.get('/api/debug/config-reload', async (req, res) => {
   try {
