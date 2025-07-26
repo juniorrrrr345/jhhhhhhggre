@@ -1160,8 +1160,8 @@ const askConfirmation = async (ctx) => {
   const message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
     `⸻\n\n` +
     `${getTranslation('registration.step11', currentLang, customTranslations)}\n\n` +
-    `✅ Voici le récapitulatif final :\n\n` +
-    `• **Nom de Plug** : ${userForm.data.name}\n` +
+    `${getTranslation('registration.finalSummary', currentLang, customTranslations)}\n\n` +
+    `• **${getTranslation('registration.plugName', currentLang, customTranslations)}** : ${userForm.data.name}\n` +
     `• **Telegram** : ${userForm.data.telegram}\n` +
     `${userForm.data.snapchat ? `• **Snapchat** : ${userForm.data.snapchat}\n` : ''}` +
     `${userForm.data.potato ? `• **Potato** : ${userForm.data.potato}\n` : ''}` +
@@ -1170,13 +1170,13 @@ const askConfirmation = async (ctx) => {
     `${userForm.data.threema ? `• **Threema** : ${userForm.data.threema}\n` : ''}` +
     `${userForm.data.session ? `• **Session** : ${userForm.data.session}\n` : ''}` +
     `${userForm.data.telegramBot ? `• **Bot Telegram** : ${userForm.data.telegramBot}\n` : ''}` +
-    `• **Photo de boutique** : ✔️ Reçu\n\n` +
-    `Confirmer l'inscription ?`;
+    `• ${getTranslation('registration.photoReceived', currentLang, customTranslations)}\n\n` +
+    `${getTranslation('registration.confirmInscription', currentLang, customTranslations)}`;
   
   const keyboard = Markup.inlineKeyboard([
     [
-      Markup.button.callback('✅ Confirmer', 'confirm_application'),
-      Markup.button.callback('❌ Annuler', 'cancel_application')
+      Markup.button.callback(getTranslation('registration.confirm', currentLang, customTranslations), 'confirm_application'),
+      Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')
     ]
   ]);
   
@@ -1412,25 +1412,24 @@ const submitApplication = async (ctx) => {
     userForms.delete(userId);
     lastBotMessages.delete(userId);
     
-    const photoText = userForm.data.photo ? '✅ Photo incluse' : '⚠️ Aucune photo';
+    // Récupérer la langue pour les traductions
+    const Config = require('../models/Config');
+    const config = await Config.findById('main');
+    const currentLang = config?.languages?.currentLanguage || 'fr';
+    const customTranslations = config?.languages?.translations;
     
-    const message = `🛠️ FORMULAIRE D'INSCRIPTION – FindYourPlug\n\n` +
+    const message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
       `⸻\n\n` +
-      `🟩 ÉTAPE FINALE\n\n` +
-      `🎉 Formulaire reçu !\n\n` +
-      `📌 Pour valider ton inscription :\n\n` +
-      `1️⃣ Poste le logo FindYourPlug sur un de tes réseaux renseignés avec le texte :\n` +
-      `"Inscription en cours chez @FindYourPlug"\n` +
-      `et identifie @findyourplug\n\n` +
-      `2️⃣ Envoie une photo de ton stock avec\n` +
-      `FindYourPlug et la date du jour écrits sur papier\n` +
-      `à l'admin : @findyourplug_admin\n\n` +
-      `⏰ Tu as 24h pour faire ces 2 étapes.\n\n` +
-      `ℹ️ La pré-approbation peut prendre 24 à 48h.\n` +
-      `Tu seras notifié automatiquement de la décision.`;
+      `${getTranslation('registration.finalStep', currentLang, customTranslations)}\n\n` +
+      `${getTranslation('registration.formReceived', currentLang, customTranslations)}\n\n` +
+      `${getTranslation('registration.validationInstructions', currentLang, customTranslations)}\n\n` +
+      `${getTranslation('registration.step1Validation', currentLang, customTranslations)}\n\n` +
+      `${getTranslation('registration.step2Validation', currentLang, customTranslations)}\n\n` +
+      `${getTranslation('registration.timeLimit', currentLang, customTranslations)}\n\n` +
+      `${getTranslation('registration.approvalTime', currentLang, customTranslations)}`;
     
     const keyboard = Markup.inlineKeyboard([
-      [Markup.button.callback('🔙 Retour au menu', 'back_main')]
+      [Markup.button.callback(getTranslation('registration.backToMenu', currentLang, customTranslations), 'back_main')]
     ]);
     
     // Utiliser editMessageText simple sans formatage pour éviter les problèmes

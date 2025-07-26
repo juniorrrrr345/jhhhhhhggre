@@ -799,6 +799,94 @@ const translations = {
       de: '❌ Ungültiges Land'
     },
 
+    // === CONFIRMATION ===
+    'registration.finalSummary': {
+      fr: '✅ Voici le récapitulatif final :',
+      en: '✅ Here is the final summary:',
+      it: '✅ Ecco il riepilogo finale:',
+      es: '✅ Aquí está el resumen final:',
+      de: '✅ Hier ist die finale Zusammenfassung:'
+    },
+    'registration.plugName': {
+      fr: 'Nom de Plug',
+      en: 'Plug Name',
+      it: 'Nome Negozio',
+      es: 'Nombre de Tienda',
+      de: 'Shop-Name'
+    },
+    'registration.photoReceived': {
+      fr: 'Photo de boutique : ✔️ Reçu',
+      en: 'Shop photo: ✔️ Received',
+      it: 'Foto negozio: ✔️ Ricevuta',
+      es: 'Foto de tienda: ✔️ Recibida',
+      de: 'Shop-Foto: ✔️ Erhalten'
+    },
+    'registration.confirmInscription': {
+      fr: 'Confirmer l\'inscription ?',
+      en: 'Confirm registration?',
+      it: 'Confermare la registrazione?',
+      es: '¿Confirmar registro?',
+      de: 'Registrierung bestätigen?'
+    },
+    'registration.confirm': {
+      fr: '✅ Confirmer',
+      en: '✅ Confirm',
+      it: '✅ Conferma',
+      es: '✅ Confirmar',
+      de: '✅ Bestätigen'
+    },
+
+    // === SOUMISSION FINALE ===
+    'registration.finalStep': {
+      fr: '🟩 ÉTAPE FINALE',
+      en: '🟩 FINAL STEP',
+      it: '🟩 FASE FINALE',
+      es: '🟩 PASO FINAL',
+      de: '🟩 LETZTER SCHRITT'
+    },
+    'registration.formReceived': {
+      fr: '🎉 Formulaire reçu !',
+      en: '🎉 Form received!',
+      it: '🎉 Modulo ricevuto!',
+      es: '🎉 ¡Formulario recibido!',
+      de: '🎉 Formular erhalten!'
+    },
+    'registration.validationInstructions': {
+      fr: '📌 Pour valider ton inscription :',
+      en: '📌 To validate your registration:',
+      it: '📌 Per convalidare la tua registrazione:',
+      es: '📌 Para validar tu registro:',
+      de: '📌 Um deine Registrierung zu bestätigen:'
+    },
+    'registration.step1Validation': {
+      fr: '1️⃣ Poste le logo FindYourPlug sur un de tes réseaux renseignés avec le texte :\n"Inscription en cours chez @FindYourPlug"\net identifie @findyourplug',
+      en: '1️⃣ Post the FindYourPlug logo on one of your registered networks with the text:\n"Registration in progress at @FindYourPlug"\nand tag @findyourplug',
+      it: '1️⃣ Pubblica il logo FindYourPlug su uno dei tuoi social registrati con il testo:\n"Registrazione in corso presso @FindYourPlug"\ne tagga @findyourplug',
+      es: '1️⃣ Publica el logo FindYourPlug en una de tus redes registradas con el texto:\n"Registro en curso en @FindYourPlug"\ny etiqueta @findyourplug',
+      de: '1️⃣ Poste das FindYourPlug-Logo in einem deiner registrierten Netzwerke mit dem Text:\n"Registrierung läuft bei @FindYourPlug"\nund tagge @findyourplug'
+    },
+    'registration.step2Validation': {
+      fr: '2️⃣ Envoie une photo de ton stock avec\nFindYourPlug et la date du jour écrits sur papier\nà l\'admin : @findyourplug_admin',
+      en: '2️⃣ Send a photo of your stock with\nFindYourPlug and today\'s date written on paper\nto admin: @findyourplug_admin',
+      it: '2️⃣ Invia una foto del tuo stock con\nFindYourPlug e la data di oggi scritti su carta\nall\'admin: @findyourplug_admin',
+      es: '2️⃣ Envía una foto de tu stock con\nFindYourPlug y la fecha de hoy escritos en papel\nal admin: @findyourplug_admin',
+      de: '2️⃣ Sende ein Foto deines Lagers mit\nFindYourPlug und dem heutigen Datum auf Papier geschrieben\nan Admin: @findyourplug_admin'
+    },
+    'registration.timeLimit': {
+      fr: '⏰ Tu as 24h pour faire ces 2 étapes.',
+      en: '⏰ You have 24h to complete these 2 steps.',
+      it: '⏰ Hai 24 ore per completare questi 2 passaggi.',
+      es: '⏰ Tienes 24h para completar estos 2 pasos.',
+      de: '⏰ Du hast 24 Stunden, um diese 2 Schritte zu erledigen.'
+    },
+    'registration.approvalTime': {
+      fr: 'ℹ️ La pré-approbation peut prendre 24 à 48h.\nTu seras notifié automatiquement de la décision.',
+      en: 'ℹ️ Pre-approval may take 24 to 48h.\nYou will be automatically notified of the decision.',
+      it: 'ℹ️ La pre-approvazione può richiedere da 24 a 48 ore.\nSarai notificato automaticamente della decisione.',
+      es: 'ℹ️ La pre-aprobación puede tomar de 24 a 48h.\nSerás notificado automáticamente de la decisión.',
+      de: 'ℹ️ Die Vorabgenehmigung kann 24 bis 48 Stunden dauern.\nDu wirst automatisch über die Entscheidung benachrichtigt.'
+    },
+
     // === SERVICES ===
     'service_delivery': {
       fr: 'Livraison',
