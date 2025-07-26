@@ -487,6 +487,7 @@ bot.action('skip_whatsapp', (ctx) => handleSkipStep(ctx, 'whatsapp'));
 bot.action('skip_signal', (ctx) => handleSkipStep(ctx, 'signal'));
 bot.action('skip_session', (ctx) => handleSkipStep(ctx, 'session'));
 bot.action('skip_threema', (ctx) => handleSkipStep(ctx, 'threema'));
+bot.action('skip_telegram_bot', (ctx) => handleSkipStep(ctx, 'telegram_bot'));
 bot.action('confirm_application', submitApplication);
 
 bot.action('check_application_status', handleCheckApplicationStatus);

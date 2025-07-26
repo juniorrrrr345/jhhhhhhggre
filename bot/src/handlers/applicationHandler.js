@@ -299,7 +299,20 @@ const handleFormMessage = async (ctx) => {
         }
 
         userForm.data.threema = text;
+        userForm.step = 'telegram_bot';
+        userForms.set(userId, userForm);
+        
+        await askTelegramBot(ctx);
+        break;
+
+      case 'telegram_bot':
+        if (!text.startsWith('@') && !text.includes('t.me/')) {
+          return await ctx.reply(getTranslation('registration.error.telegramBotFormat', currentLang, customTranslations));
+        }
+
+        userForm.data.telegramBot = text;
         userForm.step = 'country';
+        userForms.set(userId, userForm);
         
         await askCountry(ctx);
         break;
@@ -685,7 +698,7 @@ const askSnapchat = async (ctx) => {
   await safeEditMessage(ctx, message, {
     reply_markup: keyboard.reply_markup,
     parse_mode: 'Markdown'
-  }, true);
+  });
 };
 
 // Demander WhatsApp
