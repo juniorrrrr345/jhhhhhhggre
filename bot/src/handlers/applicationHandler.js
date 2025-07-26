@@ -737,15 +737,20 @@ const askWhatsApp = async (ctx) => {
 
 // Demander Signal
 const askSignal = async (ctx) => {
-  const userForm = userForms.get(ctx.from.id);
-  const message = `📝 **Récapitulatif de votre inscription :**\n\n` +
-    `📝 Nom de Plug: ${userForm.data.name}\n` +
-    `🔗 Telegram: ${userForm.data.telegram}\n\n` +
-    `Entrez votre lien Signal (commençant par https://):`;
+  const Config = require('../models/Config');
+  const config = await Config.findById('main');
+  const currentLang = config?.languages?.currentLanguage || 'fr';
+  const customTranslations = config?.languages?.translations;
+
+  const message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
+    `⸻\n\n` +
+    `${getTranslation('registration.step8', currentLang, customTranslations)}\n\n` +
+    `${getTranslation('registration.signalQuestion', currentLang, customTranslations)}\n\n` +
+    `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
   
   const keyboard = Markup.inlineKeyboard([
-    [Markup.button.callback('➡️ Passer cette étape', 'skip_signal')],
-    [Markup.button.callback('❌ Annuler', 'cancel_application')]
+    [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_signal')],
+    [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
   ]);
   
   await safeEditMessage(ctx, message, {
@@ -756,15 +761,20 @@ const askSignal = async (ctx) => {
 
 // Demander Session
 const askSession = async (ctx) => {
-  const userForm = userForms.get(ctx.from.id);
-  const message = `📝 **Récapitulatif de votre inscription :**\n\n` +
-    `📝 Nom de Plug: ${userForm.data.name}\n` +
-    `🔗 Telegram: ${userForm.data.telegram}\n\n` +
-    `Entrez votre identifiant Session (texte libre):`;
+  const Config = require('../models/Config');
+  const config = await Config.findById('main');
+  const currentLang = config?.languages?.currentLanguage || 'fr';
+  const customTranslations = config?.languages?.translations;
+
+  const message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
+    `⸻\n\n` +
+    `${getTranslation('registration.step9', currentLang, customTranslations)}\n\n` +
+    `${getTranslation('registration.sessionQuestion', currentLang, customTranslations)}\n\n` +
+    `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
   
   const keyboard = Markup.inlineKeyboard([
-    [Markup.button.callback('➡️ Passer cette étape', 'skip_session')],
-    [Markup.button.callback('❌ Annuler', 'cancel_application')]
+    [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_session')],
+    [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
   ]);
   
   await safeEditMessage(ctx, message, {
@@ -775,14 +785,19 @@ const askSession = async (ctx) => {
 
 // Demander Threema
 const askThreema = async (ctx) => {
-  const userForm = userForms.get(ctx.from.id);
-  const message = `📝 **Récapitulatif de votre inscription :**\n\n` +
-    `📝 Nom de Plug: ${userForm.data.name}\n` +
-    `🔗 Telegram: ${userForm.data.telegram}\n\n` +
-    `Entrez votre lien Threema (commençant par https://):`;
+  const Config = require('../models/Config');
+  const config = await Config.findById('main');
+  const currentLang = config?.languages?.currentLanguage || 'fr';
+  const customTranslations = config?.languages?.translations;
+
+  const message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
+    `⸻\n\n` +
+    `${getTranslation('registration.step10', currentLang, customTranslations)}\n\n` +
+    `${getTranslation('registration.threemaQuestion', currentLang, customTranslations)}\n\n` +
+    `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
   
   const keyboard = Markup.inlineKeyboard([
-    [Markup.button.callback('➡️ Passer cette étape', 'skip_threema')],
+    [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_threema')],
     [Markup.button.callback('❌ Annuler', 'cancel_application')]
   ]);
   
@@ -794,10 +809,15 @@ const askThreema = async (ctx) => {
 
 // Demander le pays avec boutons
 const askCountry = async (ctx) => {
-  const message = `🛠️ **FORMULAIRE D'INSCRIPTION – FindYourPlug**\n\n` +
+  const Config = require('../models/Config');
+  const config = await Config.findById('main');
+  const currentLang = config?.languages?.currentLanguage || 'fr';
+  const customTranslations = config?.languages?.translations;
+
+  const message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
     `⸻\n\n` +
-    `🟦 **Étape 11 : Pays d'activité**\n\n` +
-    `🌍 Dans quel pays opères-tu principalement ?`;
+    `${getTranslation('registration.step11', currentLang, customTranslations)}\n\n` +
+    `${getTranslation('registration.countryQuestion', currentLang, customTranslations)}`;
   
   // Créer les boutons de pays (3 par ligne)
   const countryButtons = [];
@@ -810,7 +830,7 @@ const askCountry = async (ctx) => {
   
   // Ajouter boutons d'action
   countryButtons.push([
-    Markup.button.callback('🌍 Tous les pays', 'country_all')
+    Markup.button.callback(`🌍 ${getTranslation('registration.allCountries', currentLang, customTranslations)}`, 'country_all')
   ]);
   
   const keyboard = Markup.inlineKeyboard(countryButtons);
@@ -854,23 +874,26 @@ const handleCountrySelection = async (ctx) => {
 
 // Demander les services
 const askServices = async (ctx) => {
-  const message = `🛠️ **FORMULAIRE D'INSCRIPTION – FindYourPlug**\n\n` +
+  const Config = require('../models/Config');
+  const config = await Config.findById('main');
+  const currentLang = config?.languages?.currentLanguage || 'fr';
+  const customTranslations = config?.languages?.translations;
+
+  const message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
     `⸻\n\n` +
-    `🟦 **Étape 12 : Services proposés**\n\n` +
-    `📦 Quels services proposes-tu ?\n` +
-    `(Sélectionne tous ceux qui s'appliquent)\n\n` +
-    `☑️ Meetup\n` +
-    `☑️ Livraison\n` +
-    `☑️ Envoi Postal`;
+    `${getTranslation('registration.step13', currentLang, customTranslations)}\n\n` +
+    `${getTranslation('registration.servicesQuestion', currentLang, customTranslations)}\n` +
+    `${getTranslation('registration.selectServices', currentLang, customTranslations)}\n\n` +
+    `${getTranslation('registration.servicesAvailable', currentLang, customTranslations)}`;
   
   const keyboard = Markup.inlineKeyboard([
     [
-      Markup.button.callback('📍 Meetup', 'service_meetup'),
-      Markup.button.callback('🚚 Livraison', 'service_delivery')
+      Markup.button.callback(`📍 ${getTranslation('service_meetup', currentLang, customTranslations)}`, 'service_meetup'),
+      Markup.button.callback(`🚚 ${getTranslation('service_delivery', currentLang, customTranslations)}`, 'service_delivery')
     ],
-    [Markup.button.callback('✈️ Envoi Postal', 'service_postal')],
-    [Markup.button.callback('✅ Terminer la sélection', 'services_done')],
-    [Markup.button.callback('❌ Annuler', 'cancel_application')]
+    [Markup.button.callback(`✈️ ${getTranslation('service_postal', currentLang, customTranslations)}`, 'service_postal')],
+    [Markup.button.callback(`✅ ${getTranslation('registration.finishSelection', currentLang, customTranslations)}`, 'services_done')],
+    [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
   ]);
   
   await safeEditMessage(ctx, message, {

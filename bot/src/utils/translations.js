@@ -632,6 +632,89 @@ const translations = {
       de: '❌ Departements müssen mindestens 2 Zeichen haben. Versuchen Sie es erneut:'
     },
 
+    // === SÉLECTION ET FINALISATION ===
+    'registration.finishSelection': {
+      fr: 'Terminer la sélection',
+      en: 'Finish selection',
+      it: 'Termina selezione',
+      es: 'Terminar selección',
+      de: 'Auswahl abschließen'
+    },
+    'registration.allCountries': {
+      fr: 'Tous les pays',
+      en: 'All countries',
+      it: 'Tutti i paesi',
+      es: 'Todos los países',
+      de: 'Alle Länder'
+    },
+    'registration.selectServices': {
+      fr: '(Sélectionne tous ceux qui s\'appliquent)',
+      en: '(Select all that apply)',
+      it: '(Seleziona tutto ciò che si applica)',
+      es: '(Selecciona todo lo que corresponda)',
+      de: '(Wählen Sie alles Zutreffende aus)'
+    },
+    'registration.servicesAvailable': {
+      fr: '☑️ Services disponibles',
+      en: '☑️ Available services',
+      it: '☑️ Servizi disponibili',
+      es: '☑️ Servicios disponibles',
+      de: '☑️ Verfügbare Services'
+    },
+
+    // === MESSAGES D'ERREUR GÉNÉRIQUES ===
+    'registration.error.formError': {
+      fr: '❌ Erreur de formulaire',
+      en: '❌ Form error',
+      it: '❌ Errore del modulo',
+      es: '❌ Error de formulario',
+      de: '❌ Formular-Fehler'
+    },
+    'registration.error.genericError': {
+      fr: '❌ Erreur',
+      en: '❌ Error',
+      it: '❌ Errore',
+      es: '❌ Error',
+      de: '❌ Fehler'
+    },
+    'registration.error.technicalError': {
+      fr: '❌ Erreur technique',
+      en: '❌ Technical error',
+      it: '❌ Errore tecnico',
+      es: '❌ Error técnico',
+      de: '❌ Technischer Fehler'
+    },
+    'registration.error.photoError': {
+      fr: '❌ Erreur lors du traitement de la photo. Réessaie.',
+      en: '❌ Error processing photo. Try again.',
+      it: '❌ Errore nell\'elaborazione della foto. Riprova.',
+      es: '❌ Error al procesar la foto. Inténtalo de nuevo.',
+      de: '❌ Fehler beim Verarbeiten des Fotos. Versuchen Sie es erneut.'
+    },
+    'registration.error.startupError': {
+      fr: '❌ Erreur lors du démarrage',
+      en: '❌ Startup error',
+      it: '❌ Errore di avvio',
+      es: '❌ Error de inicio',
+      de: '❌ Startfehler'
+    },
+
+    // === MESSAGES DE CONFIRMATION ===
+    'registration.countrySelected': {
+      fr: 'Pays sélectionné :',
+      en: 'Country selected:',
+      it: 'Paese selezionato:',
+      es: 'País seleccionado:',
+      de: 'Land ausgewählt:'
+    },
+    'registration.invalidCountry': {
+      fr: '❌ Pays invalide',
+      en: '❌ Invalid country',
+      it: '❌ Paese non valido',
+      es: '❌ País inválido',
+      de: '❌ Ungültiges Land'
+    },
+
     // === SERVICES ===
     'service_delivery': {
       fr: 'Livraison',
