@@ -798,13 +798,38 @@ const askThreema = async (ctx) => {
   
   const keyboard = Markup.inlineKeyboard([
     [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_threema')],
-    [Markup.button.callback('❌ Annuler', 'cancel_application')]
+    [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
   ]);
   
   await safeEditMessage(ctx, message, {
     reply_markup: keyboard.reply_markup,
     parse_mode: 'Markdown'
-  });
+  }, true);
+};
+
+// Demander Bot Telegram
+const askTelegramBot = async (ctx) => {
+  const Config = require('../models/Config');
+  const config = await Config.findById('main');
+  const currentLang = config?.languages?.currentLanguage || 'fr';
+  const customTranslations = config?.languages?.translations;
+
+  const message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
+    `⸻\n\n` +
+    `${getTranslation('registration.step11', currentLang, customTranslations)}\n\n` +
+    `${getTranslation('registration.telegramBotQuestion', currentLang, customTranslations)}\n\n` +
+    `${getTranslation('registration.telegramBotExample', currentLang, customTranslations)}\n\n` +
+    `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
+  
+  const keyboard = Markup.inlineKeyboard([
+    [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_telegram_bot')],
+    [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
+  ]);
+  
+  await safeEditMessage(ctx, message, {
+    reply_markup: keyboard.reply_markup,
+    parse_mode: 'Markdown'
+  }, true);
 };
 
 // Demander le pays avec boutons
@@ -816,7 +841,7 @@ const askCountry = async (ctx) => {
 
   const message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
     `⸻\n\n` +
-    `${getTranslation('registration.step11', currentLang, customTranslations)}\n\n` +
+    `${getTranslation('registration.step12', currentLang, customTranslations)}\n\n` +
     `${getTranslation('registration.countryQuestion', currentLang, customTranslations)}`;
   
   // Créer les boutons de pays (3 par ligne)

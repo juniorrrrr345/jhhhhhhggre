@@ -488,25 +488,53 @@ const translations = {
       de: '🟦 Schritt 10: Threema'
     },
     'registration.step11': {
-      fr: '🟦 Étape 11 : Pays de service',
-      en: '🟦 Step 11: Service country',
-      it: '🟦 Fase 11: Paese di servizio',
-      es: '🟦 Paso 11: País de servicio',
-      de: '🟦 Schritt 11: Service-Land'
+      fr: '🟦 Étape 11 : Bot Telegram',
+      en: '🟦 Step 11: Telegram Bot',
+      it: '🟦 Fase 11: Bot Telegram',
+      es: '🟦 Paso 11: Bot Telegram',
+      de: '🟦 Schritt 11: Telegram Bot'
     },
     'registration.step12': {
-      fr: '🟦 Étape 12 : Ville',
-      en: '🟦 Step 12: City',
-      it: '🟦 Fase 12: Città',
-      es: '🟦 Paso 12: Ciudad',
-      de: '🟦 Schritt 12: Stadt'
+      fr: '🟦 Étape 12 : Pays de service',
+      en: '🟦 Step 12: Service country',
+      it: '🟦 Fase 12: Paese di servizio',
+      es: '🟦 Paso 12: País de servicio',
+      de: '🟦 Schritt 12: Service-Land'
     },
     'registration.step13': {
-      fr: '🟦 Étape 13 : Services proposés',
-      en: '🟦 Step 13: Services offered',
-      it: '🟦 Fase 13: Servizi offerti',
-      es: '🟦 Paso 13: Servicios ofrecidos',
-      de: '🟦 Schritt 13: Angebotene Services'
+      fr: '🟦 Étape 13 : Ville',
+      en: '🟦 Step 13: City',
+      it: '🟦 Fase 13: Città',
+      es: '🟦 Paso 13: Ciudad',
+      de: '🟦 Schritt 13: Stadt'
+    },
+    'registration.step14': {
+      fr: '🟦 Étape 14 : Services',
+      en: '🟦 Step 14: Services',
+      it: '🟦 Fase 14: Servizi',
+      es: '🟦 Paso 14: Servicios',
+      de: '🟦 Schritt 14: Dienstleistungen'
+    },
+    'registration.step15': {
+      fr: '🟦 Étape 15 : Logo de boutique',
+      en: '🟦 Step 15: Shop logo',
+      it: '🟦 Fase 15: Logo del negozio',
+      es: '🟦 Paso 15: Logo de la tienda',
+      de: '🟦 Schritt 15: Shop-Logo'
+    },
+    'registration.step16': {
+      fr: '🟦 Étape 16 : Photo de boutique',
+      en: '🟦 Step 16: Shop photo',
+      it: '🟦 Fase 16: Foto del negozio',
+      es: '🟦 Paso 16: Foto de la tienda',
+      de: '🟦 Schritt 16: Shop-Foto'
+    },
+    'registration.step17': {
+      fr: '🟦 Étape 17 : Confirmation',
+      en: '🟦 Step 17: Confirmation',
+      it: '🟦 Fase 17: Conferma',
+      es: '🟦 Paso 17: Confirmación',
+      de: '🟦 Schritt 17: Bestätigung'
     },
 
     // === QUESTIONS DÉTAILLÉES ===
@@ -551,6 +579,48 @@ const translations = {
       it: '🔐 Inserisci il tuo link Threema (https://threema.id/tuo_id)',
       es: '🔐 Introduce tu enlace de Threema (https://threema.id/tu_id)',
       de: '🔐 Geben Sie Ihren Threema-Link ein (https://threema.id/ihre_id)'
+    },
+    'registration.telegramBotQuestion': {
+      fr: '🤖 As-tu un bot Telegram pour ta boutique ?',
+      en: '🤖 Do you have a Telegram bot for your shop?',
+      it: '🤖 Hai un bot Telegram per il tuo negozio?',
+      es: '🤖 ¿Tienes un bot de Telegram para tu tienda?',
+      de: '🤖 Haben Sie einen Telegram-Bot für Ihren Shop?'
+    },
+    'registration.telegramBotExample': {
+      fr: '(Ex: @monbotshop_bot ou lien du bot)',
+      en: '(Ex: @myshopbot_bot or bot link)',
+      it: '(Es: @mionegoziobot_bot o link del bot)',
+      es: '(Ej: @mibottienda_bot o enlace del bot)',
+      de: '(Z.B.: @meinshopbot_bot oder Bot-Link)'
+    },
+    'registration.logoQuestion': {
+      fr: '🖼️ Envoie ton logo de boutique (obligatoire)',
+      en: '🖼️ Send your shop logo (required)',
+      it: '🖼️ Invia il logo del tuo negozio (obbligatorio)',
+      es: '🖼️ Envía el logo de tu tienda (obligatorio)',
+      de: '🖼️ Senden Sie Ihr Shop-Logo (erforderlich)'
+    },
+    'registration.logoInstruction': {
+      fr: '⚠️ Tu peux envoyer une image ici.',
+      en: '⚠️ You can send an image here.',
+      it: '⚠️ Puoi inviare un\'immagine qui.',
+      es: '⚠️ Puedes enviar una imagen aquí.',
+      de: '⚠️ Sie können hier ein Bild senden.'
+    },
+    'registration.shopPhotoQuestion': {
+      fr: '📸 Envoie une photo de ta boutique',
+      en: '📸 Send a photo of your shop',
+      it: '📸 Invia una foto del tuo negozio',
+      es: '📸 Envía una foto de tu tienda',
+      de: '📸 Senden Sie ein Foto Ihres Shops'
+    },
+    'registration.shopPhotoInstruction': {
+      fr: '(Photo de présentation de tes produits ou de ton espace de vente)',
+      en: '(Presentation photo of your products or sales space)',
+      it: '(Foto di presentazione dei tuoi prodotti o spazio vendita)',
+      es: '(Foto de presentación de tus productos o espacio de venta)',
+      de: '(Präsentationsfoto Ihrer Produkte oder Verkaufsraum)'
     },
     'registration.countryQuestion': {
       fr: '🌍 Dans quel pays exerces-tu principalement ?',
