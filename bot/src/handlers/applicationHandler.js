@@ -3029,7 +3029,6 @@ const askMeetupPostalForCountry = async (ctx, countryIndex) => {
   userForms.set(userId, userForm);
   
   const keyboard = Markup.inlineKeyboard([
-    [Markup.button.callback('✅ Valider le code postal', `validate_meetup_postal_${countryIndex}`)],
     // Si c'est le premier pays, retour aux services, sinon retour au pays précédent
     countryIndex === 0 ? 
       [Markup.button.callback('🔙 Retour aux services', 'go_back_service_selection')] :
@@ -3079,7 +3078,6 @@ const askDeliveryPostalForCountry = async (ctx, countryIndex) => {
   userForms.set(userId, userForm);
   
   const keyboard = Markup.inlineKeyboard([
-    [Markup.button.callback('✅ Valider le code postal', `validate_delivery_postal_${countryIndex}`)],
     // Si c'est le premier pays, retour aux services, sinon retour au pays précédent
     countryIndex === 0 ? 
       [Markup.button.callback('🔙 Retour aux services', 'go_back_service_selection')] :
