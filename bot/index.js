@@ -1308,6 +1308,108 @@ bot.action('finish_services_selection', handleFinishServicesSelection);
 // Handler pour le début de l'application
 bot.action('start_application', handleStartApplication);
 
+// Handlers pour toggle des services (cocher/décocher)
+bot.action('toggle_service_meetup', async (ctx) => {
+  try {
+    await ctx.answerCbQuery();
+    const userId = ctx.from.id;
+    const userForm = userForms.get(userId);
+    
+    if (!userForm || userForm.step !== 'service_selection') {
+      return await ctx.answerCbQuery('❌ Erreur de formulaire');
+    }
+    
+    if (!userForm.data.selectedServices) {
+      userForm.data.selectedServices = [];
+    }
+    
+    // Toggle du service
+    const index = userForm.data.selectedServices.indexOf('meetup');
+    if (index > -1) {
+      userForm.data.selectedServices.splice(index, 1);
+      delete userForm.data.meetupPostalCodes; // Supprimer les codes postaux
+      await ctx.answerCbQuery('❌ Meet Up désélectionné');
+    } else {
+      userForm.data.selectedServices.push('meetup');
+      await ctx.answerCbQuery('✅ Meet Up sélectionné');
+    }
+    
+    userForms.set(userId, userForm);
+    await askServices(ctx);
+    
+  } catch (error) {
+    console.error('Erreur toggle_service_meetup:', error);
+    await ctx.answerCbQuery('❌ Erreur');
+  }
+});
+
+bot.action('toggle_service_delivery', async (ctx) => {
+  try {
+    await ctx.answerCbQuery();
+    const userId = ctx.from.id;
+    const userForm = userForms.get(userId);
+    
+    if (!userForm || userForm.step !== 'service_selection') {
+      return await ctx.answerCbQuery('❌ Erreur de formulaire');
+    }
+    
+    if (!userForm.data.selectedServices) {
+      userForm.data.selectedServices = [];
+    }
+    
+    // Toggle du service
+    const index = userForm.data.selectedServices.indexOf('delivery');
+    if (index > -1) {
+      userForm.data.selectedServices.splice(index, 1);
+      delete userForm.data.deliveryPostalCodes; // Supprimer les codes postaux
+      await ctx.answerCbQuery('❌ Livraison désélectionnée');
+    } else {
+      userForm.data.selectedServices.push('delivery');
+      await ctx.answerCbQuery('✅ Livraison sélectionnée');
+    }
+    
+    userForms.set(userId, userForm);
+    await askServices(ctx);
+    
+  } catch (error) {
+    console.error('Erreur toggle_service_delivery:', error);
+    await ctx.answerCbQuery('❌ Erreur');
+  }
+});
+
+bot.action('toggle_service_shipping', async (ctx) => {
+  try {
+    await ctx.answerCbQuery();
+    const userId = ctx.from.id;
+    const userForm = userForms.get(userId);
+    
+    if (!userForm || userForm.step !== 'service_selection') {
+      return await ctx.answerCbQuery('❌ Erreur de formulaire');
+    }
+    
+    if (!userForm.data.selectedServices) {
+      userForm.data.selectedServices = [];
+    }
+    
+    // Toggle du service
+    const index = userForm.data.selectedServices.indexOf('shipping');
+    if (index > -1) {
+      userForm.data.selectedServices.splice(index, 1);
+      await ctx.answerCbQuery('❌ Envoi postal désélectionné');
+    } else {
+      userForm.data.selectedServices.push('shipping');
+      await ctx.answerCbQuery('✅ Envoi postal sélectionné');
+    }
+    
+    userForms.set(userId, userForm);
+    await askServices(ctx);
+    
+  } catch (error) {
+    console.error('Erreur toggle_service_shipping:', error);
+    await ctx.answerCbQuery('❌ Erreur');
+  }
+});
+
 // Handler pour revenir à l'étape photo (logo)
 bot.action('go_back_photo', async (ctx) => {
   try {
