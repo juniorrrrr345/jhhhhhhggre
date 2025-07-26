@@ -133,7 +133,7 @@ const createMainKeyboard = (config) => {
   secondRow.push(Markup.button.callback(infoText, 'info'));
   buttons.push(secondRow);
 
-  // Troisième ligne : Devenir Plug seul
+      // Troisième ligne : Inscription seul
   const becomeDealerText = getTranslation('menu_becomeDealer', currentLang, customTranslations);
   buttons.push([Markup.button.callback(becomeDealerText, 'start_application')]);
   

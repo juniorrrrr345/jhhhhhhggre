@@ -96,11 +96,11 @@ const translations = {
       de: 'Entdecken Sie unsere Premium-Plattform.\n\nWir bieten qualitativ hochwertige Dienstleistungen mit einer modernen und intuitiven Benutzeroberfläche. Treten Sie unserer Community bei, um auf exklusive Funktionen zuzugreifen.'
     },
     'menu_becomeDealer': {
-      fr: '💼 Devenir Plug',
-      en: '💼 Become Dealer',
-      it: '💼 Diventa Rivenditore',
-      es: '💼 Ser Distribuidor',
-      de: '💼 Händler werden'
+      fr: '📝 Inscription',
+      en: '📝 Registration',
+      it: '📝 Registrazione',
+      es: '📝 Registro',
+      de: '📝 Registrierung'
     },
     'menu_language': {
       fr: '🌍 Langue',
@@ -110,11 +110,11 @@ const translations = {
       de: '🌍 Sprache'
     },
     'menu_translation': {
-      fr: '🌍 Traduction',
-      en: '🌍 Translation',
-      it: '🌍 Traduzione',
-      es: '🌍 Traducción',
-      de: '🌍 Übersetzung'
+      fr: '🗣 Change language',
+      en: '🗣 Change language',
+      it: '🗣 Change language',
+      es: '🗣 Change language',
+      de: '🗣 Change language'
     },
     'menu_main': {
       fr: '🏠 Menu principal',
