@@ -707,7 +707,58 @@ const handleFormMessage = async (ctx) => {
           // Tous les pays traités pour Meet Up, retourner à la sélection des services
           userForm.step = 'service_selection';
           userForms.set(userId, userForm);
-          await askServices(ctx);
+          
+          // Utiliser safeEditMessage pour éditer le dernier message au lieu d'askServices
+          const Config = require('../models/Config');
+          const config = await Config.findById('main');
+          const currentLang = config?.languages?.currentLanguage || 'fr';
+          const customTranslations = config?.languages?.translations;
+          
+          // Recréer le contenu du menu des services
+          const selectedServices = userForm.data.selectedServices || [];
+          const hasServices = selectedServices.length > 0;
+
+          let message = `🛠️ **FORMULAIRE D'INSCRIPTION – FindYourPlug**\n\n` +
+            `⸻\n\n` +
+            `🛠️ **Étape 4 : Choix des services**\n\n`;
+            
+          if (hasServices) {
+            message += `✅ **Services déjà sélectionnés :**\n`;
+            selectedServices.forEach(service => {
+              if (service === 'meetup') message += `• 🤝 Meet Up\n`;
+              else if (service === 'delivery') message += `• 🚚 Livraison\n`;
+              else if (service === 'shipping') message += `• 📮 Envoi postal\n`;
+            });
+            message += `\n**Choisissez un autre service ou terminez :**\n\n`;
+          }
+
+          const availableButtons = [];
+          
+          // Ajouter les services non encore sélectionnés
+          if (!selectedServices.includes('meetup')) {
+            availableButtons.push([Markup.button.callback('🤝 Meet Up', 'new_service_meetup')]);
+          }
+          if (!selectedServices.includes('delivery')) {
+            availableButtons.push([Markup.button.callback('🚚 Livraison', 'new_service_delivery')]);
+          }
+          if (!selectedServices.includes('shipping')) {
+            availableButtons.push([Markup.button.callback('📮 Envoi postal', 'new_service_shipping')]);
+          }
+          
+          // Ajouter le bouton de fin si au moins un service est sélectionné
+          if (hasServices) {
+            availableButtons.push([Markup.button.callback('✅ Terminer et voir le récapitulatif', 'finish_services_selection')]);
+          }
+          
+          availableButtons.push([Markup.button.callback(getTranslation('registration.goBack', currentLang, customTranslations), 'go_back_working_countries')]);
+          availableButtons.push([Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]);
+          
+          const keyboard = Markup.inlineKeyboard(availableButtons);
+          
+          await safeEditMessage(ctx, message, {
+            reply_markup: keyboard.reply_markup,
+            parse_mode: 'Markdown'
+          });
         } else {
           // Pays suivant
           await askMeetupPostalForCountry(ctx, meetupCountryIndex + 1);
@@ -737,7 +788,58 @@ const handleFormMessage = async (ctx) => {
           // Tous les pays traités pour Livraison, retourner à la sélection des services
           userForm.step = 'service_selection';
           userForms.set(userId, userForm);
-          await askServices(ctx);
+          
+          // Utiliser safeEditMessage pour éditer le dernier message au lieu d'askServices
+          const Config = require('../models/Config');
+          const config = await Config.findById('main');
+          const currentLang = config?.languages?.currentLanguage || 'fr';
+          const customTranslations = config?.languages?.translations;
+          
+          // Recréer le contenu du menu des services
+          const selectedServices = userForm.data.selectedServices || [];
+          const hasServices = selectedServices.length > 0;
+
+          let message = `🛠️ **FORMULAIRE D'INSCRIPTION – FindYourPlug**\n\n` +
+            `⸻\n\n` +
+            `🛠️ **Étape 4 : Choix des services**\n\n`;
+            
+          if (hasServices) {
+            message += `✅ **Services déjà sélectionnés :**\n`;
+            selectedServices.forEach(service => {
+              if (service === 'meetup') message += `• 🤝 Meet Up\n`;
+              else if (service === 'delivery') message += `• 🚚 Livraison\n`;
+              else if (service === 'shipping') message += `• 📮 Envoi postal\n`;
+            });
+            message += `\n**Choisissez un autre service ou terminez :**\n\n`;
+          }
+
+          const availableButtons = [];
+          
+          // Ajouter les services non encore sélectionnés
+          if (!selectedServices.includes('meetup')) {
+            availableButtons.push([Markup.button.callback('🤝 Meet Up', 'new_service_meetup')]);
+          }
+          if (!selectedServices.includes('delivery')) {
+            availableButtons.push([Markup.button.callback('🚚 Livraison', 'new_service_delivery')]);
+          }
+          if (!selectedServices.includes('shipping')) {
+            availableButtons.push([Markup.button.callback('📮 Envoi postal', 'new_service_shipping')]);
+          }
+          
+          // Ajouter le bouton de fin si au moins un service est sélectionné
+          if (hasServices) {
+            availableButtons.push([Markup.button.callback('✅ Terminer et voir le récapitulatif', 'finish_services_selection')]);
+          }
+          
+          availableButtons.push([Markup.button.callback(getTranslation('registration.goBack', currentLang, customTranslations), 'go_back_working_countries')]);
+          availableButtons.push([Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]);
+          
+          const keyboard = Markup.inlineKeyboard(availableButtons);
+          
+          await safeEditMessage(ctx, message, {
+            reply_markup: keyboard.reply_markup,
+            parse_mode: 'Markdown'
+          });
         } else {
           // Pays suivant
           await askDeliveryPostalForCountry(ctx, deliveryCountryIndex + 1);
