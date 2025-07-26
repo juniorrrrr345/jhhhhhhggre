@@ -458,6 +458,11 @@ bot.action('submit_final_application', async (ctx) => {
   return await handleFinalSubmission(ctx);
 });
 
+bot.action('finish_services_selection', async (ctx) => {
+  const { handleFinishServicesSelection } = require('./src/handlers/applicationHandler');
+  return await handleFinishServicesSelection(ctx);
+});
+
 // Validation des codes postaux via boutons
 bot.action(/^validate_meetup_postal_(\d+)$/, async (ctx) => {
   const countryIndex = parseInt(ctx.match[1]);

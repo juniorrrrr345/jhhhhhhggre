@@ -695,7 +695,13 @@ const handleFormMessage = async (ctx) => {
         userForm.data.meetupPostalCodes[meetupCurrentCountry] = text;
         userForms.set(userId, userForm);
         
-        await ctx.reply(`✅ Code postal ${text} validé pour ${meetupCurrentCountry}`);
+        const Config = require('../models/Config');
+        const config = await Config.findById('main');
+        const currentLang = config?.languages?.currentLanguage || 'fr';
+        const customTranslations = config?.languages?.translations;
+        
+        await ctx.reply(getTranslation('registration.postalCodeValidated', currentLang, customTranslations) || 
+          `✅ Code postal ${text} validé pour ${meetupCurrentCountry}`);
         await askMeetupPostalForCountry(ctx, meetupCountryIndex + 1);
         break;
         
@@ -710,7 +716,13 @@ const handleFormMessage = async (ctx) => {
         userForm.data.deliveryPostalCodes[deliveryCurrentCountry] = text;
         userForms.set(userId, userForm);
         
-        await ctx.reply(`✅ Code postal ${text} validé pour ${deliveryCurrentCountry}`);
+        const Config = require('../models/Config');
+        const config = await Config.findById('main');
+        const currentLang = config?.languages?.currentLanguage || 'fr';
+        const customTranslations = config?.languages?.translations;
+        
+        await ctx.reply(getTranslation('registration.postalCodeValidated', currentLang, customTranslations) || 
+          `✅ Code postal ${text} validé pour ${deliveryCurrentCountry}`);
         await askDeliveryPostalForCountry(ctx, deliveryCountryIndex + 1);
         break;
     }
@@ -1361,36 +1373,70 @@ const askWorkingCountries = async (ctx) => {
   });
 };
 
-// Demander les services - NOUVEAU FLUX avec 2 choix
+// Demander les services - NOUVEAU FLUX avec sélection multiple
 const askServices = async (ctx) => {
   const userId = ctx.from.id;
   const userForm = userForms.get(userId);
+  
+  // Initialiser les services sélectionnés si pas encore fait
+  if (!userForm.data.selectedServices) {
+    userForm.data.selectedServices = [];
+  }
   
   const Config = require('../models/Config');
   const config = await Config.findById('main');
   const currentLang = config?.languages?.currentLanguage || 'fr';
   const customTranslations = config?.languages?.translations;
 
-  const message = `🛠️ **FORMULAIRE D'INSCRIPTION – FindYourPlug**\n\n` +
+  const selectedServices = userForm.data.selectedServices;
+  const hasServices = selectedServices.length > 0;
+
+  let message = `🛠️ **FORMULAIRE D'INSCRIPTION – FindYourPlug**\n\n` +
     `⸻\n\n` +
-    `🛠️ **Étape 4 : Choix du service**\n\n` +
-    `Vous avez trois choix de services :\n\n` +
-    `⸻\n\n` +
-    `▶️ **1. Service "Meet Up"**\n` +
-    `💬 Rencontres locales avec vos clients\n\n` +
-    `▶️ **2. Service "Livraison"**\n` +
-    `🚚 Livraison directe chez le client\n\n` +
-    `▶️ **3. Service "Envoi postal"**\n` +
-    `📮 Envoi de produits par courrier\n\n` +
-    `👆 Choisissez votre service :`;
+    `🛠️ **Étape 4 : Choix des services**\n\n`;
+    
+  if (hasServices) {
+    message += `✅ **Services déjà sélectionnés :**\n`;
+    selectedServices.forEach(service => {
+      if (service === 'meetup') message += `• 🤝 Meet Up\n`;
+      else if (service === 'delivery') message += `• 🚚 Livraison\n`;
+      else if (service === 'shipping') message += `• 📮 Envoi postal\n`;
+    });
+    message += `\n**Choisissez un autre service ou terminez :**\n\n`;
+  } else {
+    message += `Vous avez trois choix de services :\n\n` +
+      `⸻\n\n` +
+      `▶️ **1. Service "Meet Up"**\n` +
+      `💬 Rencontres locales avec vos clients\n\n` +
+      `▶️ **2. Service "Livraison"**\n` +
+      `🚚 Livraison directe chez le client\n\n` +
+      `▶️ **3. Service "Envoi postal"**\n` +
+      `📮 Envoi de produits par courrier\n\n` +
+      `👆 Choisissez votre premier service :\n\n`;
+  }
+
+  const availableButtons = [];
   
-  const keyboard = Markup.inlineKeyboard([
-    [Markup.button.callback('🤝 Meet Up', 'new_service_meetup')],
-    [Markup.button.callback('🚚 Livraison', 'new_service_delivery')],
-    [Markup.button.callback('📮 Envoi postal', 'new_service_shipping')],
-    [Markup.button.callback(getTranslation('registration.goBack', currentLang, customTranslations), 'go_back_working_countries')],
-    [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
-  ]);
+  // Ajouter les services non encore sélectionnés
+  if (!selectedServices.includes('meetup')) {
+    availableButtons.push([Markup.button.callback('🤝 Meet Up', 'new_service_meetup')]);
+  }
+  if (!selectedServices.includes('delivery')) {
+    availableButtons.push([Markup.button.callback('🚚 Livraison', 'new_service_delivery')]);
+  }
+  if (!selectedServices.includes('shipping')) {
+    availableButtons.push([Markup.button.callback('📮 Envoi postal', 'new_service_shipping')]);
+  }
+  
+  // Ajouter le bouton de fin si au moins un service est sélectionné
+  if (hasServices) {
+    availableButtons.push([Markup.button.callback('✅ Terminer et voir le récapitulatif', 'finish_services_selection')]);
+  }
+  
+  availableButtons.push([Markup.button.callback(getTranslation('registration.goBack', currentLang, customTranslations), 'go_back_working_countries')]);
+  availableButtons.push([Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]);
+  
+  const keyboard = Markup.inlineKeyboard(availableButtons);
   
   await safeEditMessage(ctx, message, {
     reply_markup: keyboard.reply_markup,
@@ -2721,11 +2767,18 @@ const handleNewServiceMeetup = async (ctx) => {
       return await ctx.answerCbQuery('❌ Erreur de formulaire');
     }
     
-    // Sauvegarder le choix du service
-    userForm.data.selectedService = 'meetup';
+    // Ajouter meetup aux services sélectionnés
+    if (!userForm.data.selectedServices) {
+      userForm.data.selectedServices = [];
+    }
+    if (!userForm.data.selectedServices.includes('meetup')) {
+      userForm.data.selectedServices.push('meetup');
+    }
+    
     userForm.step = 'meetup_postal_codes';
     userForm.data.meetupPostalCodes = {}; // Pour stocker par pays
     userForm.data.currentCountryIndex = 0; // Index du pays actuel
+    userForm.data.currentService = 'meetup'; // Service en cours de traitement
     userForms.set(userId, userForm);
     
     // Commencer par le premier pays
@@ -2749,11 +2802,18 @@ const handleNewServiceDelivery = async (ctx) => {
       return await ctx.answerCbQuery('❌ Erreur de formulaire');
     }
     
-    // Sauvegarder le choix du service
-    userForm.data.selectedService = 'delivery';
+    // Ajouter delivery aux services sélectionnés
+    if (!userForm.data.selectedServices) {
+      userForm.data.selectedServices = [];
+    }
+    if (!userForm.data.selectedServices.includes('delivery')) {
+      userForm.data.selectedServices.push('delivery');
+    }
+    
     userForm.step = 'delivery_postal_codes';
     userForm.data.deliveryPostalCodes = {}; // Pour stocker par pays
     userForm.data.currentCountryIndex = 0; // Index du pays actuel
+    userForm.data.currentService = 'delivery'; // Service en cours de traitement
     userForms.set(userId, userForm);
     
     // Commencer par le premier pays
@@ -2777,9 +2837,14 @@ const handleNewServiceShipping = async (ctx) => {
       return await ctx.answerCbQuery('❌ Erreur de formulaire');
     }
     
-    // Sauvegarder le choix du service
-    userForm.data.selectedService = 'shipping';
-    userForm.step = 'final_confirmation';
+    // Ajouter shipping aux services sélectionnés
+    if (!userForm.data.selectedServices) {
+      userForm.data.selectedServices = [];
+    }
+    if (!userForm.data.selectedServices.includes('shipping')) {
+      userForm.data.selectedServices.push('shipping');
+    }
+    
     userForms.set(userId, userForm);
     
     const Config = require('../models/Config');
@@ -2787,25 +2852,12 @@ const handleNewServiceShipping = async (ctx) => {
     const currentLang = config?.languages?.currentLanguage || 'fr';
     const customTranslations = config?.languages?.translations;
     
-    // Validation directe automatique pour Envoi postal
-    const message = `🛠️ **FORMULAIRE D'INSCRIPTION – FindYourPlug**\n\n` +
-      `⸻\n\n` +
-      `📮 **Service "Envoi postal" sélectionné**\n\n` +
-      `✅ **Validation directe automatique**\n\n` +
-      `Pas de choix de pays à faire.\n` +
-      `La validation se fait directement, automatiquement.\n\n` +
-      `🎉 **Votre plugin est prêt à être soumis !**`;
+    // Message de confirmation pour Envoi postal puis retour aux services
+    await ctx.reply(getTranslation('registration.shippingServiceAdded', currentLang, customTranslations) || 
+      '✅ Service "Envoi postal" ajouté ! Validation directe automatique.');
     
-    const keyboard = Markup.inlineKeyboard([
-      [Markup.button.callback('🚀 Soumettre le plugin', 'submit_final_application')],
-      [Markup.button.callback('🔙 Retour au choix des services', 'go_back_service_selection')],
-      [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
-    ]);
-    
-    await safeEditMessage(ctx, message, {
-      reply_markup: keyboard.reply_markup,
-      parse_mode: 'Markdown'
-    });
+    // Retourner à la sélection des services pour permettre d'ajouter d'autres services
+    await askServices(ctx);
     
   } catch (error) {
     console.error('Erreur dans handleNewServiceShipping:', error);
@@ -2825,10 +2877,19 @@ const askMeetupPostalForCountry = async (ctx, countryIndex) => {
   const countries = userForm.data.workingCountries;
   
   if (countryIndex >= countries.length) {
-    // Tous les pays traités, passer à la confirmation finale
-    userForm.step = 'final_confirmation';
+    // Tous les pays traités pour Meet Up, retourner à la sélection des services
+    userForm.step = 'service_selection';
     userForms.set(userId, userForm);
-    await showFinalConfirmation(ctx);
+    
+    const Config = require('../models/Config');
+    const config = await Config.findById('main');
+    const currentLang = config?.languages?.currentLanguage || 'fr';
+    const customTranslations = config?.languages?.translations;
+    
+    await ctx.reply(getTranslation('registration.meetupServiceCompleted', currentLang, customTranslations) || 
+      '✅ Service "Meet Up" configuré avec succès !');
+    
+    await askServices(ctx);
     return;
   }
   
@@ -2875,10 +2936,19 @@ const askDeliveryPostalForCountry = async (ctx, countryIndex) => {
   const countries = userForm.data.workingCountries;
   
   if (countryIndex >= countries.length) {
-    // Tous les pays traités, passer à la confirmation finale
-    userForm.step = 'final_confirmation';
+    // Tous les pays traités pour Livraison, retourner à la sélection des services
+    userForm.step = 'service_selection';
     userForms.set(userId, userForm);
-    await showFinalConfirmation(ctx);
+    
+    const Config = require('../models/Config');
+    const config = await Config.findById('main');
+    const currentLang = config?.languages?.currentLanguage || 'fr';
+    const customTranslations = config?.languages?.translations;
+    
+    await ctx.reply(getTranslation('registration.deliveryServiceCompleted', currentLang, customTranslations) || 
+      '✅ Service "Livraison" configuré avec succès !');
+    
+    await askServices(ctx);
     return;
   }
   
@@ -2977,7 +3047,30 @@ const handleDeliveryPostalCode = async (ctx, text) => {
   await askDeliveryPostalForCountry(ctx, currentCountryIndex + 1);
 };
 
-// Afficher la confirmation finale
+// Gestionnaire pour terminer la sélection des services et afficher le récapitulatif
+const handleFinishServicesSelection = async (ctx) => {
+  try {
+    await ctx.answerCbQuery();
+    
+    const userId = ctx.from.id;
+    const userForm = userForms.get(userId);
+    
+    if (!userForm || userForm.step !== 'service_selection') {
+      return await ctx.answerCbQuery('❌ Erreur de formulaire');
+    }
+    
+    userForm.step = 'final_confirmation';
+    userForms.set(userId, userForm);
+    
+    await showFinalConfirmation(ctx);
+    
+  } catch (error) {
+    console.error('Erreur dans handleFinishServicesSelection:', error);
+    await ctx.answerCbQuery('❌ Erreur');
+  }
+};
+
+// Afficher la confirmation finale avec tous les services sélectionnés
 const showFinalConfirmation = async (ctx) => {
   const userId = ctx.from.id;
   const userForm = userForms.get(userId);
@@ -2988,29 +3081,37 @@ const showFinalConfirmation = async (ctx) => {
   const customTranslations = config?.languages?.translations;
   
   let serviceDetails = '';
-  if (userForm.data.selectedService === 'meetup') {
-    serviceDetails = '🤝 **Service :** Meet Up\n\n';
-    serviceDetails += '📍 **Codes postaux Meet Up :**\n';
-    Object.entries(userForm.data.meetupPostalCodes || {}).forEach(([country, code]) => {
-      serviceDetails += `• ${country}: ${code}\n`;
-    });
-  } else if (userForm.data.selectedService === 'delivery') {
-    serviceDetails = '🚚 **Service :** Livraison\n\n';
-    serviceDetails += '📍 **Codes postaux Livraison :**\n';
-    Object.entries(userForm.data.deliveryPostalCodes || {}).forEach(([country, code]) => {
-      serviceDetails += `• ${country}: ${code}\n`;
-    });
-  } else if (userForm.data.selectedService === 'shipping') {
-    serviceDetails = '📮 **Service :** Envoi postal\n✅ Validation automatique\n';
-  }
+  const selectedServices = userForm.data.selectedServices || [];
+  
+  selectedServices.forEach(service => {
+    if (service === 'meetup') {
+      serviceDetails += '🤝 **Service Meet Up :**\n';
+      if (userForm.data.meetupPostalCodes) {
+        Object.entries(userForm.data.meetupPostalCodes).forEach(([country, code]) => {
+          serviceDetails += `  • ${country}: ${code}\n`;
+        });
+      }
+      serviceDetails += '\n';
+    } else if (service === 'delivery') {
+      serviceDetails += '🚚 **Service Livraison :**\n';
+      if (userForm.data.deliveryPostalCodes) {
+        Object.entries(userForm.data.deliveryPostalCodes).forEach(([country, code]) => {
+          serviceDetails += `  • ${country}: ${code}\n`;
+        });
+      }
+      serviceDetails += '\n';
+    } else if (service === 'shipping') {
+      serviceDetails += '📮 **Service Envoi postal :** ✅ Validation automatique\n\n';
+    }
+  });
   
   const message = `🛠️ **FORMULAIRE D'INSCRIPTION – FindYourPlug**\n\n` +
     `⸻\n\n` +
-    `🎯 **Confirmation finale**\n\n` +
+    `🎯 **Récapitulatif final**\n\n` +
     `📝 **Nom du plugin :** ${userForm.data.name}\n` +
     `🌍 **Pays de travail :** ${userForm.data.workingCountries.join(', ')}\n\n` +
-    serviceDetails + '\n\n' +
-    `🎉 **Une fois les codes postaux validés → c'est confirmé**\n\n` +
+    serviceDetails + 
+    `🎉 **Tout est configuré !**\n\n` +
     `👆 Confirmer votre plugin ?`;
   
   const keyboard = Markup.inlineKeyboard([
@@ -3051,30 +3152,34 @@ const handleFinalSubmission = async (ctx) => {
       services: {}
     };
     
-    // Configurer les services selon le type sélectionné
-    if (userForm.data.selectedService === 'meetup') {
-      compatibleData.services.meetup = {
-        enabled: true,
-        departments: []
-      };
-      // Convertir les codes postaux en départements pour chaque pays
-      Object.entries(userForm.data.meetupPostalCodes || {}).forEach(([country, code]) => {
-        compatibleData.services.meetup.departments.push(code);
-      });
-    } else if (userForm.data.selectedService === 'delivery') {
-      compatibleData.services.delivery = {
-        enabled: true,
-        departments: []
-      };
-      // Convertir les codes postaux en départements pour chaque pays
-      Object.entries(userForm.data.deliveryPostalCodes || {}).forEach(([country, code]) => {
-        compatibleData.services.delivery.departments.push(code);
-      });
-    } else if (userForm.data.selectedService === 'shipping') {
-      compatibleData.services.shipping = {
-        enabled: true
-      };
-    }
+    // Configurer les services selon les types sélectionnés
+    const selectedServices = userForm.data.selectedServices || [];
+    
+    selectedServices.forEach(service => {
+      if (service === 'meetup') {
+        compatibleData.services.meetup = {
+          enabled: true,
+          departments: []
+        };
+        // Convertir les codes postaux en départements pour chaque pays
+        Object.entries(userForm.data.meetupPostalCodes || {}).forEach(([country, code]) => {
+          compatibleData.services.meetup.departments.push(code);
+        });
+      } else if (service === 'delivery') {
+        compatibleData.services.delivery = {
+          enabled: true,
+          departments: []
+        };
+        // Convertir les codes postaux en départements pour chaque pays
+        Object.entries(userForm.data.deliveryPostalCodes || {}).forEach(([country, code]) => {
+          compatibleData.services.delivery.departments.push(code);
+        });
+      } else if (service === 'shipping') {
+        compatibleData.services.shipping = {
+          enabled: true
+        };
+      }
+    });
     
     // Mettre à jour les données du formulaire
     userForm.data = compatibleData;
@@ -3219,5 +3324,6 @@ module.exports = {
   handleValidateDeliveryPostal,
   askMeetupPostalForCountry,
   askDeliveryPostalForCountry,
-  askServices
+  askServices,
+  handleFinishServicesSelection
 };
