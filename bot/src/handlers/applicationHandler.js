@@ -673,6 +673,46 @@ const handleFormMessage = async (ctx) => {
         
         await askConfirmation(ctx);
         break;
+        
+      case 'waiting_meetup_postal':
+        console.log(`🤝 ENTERING case 'waiting_meetup_postal' for user ${userId} with text: '${text}'`);
+        await handleMeetupPostalCode(ctx, text);
+        break;
+        
+      case 'waiting_delivery_postal':
+        console.log(`🚚 ENTERING case 'waiting_delivery_postal' for user ${userId} with text: '${text}'`);
+        await handleDeliveryPostalCode(ctx, text);
+        break;
+        
+      case 'entering_meetup_postal':
+        console.log(`🤝 ENTERING case 'entering_meetup_postal' for user ${userId} with text: '${text}'`);
+        const meetupCountryIndex = userForm.data.validationCountryIndex;
+        const meetupCurrentCountry = userForm.data.workingCountries[meetupCountryIndex];
+        
+        if (!userForm.data.meetupPostalCodes) {
+          userForm.data.meetupPostalCodes = {};
+        }
+        userForm.data.meetupPostalCodes[meetupCurrentCountry] = text;
+        userForms.set(userId, userForm);
+        
+        await ctx.reply(`✅ Code postal ${text} validé pour ${meetupCurrentCountry}`);
+        await askMeetupPostalForCountry(ctx, meetupCountryIndex + 1);
+        break;
+        
+      case 'entering_delivery_postal':
+        console.log(`🚚 ENTERING case 'entering_delivery_postal' for user ${userId} with text: '${text}'`);
+        const deliveryCountryIndex = userForm.data.validationCountryIndex;
+        const deliveryCurrentCountry = userForm.data.workingCountries[deliveryCountryIndex];
+        
+        if (!userForm.data.deliveryPostalCodes) {
+          userForm.data.deliveryPostalCodes = {};
+        }
+        userForm.data.deliveryPostalCodes[deliveryCurrentCountry] = text;
+        userForms.set(userId, userForm);
+        
+        await ctx.reply(`✅ Code postal ${text} validé pour ${deliveryCurrentCountry}`);
+        await askDeliveryPostalForCountry(ctx, deliveryCountryIndex + 1);
+        break;
     }
     
     userForms.set(userId, userForm);
@@ -1335,16 +1375,19 @@ const askServices = async (ctx) => {
   const message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
     `⸻\n\n` +
     `🛠️ **Étape 4 : Choix du service**\n\n` +
-    `Vous avez deux choix de services :\n\n` +
+    `Vous avez trois choix de services :\n\n` +
     `⸻\n\n` +
     `▶️ **1. Service "Meet Up"**\n` +
     `💬 Rencontres locales avec vos clients\n\n` +
-    `▶️ **2. Service "Envoi postal"**\n` +
+    `▶️ **2. Service "Livraison"**\n` +
+    `🚚 Livraison directe chez le client\n\n` +
+    `▶️ **3. Service "Envoi postal"**\n` +
     `📮 Envoi de produits par courrier\n\n` +
     `👆 Choisissez votre service :`;
   
   const keyboard = Markup.inlineKeyboard([
     [Markup.button.callback('🤝 Meet Up', 'new_service_meetup')],
+    [Markup.button.callback('🚚 Livraison', 'new_service_delivery')],
     [Markup.button.callback('📮 Envoi postal', 'new_service_shipping')],
     [Markup.button.callback(getTranslation('registration.goBack', currentLang, customTranslations), 'go_back_working_countries')],
     [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
@@ -2589,6 +2632,526 @@ const handleGoBack = async (ctx) => {
   }
 };
 
+// ============================================
+// NOUVEAUX HANDLERS POUR LE NOUVEAU FLUX DE SERVICES
+// ============================================
+
+// Gestionnaire pour la sélection des pays de travail
+const handleWorkingCountrySelection = async (ctx, countryCode) => {
+  try {
+    await ctx.answerCbQuery();
+    
+    const userId = ctx.from.id;
+    const userForm = userForms.get(userId);
+    
+    if (!userForm || userForm.step !== 'working_countries') {
+      return await ctx.answerCbQuery('❌ Erreur de formulaire');
+    }
+    
+    const selectedCountry = COUNTRIES.find(c => c.code === countryCode);
+    if (!selectedCountry) {
+      return await ctx.answerCbQuery('❌ Pays non trouvé');
+    }
+    
+    // Toggle la sélection
+    if (!userForm.data.workingCountries) {
+      userForm.data.workingCountries = [];
+    }
+    
+    const countryName = selectedCountry.name;
+    const index = userForm.data.workingCountries.indexOf(countryName);
+    
+    if (index > -1) {
+      // Désélectionner
+      userForm.data.workingCountries.splice(index, 1);
+      await ctx.answerCbQuery(`❌ ${countryName} retiré`);
+    } else {
+      // Sélectionner
+      userForm.data.workingCountries.push(countryName);
+      await ctx.answerCbQuery(`✅ ${countryName} ajouté`);
+    }
+    
+    userForms.set(userId, userForm);
+    
+    // Rafraîchir l'affichage
+    await askWorkingCountries(ctx);
+    
+  } catch (error) {
+    console.error('Erreur dans handleWorkingCountrySelection:', error);
+    await ctx.answerCbQuery('❌ Erreur');
+  }
+};
+
+// Gestionnaire pour confirmer les pays de travail
+const handleConfirmWorkingCountries = async (ctx) => {
+  try {
+    await ctx.answerCbQuery();
+    
+    const userId = ctx.from.id;
+    const userForm = userForms.get(userId);
+    
+    if (!userForm || userForm.step !== 'working_countries') {
+      return await ctx.answerCbQuery('❌ Erreur de formulaire');
+    }
+    
+    if (!userForm.data.workingCountries || userForm.data.workingCountries.length === 0) {
+      return await ctx.answerCbQuery('❌ Sélectionnez au moins un pays');
+    }
+    
+    // Passer à l'étape des services
+    userForm.step = 'service_selection';
+    userForms.set(userId, userForm);
+    
+    await askServices(ctx);
+    
+  } catch (error) {
+    console.error('Erreur dans handleConfirmWorkingCountries:', error);
+    await ctx.answerCbQuery('❌ Erreur');
+  }
+};
+
+// Gestionnaire pour le service Meet Up
+const handleNewServiceMeetup = async (ctx) => {
+  try {
+    await ctx.answerCbQuery();
+    
+    const userId = ctx.from.id;
+    const userForm = userForms.get(userId);
+    
+    if (!userForm || userForm.step !== 'service_selection') {
+      return await ctx.answerCbQuery('❌ Erreur de formulaire');
+    }
+    
+    // Sauvegarder le choix du service
+    userForm.data.selectedService = 'meetup';
+    userForm.step = 'meetup_postal_codes';
+    userForm.data.meetupPostalCodes = {}; // Pour stocker par pays
+    userForm.data.currentCountryIndex = 0; // Index du pays actuel
+    userForms.set(userId, userForm);
+    
+    // Commencer par le premier pays
+    await askMeetupPostalForCountry(ctx, 0);
+    
+  } catch (error) {
+    console.error('Erreur dans handleNewServiceMeetup:', error);
+    await ctx.answerCbQuery('❌ Erreur');
+  }
+};
+
+// Gestionnaire pour le service Livraison
+const handleNewServiceDelivery = async (ctx) => {
+  try {
+    await ctx.answerCbQuery();
+    
+    const userId = ctx.from.id;
+    const userForm = userForms.get(userId);
+    
+    if (!userForm || userForm.step !== 'service_selection') {
+      return await ctx.answerCbQuery('❌ Erreur de formulaire');
+    }
+    
+    // Sauvegarder le choix du service
+    userForm.data.selectedService = 'delivery';
+    userForm.step = 'delivery_postal_codes';
+    userForm.data.deliveryPostalCodes = {}; // Pour stocker par pays
+    userForm.data.currentCountryIndex = 0; // Index du pays actuel
+    userForms.set(userId, userForm);
+    
+    // Commencer par le premier pays
+    await askDeliveryPostalForCountry(ctx, 0);
+    
+  } catch (error) {
+    console.error('Erreur dans handleNewServiceDelivery:', error);
+    await ctx.answerCbQuery('❌ Erreur');
+  }
+};
+
+// Gestionnaire pour le service Envoi postal (validation directe)
+const handleNewServiceShipping = async (ctx) => {
+  try {
+    await ctx.answerCbQuery();
+    
+    const userId = ctx.from.id;
+    const userForm = userForms.get(userId);
+    
+    if (!userForm || userForm.step !== 'service_selection') {
+      return await ctx.answerCbQuery('❌ Erreur de formulaire');
+    }
+    
+    // Sauvegarder le choix du service
+    userForm.data.selectedService = 'shipping';
+    userForm.step = 'final_confirmation';
+    userForms.set(userId, userForm);
+    
+    const Config = require('../models/Config');
+    const config = await Config.findById('main');
+    const currentLang = config?.languages?.currentLanguage || 'fr';
+    const customTranslations = config?.languages?.translations;
+    
+    // Validation directe automatique pour Envoi postal
+    const message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
+      `⸻\n\n` +
+      `📮 **Service "Envoi postal" sélectionné**\n\n` +
+      `✅ **Validation directe automatique**\n\n` +
+      `Pas de choix de pays à faire.\n` +
+      `La validation se fait directement, automatiquement.\n\n` +
+      `🎉 **Votre plugin est prêt à être soumis !**`;
+    
+    const keyboard = Markup.inlineKeyboard([
+      [Markup.button.callback('🚀 Soumettre le plugin', 'submit_final_application')],
+      [Markup.button.callback('🔙 Retour au choix des services', 'go_back_service_selection')],
+      [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
+    ]);
+    
+    await safeEditMessage(ctx, message, {
+      reply_markup: keyboard.reply_markup,
+      parse_mode: 'Markdown'
+    });
+    
+  } catch (error) {
+    console.error('Erreur dans handleNewServiceShipping:', error);
+    await ctx.answerCbQuery('❌ Erreur');
+  }
+};
+
+// Demander les codes postaux pour Meet Up pour un pays spécifique
+const askMeetupPostalForCountry = async (ctx, countryIndex) => {
+  const userId = ctx.from.id;
+  const userForm = userForms.get(userId);
+  
+  if (!userForm || !userForm.data.workingCountries) {
+    return;
+  }
+  
+  const countries = userForm.data.workingCountries;
+  
+  if (countryIndex >= countries.length) {
+    // Tous les pays traités, passer à la confirmation finale
+    userForm.step = 'final_confirmation';
+    userForms.set(userId, userForm);
+    await showFinalConfirmation(ctx);
+    return;
+  }
+  
+  const currentCountry = countries[countryIndex];
+  
+  const Config = require('../models/Config');
+  const config = await Config.findById('main');
+  const currentLang = config?.languages?.currentLanguage || 'fr';
+  const customTranslations = config?.languages?.translations;
+  
+  const message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
+    `⸻\n\n` +
+    `🤝 **Service "Meet Up" - Codes postaux**\n\n` +
+    `📍 **Pays actuel :** ${currentCountry}\n` +
+    `📊 **Progression :** ${countryIndex + 1}/${countries.length}\n\n` +
+    `Entrez le code postal pour **${currentCountry}** :\n\n` +
+    `Ensuite, cliquez sur "valider"`;
+  
+  userForm.step = 'waiting_meetup_postal';
+  userForm.data.currentCountryIndex = countryIndex;
+  userForms.set(userId, userForm);
+  
+  const keyboard = Markup.inlineKeyboard([
+    [Markup.button.callback('✅ Valider le code postal', `validate_meetup_postal_${countryIndex}`)],
+    [Markup.button.callback('🔙 Retour aux services', 'go_back_service_selection')],
+    [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
+  ]);
+  
+  await safeEditMessage(ctx, message, {
+    reply_markup: keyboard.reply_markup,
+    parse_mode: 'Markdown'
+  });
+};
+
+// Demander les codes postaux pour Livraison pour un pays spécifique
+const askDeliveryPostalForCountry = async (ctx, countryIndex) => {
+  const userId = ctx.from.id;
+  const userForm = userForms.get(userId);
+  
+  if (!userForm || !userForm.data.workingCountries) {
+    return;
+  }
+  
+  const countries = userForm.data.workingCountries;
+  
+  if (countryIndex >= countries.length) {
+    // Tous les pays traités, passer à la confirmation finale
+    userForm.step = 'final_confirmation';
+    userForms.set(userId, userForm);
+    await showFinalConfirmation(ctx);
+    return;
+  }
+  
+  const currentCountry = countries[countryIndex];
+  
+  const Config = require('../models/Config');
+  const config = await Config.findById('main');
+  const currentLang = config?.languages?.currentLanguage || 'fr';
+  const customTranslations = config?.languages?.translations;
+  
+  const message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
+    `⸻\n\n` +
+    `🚚 **Service "Livraison" - Codes postaux**\n\n` +
+    `📍 **Pays actuel :** ${currentCountry}\n` +
+    `📊 **Progression :** ${countryIndex + 1}/${countries.length}\n\n` +
+    `Entrez le code postal pour **${currentCountry}** :\n\n` +
+    `Ensuite, cliquez sur "valider"`;
+  
+  userForm.step = 'waiting_delivery_postal';
+  userForm.data.currentCountryIndex = countryIndex;
+  userForms.set(userId, userForm);
+  
+  const keyboard = Markup.inlineKeyboard([
+    [Markup.button.callback('✅ Valider le code postal', `validate_delivery_postal_${countryIndex}`)],
+    [Markup.button.callback('🔙 Retour aux services', 'go_back_service_selection')],
+    [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
+  ]);
+  
+  await safeEditMessage(ctx, message, {
+    reply_markup: keyboard.reply_markup,
+    parse_mode: 'Markdown'
+  });
+};
+
+// Gestionnaire pour traiter les codes postaux Meet Up
+const handleMeetupPostalCode = async (ctx, text) => {
+  const userId = ctx.from.id;
+  const userForm = userForms.get(userId);
+  
+  if (!userForm || userForm.step !== 'waiting_meetup_postal') {
+    return;
+  }
+  
+  if (!text || text.length < 2) {
+    const Config = require('../models/Config');
+    const config = await Config.findById('main');
+    const currentLang = config?.languages?.currentLanguage || 'fr';
+    const customTranslations = config?.languages?.translations;
+    return await ctx.reply(getTranslation('registration.error.postalCodeLength', currentLang, customTranslations));
+  }
+  
+  const currentCountryIndex = userForm.data.currentCountryIndex;
+  const currentCountry = userForm.data.workingCountries[currentCountryIndex];
+  
+  // Sauvegarder le code postal pour ce pays
+  if (!userForm.data.meetupPostalCodes) {
+    userForm.data.meetupPostalCodes = {};
+  }
+  userForm.data.meetupPostalCodes[currentCountry] = text;
+  
+  userForms.set(userId, userForm);
+  
+  // Passer au pays suivant
+  await askMeetupPostalForCountry(ctx, currentCountryIndex + 1);
+};
+
+// Gestionnaire pour traiter les codes postaux Livraison
+const handleDeliveryPostalCode = async (ctx, text) => {
+  const userId = ctx.from.id;
+  const userForm = userForms.get(userId);
+  
+  if (!userForm || userForm.step !== 'waiting_delivery_postal') {
+    return;
+  }
+  
+  if (!text || text.length < 2) {
+    const Config = require('../models/Config');
+    const config = await Config.findById('main');
+    const currentLang = config?.languages?.currentLanguage || 'fr';
+    const customTranslations = config?.languages?.translations;
+    return await ctx.reply(getTranslation('registration.error.postalCodeLength', currentLang, customTranslations));
+  }
+  
+  const currentCountryIndex = userForm.data.currentCountryIndex;
+  const currentCountry = userForm.data.workingCountries[currentCountryIndex];
+  
+  // Sauvegarder le code postal pour ce pays
+  if (!userForm.data.deliveryPostalCodes) {
+    userForm.data.deliveryPostalCodes = {};
+  }
+  userForm.data.deliveryPostalCodes[currentCountry] = text;
+  
+  userForms.set(userId, userForm);
+  
+  // Passer au pays suivant
+  await askDeliveryPostalForCountry(ctx, currentCountryIndex + 1);
+};
+
+// Afficher la confirmation finale
+const showFinalConfirmation = async (ctx) => {
+  const userId = ctx.from.id;
+  const userForm = userForms.get(userId);
+  
+  const Config = require('../models/Config');
+  const config = await Config.findById('main');
+  const currentLang = config?.languages?.currentLanguage || 'fr';
+  const customTranslations = config?.languages?.translations;
+  
+  let serviceDetails = '';
+  if (userForm.data.selectedService === 'meetup') {
+    serviceDetails = '🤝 **Service :** Meet Up\n\n';
+    serviceDetails += '📍 **Codes postaux Meet Up :**\n';
+    Object.entries(userForm.data.meetupPostalCodes || {}).forEach(([country, code]) => {
+      serviceDetails += `• ${country}: ${code}\n`;
+    });
+  } else if (userForm.data.selectedService === 'delivery') {
+    serviceDetails = '🚚 **Service :** Livraison\n\n';
+    serviceDetails += '📍 **Codes postaux Livraison :**\n';
+    Object.entries(userForm.data.deliveryPostalCodes || {}).forEach(([country, code]) => {
+      serviceDetails += `• ${country}: ${code}\n`;
+    });
+  } else if (userForm.data.selectedService === 'shipping') {
+    serviceDetails = '📮 **Service :** Envoi postal\n✅ Validation automatique\n';
+  }
+  
+  const message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
+    `⸻\n\n` +
+    `🎯 **Confirmation finale**\n\n` +
+    `📝 **Nom du plugin :** ${userForm.data.name}\n` +
+    `🌍 **Pays de travail :** ${userForm.data.workingCountries.join(', ')}\n\n` +
+    serviceDetails + '\n\n' +
+    `🎉 **Une fois les codes postaux validés → c'est confirmé**\n\n` +
+    `👆 Confirmer votre plugin ?`;
+  
+  const keyboard = Markup.inlineKeyboard([
+    [Markup.button.callback('🚀 Soumettre le plugin', 'submit_final_application')],
+    [Markup.button.callback('🔙 Retour aux services', 'go_back_service_selection')],
+    [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
+  ]);
+  
+  await safeEditMessage(ctx, message, {
+    reply_markup: keyboard.reply_markup,
+    parse_mode: 'Markdown'
+  });
+};
+
+// Gestionnaire pour la soumission finale du nouveau flux
+const handleFinalSubmission = async (ctx) => {
+  try {
+    await ctx.answerCbQuery();
+    
+    const userId = ctx.from.id;
+    const userForm = userForms.get(userId);
+    
+    if (!userForm || userForm.step !== 'final_confirmation') {
+      return await ctx.answerCbQuery('❌ Erreur de formulaire');
+    }
+    
+    const Config = require('../models/Config');
+    const config = await Config.findById('main');
+    const currentLang = config?.languages?.currentLanguage || 'fr';
+    const customTranslations = config?.languages?.translations;
+    
+    // Convertir les données du nouveau flux vers l'ancien format pour compatibilité
+    const compatibleData = {
+      ...userForm.data,
+      // Mapping des pays de travail vers l'ancien système
+      countries: userForm.data.workingCountries || [],
+      // Mapping des services selon le service sélectionné
+      services: {}
+    };
+    
+    // Configurer les services selon le type sélectionné
+    if (userForm.data.selectedService === 'meetup') {
+      compatibleData.services.meetup = {
+        enabled: true,
+        departments: []
+      };
+      // Convertir les codes postaux en départements pour chaque pays
+      Object.entries(userForm.data.meetupPostalCodes || {}).forEach(([country, code]) => {
+        compatibleData.services.meetup.departments.push(code);
+      });
+    } else if (userForm.data.selectedService === 'delivery') {
+      compatibleData.services.delivery = {
+        enabled: true,
+        departments: []
+      };
+      // Convertir les codes postaux en départements pour chaque pays
+      Object.entries(userForm.data.deliveryPostalCodes || {}).forEach(([country, code]) => {
+        compatibleData.services.delivery.departments.push(code);
+      });
+    } else if (userForm.data.selectedService === 'shipping') {
+      compatibleData.services.shipping = {
+        enabled: true
+      };
+    }
+    
+    // Mettre à jour les données du formulaire
+    userForm.data = compatibleData;
+    userForm.step = 'confirmation';
+    userForms.set(userId, userForm);
+    
+    // Utiliser la fonction de soumission existante
+    await submitApplication(ctx);
+    
+  } catch (error) {
+    console.error('Erreur dans handleFinalSubmission:', error);
+    await ctx.answerCbQuery('❌ Erreur lors de la soumission');
+  }
+};
+
+// Gestionnaires pour valider les codes postaux via boutons
+const handleValidateMeetupPostal = async (ctx, countryIndex) => {
+  try {
+    await ctx.answerCbQuery();
+    
+    const userId = ctx.from.id;
+    const userForm = userForms.get(userId);
+    
+    if (!userForm || userForm.step !== 'waiting_meetup_postal') {
+      return await ctx.answerCbQuery('❌ Aucun code postal en attente');
+    }
+    
+    // Demander à l'utilisateur de taper le code postal
+    const Config = require('../models/Config');
+    const config = await Config.findById('main');
+    const currentLang = config?.languages?.currentLanguage || 'fr';
+    const customTranslations = config?.languages?.translations;
+    
+    await ctx.answerCbQuery('💬 Tapez maintenant le code postal');
+    
+    // Changer l'étape pour attendre la saisie texte
+    userForm.step = 'entering_meetup_postal';
+    userForm.data.validationCountryIndex = countryIndex;
+    userForms.set(userId, userForm);
+    
+  } catch (error) {
+    console.error('Erreur dans handleValidateMeetupPostal:', error);
+    await ctx.answerCbQuery('❌ Erreur');
+  }
+};
+
+const handleValidateDeliveryPostal = async (ctx, countryIndex) => {
+  try {
+    await ctx.answerCbQuery();
+    
+    const userId = ctx.from.id;
+    const userForm = userForms.get(userId);
+    
+    if (!userForm || userForm.step !== 'waiting_delivery_postal') {
+      return await ctx.answerCbQuery('❌ Aucun code postal en attente');
+    }
+    
+    // Demander à l'utilisateur de taper le code postal
+    const Config = require('../models/Config');
+    const config = await Config.findById('main');
+    const currentLang = config?.languages?.currentLanguage || 'fr';
+    const customTranslations = config?.languages?.translations;
+    
+    await ctx.answerCbQuery('💬 Tapez maintenant le code postal');
+    
+    // Changer l'étape pour attendre la saisie texte
+    userForm.step = 'entering_delivery_postal';
+    userForm.data.validationCountryIndex = countryIndex;
+    userForms.set(userId, userForm);
+    
+  } catch (error) {
+    console.error('Erreur dans handleValidateDeliveryPostal:', error);
+    await ctx.answerCbQuery('❌ Erreur');
+  }
+};
+
 module.exports = {
   handleStartApplication,
   handleFormMessage,
@@ -2608,5 +3171,17 @@ module.exports = {
   handleGoBack,
   userForms,
   lastBotMessages,
-  COUNTRIES
+  COUNTRIES,
+  // Nouvelles fonctions pour le nouveau flux
+  askWorkingCountries,
+  handleWorkingCountrySelection,
+  handleConfirmWorkingCountries,
+  handleNewServiceMeetup,
+  handleNewServiceDelivery,
+  handleNewServiceShipping,
+  handleMeetupPostalCode,
+  handleDeliveryPostalCode,
+  handleFinalSubmission,
+  handleValidateMeetupPostal,
+  handleValidateDeliveryPostal
 };

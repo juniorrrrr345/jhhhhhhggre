@@ -394,6 +394,83 @@ bot.action('cancel_application', handleCancelApplication);
 bot.action('services_done', handleServicesDone);
 bot.action(/^country_(.+)$/, handleCountrySelection);
 
+// === NOUVEAUX HANDLERS POUR LE NOUVEAU FLUX DE SERVICES ===
+bot.action(/^working_country_(.+)$/, async (ctx) => {
+  const countryCode = ctx.match[1];
+  const { handleWorkingCountrySelection } = require('./src/handlers/applicationHandler');
+  return await handleWorkingCountrySelection(ctx, countryCode);
+});
+
+bot.action('confirm_working_countries', async (ctx) => {
+  const { handleConfirmWorkingCountries } = require('./src/handlers/applicationHandler');
+  return await handleConfirmWorkingCountries(ctx);
+});
+
+bot.action('new_service_meetup', async (ctx) => {
+  const { handleNewServiceMeetup } = require('./src/handlers/applicationHandler');
+  return await handleNewServiceMeetup(ctx);
+});
+
+bot.action('new_service_delivery', async (ctx) => {
+  const { handleNewServiceDelivery } = require('./src/handlers/applicationHandler');
+  return await handleNewServiceDelivery(ctx);
+});
+
+bot.action('new_service_shipping', async (ctx) => {
+  const { handleNewServiceShipping } = require('./src/handlers/applicationHandler');
+  return await handleNewServiceShipping(ctx);
+});
+
+// Gestion des codes postaux pour Meet Up par pays
+bot.action(/^meetup_postal_(.+)$/, async (ctx) => {
+  const countryCode = ctx.match[1];
+  const { handleMeetupPostalCode } = require('./src/handlers/applicationHandler');
+  return await handleMeetupPostalCode(ctx, countryCode);
+});
+
+// Gestion des codes postaux pour Livraison par pays
+bot.action(/^delivery_postal_(.+)$/, async (ctx) => {
+  const countryCode = ctx.match[1];
+  const { handleDeliveryPostalCode } = require('./src/handlers/applicationHandler');
+  return await handleDeliveryPostalCode(ctx, countryCode);
+});
+
+// Boutons retour pour le nouveau flux
+bot.action('go_back_working_countries', async (ctx) => {
+  const { askWorkingCountries } = require('./src/handlers/applicationHandler');
+  return await askWorkingCountries(ctx);
+});
+
+bot.action('go_back_service_selection', async (ctx) => {
+  const { askServices } = require('./src/handlers/applicationHandler');
+  const userId = ctx.from.id;
+  const { userForms } = require('./src/handlers/applicationHandler');
+  const userForm = userForms.get(userId);
+  if (userForm) {
+    userForm.step = 'service_selection';
+    userForms.set(userId, userForm);
+  }
+  return await askServices(ctx);
+});
+
+bot.action('submit_final_application', async (ctx) => {
+  const { handleFinalSubmission } = require('./src/handlers/applicationHandler');
+  return await handleFinalSubmission(ctx);
+});
+
+// Validation des codes postaux via boutons
+bot.action(/^validate_meetup_postal_(\d+)$/, async (ctx) => {
+  const countryIndex = parseInt(ctx.match[1]);
+  const { handleValidateMeetupPostal } = require('./src/handlers/applicationHandler');
+  return await handleValidateMeetupPostal(ctx, countryIndex);
+});
+
+bot.action(/^validate_delivery_postal_(\d+)$/, async (ctx) => {
+  const countryIndex = parseInt(ctx.match[1]);
+  const { handleValidateDeliveryPostal } = require('./src/handlers/applicationHandler');
+  return await handleValidateDeliveryPostal(ctx, countryIndex);
+});
+
 // === NOUVEAUX HANDLERS TOP DES PLUGS ===
 bot.action(/^top_country_(.+)$/, (ctx) => {
   const country = ctx.match[1];
