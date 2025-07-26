@@ -1838,31 +1838,54 @@ const handleCountryDepartments = async (ctx, country) => {
     const currentLang = config?.languages?.currentLanguage || 'fr';
     const customTranslations = config?.languages?.translations;
     
-    // Utiliser le service postal pour obtenir les vrais codes postaux de chaque pays
-    const postalCodes = postalCodeService.getPostalCodes(country);
+    // ✅ NOUVEAU: Récupérer SEULEMENT les départements où il y a des boutiques réelles
+    const shopsInCountry = await Plug.find({
+      isActive: true,
+      countries: { $in: [country] },
+      $or: [
+        { 'services.delivery.enabled': true },
+        { 'services.meetup.enabled': true }
+      ]
+    });
     
-    if (!postalCodes || postalCodes.length === 0) {
-      console.log(`❌ Aucun code postal trouvé pour ${country}`);
-      const message = `❌ ${getTranslation('no_postal_codes_for_country', currentLang, customTranslations)} ${country}`;
+    if (shopsInCountry.length === 0) {
+      console.log(`❌ Aucune boutique trouvée pour ${country}`);
+      const message = `❌ **Aucune boutique disponible pour ${getCountryFlag(country)} ${country}**\n\n💡 *Les boutiques apparaîtront ici une fois qu'elles seront ajoutées*`;
       await safeEditMessage(ctx, message, {
         parse_mode: 'Markdown',
         reply_markup: { 
-          inline_keyboard: [[{ text: '🔙 Retour', callback_data: 'top_plugs' }]]
+          inline_keyboard: [[{ text: '🔙 Retour aux pays', callback_data: 'all_departments' }]]
         }
       });
       return;
     }
-
-    console.log(`✅ ${postalCodes.length} codes postaux trouvés pour ${country}`);
     
-    // Prendre un échantillon représentatif des codes postaux (max 50 pour éviter trop de boutons)
-    const sampleSize = Math.min(50, postalCodes.length);
-    const step = Math.max(1, Math.floor(postalCodes.length / sampleSize));
-    const departmentsByCountry = {
-      [country]: postalCodes.filter((_, index) => index % step === 0).slice(0, sampleSize)
-    };
+    // Récupérer tous les départements disponibles dans les boutiques de ce pays
+    const availableDepartments = new Set();
     
-    const departments = departmentsByCountry[country] || [];
+    shopsInCountry.forEach(shop => {
+      // Départements livraison
+      if (shop.services?.delivery?.enabled && shop.services.delivery.departments) {
+        shop.services.delivery.departments.forEach(dept => {
+          if (dept && dept.trim() !== '') {
+            availableDepartments.add(dept.trim());
+          }
+        });
+      }
+      
+      // Départements meetup
+      if (shop.services?.meetup?.enabled && shop.services.meetup.departments) {
+        shop.services.meetup.departments.forEach(dept => {
+          if (dept && dept.trim() !== '') {
+            availableDepartments.add(dept.trim());
+          }
+        });
+      }
+    });
+    
+    const departments = Array.from(availableDepartments).sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+    
+    console.log(`✅ ${departments.length} départements réels trouvés pour ${country}: ${departments.join(', ')}`);
     
     if (departments.length === 0) {
       const message = `❌ **Aucun département trouvé pour ${getCountryFlag(country)} ${country}**`;
@@ -1879,9 +1902,10 @@ const handleCountryDepartments = async (ctx, country) => {
       return;
     }
     
-    // Construire le message avec tous les départements
-    let message = `📍 **Départements de ${getCountryFlag(country)} ${country}**\n\n`;
-    message += `**${departments.length} départements disponibles :**\n\n`;
+    // Construire le message avec tous les départements disponibles dans les boutiques
+    let message = `📍 **Départements avec boutiques - ${getCountryFlag(country)} ${country}**\n\n`;
+    message += `🏪 **${shopsInCountry.length} boutique${shopsInCountry.length > 1 ? 's' : ''} trouvée${shopsInCountry.length > 1 ? 's' : ''}**\n`;
+    message += `📍 **${departments.length} département${departments.length > 1 ? 's' : ''} disponible${departments.length > 1 ? 's' : ''}** pour livraison/meetup :\n\n`;
     
     // Afficher les départements par groupes de 10 pour une meilleure lisibilité
     for (let i = 0; i < departments.length; i += 10) {
@@ -1889,7 +1913,8 @@ const handleCountryDepartments = async (ctx, country) => {
       message += `${chunk.join(' • ')}\n`;
     }
     
-    message += `\n💡 *Vous pouvez utiliser ces numéros pour filtrer les boutiques*`;
+    message += `\n💡 *Cliquez sur un département pour voir les boutiques disponibles*\n`;
+    message += `✅ *Seuls les départements avec des boutiques réelles sont affichés*`;
     
     // Créer les boutons de départements (5 par ligne)
     const departmentButtons = [];
@@ -1985,187 +2010,10 @@ const handleDepartmentsList = async (ctx, serviceType, selectedCountry = null) =
     message += `🌍 Pays: ${getCountryFlag(selectedCountry)} ${selectedCountry}\n`;
     message += `\n💡 ${getTranslation('departments_click_instruction', currentLang, customTranslations)}\n\n`;
     
-    // BOUTONS DÉPARTEMENTS PAR PAYS
+    // ✅ NOUVEAU: Récupérer SEULEMENT les départements réels des boutiques
     const buttons = [];
     
-    // Départements par pays (TOUS LES PAYS EUROPÉENS + MAROC, CANADA, USA, THAILAND)
-    const departmentsByCountry = {
-      // Europe Occidentale
-      'France': ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '2A', '2B', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31', '32', '33', '34', '35', '36', '37', '38', '39', '40', '41', '42', '43', '44', '45', '46', '47', '48', '49', '50', '51', '52', '53', '54', '55', '56', '57', '58', '59', '60', '61', '62', '63', '64', '65', '66', '67', '68', '69', '70', '71', '72', '73', '74', '75', '76', '77', '78', '79', '80', '81', '82', '83', '84', '85', '86', '87', '88', '89', '90', '91', '92', '93', '94', '95'],
-      'Allemagne': ['01000', '10000', '20000', '30000', '40000', '50000', '60000', '70000', '80000', '90000', '12000', '13000', '14000', '15000', '16000', '17000', '18000', '19000', '21000', '22000', '23000', '24000', '25000', '26000', '27000', '28000', '29000', '31000', '32000', '33000'],
-      'Espagne': [
-        // Espagne péninsulaire (par provinces selon ordre alphabétique)
-        '01', // Álava
-        '02', // Albacete
-        '03', // Alicante
-        '04', // Almería
-        '05', // Ávila
-        '06', // Badajoz
-        '07', // Illes Balears (Mallorca, Ibiza, Formentera, Menorca)
-        '08', // Barcelona
-        '09', // Burgos
-        '10', // Cáceres
-        '11', // Cádiz
-        '12', // Castellón
-        '13', // Ciudad Real
-        '14', // Córdoba
-        '15', // A Coruña
-        '16', // Cuenca
-        '17', // Girona
-        '18', // Granada
-        '19', // Guadalajara
-        '20', // Gipuzkoa
-        '21', // Huelva
-        '22', // Huesca
-        '23', // Jaén
-        '24', // León
-        '25', // Lleida
-        '26', // La Rioja
-        '27', // Lugo
-        '28', // Madrid
-        '29', // Málaga
-        '30', // Murcia
-        '31', // Navarra
-        '32', // Ourense
-        '33', // Asturias
-        '34', // Palencia
-        '35', // Las Palmas (Gran Canaria, Lanzarote, Fuerteventura)
-        '36', // Pontevedra
-        '37', // Salamanca
-        '38', // Santa Cruz de Tenerife (Tenerife, La Gomera, El Hierro, La Palma)
-        '39', // Cantabria
-        '40', // Segovia
-        '41', // Sevilla
-        '42', // Soria
-        '43', // Tarragona
-        '44', // Teruel
-        '45', // Toledo
-        '46', // Valencia
-        '47', // Valladolid
-        '48', // Bizkaia
-        '49', // Zamora
-        '50', // Zaragoza
-        '51', // Ceuta
-        '52'  // Melilla
-      ],
-      'Italie': [
-        // Italie du Nord
-        '00100', // Rome (Latium)
-        '10100', // Turin (Piémont)
-        '16100', // Gênes (Ligurie)
-        '20100', // Milan (Lombardie)
-        '25100', // Brescia (Lombardie)
-        '30100', // Venise (Vénétie)
-        '33100', // Udine (Frioul-Vénétie julienne)
-        '34100', // Trieste (Frioul-Vénétie julienne)
-        '35100', // Padoue (Vénétie)
-        '37100', // Vérone (Vénétie)
-        '38100', // Trente (Trentin-Haut-Adige)
-        '39100', // Bolzano (Trentin-Haut-Adige)
-        '40100', // Bologne (Émilie-Romagne)
-        '41100', // Modène (Émilie-Romagne)
-        '43100', // Parme (Émilie-Romagne)
-        '44100', // Ferrare (Émilie-Romagne)
-        '47100', // Forlì (Émilie-Romagne)
-        '48100', // Ravenne (Émilie-Romagne)
-        // Italie centrale
-        '50100', // Florence (Toscane)
-        '51100', // Pistoia (Toscane)
-        '52100', // Arezzo (Toscane)
-        '53100', // Sienne (Toscane)
-        '55100', // Lucques (Toscane)
-        '56100', // Pise (Toscane)
-        '57100', // Livourne (Toscane)
-        '58100', // Grosseto (Toscane)
-        '59100', // Prato (Toscane)
-        '60100', // Ancône (Marches)
-        '61100', // Pesaro (Marches)
-        '62100', // Macerata (Marches)
-        '63100', // Ascoli Piceno (Marches)
-        '06100', // Pérouse (Ombrie)
-        '05100', // Terni (Ombrie)
-        // Italie du Sud et îles
-        '65100', // Pescara (Abruzzes)
-        '66100', // Chieti (Abruzzes)
-        '67100', // L'Aquila (Abruzzes)
-        '64100', // Teramo (Abruzzes)
-        '70100', // Bari (Pouilles)
-        '71100', // Foggia (Pouilles)
-        '72100', // Brindisi (Pouilles)
-        '73100', // Lecce (Pouilles)
-        '74100', // Tarente (Pouilles)
-        '75100', // Matera (Basilicate)
-        '85100', // Potenza (Basilicate)
-        '80100', // Naples (Campanie)
-        '81100', // Caserte (Campanie)
-        '82100', // Bénévent (Campanie)
-        '83100', // Avellino (Campanie)
-        '84100', // Salerne (Campanie)
-        '86100', // Campobasso (Molise)
-        '88100', // Catanzaro (Calabre)
-        '87100', // Cosenza (Calabre)
-        '89100', // Reggio de Calabre (Calabre)
-        '90100', // Palerme (Sicile)
-        '91100', // Trapani (Sicile)
-        '92100', // Agrigente (Sicile)
-        '93100', // Caltanissetta (Sicile)
-        '94100', // Enna (Sicile)
-        '95100', // Catane (Sicile)
-        '96100', // Syracuse (Sicile)
-        '97100', // Raguse (Sicile)
-        '98100', // Messine (Sicile)
-        // Sardaigne
-        '07100', // Sassari (Sardaigne)
-        '08100', // Nuoro (Sardaigne)
-        '09100', // Cagliari (Sardaigne)
-        '09123', // Cagliari centre (Sardaigne)
-        '09124', // Cagliari quartiers (Sardaigne)
-        '09125', // Cagliari périphérie (Sardaigne)
-        '07026'  // Olbia (Sardaigne)
-      ],
-      'Royaume-Uni': ['B1', 'B2', 'B3', 'B4', 'B5', 'B6', 'B7', 'B8', 'B9', 'B10', 'B11', 'B12', 'B13', 'B14', 'B15', 'B16', 'B17', 'B18', 'B19', 'B20', 'B21', 'B22', 'B23', 'B24', 'B25', 'B26', 'B27', 'B28', 'B29', 'B30'],
-      'Pays-Bas': ['1000', '2000', '3000', '4000', '5000', '6000', '7000', '8000', '9000', '1100', '1200', '1300', '1400', '1500', '2100', '2200', '2300', '2400', '2500', '3100', '3200', '3300', '3400', '3500', '4100', '4200', '4300', '4400', '4500'],
-      'Belgique': ['1000', '2000', '3000', '4000', '5000', '6000', '7000', '8000', '9000', '1500', '1200', '1400', '1300', '1600', '1800', '2500', '3500', '4500', '5500', '6500', '7500', '8500', '9500'],
-      'Suisse': ['1000', '1200', '1300', '2000', '2500', '3000', '4000', '5000', '6000', '7000', '8000', '9000', '1400', '1700', '2600', '3200', '3900', '4600', '5200', '6200', '6300', '6400', '6500', '6600', '6700', '6800'],
-      'Autriche': ['1000', '2000', '3000', '4000', '5000', '6000', '7000', '8000', '9000', '1100', '1200', '1300', '1400', '1500', '1600', '1700', '1800', '1900', '2100', '2200', '2300', '2400', '2500', '3100', '3200'],
-      'Portugal': ['1000', '2000', '3000', '4000', '5000', '6000', '7000', '8000', '9000', '1100', '1200', '1300', '1400', '1500', '2100', '2200', '2300', '2400', '2500', '3100', '3200', '4100', '4200', '4300', '4400'],
-
-      // Europe du Nord
-      'Suède': ['10000', '20000', '30000', '40000', '50000', '60000', '70000', '80000', '90000', '11000', '12000', '13000', '14000', '15000', '16000', '17000', '18000', '19000', '21000', '22000'],
-      'Norvège': ['0100', '0200', '0300', '0400', '0500', '0600', '0700', '0800', '0900', '1000', '1100', '1200', '1300', '1400', '1500', '1600', '1700', '1800', '1900', '2000'],
-      'Danemark': ['1000', '2000', '3000', '4000', '5000', '6000', '7000', '8000', '9000', '1100', '1200', '1300', '1400', '1500', '1600', '1700', '1800', '1900', '2100', '2200'],
-      'Finlande': ['00100', '00200', '00300', '00400', '00500', '00600', '00700', '00800', '00900', '01000', '01100', '01200', '01300', '01400', '01500', '01600', '01700', '01800', '01900', '02000'],
-
-      // Europe de l'Est
-      'Pologne': ['00100', '10000', '20000', '30000', '40000', '50000', '60000', '70000', '80000', '90000', '11000', '12000', '13000', '14000', '15000', '16000', '17000', '18000', '19000', '21000'],
-      'République Tchèque': ['10000', '11000', '12000', '13000', '14000', '15000', '16000', '17000', '18000', '19000', '20000', '21000', '22000', '23000', '24000', '25000', '26000', '27000', '28000', '29000'],
-      'Hongrie': ['1000', '2000', '3000', '4000', '5000', '6000', '7000', '8000', '9000', '1100', '1200', '1300', '1400', '1500', '1600', '1700', '1800', '1900', '2100', '2200'],
-      'Slovaquie': ['80000', '81000', '82000', '83000', '84000', '85000', '86000', '87000', '88000', '89000', '90000', '91000', '92000', '93000', '94000', '95000', '96000', '97000', '98000', '99000'],
-      'Roumanie': ['010000', '020000', '030000', '040000', '050000', '060000', '070000', '080000', '090000', '100000', '110000', '120000', '130000', '140000', '150000', '160000', '170000', '180000', '190000', '200000'],
-      'Bulgarie': ['1000', '2000', '3000', '4000', '5000', '6000', '7000', '8000', '9000', '1100', '1200', '1300', '1400', '1500', '1600', '1700', '1800', '1900', '2100', '2200'],
-
-      // Europe du Sud
-      'Grèce': ['10000', '11000', '12000', '13000', '14000', '15000', '16000', '17000', '18000', '19000', '20000', '21000', '22000', '23000', '24000', '25000', '26000', '27000', '28000', '29000'],
-      'Croatie': ['10000', '20000', '21000', '22000', '23000', '31000', '32000', '33000', '34000', '35000', '40000', '42000', '43000', '44000', '47000', '48000', '49000', '51000', '52000', '53000'],
-      'Slovénie': ['1000', '2000', '3000', '4000', '5000', '6000', '7000', '8000', '9000', '1100', '1200', '1300', '1400', '1500', '1600', '1700', '1800', '1900', '2100', '2200'],
-      'Serbie': ['10000', '11000', '12000', '13000', '14000', '15000', '16000', '17000', '18000', '19000', '20000', '21000', '22000', '23000', '24000', '25000', '26000', '27000', '28000', '29000'],
-
-      // Autres pays européens
-      'Irlande': ['D01', 'D02', 'D03', 'D04', 'D05', 'D06', 'D07', 'D08', 'D09', 'D10', 'D11', 'D12', 'D13', 'D14', 'D15', 'D16', 'D17', 'D18', 'D19', 'D20'],
-      'Luxembourg': ['1000', '2000', '3000', '4000', '5000', '6000', '7000', '8000', '9000', '1100', '1200', '1300', '1400', '1500', '1600', '1700', '1800', '1900', '2100', '2200'],
-      'Islande': ['100', '200', '300', '400', '500', '600', '700', '800', '900', '101', '102', '103', '104', '105', '106', '107', '108', '109', '110', '111'],
-
-      // Hors Europe
-      'Maroc': ['10000', '20000', '30000', '40000', '50000', '60000', '70000', '80000', '90000', '11000', '12000', '13000', '14000', '15000', '16000', '17000', '18000', '19000', '21000', '22000'],
-      'Canada': ['A0A', 'A1A', 'B0A', 'B1A', 'C0A', 'C1A', 'E0A', 'E1A', 'G0A', 'G1A', 'H0A', 'H1A', 'J0A', 'J1A', 'K0A', 'K1A', 'L0A', 'L1A', 'M0A', 'M1A', 'N0A', 'N1A', 'P0A', 'P1A', 'R0A', 'R1A', 'S0A', 'S1A', 'T0A', 'T1A', 'V0A', 'V1A', 'X0A', 'X1A', 'Y0A', 'Y1A'],
-      'USA': ['10001', '20001', '30001', '40001', '50001', '60001', '70001', '80001', '90001', '11001', '12001', '13001', '14001', '15001', '16001', '17001', '18001', '19001', '21001', '22001', '30301', '33101', '34101', '35101', '36101', '37101', '38101', '39101', '44101', '45101'],
-      'Thailand': ['10100', '10200', '10300', '10400', '10500', '20100', '20200', '30100', '30200', '40100', '40200', '50100', '50200', '60100', '60200', '70100', '70200', '80100', '80200', '90100']
-    };
-    
-    // Récupérer TOUS les départements du pays sélectionné
-    const depts = departmentsByCountry[selectedCountry] || departmentsByCountry['France'];
-    
-    // Récupérer toutes les boutiques pour ce service et pays pour compter correctement
+    // Récupérer toutes les boutiques pour ce service et pays
     let query = { isActive: true };
     
     if (serviceType === 'delivery') {
@@ -2181,21 +2029,59 @@ const handleDepartmentsList = async (ctx, serviceType, selectedCountry = null) =
     const shopsWithService = await Plug.find(query);
     console.log(`🔍 Trouvé ${shopsWithService.length} boutiques pour ${serviceType} dans ${selectedCountry || 'tous pays'}`);
     
+    if (shopsWithService.length === 0) {
+      message += `❌ **Aucune boutique disponible** pour ce service dans ${selectedCountry}\n\n`;
+      message += `💡 *Les boutiques apparaîtront ici une fois qu'elles seront ajoutées*`;
+      
+      const backText = getTranslation('back_to_menu', currentLang, customTranslations);
+      const keyboard = Markup.inlineKeyboard([
+        [{
+          text: backText,
+          callback_data: 'top_plugs'
+        }]
+      ]);
+      
+      await editMessageWithImage(ctx, message, keyboard, config, { parse_mode: 'Markdown' });
+      return;
+    }
+    
+    // Récupérer tous les départements disponibles dans les boutiques de ce pays
+    const availableDepartments = new Set();
+    const departmentShopCount = {};
+    
+    shopsWithService.forEach(shop => {
+      // Départements selon le service
+      let departments = [];
+      if (serviceType === 'delivery' && shop.services?.delivery?.enabled && shop.services.delivery.departments) {
+        departments = shop.services.delivery.departments;
+      } else if (serviceType === 'meetup' && shop.services?.meetup?.enabled && shop.services.meetup.departments) {
+        departments = shop.services.meetup.departments;
+      }
+      
+      departments.forEach(dept => {
+        if (dept && dept.trim() !== '') {
+          const deptTrimmed = dept.trim();
+          availableDepartments.add(deptTrimmed);
+          departmentShopCount[deptTrimmed] = (departmentShopCount[deptTrimmed] || 0) + 1;
+        }
+      });
+    });
+    
+    const depts = Array.from(availableDepartments).sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+    
+    console.log(`✅ ${depts.length} départements réels trouvés pour ${selectedCountry}: ${depts.join(', ')}`);
+    
+    // Mettre à jour le message avec les infos réelles
+    message += `🏪 **${shopsWithService.length} boutique${shopsWithService.length > 1 ? 's' : ''} trouvée${shopsWithService.length > 1 ? 's' : ''}**\n`;
+    message += `📍 **${depts.length} département${depts.length > 1 ? 's' : ''} disponible${depts.length > 1 ? 's' : ''}** :\n\n`;
+    message += `✅ *Seuls les départements avec des boutiques réelles sont affichés*\n\n`;
+    
     // 4 boutons par ligne avec VRAI comptage de boutiques
     for (let i = 0; i < depts.length; i += 4) {
       const row = [];
       for (let j = 0; j < 4 && (i + j) < depts.length; j++) {
         const dept = depts[i + j];
-        
-        // Compter les VRAIES boutiques pour ce département
-        const shopsInDept = shopsWithService.filter(shop => {
-          if (serviceType === 'delivery') {
-            return shop.services?.delivery?.departments?.includes(dept);
-          } else if (serviceType === 'meetup') {
-            return shop.services?.meetup?.departments?.includes(dept);
-          }
-          return false;
-        }).length;
+        const shopsInDept = departmentShopCount[dept] || 0;
         
         console.log(`📍 Département ${dept}: ${shopsInDept} boutiques`);
         
