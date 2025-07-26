@@ -602,6 +602,7 @@ bot.action('skip_signal', (ctx) => handleSkipStep(ctx, 'signal'));
 bot.action('skip_session', (ctx) => handleSkipStep(ctx, 'session'));
 bot.action('skip_threema', (ctx) => handleSkipStep(ctx, 'threema'));
 bot.action('skip_telegram_bot', (ctx) => handleSkipStep(ctx, 'telegram_bot'));
+bot.action('skip_photo', (ctx) => handleSkipStep(ctx, 'photo'));
 bot.action('skip_departments_delivery', (ctx) => handleSkipStep(ctx, 'departments_delivery'));
 bot.action('skip_departments_meetup', (ctx) => handleSkipStep(ctx, 'departments_meetup'));
 bot.action('skip_departments_shipping', (ctx) => handleSkipStep(ctx, 'departments_shipping'));
@@ -1577,6 +1578,7 @@ bot.action('go_back_photo', async (ctx) => {
       `(Photo de présentation de tes produits ou de ton espace de vente)`;
     
     const photoKeyboard = Markup.inlineKeyboard([
+      [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_photo')],
       [Markup.button.callback(getTranslation('registration.goBack', currentLang, customTranslations), 'go_back_telegram_bot')],
       [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
     ]);

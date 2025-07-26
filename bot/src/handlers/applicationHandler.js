@@ -578,6 +578,7 @@ const handleFormMessage = async (ctx) => {
           `${getTranslation('registration.shopPhotoInstruction', currentLang, customTranslations)}`;
         
         const photoFromTelegramBotKeyboard = Markup.inlineKeyboard([
+          [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_photo')],
           [Markup.button.callback(getTranslation('registration.goBack', currentLang, customTranslations), 'go_back_telegram_bot')],
           [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
         ]);
@@ -1922,6 +1923,7 @@ const askPhoto = async (ctx) => {
     `${getTranslation('registration.shopPhotoInstruction', currentLang, customTranslations)}`;
   
   const keyboard = Markup.inlineKeyboard([
+    [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_photo')],
     [Markup.button.callback(getTranslation('registration.goBack', currentLang, customTranslations), 'go_back_telegram_bot')],
     [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
   ]);
@@ -2249,6 +2251,8 @@ const handleSkipStep = async (ctx, step) => {
           `${getTranslation('registration.shopPhotoInstruction', currentLang, customTranslations)}`;
         
         const photoKeyboard = Markup.inlineKeyboard([
+          [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_photo')],
+          [Markup.button.callback(getTranslation('registration.goBack', currentLang, customTranslations), 'go_back_telegram_bot')],
           [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
         ]);
         
@@ -2256,6 +2260,13 @@ const handleSkipStep = async (ctx, step) => {
           reply_markup: photoKeyboard.reply_markup,
           parse_mode: 'Markdown'
         });
+        break;
+
+      case 'photo':
+        userForm.step = 'working_countries';
+        userForms.set(userId, userForm);
+        console.log('➡️ Skip photo → working_countries');
+        await askWorkingCountries(ctx);
         break;
 
       case 'departments_delivery':
