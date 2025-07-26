@@ -59,11 +59,18 @@ export default function ShopHome() {
 
   const fetchPlugs = async () => {
     try {
-      console.log('🔍 Chargement boutiques...')
+      console.log('🔍 Chargement boutiques DIRECTEMENT depuis le bot...')
       setLoading(true)
       
-      // Utiliser l'API simple avec fallback automatique
-      const data = await api.getPublicPlugs({ limit: 50 })
+      // APPEL DIRECT au bot pour récupérer les VRAIES boutiques
+      const response = await fetch('https://jhhhhhhggre.onrender.com/api/public/plugs?limit=50', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      
+      const data = await response.json()
       
       if (data && data.plugs) {
         console.log('🎯 Boutiques récupérées:', data.plugs.length)

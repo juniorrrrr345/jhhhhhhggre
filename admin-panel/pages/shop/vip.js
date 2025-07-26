@@ -74,7 +74,16 @@ export default function ShopVIP() {
   const fetchPlugs = async () => {
     try {
       setLoading(true)
-      const data = await api.getPublicPlugs({ limit: 100 })
+      
+      // APPEL DIRECT au bot pour récupérer les VRAIES boutiques VIP
+      const response = await fetch('https://jhhhhhhggre.onrender.com/api/public/plugs?filter=vip&limit=100', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      
+      const data = await response.json()
 
       let plugsArray = []
       if (data && Array.isArray(data.plugs)) {

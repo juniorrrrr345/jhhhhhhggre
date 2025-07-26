@@ -41,6 +41,21 @@ export default function ShopSearch() {
     setCurrentLanguage(newLanguage)
   }
 
+  // Récupérer les pays disponibles dynamiquement depuis les boutiques
+  const getAvailableCountries = () => {
+    const countries = new Set()
+    allPlugs.forEach(plug => {
+      if (plug.countries && Array.isArray(plug.countries)) {
+        plug.countries.forEach(country => {
+          if (country && country.trim() !== '' && country.toLowerCase() !== 'autre') {
+            countries.add(country)
+          }
+        })
+      }
+    })
+    return Array.from(countries).sort()
+  }
+
   useEffect(() => {
     filterPlugs()
   }, [search, countryFilter, serviceFilter, vipFilter, allPlugs])
@@ -64,7 +79,15 @@ export default function ShopSearch() {
   const fetchPlugs = async () => {
     try {
       setLoading(true)
-      const data = await api.getPublicPlugs({ limit: 100 })
+      // APPEL DIRECT au bot pour récupérer les VRAIES boutiques
+      const response = await fetch('https://jhhhhhhggre.onrender.com/api/public/plugs?limit=100', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      
+      const data = await response.json()
 
       let plugsArray = []
       if (data && Array.isArray(data.plugs)) {
@@ -309,7 +332,7 @@ export default function ShopSearch() {
               }}
             >
               <option value="">🌍 {t('all_countries') || 'Tous pays'}</option>
-              {uniqueCountries.map(country => (
+              {getAvailableCountries().map(country => (
                 <option key={country} value={country}>{country}</option>
               ))}
             </select>
