@@ -406,6 +406,13 @@ const translations = {
       es: '❌ Proporciona un enlace válido que comience con https://. Inténtalo de nuevo:',
       de: '❌ Bitte geben Sie einen gültigen Link an, der mit https:// beginnt. Versuchen Sie es erneut:'
     },
+    'registration.error.telegramBotFormat': {
+      fr: '❌ Merci de fournir un bot Telegram valide (@username ou t.me/botname). Réessaie :',
+      en: '❌ Please provide a valid Telegram bot (@username or t.me/botname). Try again:',
+      it: '❌ Fornisci un bot Telegram valido (@username o t.me/botname). Riprova:',
+      es: '❌ Proporciona un bot de Telegram válido (@username o t.me/botname). Inténtalo de nuevo:',
+      de: '❌ Bitte geben Sie einen gültigen Telegram-Bot an (@username oder t.me/botname). Versuchen Sie es erneut:'
+    },
     'registration.error.general': {
       fr: '❌ Une erreur est survenue. Réessaie ou tape /start pour recommencer.',
       en: '❌ An error occurred. Try again or type /start to restart.',
@@ -581,11 +588,11 @@ const translations = {
       de: '🔐 Geben Sie Ihren Threema-Link ein (https://threema.id/ihre_id)'
     },
     'registration.telegramBotQuestion': {
-      fr: '🤖 As-tu un bot Telegram pour ta boutique ?',
-      en: '🤖 Do you have a Telegram bot for your shop?',
-      it: '🤖 Hai un bot Telegram per il tuo negozio?',
-      es: '🤖 ¿Tienes un bot de Telegram para tu tienda?',
-      de: '🤖 Haben Sie einen Telegram-Bot für Ihren Shop?'
+      fr: '🤖 Entrez votre bot Telegram (@username ou t.me/botname)',
+      en: '🤖 Enter your Telegram bot (@username or t.me/botname)',
+      it: '🤖 Inserisci il tuo bot Telegram (@username o t.me/botname)',
+      es: '🤖 Introduce tu bot de Telegram (@username o t.me/botname)',
+      de: '🤖 Geben Sie Ihren Telegram-Bot ein (@username oder t.me/botname)'
     },
     'registration.telegramBotExample': {
       fr: '(Ex: @monbotshop_bot ou lien du bot)',
