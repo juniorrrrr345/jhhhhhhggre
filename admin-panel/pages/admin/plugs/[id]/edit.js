@@ -4,6 +4,7 @@ import Head from 'next/head'
 import toast, { Toaster } from 'react-hot-toast'
 import { TrashIcon, PlusIcon, ArrowLeftIcon } from '@heroicons/react/24/outline'
 import { getRobustSync } from '../../../../lib/robust-sync'
+import postalCodeService from '../../../../lib/postalCodeService'
 
 // Fonction wrapper pour toast avec gestion d'erreur
 const safeToast = {
@@ -30,10 +31,10 @@ const safeToast = {
   }
 }
 
+// Utiliser les pays du service postal + quelques autres
 const countries = [
-  'France', 'Belgique', 'Suisse', 'Canada', 'Maroc', 'Tunisie', 'Algérie',
-  'Sénégal', 'Côte d\'Ivoire', 'Cameroun', 'Madagascar', 'Allemagne', 
-  'Espagne', 'Italie', 'Portugal', 'Royaume-Uni', 'États-Unis', 'Autre'
+  ...postalCodeService.getAvailableCountries(),
+  'Tunisie', 'Algérie', 'Sénégal', 'Côte d\'Ivoire', 'Cameroun', 'Madagascar', 'Autre'
 ]
 
 export default function EditPlug() {
@@ -48,15 +49,18 @@ export default function EditPlug() {
     services: {
       delivery: {
         enabled: false,
-        description: ''
+        description: '',
+        departments: []
       },
       postal: {
         enabled: false,
-        description: ''
+        description: '',
+        countries: []
       },
       meetup: {
         enabled: false,
-        description: ''
+        description: '',
+        departments: []
       }
     },
     socialMedia: []
@@ -65,8 +69,19 @@ export default function EditPlug() {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [originalData, setOriginalData] = useState(null)
+  const [selectedCountries, setSelectedCountries] = useState([])
   const router = useRouter()
   const { id } = router.query
+
+  // Obtenir les départements disponibles pour les pays sélectionnés
+  const getAvailableDepartments = () => {
+    const allDepartments = new Set()
+    selectedCountries.forEach(country => {
+      const departments = postalCodeService.getPostalCodes(country)
+      departments.forEach(dept => allDepartments.add(dept))
+    })
+    return Array.from(allDepartments).sort()
+  }
 
   useEffect(() => {
     let token = localStorage.getItem('adminToken')
@@ -158,15 +173,18 @@ export default function EditPlug() {
           services: {
             delivery: {
               enabled: data.services?.delivery?.enabled || false,
-              description: data.services?.delivery?.description || ''
+              description: data.services?.delivery?.description || '',
+              departments: data.services?.delivery?.departments || []
             },
             postal: {
               enabled: data.services?.postal?.enabled || false,
-              description: data.services?.postal?.description || ''
+              description: data.services?.postal?.description || '',
+              countries: data.services?.postal?.countries || []
             },
             meetup: {
               enabled: data.services?.meetup?.enabled || false,
-              description: data.services?.meetup?.description || ''
+              description: data.services?.meetup?.description || '',
+              departments: data.services?.meetup?.departments || []
             }
           },
           socialMedia: Array.isArray(data.socialMedia) ? data.socialMedia : []
@@ -174,6 +192,7 @@ export default function EditPlug() {
         
         setFormData(plugData)
         setOriginalData(plugData)
+        setSelectedCountries(plugData.countries || [])
         safeToast.success('Plug chargé avec succès')
       } else {
         console.error('❌ Impossible de charger le plug')
@@ -201,6 +220,35 @@ export default function EditPlug() {
       current[keys[keys.length - 1]] = value
       return newData
     })
+  }
+
+  const toggleCountry = (country) => {
+    const newCountries = formData.countries.includes(country)
+      ? formData.countries.filter(c => c !== country)
+      : [...formData.countries, country]
+    
+    updateFormData('countries', newCountries)
+    
+    // Mettre à jour les pays sélectionnés pour les départements
+    setSelectedCountries(newCountries)
+  }
+
+  const toggleDepartment = (service, department) => {
+    const currentDepartments = formData.services[service].departments || []
+    const newDepartments = currentDepartments.includes(department)
+      ? currentDepartments.filter(d => d !== department)
+      : [...currentDepartments, department]
+    
+    updateFormData(`services.${service}.departments`, newDepartments)
+  }
+
+  const togglePostalCountry = (country) => {
+    const currentCountries = formData.services.postal.countries || []
+    const newCountries = currentCountries.includes(country)
+      ? currentCountries.filter(c => c !== country)
+      : [...currentCountries, country]
+    
+    updateFormData('services.postal.countries', newCountries)
   }
 
   const savePlug = async () => {
@@ -575,16 +623,48 @@ export default function EditPlug() {
                     </label>
                   </div>
                   {formData.services.delivery.enabled && (
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Description du service de livraison
-                      </label>
-                      <textarea
-                        value={formData.services.delivery.description}
-                        onChange={(e) => updateFormData('services.delivery.description', e.target.value)}
-                        className="w-full border border-gray-300 rounded-lg p-3 h-20 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        placeholder="Ex: Livraison rapide en moins de 2h dans Paris, disponible 7j/7..."
-                      />
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Description du service de livraison
+                        </label>
+                        <textarea
+                          value={formData.services.delivery.description}
+                          onChange={(e) => updateFormData('services.delivery.description', e.target.value)}
+                          className="w-full border border-gray-300 rounded-lg p-3 h-20 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          placeholder="Ex: Livraison rapide en moins de 2h dans Paris, disponible 7j/7..."
+                        />
+                      </div>
+                      
+                      {/* Départements pour la livraison */}
+                      {selectedCountries.length > 0 && (
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            📍 Départements de livraison disponibles :
+                          </label>
+                          <div className="max-h-40 overflow-y-auto border border-gray-200 rounded-md p-3 bg-gray-50">
+                            <div className="grid grid-cols-4 gap-2">
+                              {getAvailableDepartments().map(department => (
+                                <button
+                                  key={department}
+                                  type="button"
+                                  onClick={() => toggleDepartment('delivery', department)}
+                                  className={`px-2 py-1 rounded text-xs font-medium border transition-colors ${
+                                    (formData.services.delivery.departments || []).includes(department)
+                                      ? 'bg-green-500 border-green-500 text-white'
+                                      : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'
+                                  }`}
+                                >
+                                  {department}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                          <p className="text-xs text-gray-500 mt-1">
+                            Sélectionnés: {(formData.services.delivery.departments || []).length} départements
+                          </p>
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
@@ -606,16 +686,46 @@ export default function EditPlug() {
                     </label>
                   </div>
                   {formData.services.postal.enabled && (
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Description du service d'envoi postal
-                      </label>
-                      <textarea
-                        value={formData.services.postal.description}
-                        onChange={(e) => updateFormData('services.postal.description', e.target.value)}
-                        className="w-full border border-gray-300 rounded-lg p-3 h-20 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        placeholder="Ex: Envoi postal sécurisé partout en Europe, suivi inclus..."
-                      />
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Description du service d'envoi postal
+                        </label>
+                        <textarea
+                          value={formData.services.postal.description}
+                          onChange={(e) => updateFormData('services.postal.description', e.target.value)}
+                          className="w-full border border-gray-300 rounded-lg p-3 h-20 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          placeholder="Ex: Envoi postal sécurisé partout en Europe, suivi inclus..."
+                        />
+                      </div>
+                      
+                      {/* Pays pour l'envoi postal */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          🌍 Pays d'envoi postal disponibles :
+                        </label>
+                        <div className="max-h-40 overflow-y-auto border border-gray-200 rounded-md p-3 bg-gray-50">
+                          <div className="grid grid-cols-3 gap-2">
+                            {countries.map(country => (
+                              <button
+                                key={country}
+                                type="button"
+                                onClick={() => togglePostalCountry(country)}
+                                className={`px-3 py-2 rounded text-sm font-medium border transition-colors ${
+                                  (formData.services.postal.countries || []).includes(country)
+                                    ? 'bg-blue-500 border-blue-500 text-white'
+                                    : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'
+                                }`}
+                              >
+                                🌍 {country}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                        <p className="text-xs text-gray-500 mt-1">
+                          Sélectionnés: {(formData.services.postal.countries || []).length} pays
+                        </p>
+                      </div>
                     </div>
                   )}
                 </div>
@@ -637,16 +747,48 @@ export default function EditPlug() {
                     </label>
                   </div>
                   {formData.services.meetup.enabled && (
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Description du service de meetup
-                      </label>
-                      <textarea
-                        value={formData.services.meetup.description}
-                        onChange={(e) => updateFormData('services.meetup.description', e.target.value)}
-                        className="w-full border border-gray-300 rounded-lg p-3 h-20 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        placeholder="Ex: Rencontre possible sur Paris 15ème, métro Vaugirard..."
-                      />
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Description du service de meetup
+                        </label>
+                        <textarea
+                          value={formData.services.meetup.description}
+                          onChange={(e) => updateFormData('services.meetup.description', e.target.value)}
+                          className="w-full border border-gray-300 rounded-lg p-3 h-20 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          placeholder="Ex: Rencontre possible sur Paris 15ème, métro Vaugirard..."
+                        />
+                      </div>
+                      
+                      {/* Départements pour les meetups */}
+                      {selectedCountries.length > 0 && (
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            📍 Départements de meetup disponibles :
+                          </label>
+                          <div className="max-h-40 overflow-y-auto border border-gray-200 rounded-md p-3 bg-gray-50">
+                            <div className="grid grid-cols-4 gap-2">
+                              {getAvailableDepartments().map(department => (
+                                <button
+                                  key={department}
+                                  type="button"
+                                  onClick={() => toggleDepartment('meetup', department)}
+                                  className={`px-2 py-1 rounded text-xs font-medium border transition-colors ${
+                                    (formData.services.meetup.departments || []).includes(department)
+                                      ? 'bg-purple-500 border-purple-500 text-white'
+                                      : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'
+                                  }`}
+                                >
+                                  {department}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                          <p className="text-xs text-gray-500 mt-1">
+                            Sélectionnés: {(formData.services.meetup.departments || []).length} départements
+                          </p>
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
