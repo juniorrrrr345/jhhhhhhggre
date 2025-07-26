@@ -3194,6 +3194,9 @@ const handleUserAnalytics = async (req, res) => {
       'location.country': { $exists: true, $ne: null, $ne: 'Unknown' }
     });
     
+    console.log(`🔍 DEBUG Analytics: totalUsers = ${totalUsers}, usersWithLocation = ${usersWithLocation}`);
+    console.log(`🔍 DEBUG userFilter:`, JSON.stringify(userFilter));
+    
     // Utiliser le service de géolocalisation pour les statistiques par pays
     const locationService = require('./src/services/locationService');
     const countryStats = await locationService.getCountryStats(User);
@@ -3243,6 +3246,7 @@ const handleUserAnalytics = async (req, res) => {
     };
     
     console.log(`✅ Stats générées: ${totalUsers} users, ${usersWithLocation} localisés, ${filteredCountryStats.length} pays`);
+    console.log(`🔍 DEBUG Réponse finale:`, JSON.stringify(response));
     
     res.json(response);
     
