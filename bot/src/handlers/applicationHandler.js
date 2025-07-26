@@ -22,9 +22,16 @@ const COUNTRIES = [
   { code: 'OTHER', name: 'Autre', flag: '🌍' }
 ];
 
-// Fonction utilitaire pour éditer les messages avec gestion robuste des erreurs
+// Fonction utilitaire pour éditer les messages avec gestion robuste des erreurs et désactivation des aperçus de liens
 const safeEditMessage = async (ctx, message, options = {}, keepWelcomeImage = false) => {
   const userId = ctx.from.id;
+  
+  // Ajouter disable_web_page_preview par défaut pour éviter les aperçus de liens
+  const enhancedOptions = {
+    ...options,
+    disable_web_page_preview: true
+  };
+  
   try {
     // Si on veut garder l'image d'accueil, on essaie plusieurs méthodes
     if (keepWelcomeImage) {
@@ -39,9 +46,9 @@ const safeEditMessage = async (ctx, message, options = {}, keepWelcomeImage = fa
             type: 'photo',
             media: welcomeImage,
             caption: message,
-            parse_mode: options.parse_mode || 'Markdown'
+            parse_mode: enhancedOptions.parse_mode || 'Markdown'
           }, {
-            reply_markup: options.reply_markup
+            reply_markup: enhancedOptions.reply_markup
           });
           return;
         } catch (mediaError) {
@@ -50,8 +57,8 @@ const safeEditMessage = async (ctx, message, options = {}, keepWelcomeImage = fa
           // Fallback 1: Essayer d'éditer la caption seulement
           try {
             await ctx.editMessageCaption(message, {
-              parse_mode: options.parse_mode || 'Markdown',
-              reply_markup: options.reply_markup
+              parse_mode: enhancedOptions.parse_mode || 'Markdown',
+              reply_markup: enhancedOptions.reply_markup
             });
             return;
           } catch (captionError) {
@@ -63,7 +70,7 @@ const safeEditMessage = async (ctx, message, options = {}, keepWelcomeImage = fa
     
     // Essayer l'édition de texte normale
     try {
-      await ctx.editMessageText(message, options);
+      await ctx.editMessageText(message, enhancedOptions);
     } catch (textError) {
       console.log('⚠️ editMessageText échoué:', textError.message);
       
@@ -83,16 +90,16 @@ const safeEditMessage = async (ctx, message, options = {}, keepWelcomeImage = fa
         if (welcomeImage) {
           const sentMessage = await ctx.replyWithPhoto(welcomeImage, {
             caption: message,
-            parse_mode: options.parse_mode || 'Markdown',
-            reply_markup: options.reply_markup
+            parse_mode: enhancedOptions.parse_mode || 'Markdown',
+            reply_markup: enhancedOptions.reply_markup
           });
           lastBotMessages.set(userId, sentMessage.message_id);
         } else {
-          const sentMessage = await ctx.reply(message, options);
+          const sentMessage = await ctx.reply(message, enhancedOptions);
           lastBotMessages.set(userId, sentMessage.message_id);
         }
       } else {
-        const sentMessage = await ctx.reply(message, options);
+        const sentMessage = await ctx.reply(message, enhancedOptions);
         lastBotMessages.set(userId, sentMessage.message_id);
       }
     }
@@ -102,7 +109,8 @@ const safeEditMessage = async (ctx, message, options = {}, keepWelcomeImage = fa
     // Dernier fallback: envoyer le message original sans formatage
     try {
       const sentMessage = await ctx.reply(message, {
-        reply_markup: options.reply_markup
+        reply_markup: enhancedOptions.reply_markup,
+        disable_web_page_preview: true
       });
       lastBotMessages.set(userId, sentMessage.message_id);
     } catch (finalError) {
@@ -187,6 +195,20 @@ const handleStartApplication = async (ctx) => {
   }
 };
 
+// Fonction utilitaire pour supprimer l'ancien message du bot
+const deleteLastBotMessage = async (ctx, userId) => {
+  const lastBotMessageId = lastBotMessages.get(userId);
+  if (lastBotMessageId) {
+    try {
+      await ctx.telegram.deleteMessage(ctx.chat.id, lastBotMessageId);
+      lastBotMessages.delete(userId); // Nettoyer la référence
+    } catch (error) {
+      // Ignorer l'erreur si le message ne peut pas être supprimé
+      console.log('⚠️ Impossible de supprimer l\'ancien message bot:', error.message);
+    }
+  }
+};
+
 // Gestionnaire pour les messages texte du formulaire
 const handleFormMessage = async (ctx) => {
   const userId = ctx.from.id;
@@ -204,6 +226,9 @@ const handleFormMessage = async (ctx) => {
   } catch (error) {
     // Ignorer l'erreur si on ne peut pas supprimer
   }
+  
+  // Supprimer l'ancien message du bot avant d'afficher la prochaine question
+  await deleteLastBotMessage(ctx, userId);
   
   // Récupérer la langue pour les erreurs (en dehors du switch)
   const Config = require('../models/Config');
@@ -395,6 +420,8 @@ const handleFormMessage = async (ctx) => {
 
 // Demander Telegram
 const askTelegram = async (ctx) => {
+  const userId = ctx.from.id;
+  
   const message = `🛠️ **FORMULAIRE D'INSCRIPTION – FindYourPlug**\n\n` +
     `⸻\n\n` +
     `🟦 **Étape 2 : Lien Telegram**\n\n` +
@@ -404,10 +431,14 @@ const askTelegram = async (ctx) => {
     [Markup.button.callback('❌ Annuler', 'cancel_application')]
   ]);
   
-  await safeEditMessage(ctx, message, {
+  const sentMessage = await ctx.reply(message, {
     reply_markup: keyboard.reply_markup,
-    parse_mode: 'Markdown'
+    parse_mode: 'Markdown',
+    disable_web_page_preview: true
   });
+  
+  // Sauvegarder l'ID du message pour suppression ultérieure
+  lastBotMessages.set(userId, sentMessage.message_id);
 };
 
 // Fonction pour générer le récapitulatif des réponses
@@ -613,7 +644,8 @@ const replyWithStep = async (ctx, step) => {
   if (message) {
     const sentMessage = await ctx.reply(message, {
       reply_markup: keyboard ? keyboard.reply_markup : undefined,
-      parse_mode: 'Markdown'
+      parse_mode: 'Markdown',
+      disable_web_page_preview: true
     });
     
     // Sauvegarder l'ID du message pour le supprimer à la prochaine étape
@@ -669,6 +701,7 @@ const askInstagram = async (ctx) => {
 
 // Demander Potato
 const askPotato = async (ctx) => {
+  const userId = ctx.from.id;
   const Config = require('../models/Config');
   const config = await Config.findById('main');
   const currentLang = config?.languages?.currentLanguage || 'fr';
@@ -685,14 +718,18 @@ const askPotato = async (ctx) => {
     [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
   ]);
   
-  await safeEditMessage(ctx, message, {
+  const sentMessage = await ctx.reply(message, {
     reply_markup: keyboard.reply_markup,
-    parse_mode: 'Markdown'
+    parse_mode: 'Markdown',
+    disable_web_page_preview: true
   });
+  
+  lastBotMessages.set(userId, sentMessage.message_id);
 };
 
 // Demander Snapchat
 const askSnapchat = async (ctx) => {
+  const userId = ctx.from.id;
   const Config = require('../models/Config');
   const config = await Config.findById('main');
   const currentLang = config?.languages?.currentLanguage || 'fr';
@@ -709,16 +746,20 @@ const askSnapchat = async (ctx) => {
     [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
   ]);
   
-  await safeEditMessage(ctx, message, {
+  const sentMessage = await ctx.reply(message, {
     reply_markup: keyboard.reply_markup,
-    parse_mode: 'Markdown'
+    parse_mode: 'Markdown',
+    disable_web_page_preview: true
   });
+  
+  lastBotMessages.set(userId, sentMessage.message_id);
 };
 
 // Demander WhatsApp
 const askWhatsApp = async (ctx) => {
   try {
-    console.log(`🔄 askWhatsApp: STARTING for user ${ctx.from.id}`);
+    const userId = ctx.from.id;
+    console.log(`🔄 askWhatsApp: STARTING for user ${userId}`);
     
     const Config = require('../models/Config');
     const config = await Config.findById('main');
@@ -740,11 +781,13 @@ const askWhatsApp = async (ctx) => {
     
     console.log(`⌨️ askWhatsApp: Keyboard created`);
     
-    await safeEditMessage(ctx, message, {
+    const sentMessage = await ctx.reply(message, {
       reply_markup: keyboard.reply_markup,
-      parse_mode: 'Markdown'
+      parse_mode: 'Markdown',
+      disable_web_page_preview: true
     });
     
+    lastBotMessages.set(userId, sentMessage.message_id);
     console.log(`✅ askWhatsApp: Message sent successfully`);
   } catch (error) {
     console.error(`❌ askWhatsApp ERROR:`, error);
@@ -754,6 +797,7 @@ const askWhatsApp = async (ctx) => {
 
 // Demander Signal
 const askSignal = async (ctx) => {
+  const userId = ctx.from.id;
   const Config = require('../models/Config');
   const config = await Config.findById('main');
   const currentLang = config?.languages?.currentLanguage || 'fr';
@@ -770,14 +814,18 @@ const askSignal = async (ctx) => {
     [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
   ]);
   
-  await safeEditMessage(ctx, message, {
+  const sentMessage = await ctx.reply(message, {
     reply_markup: keyboard.reply_markup,
-    parse_mode: 'Markdown'
+    parse_mode: 'Markdown',
+    disable_web_page_preview: true
   });
+  
+  lastBotMessages.set(userId, sentMessage.message_id);
 };
 
 // Demander Session
 const askSession = async (ctx) => {
+  const userId = ctx.from.id;
   const Config = require('../models/Config');
   const config = await Config.findById('main');
   const currentLang = config?.languages?.currentLanguage || 'fr';
@@ -794,14 +842,18 @@ const askSession = async (ctx) => {
     [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
   ]);
   
-  await safeEditMessage(ctx, message, {
+  const sentMessage = await ctx.reply(message, {
     reply_markup: keyboard.reply_markup,
-    parse_mode: 'Markdown'
+    parse_mode: 'Markdown',
+    disable_web_page_preview: true
   });
+  
+  lastBotMessages.set(userId, sentMessage.message_id);
 };
 
 // Demander Threema
 const askThreema = async (ctx) => {
+  const userId = ctx.from.id;
   const Config = require('../models/Config');
   const config = await Config.findById('main');
   const currentLang = config?.languages?.currentLanguage || 'fr';
@@ -818,14 +870,18 @@ const askThreema = async (ctx) => {
     [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
   ]);
   
-  await safeEditMessage(ctx, message, {
+  const sentMessage = await ctx.reply(message, {
     reply_markup: keyboard.reply_markup,
-    parse_mode: 'Markdown'
+    parse_mode: 'Markdown',
+    disable_web_page_preview: true
   });
+  
+  lastBotMessages.set(userId, sentMessage.message_id);
 };
 
 // Demander Bot Telegram
 const askTelegramBot = async (ctx) => {
+  const userId = ctx.from.id;
   const Config = require('../models/Config');
   const config = await Config.findById('main');
   const currentLang = config?.languages?.currentLanguage || 'fr';
@@ -843,10 +899,13 @@ const askTelegramBot = async (ctx) => {
     [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
   ]);
   
-  await safeEditMessage(ctx, message, {
+  const sentMessage = await ctx.reply(message, {
     reply_markup: keyboard.reply_markup,
-    parse_mode: 'Markdown'
+    parse_mode: 'Markdown',
+    disable_web_page_preview: true
   });
+  
+  lastBotMessages.set(userId, sentMessage.message_id);
 };
 
 // Demander le pays avec boutons
@@ -1064,6 +1123,7 @@ const handleServicesDone = async (ctx) => {
 
 // Demander la photo
 const askPhoto = async (ctx) => {
+  const userId = ctx.from.id;
   const Config = require('../models/Config');
   const config = await Config.findById('main');
   const currentLang = config?.languages?.currentLanguage || 'fr';
@@ -1079,10 +1139,13 @@ const askPhoto = async (ctx) => {
     [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
   ]);
   
-  await safeEditMessage(ctx, message, {
+  const sentMessage = await ctx.reply(message, {
     reply_markup: keyboard.reply_markup,
-    parse_mode: 'Markdown'
+    parse_mode: 'Markdown',
+    disable_web_page_preview: true
   });
+  
+  lastBotMessages.set(userId, sentMessage.message_id);
 };
 
 
