@@ -40,12 +40,11 @@ const handleTopPlugs = async (ctx) => {
     
     console.log(`🔝 Top Plugs affiché en langue: ${currentLang}`);
     
-    // Récupérer tous les plugs actifs triés par votes
-    const allPlugs = await Plug.find({ isActive: true })
-      .sort({ likes: -1, createdAt: -1 });
+    // Récupérer les boutiques selon la langue actuelle
+    const allPlugs = await getPlugsByLanguage({}, currentLang);
 
-    // Récupérer les pays disponibles dynamiquement
-    const availableCountries = await getAvailableCountries();
+    // Récupérer les pays disponibles traduits selon la langue
+    const availableCountries = await getAvailableCountries(currentLang);
     
     // Message d'affichage initial avec traduction
     const topPlugsTitle = getTranslation('menu_topPlugs', currentLang, customTranslations);
@@ -907,19 +906,119 @@ const handleResetFilters = async (ctx) => {
 
 // === FONCTIONS UTILITAIRES ===
 
-// Fonction pour récupérer les pays disponibles dynamiquement
-const getAvailableCountries = async () => {
+// 🌍 MAPPING DES PAYS PAR LANGUE
+const getCountryNameByLanguage = (countryKey, lang) => {
+  const countryMapping = {
+    'france': {
+      fr: 'France', en: 'France', it: 'Francia', es: 'Francia', de: 'Frankreich'
+    },
+    'belgique': {
+      fr: 'Belgique', en: 'Belgium', it: 'Belgio', es: 'Bélgica', de: 'Belgien'
+    },
+    'suisse': {
+      fr: 'Suisse', en: 'Switzerland', it: 'Svizzera', es: 'Suiza', de: 'Schweiz'
+    },
+    'allemagne': {
+      fr: 'Allemagne', en: 'Germany', it: 'Germania', es: 'Alemania', de: 'Deutschland'
+    },
+    'italie': {
+      fr: 'Italie', en: 'Italy', it: 'Italia', es: 'Italia', de: 'Italien'
+    },
+    'espagne': {
+      fr: 'Espagne', en: 'Spain', it: 'Spagna', es: 'España', de: 'Spanien'
+    },
+    'pays-bas': {
+      fr: 'Pays-Bas', en: 'Netherlands', it: 'Paesi Bassi', es: 'Países Bajos', de: 'Niederlande'
+    },
+    'luxembourg': {
+      fr: 'Luxembourg', en: 'Luxembourg', it: 'Lussemburgo', es: 'Luxemburgo', de: 'Luxemburg'
+    },
+    'portugal': {
+      fr: 'Portugal', en: 'Portugal', it: 'Portogallo', es: 'Portugal', de: 'Portugal'
+    },
+    'royaume-uni': {
+      fr: 'Royaume-Uni', en: 'United Kingdom', it: 'Regno Unito', es: 'Reino Unido', de: 'Vereinigtes Königreich'
+    },
+    'canada': {
+      fr: 'Canada', en: 'Canada', it: 'Canada', es: 'Canadá', de: 'Kanada'
+    },
+    'maroc': {
+      fr: 'Maroc', en: 'Morocco', it: 'Marocco', es: 'Marruecos', de: 'Marokko'
+    }
+  };
+
+  const key = countryKey.toLowerCase().trim();
+  return countryMapping[key]?.[lang] || countryKey;
+};
+
+// 🔍 FILTRER LES BOUTIQUES SELON LA LANGUE ACTUELLE
+const getPlugsByLanguage = async (filters = {}, lang = 'fr') => {
+  try {
+    // Récupérer tous les plugs actifs
+    const baseQuery = { isActive: true, ...filters };
+    let plugs = await Plug.find(baseQuery).sort({ likes: -1, createdAt: -1 });
+    
+    // Si français, retourner tout (langue de référence)
+    if (lang === 'fr') {
+      return plugs;
+    }
+    
+    // Pour autres langues, filtrer par pays traduits
+    const availableCountriesInFrench = await Plug.distinct('countries', { isActive: true });
+    const countriesForLang = [];
+    
+    // Mapper les pays français vers la langue cible
+    availableCountriesInFrench.forEach(frenchCountry => {
+      const translatedCountry = getCountryNameByLanguage(frenchCountry.toLowerCase(), lang);
+      if (translatedCountry !== frenchCountry) {
+        countriesForLang.push(frenchCountry); // Garder les pays qui ont une traduction
+      }
+    });
+    
+    // Filtrer les plugs qui ont des pays traduits dans la langue cible
+    if (countriesForLang.length > 0) {
+      plugs = plugs.filter(plug => 
+        plug.countries.some(country => 
+          countriesForLang.includes(country)
+        )
+      );
+    }
+    
+    console.log(`🌍 ${plugs.length} boutiques trouvées pour langue ${lang}`);
+    return plugs;
+    
+  } catch (error) {
+    console.error('Erreur récupération plugs par langue:', error);
+    return [];
+  }
+};
+
+// Fonction pour récupérer les pays disponibles dynamiquement selon la langue
+const getAvailableCountries = async (lang = 'fr') => {
   try {
     const countries = await Plug.distinct('countries', { isActive: true });
-    return countries.filter(country => 
+    const filteredCountries = countries.filter(country => 
       country && 
       country.trim() !== '' && 
       country.toLowerCase() !== 'autre' &&
       country.toLowerCase() !== 'other'
     );
+    
+    // Traduire les noms de pays selon la langue
+    return filteredCountries.map(country => ({
+      original: country,
+      translated: getCountryNameByLanguage(country, lang),
+      flag: getCountryFlag(country)
+    }));
+    
   } catch (error) {
     console.error('Erreur récupération pays:', error);
-    return ['France', 'Belgique', 'Suisse', 'Italie']; // Fallback
+    return [
+      { original: 'France', translated: getCountryNameByLanguage('france', lang), flag: '🇫🇷' },
+      { original: 'Belgique', translated: getCountryNameByLanguage('belgique', lang), flag: '🇧🇪' },
+      { original: 'Suisse', translated: getCountryNameByLanguage('suisse', lang), flag: '🇨🇭' },
+      { original: 'Italie', translated: getCountryNameByLanguage('italie', lang), flag: '🇮🇹' }
+    ];
   }
 };
 
@@ -999,9 +1098,12 @@ const createTopPlugsKeyboard = (config, countries, selectedCountry, selectedServ
   const currentLang = config?.languages?.currentLanguage || 'fr';
   const customTranslations = config?.languages?.translations;
   
-  // Première ligne : Pays (affichage intelligent)
+  // Première ligne : Pays (affichage intelligent avec traduction)
   if (countries.length > 0) {
     const countryButtons = [];
+    
+    // Support des deux formats : tableau d'objets (nouveau) ou tableau de strings (ancien)
+    const countryList = countries[0]?.original ? countries : countries.map(c => ({ original: c, translated: c, flag: getCountryFlag(c) }));
     
     // Prioriser certains pays importants et limiter l'affichage
     const priorityCountries = ['France', 'Espagne', 'Suisse', 'Italie', 'Maroc', 'Belgique'];
@@ -1009,24 +1111,25 @@ const createTopPlugsKeyboard = (config, countries, selectedCountry, selectedServ
     
     // Ajouter les pays prioritaires s'ils existent
     priorityCountries.forEach(priority => {
-      if (countries.includes(priority)) {
-        displayCountries.push(priority);
+      const found = countryList.find(c => c.original === priority);
+      if (found) {
+        displayCountries.push(found);
       }
     });
     
     // Ajouter les autres pays jusqu'à maximum 8 pays
-    countries.forEach(country => {
-      if (!displayCountries.includes(country) && displayCountries.length < 8) {
-        displayCountries.push(country);
+    countryList.forEach(countryObj => {
+      if (!displayCountries.find(c => c.original === countryObj.original) && displayCountries.length < 8) {
+        displayCountries.push(countryObj);
       }
     });
     
-    // Créer les boutons
-    displayCountries.forEach(country => {
-      const flag = getCountryFlag(country);
-      const isSelected = selectedCountry === country;
+    // Créer les boutons avec noms traduits
+    displayCountries.forEach(countryObj => {
+      const flag = countryObj.flag || getCountryFlag(countryObj.original);
+      const isSelected = selectedCountry === countryObj.original;
       const buttonText = isSelected ? `✅ ${flag}` : flag;
-      countryButtons.push(Markup.button.callback(buttonText, `top_country_${country}`));
+      countryButtons.push(Markup.button.callback(buttonText, `top_country_${countryObj.original}`));
     });
     
     // Grouper par 4 boutons par ligne
@@ -1135,8 +1238,12 @@ const handleVipPlugs = async (ctx, page = 0) => {
     
     // Toujours récupérer la config fraîche
     const config = await Config.findById('main');
-    const vipPlugs = await Plug.find({ isActive: true, isVip: true })
-      .sort({ likes: -1, vipOrder: 1, createdAt: -1 });
+    const currentLang = config?.languages?.currentLanguage || 'fr';
+    
+    console.log(`👑 VIP Plugs affiché en langue: ${currentLang}`);
+    
+    // Récupérer les boutiques VIP selon la langue actuelle
+    const vipPlugs = await getPlugsByLanguage({ isVip: true }, currentLang);
 
     if (vipPlugs.length === 0) {
       const backButtonText = config?.botTexts?.backButtonText || '🔙 Retour';
