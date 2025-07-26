@@ -1498,10 +1498,7 @@ const askWorkingCountries = async (ctx) => {
 
   const keyboard = Markup.inlineKeyboard([...countryButtons, ...actionButtons]);
   
-  await safeEditMessage(ctx, message, {
-    reply_markup: keyboard.reply_markup,
-    parse_mode: 'Markdown'
-  });
+  await editLastFormMessage(ctx, userId, message, keyboard);
 };
 
 // Demander les services - NOUVEAU FLUX avec sélection multiple
