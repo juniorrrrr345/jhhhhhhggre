@@ -1340,17 +1340,17 @@ const askConfirmation = async (ctx) => {
     `⸻\n\n` +
     `${getTranslation('registration.step11', currentLang, customTranslations)}\n\n` +
     `${getTranslation('registration.finalSummary', currentLang, customTranslations)}\n\n` +
-    `• **${getTranslation('registration.plugName', currentLang, customTranslations)}** : ${userForm.data.name}\n` +
-    `• **Telegram** : ${userForm.data.telegram}\n` +
-    `${userForm.data.snapchat ? `• **Snapchat** : ${userForm.data.snapchat}\n` : ''}` +
-    `${userForm.data.potato ? `• **Potato** : ${userForm.data.potato}\n` : ''}` +
-    `${userForm.data.signal ? `• **Signal** : ${userForm.data.signal}\n` : ''}` +
-    `${userForm.data.whatsapp ? `• **WhatsApp** : ${userForm.data.whatsapp}\n` : ''}` +
-    `${userForm.data.threema ? `• **Threema** : ${userForm.data.threema}\n` : ''}` +
-    `${userForm.data.session ? `• **Session** : ${userForm.data.session}\n` : ''}` +
-    `${userForm.data.instagram ? `• **Instagram** : ${userForm.data.instagram}\n` : ''}` +
-    `${userForm.data.telegramBot ? `• **Bot Telegram** : ${userForm.data.telegramBot}\n` : ''}` +
-    `• ${getTranslation('registration.photoReceived', currentLang, customTranslations)}\n\n` +
+    `• ${getTranslation('registration.plugName', currentLang, customTranslations)} : ${userForm.data.name}\n` +
+    `• Telegram : ${userForm.data.telegram}\n` +
+    `${userForm.data.snapchat ? `• Snapchat : ${userForm.data.snapchat}\n` : ''}` +
+    `${userForm.data.potato ? `• Potato : ${userForm.data.potato}\n` : ''}` +
+    `${userForm.data.signal ? `• Signal : ${userForm.data.signal}\n` : ''}` +
+    `${userForm.data.whatsapp ? `• WhatsApp : ${userForm.data.whatsapp}\n` : ''}` +
+    `${userForm.data.threema ? `• Threema : ${userForm.data.threema}\n` : ''}` +
+    `${userForm.data.session ? `• Session : ${userForm.data.session}\n` : ''}` +
+    `${userForm.data.instagram ? `• Instagram : ${userForm.data.instagram}\n` : ''}` +
+    `${userForm.data.telegramBot ? `• Bot Telegram : ${userForm.data.telegramBot}\n` : ''}` +
+    `• Photo de boutique : ✔️ Reçu\n\n` +
     `${getTranslation('registration.confirmInscription', currentLang, customTranslations)}`;
   
   const keyboard = Markup.inlineKeyboard([
@@ -1361,8 +1361,8 @@ const askConfirmation = async (ctx) => {
   ]);
   
   await safeEditMessage(ctx, message, {
-    reply_markup: keyboard.reply_markup,
-    parse_mode: 'Markdown'
+    reply_markup: keyboard.reply_markup
+    // Pas de parse_mode pour éviter les erreurs de parsing d'entités
   });
 };
 
@@ -1656,19 +1656,16 @@ const submitApplication = async (ctx) => {
       return;
     }
     
-    // Convertir les services au nouveau format (array)
-    const servicesArray = [];
-    if (userForm.data.services.delivery?.enabled) servicesArray.push('delivery');
-    if (userForm.data.services.postal?.enabled) servicesArray.push('postal');
-    if (userForm.data.services.meetup?.enabled) servicesArray.push('meetup');
+    // Services par défaut (le formulaire actuel ne collecte pas cette info)
+    const servicesArray = ['delivery', 'meetup']; // Services par défaut
     
     console.log('📋 SUBMIT DEBUG: Creating application with data:', {
       userId: userForm.data.userId,
       name: userForm.data.name,
       services: servicesArray,
       location: {
-        country: userForm.data.country,
-        city: userForm.data.country || 'Non spécifiée'
+        country: userForm.data.country || 'France', // Pays par défaut
+        city: userForm.data.city || 'Non spécifiée'
       },
       contact: {
         telegram: userForm.data.telegram
@@ -1686,8 +1683,8 @@ const submitApplication = async (ctx) => {
       name: userForm.data.name,
       description: userForm.data.name + ' - Inscription FindYourPlug', // Description par défaut
       location: {
-        country: userForm.data.country,
-        city: userForm.data.country || 'Non spécifiée' // City par défaut
+        country: userForm.data.country || 'France', // Pays par défaut
+        city: userForm.data.city || 'Non spécifiée' // City par défaut
       },
       services: servicesArray, // Format array au lieu d'object
       contact: {
@@ -1716,9 +1713,7 @@ const submitApplication = async (ctx) => {
     if (!userForm.data.name) {
       throw new Error('Nom du plug manquant - requis');
     }
-    if (!userForm.data.country) {
-      throw new Error('Pays manquant - requis');
-    }
+    // Le pays n'est plus requis car on a une valeur par défaut
     
     console.log('✅ SUBMIT DEBUG: Tous les champs requis sont présents');
     await application.save();
