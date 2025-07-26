@@ -531,7 +531,7 @@ bot.action(/^search_dept_(.+)_(.+)$/, (ctx) => {
 });
 
 // Gestionnaire des services (distinguer formulaire vs filtres)
-bot.action(/^service_(delivery|postal|meetup)$/, async (ctx) => {
+bot.action(/^service_(delivery|postal|meetup|shipping)$/, async (ctx) => {
   const userId = ctx.from.id;
   const userForm = userForms.get(userId);
   

@@ -584,7 +584,10 @@ const handleFormMessage = async (ctx) => {
         // Validation: vérifier que seuls des chiffres et virgules sont utilisés
         const departmentPattern = /^[\d\s,]+$/;
         if (!departmentPattern.test(text)) {
-          return await ctx.reply(getTranslation('registration.error.departmentsNumbers', currentLang, customTranslations));
+          // Envoyer message d'erreur temporaire puis redemander
+          await ctx.reply(getTranslation('registration.error.departmentsNumbers', currentLang, customTranslations));
+          await askDepartmentsDelivery(ctx);
+          return;
         }
         
         userForm.data.departmentsDelivery = text;
@@ -592,15 +595,19 @@ const handleFormMessage = async (ctx) => {
         
         // Passer au service suivant selon ce qui est activé
         const services = userForm.data.services;
-        if (services.meetup.enabled) {
+        console.log('🔄 DELIVERY DONE: Services after delivery:', JSON.stringify(services));
+        if (services.meetup && services.meetup.enabled) {
+          console.log('➡️ Going to departments_meetup');
           userForm.step = 'departments_meetup';
           userForms.set(userId, userForm);
           await askDepartmentsMeetup(ctx);
-        } else if (services.shipping.enabled) {
+        } else if (services.shipping && services.shipping.enabled) {
+          console.log('➡️ Going to departments_shipping');
           userForm.step = 'departments_shipping';
           userForms.set(userId, userForm);
           await askDepartmentsShipping(ctx);
         } else {
+          console.log('➡️ Going to confirmation');
           userForm.step = 'confirmation';
           userForms.set(userId, userForm);
           await askConfirmation(ctx);
@@ -615,7 +622,10 @@ const handleFormMessage = async (ctx) => {
         // Validation: vérifier que seuls des chiffres et virgules sont utilisés
         const meetupDepartmentPattern = /^[\d\s,]+$/;
         if (!meetupDepartmentPattern.test(text)) {
-          return await ctx.reply(getTranslation('registration.error.departmentsNumbers', currentLang, customTranslations));
+          // Envoyer message d'erreur temporaire puis redemander
+          await ctx.reply(getTranslation('registration.error.departmentsNumbers', currentLang, customTranslations));
+          await askDepartmentsMeetup(ctx);
+          return;
         }
         
         userForm.data.departmentsMeetup = text;
@@ -623,11 +633,14 @@ const handleFormMessage = async (ctx) => {
         
         // Passer au service suivant selon ce qui est activé
         const servicesAfterMeetup = userForm.data.services;
-        if (servicesAfterMeetup.shipping.enabled) {
+        console.log('🔄 MEETUP DONE: Services after meetup:', JSON.stringify(servicesAfterMeetup));
+        if (servicesAfterMeetup.shipping && servicesAfterMeetup.shipping.enabled) {
+          console.log('➡️ Going to departments_shipping');
           userForm.step = 'departments_shipping';
           userForms.set(userId, userForm);
           await askDepartmentsShipping(ctx);
         } else {
+          console.log('➡️ Going to confirmation');
           userForm.step = 'confirmation';
           userForms.set(userId, userForm);
           await askConfirmation(ctx);
@@ -1275,9 +1288,7 @@ const askDepartmentsDelivery = async (ctx) => {
     [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
   ]);
   
-  await safeEditMessage(ctx, message, {
-    reply_markup: keyboard.reply_markup
-  });
+  await editLastFormMessage(ctx, ctx.from.id, message, keyboard);
 };
 
 // Demander les départements pour le meetup
@@ -1298,9 +1309,7 @@ const askDepartmentsMeetup = async (ctx) => {
     [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
   ]);
   
-  await safeEditMessage(ctx, message, {
-    reply_markup: keyboard.reply_markup
-  });
+  await editLastFormMessage(ctx, ctx.from.id, message, keyboard);
 };
 
 // Demander les pays pour l'envoi
@@ -1321,9 +1330,7 @@ const askDepartmentsShipping = async (ctx) => {
     [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
   ]);
   
-  await safeEditMessage(ctx, message, {
-    reply_markup: keyboard.reply_markup
-  });
+  await editLastFormMessage(ctx, ctx.from.id, message, keyboard);
 };
 
 // Gestionnaires pour les services
