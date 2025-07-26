@@ -280,6 +280,7 @@ const handleFormMessage = async (ctx) => {
     console.log(`🔄 FORM DEBUG: User ${userId} at step '${userForm.step}' with text: '${text}'`);
     console.log(`📊 FORM STATE BEFORE: ${JSON.stringify({step: userForm.step, services: userForm.data.services, messageId: ctx.message.message_id})}`);
     
+    console.log(`🎯 SWITCH: About to enter switch with step='${userForm.step}' for user ${userId}`);
     switch (userForm.step) {
               case 'name':
           
@@ -587,6 +588,7 @@ const handleFormMessage = async (ctx) => {
         break;
         
       case 'departments_delivery':
+        console.log(`🔵 ENTERING case 'departments_delivery' for user ${userId}`);
         if (text.length < 2) {
           return await ctx.reply(getTranslation('registration.error.departmentsLength', currentLang, customTranslations));
         }
@@ -625,6 +627,7 @@ const handleFormMessage = async (ctx) => {
         break;
 
       case 'departments_meetup':
+        console.log(`🟢 ENTERING case 'departments_meetup' for user ${userId}`);
         if (text.length < 2) {
           return await ctx.reply(getTranslation('registration.error.departmentsLength', currentLang, customTranslations));
         }
@@ -659,6 +662,7 @@ const handleFormMessage = async (ctx) => {
         break;
 
       case 'departments_shipping':
+        console.log(`🟡 ENTERING case 'departments_shipping' for user ${userId}`);
         if (text.length < 2) {
           return await ctx.reply(getTranslation('registration.error.departmentsLength', currentLang, customTranslations));
         }
