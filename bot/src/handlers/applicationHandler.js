@@ -696,7 +696,7 @@ const askPotato = async (ctx) => {
   await safeEditMessage(ctx, message, {
     reply_markup: keyboard.reply_markup,
     parse_mode: 'Markdown'
-  }, true);
+  });
 };
 
 // Demander Snapchat
@@ -744,7 +744,7 @@ const askWhatsApp = async (ctx) => {
   await safeEditMessage(ctx, message, {
     reply_markup: keyboard.reply_markup,
     parse_mode: 'Markdown'
-  }, true);
+  });
 };
 
 // Demander Signal
@@ -768,7 +768,7 @@ const askSignal = async (ctx) => {
   await safeEditMessage(ctx, message, {
     reply_markup: keyboard.reply_markup,
     parse_mode: 'Markdown'
-  }, true);
+  });
 };
 
 // Demander Session
@@ -792,7 +792,7 @@ const askSession = async (ctx) => {
   await safeEditMessage(ctx, message, {
     reply_markup: keyboard.reply_markup,
     parse_mode: 'Markdown'
-  }, true);
+  });
 };
 
 // Demander Threema
@@ -816,7 +816,7 @@ const askThreema = async (ctx) => {
   await safeEditMessage(ctx, message, {
     reply_markup: keyboard.reply_markup,
     parse_mode: 'Markdown'
-  }, true);
+  });
 };
 
 // Demander Bot Telegram
@@ -841,7 +841,7 @@ const askTelegramBot = async (ctx) => {
   await safeEditMessage(ctx, message, {
     reply_markup: keyboard.reply_markup,
     parse_mode: 'Markdown'
-  }, true);
+  });
 };
 
 // Demander le pays avec boutons
@@ -1080,28 +1080,6 @@ const askPhoto = async (ctx) => {
   }, true);
 };
 
-// Demander la photo de boutique
-const askShopPhoto = async (ctx) => {
-  const Config = require('../models/Config');
-  const config = await Config.findById('main');
-  const currentLang = config?.languages?.currentLanguage || 'fr';
-  const customTranslations = config?.languages?.translations;
-
-  const message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
-    `⸻\n\n` +
-    `${getTranslation('registration.step16', currentLang, customTranslations)}\n\n` +
-    `${getTranslation('registration.shopPhotoQuestion', currentLang, customTranslations)}\n\n` +
-    `${getTranslation('registration.shopPhotoInstruction', currentLang, customTranslations)}`;
-  
-  const keyboard = Markup.inlineKeyboard([
-    [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
-  ]);
-  
-  await safeEditMessage(ctx, message, {
-    reply_markup: keyboard.reply_markup,
-    parse_mode: 'Markdown'
-  }, true);
-};
 
 // Demander la confirmation
 const askConfirmation = async (ctx) => {
@@ -1122,8 +1100,7 @@ const askConfirmation = async (ctx) => {
     `${userForm.data.departmentsMeetup ? `• Meetup : ${userForm.data.departmentsMeetup}\n` : ''}` +
     `${userForm.data.departmentsDelivery ? `• Livraison : ${userForm.data.departmentsDelivery}\n` : ''}` +
     `${userForm.data.telegramBot ? `• Bot Telegram : ${userForm.data.telegramBot}\n` : ''}` +
-    `• Logo : ✔️ Reçu\n` +
-    `• Photo boutique : ✔️ Reçu\n\n` +
+    `• Photo de boutique : ✔️ Reçu\n\n` +
     `Confirmer l'inscription ?`;
   
   const keyboard = Markup.inlineKeyboard([
@@ -1136,7 +1113,7 @@ const askConfirmation = async (ctx) => {
   await safeEditMessage(ctx, message, {
     reply_markup: keyboard.reply_markup,
     parse_mode: 'Markdown'
-  }, true);
+  });
 };
 
 // Gestionnaire pour les photos
@@ -1509,7 +1486,6 @@ module.exports = {
   handleCancelApplication,
   submitApplication,
   askTelegramBot,
-  askShopPhoto,
   userForms,
   lastBotMessages
 };
