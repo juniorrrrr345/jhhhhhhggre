@@ -134,11 +134,11 @@ const createMainKeyboard = (config) => {
   buttons.push(secondRow);
 
       // Troisième ligne : Inscription seul
-  const becomeDealerText = getTranslation('menu_becomeDealer', currentLang, customTranslations);
+  const becomeDealerText = '📋 Inscription'; // FORCE LE TEXTE EXACT
   buttons.push([Markup.button.callback(becomeDealerText, 'start_application')]);
   
   // Quatrième ligne : Bouton Traduction seul en bas
-  const translationText = getTranslation('menu_translation', currentLang, customTranslations);
+  const translationText = '🗣️ Change language'; // FORCE LE TEXTE EXACT
   buttons.push([Markup.button.callback(translationText, 'select_language')]);
   
   // Réseaux sociaux personnalisés en bas du menu - PRIORITÉ socialMediaList
