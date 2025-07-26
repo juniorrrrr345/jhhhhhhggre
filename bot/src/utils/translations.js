@@ -543,49 +543,49 @@ const translations = {
       es: '🟦 Paso 9: Instagram',
       de: '🟦 Schritt 9: Instagram'
     },
-    'registration.step9Bot': {
+    'registration.step10Bot': {
       fr: '🟦 Étape 10 : Bot Telegram',
       en: '🟦 Step 10: Telegram Bot',
       it: '🟦 Fase 10: Bot Telegram',
       es: '🟦 Paso 10: Bot Telegram',
       de: '🟦 Schritt 10: Telegram Bot'
     },
-    'registration.step10': {
+    'registration.step11Photo': {
       fr: '🟦 Étape 11 : Logo de boutique',
       en: '🟦 Step 11: Shop logo',
       it: '🟦 Fase 11: Logo del negozio',
       es: '🟦 Paso 11: Logo de la tienda',
       de: '🟦 Schritt 11: Shop-Logo'
     },
-    'registration.step11Services': {
+    'registration.step12Services': {
       fr: '🟦 Étape 12 : Services',
       en: '🟦 Step 12: Services',
       it: '🟦 Fase 12: Servizi',
       es: '🟦 Paso 12: Servicios',
       de: '🟦 Schritt 12: Services'
     },
-    'registration.step12Delivery': {
+    'registration.step13Delivery': {
       fr: '🟦 Étape 13 : Départements Livraison',
       en: '🟦 Step 13: Delivery Departments',
       it: '🟦 Fase 13: Dipartimenti Consegna',
       es: '🟦 Paso 13: Departamentos Entrega',
       de: '🟦 Schritt 13: Lieferung Departements'
     },
-    'registration.step13Meetup': {
+    'registration.step14Meetup': {
       fr: '🟦 Étape 14 : Départements Meetup',
       en: '🟦 Step 14: Meetup Departments',
       it: '🟦 Fase 14: Dipartimenti Meetup',
       es: '🟦 Paso 14: Departamentos Meetup',
       de: '🟦 Schritt 14: Meetup Departements'
     },
-    'registration.step14Shipping': {
+    'registration.step15Shipping': {
       fr: '🟦 Étape 15 : Départements Envoi',
       en: '🟦 Step 15: Shipping Departments',
       it: '🟦 Fase 15: Dipartimenti Spedizione',
       es: '🟦 Paso 15: Departamentos Envío',
       de: '🟦 Schritt 15: Versand Departements'
     },
-    'registration.step15Confirmation': {
+    'registration.step16Confirmation': {
       fr: '🟦 Étape 16 : Confirmation',
       en: '🟦 Step 16: Confirmation',
       it: '🟦 Fase 16: Conferma',

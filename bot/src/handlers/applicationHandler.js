@@ -486,7 +486,7 @@ const handleFormMessage = async (ctx) => {
         // Éditer le message existant pour montrer l'étape suivante (ÉTAPE 10 = BOT TELEGRAM)
         const telegramBotFromInstagramMessage = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
           `⸻\n\n` +
-          `${getTranslation('registration.step9Bot', currentLang, customTranslations)}\n\n` +
+          `${getTranslation('registration.step10Bot', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.telegramBotQuestion', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.telegramBotExample', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
@@ -512,7 +512,7 @@ const handleFormMessage = async (ctx) => {
         // Éditer le message existant pour montrer l'étape suivante
         const photoFromTelegramBotMessage = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
           `⸻\n\n` +
-          `${getTranslation('registration.step10', currentLang, customTranslations)}\n\n` +
+          `${getTranslation('registration.step11Photo', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.shopPhotoQuestion', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.shopPhotoInstruction', currentLang, customTranslations)}`;
         
