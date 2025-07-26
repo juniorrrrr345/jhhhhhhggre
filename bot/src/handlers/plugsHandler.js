@@ -117,7 +117,6 @@ const handleTopCountryFilter = async (ctx, country) => {
       countries: { $in: [country] }
     }).sort({ likes: -1, createdAt: -1 });
 
-    const config = await Config.findById('main');
     const currentLang = config?.languages?.currentLanguage || 'fr';
     const customTranslations = config?.languages?.translations;
     const availableCountries = await getAvailableCountries(currentLang);
