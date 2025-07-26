@@ -74,22 +74,18 @@ const editMessageWithImage = async (ctx, message, keyboard, config, options = {}
   } catch (error) {
     console.error('❌ Erreur modification message avec image:', error);
     
-    // Fallback : envoyer un nouveau message
+    // Fallback : essayer d'éditer le texte seulement (sans créer nouveau message)
     try {
-      if (config?.welcome?.image || 'https://i.imgur.com/DD5OU6o.jpeg') {
-        await ctx.replyWithPhoto(config?.welcome?.image || 'https://i.imgur.com/DD5OU6o.jpeg', {
-          caption: message,
-          reply_markup: keyboard.reply_markup,
-          parse_mode: options.parse_mode || 'Markdown'
-        });
-      } else {
-        await ctx.reply(message, {
-          reply_markup: keyboard.reply_markup,
-          parse_mode: options.parse_mode || 'Markdown'
-        });
-      }
+      console.log('🔄 Fallback: tentative édition texte seulement');
+      await ctx.editMessageText(message, {
+        reply_markup: keyboard.reply_markup,
+        parse_mode: options.parse_mode || 'Markdown',
+        disable_web_page_preview: true
+      });
     } catch (fallbackError) {
-      console.error('❌ Erreur fallback:', fallbackError);
+      console.error('❌ Fallback échoué aussi:', fallbackError.message);
+      // Ne pas créer de nouveau message, juste logger l'erreur
+      console.log('⚠️ Impossible de modifier le message, aucune action prise pour éviter le spam');
     }
   }
 };
@@ -148,9 +144,25 @@ const sendWelcomeMessage = async (ctx, config) => {
   }
 };
 
+// Fonction utilitaire pour éditer un message sans jamais créer de nouveau message
+const safeEditMessage = async (ctx, message, options = {}) => {
+  try {
+    await ctx.editMessageText(message, {
+      parse_mode: options.parse_mode || 'Markdown',
+      reply_markup: options.reply_markup,
+      disable_web_page_preview: true
+    });
+  } catch (error) {
+    console.log('⚠️ Impossible d\'éditer le message:', error.message);
+    // Ne jamais créer de nouveau message pour éviter le spam
+    console.log('🔇 Aucun nouveau message créé pour éviter le spam');
+  }
+};
+
 module.exports = {
   sendMessageWithImage,
   editMessageWithImage,
+  safeEditMessage,
   sendPlugWithImage,
   sendWelcomeMessage
 };

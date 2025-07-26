@@ -8,7 +8,7 @@ const {
   createPlugsKeyboard,
   createPlugKeyboard
 } = require('../utils/keyboards');
-const { sendMessageWithImage, editMessageWithImage, sendPlugWithImage } = require('../utils/messageHelper');
+const { sendMessageWithImage, editMessageWithImage, sendPlugWithImage, safeEditMessage } = require('../utils/messageHelper');
 const { getTranslation, translateDescription } = require('../utils/translations');
 const postalCodeService = require('../services/postalCodeService');
 
@@ -238,18 +238,10 @@ const handleTopServiceFilter = async (ctx, serviceType, selectedCountry = null) 
     }
     
     // Éditer le message existant pour éviter le spam
-    try {
-      await ctx.editMessageText(message, {
-        parse_mode: 'Markdown',
-        reply_markup: keyboard.reply_markup || keyboard
-      });
-    } catch (editError) {
-      console.log('Erreur édition message, tentative avec reply:', editError.message);
-      await ctx.reply(message, {
-        parse_mode: 'Markdown',
-        reply_markup: keyboard.reply_markup || keyboard
-      });
-    }
+    await safeEditMessage(ctx, message, {
+      parse_mode: 'Markdown',
+      reply_markup: keyboard.reply_markup || keyboard
+    });
     
   } catch (error) {
     console.error('Erreur dans handleTopServiceFilter:', error);
@@ -386,18 +378,10 @@ const handlePostalCodeFilter = async (ctx, serviceType, selectedCountry = null, 
     message += `💡 *Cliquez sur un code postal pour voir les boutiques disponibles*`;
     
     // Éditer le message directement sans image pour les codes postaux
-    try {
-      await ctx.editMessageText(message, {
-        parse_mode: 'Markdown',
-        reply_markup: keyboard
-      });
-    } catch (editError) {
-      console.log('Erreur édition message, tentative avec reply:', editError.message);
-      await ctx.reply(message, {
-        parse_mode: 'Markdown',
-        reply_markup: keyboard
-      });
-    }
+    await safeEditMessage(ctx, message, {
+      parse_mode: 'Markdown',
+      reply_markup: keyboard
+    });
     
   } catch (error) {
     console.error('Erreur dans handlePostalCodeFilter:', error);
@@ -2425,18 +2409,10 @@ const handleCountryServiceShops = async (ctx, serviceType, country) => {
       };
       
       // Éditer le message existant
-      try {
-        await ctx.editMessageText(message, {
-          parse_mode: 'Markdown',
-          reply_markup: keyboard
-        });
-      } catch (editError) {
-        console.log('Erreur édition message, tentative avec reply:', editError.message);
-        await ctx.reply(message, {
-          parse_mode: 'Markdown',
-          reply_markup: keyboard
-        });
-      }
+      await safeEditMessage(ctx, message, {
+        parse_mode: 'Markdown',
+        reply_markup: keyboard
+      });
       return;
     }
     
@@ -2468,18 +2444,10 @@ const handleCountryServiceShops = async (ctx, serviceType, country) => {
     const keyboard = { inline_keyboard: shopButtons };
     
     // Éditer le message existant
-    try {
-      await ctx.editMessageText(message, {
-        parse_mode: 'Markdown',
-        reply_markup: keyboard
-      });
-    } catch (editError) {
-      console.log('Erreur édition message, tentative avec reply:', editError.message);
-      await ctx.reply(message, {
-        parse_mode: 'Markdown',
-        reply_markup: keyboard
-      });
-    }
+    await safeEditMessage(ctx, message, {
+      parse_mode: 'Markdown',
+      reply_markup: keyboard
+    });
     
   } catch (error) {
     console.error('Erreur dans handleCountryServiceShops:', error);
