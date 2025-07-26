@@ -652,6 +652,156 @@ bot.action('retry_departments_delivery', async (ctx) => {
   }
 });
 
+// Handlers pour la sélection des pays de meetup
+bot.action(/^meetup_country_(.+)$/, async (ctx) => {
+  try {
+    const country = ctx.match[1];
+    const userId = ctx.from.id;
+    const userForm = userForms.get(userId);
+    
+    if (!userForm || userForm.step !== 'countries_meetup') {
+      return await ctx.answerCbQuery('❌ Session expirée');
+    }
+
+    // Initialiser la liste des pays sélectionnés si elle n'existe pas
+    if (!userForm.selectedMeetupCountries) {
+      userForm.selectedMeetupCountries = [];
+    }
+
+    // Toggle du pays (ajouter/supprimer)
+    const index = userForm.selectedMeetupCountries.indexOf(country);
+    if (index > -1) {
+      // Supprimer le pays
+      userForm.selectedMeetupCountries.splice(index, 1);
+      await ctx.answerCbQuery(`❌ ${country} supprimé`);
+    } else {
+      // Ajouter le pays
+      userForm.selectedMeetupCountries.push(country);
+      await ctx.answerCbQuery(`✅ ${country} ajouté`);
+    }
+
+    userForms.set(userId, userForm);
+    
+    // Mettre à jour l'affichage
+    const { askCountriesMeetup } = require('./src/handlers/applicationHandler');
+    const departments = userForm.data.departmentsMeetup.split(', ');
+    await askCountriesMeetup(ctx, departments);
+    
+  } catch (error) {
+    console.error('Erreur sélection pays de meetup:', error);
+    await ctx.answerCbQuery('❌ Erreur lors de la sélection');
+  }
+});
+
+bot.action('confirm_meetup_countries', async (ctx) => {
+  try {
+    const userId = ctx.from.id;
+    const userForm = userForms.get(userId);
+    
+    if (!userForm || userForm.step !== 'countries_meetup') {
+      return await ctx.answerCbQuery('❌ Session expirée');
+    }
+
+    if (!userForm.selectedMeetupCountries || userForm.selectedMeetupCountries.length === 0) {
+      return await ctx.answerCbQuery('❌ Veuillez sélectionner au moins un pays');
+    }
+
+    // Fusionner les pays de livraison et meetup
+    const allCountries = [...(userForm.data.countries || []), ...userForm.selectedMeetupCountries];
+    userForm.data.countries = [...new Set(allCountries)]; // Supprimer les doublons
+    userForm.step = 'shipping_service';
+    userForms.set(userId, userForm);
+
+    await ctx.answerCbQuery('✅ Pays de meetup confirmés');
+    
+    // Passer à l'étape envoi postal
+    const { askShippingService } = require('./src/handlers/applicationHandler');
+    await askShippingService(ctx);
+    
+  } catch (error) {
+    console.error('Erreur confirmation pays de meetup:', error);
+    await ctx.answerCbQuery('❌ Erreur lors de la confirmation');
+  }
+});
+
+bot.action('retry_departments_meetup', async (ctx) => {
+  try {
+    const userId = ctx.from.id;
+    const userForm = userForms.get(userId);
+    
+    if (!userForm) {
+      return await ctx.answerCbQuery('❌ Session expirée');
+    }
+
+    // Retourner à la saisie des départements
+    userForm.step = 'departments_meetup';
+    userForm.selectedMeetupCountries = [];
+    userForms.set(userId, userForm);
+
+    await ctx.answerCbQuery('🔄 Retour à la saisie');
+    
+    const { askDepartmentsMeetup } = require('./src/handlers/applicationHandler');
+    await askDepartmentsMeetup(ctx);
+    
+  } catch (error) {
+    console.error('Erreur retour départements meetup:', error);
+    await ctx.answerCbQuery('❌ Erreur lors du retour');
+  }
+});
+
+// Handlers pour l'envoi postal (Oui/Non)
+bot.action('shipping_yes', async (ctx) => {
+  try {
+    const userId = ctx.from.id;
+    const userForm = userForms.get(userId);
+    
+    if (!userForm || userForm.step !== 'shipping_service') {
+      return await ctx.answerCbQuery('❌ Session expirée');
+    }
+
+    // Sauvegarder que l'utilisateur fait de l'envoi postal
+    userForm.data.hasShipping = true;
+    userForm.step = 'confirmation';
+    userForms.set(userId, userForm);
+
+    await ctx.answerCbQuery('✅ Envoi postal activé');
+    
+    // Passer à la confirmation finale
+    const { askConfirmation } = require('./src/handlers/applicationHandler');
+    await askConfirmation(ctx);
+    
+  } catch (error) {
+    console.error('Erreur confirmation envoi postal oui:', error);
+    await ctx.answerCbQuery('❌ Erreur lors de la confirmation');
+  }
+});
+
+bot.action('shipping_no', async (ctx) => {
+  try {
+    const userId = ctx.from.id;
+    const userForm = userForms.get(userId);
+    
+    if (!userForm || userForm.step !== 'shipping_service') {
+      return await ctx.answerCbQuery('❌ Session expirée');
+    }
+
+    // Sauvegarder que l'utilisateur ne fait pas d'envoi postal
+    userForm.data.hasShipping = false;
+    userForm.step = 'confirmation';
+    userForms.set(userId, userForm);
+
+    await ctx.answerCbQuery('❌ Envoi postal désactivé');
+    
+    // Passer à la confirmation finale
+    const { askConfirmation } = require('./src/handlers/applicationHandler');
+    await askConfirmation(ctx);
+    
+  } catch (error) {
+    console.error('Erreur confirmation envoi postal non:', error);
+    await ctx.answerCbQuery('❌ Erreur lors de la confirmation');
+  }
+});
+
 // Handlers pour les boutons "Retour"
 bot.action('go_back_name', handleGoBack);
 bot.action('go_back_telegram', handleGoBack);

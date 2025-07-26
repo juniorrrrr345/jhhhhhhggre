@@ -641,7 +641,7 @@ const handleFormMessage = async (ctx) => {
         }
         
         // Validation: vérifier que seuls des chiffres et virgules sont utilisés
-        const meetupDepartmentPattern = /^[\d\s,]+$/;
+        const meetupDepartmentPattern = /^[\d\s,A-Za-z]+$/;
         if (!meetupDepartmentPattern.test(text)) {
           // Envoyer message d'erreur temporaire puis redemander
           await ctx.reply(getTranslation('registration.error.departmentsNumbers', currentLang, customTranslations));
@@ -649,15 +649,15 @@ const handleFormMessage = async (ctx) => {
           return;
         }
         
-        userForm.data.departmentsMeetup = text;
+        // Parser les départements
+        const meetupDepartments = text.split(',').map(d => d.trim()).filter(d => d.length > 0);
+        userForm.data.departmentsMeetup = meetupDepartments.join(', ');
+        userForm.selectedMeetupCountries = []; // Réinitialiser les pays sélectionnés
+        userForm.step = 'countries_meetup'; // Nouvelle étape pour sélection pays
         userForms.set(userId, userForm);
         
-        // Toujours passer à shipping maintenant
-        console.log('✅ MEETUP DONE: Going to departments_shipping');
-        userForm.step = 'departments_shipping';
-        userForms.set(userId, userForm);
-        await askDepartmentsShipping(ctx);
-        console.log(`✅ MEETUP CASE FINISHED for user ${userId}`);
+        console.log('✅ MEETUP DEPARTMENTS: Going to countries_meetup');
+        await askCountriesMeetup(ctx, meetupDepartments);
         break;
 
       case 'departments_shipping':
@@ -1380,7 +1380,7 @@ const askCountriesDelivery = async (ctx, departments) => {
   await editLastFormMessage(ctx, ctx.from.id, message, keyboard);
 };
 
-// Demander les départements pour le meetup
+// Demander les départements pour le meetup (Étape 1: saisie départements)
 const askDepartmentsMeetup = async (ctx) => {
   const Config = require('../models/Config');
   const config = await Config.findById('main');
@@ -1402,43 +1402,45 @@ const askDepartmentsMeetup = async (ctx) => {
   await editLastFormMessage(ctx, ctx.from.id, message, keyboard);
 };
 
-// Demander les pays pour l'envoi avec boutons de sélection
-const askDepartmentsShipping = async (ctx) => {
+// Demander les pays pour le meetup (Étape 2: sélection pays basée sur départements)
+const askCountriesMeetup = async (ctx, departments) => {
   const Config = require('../models/Config');
   const config = await Config.findById('main');
   const currentLang = config?.languages?.currentLanguage || 'fr';
   const customTranslations = config?.languages?.translations;
 
+  const { getSuggestedCountries } = require('../utils/departmentCountryMapping');
   const userId = ctx.from.id;
   const userForm = userForms.get(userId);
   
-  // Récupérer les pays déjà sélectionnés
-  const selectedCountries = userForm?.selectedShippingCountries || [];
+  // Obtenir les pays suggérés basés sur les départements
+  const suggestedCountries = getSuggestedCountries(departments);
+  const selectedCountries = userForm?.selectedMeetupCountries || [];
 
   const message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
     `⸻\n\n` +
-    `${getTranslation('registration.step15Shipping', currentLang, customTranslations)}\n\n` +
-    `${getTranslation('registration.shippingCountriesQuestion', currentLang, customTranslations)}\n\n` +
-    `📍 Sélectionnez les pays où vous faites de l'envoi :\n\n` +
+    `🤝 Étape 14b : Pays de Meetup\n\n` +
+    `📦 Départements saisis : ${departments.join(', ')}\n\n` +
+    `🌍 Sélectionnez les PAYS où vous faites du meetup :\n\n` +
     (selectedCountries.length > 0 ? 
       `✅ Pays sélectionnés : ${selectedCountries.join(', ')}\n\n` : 
       `⚪ Aucun pays sélectionné\n\n`);
 
   // Créer les boutons de pays (2 par ligne)
   const countryButtons = [];
-  for (let i = 0; i < COUNTRIES.length; i += 2) {
+  for (let i = 0; i < suggestedCountries.length; i += 2) {
     const row = [];
     
-    const country1 = COUNTRIES[i];
-    const isSelected1 = selectedCountries.includes(country1.name);
-    const text1 = `${isSelected1 ? '✅' : '⚪'} ${country1.flag} ${country1.name}`;
-    row.push(Markup.button.callback(text1, `shipping_country_${country1.code}`));
+    const country1 = suggestedCountries[i];
+    const isSelected1 = selectedCountries.includes(country1);
+    const text1 = `${isSelected1 ? '✅' : '⚪'} ${country1}`;
+    row.push(Markup.button.callback(text1, `meetup_country_${country1}`));
     
-    if (i + 1 < COUNTRIES.length) {
-      const country2 = COUNTRIES[i + 1];
-      const isSelected2 = selectedCountries.includes(country2.name);
-      const text2 = `${isSelected2 ? '✅' : '⚪'} ${country2.flag} ${country2.name}`;
-      row.push(Markup.button.callback(text2, `shipping_country_${country2.code}`));
+    if (i + 1 < suggestedCountries.length) {
+      const country2 = suggestedCountries[i + 1];
+      const isSelected2 = selectedCountries.includes(country2);
+      const text2 = `${isSelected2 ? '✅' : '⚪'} ${country2}`;
+      row.push(Markup.button.callback(text2, `meetup_country_${country2}`));
     }
     
     countryButtons.push(row);
@@ -1448,16 +1450,40 @@ const askDepartmentsShipping = async (ctx) => {
   const actionButtons = [];
   
   if (selectedCountries.length > 0) {
-    actionButtons.push([Markup.button.callback('✅ Confirmer la sélection', 'confirm_shipping_countries')]);
+    actionButtons.push([Markup.button.callback('✅ Confirmer les pays', 'confirm_meetup_countries')]);
   }
   
   actionButtons.push(
-    [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_departments_shipping')],
-    [Markup.button.callback(getTranslation('registration.goBack', currentLang, customTranslations), 'go_back_departments_meetup')],
+    [Markup.button.callback('🔙 Retaper les départements', 'retry_departments_meetup')],
     [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
   );
 
   const keyboard = Markup.inlineKeyboard([...countryButtons, ...actionButtons]);
+  
+  await editLastFormMessage(ctx, ctx.from.id, message, keyboard);
+};
+
+// Demander si l'utilisateur fait de l'envoi postal (question Oui/Non simplifiée)
+const askShippingService = async (ctx) => {
+  const Config = require('../models/Config');
+  const config = await Config.findById('main');
+  const currentLang = config?.languages?.currentLanguage || 'fr';
+  const customTranslations = config?.languages?.translations;
+
+  const message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
+    `⸻\n\n` +
+    `📮 Étape 15 : Service Envoi Postal\n\n` +
+    `📦 Fais-tu de l'ENVOI POSTAL ?\n\n` +
+    `💡 L'envoi postal permet d'expédier tes produits par la poste vers tes clients.`;
+
+  const keyboard = Markup.inlineKeyboard([
+    [
+      Markup.button.callback('✅ Oui, je fais de l\'envoi postal', 'shipping_yes'),
+      Markup.button.callback('❌ Non, pas d\'envoi postal', 'shipping_no')
+    ],
+    [Markup.button.callback(getTranslation('registration.goBack', currentLang, customTranslations), 'go_back_countries_meetup')],
+    [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
+  ]);
   
   await editLastFormMessage(ctx, ctx.from.id, message, keyboard);
 };
@@ -2515,10 +2541,11 @@ module.exports = {
   handleCancelApplication,
   submitApplication,
   askTelegramBot,
-  askDepartmentsMeetup,
   askDepartmentsDelivery,
   askCountriesDelivery,
-  askDepartmentsShipping,
+  askDepartmentsMeetup,
+  askCountriesMeetup,
+  askShippingService,
   handleGoBack,
   userForms,
   lastBotMessages,
