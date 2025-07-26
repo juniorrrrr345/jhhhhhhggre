@@ -1391,55 +1391,187 @@ const handleSkipStep = async (ctx, step) => {
     
     console.log('📋 Current step avant skip:', userForm.step);
     
+    // Récupérer la langue actuelle
+    const Config = require('../models/Config');
+    const config = await Config.findById('main');
+    const currentLang = config?.languages?.currentLanguage || 'fr';
+    const customTranslations = config?.languages?.translations;
+
     // NOUVEL ORDRE : Nom → Telegram → Snapchat → Potato → Signal → WhatsApp → Threema → Session → Bot Telegram → Photo → Confirmation
     switch (step) {
       case 'telegram':
         userForm.step = 'snapchat';
         userForms.set(userId, userForm);
         console.log('➡️ Skip telegram → snapchat');
-        await askSnapchat(ctx);
+        
+        const snapchatMessage = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
+          `⸻\n\n` +
+          `${getTranslation('registration.step3', currentLang, customTranslations)}\n\n` +
+          `${getTranslation('registration.snapchatQuestion', currentLang, customTranslations)}\n\n` +
+          `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
+        
+        const snapchatKeyboard = Markup.inlineKeyboard([
+          [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_snapchat')],
+          [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
+        ]);
+        
+        await safeEditMessage(ctx, snapchatMessage, {
+          reply_markup: snapchatKeyboard.reply_markup,
+          parse_mode: 'Markdown'
+        });
         break;
+        
       case 'snapchat':
         userForm.step = 'potato';
         userForms.set(userId, userForm);
         console.log('➡️ Skip snapchat → potato');
-        await askPotato(ctx);
+        
+        const potatoMessage = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
+          `⸻\n\n` +
+          `${getTranslation('registration.step4', currentLang, customTranslations)}\n\n` +
+          `${getTranslation('registration.potatoQuestion', currentLang, customTranslations)}\n\n` +
+          `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
+        
+        const potatoKeyboard = Markup.inlineKeyboard([
+          [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_potato')],
+          [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
+        ]);
+        
+        await safeEditMessage(ctx, potatoMessage, {
+          reply_markup: potatoKeyboard.reply_markup,
+          parse_mode: 'Markdown'
+        });
         break;
+        
       case 'potato':
         userForm.step = 'signal';
         userForms.set(userId, userForm);
         console.log('➡️ Skip potato → signal');
-        await askSignal(ctx);
+        
+        const signalMessage = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
+          `⸻\n\n` +
+          `${getTranslation('registration.step5', currentLang, customTranslations)}\n\n` +
+          `${getTranslation('registration.signalQuestion', currentLang, customTranslations)}\n\n` +
+          `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
+        
+        const signalKeyboard = Markup.inlineKeyboard([
+          [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_signal')],
+          [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
+        ]);
+        
+        await safeEditMessage(ctx, signalMessage, {
+          reply_markup: signalKeyboard.reply_markup,
+          parse_mode: 'Markdown'
+        });
         break;
+        
       case 'signal':
         userForm.step = 'whatsapp';
         userForms.set(userId, userForm);
         console.log('➡️ Skip signal → whatsapp');
-        await askWhatsApp(ctx);
+        
+        const whatsappMessage = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
+          `⸻\n\n` +
+          `${getTranslation('registration.step6', currentLang, customTranslations)}\n\n` +
+          `${getTranslation('registration.whatsappQuestion', currentLang, customTranslations)}\n\n` +
+          `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
+        
+        const whatsappKeyboard = Markup.inlineKeyboard([
+          [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_whatsapp')],
+          [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
+        ]);
+        
+        await safeEditMessage(ctx, whatsappMessage, {
+          reply_markup: whatsappKeyboard.reply_markup,
+          parse_mode: 'Markdown'
+        });
         break;
+        
       case 'whatsapp':
         userForm.step = 'threema';
         userForms.set(userId, userForm);
         console.log('➡️ Skip whatsapp → threema');
-        await askThreema(ctx);
+        
+        const threemaMessage = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
+          `⸻\n\n` +
+          `${getTranslation('registration.step7', currentLang, customTranslations)}\n\n` +
+          `${getTranslation('registration.threemaQuestion', currentLang, customTranslations)}\n\n` +
+          `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
+        
+        const threemaKeyboard = Markup.inlineKeyboard([
+          [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_threema')],
+          [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
+        ]);
+        
+        await safeEditMessage(ctx, threemaMessage, {
+          reply_markup: threemaKeyboard.reply_markup,
+          parse_mode: 'Markdown'
+        });
         break;
+        
       case 'threema':
         userForm.step = 'session';
         userForms.set(userId, userForm);
         console.log('➡️ Skip threema → session');
-        await askSession(ctx);
+        
+        const sessionMessage = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
+          `⸻\n\n` +
+          `${getTranslation('registration.step8', currentLang, customTranslations)}\n\n` +
+          `${getTranslation('registration.sessionQuestion', currentLang, customTranslations)}\n\n` +
+          `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
+        
+        const sessionKeyboard = Markup.inlineKeyboard([
+          [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_session')],
+          [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
+        ]);
+        
+        await safeEditMessage(ctx, sessionMessage, {
+          reply_markup: sessionKeyboard.reply_markup,
+          parse_mode: 'Markdown'
+        });
         break;
       case 'session':
         userForm.step = 'telegram_bot';
         userForms.set(userId, userForm);
         console.log('➡️ Skip session → telegram_bot');
-        await askTelegramBot(ctx);
+        
+        const telegramBotMessage = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
+          `⸻\n\n` +
+          `${getTranslation('registration.step9', currentLang, customTranslations)}\n\n` +
+          `${getTranslation('registration.telegramBotQuestion', currentLang, customTranslations)}\n\n` +
+          `${getTranslation('registration.telegramBotExample', currentLang, customTranslations)}\n\n` +
+          `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
+        
+        const telegramBotKeyboard = Markup.inlineKeyboard([
+          [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_telegram_bot')],
+          [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
+        ]);
+        
+        await safeEditMessage(ctx, telegramBotMessage, {
+          reply_markup: telegramBotKeyboard.reply_markup,
+          parse_mode: 'Markdown'
+        });
         break;
+        
       case 'telegram_bot':
         userForm.step = 'photo';
         userForms.set(userId, userForm);
         console.log('➡️ Skip telegram_bot → photo');
-        await askPhoto(ctx);
+        
+        const photoMessage = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
+          `⸻\n\n` +
+          `${getTranslation('registration.step10', currentLang, customTranslations)}\n\n` +
+          `${getTranslation('registration.shopPhotoQuestion', currentLang, customTranslations)}\n\n` +
+          `${getTranslation('registration.shopPhotoInstruction', currentLang, customTranslations)}`;
+        
+        const photoKeyboard = Markup.inlineKeyboard([
+          [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
+        ]);
+        
+        await safeEditMessage(ctx, photoMessage, {
+          reply_markup: photoKeyboard.reply_markup,
+          parse_mode: 'Markdown'
+        });
         break;
       default:
         console.log('❌ Step non reconnu:', step);
