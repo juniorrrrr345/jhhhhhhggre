@@ -280,11 +280,11 @@ export default function UserAnalytics() {
                     <div className="flex items-center gap-3 mb-2 sm:mb-0">
                       <span className="text-2xl">{getCountryFlag(country.countryCode)}</span>
                       <div>
-                        <div className="font-semibold text-black bg-white rounded px-2 py-1 text-sm sm:text-base inline-block">
+                        <div className="font-semibold text-white bg-black rounded px-2 py-1 text-sm sm:text-base inline-block border border-white">
                           {country.country}
                         </div>
                         {country.latestUser && (
-                          <div className="text-xs text-gray-400">
+                          <div className="text-xs text-white">
                             Dernier: {formatDate(country.latestUser)}
                           </div>
                         )}
