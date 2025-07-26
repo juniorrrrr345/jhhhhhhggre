@@ -732,7 +732,16 @@ const handleFormMessage = async (ctx) => {
           // Ignorer l'erreur si on ne peut pas supprimer
         }
         
-        await askDeliveryPostalForCountry(ctx, deliveryCountryIndex + 1);
+        // Passer au pays suivant ou terminer
+        if (deliveryCountryIndex + 1 >= userForm.data.workingCountries.length) {
+          // Tous les pays traités pour Livraison, retourner à la sélection des services
+          userForm.step = 'service_selection';
+          userForms.set(userId, userForm);
+          await askServices(ctx);
+        } else {
+          // Pays suivant
+          await askDeliveryPostalForCountry(ctx, deliveryCountryIndex + 1);
+        }
         break;
     }
     
@@ -3072,7 +3081,7 @@ const showFinalConfirmation = async (ctx) => {
       serviceDetails += '🤝 **Service Meet Up :**\n';
       if (userForm.data.meetupPostalCodes) {
         Object.entries(userForm.data.meetupPostalCodes).forEach(([country, code]) => {
-          serviceDetails += `  • ${country}: ${code}\n`;
+          serviceDetails += `  📍 ${country}: Département ${code}\n`;
         });
       }
       serviceDetails += '\n';
@@ -3080,7 +3089,7 @@ const showFinalConfirmation = async (ctx) => {
       serviceDetails += '🚚 **Service Livraison :**\n';
       if (userForm.data.deliveryPostalCodes) {
         Object.entries(userForm.data.deliveryPostalCodes).forEach(([country, code]) => {
-          serviceDetails += `  • ${country}: ${code}\n`;
+          serviceDetails += `  📍 ${country}: Département ${code}\n`;
         });
       }
       serviceDetails += '\n';
@@ -3143,20 +3152,22 @@ const handleFinalSubmission = async (ctx) => {
       if (service === 'meetup') {
         compatibleData.services.meetup = {
           enabled: true,
-          departments: []
+          departments: [],
+          departmentsByCountry: userForm.data.meetupPostalCodes || {}
         };
-        // Convertir les codes postaux en départements pour chaque pays
+        // Convertir les codes postaux en départements (format compatible)
         Object.entries(userForm.data.meetupPostalCodes || {}).forEach(([country, code]) => {
-          compatibleData.services.meetup.departments.push(code);
+          compatibleData.services.meetup.departments.push(`${country}: ${code}`);
         });
       } else if (service === 'delivery') {
         compatibleData.services.delivery = {
           enabled: true,
-          departments: []
+          departments: [],
+          departmentsByCountry: userForm.data.deliveryPostalCodes || {}
         };
-        // Convertir les codes postaux en départements pour chaque pays
+        // Convertir les codes postaux en départements (format compatible)
         Object.entries(userForm.data.deliveryPostalCodes || {}).forEach(([country, code]) => {
-          compatibleData.services.delivery.departments.push(code);
+          compatibleData.services.delivery.departments.push(`${country}: ${code}`);
         });
       } else if (service === 'shipping') {
         compatibleData.services.shipping = {
