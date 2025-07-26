@@ -209,10 +209,14 @@ const createMainKeyboard = (config) => {
 
 // Clavier des services
 const createServicesKeyboard = (config) => {
-  const deliveryText = config?.botTexts?.deliveryServiceText || '🚚 Livraison';
-  const postalText = config?.botTexts?.postalServiceText || '✈️ Envoi postal';
-  const meetupText = config?.botTexts?.meetupServiceText || '🏠 Meetup';
-  const backText = config?.botTexts?.backButtonText || '🔙 Retour';
+  // Récupérer la langue actuelle
+  const currentLang = config?.languages?.currentLanguage || 'fr';
+  const customTranslations = config?.languages?.translations;
+  
+  const deliveryText = config?.botTexts?.deliveryServiceText || `🚚 ${getTranslation('service_delivery', currentLang, customTranslations)}`;
+  const postalText = config?.botTexts?.postalServiceText || `✈️ ${getTranslation('service_postal', currentLang, customTranslations)}`;
+  const meetupText = config?.botTexts?.meetupServiceText || `🏠 ${getTranslation('service_meetup', currentLang, customTranslations)}`;
+  const backText = config?.botTexts?.backButtonText || `🔙 ${getTranslation('back_to_menu', currentLang, customTranslations)}`;
   
   return Markup.inlineKeyboard([
     [Markup.button.callback(deliveryText, 'service_delivery')],
@@ -236,7 +240,9 @@ const createCountriesKeyboard = (countries) => {
     buttons.push(row);
   }
   
-  buttons.push([Markup.button.callback('🔙 Retour', 'top_plugs')]);
+  // Récupérer la langue depuis une config globale (à améliorer)
+  const backText = `🔙 ${getTranslation('back_to_menu', 'fr', null)}`;
+  buttons.push([Markup.button.callback(backText, 'top_plugs')]);
   return Markup.inlineKeyboard(buttons);
 };
 

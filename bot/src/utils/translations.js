@@ -473,6 +473,20 @@ const translations = {
       es: 'Servicios disponibles',
       de: 'Verfügbare Services'
     },
+    'service_choose_type': {
+      fr: 'Choisissez le type de service :',
+      en: 'Choose the type of service:',
+      it: 'Scegli il tipo di servizio:',
+      es: 'Elige el tipo de servicio:',
+      de: 'Wählen Sie den Servicetyp:'
+    },
+    'shops_count': {
+      fr: 'boutiques',
+      en: 'shops',
+      it: 'negozi',
+      es: 'tiendas',
+      de: 'Shops'
+    },
     'countries_served': {
       fr: 'Pays desservis',
       en: 'Countries served',
@@ -539,6 +553,20 @@ const translations = {
       it: 'Torna al menu',
       es: 'Volver al menú',
       de: 'Zurück zum Menü'
+    },
+    'back_to_departments': {
+      fr: 'Retour aux départements',
+      en: 'Back to departments',
+      it: 'Torna ai dipartimenti',
+      es: 'Volver a departamentos',
+      de: 'Zurück zu den Abteilungen'
+    },
+    'main_menu': {
+      fr: 'Menu principal',
+      en: 'Main menu',
+      it: 'Menu principale',
+      es: 'Menú principal',
+      de: 'Hauptmenü'
     },
     'page_info': {
       fr: 'Page',

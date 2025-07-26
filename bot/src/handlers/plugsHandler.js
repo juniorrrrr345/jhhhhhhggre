@@ -684,6 +684,10 @@ const handleSpecificDepartment = async (ctx, serviceType, department, selectedCo
     
     const config = await Config.findById('main');
     
+    // Récupérer la langue actuelle
+    const currentLang = config?.languages?.currentLanguage || 'fr';
+    const customTranslations = config?.languages?.translations;
+    
     // Construire la requête
     let query = { isActive: true };
     
@@ -762,13 +766,13 @@ const handleSpecificDepartment = async (ctx, serviceType, department, selectedCo
       
       // Ajouter bouton retour aux départements
       plugButtons.push([{
-        text: '🔙 Retour aux départements',
+        text: `🔙 ${getTranslation('back_to_departments', currentLang, customTranslations)}`,
         callback_data: `service_${serviceType}`
       }]);
       
       // Bouton retour au menu principal
       plugButtons.push([{
-        text: '🏠 Menu principal',
+        text: `🏠 ${getTranslation('main_menu', currentLang, customTranslations)}`,
         callback_data: 'top_plugs'
       }]);
       
@@ -779,11 +783,11 @@ const handleSpecificDepartment = async (ctx, serviceType, department, selectedCo
       
       keyboard = Markup.inlineKeyboard([
         [{
-          text: '🔙 Retour aux départements',
+          text: `🔙 ${getTranslation('back_to_departments', currentLang, customTranslations)}`,
           callback_data: `top_departments_${serviceType}${selectedCountry ? `_${selectedCountry}` : ''}`
         }],
         [{
-          text: '🏠 Menu principal',
+          text: `🏠 ${getTranslation('main_menu', currentLang, customTranslations)}`,
           callback_data: 'top_plugs'
         }]
       ]);
@@ -1276,7 +1280,20 @@ const handleFilterService = async (ctx) => {
     
     console.log(`📊 Services disponibles: Livraison(${deliveryCount}), Postal(${postalCount}), Meetup(${meetupCount})`);
     
-    const messageText = `${config?.botTexts?.filterServiceTitle || '🔍 Filtrer par service'}\n\n${config?.botTexts?.filterServiceDescription || 'Choisissez le type de service :'}\n\n📊 **Disponibilité :**\n🚚 Livraison: ${deliveryCount} boutiques\n✈️ Postal: ${postalCount} boutiques\n🏠 Meetup: ${meetupCount} boutiques`;
+    // Récupérer la langue actuelle
+    const currentLang = config?.languages?.currentLanguage || 'fr';
+    const customTranslations = config?.languages?.translations;
+    
+    const filterTitle = config?.botTexts?.filterServiceTitle || getTranslation('messages_selectService', currentLang, customTranslations) || '🔍 Filtrer par service';
+    const filterDescription = config?.botTexts?.filterServiceDescription || getTranslation('service_choose_type', currentLang, customTranslations) || 'Choisissez le type de service :';
+    const availabilityText = getTranslation('services_available', currentLang, customTranslations) || 'Disponibilité';
+    const shopsText = getTranslation('shops_count', currentLang, customTranslations) || 'boutiques';
+    
+    const deliveryName = getTranslation('service_delivery', currentLang, customTranslations);
+    const postalName = getTranslation('service_postal', currentLang, customTranslations);
+    const meetupName = getTranslation('service_meetup', currentLang, customTranslations);
+    
+    const messageText = `${filterTitle}\n\n${filterDescription}\n\n📊 **${availabilityText} :**\n🚚 ${deliveryName}: ${deliveryCount} ${shopsText}\n✈️ ${postalName}: ${postalCount} ${shopsText}\n🏠 ${meetupName}: ${meetupCount} ${shopsText}`;
     
     // Utiliser la fonction helper pour afficher avec image
     await editMessageWithImage(ctx, messageText, keyboard, config, { parse_mode: 'Markdown' });
@@ -1333,10 +1350,14 @@ const handleServiceFilter = async (ctx, serviceType, page = 0) => {
     // Utiliser le contexte 'service_TYPE' pour que le retour fonctionne correctement
     const keyboard = createPlugsKeyboard(plugs, page, totalPages, `service_${serviceType}`);
 
+    // Récupérer la langue actuelle
+    const currentLang = config?.languages?.currentLanguage || 'fr';
+    const customTranslations = config?.languages?.translations;
+    
     const serviceNames = {
-      delivery: '🚚 Livraison',
-      postal: '✈️ Envoi postal',
-      meetup: '🏠 Meetup'
+      delivery: `🚚 ${getTranslation('service_delivery', currentLang, customTranslations)}`,
+      postal: `✈️ ${getTranslation('service_postal', currentLang, customTranslations)}`,
+      meetup: `🏠 ${getTranslation('service_meetup', currentLang, customTranslations)}`
     };
 
     let message = `🔍 **Plugs avec ${serviceNames[serviceType]} :**\n\n`;
