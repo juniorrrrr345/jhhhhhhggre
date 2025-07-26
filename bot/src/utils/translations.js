@@ -97,10 +97,10 @@ const translations = {
     },
     'menu_becomeDealer': {
       fr: '📋 Inscription',
-      en: '📋 Registration',
-      it: '📋 Registrazione',
-      es: '📋 Registro',
-      de: '📋 Registrierung'
+      en: '📋 Inscription',
+      it: '📋 Inscription',
+      es: '📋 Inscription',
+      de: '📋 Inscription'
     },
     'menu_language': {
       fr: '🌍 Langue',
@@ -110,11 +110,11 @@ const translations = {
       de: '🌍 Sprache'
     },
     'menu_translation': {
-      fr: '🗣️ Changer de langue',
+      fr: '🗣️ Change language',
       en: '🗣️ Change language',
-      it: '🗣️ Cambia lingua',
-      es: '🗣️ Cambiar idioma',
-      de: '🗣️ Sprache ändern'
+      it: '🗣️ Change language',
+      es: '🗣️ Change language',
+      de: '🗣️ Change language'
     },
     'menu_main': {
       fr: '🏠 Menu principal',
