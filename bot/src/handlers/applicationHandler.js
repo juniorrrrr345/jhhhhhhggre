@@ -755,10 +755,7 @@ const handleFormMessage = async (ctx) => {
           
           const keyboard = Markup.inlineKeyboard(availableButtons);
           
-          await safeEditMessage(ctx, message, {
-            reply_markup: keyboard.reply_markup,
-            parse_mode: 'Markdown'
-          });
+          await editLastFormMessage(ctx, userId, message, keyboard);
         } else {
           // Pays suivant
           await askMeetupPostalForCountry(ctx, meetupCountryIndex + 1);
@@ -836,10 +833,7 @@ const handleFormMessage = async (ctx) => {
           
           const keyboard = Markup.inlineKeyboard(availableButtons);
           
-          await safeEditMessage(ctx, message, {
-            reply_markup: keyboard.reply_markup,
-            parse_mode: 'Markdown'
-          });
+          await editLastFormMessage(ctx, userId, message, keyboard);
         } else {
           // Pays suivant
           await askDeliveryPostalForCountry(ctx, deliveryCountryIndex + 1);
