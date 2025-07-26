@@ -24,8 +24,25 @@ class PostalCodeServiceVercel {
       const countryDepartments = {};
 
       if (data.plugs && Array.isArray(data.plugs)) {
-        data.plugs.forEach(plug => {
-          // Extraire les pays de cette boutique
+        // Filtrer les boutiques de test
+        const realPlugs = data.plugs.filter(plug => {
+          // Exclure les boutiques de test basées sur le nom
+          const testNames = ['test', 'haha', 'demo', 'exemple', 'fake'];
+          const isTestPlug = testNames.some(testName => 
+            plug.name.toLowerCase().includes(testName)
+          );
+          
+          // Exclure les boutiques avec trop de pays (probablement des tests)
+          const tooManyCountries = plug.countries && plug.countries.length > 10;
+          
+          // Garder seulement les vraies boutiques actives
+          return plug.isActive && !isTestPlug && !tooManyCountries;
+        });
+
+        console.log(`🔍 Filtrage: ${data.plugs.length} boutiques totales → ${realPlugs.length} vraies boutiques`);
+        
+        realPlugs.forEach(plug => {
+          // Extraire les pays de cette boutique RÉELLE
           if (plug.countries && Array.isArray(plug.countries)) {
             plug.countries.forEach(country => {
               if (!countryDepartments[country]) {
