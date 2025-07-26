@@ -415,28 +415,7 @@ const handleFormMessage = async (ctx) => {
   }
 };
 
-// Demander Telegram
-const askTelegram = async (ctx) => {
-  const userId = ctx.from.id;
-  
-  const message = `🛠️ **FORMULAIRE D'INSCRIPTION – FindYourPlug**\n\n` +
-    `⸻\n\n` +
-    `🟦 **Étape 2 : Lien Telegram**\n\n` +
-    `🔗 Entrez votre lien Telegram (format : @username ou https://t.me/username)`;
-  
-  const keyboard = Markup.inlineKeyboard([
-    [Markup.button.callback('❌ Annuler', 'cancel_application')]
-  ]);
-  
-  const sentMessage = await ctx.reply(message, {
-    reply_markup: keyboard.reply_markup,
-    parse_mode: 'Markdown',
-    disable_web_page_preview: true
-  });
-  
-  // Sauvegarder l'ID du message pour suppression ultérieure
-  lastBotMessages.set(userId, sentMessage.message_id);
-};
+
 
 // Fonction pour générer le récapitulatif des réponses
 const generateSummary = (ctx, userForm) => {
