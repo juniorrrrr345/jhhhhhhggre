@@ -2919,10 +2919,7 @@ const askMeetupPostalForCountry = async (ctx, countryIndex) => {
     [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
   ]);
   
-  await safeEditMessage(ctx, message, {
-    reply_markup: keyboard.reply_markup,
-    parse_mode: 'Markdown'
-  });
+  await editLastFormMessage(ctx, userId, message, keyboard);
 };
 
 // Demander les codes postaux pour Livraison pour un pays spécifique
@@ -2970,10 +2967,7 @@ const askDeliveryPostalForCountry = async (ctx, countryIndex) => {
     [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
   ]);
   
-  await safeEditMessage(ctx, message, {
-    reply_markup: keyboard.reply_markup,
-    parse_mode: 'Markdown'
-  });
+  await editLastFormMessage(ctx, userId, message, keyboard);
 };
 
 // Gestionnaire pour traiter les codes postaux Meet Up
