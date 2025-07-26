@@ -702,7 +702,16 @@ const handleFormMessage = async (ctx) => {
           // Ignorer l'erreur si on ne peut pas supprimer
         }
         
-        await askMeetupPostalForCountry(ctx, meetupCountryIndex + 1);
+        // Passer au pays suivant ou terminer
+        if (meetupCountryIndex + 1 >= userForm.data.workingCountries.length) {
+          // Tous les pays traités pour Meet Up, retourner à la sélection des services
+          userForm.step = 'service_selection';
+          userForms.set(userId, userForm);
+          await askServices(ctx);
+        } else {
+          // Pays suivant
+          await askMeetupPostalForCountry(ctx, meetupCountryIndex + 1);
+        }
         break;
         
       case 'entering_delivery_postal':
