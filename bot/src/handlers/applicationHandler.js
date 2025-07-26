@@ -1341,24 +1341,62 @@ const askDepartmentsMeetup = async (ctx) => {
   await editLastFormMessage(ctx, ctx.from.id, message, keyboard);
 };
 
-// Demander les pays pour l'envoi
+// Demander les pays pour l'envoi avec boutons de sélection
 const askDepartmentsShipping = async (ctx) => {
   const Config = require('../models/Config');
   const config = await Config.findById('main');
   const currentLang = config?.languages?.currentLanguage || 'fr';
   const customTranslations = config?.languages?.translations;
 
+  const userId = ctx.from.id;
+  const userForm = userForms.get(userId);
+  
+  // Récupérer les pays déjà sélectionnés
+  const selectedCountries = userForm?.selectedShippingCountries || [];
+
   const message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
     `⸻\n\n` +
     `${getTranslation('registration.step15Shipping', currentLang, customTranslations)}\n\n` +
     `${getTranslation('registration.shippingCountriesQuestion', currentLang, customTranslations)}\n\n` +
-    `${getTranslation('registration.shippingCountriesInstruction', currentLang, customTranslations)}`;
+    `📍 Sélectionnez les pays où vous faites de l'envoi :\n\n` +
+    (selectedCountries.length > 0 ? 
+      `✅ Pays sélectionnés : ${selectedCountries.join(', ')}\n\n` : 
+      `⚪ Aucun pays sélectionné\n\n`);
+
+  // Créer les boutons de pays (2 par ligne)
+  const countryButtons = [];
+  for (let i = 0; i < COUNTRIES.length; i += 2) {
+    const row = [];
+    
+    const country1 = COUNTRIES[i];
+    const isSelected1 = selectedCountries.includes(country1.name);
+    const text1 = `${isSelected1 ? '✅' : '⚪'} ${country1.flag} ${country1.name}`;
+    row.push(Markup.button.callback(text1, `shipping_country_${country1.code}`));
+    
+    if (i + 1 < COUNTRIES.length) {
+      const country2 = COUNTRIES[i + 1];
+      const isSelected2 = selectedCountries.includes(country2.name);
+      const text2 = `${isSelected2 ? '✅' : '⚪'} ${country2.flag} ${country2.name}`;
+      row.push(Markup.button.callback(text2, `shipping_country_${country2.code}`));
+    }
+    
+    countryButtons.push(row);
+  }
+
+  // Boutons d'action
+  const actionButtons = [];
   
-  const keyboard = Markup.inlineKeyboard([
+  if (selectedCountries.length > 0) {
+    actionButtons.push([Markup.button.callback('✅ Confirmer la sélection', 'confirm_shipping_countries')]);
+  }
+  
+  actionButtons.push(
     [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_departments_shipping')],
     [Markup.button.callback(getTranslation('registration.goBack', currentLang, customTranslations), 'go_back_departments_meetup')],
     [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
-  ]);
+  );
+
+  const keyboard = Markup.inlineKeyboard([...countryButtons, ...actionButtons]);
   
   await editLastFormMessage(ctx, ctx.from.id, message, keyboard);
 };
@@ -2418,7 +2456,9 @@ module.exports = {
   askTelegramBot,
   askDepartmentsMeetup,
   askDepartmentsDelivery,
+  askDepartmentsShipping,
   handleGoBack,
   userForms,
-  lastBotMessages
+  lastBotMessages,
+  COUNTRIES
 };

@@ -23,6 +23,10 @@ const { connectDB } = require('./src/utils/database');
 // Gestionnaires
 const { handleStart, handleBackMain } = require('./src/handlers/startHandler');
 const { getTranslation, createLanguageKeyboard, initializeDefaultTranslations } = require('./src/utils/translations');
+
+// Import de la liste des pays pour l'inscription
+const { COUNTRIES } = require('./src/handlers/applicationHandler');
+
 const { 
   handleTopPlugs, 
   handleVipPlugs,
@@ -475,6 +479,82 @@ bot.action('skip_telegram_bot', (ctx) => handleSkipStep(ctx, 'telegram_bot'));
 bot.action('skip_departments_delivery', (ctx) => handleSkipStep(ctx, 'departments_delivery'));
 bot.action('skip_departments_meetup', (ctx) => handleSkipStep(ctx, 'departments_meetup'));
 bot.action('skip_departments_shipping', (ctx) => handleSkipStep(ctx, 'departments_shipping'));
+
+// Handlers pour la sélection des pays d'envoi
+bot.action(/^shipping_country_(.+)$/, async (ctx) => {
+  try {
+    const countryCode = ctx.match[1];
+    const userId = ctx.from.id;
+    const userForm = userForms.get(userId);
+    
+    if (!userForm || userForm.step !== 'departments_shipping') {
+      return await ctx.answerCbQuery('❌ Session expirée');
+    }
+
+    // Trouver le pays dans la liste
+    const country = COUNTRIES.find(c => c.code === countryCode);
+    if (!country) {
+      return await ctx.answerCbQuery('❌ Pays non trouvé');
+    }
+
+    // Initialiser la liste des pays sélectionnés si elle n'existe pas
+    if (!userForm.selectedShippingCountries) {
+      userForm.selectedShippingCountries = [];
+    }
+
+    // Toggle du pays (ajouter/supprimer)
+    const index = userForm.selectedShippingCountries.indexOf(country.name);
+    if (index > -1) {
+      // Supprimer le pays
+      userForm.selectedShippingCountries.splice(index, 1);
+      await ctx.answerCbQuery(`❌ ${country.name} supprimé`);
+    } else {
+      // Ajouter le pays
+      userForm.selectedShippingCountries.push(country.name);
+      await ctx.answerCbQuery(`✅ ${country.name} ajouté`);
+    }
+
+    userForms.set(userId, userForm);
+    
+    // Mettre à jour l'affichage
+    const { askDepartmentsShipping } = require('./src/handlers/applicationHandler');
+    await askDepartmentsShipping(ctx);
+    
+  } catch (error) {
+    console.error('Erreur sélection pays d\'envoi:', error);
+    await ctx.answerCbQuery('❌ Erreur lors de la sélection');
+  }
+});
+
+bot.action('confirm_shipping_countries', async (ctx) => {
+  try {
+    const userId = ctx.from.id;
+    const userForm = userForms.get(userId);
+    
+    if (!userForm || userForm.step !== 'departments_shipping') {
+      return await ctx.answerCbQuery('❌ Session expirée');
+    }
+
+    if (!userForm.selectedShippingCountries || userForm.selectedShippingCountries.length === 0) {
+      return await ctx.answerCbQuery('❌ Veuillez sélectionner au moins un pays');
+    }
+
+    // Sauvegarder les pays sélectionnés
+    userForm.data.shippingCountries = userForm.selectedShippingCountries.join(', ');
+    userForm.step = 'confirmation';
+    userForms.set(userId, userForm);
+
+    await ctx.answerCbQuery('✅ Pays d\'envoi confirmés');
+    
+    // Passer à l'étape de confirmation
+    const { askConfirmation } = require('./src/handlers/applicationHandler');
+    await askConfirmation(ctx);
+    
+  } catch (error) {
+    console.error('Erreur confirmation pays d\'envoi:', error);
+    await ctx.answerCbQuery('❌ Erreur lors de la confirmation');
+  }
+});
 
 // Handlers pour les boutons "Retour"
 bot.action('go_back_name', handleGoBack);
