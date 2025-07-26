@@ -32,6 +32,20 @@ const translations = {
       es: 'ℹ️ Información',
       de: 'ℹ️ Informationen'
     },
+    'menu_inscription': {
+      fr: '📋 Inscription',
+      en: '📋 Registration',
+      it: '📋 Registrazione',
+      es: '📋 Inscripción',
+      de: '📋 Anmeldung'
+    },
+    'menu_changeLanguage': {
+      fr: '🗣️ Changer de langue',
+      en: '🗣️ Change language',
+      it: '🗣️ Cambia lingua',
+      es: '🗣️ Cambiar idioma',
+      de: '🗣️ Sprache ändern'
+    },
     'messages_topPlugsHelp': {
       fr: 'Comment ça marche ?',
       en: 'How does it work?',

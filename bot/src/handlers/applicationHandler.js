@@ -453,6 +453,31 @@ const handleFormMessage = async (ctx) => {
         }
 
         userForm.data.session = text;
+        userForm.step = 'instagram';
+        userForms.set(userId, userForm);
+        
+        // Éditer le message existant pour montrer l'étape suivante
+        const message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
+          `⸻\n\n` +
+          `${getTranslation('registration.step4', currentLang, customTranslations)}\n\n` +
+          `${getTranslation('registration.instagramQuestion', currentLang, customTranslations)}\n\n` +
+          `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
+        
+        const keyboard = Markup.inlineKeyboard([
+          [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_instagram')],
+          [Markup.button.callback(getTranslation('registration.goBack', currentLang, customTranslations), 'go_back_session')],
+          [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
+        ]);
+        
+        await editLastFormMessage(ctx, userId, message, keyboard);
+        break;
+
+      case 'instagram':
+        if (!text.startsWith('https://www.instagram.com/') && !text.startsWith('https://instagram.com/') && !text.startsWith('@') && text.length < 2) {
+          return await ctx.reply(getTranslation('registration.error.instagramFormat', currentLang, customTranslations));
+        }
+
+        userForm.data.instagram = text;
         userForm.step = 'telegram_bot';
         userForms.set(userId, userForm);
         
@@ -466,6 +491,7 @@ const handleFormMessage = async (ctx) => {
         
         const keyboard = Markup.inlineKeyboard([
           [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_telegram_bot')],
+          [Markup.button.callback(getTranslation('registration.goBack', currentLang, customTranslations), 'go_back_instagram')],
           [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
         ]);
         
@@ -654,6 +680,7 @@ const replyWithStep = async (ctx, step) => {
         `${getTranslation('registration.step2', currentLang, customTranslations)}\n\n` +
         `${getTranslation('registration.telegramQuestion', currentLang, customTranslations)}`;
       keyboard = Markup.inlineKeyboard([
+        [Markup.button.callback(getTranslation('registration.goBack', currentLang, customTranslations), 'go_back_name')],
         [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
       ]);
       break;
@@ -667,6 +694,7 @@ const replyWithStep = async (ctx, step) => {
         `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
       keyboard = Markup.inlineKeyboard([
         [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_telegram_channel')],
+        [Markup.button.callback(getTranslation('registration.goBack', currentLang, customTranslations), 'go_back_telegram')],
         [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
       ]);
       break;
@@ -680,6 +708,7 @@ const replyWithStep = async (ctx, step) => {
         `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
       keyboard = Markup.inlineKeyboard([
         [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_instagram')],
+        [Markup.button.callback(getTranslation('registration.goBack', currentLang, customTranslations), 'go_back_telegram_channel')],
         [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
       ]);
       break;
@@ -1319,6 +1348,7 @@ const askConfirmation = async (ctx) => {
     `${userForm.data.whatsapp ? `• **WhatsApp** : ${userForm.data.whatsapp}\n` : ''}` +
     `${userForm.data.threema ? `• **Threema** : ${userForm.data.threema}\n` : ''}` +
     `${userForm.data.session ? `• **Session** : ${userForm.data.session}\n` : ''}` +
+    `${userForm.data.instagram ? `• **Instagram** : ${userForm.data.instagram}\n` : ''}` +
     `${userForm.data.telegramBot ? `• **Bot Telegram** : ${userForm.data.telegramBot}\n` : ''}` +
     `• ${getTranslation('registration.photoReceived', currentLang, customTranslations)}\n\n` +
     `${getTranslation('registration.confirmInscription', currentLang, customTranslations)}`;
@@ -1532,9 +1562,32 @@ const handleSkipStep = async (ctx, step) => {
         });
         break;
       case 'session':
+        userForm.step = 'instagram';
+        userForms.set(userId, userForm);
+        console.log('➡️ Skip session → instagram');
+        
+        const instagramMessage = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
+          `⸻\n\n` +
+          `${getTranslation('registration.step4', currentLang, customTranslations)}\n\n` +
+          `${getTranslation('registration.instagramQuestion', currentLang, customTranslations)}\n\n` +
+          `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
+        
+        const instagramKeyboard = Markup.inlineKeyboard([
+          [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_instagram')],
+          [Markup.button.callback(getTranslation('registration.goBack', currentLang, customTranslations), 'go_back_session')],
+          [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
+        ]);
+        
+        await safeEditMessage(ctx, instagramMessage, {
+          reply_markup: instagramKeyboard.reply_markup,
+          parse_mode: 'Markdown'
+        });
+        break;
+
+      case 'instagram':
         userForm.step = 'telegram_bot';
         userForms.set(userId, userForm);
-        console.log('➡️ Skip session → telegram_bot');
+        console.log('➡️ Skip instagram → telegram_bot');
         
         const telegramBotMessage = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
           `⸻\n\n` +
@@ -1545,6 +1598,7 @@ const handleSkipStep = async (ctx, step) => {
         
         const telegramBotKeyboard = Markup.inlineKeyboard([
           [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_telegram_bot')],
+          [Markup.button.callback(getTranslation('registration.goBack', currentLang, customTranslations), 'go_back_instagram')],
           [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
         ]);
         
@@ -1881,11 +1935,11 @@ const handleGoBack = async (ctx) => {
     'snapchat': 'telegram',
     'whatsapp': 'snapchat', 
     'signal': 'whatsapp',
-    'session': 'signal',
-    'threema': 'session',
-    'telegram_channel': 'threema',
-    'instagram': 'telegram_channel',
-    'photo': 'instagram',
+    'threema': 'signal',
+    'session': 'threema',
+    'instagram': 'session',
+    'telegram_bot': 'instagram',
+    'photo': 'telegram_bot',
     'confirmation': 'photo',
     'departments_meetup': 'confirmation',
     'departments_delivery': 'confirmation'

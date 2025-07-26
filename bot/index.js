@@ -56,6 +56,7 @@ const {
   handleCancelApplication,
   handleSkipStep,
   submitApplication,
+  handleGoBack,
   userForms
 } = require('./src/handlers/applicationHandler');
 const {
@@ -488,6 +489,18 @@ bot.action('skip_signal', (ctx) => handleSkipStep(ctx, 'signal'));
 bot.action('skip_session', (ctx) => handleSkipStep(ctx, 'session'));
 bot.action('skip_threema', (ctx) => handleSkipStep(ctx, 'threema'));
 bot.action('skip_telegram_bot', (ctx) => handleSkipStep(ctx, 'telegram_bot'));
+
+// Handlers pour les boutons "Retour"
+bot.action('go_back_name', handleGoBack);
+bot.action('go_back_telegram', handleGoBack);
+bot.action('go_back_telegram_channel', handleGoBack);
+bot.action('go_back_snapchat', handleGoBack);
+bot.action('go_back_whatsapp', handleGoBack);
+bot.action('go_back_signal', handleGoBack);
+bot.action('go_back_threema', handleGoBack);
+bot.action('go_back_session', handleGoBack);
+bot.action('go_back_instagram', handleGoBack);
+bot.action('go_back_telegram_bot', handleGoBack);
 bot.action('confirm_application', submitApplication);
 
 bot.action('check_application_status', handleCheckApplicationStatus);
