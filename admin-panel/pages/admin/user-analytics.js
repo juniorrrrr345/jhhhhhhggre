@@ -41,37 +41,46 @@ export default function UserAnalytics() {
       setStats(prev => ({ ...prev, loading: true }))
       setNextUpdateIn(30) // Reset le compteur lors de l'actualisation manuelle
       
-      // Bypass du proxy - appel direct à l'API bot (solution qui fonctionne)
-      const botApiUrl = 'https://jhhhhhhggre.onrender.com'
-      const response = await fetch(`${botApiUrl}/api/admin/user-analytics?timeRange=${timeRange}`, {
+      // SOLUTION QUI MARCHAIT - Direct fetch bypass proxy
+      const response = await fetch('https://jhhhhhhggre.onrender.com/api/admin/user-analytics?timeRange=' + timeRange, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json'
         }
       })
       
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`)
+      }
+      
       const data = await response.json()
-      console.log('📊 Response direct API:', data)
+      console.log('✅ DIRECT API SUCCESS:', data)
       
       const apiResponse = {
-        ok: response.ok,
+        ok: true,
         data: data
       }
       console.log('📊 Response API user-analytics:', apiResponse)
         
         if (apiResponse.ok && apiResponse.data) {
-          console.log('✅ Stats reçues:', apiResponse.data)
-          setStats(prev => ({
-            ...prev,
-            loading: false,
+          console.log('✅ DONNEES REÇUES:', apiResponse.data)
+          console.log('👥 totalUsers:', apiResponse.data.totalUsers)
+          console.log('📍 usersWithLocation:', apiResponse.data.usersWithLocation)
+          console.log('🌍 countryStats:', apiResponse.data.countryStats)
+          
+          const newStats = {
             totalUsers: apiResponse.data.totalUsers || 0,
             usersWithLocation: apiResponse.data.usersWithLocation || 0,
             countryStats: apiResponse.data.countryStats || [],
+            loading: false,
             lastUpdate: new Date(),
             error: null
-          }))
+          }
+          
+          console.log('🔄 NOUVEAU STATE:', newStats)
+          setStats(newStats)
         } else {
-          console.error('❌ Erreur lors du chargement des stats utilisateurs:', apiResponse)
+          console.error('❌ Erreur API response:', apiResponse)
           setStats(prev => ({ 
             ...prev, 
             loading: false,
