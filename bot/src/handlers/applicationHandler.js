@@ -1216,6 +1216,19 @@ const handleCountrySelection = async (ctx) => {
 
 // Demander les services
 const askServices = async (ctx) => {
+  const userId = ctx.from.id;
+  const userForm = userForms.get(userId);
+  
+  // Initialiser les services si pas encore fait
+  if (!userForm.data.services) {
+    userForm.data.services = {
+      delivery: { enabled: false },
+      shipping: { enabled: false },
+      meetup: { enabled: false }
+    };
+    userForms.set(userId, userForm);
+  }
+  
   const Config = require('../models/Config');
   const config = await Config.findById('main');
   const currentLang = config?.languages?.currentLanguage || 'fr';
