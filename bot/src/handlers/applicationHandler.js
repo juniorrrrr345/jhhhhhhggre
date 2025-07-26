@@ -1261,7 +1261,7 @@ const askDepartmentsMeetup = async (ctx) => {
 
   const message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
     `⸻\n\n` +
-    `${getTranslation('registration.step13Meetup', currentLang, customTranslations)}\n\n` +
+    `${getTranslation('registration.step14Meetup', currentLang, customTranslations)}\n\n` +
     `${getTranslation('registration.departmentsMeetupQuestion', currentLang, customTranslations)}\n\n` +
     `${getTranslation('registration.departmentsInstruction', currentLang, customTranslations)}`;
   
@@ -1283,7 +1283,7 @@ const askDepartmentsShipping = async (ctx) => {
 
   const message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
     `⸻\n\n` +
-    `${getTranslation('registration.step14Shipping', currentLang, customTranslations)}\n\n` +
+    `${getTranslation('registration.step15Shipping', currentLang, customTranslations)}\n\n` +
     `${getTranslation('registration.departmentsShippingQuestion', currentLang, customTranslations)}\n\n` +
     `${getTranslation('registration.departmentsInstruction', currentLang, customTranslations)}`;
   
@@ -1447,7 +1447,7 @@ const askConfirmation = async (ctx) => {
   const userForm = userForms.get(ctx.from.id);
   const message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
     `⸻\n\n` +
-    `${getTranslation('registration.step15Confirmation', currentLang, customTranslations)}\n\n` +
+    `${getTranslation('registration.step16Confirmation', currentLang, customTranslations)}\n\n` +
     `${getTranslation('registration.finalSummary', currentLang, customTranslations)}\n\n` +
     `• ${getTranslation('registration.plugName', currentLang, customTranslations)} : ${userForm.data.name}\n` +
     `• Telegram : ${userForm.data.telegram}\n` +
@@ -1999,49 +1999,7 @@ const getServicesText = (services) => {
   return servicesList.join(', ');
 };
 
-// Demander départements pour Meetup
-const askDepartmentsMeetup = async (ctx) => {
-  const Config = require('../models/Config');
-  const config = await Config.findById('main');
-  const currentLang = config?.languages?.currentLanguage || 'fr';
-  const customTranslations = config?.languages?.translations;
 
-  const message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
-    `⸻\n\n` +
-    `${getTranslation('registration.step13', currentLang, customTranslations)}\n\n` +
-    `${getTranslation('registration.departmentsMeetupQuestion', currentLang, customTranslations)}`;
-  
-  const keyboard = Markup.inlineKeyboard([
-    [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
-  ]);
-  
-  await safeEditMessage(ctx, message, {
-    reply_markup: keyboard.reply_markup,
-    parse_mode: 'Markdown'
-  });
-};
-
-// Demander départements pour Livraison
-const askDepartmentsDelivery = async (ctx) => {
-  const Config = require('../models/Config');
-  const config = await Config.findById('main');
-  const currentLang = config?.languages?.currentLanguage || 'fr';
-  const customTranslations = config?.languages?.translations;
-
-  const message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
-    `⸻\n\n` +
-    `${getTranslation('registration.step14', currentLang, customTranslations)}\n\n` +
-    `${getTranslation('registration.departmentsDeliveryQuestion', currentLang, customTranslations)}`;
-  
-  const keyboard = Markup.inlineKeyboard([
-    [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
-  ]);
-  
-  await safeEditMessage(ctx, message, {
-    reply_markup: keyboard.reply_markup,
-    parse_mode: 'Markdown'
-  });
-};
 
 // Fonction pour gérer les retours en arrière
 const handleGoBack = async (ctx) => {
