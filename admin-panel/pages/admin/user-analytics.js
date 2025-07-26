@@ -157,41 +157,28 @@ export default function UserAnalytics() {
             </h1>
           </div>
           
-          <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
-            <button
-              onClick={() => {
-                console.log('🔄 DEBUG: Bouton cliqué, forçage fetch...')
-                fetchUserStats()
-              }}
-              disabled={stats.loading}
-              className="px-4 py-2 bg-red-600 hover:bg-red-700 disabled:opacity-50 text-white font-bold rounded-lg transition-colors border-2 border-white"
-            >
-              {stats.loading ? '⏳ DEBUG...' : '🔄 DEBUG FETCH'}
-            </button>
-            
-            {stats.lastUpdate && (
-              <>
-                <div className="text-black bg-white rounded px-3 py-2 text-sm font-medium text-center">
-                  📅 MAJ: {stats.lastUpdate.toLocaleTimeString('fr-FR')}
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="flex items-center gap-1 bg-white rounded px-2 py-1 border border-black">
-                    <div className="w-2 h-2 bg-black rounded-full animate-pulse"></div>
-                    <span className="text-black text-xs font-medium">TEMPS RÉEL</span>
-                  </div>
-                  <div className="text-white bg-black rounded px-2 py-1 text-xs font-medium border border-white">
-                    ⏱️ {nextUpdateIn}s
-                  </div>
-                </div>
-              </>
-            )}
-            
-            {stats.error && (
-              <div className="text-red-600 bg-white rounded px-3 py-2 text-sm font-bold border-2 border-red-600">
-                ❌ {stats.error}
+                    {stats.lastUpdate && (
+            <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
+              <div className="text-black bg-white rounded px-3 py-2 text-sm font-medium text-center">
+                📅 MAJ: {stats.lastUpdate.toLocaleTimeString('fr-FR')}
               </div>
-            )}
-          </div>
+              <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1 bg-white rounded px-2 py-1 border border-black">
+                  <div className="w-2 h-2 bg-black rounded-full animate-pulse"></div>
+                  <span className="text-black text-xs font-medium">TEMPS RÉEL</span>
+                </div>
+                <div className="text-white bg-black rounded px-2 py-1 text-xs font-medium border border-white">
+                  ⏱️ {nextUpdateIn}s
+                </div>
+              </div>
+            </div>
+          )}
+          
+          {stats.error && (
+            <div className="text-red-600 bg-white rounded px-3 py-2 text-sm font-bold border-2 border-red-600">
+              ❌ {stats.error}
+            </div>
+          )}
         </div>
 
         {/* Filtres temporels - Mobile Responsive */}
