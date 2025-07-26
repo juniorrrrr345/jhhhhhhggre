@@ -231,18 +231,6 @@ const handleFormMessage = async (ctx) => {
           }
 
           userForm.data.telegram = text;
-          userForm.step = 'potato';
-          userForms.set(userId, userForm);
-          
-          await askPotato(ctx);
-          break;
-        
-              case 'potato':
-          if (!text.startsWith('https://potato.chat/') && !text.startsWith('https://')) {
-            return await ctx.reply(getTranslation('registration.error.potatoFormat', currentLang, customTranslations));
-          }
-
-          userForm.data.potato = text;
           userForm.step = 'snapchat';
           userForms.set(userId, userForm);
           
@@ -255,7 +243,32 @@ const handleFormMessage = async (ctx) => {
         }
 
         userForm.data.snapchat = text;
+        userForm.step = 'potato';
+        userForms.set(userId, userForm);
+        
+        await askPotato(ctx);
+        break;
+        
+              case 'potato':
+          if (!text.startsWith('https://potato.chat/') && !text.startsWith('https://')) {
+            return await ctx.reply(getTranslation('registration.error.potatoFormat', currentLang, customTranslations));
+          }
+
+          userForm.data.potato = text;
+          userForm.step = 'signal';
+          userForms.set(userId, userForm);
+          
+          await askSignal(ctx);
+          break;
+
+      case 'signal':
+        if (!text.startsWith('https://') && text.length < 3) {
+          return await ctx.reply(getTranslation('registration.error.signalFormat', currentLang, customTranslations));
+        }
+
+        userForm.data.signal = text;
         userForm.step = 'whatsapp';
+        userForms.set(userId, userForm);
         
         await askWhatsApp(ctx);
         break;
@@ -266,29 +279,8 @@ const handleFormMessage = async (ctx) => {
         }
 
         userForm.data.whatsapp = text;
-        userForm.step = 'signal';
-        
-        await askSignal(ctx);
-        break;
-        
-      case 'signal':
-        if (text.length < 2) {
-          return await ctx.reply(getTranslation('registration.error.signalFormat', currentLang, customTranslations));
-        }
-
-        userForm.data.signal = text;
-        userForm.step = 'session';
-        
-        await askSession(ctx);
-        break;
-        
-      case 'session':
-        if (text.length < 2) {
-          return await ctx.reply(getTranslation('registration.error.sessionFormat', currentLang, customTranslations));
-        }
-
-        userForm.data.session = text;
         userForm.step = 'threema';
+        userForms.set(userId, userForm);
         
         await askThreema(ctx);
         break;
@@ -299,6 +291,18 @@ const handleFormMessage = async (ctx) => {
         }
 
         userForm.data.threema = text;
+        userForm.step = 'session';
+        userForms.set(userId, userForm);
+        
+        await askSession(ctx);
+        break;
+        
+      case 'session':
+        if (text.length < 2) {
+          return await ctx.reply(getTranslation('registration.error.sessionFormat', currentLang, customTranslations));
+        }
+
+        userForm.data.session = text;
         userForm.step = 'telegram_bot';
         userForms.set(userId, userForm);
         
@@ -311,10 +315,10 @@ const handleFormMessage = async (ctx) => {
         }
 
         userForm.data.telegramBot = text;
-        userForm.step = 'country';
+        userForm.step = 'photo';
         userForms.set(userId, userForm);
         
-        await askCountry(ctx);
+        await askPhoto(ctx);
         break;
         
       case 'city':
@@ -662,7 +666,7 @@ const askPotato = async (ctx) => {
 
   const message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
     `⸻\n\n` +
-    `${getTranslation('registration.step5', currentLang, customTranslations)}\n\n` +
+    `${getTranslation('registration.step4', currentLang, customTranslations)}\n\n` +
     `${getTranslation('registration.potatoQuestion', currentLang, customTranslations)}\n\n` +
     `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
   
@@ -686,7 +690,7 @@ const askSnapchat = async (ctx) => {
 
   const message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
     `⸻\n\n` +
-    `${getTranslation('registration.step6', currentLang, customTranslations)}\n\n` +
+    `${getTranslation('registration.step3', currentLang, customTranslations)}\n\n` +
     `${getTranslation('registration.snapchatQuestion', currentLang, customTranslations)}\n\n` +
     `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
   
@@ -1150,67 +1154,55 @@ const handleSkipStep = async (ctx, step) => {
     
     console.log('📋 Current step avant skip:', userForm.step);
     
-    // Version simplifiée : juste passer à l'étape suivante et utiliser les anciennes fonctions ask
+    // NOUVEL ORDRE : Nom → Telegram → Snapchat → Potato → Signal → WhatsApp → Threema → Session → Bot Telegram → Photo → Confirmation
     switch (step) {
       case 'telegram':
-        userForm.step = 'telegram_channel';
-        userForms.set(userId, userForm);
-        console.log('➡️ Skip telegram → telegram_channel');
-        await askTelegramChannel(ctx);
-        break;
-      case 'telegram_channel':
-        userForm.step = 'instagram';
-        userForms.set(userId, userForm);
-        console.log('➡️ Skip telegram_channel → instagram');
-        await askInstagram(ctx);
-        break;
-      case 'instagram':
-        userForm.step = 'potato';
-        userForms.set(userId, userForm);
-        console.log('➡️ Skip instagram → potato');
-        await askPotato(ctx);
-        break;
-      case 'potato':
         userForm.step = 'snapchat';
         userForms.set(userId, userForm);
-        console.log('➡️ Skip potato → snapchat');
+        console.log('➡️ Skip telegram → snapchat');
         await askSnapchat(ctx);
         break;
       case 'snapchat':
-        userForm.step = 'whatsapp';
+        userForm.step = 'potato';
         userForms.set(userId, userForm);
-        console.log('➡️ Skip snapchat → whatsapp');
-        await askWhatsApp(ctx);
+        console.log('➡️ Skip snapchat → potato');
+        await askPotato(ctx);
         break;
-      case 'whatsapp':
+      case 'potato':
         userForm.step = 'signal';
         userForms.set(userId, userForm);
-        console.log('➡️ Skip whatsapp → signal');
+        console.log('➡️ Skip potato → signal');
         await askSignal(ctx);
         break;
       case 'signal':
-        userForm.step = 'session';
+        userForm.step = 'whatsapp';
         userForms.set(userId, userForm);
-        console.log('➡️ Skip signal → session');
-        await askSession(ctx);
+        console.log('➡️ Skip signal → whatsapp');
+        await askWhatsApp(ctx);
         break;
-      case 'session':
+      case 'whatsapp':
         userForm.step = 'threema';
         userForms.set(userId, userForm);
-        console.log('➡️ Skip session → threema');
+        console.log('➡️ Skip whatsapp → threema');
         await askThreema(ctx);
         break;
       case 'threema':
+        userForm.step = 'session';
+        userForms.set(userId, userForm);
+        console.log('➡️ Skip threema → session');
+        await askSession(ctx);
+        break;
+      case 'session':
         userForm.step = 'telegram_bot';
         userForms.set(userId, userForm);
-        console.log('➡️ Skip threema → telegram_bot');
+        console.log('➡️ Skip session → telegram_bot');
         await askTelegramBot(ctx);
         break;
       case 'telegram_bot':
-        userForm.step = 'country';
+        userForm.step = 'photo';
         userForms.set(userId, userForm);
-        console.log('➡️ Skip telegram_bot → country');
-        await askCountry(ctx);
+        console.log('➡️ Skip telegram_bot → photo');
+        await askPhoto(ctx);
         break;
       default:
         console.log('❌ Step non reconnu:', step);

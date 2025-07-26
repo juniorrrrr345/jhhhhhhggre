@@ -307,18 +307,18 @@ const translations = {
       de: '🟦 Schritt 2: Telegram-Link'
     },
     'registration.step3': {
-      fr: '🟦 Étape 3 : Lien Canal Telegram',
-      en: '🟦 Step 3: Telegram Channel Link',
-      it: '🟦 Fase 3: Link Canale Telegram',
-      es: '🟦 Paso 3: Enlace del Canal de Telegram',
-      de: '🟦 Schritt 3: Telegram-Kanal-Link'
+      fr: '🟦 Étape 3 : Snapchat',
+      en: '🟦 Step 3: Snapchat',
+      it: '🟦 Fase 3: Snapchat',
+      es: '🟦 Paso 3: Snapchat',
+      de: '🟦 Schritt 3: Snapchat'
     },
     'registration.step4': {
-      fr: '🟦 Étape 4 : Lien Instagram',
-      en: '🟦 Step 4: Instagram Link',
-      it: '🟦 Fase 4: Link Instagram',
-      es: '🟦 Paso 4: Enlace de Instagram',
-      de: '🟦 Schritt 4: Instagram-Link'
+      fr: '🟦 Étape 4 : Potato Chat',
+      en: '🟦 Step 4: Potato Chat',
+      it: '🟦 Fase 4: Potato Chat',
+      es: '🟦 Paso 4: Potato Chat',
+      de: '🟦 Schritt 4: Potato Chat'
     },
     'registration.telegramQuestion': {
       fr: '🔗 Entrez votre lien Telegram (format : @username ou https://t.me/username)',
@@ -453,53 +453,53 @@ const translations = {
 
     // === ÉTAPES RÉSEAUX SOCIAUX COMPLETS ===
     'registration.step5': {
-      fr: '🟦 Étape 5 : Potato Chat',
-      en: '🟦 Step 5: Potato Chat',
-      it: '🟦 Fase 5: Potato Chat',
-      es: '🟦 Paso 5: Potato Chat',
-      de: '🟦 Schritt 5: Potato Chat'
+      fr: '🟦 Étape 5 : Signal',
+      en: '🟦 Step 5: Signal',
+      it: '🟦 Fase 5: Signal',
+      es: '🟦 Paso 5: Signal',
+      de: '🟦 Schritt 5: Signal'
     },
     'registration.step6': {
-      fr: '🟦 Étape 6 : Snapchat',
-      en: '🟦 Step 6: Snapchat',
-      it: '🟦 Fase 6: Snapchat',
-      es: '🟦 Paso 6: Snapchat',
-      de: '🟦 Schritt 6: Snapchat'
+      fr: '🟦 Étape 6 : WhatsApp',
+      en: '🟦 Step 6: WhatsApp',
+      it: '🟦 Fase 6: WhatsApp',
+      es: '🟦 Paso 6: WhatsApp',
+      de: '🟦 Schritt 6: WhatsApp'
     },
     'registration.step7': {
-      fr: '🟦 Étape 7 : WhatsApp',
-      en: '🟦 Step 7: WhatsApp',
-      it: '🟦 Fase 7: WhatsApp',
-      es: '🟦 Paso 7: WhatsApp',
-      de: '🟦 Schritt 7: WhatsApp'
+      fr: '🟦 Étape 7 : Threema',
+      en: '🟦 Step 7: Threema',
+      it: '🟦 Fase 7: Threema',
+      es: '🟦 Paso 7: Threema',
+      de: '🟦 Schritt 7: Threema'
     },
     'registration.step8': {
-      fr: '🟦 Étape 8 : Signal',
-      en: '🟦 Step 8: Signal',
-      it: '🟦 Fase 8: Signal',
-      es: '🟦 Paso 8: Signal',
-      de: '🟦 Schritt 8: Signal'
+      fr: '🟦 Étape 8 : Session',
+      en: '🟦 Step 8: Session',
+      it: '🟦 Fase 8: Session',
+      es: '🟦 Paso 8: Session',
+      de: '🟦 Schritt 8: Session'
     },
     'registration.step9': {
-      fr: '🟦 Étape 9 : Session',
-      en: '🟦 Step 9: Session',
-      it: '🟦 Fase 9: Session',
-      es: '🟦 Paso 9: Session',
-      de: '🟦 Schritt 9: Session'
+      fr: '🟦 Étape 9 : Bot Telegram',
+      en: '🟦 Step 9: Telegram Bot',
+      it: '🟦 Fase 9: Bot Telegram',
+      es: '🟦 Paso 9: Bot Telegram',
+      de: '🟦 Schritt 9: Telegram Bot'
     },
     'registration.step10': {
-      fr: '🟦 Étape 10 : Threema',
-      en: '🟦 Step 10: Threema',
-      it: '🟦 Fase 10: Threema',
-      es: '🟦 Paso 10: Threema',
-      de: '🟦 Schritt 10: Threema'
+      fr: '🟦 Étape 10 : Photo de boutique',
+      en: '🟦 Step 10: Shop photo',
+      it: '🟦 Fase 10: Foto del negozio',
+      es: '🟦 Paso 10: Foto de la tienda',
+      de: '🟦 Schritt 10: Shop-Foto'
     },
     'registration.step11': {
-      fr: '🟦 Étape 11 : Bot Telegram',
-      en: '🟦 Step 11: Telegram Bot',
-      it: '🟦 Fase 11: Bot Telegram',
-      es: '🟦 Paso 11: Bot Telegram',
-      de: '🟦 Schritt 11: Telegram Bot'
+      fr: '🟦 Étape 11 : Confirmation',
+      en: '🟦 Step 11: Confirmation',
+      it: '🟦 Fase 11: Conferma',
+      es: '🟦 Paso 11: Confirmación',
+      de: '🟦 Schritt 11: Bestätigung'
     },
     'registration.step12': {
       fr: '🟦 Étape 12 : Pays de service',
