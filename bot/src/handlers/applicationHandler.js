@@ -1996,7 +1996,13 @@ const handlePhoto = async (ctx) => {
     const currentLang = config?.languages?.currentLanguage || 'fr';
     const customTranslations = config?.languages?.translations;
     
-    await ctx.reply(getTranslation('registration.photoReceived', currentLang, customTranslations));
+    // Supprimer le message photo de l'utilisateur pour garder le chat propre
+    try {
+      await ctx.deleteMessage();
+    } catch (error) {
+      // Ignorer l'erreur si on ne peut pas supprimer
+    }
+    
     await askWorkingCountries(ctx);
     
   } catch (error) {
