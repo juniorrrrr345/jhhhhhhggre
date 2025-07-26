@@ -385,18 +385,18 @@ const handleFormMessage = async (ctx) => {
         userForms.set(userId, userForm);
         
         // Éditer le message existant pour montrer l'étape suivante
-        const message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
+        const whatsappMessage = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
           `⸻\n\n` +
           `${getTranslation('registration.step6', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.whatsappQuestion', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
         
-        const keyboard = Markup.inlineKeyboard([
+        const whatsappKeyboard = Markup.inlineKeyboard([
           [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_whatsapp')],
           [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
         ]);
         
-        await editLastFormMessage(ctx, userId, message, keyboard);
+        await editLastFormMessage(ctx, userId, whatsappMessage, whatsappKeyboard);
         break;
         
       case 'whatsapp':
@@ -457,19 +457,19 @@ const handleFormMessage = async (ctx) => {
         userForms.set(userId, userForm);
         
         // Éditer le message existant pour montrer l'étape suivante
-        const message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
+        const instagramFromSessionMessage = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
           `⸻\n\n` +
           `${getTranslation('registration.step4', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.instagramQuestion', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
         
-        const keyboard = Markup.inlineKeyboard([
+        const instagramFromSessionKeyboard = Markup.inlineKeyboard([
           [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_instagram')],
           [Markup.button.callback(getTranslation('registration.goBack', currentLang, customTranslations), 'go_back_session')],
           [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
         ]);
         
-        await editLastFormMessage(ctx, userId, message, keyboard);
+        await editLastFormMessage(ctx, userId, instagramFromSessionMessage, instagramFromSessionKeyboard);
         break;
 
       case 'instagram':
