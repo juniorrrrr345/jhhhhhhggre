@@ -1308,6 +1308,82 @@ bot.action('finish_services_selection', handleFinishServicesSelection);
 // Handler pour le début de l'application
 bot.action('start_application', handleStartApplication);
 
+// Handlers pour modifier/retirer les services
+bot.action('modify_service_meetup', async (ctx) => {
+  try {
+    await ctx.answerCbQuery();
+    const userId = ctx.from.id;
+    const userForm = userForms.get(userId);
+    
+    if (!userForm || userForm.step !== 'service_selection') {
+      return await ctx.answerCbQuery('❌ Erreur de formulaire');
+    }
+    
+    // Modifier - relancer la saisie des codes postaux
+    userForm.step = 'meetup_postal_codes';
+    userForm.data.meetupPostalCodes = {};
+    userForm.data.currentCountryIndex = 0;
+    userForm.data.currentService = 'meetup';
+    userForms.set(userId, userForm);
+    await ctx.answerCbQuery('🔄 Modification Meet Up');
+    
+    await askMeetupPostalForCountry(ctx, 0);
+    
+  } catch (error) {
+    console.error('Erreur modify_service_meetup:', error);
+    await ctx.answerCbQuery('❌ Erreur');
+  }
+});
+
+bot.action('modify_service_delivery', async (ctx) => {
+  try {
+    await ctx.answerCbQuery();
+    const userId = ctx.from.id;
+    const userForm = userForms.get(userId);
+    
+    if (!userForm || userForm.step !== 'service_selection') {
+      return await ctx.answerCbQuery('❌ Erreur de formulaire');
+    }
+    
+    // Modifier - relancer la saisie des codes postaux
+    userForm.step = 'delivery_postal_codes';
+    userForm.data.deliveryPostalCodes = {};
+    userForm.data.currentCountryIndex = 0;
+    userForm.data.currentService = 'delivery';
+    userForms.set(userId, userForm);
+    await ctx.answerCbQuery('🔄 Modification Livraison');
+    
+    await askDeliveryPostalForCountry(ctx, 0);
+    
+  } catch (error) {
+    console.error('Erreur modify_service_delivery:', error);
+    await ctx.answerCbQuery('❌ Erreur');
+  }
+});
+
+bot.action('remove_service_shipping', async (ctx) => {
+  try {
+    await ctx.answerCbQuery();
+    const userId = ctx.from.id;
+    const userForm = userForms.get(userId);
+    
+    if (!userForm || userForm.step !== 'service_selection') {
+      return await ctx.answerCbQuery('❌ Erreur de formulaire');
+    }
+    
+    // Retirer le service
+    userForm.data.selectedServices = userForm.data.selectedServices.filter(s => s !== 'shipping');
+    userForms.set(userId, userForm);
+    await ctx.answerCbQuery('❌ Envoi postal retiré');
+    
+    await askServices(ctx);
+    
+  } catch (error) {
+    console.error('Erreur remove_service_shipping:', error);
+    await ctx.answerCbQuery('❌ Erreur');
+  }
+});
+
 // Handlers pour toggle des services (cocher/décocher)
 bot.action('toggle_service_meetup', async (ctx) => {
   try {

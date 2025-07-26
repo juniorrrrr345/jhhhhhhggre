@@ -1548,19 +1548,24 @@ const askServices = async (ctx) => {
 
   const availableButtons = [];
   
-  // Ajouter TOUS les services avec ✅ si sélectionnés (pour permettre de cocher/décocher)
-  availableButtons.push([Markup.button.callback(
-    (selectedServices.includes('meetup') ? '✅ ' : '') + '🤝 Meet Up',
-    'toggle_service_meetup'
-  )]);
-  availableButtons.push([Markup.button.callback(
-    (selectedServices.includes('delivery') ? '✅ ' : '') + '🚚 Livraison',
-    'toggle_service_delivery'
-  )]);
-  availableButtons.push([Markup.button.callback(
-    (selectedServices.includes('shipping') ? '✅ ' : '') + '📮 Envoi postal',
-    'toggle_service_shipping'
-  )]);
+  // Ajouter les services disponibles avec indication si déjà configurés
+  if (!selectedServices.includes('meetup')) {
+    availableButtons.push([Markup.button.callback('▶️ Continuer vers Meet Up', 'new_service_meetup')]);
+  } else {
+    availableButtons.push([Markup.button.callback('✅ Meet Up configuré - Modifier', 'modify_service_meetup')]);
+  }
+  
+  if (!selectedServices.includes('delivery')) {
+    availableButtons.push([Markup.button.callback('▶️ Continuer vers Livraison', 'new_service_delivery')]);
+  } else {
+    availableButtons.push([Markup.button.callback('✅ Livraison configurée - Modifier', 'modify_service_delivery')]);
+  }
+  
+  if (!selectedServices.includes('shipping')) {
+    availableButtons.push([Markup.button.callback('▶️ Continuer vers Envoi postal', 'new_service_shipping')]);
+  } else {
+    availableButtons.push([Markup.button.callback('✅ Envoi postal configuré - Retirer', 'remove_service_shipping')]);
+  }
   
   // Ajouter le bouton de fin si au moins un service est sélectionné
   if (hasServices) {
