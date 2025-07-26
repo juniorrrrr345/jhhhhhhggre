@@ -1516,42 +1516,45 @@ const askServices = async (ctx) => {
   const selectedServices = userForm.data.selectedServices;
   const hasServices = selectedServices.length > 0;
 
-  let message = `🛠️ **FORMULAIRE D'INSCRIPTION – FindYourPlug**\n\n` +
+  let message = `🛠️ FORMULAIRE D'INSCRIPTION – FindYourPlug\n\n` +
     `⸻\n\n` +
-    `🛠️ **Étape 4 : Choix des services**\n\n`;
+    `🛠️ Étape 13 : Choix des services\n\n`;
     
   if (hasServices) {
-    message += `✅ **Services déjà sélectionnés :**\n`;
+    message += `✅ Services déjà sélectionnés :\n`;
     selectedServices.forEach(service => {
       if (service === 'meetup') message += `• 🤝 Meet Up\n`;
       else if (service === 'delivery') message += `• 🚚 Livraison\n`;
       else if (service === 'shipping') message += `• 📮 Envoi postal\n`;
     });
-    message += `\n**Choisissez un autre service ou terminez :**\n\n`;
+    message += `\nChoisissez un autre service, modifiez ou terminez :\n\n`;
   } else {
     message += `Vous avez trois choix de services :\n\n` +
       `⸻\n\n` +
-      `▶️ **1. Service "Meet Up"**\n` +
+      `▶️ 1. Service "Meet Up"\n` +
       `💬 Rencontres locales avec vos clients\n\n` +
-      `▶️ **2. Service "Livraison"**\n` +
+      `▶️ 2. Service "Livraison"\n` +
       `🚚 Livraison directe chez le client\n\n` +
-      `▶️ **3. Service "Envoi postal"**\n` +
+      `▶️ 3. Service "Envoi postal"\n` +
       `📮 Envoi de produits par courrier\n\n` +
-      `👆 Choisissez votre premier service :\n\n`;
+      `👆 Choisissez vos services :\n\n`;
   }
 
   const availableButtons = [];
   
-  // Ajouter les services non encore sélectionnés
-  if (!selectedServices.includes('meetup')) {
-    availableButtons.push([Markup.button.callback('🤝 Meet Up', 'new_service_meetup')]);
-  }
-  if (!selectedServices.includes('delivery')) {
-    availableButtons.push([Markup.button.callback('🚚 Livraison', 'new_service_delivery')]);
-  }
-  if (!selectedServices.includes('shipping')) {
-    availableButtons.push([Markup.button.callback('📮 Envoi postal', 'new_service_shipping')]);
-  }
+  // Ajouter TOUS les services avec ✅ si sélectionnés (pour permettre de cocher/décocher)
+  availableButtons.push([Markup.button.callback(
+    (selectedServices.includes('meetup') ? '✅ ' : '') + '🤝 Meet Up',
+    'toggle_service_meetup'
+  )]);
+  availableButtons.push([Markup.button.callback(
+    (selectedServices.includes('delivery') ? '✅ ' : '') + '🚚 Livraison',
+    'toggle_service_delivery'
+  )]);
+  availableButtons.push([Markup.button.callback(
+    (selectedServices.includes('shipping') ? '✅ ' : '') + '📮 Envoi postal',
+    'toggle_service_shipping'
+  )]);
   
   // Ajouter le bouton de fin si au moins un service est sélectionné
   if (hasServices) {
