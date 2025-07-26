@@ -130,23 +130,11 @@ export default function ShopSearch() {
       return Array.from(departments).sort((a, b) => a.localeCompare(b, undefined, { numeric: true }))
     }
 
-    // Si un pays est sélectionné, utiliser la définition correcte des départements
+    // Si un pays est sélectionné, afficher TOUS les départements de ce pays (même sans boutiques)
     const countryDepartments = departmentsByCountry[countryFilter] || []
     
-    // Filtrer pour ne montrer que les départements qui ont des boutiques
-    const availableDepartments = countryDepartments.filter(dept => {
-      return allPlugs.some(plug => {
-        const matchesCountry = plug.countries && plug.countries.some(country => 
-          country.toLowerCase().includes(countryFilter.toLowerCase())
-        )
-        const hasDepartment = 
-          (plug.services?.delivery?.departments && plug.services.delivery.departments.includes(dept)) ||
-          (plug.services?.meetup?.departments && plug.services.meetup.departments.includes(dept))
-        return matchesCountry && hasDepartment
-      })
-    })
-
-    return availableDepartments.sort((a, b) => a.localeCompare(b, undefined, { numeric: true }))
+    // Retourner TOUS les départements du pays, triés
+    return countryDepartments.sort((a, b) => a.localeCompare(b, undefined, { numeric: true }))
   }
 
   useEffect(() => {

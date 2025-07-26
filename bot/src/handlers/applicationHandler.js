@@ -266,8 +266,9 @@ const handleFormMessage = async (ctx) => {
       case 'signal':
         console.log(`🔍 SIGNAL DEBUG: Input '${text}', validation: https check=${text.startsWith('https://')}, length=${text.length}`);
         
-        if (!text.startsWith('https://') && text.length < 3) {
-          console.log(`❌ SIGNAL VALIDATION FAILED`);
+        // Validation plus souple : accepter tout ce qui fait au moins 2 caractères
+        if (text.length < 2) {
+          console.log(`❌ SIGNAL VALIDATION FAILED: too short`);
           return await ctx.reply(getTranslation('registration.error.signalFormat', currentLang, customTranslations));
         }
 
@@ -276,7 +277,9 @@ const handleFormMessage = async (ctx) => {
         userForm.step = 'whatsapp';
         userForms.set(userId, userForm);
         
+        console.log(`🔄 CALLING askWhatsApp...`);
         await askWhatsApp(ctx);
+        console.log(`✅ askWhatsApp completed`);
         break;
         
       case 'whatsapp':
@@ -713,26 +716,39 @@ const askSnapchat = async (ctx) => {
 
 // Demander WhatsApp
 const askWhatsApp = async (ctx) => {
-  const Config = require('../models/Config');
-  const config = await Config.findById('main');
-  const currentLang = config?.languages?.currentLanguage || 'fr';
-  const customTranslations = config?.languages?.translations;
+  try {
+    console.log(`🔄 askWhatsApp: STARTING for user ${ctx.from.id}`);
+    
+    const Config = require('../models/Config');
+    const config = await Config.findById('main');
+    const currentLang = config?.languages?.currentLanguage || 'fr';
+    const customTranslations = config?.languages?.translations;
 
-  const message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
-    `⸻\n\n` +
-    `${getTranslation('registration.step6', currentLang, customTranslations)}\n\n` +
-    `${getTranslation('registration.whatsappQuestion', currentLang, customTranslations)}\n\n` +
-    `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
-  
-  const keyboard = Markup.inlineKeyboard([
-    [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_whatsapp')],
-    [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
-  ]);
-  
-  await safeEditMessage(ctx, message, {
-    reply_markup: keyboard.reply_markup,
-    parse_mode: 'Markdown'
-  });
+    const message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
+      `⸻\n\n` +
+      `${getTranslation('registration.step6', currentLang, customTranslations)}\n\n` +
+      `${getTranslation('registration.whatsappQuestion', currentLang, customTranslations)}\n\n` +
+      `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
+    
+    console.log(`📝 askWhatsApp: Message prepared, length=${message.length}`);
+    
+    const keyboard = Markup.inlineKeyboard([
+      [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_whatsapp')],
+      [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
+    ]);
+    
+    console.log(`⌨️ askWhatsApp: Keyboard created`);
+    
+    await safeEditMessage(ctx, message, {
+      reply_markup: keyboard.reply_markup,
+      parse_mode: 'Markdown'
+    });
+    
+    console.log(`✅ askWhatsApp: Message sent successfully`);
+  } catch (error) {
+    console.error(`❌ askWhatsApp ERROR:`, error);
+    throw error;
+  }
 };
 
 // Demander Signal
