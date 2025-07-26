@@ -1254,20 +1254,78 @@ const handleCountrySelection = async (ctx) => {
   }
 };
 
-// Demander les services
-const askServices = async (ctx) => {
+// Demander les pays de travail (Étape 3)
+const askWorkingCountries = async (ctx) => {
   const userId = ctx.from.id;
   const userForm = userForms.get(userId);
   
-  // Initialiser les services si pas encore fait
-  if (!userForm.data.services) {
-    userForm.data.services = {
-      delivery: { enabled: false },
-      shipping: { enabled: false },
-      meetup: { enabled: false }
-    };
+  // Initialiser la liste des pays sélectionnés
+  if (!userForm.data.workingCountries) {
+    userForm.data.workingCountries = [];
     userForms.set(userId, userForm);
   }
+  
+  const Config = require('../models/Config');
+  const config = await Config.findById('main');
+  const currentLang = config?.languages?.currentLanguage || 'fr';
+  const customTranslations = config?.languages?.translations;
+  
+  const selectedCountries = userForm.data.workingCountries;
+
+  const message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
+    `⸻\n\n` +
+    `🌍 **Étape 3 : Pays de travail**\n\n` +
+    `Il choisit un ou plusieurs pays où il travaille ou où le service est disponible.\n\n` +
+    `**Exemples :** France, Espagne\n\n` +
+    (selectedCountries.length > 0 ? 
+      `✅ **Pays sélectionnés :** ${selectedCountries.join(', ')}\n\n` : 
+      `⚪ Aucun pays sélectionné\n\n`) +
+    `👆 Sélectionnez vos pays de travail :`;
+
+  // Créer les boutons de pays (2 par ligne)
+  const countryButtons = [];
+  for (let i = 0; i < COUNTRIES.length; i += 2) {
+    const row = [];
+    
+    const country1 = COUNTRIES[i];
+    const isSelected1 = selectedCountries.includes(country1.name);
+    const text1 = `${isSelected1 ? '✅' : '⚪'} ${country1.flag} ${country1.name}`;
+    row.push(Markup.button.callback(text1, `working_country_${country1.code}`));
+    
+    if (i + 1 < COUNTRIES.length) {
+      const country2 = COUNTRIES[i + 1];
+      const isSelected2 = selectedCountries.includes(country2.name);
+      const text2 = `${isSelected2 ? '✅' : '⚪'} ${country2.flag} ${country2.name}`;
+      row.push(Markup.button.callback(text2, `working_country_${country2.code}`));
+    }
+    
+    countryButtons.push(row);
+  }
+
+  // Boutons d'action
+  const actionButtons = [];
+  
+  if (selectedCountries.length > 0) {
+    actionButtons.push([Markup.button.callback('✅ Confirmer les pays', 'confirm_working_countries')]);
+  }
+  
+  actionButtons.push(
+    [Markup.button.callback(getTranslation('registration.goBack', currentLang, customTranslations), 'go_back_photo')],
+    [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
+  );
+
+  const keyboard = Markup.inlineKeyboard([...countryButtons, ...actionButtons]);
+  
+  await safeEditMessage(ctx, message, {
+    reply_markup: keyboard.reply_markup,
+    parse_mode: 'Markdown'
+  });
+};
+
+// Demander les services - NOUVEAU FLUX avec 2 choix
+const askServices = async (ctx) => {
+  const userId = ctx.from.id;
+  const userForm = userForms.get(userId);
   
   const Config = require('../models/Config');
   const config = await Config.findById('main');
@@ -1276,18 +1334,19 @@ const askServices = async (ctx) => {
 
   const message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
     `⸻\n\n` +
-    `${getTranslation('registration.step12Services', currentLang, customTranslations)}\n\n` +
-    `${getTranslation('registration.servicesQuestion', currentLang, customTranslations)}\n\n` +
-    `${getTranslation('registration.servicesInstruction', currentLang, customTranslations)}`;
+    `🛠️ **Étape 4 : Choix du service**\n\n` +
+    `Vous avez deux choix de services :\n\n` +
+    `⸻\n\n` +
+    `▶️ **1. Service "Meet Up"**\n` +
+    `💬 Rencontres locales avec vos clients\n\n` +
+    `▶️ **2. Service "Envoi postal"**\n` +
+    `📮 Envoi de produits par courrier\n\n` +
+    `👆 Choisissez votre service :`;
   
   const keyboard = Markup.inlineKeyboard([
-    [
-      Markup.button.callback(getTranslation('registration.serviceMeetup', currentLang, customTranslations), 'service_meetup'),
-      Markup.button.callback(getTranslation('registration.serviceDelivery', currentLang, customTranslations), 'service_delivery')
-    ],
-    [Markup.button.callback(getTranslation('registration.serviceShipping', currentLang, customTranslations), 'service_shipping')],
-    [Markup.button.callback(getTranslation('registration.continueToNext', currentLang, customTranslations), 'services_done')],
-    [Markup.button.callback(getTranslation('registration.goBack', currentLang, customTranslations), 'go_back_photo')],
+    [Markup.button.callback('🤝 Meet Up', 'new_service_meetup')],
+    [Markup.button.callback('📮 Envoi postal', 'new_service_shipping')],
+    [Markup.button.callback(getTranslation('registration.goBack', currentLang, customTranslations), 'go_back_working_countries')],
     [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
   ]);
   
@@ -1720,17 +1779,17 @@ const handlePhoto = async (ctx) => {
       height: photo.height
     };
     
-    userForm.step = 'departments_delivery';
+    userForm.step = 'working_countries';
     userForms.set(userId, userForm);
     
-    // Confirmer réception et passer aux départements livraison
+    // Confirmer réception et passer aux pays de travail
     const Config = require('../models/Config');
     const config = await Config.findById('main');
     const currentLang = config?.languages?.currentLanguage || 'fr';
     const customTranslations = config?.languages?.translations;
     
     await ctx.reply(getTranslation('registration.photoReceived', currentLang, customTranslations));
-    await askDepartmentsDelivery(ctx);
+    await askWorkingCountries(ctx);
     
   } catch (error) {
     console.error('Erreur dans handlePhoto:', error);
