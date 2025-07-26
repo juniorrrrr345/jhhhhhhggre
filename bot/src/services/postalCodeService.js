@@ -1,6 +1,7 @@
 // Service pour gérer les codes postaux par pays
 class PostalCodeService {
   constructor() {
+    this.lastReload = new Date();
     // Base de données des codes postaux par pays
     this.postalCodes = {
       // 🇫🇷 FRANCE (01-99 départements + DOM-TOM)
