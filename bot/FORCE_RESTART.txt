@@ -1,5 +1,1 @@
-FORCE RESTART: Boutons Telegram doivent être:
-- 📋 Inscription (PAS "Devenir Plug")
-- 🗣️ Changer de langue (PAS "Traduction")
-
-Timestamp: 2025-01-27 URGENT FIX
+Sat Jul 26 06:55:21 PM UTC 2025: Force reload with new postal codes
