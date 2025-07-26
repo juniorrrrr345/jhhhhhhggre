@@ -855,16 +855,24 @@ const handleCountrySelection = async (ctx) => {
     const selectedCountry = COUNTRIES.find(c => c.code === countryCode);
     
     if (!selectedCountry && countryCode !== 'all') {
-      return await ctx.answerCbQuery('❌ Pays invalide');
+      const Config = require('../models/Config');
+      const config = await Config.findById('main');
+      const currentLang = config?.languages?.currentLanguage || 'fr';
+      const customTranslations = config?.languages?.translations;
+      return await ctx.answerCbQuery(getTranslation('registration.invalidCountry', currentLang, customTranslations));
     }
     
-    userForm.data.country = selectedCountry ? selectedCountry.name : 'Tous les pays';
+    userForm.data.country = selectedCountry ? selectedCountry.name : getTranslation('registration.allCountries', currentLang, customTranslations);
     userForm.data.countryCode = countryCode;
     userForm.step = 'services';
     userForms.set(userId, userForm);
     
     await askServices(ctx);
-    await ctx.answerCbQuery(`Pays sélectionné : ${userForm.data.country}`);
+    const Config = require('../models/Config');
+    const config = await Config.findById('main');
+    const currentLang = config?.languages?.currentLanguage || 'fr';
+    const customTranslations = config?.languages?.translations;
+    await ctx.answerCbQuery(`${getTranslation('registration.countrySelected', currentLang, customTranslations)} ${userForm.data.country}`);
     
   } catch (error) {
     console.error('Erreur dans handleCountrySelection:', error);
