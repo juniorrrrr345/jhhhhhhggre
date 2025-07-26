@@ -825,6 +825,13 @@ const translations = {
       es: '❌ Ingresa solo números y comas (ejemplo: 75, 92, 93)',
       de: '❌ Bitte geben Sie nur Zahlen und Kommas ein (Beispiel: 75, 92, 93)'
     },
+    'no_postal_codes_for_country': {
+      fr: 'Aucun code postal trouvé pour',
+      en: 'No postal codes found for',
+      it: 'Nessun codice postale trovato per',
+      es: 'No se encontraron códigos postales para',
+      de: 'Keine Postleitzahlen gefunden für'
+    },
     'registration.continueToNext': {
       fr: '➡️ Continuer',
       en: '➡️ Continue',
