@@ -325,6 +325,27 @@ const translations = {
       es: '📋 RESUMEN FINAL',
       de: '📋 ABSCHLUSSZUSAMMENFASSUNG'
     },
+    'registration.photoReceived': {
+      fr: '✅ Logo de boutique reçu !',
+      en: '✅ Shop logo received!',
+      it: '✅ Logo del negozio ricevuto!',
+      es: '✅ Logo de la tienda recibido!',
+      de: '✅ Shop-Logo erhalten!'
+    },
+    'registration.error.photoProcessing': {
+      fr: '❌ Erreur lors du traitement de la photo. Réessaie.',
+      en: '❌ Error processing photo. Try again.',
+      it: '❌ Errore nell\'elaborazione della foto. Riprova.',
+      es: '❌ Error al procesar la foto. Inténtalo de nuevo.',
+      de: '❌ Fehler bei der Fotobearbeitung. Versuchen Sie es erneut.'
+    },
+    'registration.error.invalidPhoto': {
+      fr: '❌ Merci d\'envoyer une photo valide.',
+      en: '❌ Please send a valid photo.',
+      it: '❌ Si prega di inviare una foto valida.',
+      es: '❌ Por favor envía una foto válida.',
+      de: '❌ Bitte senden Sie ein gültiges Foto.'
+    },
 
     // === FORMULAIRE ÉTAPES DÉTAILLÉES ===
     'registration.step2': {
