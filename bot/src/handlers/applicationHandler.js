@@ -3072,8 +3072,7 @@ const askDeliveryPostalForCountry = async (ctx, countryIndex) => {
     `🚚 Service "Livraison" - Codes postaux\n\n` +
     `📍 Pays actuel : ${currentCountry}\n` +
     `📊 Progression : ${countryIndex + 1}/${countries.length}\n\n` +
-    `Entrez le code postal pour ${currentCountry} :\n\n` +
-    `Ensuite, cliquez sur "valider"`;
+    `Entrez le code postal pour ${currentCountry} :`;
   
   userForm.step = 'waiting_delivery_postal';
   userForm.data.currentCountryIndex = countryIndex;
