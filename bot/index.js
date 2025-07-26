@@ -1504,6 +1504,50 @@ bot.action('toggle_service_shipping', async (ctx) => {
   }
 });
 
+// Handler pour revenir à l'étape telegram bot
+bot.action('go_back_telegram_bot', async (ctx) => {
+  try {
+    await ctx.answerCbQuery();
+    const userId = ctx.from.id;
+    const userForm = userForms.get(userId);
+    
+    if (!userForm) {
+      return await ctx.answerCbQuery('❌ Session expirée');
+    }
+    
+    const Config = require('./src/models/Config');
+    const config = await Config.findById('main');
+    const currentLang = config?.languages?.currentLanguage || 'fr';
+    const { getTranslation } = require('./src/utils/translations');
+    const customTranslations = config?.languages?.translations;
+    
+    // Retourner à l'étape telegram_bot
+    userForm.step = 'telegram_bot';
+    userForms.set(userId, userForm);
+    
+    // Afficher l'étape 10 : Bot Telegram
+    const telegramBotMessage = `🛠️ FORMULAIRE D'INSCRIPTION – FindYourPlug\n\n` +
+      `⸻\n\n` +
+      `🟦 Étape 10 : Bot Telegram\n\n` +
+      `🤖 Entrez votre identifiant Bot Telegram\n\n` +
+      `Exemple : @votre_bot ou https://t.me/votre_bot\n\n` +
+      `⚠️ Tu peux aussi passer cette étape.`;
+    
+    const telegramBotKeyboard = Markup.inlineKeyboard([
+      [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_telegram_bot')],
+      [Markup.button.callback(getTranslation('registration.goBack', currentLang, customTranslations), 'go_back_instagram')],
+      [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
+    ]);
+    
+    const { editLastFormMessage } = require('./src/handlers/applicationHandler');
+    await editLastFormMessage(ctx, userId, telegramBotMessage, telegramBotKeyboard);
+    
+  } catch (error) {
+    console.error('Erreur go_back_telegram_bot:', error);
+    await ctx.answerCbQuery('❌ Une erreur temporaire est survenue.');
+  }
+});
+
 // Handler pour revenir à l'étape photo (logo)
 bot.action('go_back_photo', async (ctx) => {
   try {
