@@ -276,6 +276,13 @@ const translations = {
       es: '¿Cuál es tu **nombre de tienda**?',
       de: 'Wie lautet dein **Shop-Name**?'
     },
+    'registration.nameQuestion': {
+      fr: 'Quel est ton nom de Plug ?',
+      en: 'What is your Plug name?',
+      it: 'Qual è il tuo nome del negozio?',
+      es: '¿Cuál es tu nombre de tienda?',
+      de: 'Wie lautet dein Shop-Name?'
+    },
     'registration.pendingTitle': {
       fr: '📝 **Demande en cours**',
       en: '📝 **Application in progress**',

@@ -147,8 +147,9 @@ export default function Applications() {
     
     const serviceLabels = {
       delivery: 'Livraison',
-      postal: 'Postal',
-      meetup: 'Meetup'
+      postal: 'Postal', 
+      meetup: 'Meetup',
+      shipping: 'Envoi'
     };
 
     let servicesList = [];
