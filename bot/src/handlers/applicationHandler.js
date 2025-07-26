@@ -2835,16 +2835,7 @@ const handleNewServiceShipping = async (ctx) => {
     
     userForms.set(userId, userForm);
     
-    const Config = require('../models/Config');
-    const config = await Config.findById('main');
-    const currentLang = config?.languages?.currentLanguage || 'fr';
-    const customTranslations = config?.languages?.translations;
-    
-    // Message de confirmation pour Envoi postal puis retour aux services
-    await ctx.reply(getTranslation('registration.shippingServiceAdded', currentLang, customTranslations) || 
-      '✅ Service "Envoi postal" ajouté ! Validation directe automatique.');
-    
-    // Retourner à la sélection des services pour permettre d'ajouter d'autres services
+    // Retourner directement à la sélection des services
     await askServices(ctx);
     
   } catch (error) {
