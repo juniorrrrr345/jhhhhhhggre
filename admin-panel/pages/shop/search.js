@@ -70,8 +70,25 @@ export default function ShopSearch() {
     const countries = postalCodeService.getAvailableCountries()
     const departmentsByCountry = {}
     
+    // Ajouter les pays avec leurs vrais codes postaux
     countries.forEach(country => {
       departmentsByCountry[country] = postalCodeService.getPostalCodes(country)
+    })
+    
+    // Ajouter des codes postaux génériques pour les pays non couverts par le service
+    const fallbackCountries = {
+      'Tunisie': ['1000', '2000', '3000', '4000', '5000', '6000', '7000', '8000', '9000'],
+      'Algérie': ['16000', '31000', '21000', '09000', '25000', '23000', '13000', '15000', '19000'],
+      'Sénégal': ['10000', '11000', '12000', '14000', '21000', '23000', '27000', '28000', '29000'],
+      'Côte d\'Ivoire': ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14'],
+      'Cameroun': ['237001', '237002', '237003', '237004', '237005', '237006', '237007', '237008', '237009'],
+      'Madagascar': ['101', '201', '301', '401', '501', '601'],
+      'Autre': ['001', '002', '003', '004', '005']
+    }
+    
+    // Ajouter les pays fallback
+    Object.keys(fallbackCountries).forEach(country => {
+      departmentsByCountry[country] = fallbackCountries[country]
     })
     
     return departmentsByCountry
@@ -101,6 +118,27 @@ export default function ShopSearch() {
 
     // Si un pays est sélectionné, afficher TOUS les départements de ce pays (même sans boutiques)
     const countryDepartments = departmentsByCountry[countryFilter] || []
+    
+    if (countryDepartments.length === 0) {
+      console.warn(`⚠️ Aucun département trouvé pour le pays: ${countryFilter}`)
+      // Fallback: chercher dans les boutiques pour ce pays spécifique
+      const fallbackDepartments = new Set()
+      allPlugs.forEach(plug => {
+        if (plug.countries && plug.countries.includes(countryFilter)) {
+          if (plug.services?.delivery?.departments && Array.isArray(plug.services.delivery.departments)) {
+            plug.services.delivery.departments.forEach(dept => {
+              if (dept && dept.trim() !== '') fallbackDepartments.add(dept)
+            })
+          }
+          if (plug.services?.meetup?.departments && Array.isArray(plug.services.meetup.departments)) {
+            plug.services.meetup.departments.forEach(dept => {
+              if (dept && dept.trim() !== '') fallbackDepartments.add(dept)
+            })
+          }
+        }
+      })
+      return Array.from(fallbackDepartments).sort((a, b) => a.localeCompare(b, undefined, { numeric: true }))
+    }
     
     // Retourner TOUS les départements du pays, triés
     return countryDepartments.sort((a, b) => a.localeCompare(b, undefined, { numeric: true }))
