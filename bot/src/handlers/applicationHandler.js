@@ -1321,23 +1321,67 @@ const handleServiceToggle = async (ctx) => {
     
     userForms.set(userId, userForm);
     
-    // Mettre à jour l'affichage
+    // Récupérer les traductions
+    const Config = require('../models/Config');
+    const config = await Config.findById('main');
+    const currentLang = config?.languages?.currentLanguage || 'fr';
+    const customTranslations = config?.languages?.translations;
+    
+    // Construire le message avec les services sélectionnés
     const services = userForm.data.services;
-    let servicesText = '';
+    let selectedServicesText = '';
     
-    if (services.meetup.enabled) servicesText += '📍 Meetup ✅\n';
-    if (services.delivery.enabled) servicesText += '🚚 Livraison ✅\n';
-    if (services.postal.enabled) servicesText += '✈️ Envoi Postal ✅\n';
+    if (services.delivery.enabled) {
+      selectedServicesText += `\n✅ ${getTranslation('registration.serviceDelivery', currentLang, customTranslations)}`;
+    }
+    if (services.meetup.enabled) {
+      selectedServicesText += `\n✅ ${getTranslation('registration.serviceMeetup', currentLang, customTranslations)}`;
+    }
+    if (services.shipping.enabled) {
+      selectedServicesText += `\n✅ ${getTranslation('registration.serviceShipping', currentLang, customTranslations)}`;
+    }
     
-    const message = `📝 **Récapitulatif de votre inscription :**\n\n` +
-      `📝 Nom de Plug: ${userForm.data.name}\n` +
-      `🔗 Telegram: ${userForm.data.telegram}\n` +
-      `🌍 Pays: ${userForm.data.country}\n` +
-      `🛠️ Services: ${servicesText}\n\n` +
-      `Quels services proposez-vous? (Sélectionnez tous ceux qui s'appliquent)`;
+    const message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
+      `⸻\n\n` +
+      `${getTranslation('registration.step12Services', currentLang, customTranslations)}\n\n` +
+      `${getTranslation('registration.servicesQuestion', currentLang, customTranslations)}\n\n` +
+      `${getTranslation('registration.servicesInstruction', currentLang, customTranslations)}` +
+      (selectedServicesText ? `\n\n**Services sélectionnés :**${selectedServicesText}` : '');
+    
+    // Créer les boutons avec ✅ pour les services sélectionnés
+    const deliveryText = services.delivery.enabled ? 
+      `✅ ${getTranslation('registration.serviceDelivery', currentLang, customTranslations)}` : 
+      getTranslation('registration.serviceDelivery', currentLang, customTranslations);
+    
+    const meetupText = services.meetup.enabled ? 
+      `✅ ${getTranslation('registration.serviceMeetup', currentLang, customTranslations)}` : 
+      getTranslation('registration.serviceMeetup', currentLang, customTranslations);
+    
+    const shippingText = services.shipping.enabled ? 
+      `✅ ${getTranslation('registration.serviceShipping', currentLang, customTranslations)}` : 
+      getTranslation('registration.serviceShipping', currentLang, customTranslations);
     
     const keyboard = Markup.inlineKeyboard([
       [
+        Markup.button.callback(meetupText, 'service_meetup'),
+        Markup.button.callback(deliveryText, 'service_delivery')
+      ],
+      [Markup.button.callback(shippingText, 'service_shipping')],
+      [Markup.button.callback(getTranslation('registration.continueToNext', currentLang, customTranslations), 'services_done')],
+      [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
+    ]);
+    
+    await safeEditMessage(ctx, message, {
+      reply_markup: keyboard.reply_markup
+    });
+    
+    await ctx.answerCbQuery();
+    
+  } catch (error) {
+    console.error('Erreur dans handleServiceToggle:', error);
+    await ctx.answerCbQuery('❌ Erreur');
+  }
+};
         Markup.button.callback(
           services.meetup.enabled ? '📍 Meetup ✅' : '📍 Meetup',
           'service_meetup'
