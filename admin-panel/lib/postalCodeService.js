@@ -2,72 +2,22 @@
 class PostalCodeService {
   constructor() {
     this.lastReload = new Date();
-    // Base de données des codes postaux par pays
+    // Base de données des codes postaux par pays - SEULEMENT LES PAYS DES BOUTIQUES RÉELLES
     this.postalCodes = {
       // 🇫🇷 FRANCE (01-99 départements + DOM-TOM)
       France: this.generateFrenchPostalCodes(),
       
-      // 🇪🇸 ESPAGNE (01-52 provinces)
-      Espagne: this.generateSpanishPostalCodes(),
+      // 🇧🇪 BELGIQUE (1000-9999)
+      Belgique: this.generateBelgianPostalCodes(),
       
       // 🇨🇭 SUISSE (1000-9999)
       Suisse: this.generateSwissPostalCodes(),
       
-      // 🇮🇹 ITALIE (00010-99999)
-      Italie: this.generateItalianPostalCodes(),
-      
-      // 🇩🇪 ALLEMAGNE (01067-99998)
-      Allemagne: this.generateGermanPostalCodes(),
-      
-      // 🇧🇪 BELGIQUE (1000-9999)
-      Belgique: this.generateBelgianPostalCodes(),
-      
       // 🇳🇱 PAYS-BAS (1000-9999)
       'Pays-Bas': this.generateDutchPostalCodes(),
       
-      // 🇬🇧 ROYAUME-UNI (Zones alphabétiques)
-      'Royaume-Uni': this.generateUKPostalCodes(),
-      
-      // 🇺🇸 USA (États + ZIP codes principaux)
-      'États-Unis': this.generateUSPostalCodes(),
-      
-      // 🇨🇦 CANADA (Provinces + codes principaux)
-      Canada: this.generateCanadianPostalCodes(),
-      
-      // 🇹🇭 THAÏLANDE (10000-99999)
-      Thaïlande: this.generateThaiPostalCodes(),
-      
-      // 🇲🇦 MAROC (10000-99999)
-      Maroc: this.generateMoroccanPostalCodes(),
-      
-      // 🇹🇳 TUNISIE (1000-9999)
-      Tunisie: this.generateTunisianPostalCodes(),
-      
-      // 🇸🇳 SÉNÉGAL (10000-99999)
-      Sénégal: this.generateSenegalesePostalCodes(),
-      
-      // 🇩🇿 ALGÉRIE (01000-99999)
-      Algérie: this.generateAlgerianPostalCodes(),
-      
-      // 🇨🇲 CAMEROUN (P.O.Box system + modern codes)
-      Cameroun: this.generateCameroonianPostalCodes(),
-      
-      // 🇨🇮 CÔTE D'IVOIRE (Traditional + modern system)
-      "Côte d'Ivoire": this.generateIvorianPostalCodes(),
-      
-      // 🇲🇬 MADAGASCAR (101-999)
-      Madagascar: this.generateMalagasyPostalCodes(),
-      
-      // 🇵🇹 PORTUGAL (1000-9999)
-      Portugal: this.generatePortuguesePostalCodes(),
-      
-      // 🇳🇱 PAYS-BAS (already implemented above)
-      
-      // 🇦🇺 AUSTRALIE (0000-9999)
-      Australie: this.generateAustralianPostalCodes(),
-      
-      // 🇧🇷 BRÉSIL (01000-999999)
-      Brésil: this.generateBrazilianPostalCodes(),
+      // 🏴 AUTRE (codes génériques)
+      Autre: this.generateGenericPostalCodes()
       
       // 🇯🇵 JAPON (100-0000 to 999-9999)
       Japon: this.generateJapanesePostalCodes()

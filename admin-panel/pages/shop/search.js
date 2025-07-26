@@ -8,7 +8,7 @@ import Pagination from '../../components/Pagination'
 import ShopCard from '../../components/ShopCard'
 import LanguageSelector, { useTranslation, getCurrentLanguage } from '../../components/LanguageSelector'
 import ShopNavigation from '../../components/ShopNavigation'
-import postalCodeService from '../../lib/postalCodeServiceVercel'
+import postalCodeService from '../../lib/postalCodeService'
 
 export default function ShopSearch() {
   const [plugs, setPlugs] = useState([])
@@ -43,26 +43,20 @@ export default function ShopSearch() {
     setCurrentLanguage(newLanguage)
   }
 
-  // Récupérer TOUS les pays européens + extras (même s'il n'y a pas de boutiques)
+  // Récupérer SEULEMENT les pays des boutiques réelles du bot Telegram
   const getAvailableCountries = () => {
-    // D'abord, récupérer tous les pays définis dans departmentsByCountry
-    const allDefinedCountries = Object.keys(departmentsByCountry)
-    
-    // Ensuite, ajouter les pays des boutiques existantes
     const shopsCountries = new Set()
     allPlugs.forEach(plug => {
       if (plug.countries && Array.isArray(plug.countries)) {
         plug.countries.forEach(country => {
-          if (country && country.trim() !== '' && country.toLowerCase() !== 'autre') {
+          if (country && country.trim() !== '') {
             shopsCountries.add(country)
           }
         })
       }
     })
     
-    // Combiner les deux listes et supprimer les doublons
-    const allCountries = new Set([...allDefinedCountries, ...Array.from(shopsCountries)])
-    return Array.from(allCountries).sort()
+    return Array.from(shopsCountries).sort()
   }
 
   // Utiliser le service postal partagé pour obtenir les départements corrects
@@ -75,21 +69,8 @@ export default function ShopSearch() {
       departmentsByCountry[country] = postalCodeService.getPostalCodes(country)
     })
     
-    // Ajouter des codes postaux génériques pour les pays non couverts par le service
-    const fallbackCountries = {
-      'Tunisie': ['1000', '2000', '3000', '4000', '5000', '6000', '7000', '8000', '9000'],
-      'Algérie': ['16000', '31000', '21000', '09000', '25000', '23000', '13000', '15000', '19000'],
-      'Sénégal': ['10000', '11000', '12000', '14000', '21000', '23000', '27000', '28000', '29000'],
-      'Côte d\'Ivoire': ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14'],
-      'Cameroun': ['237001', '237002', '237003', '237004', '237005', '237006', '237007', '237008', '237009'],
-      'Madagascar': ['101', '201', '301', '401', '501', '601'],
-      'Autre': ['001', '002', '003', '004', '005']
-    }
-    
-    // Ajouter les pays fallback
-    Object.keys(fallbackCountries).forEach(country => {
-      departmentsByCountry[country] = fallbackCountries[country]
-    })
+    // SUPPRIMÉ: Plus de pays fallback hardcodés
+    // Seulement les pays des vraies boutiques Telegram
     
     return departmentsByCountry
   }
