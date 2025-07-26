@@ -397,23 +397,7 @@ bot.action(/^top_country_(.+)$/, (ctx) => {
   return handleTopCountryFilter(ctx, country);
 });
 
-bot.action(/^top_service_(.+)$/, (ctx) => {
-  const fullMatch = ctx.match[1];
-  const parts = fullMatch.split('_');
-  const serviceType = parts[0]; // delivery, meetup, postal
-  const selectedCountry = parts.length > 1 ? parts[1] : null;
-  return handleTopServiceFilter(ctx, serviceType, selectedCountry);
-});
-
-bot.action(/^top_departments_(.+)$/, (ctx) => {
-  console.log(`🔥 CALLBACK top_departments_ DÉCLENCHÉ! Match: ${ctx.match[1]}`);
-  const fullMatch = ctx.match[1];
-  const parts = fullMatch.split('_');
-  const serviceType = parts[0]; // delivery ou meetup
-  const selectedCountry = parts.length > 1 ? parts[1] : null;
-  console.log(`🔥 Parsed: serviceType=${serviceType}, selectedCountry=${selectedCountry}`);
-  return handleDepartmentsList(ctx, serviceType, selectedCountry);
-});
+// Services supprimés - navigation directe par pays
 
 bot.action(/^top_dept_([^_]+)_([^_]+)(?:_(.+))?$/, (ctx) => {
   console.log(`🔥 CALLBACK COMPLET: "${ctx.match[0]}"`);

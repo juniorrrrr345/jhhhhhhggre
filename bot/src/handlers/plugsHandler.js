@@ -55,8 +55,6 @@ const handleTopPlugs = async (ctx) => {
     const helpMessage = getTranslation('messages_topPlugsHelp', currentLang, customTranslations);
     message += `💡 **${helpMessage}**\n`;
     message += `• ${getTranslation('messages_selectCountry', currentLang, customTranslations)}\n`;
-    message += `• ${getTranslation('messages_selectService', currentLang, customTranslations)}\n`;
-    message += `• ${getTranslation('messages_selectPostalCode', currentLang, customTranslations)}\n`;
     message += `• ${getTranslation('messages_findShops', currentLang, customTranslations)}\n\n`;
     
     // Afficher les premiers plugs (top 10 par défaut)
@@ -1130,29 +1128,7 @@ const createTopPlugsKeyboard = (config, countries, selectedCountry, selectedServ
     }
   }
   
-  // Deuxième ligne : Filtres de services avec traductions
-  const serviceRow = [];
-  
-  const deliveryName = getTranslation('filters_delivery', currentLang, customTranslations);
-  const meetupName = getTranslation('filters_meetup', currentLang, customTranslations);
-  const postalName = getTranslation('filters_postal', currentLang, customTranslations);
-  
-  const deliveryText = selectedService === 'delivery' ? `✅ ${deliveryName}` : deliveryName;
-  const meetupText = selectedService === 'meetup' ? `✅ ${meetupName}` : meetupName;
-  const postalText = selectedService === 'postal' ? `✅ ${postalName}` : postalName;
-  
-  serviceRow.push(Markup.button.callback(deliveryText, `top_service_delivery${selectedCountry ? `_${selectedCountry}` : ''}`));
-  serviceRow.push(Markup.button.callback(meetupText, `top_service_meetup${selectedCountry ? `_${selectedCountry}` : ''}`));
-  serviceRow.push(Markup.button.callback(postalText, `top_service_postal${selectedCountry ? `_${selectedCountry}` : ''}`));
-  
-  buttons.push(serviceRow);
-  
-  // Troisième ligne : Département (si service delivery ou meetup sélectionné)
-  if (selectedService === 'delivery' || selectedService === 'meetup') {
-    const deptText = getTranslation('filters_department', currentLang, customTranslations);
-    const deptButton = Markup.button.callback(deptText, `top_departments_${selectedService}${selectedCountry ? `_${selectedCountry}` : ''}`);
-    buttons.push([deptButton]);
-  }
+  // Services supprimés - affichage direct des boutiques par vote
   
   // Ajouter les boutons de boutiques s'il y en a
   if (plugButtons && plugButtons.length > 0) {
