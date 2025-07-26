@@ -770,32 +770,32 @@ const translations = {
       de: 'Wählen Sie alle Services aus, die Sie anbieten:'
     },
     'registration.departmentsDeliveryQuestion': {
-      fr: '🚚 Dans quels départements fais-tu de la LIVRAISON ?',
-      en: '🚚 In which departments do you do DELIVERY?',
-      it: '🚚 In quali dipartimenti fai CONSEGNA?',
-      es: '🚚 ¿En qué departamentos haces ENTREGA?',
-      de: '🚚 In welchen Departements machen Sie LIEFERUNG?'
+      fr: '🚚 Dans quels NUMÉROS de départements fais-tu de la LIVRAISON ?',
+      en: '🚚 In which department NUMBERS do you do DELIVERY?',
+      it: '🚚 In quali NUMERI di dipartimenti fai CONSEGNA?',
+      es: '🚚 ¿En qué NÚMEROS de departamentos haces ENTREGA?',
+      de: '🚚 In welchen Departement-NUMMERN machen Sie LIEFERUNG?'
     },
     'registration.departmentsMeetupQuestion': {
-      fr: '🤝 Dans quels départements fais-tu du MEETUP ?',
-      en: '🤝 In which departments do you do MEETUP?',
-      it: '🤝 In quali dipartimenti fai MEETUP?',
-      es: '🤝 ¿En qué departamentos haces MEETUP?',
-      de: '🤝 In welchen Departements machen Sie MEETUP?'
+      fr: '🤝 Dans quels NUMÉROS de départements fais-tu du MEETUP ?',
+      en: '🤝 In which department NUMBERS do you do MEETUP?',
+      it: '🤝 In quali NUMERI di dipartimenti fai MEETUP?',
+      es: '🤝 ¿En qué NÚMEROS de departamentos haces MEETUP?',
+      de: '🤝 In welchen Departement-NUMMERN machen Sie MEETUP?'
     },
     'registration.departmentsShippingQuestion': {
-      fr: '📦 Dans quels départements fais-tu de l\'ENVOI ?',
-      en: '📦 In which departments do you do SHIPPING?',
-      it: '📦 In quali dipartimenti fai SPEDIZIONE?',
-      es: '📦 ¿En qué departamentos haces ENVÍO?',
-      de: '📦 In welchen Departements machen Sie VERSAND?'
+      fr: '📦 Dans quels NUMÉROS de départements fais-tu de l\'ENVOI ?',
+      en: '📦 In which department NUMBERS do you do SHIPPING?',
+      it: '📦 In quali NUMERI di dipartimenti fai SPEDIZIONE?',
+      es: '📦 ¿En qué NÚMEROS de departamentos haces ENVÍO?',
+      de: '📦 In welchen Departement-NUMMERN machen Sie VERSAND?'
     },
     'registration.departmentsInstruction': {
-      fr: 'Écris les départements séparés par des virgules (ex: 75, 92, 93)',
-      en: 'Write departments separated by commas (ex: 75, 92, 93)',
-      it: 'Scrivi i dipartimenti separati da virgole (es: 75, 92, 93)',
-      es: 'Escribe los departamentos separados por comas (ej: 75, 92, 93)',
-      de: 'Schreiben Sie Departements getrennt durch Kommas (z.B: 75, 92, 93)'
+      fr: 'Écris les NUMÉROS de départements séparés par des virgules (exemple: 75, 92, 93, 94)',
+      en: 'Write the department NUMBERS separated by commas (example: 75, 92, 93, 94)',
+      it: 'Scrivi i NUMERI dei dipartimenti separati da virgole (esempio: 75, 92, 93, 94)',
+      es: 'Escribe los NÚMEROS de departamentos separados por comas (ejemplo: 75, 92, 93, 94)',
+      de: 'Schreiben Sie die Departement-NUMMERN getrennt durch Kommas (Beispiel: 75, 92, 93, 94)'
     },
     'registration.continueToNext': {
       fr: '➡️ Continuer',
