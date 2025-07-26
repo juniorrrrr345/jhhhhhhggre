@@ -1443,12 +1443,12 @@ const handleSkipStep = async (ctx, step) => {
         
         const snapchatKeyboard = Markup.inlineKeyboard([
           [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_snapchat')],
+          [Markup.button.callback(getTranslation('registration.goBack', currentLang, customTranslations), 'go_back_telegram')],
           [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
         ]);
         
         await safeEditMessage(ctx, snapchatMessage, {
-          reply_markup: snapchatKeyboard.reply_markup,
-          parse_mode: 'Markdown'
+          reply_markup: snapchatKeyboard.reply_markup
         });
         break;
         
@@ -1479,20 +1479,20 @@ const handleSkipStep = async (ctx, step) => {
         userForms.set(userId, userForm);
         console.log('➡️ Skip potato → signal');
         
-        const signalMessage = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
+        const signalFromPotatoMessage = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
           `⸻\n\n` +
           `${getTranslation('registration.step5', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.signalQuestion', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
         
-        const signalKeyboard = Markup.inlineKeyboard([
+        const signalFromPotatoKeyboard = Markup.inlineKeyboard([
           [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_signal')],
+          [Markup.button.callback(getTranslation('registration.goBack', currentLang, customTranslations), 'go_back_potato')],
           [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
         ]);
         
-        await safeEditMessage(ctx, signalMessage, {
-          reply_markup: signalKeyboard.reply_markup,
-          parse_mode: 'Markdown'
+        await safeEditMessage(ctx, signalFromPotatoMessage, {
+          reply_markup: signalFromPotatoKeyboard.reply_markup
         });
         break;
         
@@ -1501,20 +1501,20 @@ const handleSkipStep = async (ctx, step) => {
         userForms.set(userId, userForm);
         console.log('➡️ Skip signal → whatsapp');
         
-        const whatsappMessage = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
+        const whatsappFromSignalMessage = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
           `⸻\n\n` +
           `${getTranslation('registration.step6', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.whatsappQuestion', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
         
-        const whatsappKeyboard = Markup.inlineKeyboard([
+        const whatsappFromSignalKeyboard = Markup.inlineKeyboard([
           [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_whatsapp')],
+          [Markup.button.callback(getTranslation('registration.goBack', currentLang, customTranslations), 'go_back_signal')],
           [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
         ]);
         
-        await safeEditMessage(ctx, whatsappMessage, {
-          reply_markup: whatsappKeyboard.reply_markup,
-          parse_mode: 'Markdown'
+        await safeEditMessage(ctx, whatsappFromSignalMessage, {
+          reply_markup: whatsappFromSignalKeyboard.reply_markup
         });
         break;
         
@@ -1523,19 +1523,20 @@ const handleSkipStep = async (ctx, step) => {
         userForms.set(userId, userForm);
         console.log('➡️ Skip whatsapp → threema');
         
-        const threemaMessage = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
+        const threemaFromWhatsappMessage = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
           `⸻\n\n` +
           `${getTranslation('registration.step7', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.threemaQuestion', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
         
-        const threemaKeyboard = Markup.inlineKeyboard([
+        const threemaFromWhatsappKeyboard = Markup.inlineKeyboard([
           [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_threema')],
+          [Markup.button.callback(getTranslation('registration.goBack', currentLang, customTranslations), 'go_back_whatsapp')],
           [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
         ]);
         
-        await safeEditMessage(ctx, threemaMessage, {
-          reply_markup: threemaKeyboard.reply_markup,
+        await safeEditMessage(ctx, threemaFromWhatsappMessage, {
+          reply_markup: threemaFromWhatsappKeyboard.reply_markup,
           parse_mode: 'Markdown'
         });
         break;
@@ -1545,19 +1546,20 @@ const handleSkipStep = async (ctx, step) => {
         userForms.set(userId, userForm);
         console.log('➡️ Skip threema → session');
         
-        const sessionMessage = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
+        const sessionFromThreemaMessage = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
           `⸻\n\n` +
           `${getTranslation('registration.step8', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.sessionQuestion', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
         
-        const sessionKeyboard = Markup.inlineKeyboard([
+        const sessionFromThreemaKeyboard = Markup.inlineKeyboard([
           [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_session')],
+          [Markup.button.callback(getTranslation('registration.goBack', currentLang, customTranslations), 'go_back_threema')],
           [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
         ]);
         
-        await safeEditMessage(ctx, sessionMessage, {
-          reply_markup: sessionKeyboard.reply_markup,
+        await safeEditMessage(ctx, sessionFromThreemaMessage, {
+          reply_markup: sessionFromThreemaKeyboard.reply_markup,
           parse_mode: 'Markdown'
         });
         break;
@@ -1929,13 +1931,14 @@ const handleGoBack = async (ctx) => {
   const currentLang = config?.languages?.currentLanguage || 'fr';
   const customTranslations = config?.languages?.translations;
 
-  // Définir les étapes précédentes
+  // Définir les étapes précédentes selon le VRAI ordre du formulaire
   const stepHistory = {
     'telegram': 'name',
     'snapchat': 'telegram',
-    'whatsapp': 'snapchat', 
-    'signal': 'whatsapp',
-    'threema': 'signal',
+    'potato': 'snapchat',
+    'signal': 'potato', 
+    'whatsapp': 'signal',
+    'threema': 'whatsapp',
     'session': 'threema',
     'instagram': 'session',
     'telegram_bot': 'instagram',
@@ -1956,24 +1959,83 @@ const handleGoBack = async (ctx) => {
   userForm.step = previousStep;
   userForms.set(userId, userForm);
 
-  // Afficher l'étape précédente
-  if (previousStep === 'name') {
-    const message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
-      `⸻\n\n` +
-      `${getTranslation('registration.step1', currentLang, customTranslations)}\n\n` +
-      `${getTranslation('registration.nameQuestion', currentLang, customTranslations)}`;
-    
-    const keyboard = Markup.inlineKeyboard([
-      [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
-    ]);
+  // Afficher l'étape précédente avec le bon message et boutons
+  switch (previousStep) {
+    case 'name':
+      const nameMessage = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
+        `⸻\n\n` +
+        `${getTranslation('registration.step1', currentLang, customTranslations)}\n\n` +
+        `${getTranslation('registration.nameQuestion', currentLang, customTranslations)}`;
+      
+      const nameKeyboard = Markup.inlineKeyboard([
+        [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
+      ]);
 
-    await safeEditMessage(ctx, message, {
-      reply_markup: keyboard.reply_markup,
-      parse_mode: 'Markdown'
-    });
-  } else {
-    // Pour les autres étapes, utiliser replyWithStep
-    await replyWithStep(ctx, previousStep);
+      await safeEditMessage(ctx, nameMessage, {
+        reply_markup: nameKeyboard.reply_markup,
+        parse_mode: 'Markdown'
+      });
+      break;
+
+    case 'telegram':
+      const telegramMessage = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
+        `⸻\n\n` +
+        `${getTranslation('registration.step2', currentLang, customTranslations)}\n\n` +
+        `${getTranslation('registration.telegramQuestion', currentLang, customTranslations)}`;
+      
+      const telegramKeyboard = Markup.inlineKeyboard([
+        [Markup.button.callback(getTranslation('registration.goBack', currentLang, customTranslations), 'go_back_name')],
+        [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
+      ]);
+
+      await safeEditMessage(ctx, telegramMessage, {
+        reply_markup: telegramKeyboard.reply_markup,
+        parse_mode: 'Markdown'
+      });
+      break;
+
+    case 'snapchat':
+      const snapchatBackMessage = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
+        `⸻\n\n` +
+        `${getTranslation('registration.step3', currentLang, customTranslations)}\n\n` +
+        `${getTranslation('registration.snapchatQuestion', currentLang, customTranslations)}\n\n` +
+        `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
+      
+      const snapchatBackKeyboard = Markup.inlineKeyboard([
+        [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_snapchat')],
+        [Markup.button.callback(getTranslation('registration.goBack', currentLang, customTranslations), 'go_back_telegram')],
+        [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
+      ]);
+
+      await safeEditMessage(ctx, snapchatBackMessage, {
+        reply_markup: snapchatBackKeyboard.reply_markup,
+        parse_mode: 'Markdown'
+      });
+      break;
+
+    case 'potato':
+      const potatoBackMessage = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
+        `⸻\n\n` +
+        `${getTranslation('registration.step4', currentLang, customTranslations)}\n\n` +
+        `${getTranslation('registration.potatoQuestion', currentLang, customTranslations)}\n\n` +
+        `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
+      
+      const potatoBackKeyboard = Markup.inlineKeyboard([
+        [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_potato')],
+        [Markup.button.callback(getTranslation('registration.goBack', currentLang, customTranslations), 'go_back_snapchat')],
+        [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
+      ]);
+
+      await safeEditMessage(ctx, potatoBackMessage, {
+        reply_markup: potatoBackKeyboard.reply_markup,
+        parse_mode: 'Markdown'
+      });
+      break;
+
+    default:
+      // Pour les autres étapes, construire le message approprié
+      await replyWithStep(ctx, previousStep);
+      break;
   }
 };
 

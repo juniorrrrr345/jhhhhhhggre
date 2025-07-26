@@ -495,6 +495,7 @@ bot.action('go_back_name', handleGoBack);
 bot.action('go_back_telegram', handleGoBack);
 bot.action('go_back_telegram_channel', handleGoBack);
 bot.action('go_back_snapchat', handleGoBack);
+bot.action('go_back_potato', handleGoBack);
 bot.action('go_back_whatsapp', handleGoBack);
 bot.action('go_back_signal', handleGoBack);
 bot.action('go_back_threema', handleGoBack);
