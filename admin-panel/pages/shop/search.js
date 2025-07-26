@@ -18,6 +18,7 @@ export default function ShopSearch() {
   const [search, setSearch] = useState('')
   const [countryFilter, setCountryFilter] = useState('')
   const [serviceFilter, setServiceFilter] = useState('')
+  const [departmentFilter, setDepartmentFilter] = useState('')
   const [vipFilter, setVipFilter] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
   const [currentLanguage, setCurrentLanguage] = useState('fr')
@@ -56,9 +57,33 @@ export default function ShopSearch() {
     return Array.from(countries).sort()
   }
 
+  // Récupérer les départements disponibles dynamiquement depuis les boutiques
+  const getAvailableDepartments = () => {
+    const departments = new Set()
+    allPlugs.forEach(plug => {
+      // Départements de livraison
+      if (plug.services?.delivery?.departments && Array.isArray(plug.services.delivery.departments)) {
+        plug.services.delivery.departments.forEach(dept => {
+          if (dept && dept.trim() !== '') {
+            departments.add(dept)
+          }
+        })
+      }
+      // Départements de meetup
+      if (plug.services?.meetup?.departments && Array.isArray(plug.services.meetup.departments)) {
+        plug.services.meetup.departments.forEach(dept => {
+          if (dept && dept.trim() !== '') {
+            departments.add(dept)
+          }
+        })
+      }
+    })
+    return Array.from(departments).sort((a, b) => a.localeCompare(b, undefined, { numeric: true }))
+  }
+
   useEffect(() => {
     filterPlugs()
-  }, [search, countryFilter, serviceFilter, vipFilter, allPlugs])
+  }, [search, countryFilter, serviceFilter, departmentFilter, vipFilter, allPlugs])
 
   const fetchConfig = async () => {
     try {
@@ -141,11 +166,15 @@ export default function ShopSearch() {
         (serviceFilter === 'postal' && plug.services?.postal?.enabled) ||
         (serviceFilter === 'meetup' && plug.services?.meetup?.enabled)
       
+      const matchesDepartment = departmentFilter === '' || 
+        (plug.services?.delivery?.departments && plug.services.delivery.departments.includes(departmentFilter)) ||
+        (plug.services?.meetup?.departments && plug.services.meetup.departments.includes(departmentFilter))
+      
       const matchesVip = vipFilter === '' || 
         (vipFilter === 'vip' && plug.isVip) ||
         (vipFilter === 'standard' && !plug.isVip)
       
-      return matchesSearch && matchesCountry && matchesService && matchesVip
+      return matchesSearch && matchesCountry && matchesService && matchesDepartment && matchesVip
     })
 
     filtered = filtered.sort((a, b) => {
@@ -162,6 +191,7 @@ export default function ShopSearch() {
     setSearch('')
     setCountryFilter('')
     setServiceFilter('')
+    setDepartmentFilter('')
     setVipFilter('')
   }
 
@@ -351,9 +381,28 @@ export default function ShopSearch() {
               }}
             >
               <option value="">🚀 {t('all_services') || 'Tous services'}</option>
-              <option value="delivery">📦 {t('delivery') || 'Livraison'}</option>
-              <option value="postal">📍 {t('postal') || 'Postal'}</option>
-              <option value="meetup">💰 {t('meetup') || 'Meetup'}</option>
+              <option value="delivery">🛵 {t('delivery') || 'Livraison'}</option>
+              <option value="postal">📬 {t('postal') || 'Postal'}</option>
+              <option value="meetup">🤝 {t('meetup') || 'Meetup'}</option>
+            </select>
+
+            <select
+              value={departmentFilter}
+              onChange={(e) => setDepartmentFilter(e.target.value)}
+              style={{
+                padding: '8px 12px',
+                backgroundColor: '#2a2a2a',
+                border: '1px solid #3a3a3a',
+                borderRadius: '6px',
+                color: '#ffffff',
+                fontSize: '14px',
+                boxSizing: 'border-box'
+              }}
+            >
+              <option value="">🗺️ {t('all_departments') || 'Tous départements'}</option>
+              {getAvailableDepartments().map(department => (
+                <option key={department} value={department}>{department}</option>
+              ))}
             </select>
 
             <select

@@ -228,7 +228,7 @@ export default function ShopCard({ plug, index, layout = 'grid', currentLanguage
                 whiteSpace: 'nowrap',
                 border: '1px solid #22c55e'
               }}>
-                <span>📦</span>
+                <span>🛵</span>
                 <span>{translateService('delivery')}</span>
                 {plug.services?.delivery?.departments && plug.services.delivery.departments.length > 0 && (
                   <span style={{ opacity: 0.8, marginLeft: '2px' }}>
