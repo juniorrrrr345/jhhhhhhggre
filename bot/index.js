@@ -1326,16 +1326,25 @@ bot.action('toggle_service_meetup', async (ctx) => {
     // Toggle du service
     const index = userForm.data.selectedServices.indexOf('meetup');
     if (index > -1) {
+      // Décocher - supprimer le service et ses codes postaux
       userForm.data.selectedServices.splice(index, 1);
-      delete userForm.data.meetupPostalCodes; // Supprimer les codes postaux
+      delete userForm.data.meetupPostalCodes;
+      userForms.set(userId, userForm);
       await ctx.answerCbQuery('❌ Meet Up désélectionné');
+      await askServices(ctx);
     } else {
+      // Cocher - ajouter le service et demander les codes postaux
       userForm.data.selectedServices.push('meetup');
+      userForm.step = 'meetup_postal_codes';
+      userForm.data.meetupPostalCodes = {};
+      userForm.data.currentCountryIndex = 0;
+      userForm.data.currentService = 'meetup';
+      userForms.set(userId, userForm);
       await ctx.answerCbQuery('✅ Meet Up sélectionné');
+      
+      // Commencer directement par le premier pays
+      await askMeetupPostalForCountry(ctx, 0);
     }
-    
-    userForms.set(userId, userForm);
-    await askServices(ctx);
     
   } catch (error) {
     console.error('Erreur toggle_service_meetup:', error);
@@ -1360,16 +1369,25 @@ bot.action('toggle_service_delivery', async (ctx) => {
     // Toggle du service
     const index = userForm.data.selectedServices.indexOf('delivery');
     if (index > -1) {
+      // Décocher - supprimer le service et ses codes postaux
       userForm.data.selectedServices.splice(index, 1);
-      delete userForm.data.deliveryPostalCodes; // Supprimer les codes postaux
+      delete userForm.data.deliveryPostalCodes;
+      userForms.set(userId, userForm);
       await ctx.answerCbQuery('❌ Livraison désélectionnée');
+      await askServices(ctx);
     } else {
+      // Cocher - ajouter le service et demander les codes postaux
       userForm.data.selectedServices.push('delivery');
+      userForm.step = 'delivery_postal_codes';
+      userForm.data.deliveryPostalCodes = {};
+      userForm.data.currentCountryIndex = 0;
+      userForm.data.currentService = 'delivery';
+      userForms.set(userId, userForm);
       await ctx.answerCbQuery('✅ Livraison sélectionnée');
+      
+      // Commencer directement par le premier pays
+      await askDeliveryPostalForCountry(ctx, 0);
     }
-    
-    userForms.set(userId, userForm);
-    await askServices(ctx);
     
   } catch (error) {
     console.error('Erreur toggle_service_delivery:', error);
