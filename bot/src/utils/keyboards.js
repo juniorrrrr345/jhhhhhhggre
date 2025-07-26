@@ -125,8 +125,9 @@ const createMainKeyboard = (config) => {
   
   // Boutons Contact et Info sur la même ligne avec traductions
   const secondRow = [];
-  const contactText = config?.buttons?.contact?.text || getTranslation('menu_contact', currentLang, customTranslations);
-  const infoText = config?.buttons?.info?.text || getTranslation('menu_info', currentLang, customTranslations);
+  // Utiliser les traductions en priorité, puis fallback sur config panel admin
+  const contactText = getTranslation('menu_contact', currentLang, customTranslations) || config?.buttons?.contact?.text;
+  const infoText = getTranslation('menu_info', currentLang, customTranslations) || config?.buttons?.info?.text;
   
   secondRow.push(Markup.button.callback(contactText, 'contact'));
   secondRow.push(Markup.button.callback(infoText, 'info'));

@@ -28,9 +28,8 @@ const handleContact = async (ctx) => {
     const contactTitle = getTranslation('menu_contact', currentLang, customTranslations);
     const defaultContactText = getTranslation('contact_default_text', currentLang, customTranslations) || 'Contactez-nous pour plus d\'informations !';
     
-    // Utiliser le contenu du panel admin en priorité, sinon traduction par défaut
-    const contactContent = config?.buttons?.contact?.content;
-    const finalContactText = contactContent || defaultContactText;
+    // Utiliser les traductions en priorité pour le multilingue, puis fallback sur panel admin
+    const finalContactText = defaultContactText || config?.buttons?.contact?.content;
     console.log('📞 Contact content utilisé:', finalContactText);
     
     let message = `${contactTitle}\n\n${finalContactText}`;
@@ -155,9 +154,8 @@ const handleInfo = async (ctx) => {
     const infoTitle = getTranslation('menu_info', currentLang, customTranslations);
     const defaultInfoText = getTranslation('info_default_text', currentLang, customTranslations) || 'Découvrez notre plateforme premium.';
     
-    // Utiliser le contenu du panel admin en priorité, sinon traduction par défaut
-    const infoContent = config?.buttons?.info?.content;
-    const finalInfoText = infoContent || defaultInfoText;
+    // Utiliser les traductions en priorité pour le multilingue, puis fallback sur panel admin
+    const finalInfoText = defaultInfoText || config?.buttons?.info?.content;
     console.log('ℹ️ Info content utilisé:', finalInfoText);
     
     const message = `${infoTitle}\n\n${finalInfoText}`;
