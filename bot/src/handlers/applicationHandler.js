@@ -1633,6 +1633,7 @@ const handleSkipStep = async (ctx, step) => {
           `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
         
         const potatoKeyboard = Markup.inlineKeyboard([
+          [Markup.button.callback(getTranslation('registration.goBack', currentLang, customTranslations), 'go_back_snapchat')],
           [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_potato')],
           [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
         ]);
