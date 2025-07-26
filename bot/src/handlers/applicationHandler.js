@@ -56,7 +56,13 @@ const COUNTRIES = [
   { code: 'SI', name: 'Slovénie', flag: '🇸🇮' },
   { code: 'CH', name: 'Suisse', flag: '🇨🇭' },
   { code: 'SE', name: 'Suède', flag: '🇸🇪' },
+  { code: 'TR', name: 'Turquie', flag: '🇹🇷' },
   { code: 'UA', name: 'Ukraine', flag: '🇺🇦' },
+  
+  // PAYS CAUCASIENS ET ASIE OCCIDENTALE
+  { code: 'AM', name: 'Arménie', flag: '🇦🇲' },
+  { code: 'AZ', name: 'Azerbaïdjan', flag: '🇦🇿' },
+  { code: 'GE', name: 'Géorgie', flag: '🇬🇪' },
   
   // PAYS SPÉCIAUX (hors Europe)
   { code: 'CA', name: 'Canada', flag: '🇨🇦' },
