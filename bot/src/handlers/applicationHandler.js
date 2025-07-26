@@ -227,9 +227,6 @@ const handleFormMessage = async (ctx) => {
     // Ignorer l'erreur si on ne peut pas supprimer
   }
   
-  // Supprimer l'ancien message du bot avant d'afficher la prochaine question
-  await deleteLastBotMessage(ctx, userId);
-  
   // Récupérer la langue pour les erreurs (en dehors du switch)
   const Config = require('../models/Config');
   const config = await Config.findById('main');
@@ -718,13 +715,10 @@ const askPotato = async (ctx) => {
     [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
   ]);
   
-  const sentMessage = await ctx.reply(message, {
+  await safeEditMessage(ctx, message, {
     reply_markup: keyboard.reply_markup,
-    parse_mode: 'Markdown',
-    disable_web_page_preview: true
+    parse_mode: 'Markdown'
   });
-  
-  lastBotMessages.set(userId, sentMessage.message_id);
 };
 
 // Demander Snapchat
@@ -746,13 +740,10 @@ const askSnapchat = async (ctx) => {
     [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
   ]);
   
-  const sentMessage = await ctx.reply(message, {
+  await safeEditMessage(ctx, message, {
     reply_markup: keyboard.reply_markup,
-    parse_mode: 'Markdown',
-    disable_web_page_preview: true
+    parse_mode: 'Markdown'
   });
-  
-  lastBotMessages.set(userId, sentMessage.message_id);
 };
 
 // Demander WhatsApp
@@ -781,13 +772,11 @@ const askWhatsApp = async (ctx) => {
     
     console.log(`⌨️ askWhatsApp: Keyboard created`);
     
-    const sentMessage = await ctx.reply(message, {
+    await safeEditMessage(ctx, message, {
       reply_markup: keyboard.reply_markup,
-      parse_mode: 'Markdown',
-      disable_web_page_preview: true
+      parse_mode: 'Markdown'
     });
     
-    lastBotMessages.set(userId, sentMessage.message_id);
     console.log(`✅ askWhatsApp: Message sent successfully`);
   } catch (error) {
     console.error(`❌ askWhatsApp ERROR:`, error);
@@ -814,13 +803,10 @@ const askSignal = async (ctx) => {
     [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
   ]);
   
-  const sentMessage = await ctx.reply(message, {
+  await safeEditMessage(ctx, message, {
     reply_markup: keyboard.reply_markup,
-    parse_mode: 'Markdown',
-    disable_web_page_preview: true
+    parse_mode: 'Markdown'
   });
-  
-  lastBotMessages.set(userId, sentMessage.message_id);
 };
 
 // Demander Session
@@ -842,13 +828,10 @@ const askSession = async (ctx) => {
     [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
   ]);
   
-  const sentMessage = await ctx.reply(message, {
+  await safeEditMessage(ctx, message, {
     reply_markup: keyboard.reply_markup,
-    parse_mode: 'Markdown',
-    disable_web_page_preview: true
+    parse_mode: 'Markdown'
   });
-  
-  lastBotMessages.set(userId, sentMessage.message_id);
 };
 
 // Demander Threema
@@ -870,13 +853,10 @@ const askThreema = async (ctx) => {
     [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
   ]);
   
-  const sentMessage = await ctx.reply(message, {
+  await safeEditMessage(ctx, message, {
     reply_markup: keyboard.reply_markup,
-    parse_mode: 'Markdown',
-    disable_web_page_preview: true
+    parse_mode: 'Markdown'
   });
-  
-  lastBotMessages.set(userId, sentMessage.message_id);
 };
 
 // Demander Bot Telegram
@@ -899,13 +879,10 @@ const askTelegramBot = async (ctx) => {
     [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
   ]);
   
-  const sentMessage = await ctx.reply(message, {
+  await safeEditMessage(ctx, message, {
     reply_markup: keyboard.reply_markup,
-    parse_mode: 'Markdown',
-    disable_web_page_preview: true
+    parse_mode: 'Markdown'
   });
-  
-  lastBotMessages.set(userId, sentMessage.message_id);
 };
 
 // Demander le pays avec boutons
@@ -1139,13 +1116,10 @@ const askPhoto = async (ctx) => {
     [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
   ]);
   
-  const sentMessage = await ctx.reply(message, {
+  await safeEditMessage(ctx, message, {
     reply_markup: keyboard.reply_markup,
-    parse_mode: 'Markdown',
-    disable_web_page_preview: true
+    parse_mode: 'Markdown'
   });
-  
-  lastBotMessages.set(userId, sentMessage.message_id);
 };
 
 
