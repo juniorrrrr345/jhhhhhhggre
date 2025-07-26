@@ -1449,12 +1449,12 @@ const askWorkingCountries = async (ctx) => {
   
   const selectedCountries = userForm.data.workingCountries;
 
-  const message = `🛠️ **FORMULAIRE D'INSCRIPTION – FindYourPlug**\n\n` +
+  const message = `🛠️ FORMULAIRE D'INSCRIPTION – FindYourPlug\n\n` +
     `⸻\n\n` +
-    `🌍 **Étape 3 : Pays de travail**\n\n` +
+    `🌍 Étape 12 : Pays de travail\n\n` +
     `Il choisit un ou plusieurs pays où vous travaillez ou où le service est disponible.\n\n` +
     (selectedCountries.length > 0 ? 
-      `✅ **Pays sélectionnés :** ${selectedCountries.join(', ')}\n\n` : 
+      `✅ Pays sélectionnés : ${selectedCountries.join(', ')}\n\n` : 
       `⚪ Aucun pays sélectionné\n\n`) +
     `👆 Sélectionnez vos pays de travail :`;
 
@@ -3019,8 +3019,7 @@ const askMeetupPostalForCountry = async (ctx, countryIndex) => {
     `🤝 Service "Meet Up" - Codes postaux\n\n` +
     `📍 Pays actuel : ${currentCountry}\n` +
     `📊 Progression : ${countryIndex + 1}/${countries.length}\n\n` +
-    `Entrez le code postal pour ${currentCountry} :\n\n` +
-    `Ensuite, cliquez sur "valider"`;
+    `Entrez le code postal pour ${currentCountry} :`;
   
   userForm.step = 'waiting_meetup_postal';
   userForm.data.currentCountryIndex = countryIndex;
