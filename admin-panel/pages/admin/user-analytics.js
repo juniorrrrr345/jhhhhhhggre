@@ -41,19 +41,33 @@ export default function UserAnalytics() {
       setStats(prev => ({ ...prev, loading: true }))
       setNextUpdateIn(30) // Reset le compteur lors de l'actualisation manuelle
       
-      const token = localStorage.getItem('adminToken') || 'ADMIN_TOKEN_F3F3FC574B8A95875449DBD68128C434CE3D7FB3F054567B0D3EAD3D9F1B01B1'
-      const response = await api.get(`/admin/user-analytics?timeRange=${timeRange}`, token)
-      console.log('📊 Response API user-analytics:', response)
+      // Bypass du proxy - appel direct à l'API bot
+      const botApiUrl = 'https://jhhhhhhggre.onrender.com'
+      const response = await fetch(`${botApiUrl}/api/admin/user-analytics?timeRange=${timeRange}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
       
-      if (response.ok) {
-        console.log('✅ Stats reçues:', response.data)
+      const data = await response.json()
+      console.log('📊 Response direct API:', data)
+      
+      const apiResponse = {
+        ok: response.ok,
+        data: data
+      }
+              console.log('📊 Response API user-analytics:', apiResponse)
+        
+        if (apiResponse.ok) {
+          console.log('✅ Stats reçues:', apiResponse.data)
         setStats({
-          ...response.data,
+          ...apiResponse.data,
           loading: false,
           lastUpdate: new Date()
         })
       } else {
-        console.error('❌ Erreur lors du chargement des stats utilisateurs:', response)
+        console.error('❌ Erreur lors du chargement des stats utilisateurs:', apiResponse)
         setStats(prev => ({ ...prev, loading: false }))
       }
     } catch (error) {
