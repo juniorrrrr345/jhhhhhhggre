@@ -110,11 +110,11 @@ const translations = {
       de: '🌍 Sprache'
     },
     'menu_translation': {
-      fr: '🗣 Change language',
-      en: '🗣 Change language',
-      it: '🗣 Change language',
-      es: '🗣 Change language',
-      de: '🗣 Change language'
+      fr: '🗣️ Changer de langue',
+      en: '🗣️ Change language',
+      it: '🗣️ Cambia lingua',
+      es: '🗣️ Cambiar idioma',
+      de: '🗣️ Sprache ändern'
     },
     'menu_main': {
       fr: '🏠 Menu principal',
@@ -686,6 +686,13 @@ const translations = {
       it: '❌ Fornisci un link Threema valido (es: https://threema.id/TUOID). Riprova:',
       es: '❌ Proporciona un enlace de Threema válido (ej: https://threema.id/TUID). Inténtalo de nuevo:',
       de: '❌ Bitte geben Sie einen gültigen Threema-Link an (z.B.: https://threema.id/IHREID). Versuchen Sie es erneut:'
+    },
+    'registration.error.telegramBotFormat': {
+      fr: '❌ Merci de fournir un nom ou lien de bot Telegram valide (ex: @monbot_bot). Réessaie :',
+      en: '❌ Please provide a valid Telegram bot name or link (ex: @mybot_bot). Try again:',
+      it: '❌ Fornisci un nome o link bot Telegram valido (es: @miobot_bot). Riprova:',
+      es: '❌ Proporciona un nombre o enlace de bot Telegram válido (ej: @mibot_bot). Inténtalo de nuevo:',
+      de: '❌ Bitte geben Sie einen gültigen Telegram-Bot-Namen oder -Link an (z.B.: @meinbot_bot). Versuchen Sie es erneut:'
     },
     'registration.error.cityLength': {
       fr: '❌ La ville doit faire au moins 2 caractères. Réessaie :',
