@@ -720,9 +720,6 @@ const handleSpecificDepartment = async (ctx, serviceType, department, selectedCo
     
     const availableCountries = await getAvailableCountries();
     
-    const currentLang = config?.languages?.currentLanguage || 'fr';
-    const customTranslations = config?.languages?.translations;
-    
     let message = `${getTranslation('list_plugs_title', currentLang, customTranslations)}\n`;
     message += `*${getTranslation('sorted_by_votes_subtitle', currentLang, customTranslations)}*\n\n`;
     
