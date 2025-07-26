@@ -297,6 +297,20 @@ const translations = {
       es: '🔙 Volver al menú',
       de: '🔙 Zurück zum Menü'
     },
+    'registration.goBack': {
+      fr: '⬅️ Retour',
+      en: '⬅️ Go back',
+      it: '⬅️ Indietro',
+      es: '⬅️ Volver',
+      de: '⬅️ Zurück'
+    },
+    'registration.finalSummaryTitle': {
+      fr: '📋 RÉCAPITULATIF FINAL',
+      en: '📋 FINAL SUMMARY',
+      it: '📋 RIEPILOGO FINALE',
+      es: '📋 RESUMEN FINAL',
+      de: '📋 ABSCHLUSSZUSAMMENFASSUNG'
+    },
 
     // === FORMULAIRE ÉTAPES DÉTAILLÉES ===
     'registration.step2': {
@@ -488,11 +502,11 @@ const translations = {
       de: '🟦 Schritt 9: Telegram Bot'
     },
     'registration.step10': {
-      fr: '🟦 Étape 10 : Photo de boutique',
-      en: '🟦 Step 10: Shop photo',
-      it: '🟦 Fase 10: Foto del negozio',
-      es: '🟦 Paso 10: Foto de la tienda',
-      de: '🟦 Schritt 10: Shop-Foto'
+      fr: '🟦 Étape 10 : Logo de boutique',
+      en: '🟦 Step 10: Shop logo',
+      it: '🟦 Fase 10: Logo del negozio',
+      es: '🟦 Paso 10: Logo de la tienda',
+      de: '🟦 Schritt 10: Shop-Logo'
     },
     'registration.step11': {
       fr: '🟦 Étape 11 : Confirmation',
@@ -616,11 +630,11 @@ const translations = {
       de: '⚠️ Sie können hier ein Bild senden.'
     },
     'registration.shopPhotoQuestion': {
-      fr: '📸 Envoie une photo de ta boutique',
-      en: '📸 Send a photo of your shop',
-      it: '📸 Invia una foto del tuo negozio',
-      es: '📸 Envía una foto de tu tienda',
-      de: '📸 Senden Sie ein Foto Ihres Shops'
+      fr: '📸 Envoie le logo de ta boutique',
+      en: '📸 Send your shop logo',
+      it: '📸 Invia il logo del tuo negozio',
+      es: '📸 Envía el logo de tu tienda',
+      de: '📸 Senden Sie Ihr Shop-Logo'
     },
     'registration.shopPhotoInstruction': {
       fr: '(Photo de présentation de tes produits ou de ton espace de vente)',

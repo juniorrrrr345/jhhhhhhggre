@@ -819,9 +819,10 @@ const askTelegram = async (ctx) => {
     `${getTranslation('registration.telegramQuestion', currentLang, customTranslations)}`;
   
   const keyboard = Markup.inlineKeyboard([
+    [Markup.button.callback(getTranslation('registration.goBack', currentLang, customTranslations), 'go_back_name')],
     [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
   ]);
-  
+
   await safeEditMessage(ctx, message, {
     reply_markup: keyboard.reply_markup,
     parse_mode: 'Markdown'
@@ -1857,6 +1858,71 @@ const askDepartmentsDelivery = async (ctx) => {
   });
 };
 
+// Fonction pour gérer les retours en arrière
+const handleGoBack = async (ctx) => {
+  const userId = ctx.from.id;
+  const userForm = userForms.get(userId);
+  
+  if (!userForm) {
+    await ctx.answerCbQuery('❌ Aucun formulaire en cours');
+    return;
+  }
+
+  await ctx.answerCbQuery();
+  
+  const Config = require('../models/Config');
+  const config = await Config.findById('main');
+  const currentLang = config?.languages?.currentLanguage || 'fr';
+  const customTranslations = config?.languages?.translations;
+
+  // Définir les étapes précédentes
+  const stepHistory = {
+    'telegram': 'name',
+    'snapchat': 'telegram',
+    'whatsapp': 'snapchat', 
+    'signal': 'whatsapp',
+    'session': 'signal',
+    'threema': 'session',
+    'telegram_channel': 'threema',
+    'instagram': 'telegram_channel',
+    'photo': 'instagram',
+    'confirmation': 'photo',
+    'departments_meetup': 'confirmation',
+    'departments_delivery': 'confirmation'
+  };
+
+  const previousStep = stepHistory[userForm.step];
+  
+  if (!previousStep) {
+    await ctx.answerCbQuery('❌ Impossible de revenir en arrière');
+    return;
+  }
+
+  // Revenir à l'étape précédente
+  userForm.step = previousStep;
+  userForms.set(userId, userForm);
+
+  // Afficher l'étape précédente
+  if (previousStep === 'name') {
+    const message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
+      `⸻\n\n` +
+      `${getTranslation('registration.step1', currentLang, customTranslations)}\n\n` +
+      `${getTranslation('registration.nameQuestion', currentLang, customTranslations)}`;
+    
+    const keyboard = Markup.inlineKeyboard([
+      [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
+    ]);
+
+    await safeEditMessage(ctx, message, {
+      reply_markup: keyboard.reply_markup,
+      parse_mode: 'Markdown'
+    });
+  } else {
+    // Pour les autres étapes, utiliser replyWithStep
+    await replyWithStep(ctx, previousStep);
+  }
+};
+
 module.exports = {
   handleStartApplication,
   handleFormMessage,
@@ -1870,6 +1936,7 @@ module.exports = {
   askTelegramBot,
   askDepartmentsMeetup,
   askDepartmentsDelivery,
+  handleGoBack,
   userForms,
   lastBotMessages
 };
