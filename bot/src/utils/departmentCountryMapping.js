@@ -53,10 +53,27 @@ const departmentCountryMapping = {
   // Quand l'utilisateur tape des codes non reconnus, on propose "Autre"
 };
 
+// Liste complète des pays disponibles
+const ALL_COUNTRIES = [
+  // 🇪🇺 45 pays d'Europe (ordre alphabétique)
+  'Albanie', 'Allemagne', 'Andorre', 'Autriche', 'Belgique', 'Biélorussie', 
+  'Bosnie-Herzégovine', 'Bulgarie', 'Chypre', 'Croatie', 'Danemark', 'Espagne', 
+  'Estonie', 'Finlande', 'France', 'Grèce', 'Hongrie', 'Irlande', 'Islande', 
+  'Italie', 'Kosovo', 'Lettonie', 'Liechtenstein', 'Lituanie', 'Luxembourg', 
+  'Macédoine du Nord', 'Malte', 'Moldavie', 'Monaco', 'Monténégro', 'Norvège', 
+  'Pays-Bas', 'Pologne', 'Portugal', 'République tchèque', 'Roumanie', 
+  'Royaume-Uni', 'Russie', 'Saint-Marin', 'Serbie', 'Slovaquie', 'Slovénie', 
+  'Suisse', 'Suède', 'Ukraine',
+  
+  // 🌍 4 pays spéciaux
+  'Canada', 'États-Unis', 'Maroc', 'Thaïlande'
+];
+
 // Fonction pour obtenir les pays suggérés basés sur les départements saisis
 function getSuggestedCountries(departments) {
   const suggestedCountries = new Set();
   
+  // D'abord, ajouter les pays spécifiques basés sur les départements
   departments.forEach(dept => {
     const cleanDept = dept.toString().trim().toUpperCase();
     
@@ -65,14 +82,11 @@ function getSuggestedCountries(departments) {
       departmentCountryMapping[cleanDept].forEach(country => {
         suggestedCountries.add(country);
       });
-    } else {
-      // Si département non reconnu, suggérer "Autre"
-      suggestedCountries.add('Autre');
     }
   });
 
-  // Toujours proposer quelques pays européens populaires en plus
-  ['France', 'Belgique', 'Suisse', 'Allemagne', 'Espagne', 'Italie'].forEach(country => {
+  // Ensuite, ajouter TOUS les pays disponibles pour que l'utilisateur puisse choisir
+  ALL_COUNTRIES.forEach(country => {
     suggestedCountries.add(country);
   });
 
