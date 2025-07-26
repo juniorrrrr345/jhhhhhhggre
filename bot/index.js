@@ -941,7 +941,6 @@ bot.action('go_back_threema', handleGoBack);
 bot.action('go_back_session', handleGoBack);
 bot.action('go_back_instagram', handleGoBack);
 bot.action('go_back_telegram_bot', handleGoBack);
-bot.action('go_back_photo', handleGoBack);
 bot.action('go_back_services', handleGoBack);
 bot.action('go_back_departments_delivery', handleGoBack);
 bot.action('go_back_departments_meetup', handleGoBack);
