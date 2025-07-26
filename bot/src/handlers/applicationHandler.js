@@ -1312,11 +1312,10 @@ const askWorkingCountries = async (ctx) => {
   
   const selectedCountries = userForm.data.workingCountries;
 
-  const message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
+  const message = `🛠️ **FORMULAIRE D'INSCRIPTION – FindYourPlug**\n\n` +
     `⸻\n\n` +
     `🌍 **Étape 3 : Pays de travail**\n\n` +
-    `Il choisit un ou plusieurs pays où il travaille ou où le service est disponible.\n\n` +
-    `**Exemples :** France, Espagne\n\n` +
+    `Il choisit un ou plusieurs pays où vous travaillez ou où le service est disponible.\n\n` +
     (selectedCountries.length > 0 ? 
       `✅ **Pays sélectionnés :** ${selectedCountries.join(', ')}\n\n` : 
       `⚪ Aucun pays sélectionné\n\n`) +
@@ -1372,7 +1371,7 @@ const askServices = async (ctx) => {
   const currentLang = config?.languages?.currentLanguage || 'fr';
   const customTranslations = config?.languages?.translations;
 
-  const message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
+  const message = `🛠️ **FORMULAIRE D'INSCRIPTION – FindYourPlug**\n\n` +
     `⸻\n\n` +
     `🛠️ **Étape 4 : Choix du service**\n\n` +
     `Vous avez trois choix de services :\n\n` +
@@ -2789,7 +2788,7 @@ const handleNewServiceShipping = async (ctx) => {
     const customTranslations = config?.languages?.translations;
     
     // Validation directe automatique pour Envoi postal
-    const message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
+    const message = `🛠️ **FORMULAIRE D'INSCRIPTION – FindYourPlug**\n\n` +
       `⸻\n\n` +
       `📮 **Service "Envoi postal" sélectionné**\n\n` +
       `✅ **Validation directe automatique**\n\n` +
@@ -2840,7 +2839,7 @@ const askMeetupPostalForCountry = async (ctx, countryIndex) => {
   const currentLang = config?.languages?.currentLanguage || 'fr';
   const customTranslations = config?.languages?.translations;
   
-  const message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
+  const message = `🛠️ **FORMULAIRE D'INSCRIPTION – FindYourPlug**\n\n` +
     `⸻\n\n` +
     `🤝 **Service "Meet Up" - Codes postaux**\n\n` +
     `📍 **Pays actuel :** ${currentCountry}\n` +
@@ -2890,7 +2889,7 @@ const askDeliveryPostalForCountry = async (ctx, countryIndex) => {
   const currentLang = config?.languages?.currentLanguage || 'fr';
   const customTranslations = config?.languages?.translations;
   
-  const message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
+  const message = `🛠️ **FORMULAIRE D'INSCRIPTION – FindYourPlug**\n\n` +
     `⸻\n\n` +
     `🚚 **Service "Livraison" - Codes postaux**\n\n` +
     `📍 **Pays actuel :** ${currentCountry}\n` +
@@ -3005,7 +3004,7 @@ const showFinalConfirmation = async (ctx) => {
     serviceDetails = '📮 **Service :** Envoi postal\n✅ Validation automatique\n';
   }
   
-  const message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
+  const message = `🛠️ **FORMULAIRE D'INSCRIPTION – FindYourPlug**\n\n` +
     `⸻\n\n` +
     `🎯 **Confirmation finale**\n\n` +
     `📝 **Nom du plugin :** ${userForm.data.name}\n` +
@@ -3094,61 +3093,95 @@ const handleFinalSubmission = async (ctx) => {
 // Gestionnaires pour valider les codes postaux via boutons
 const handleValidateMeetupPostal = async (ctx, countryIndex) => {
   try {
-    await ctx.answerCbQuery();
+    await ctx.answerCbQuery('💬 Tapez maintenant le code postal');
     
     const userId = ctx.from.id;
     const userForm = userForms.get(userId);
     
     if (!userForm || userForm.step !== 'waiting_meetup_postal') {
-      return await ctx.answerCbQuery('❌ Aucun code postal en attente');
+      return await ctx.reply('❌ Aucun code postal en attente');
     }
     
-    // Demander à l'utilisateur de taper le code postal
     const Config = require('../models/Config');
     const config = await Config.findById('main');
     const currentLang = config?.languages?.currentLanguage || 'fr';
     const customTranslations = config?.languages?.translations;
     
-    await ctx.answerCbQuery('💬 Tapez maintenant le code postal');
+    const currentCountry = userForm.data.workingCountries[countryIndex];
     
     // Changer l'étape pour attendre la saisie texte
     userForm.step = 'entering_meetup_postal';
     userForm.data.validationCountryIndex = countryIndex;
     userForms.set(userId, userForm);
     
+    // Mettre à jour le message pour montrer qu'on attend la saisie
+    const message = `🛠️ **FORMULAIRE D'INSCRIPTION – FindYourPlug**\n\n` +
+      `⸻\n\n` +
+      `🤝 **Service "Meet Up" - Saisie du code postal**\n\n` +
+      `📍 **Pays :** ${currentCountry}\n\n` +
+      `💬 **Tapez maintenant le code postal pour ${currentCountry} :**\n\n` +
+      `Exemple : 75001, 13001, etc.`;
+    
+    const keyboard = Markup.inlineKeyboard([
+      [Markup.button.callback('🔙 Retour aux services', 'go_back_service_selection')],
+      [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
+    ]);
+    
+    await safeEditMessage(ctx, message, {
+      reply_markup: keyboard.reply_markup,
+      parse_mode: 'Markdown'
+    });
+    
   } catch (error) {
     console.error('Erreur dans handleValidateMeetupPostal:', error);
-    await ctx.answerCbQuery('❌ Erreur');
+    await ctx.reply('❌ Erreur lors de la validation');
   }
 };
 
 const handleValidateDeliveryPostal = async (ctx, countryIndex) => {
   try {
-    await ctx.answerCbQuery();
+    await ctx.answerCbQuery('💬 Tapez maintenant le code postal');
     
     const userId = ctx.from.id;
     const userForm = userForms.get(userId);
     
     if (!userForm || userForm.step !== 'waiting_delivery_postal') {
-      return await ctx.answerCbQuery('❌ Aucun code postal en attente');
+      return await ctx.reply('❌ Aucun code postal en attente');
     }
     
-    // Demander à l'utilisateur de taper le code postal
     const Config = require('../models/Config');
     const config = await Config.findById('main');
     const currentLang = config?.languages?.currentLanguage || 'fr';
     const customTranslations = config?.languages?.translations;
     
-    await ctx.answerCbQuery('💬 Tapez maintenant le code postal');
+    const currentCountry = userForm.data.workingCountries[countryIndex];
     
     // Changer l'étape pour attendre la saisie texte
     userForm.step = 'entering_delivery_postal';
     userForm.data.validationCountryIndex = countryIndex;
     userForms.set(userId, userForm);
     
+    // Mettre à jour le message pour montrer qu'on attend la saisie
+    const message = `🛠️ **FORMULAIRE D'INSCRIPTION – FindYourPlug**\n\n` +
+      `⸻\n\n` +
+      `🚚 **Service "Livraison" - Saisie du code postal**\n\n` +
+      `📍 **Pays :** ${currentCountry}\n\n` +
+      `💬 **Tapez maintenant le code postal pour ${currentCountry} :**\n\n` +
+      `Exemple : 75001, 13001, etc.`;
+    
+    const keyboard = Markup.inlineKeyboard([
+      [Markup.button.callback('🔙 Retour aux services', 'go_back_service_selection')],
+      [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
+    ]);
+    
+    await safeEditMessage(ctx, message, {
+      reply_markup: keyboard.reply_markup,
+      parse_mode: 'Markdown'
+    });
+    
   } catch (error) {
     console.error('Erreur dans handleValidateDeliveryPostal:', error);
-    await ctx.answerCbQuery('❌ Erreur');
+    await ctx.reply('❌ Erreur lors de la validation');
   }
 };
 
@@ -3183,5 +3216,8 @@ module.exports = {
   handleDeliveryPostalCode,
   handleFinalSubmission,
   handleValidateMeetupPostal,
-  handleValidateDeliveryPostal
+  handleValidateDeliveryPostal,
+  askMeetupPostalForCountry,
+  askDeliveryPostalForCountry,
+  askServices
 };
