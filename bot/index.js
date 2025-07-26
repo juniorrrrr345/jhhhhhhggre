@@ -489,6 +489,9 @@ bot.action('skip_signal', (ctx) => handleSkipStep(ctx, 'signal'));
 bot.action('skip_session', (ctx) => handleSkipStep(ctx, 'session'));
 bot.action('skip_threema', (ctx) => handleSkipStep(ctx, 'threema'));
 bot.action('skip_telegram_bot', (ctx) => handleSkipStep(ctx, 'telegram_bot'));
+bot.action('skip_departments_delivery', (ctx) => handleSkipStep(ctx, 'departments_delivery'));
+bot.action('skip_departments_meetup', (ctx) => handleSkipStep(ctx, 'departments_meetup'));
+bot.action('skip_departments_shipping', (ctx) => handleSkipStep(ctx, 'departments_shipping'));
 
 // Handlers pour les boutons "Retour"
 bot.action('go_back_name', handleGoBack);

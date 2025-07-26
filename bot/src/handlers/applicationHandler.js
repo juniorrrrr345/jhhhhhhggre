@@ -605,25 +605,11 @@ const handleFormMessage = async (ctx) => {
         userForm.data.departmentsDelivery = text;
         userForms.set(userId, userForm);
         
-        // Passer au service suivant selon ce qui est activé
-        const services = userForm.data.services;
-        console.log('🔄 DELIVERY DONE: Services after delivery:', JSON.stringify(services));
-        if (services.meetup && services.meetup.enabled) {
-          console.log('➡️ Going to departments_meetup');
-          userForm.step = 'departments_meetup';
-          userForms.set(userId, userForm);
-          await askDepartmentsMeetup(ctx);
-        } else if (services.shipping && services.shipping.enabled) {
-          console.log('➡️ Going to departments_shipping');
-          userForm.step = 'departments_shipping';
-          userForms.set(userId, userForm);
-          await askDepartmentsShipping(ctx);
-        } else {
-          console.log('➡️ Going to confirmation');
-          userForm.step = 'confirmation';
-          userForms.set(userId, userForm);
-          await askConfirmation(ctx);
-        }
+        // Toujours passer à meetup maintenant
+        console.log('✅ DELIVERY DONE: Going to departments_meetup');
+        userForm.step = 'departments_meetup';
+        userForms.set(userId, userForm);
+        await askDepartmentsMeetup(ctx);
         break;
 
       case 'departments_meetup':
@@ -644,20 +630,11 @@ const handleFormMessage = async (ctx) => {
         userForm.data.departmentsMeetup = text;
         userForms.set(userId, userForm);
         
-        // Passer au service suivant selon ce qui est activé
-        const servicesAfterMeetup = userForm.data.services;
-        console.log('🔄 MEETUP DONE: Services after meetup:', JSON.stringify(servicesAfterMeetup));
-        if (servicesAfterMeetup.shipping && servicesAfterMeetup.shipping.enabled) {
-          console.log('➡️ Going to departments_shipping');
-          userForm.step = 'departments_shipping';
-          userForms.set(userId, userForm);
-          await askDepartmentsShipping(ctx);
-        } else {
-          console.log('➡️ Going to confirmation');
-          userForm.step = 'confirmation';
-          userForms.set(userId, userForm);
-          await askConfirmation(ctx);
-        }
+        // Toujours passer à shipping maintenant
+        console.log('✅ MEETUP DONE: Going to departments_shipping');
+        userForm.step = 'departments_shipping';
+        userForms.set(userId, userForm);
+        await askDepartmentsShipping(ctx);
         console.log(`✅ MEETUP CASE FINISHED for user ${userId}`);
         break;
 
@@ -1299,7 +1276,8 @@ const askDepartmentsDelivery = async (ctx) => {
     `${getTranslation('registration.departmentsInstruction', currentLang, customTranslations)}`;
   
   const keyboard = Markup.inlineKeyboard([
-    [Markup.button.callback(getTranslation('registration.goBack', currentLang, customTranslations), 'go_back_services')],
+    [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_departments_delivery')],
+    [Markup.button.callback(getTranslation('registration.goBack', currentLang, customTranslations), 'go_back_photo')],
     [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
   ]);
   
@@ -1320,6 +1298,7 @@ const askDepartmentsMeetup = async (ctx) => {
     `${getTranslation('registration.departmentsInstruction', currentLang, customTranslations)}`;
   
   const keyboard = Markup.inlineKeyboard([
+    [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_departments_meetup')],
     [Markup.button.callback(getTranslation('registration.goBack', currentLang, customTranslations), 'go_back_departments_delivery')],
     [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
   ]);
@@ -1341,6 +1320,7 @@ const askDepartmentsShipping = async (ctx) => {
     `${getTranslation('registration.shippingCountriesInstruction', currentLang, customTranslations)}`;
   
   const keyboard = Markup.inlineKeyboard([
+    [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_departments_shipping')],
     [Markup.button.callback(getTranslation('registration.goBack', currentLang, customTranslations), 'go_back_departments_meetup')],
     [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
   ]);
@@ -1579,17 +1559,17 @@ const handlePhoto = async (ctx) => {
       height: photo.height
     };
     
-    userForm.step = 'services';
+    userForm.step = 'departments_delivery';
     userForms.set(userId, userForm);
     
-    // Confirmer réception et passer aux services
+    // Confirmer réception et passer aux départements livraison
     const Config = require('../models/Config');
     const config = await Config.findById('main');
     const currentLang = config?.languages?.currentLanguage || 'fr';
     const customTranslations = config?.languages?.translations;
     
     await ctx.reply(getTranslation('registration.photoReceived', currentLang, customTranslations));
-    await askServices(ctx);
+    await askDepartmentsDelivery(ctx);
     
   } catch (error) {
     console.error('Erreur dans handlePhoto:', error);
@@ -1826,6 +1806,28 @@ const handleSkipStep = async (ctx, step) => {
           parse_mode: 'Markdown'
         });
         break;
+
+      case 'departments_delivery':
+        userForm.step = 'departments_meetup';
+        userForms.set(userId, userForm);
+        console.log('➡️ Skip departments_delivery → departments_meetup');
+        await askDepartmentsMeetup(ctx);
+        break;
+
+      case 'departments_meetup':
+        userForm.step = 'departments_shipping';
+        userForms.set(userId, userForm);
+        console.log('➡️ Skip departments_meetup → departments_shipping');
+        await askDepartmentsShipping(ctx);
+        break;
+
+      case 'departments_shipping':
+        userForm.step = 'confirmation';
+        userForms.set(userId, userForm);
+        console.log('➡️ Skip departments_shipping → confirmation');
+        await askConfirmation(ctx);
+        break;
+
       default:
         console.log('❌ Step non reconnu:', step);
         throw new Error(`Step non supporté: ${step}`);
