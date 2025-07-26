@@ -10,7 +10,7 @@ const {
 } = require('../utils/keyboards');
 const { sendMessageWithImage, editMessageWithImage, sendPlugWithImage, safeEditMessage } = require('../utils/messageHelper');
 const { getTranslation, translateDescription } = require('../utils/translations');
-const postalCodeService = require('../services/postalCodeServiceTelegram');
+// Service postal supprimé pour Telegram
 
 // 🚫 PRÉVENTION SPAM - Stockage des derniers états
 const lastUserState = new Map();
