@@ -1172,8 +1172,8 @@ const askPotato = async (ctx) => {
     `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
   
   const keyboard = Markup.inlineKeyboard([
-    [Markup.button.callback(getTranslation('registration.goBack', currentLang, customTranslations), 'go_back_snapchat')],
     [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_potato')],
+    [Markup.button.callback(getTranslation('registration.goBack', currentLang, customTranslations), 'go_back_snapchat')],
     [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
   ]);
   
@@ -3175,6 +3175,19 @@ const showFinalConfirmation = async (ctx) => {
   const currentLang = config?.languages?.currentLanguage || 'fr';
   const customTranslations = config?.languages?.translations;
   
+  // Récapitulatif complet avec toutes les questions
+  let allDetails = `📝 **Nom du plugin :** ${userForm.data.name || 'Non renseigné'}\n` +
+    `📱 **Telegram :** ${userForm.data.telegram || 'Non renseigné'}\n` +
+    `👻 **Snapchat :** ${userForm.data.snapchat || 'Passé'}\n` +
+    `🥔 **Potato :** ${userForm.data.potato || 'Passé'}\n` +
+    `📶 **Signal :** ${userForm.data.signal || 'Passé'}\n` +
+    `💬 **WhatsApp :** ${userForm.data.whatsapp || 'Passé'}\n` +
+    `🔒 **Threema :** ${userForm.data.threema || 'Passé'}\n` +
+    `🛡️ **Session :** ${userForm.data.session || 'Passé'}\n` +
+    `📸 **Instagram :** ${userForm.data.instagram || 'Passé'}\n` +
+    `🤖 **Bot Telegram :** ${userForm.data.telegramBot || 'Passé'}\n` +
+    `🌍 **Pays de travail :** ${userForm.data.workingCountries.join(', ')}\n\n`;
+
   let serviceDetails = '';
   const selectedServices = userForm.data.selectedServices || [];
   
@@ -3203,8 +3216,7 @@ const showFinalConfirmation = async (ctx) => {
   const message = `🛠️ **FORMULAIRE D'INSCRIPTION – FindYourPlug**\n\n` +
     `⸻\n\n` +
     `🎯 **Récapitulatif final**\n\n` +
-    `📝 **Nom du plugin :** ${userForm.data.name}\n` +
-    `🌍 **Pays de travail :** ${userForm.data.workingCountries.join(', ')}\n\n` +
+    allDetails +
     serviceDetails + 
     `🎉 **Tout est configuré !**\n\n` +
     `👆 Confirmer votre plugin ?`;
