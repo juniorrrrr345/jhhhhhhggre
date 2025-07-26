@@ -1062,18 +1062,18 @@ const translations = {
       de: '📌 Um deine Registrierung zu bestätigen:'
     },
     'registration.step1Validation': {
-      fr: '1️⃣ Poste le logo FindYourPlug sur un de tes réseaux renseignés avec le texte :\n"Inscription en cours chez @FindYourPlug"\net identifie @findyourplug',
-      en: '1️⃣ Post the FindYourPlug logo on one of your registered networks with the text:\n"Registration in progress at @FindYourPlug"\nand tag @findyourplug',
-      it: '1️⃣ Pubblica il logo FindYourPlug su uno dei tuoi social registrati con il testo:\n"Registrazione in corso presso @FindYourPlug"\ne tagga @findyourplug',
-      es: '1️⃣ Publica el logo FindYourPlug en una de tus redes registradas con el texto:\n"Registro en curso en @FindYourPlug"\ny etiqueta @findyourplug',
-      de: '1️⃣ Poste das FindYourPlug-Logo in einem deiner registrierten Netzwerke mit dem Text:\n"Registrierung läuft bei @FindYourPlug"\nund tagge @findyourplug'
+      fr: '1️⃣ Poste le logo FindYourPlug sur un de tes réseaux renseignés avec le texte :\n"Inscription en cours chez FindYourPlug"\net identifie findyourplug',
+      en: '1️⃣ Post the FindYourPlug logo on one of your registered networks with the text:\n"Registration in progress at FindYourPlug"\nand tag findyourplug',
+      it: '1️⃣ Pubblica il logo FindYourPlug su uno dei tuoi social registrati con il testo:\n"Registrazione in corso presso FindYourPlug"\ne tagga findyourplug',
+      es: '1️⃣ Publica el logo FindYourPlug en una de tus redes registradas con el texto:\n"Registro en curso en FindYourPlug"\ny etiqueta findyourplug',
+      de: '1️⃣ Poste das FindYourPlug-Logo in einem deiner registrierten Netzwerke mit dem Text:\n"Registrierung läuft bei FindYourPlug"\nund tagge findyourplug'
     },
     'registration.step2Validation': {
-      fr: '2️⃣ Envoie une photo de ton stock avec\nFindYourPlug et la date du jour écrits sur papier\nà l\'admin : @findyourplug_admin',
-      en: '2️⃣ Send a photo of your stock with\nFindYourPlug and today\'s date written on paper\nto admin: @findyourplug_admin',
-      it: '2️⃣ Invia una foto del tuo stock con\nFindYourPlug e la data di oggi scritti su carta\nall\'admin: @findyourplug_admin',
-      es: '2️⃣ Envía una foto de tu stock con\nFindYourPlug y la fecha de hoy escritos en papel\nal admin: @findyourplug_admin',
-      de: '2️⃣ Sende ein Foto deines Lagers mit\nFindYourPlug und dem heutigen Datum auf Papier geschrieben\nan Admin: @findyourplug_admin'
+      fr: '2️⃣ Envoie une photo de ton stock avec\nFindYourPlug et la date du jour écrits sur papier\nà l\'admin : findyourplug_admin',
+      en: '2️⃣ Send a photo of your stock with\nFindYourPlug and today\'s date written on paper\nto admin: findyourplug_admin',
+      it: '2️⃣ Invia una foto del tuo stock con\nFindYourPlug e la data di oggi scritti su carta\nall\'admin: findyourplug_admin',
+      es: '2️⃣ Envía una foto de tu stock con\nFindYourPlug y la fecha de hoy escritos en papel\nal admin: findyourplug_admin',
+      de: '2️⃣ Sende ein Foto deines Lagers mit\nFindYourPlug und dem heutigen Datum auf Papier geschrieben\nan Admin: findyourplug_admin'
     },
     'registration.timeLimit': {
       fr: '⏰ Tu as 24h pour faire ces 2 étapes.',
