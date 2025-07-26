@@ -363,6 +363,7 @@ const handleFormMessage = async (ctx) => {
         
         const signalKeyboard = Markup.inlineKeyboard([
           [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_signal')],
+          [Markup.button.callback(getTranslation('registration.goBack', currentLang, customTranslations), 'go_back_potato')],
           [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
         ]);
         
@@ -392,6 +393,7 @@ const handleFormMessage = async (ctx) => {
         
         const whatsappKeyboard = Markup.inlineKeyboard([
           [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_whatsapp')],
+          [Markup.button.callback(getTranslation('registration.goBack', currentLang, customTranslations), 'go_back_signal')],
           [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
         ]);
         
@@ -416,6 +418,7 @@ const handleFormMessage = async (ctx) => {
         
         const threemaKeyboard = Markup.inlineKeyboard([
           [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_threema')],
+          [Markup.button.callback(getTranslation('registration.goBack', currentLang, customTranslations), 'go_back_whatsapp')],
           [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
         ]);
         
