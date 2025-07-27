@@ -379,31 +379,6 @@ const showMainMenuInLanguage = async (ctx, config, language) => {
     
     console.log('📝 Message fixe avec stats:', welcomeMessage);
     
-    console.log('🔤 Message de traduction récupéré:', welcomeMessage);
-    console.log('🔤 Langue actuelle:', currentLang);
-    
-    // Remplacer les statistiques dans le message
-    const stats = await getBotStats();
-    console.log('📊 Statistiques récupérées:', stats);
-    
-    // Forcer l'affichage des statistiques même si elles sont à 0
-    const shopsCount = stats.shopsCount || 0;
-    const usersCount = stats.usersCount || 0;
-    
-    console.log('🔢 Valeurs à remplacer:', { shopsCount, usersCount });
-    
-    // Vérifier si les placeholders sont présents
-    console.log('🔍 Placeholders présents:', {
-      hasShopsCount: welcomeMessage.includes('{shopsCount}'),
-      hasUsersCount: welcomeMessage.includes('{usersCount}')
-    });
-    
-    welcomeMessage = welcomeMessage
-      .replace('{shopsCount}', shopsCount.toString())
-      .replace('{usersCount}', usersCount.toString());
-    
-    console.log('📝 Message final avec stats:', welcomeMessage);
-    
     // Créer le clavier principal avec traductions (AVEC le bouton langue)
     const { createMainKeyboard } = require('./src/utils/keyboards');
     const keyboard = await createMainKeyboard(freshConfig);

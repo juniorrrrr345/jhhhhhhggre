@@ -417,64 +417,6 @@ export default function ShopHome() {
           </div>
         </div>
 
-        {/* Contenu Principal */}
-        <div style={{ padding: '20px', paddingBottom: '120px' }}>
-          {plugs.length === 0 ? (
-            <div style={{ 
-              textAlign: 'center', 
-              padding: '40px 20px',
-              color: '#8e8e93'
-            }}>
-              <div style={{ 
-                width: '60px', 
-                height: '60px',
-                margin: '0 auto 16px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}>
-                <img 
-                  src="https://i.imgur.com/VwBPgtw.jpeg" 
-                  alt="FindYourPlug Logo"
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                    objectFit: 'contain'
-                  }}
-                />
-              </div>
-              <h3 style={{ fontSize: '18px', marginBottom: '8px' }}>{t('noShops')}</h3>
-              <p style={{ fontSize: '14px' }}>
-                {currentLanguage === 'fr' && 'Revenez bientôt pour découvrir nos partenaires !'}
-                {currentLanguage === 'en' && 'Come back soon to discover our partners!'}
-                {currentLanguage === 'it' && 'Torna presto per scoprire i nostri partner!'}
-                {currentLanguage === 'es' && '¡Vuelve pronto para descubrir nuestros socios!'}
-                {currentLanguage === 'de' && 'Kommen Sie bald zurück, um unsere Partner zu entdecken!'}
-              </p>
-            </div>
-          ) : (
-            <>
-              <div style={{ 
-                display: 'flex', 
-                flexDirection: 'column',
-                gap: '1px',
-                marginBottom: '20px'
-              }}>
-                {currentPlugs.map((plug, index) => (
-                  <ShopCard key={plug._id} plug={plug} index={index} currentLanguage={currentLanguage} />
-                ))}
-              </div>
-
-              {/* Pagination */}
-              <Pagination
-                currentPage={currentPage}
-                totalPages={Math.ceil(plugs.length / itemsPerPage)}
-                onPageChange={setCurrentPage}
-              />
-            </>
-          )}
-        </div>
-
         {/* Section Réseaux Sociaux */}
         <div style={{
           marginTop: '20px',
@@ -546,6 +488,64 @@ export default function ShopHome() {
               </a>
             ))}
           </div>
+        </div>
+
+        {/* Contenu Principal */}
+        <div style={{ padding: '20px', paddingBottom: '120px' }}>
+          {plugs.length === 0 ? (
+            <div style={{ 
+              textAlign: 'center', 
+              padding: '40px 20px',
+              color: '#8e8e93'
+            }}>
+              <div style={{ 
+                width: '60px', 
+                height: '60px',
+                margin: '0 auto 16px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>
+                <img 
+                  src="https://i.imgur.com/VwBPgtw.jpeg" 
+                  alt="FindYourPlug Logo"
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'contain'
+                  }}
+                />
+              </div>
+              <h3 style={{ fontSize: '18px', marginBottom: '8px' }}>{t('noShops')}</h3>
+              <p style={{ fontSize: '14px' }}>
+                {currentLanguage === 'fr' && 'Revenez bientôt pour découvrir nos partenaires !'}
+                {currentLanguage === 'en' && 'Come back soon to discover our partners!'}
+                {currentLanguage === 'it' && 'Torna presto per scoprire i nostri partner!'}
+                {currentLanguage === 'es' && '¡Vuelve pronto para descubrir nuestros socios!'}
+                {currentLanguage === 'de' && 'Kommen Sie bald zurück, um unsere Partner zu entdecken!'}
+              </p>
+            </div>
+          ) : (
+            <>
+              <div style={{ 
+                display: 'flex', 
+                flexDirection: 'column',
+                gap: '1px',
+                marginBottom: '20px'
+              }}>
+                {currentPlugs.map((plug, index) => (
+                  <ShopCard key={plug._id} plug={plug} index={index} currentLanguage={currentLanguage} />
+                ))}
+              </div>
+
+              {/* Pagination */}
+              <Pagination
+                currentPage={currentPage}
+                totalPages={Math.ceil(plugs.length / itemsPerPage)}
+                onPageChange={setCurrentPage}
+              />
+            </>
+          )}
         </div>
 
         {/* Navigation en bas - Style uniforme */}
