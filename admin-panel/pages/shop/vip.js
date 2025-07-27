@@ -197,7 +197,7 @@ export default function ShopVIP() {
         backgroundColor: '#1a1a1a',
         backgroundImage: `
           linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), 
-          url("https://i.imgur.com/VwBPgtw.jpeg")
+          url("https://i.imgur.com/iISKonz.jpeg")
         `,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
@@ -230,20 +230,27 @@ export default function ShopVIP() {
           
           <h1 style={{ 
             fontSize: '32px', 
-            fontWeight: 'bold', 
-            margin: '0 0 8px 0',
+            fontWeight: '800', 
+            margin: '0 0 12px 0',
             background: 'linear-gradient(135deg, #FFD700, #FFA500)',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
-            letterSpacing: '2px'
+            letterSpacing: '2px',
+            textShadow: '0 2px 4px rgba(0,0,0,0.8)'
           }}>
             👑 {t('vip')}
           </h1>
           <p style={{ 
-            color: '#8e8e93', 
-            fontSize: '16px',
+            color: '#ffffff', 
+            fontSize: '18px',
             margin: '0',
-            fontWeight: '400'
+            fontWeight: '500',
+            textShadow: '0 1px 3px rgba(0,0,0,0.7)',
+            padding: '8px 12px',
+            backgroundColor: 'rgba(0,0,0,0.3)',
+            borderRadius: '8px',
+            border: '1px solid rgba(255,255,255,0.2)',
+            display: 'inline-block'
           }}>
             {t('vip_desc') || 'Boutiques VIP exclusives'}
           </p>

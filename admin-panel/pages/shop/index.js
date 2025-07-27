@@ -375,28 +375,46 @@ export default function ShopHome() {
           borderBottom: '1px solid rgba(255, 255, 255, 0.1)'
         }}>
           <h1 style={{ 
-            fontSize: '22px', 
-            fontWeight: '700',
-            margin: '0 0 15px 0',
-            color: getThemeStyles().color || '#ffffff',
-            letterSpacing: '0.3px',
-            lineHeight: '1.2'
+            fontSize: '24px', 
+            fontWeight: '800',
+            margin: '0 0 20px 0',
+            color: '#ffffff',
+            letterSpacing: '0.5px',
+            lineHeight: '1.2',
+            textShadow: '0 2px 4px rgba(0,0,0,0.8)',
+            background: 'linear-gradient(135deg, #ffffff, #f0f0f0)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text'
           }}>
             👋 Bienvenue sur FindYourPlug
           </h1>
           
           <div style={{ 
-            fontSize: '14px',
-            lineHeight: '1.4',
-            color: getThemeStyles().color === '#000000' ? '#666666' : '#e0e0e0',
-            maxWidth: '400px',
+            fontSize: '16px',
+            lineHeight: '1.5',
+            color: '#ffffff',
+            maxWidth: '450px',
             margin: '0 auto',
-            fontWeight: '400'
+            fontWeight: '500',
+            textShadow: '0 1px 3px rgba(0,0,0,0.7)'
           }}>
-            <p style={{ margin: '0 0 8px 0' }}>
+            <p style={{ 
+              margin: '0 0 12px 0',
+              padding: '8px 12px',
+              backgroundColor: 'rgba(0,0,0,0.3)',
+              borderRadius: '8px',
+              border: '1px solid rgba(255,255,255,0.2)'
+            }}>
               🔍 Utilisez la barre de recherche pour trouver un plug près de chez vous ou en envoi postal
             </p>
-            <p style={{ margin: '0' }}>
+            <p style={{ 
+              margin: '0',
+              padding: '8px 12px',
+              backgroundColor: 'rgba(0,0,0,0.3)',
+              borderRadius: '8px',
+              border: '1px solid rgba(255,255,255,0.2)'
+            }}>
               ⭐ N'hésitez pas à voter pour votre Plug préféré
             </p>
           </div>
