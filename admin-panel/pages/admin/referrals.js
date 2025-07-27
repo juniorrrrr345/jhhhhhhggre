@@ -46,9 +46,31 @@ export default function ReferralsPage() {
     try {
       setLoading(true)
       
-      // Charger toutes les boutiques via l'API simple
-      const plugsResponse = await simpleApi.getPlugs(token)
-      console.log('📊 Réponse API plugs:', plugsResponse)
+      // Ajouter un délai pour éviter les erreurs 429
+      await new Promise(resolve => setTimeout(resolve, 500))
+      
+      // Charger toutes les boutiques via l'API simple avec retry
+      let plugsResponse
+      let retryCount = 0
+      const maxRetries = 3
+      
+      while (retryCount < maxRetries) {
+        try {
+          plugsResponse = await simpleApi.getPlugs(token)
+          console.log('📊 Réponse API plugs:', plugsResponse)
+          break // Succès, sortir de la boucle
+        } catch (error) {
+          retryCount++
+          console.log(`⚠️ Tentative ${retryCount}/${maxRetries} échouée:`, error.message)
+          
+          if (retryCount >= maxRetries) {
+            throw error // Relancer l'erreur après toutes les tentatives
+          }
+          
+          // Attendre avant de réessayer (délai progressif)
+          await new Promise(resolve => setTimeout(resolve, 1000 * retryCount))
+        }
+      }
       
       // L'API renvoie {plugs: [...]}
       const plugsData = plugsResponse?.plugs || plugsResponse || []
@@ -89,9 +111,19 @@ export default function ReferralsPage() {
       }
     } catch (error) {
       console.error('❌ Erreur chargement parrainage:', error)
-      toast.error(`Erreur lors du chargement: ${error.message}`)
+      
+      // Gestion spécifique des erreurs 429
+      if (error.message.includes('429') || error.message.includes('temporairement')) {
+        toast.error('Serveur temporairement surchargé. Réessayez dans quelques secondes.')
+      } else {
+        toast.error(`Erreur lors du chargement: ${error.message}`)
+      }
+      
       // En cas d'erreur, au moins afficher les boutiques sans parrainage
       try {
+        // Attendre un peu avant de réessayer
+        await new Promise(resolve => setTimeout(resolve, 2000))
+        
         const plugsData = await simpleApi.getPlugs(token)
         if (plugsData && Array.isArray(plugsData)) {
           const plugsWithoutReferrals = plugsData.map(plug => ({
@@ -110,6 +142,9 @@ export default function ReferralsPage() {
         }
       } catch (fallbackError) {
         console.error('❌ Erreur fallback:', fallbackError)
+        // En dernier recours, afficher un message d'erreur
+        setPlugs([])
+        setTotalStats({ totalPlugs: 0, totalReferred: 0, totalUsers: 0 })
       }
     } finally {
       setLoading(false)
@@ -124,6 +159,9 @@ export default function ReferralsPage() {
       if (!referralLink) {
         console.log('🔄 Génération du lien de parrainage pour:', plug.name)
         try {
+          // Attendre un peu pour éviter les erreurs 429
+          await new Promise(resolve => setTimeout(resolve, 1000))
+          
           const token = localStorage.getItem('adminToken')
           const response = await fetch('/api/cors-proxy', {
             method: 'POST',
@@ -137,28 +175,34 @@ export default function ReferralsPage() {
             })
           })
 
-                     if (response.ok) {
-             const referralData = await response.json()
-             referralLink = referralData.referralLink
-             
-             // Mettre à jour la boutique dans l'état local
-             setPlugs(prevPlugs => 
-               prevPlugs.map(p => 
-                 p._id === plug._id 
-                   ? { ...p, ...referralData }
-                   : p
-               )
-             )
-             console.log('✅ Lien généré:', referralLink)
-           } else {
-             const errorData = await response.json()
-             console.error('❌ Erreur API génération lien:', errorData)
-             toast.error(`Erreur API: ${errorData.error || 'Erreur inconnue'}`)
-           }
-         } catch (linkError) {
-           console.error('❌ Erreur génération lien:', linkError)
-           toast.error(`Erreur: ${linkError.message}`)
-         }
+          if (response.ok) {
+            const referralData = await response.json()
+            referralLink = referralData.referralLink
+            
+            // Mettre à jour la boutique dans l'état local
+            setPlugs(prevPlugs => 
+              prevPlugs.map(p => 
+                p._id === plug._id 
+                  ? { ...p, ...referralData }
+                  : p
+              )
+            )
+            console.log('✅ Lien généré:', referralLink)
+          } else {
+            const errorData = await response.json()
+            console.error('❌ Erreur API génération lien:', errorData)
+            
+            // Gestion spécifique des erreurs 429
+            if (response.status === 429) {
+              toast.error('Serveur temporairement surchargé. Réessayez dans quelques secondes.')
+            } else {
+              toast.error(`Erreur API: ${errorData.error || 'Erreur inconnue'}`)
+            }
+          }
+        } catch (linkError) {
+          console.error('❌ Erreur génération lien:', linkError)
+          toast.error(`Erreur: ${linkError.message}`)
+        }
       }
 
       if (referralLink) {
