@@ -224,7 +224,7 @@ export default function TelegramLinks() {
                 onClick={() => fetchConfig(localStorage.getItem('adminToken'))}
                 className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
               >
-                🔄 Actualiser
+                🔄 {t('telegram_links_refresh')}
               </button>
             </div>
           </div>
@@ -232,12 +232,12 @@ export default function TelegramLinks() {
 
         {/* Informations */}
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-          <h3 className="text-sm font-medium text-blue-800 mb-2">ℹ️ Informations</h3>
+          <h3 className="text-sm font-medium text-blue-800 mb-2">ℹ️ {t('telegram_links_info_title')}</h3>
           <ul className="text-sm text-blue-700 space-y-1">
-            <li>• Les liens doivent être des URLs Telegram valides (format: https://t.me/username)</li>
-            <li>• Les modifications sont appliquées immédiatement sur les pages publiques</li>
-            <li>• Utilisez le bouton "Tester" pour vérifier que les liens fonctionnent</li>
-            <li>• Les liens par défaut pointent vers @FindYourPlugBot</li>
+            <li>• {t('telegram_links_info_1')}</li>
+            <li>• {t('telegram_links_info_2')}</li>
+            <li>• {t('telegram_links_info_3')}</li>
+            <li>• {t('telegram_links_info_4')}</li>
           </ul>
         </div>
       </div>
