@@ -198,11 +198,11 @@ const translations = {
 
     // === MESSAGES ===
     'messages_welcome': {
-      fr: 'Bienvenue sur FindYourPlug! Explorez nos services.',
-      en: 'Welcome to FindYourPlug! Explore our services.',
-      it: 'Benvenuto su FindYourPlug! Esplora i nostri servizi.',
-      es: 'Bienvenido a FindYourPlug! Explora nuestros servicios.',
-      de: 'Willkommen bei FindYourPlug! Entdecken Sie unsere Services.'
+      fr: 'Bienvenue sur FindYourPlug! 🚀\n\n📊 **Statistiques :**\n🏪 {shopsCount} boutiques\n👥 {usersCount} utilisateurs\n\nExplorez nos services.',
+      en: 'Welcome to FindYourPlug! 🚀\n\n📊 **Statistics:**\n🏪 {shopsCount} shops\n👥 {usersCount} users\n\nExplore our services.',
+      it: 'Benvenuto su FindYourPlug! 🚀\n\n📊 **Statistiche:**\n🏪 {shopsCount} negozi\n👥 {usersCount} utenti\n\nEsplora i nostri servizi.',
+      es: 'Bienvenido a FindYourPlug! 🚀\n\n📊 **Estadísticas:**\n🏪 {shopsCount} tiendas\n👥 {usersCount} usuarios\n\nExplora nuestros servicios.',
+      de: 'Willkommen bei FindYourPlug! 🚀\n\n📊 **Statistiken:**\n🏪 {shopsCount} Shops\n👥 {usersCount} Benutzer\n\nEntdecken Sie unsere Services.'
     },
     'messages_contactUs': {
       fr: 'Contactez-nous pour plus d\'informations.',
