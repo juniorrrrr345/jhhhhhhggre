@@ -16,7 +16,6 @@ export default function ShopHome() {
   const [currentPage, setCurrentPage] = useState(1)
   const [likesSync, setLikesSync] = useState({}) // Pour synchroniser les likes en temps réel
   const [currentLanguage, setCurrentLanguage] = useState('fr')
-  const [shopSocialMedias, setShopSocialMedias] = useState([])
   const { t } = useTranslation(currentLanguage)
   const itemsPerPage = 50
 
@@ -110,13 +109,6 @@ export default function ShopHome() {
       // Récupérer la config publique du bot
       const data = await api.getPublicConfig()
       setConfig(data)
-      
-      // Récupérer les réseaux sociaux du shop
-      if (data && data.shopSocialMediaList) {
-        const enabledSocialMedias = data.shopSocialMediaList.filter(social => social.enabled)
-        setShopSocialMedias(enabledSocialMedias)
-        console.log('✅ Réseaux sociaux shop chargés:', enabledSocialMedias)
-      }
       
       // Récupérer aussi les liens Telegram depuis l'API publique
       try {
@@ -467,67 +459,6 @@ export default function ShopHome() {
             </>
           )}
         </div>
-
-        {/* Section Réseaux Sociaux */}
-        {shopSocialMedias.length > 0 && (
-          <div style={{ 
-            padding: '20px',
-            marginTop: '40px',
-            borderTop: '1px solid rgba(255, 255, 255, 0.1)',
-            textAlign: 'center'
-          }}>
-            <h3 style={{ 
-              fontSize: '18px', 
-              marginBottom: '20px',
-              color: '#ffffff',
-              fontWeight: '600'
-            }}>
-              📱 Suivez-nous
-            </h3>
-            <div style={{ 
-              display: 'flex', 
-              justifyContent: 'center', 
-              flexWrap: 'wrap',
-              gap: '15px'
-            }}>
-              {shopSocialMedias.map((social) => (
-                <a
-                  key={social.id}
-                  href={social.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    padding: '10px 15px',
-                    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                    borderRadius: '25px',
-                    textDecoration: 'none',
-                    color: '#ffffff',
-                    fontSize: '14px',
-                    fontWeight: '500',
-                    transition: 'all 0.3s ease',
-                    backdropFilter: 'blur(10px)',
-                    border: '1px solid rgba(255, 255, 255, 0.2)'
-                  }}
-                  onMouseEnter={(e) => {
-                    e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.2)'
-                    e.target.style.transform = 'translateY(-2px)'
-                  }}
-                  onMouseLeave={(e) => {
-                    e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.1)'
-                    e.target.style.transform = 'translateY(0px)'
-                  }}
-                >
-                  <span style={{ marginRight: '8px', fontSize: '16px' }}>
-                    {social.emoji}
-                  </span>
-                  {social.name}
-                </a>
-              ))}
-            </div>
-          </div>
-        )}
 
         {/* Navigation en bas - Style uniforme */}
         <ShopNavigation currentLanguage={currentLanguage} currentPage="home" />
