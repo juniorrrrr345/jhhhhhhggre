@@ -540,54 +540,13 @@ export default function ShopHome() {
             gap: '12px',
             flexWrap: 'wrap'
           }}>
-            {/* Réseaux sociaux depuis l'API synchronisée - priorité shopSocialMediaList */}
+            {/* Réseaux sociaux UNIQUEMENT depuis shopSocialMediaList (ce que vous ajoutez) */}
             {(config?.shopSocialMediaList && config.shopSocialMediaList.length > 0 
               ? config.shopSocialMediaList.map(social => ({
                   ...social,
                   logo: social.logo || getLogoByName(social.name || '')
                 }))
-              : config?.socialMediaList && config.socialMediaList.length > 0 
-                ? config.socialMediaList.map(social => ({
-                    ...social,
-                    logo: social.logo || getLogoByName(social.name || '')
-                  }))
-                : [
-                    { 
-                      name: 'Telegram', 
-                      logo: 'https://i.imgur.com/PP2GVMv.png',
-                      emoji: '📱',
-                      url: 'https://t.me/FindYourPlugBot',
-                      enabled: true
-                    },
-                    { 
-                      name: 'Potato', 
-                      logo: 'https://i.imgur.com/LaRHc9L.png',
-                      emoji: '🥔',
-                      url: '#',
-                      enabled: true
-                    },
-                    { 
-                      name: 'Instagram', 
-                      logo: 'https://i.imgur.com/YBE4cnb.jpeg',
-                      emoji: '📸',
-                      url: '#',
-                      enabled: true
-                    },
-                    { 
-                      name: 'Luffa', 
-                      logo: 'https://i.imgur.com/zkZtY0m.png',
-                      emoji: '🧽',
-                      url: '#',
-                      enabled: true
-                    },
-                    { 
-                      name: 'Discord', 
-                      logo: 'https://i.imgur.com/JgmWPPZ.png',
-                      emoji: '🎮',
-                      url: '#',
-                      enabled: true
-                    }
-                  ]
+              : []
             ).filter(social => social && social.enabled !== false).map((social, index) => (
               <a
                 key={index}
