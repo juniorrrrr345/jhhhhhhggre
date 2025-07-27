@@ -155,10 +155,10 @@ export default function SocialMediaManager() {
           
                     await simpleApi.updateConfig(token, configData)
           
-          // Synchroniser avec le bot
+          // Synchroniser avec le bot avec priorité haute pour les réseaux sociaux
           const robustSync = getRobustSync()
           if (robustSync) {
-            robustSync.syncConfigUpdate(configData)
+            robustSync.addOperation('config_update', configData, 'high')
           }
           
           console.log('✅ Réseaux sociaux sauvegardés et synchronisés')
@@ -379,31 +379,6 @@ export default function SocialMediaManager() {
     if (lowercaseName.includes('linkedin')) return '💼'
     if (lowercaseName.includes('website') || lowercaseName.includes('site')) return '🌐'
     return '🔗' // Emoji par défaut
-  }
-
-  // Fonction pour forcer le rechargement immédiat du bot
-  const forceReloadBot = async () => {
-    try {
-      const botUrl = process.env.NEXT_PUBLIC_BOT_URL || 'https://findyourplug-bot.onrender.com'
-      const response = await fetch(`${botUrl}/api/cache/refresh`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          operation: 'force_reload_social_media',
-          timestamp: Date.now()
-        })
-      })
-      
-      if (response.ok) {
-        console.log('✅ Bot rechargé avec succès')
-      } else {
-        console.warn('⚠️ Erreur rechargement bot:', response.status)
-      }
-    } catch (error) {
-      console.warn('⚠️ Impossible de recharger le bot:', error.message)
-    }
   }
 
   // Fonction utilitaire pour synchroniser avec l'API du bot

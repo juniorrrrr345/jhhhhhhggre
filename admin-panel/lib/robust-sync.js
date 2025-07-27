@@ -8,8 +8,8 @@ class RobustSync {
     this.lastSync = null
     this.retryCount = 0
     this.maxRetries = 2 // Réduit de 3 à 2
-    this.baseDelay = 8000 // Augmenté de 5 à 8 secondes
-    this.minInterval = 15000 // Intervalle minimum entre syncs de 15 secondes
+    this.baseDelay = 2000 // Réduit à 2 secondes pour réseaux sociaux
+    this.minInterval = 5000 // Réduit à 5 secondes pour une sync plus rapide
     
     if (this.isClient) {
       this.init()
@@ -18,8 +18,8 @@ class RobustSync {
 
   init() {
     console.log('🔄 RobustSync initialisé avec délais optimisés')
-    // Traiter la queue toutes les 20 secondes (moins agressif)
-    setInterval(() => this.processQueue(), 20000)
+    // Traiter la queue toutes les 3 secondes pour les réseaux sociaux
+    setInterval(() => this.processQueue(), 3000)
   }
 
   // Ajouter une opération à synchroniser
@@ -36,9 +36,9 @@ class RobustSync {
     this.syncQueue.push(operation)
     console.log(`📝 Opération ajoutée: ${type}`, { id: operation.id, priority })
 
-    // Même pour haute priorité, attendre un minimum
+    // Pour les réseaux sociaux, traitement plus rapide
     if (priority === 'high') {
-      setTimeout(() => this.processQueue(), 2000) // Augmenté de 100ms à 2s
+      setTimeout(() => this.processQueue(), 500) // Réduit à 500ms pour sync rapide
     }
 
     return operation.id
