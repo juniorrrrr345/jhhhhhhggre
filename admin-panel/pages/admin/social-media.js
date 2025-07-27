@@ -14,8 +14,8 @@ export default function SocialMediaManager() {
   const [editingId, setEditingId] = useState(null)
   const [newSocialMedia, setNewSocialMedia] = useState({
     name: '',
+    emoji: '',
     url: '',
-    logo: '',
     enabled: true
   })
   const [isLocalMode, setIsLocalMode] = useState(false)
@@ -106,10 +106,10 @@ export default function SocialMediaManager() {
            } else {
              // Initialiser avec des données par défaut pour le bot Telegram
              const defaultSocialMedias = [
-               { id: 'telegram', name: 'Telegram', emoji: '📱', url: '', logo: 'https://i.imgur.com/PP2GVMv.png', enabled: true },
-               { id: 'whatsapp', name: 'WhatsApp', emoji: '💬', url: '', logo: 'https://i.imgur.com/WhatsApp.png', enabled: true },
-               { id: 'discord', name: 'Discord', emoji: '🎮', url: '', logo: 'https://i.imgur.com/JgmWPPZ.png', enabled: false },
-               { id: 'instagram', name: 'Instagram', emoji: '📸', url: '', logo: 'https://i.imgur.com/YBE4cnb.jpeg', enabled: false }
+               { id: 'telegram', name: 'Telegram', emoji: '📱', url: '', enabled: true },
+               { id: 'whatsapp', name: 'WhatsApp', emoji: '💬', url: '', enabled: false },
+               { id: 'discord', name: 'Discord', emoji: '🎮', url: '', enabled: false },
+               { id: 'instagram', name: 'Instagram', emoji: '📸', url: '', enabled: false }
              ]
              setSocialMedias(defaultSocialMedias)
              await localApi.updateSocialMedia(defaultSocialMedias)
@@ -608,16 +608,14 @@ export default function SocialMediaManager() {
 
                   
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">
-                      Logo (URL de l'image)
-                      <span className="text-xs text-gray-500 ml-1">(optionnel - auto-assigné selon le nom)</span>
-                    </label>
+                    <label className="block text-sm font-medium text-gray-700">Emoji</label>
                     <input
-                      type="url"
-                      value={newSocialMedia.logo}
-                      onChange={(e) => setNewSocialMedia({...newSocialMedia, logo: e.target.value})}
+                      type="text"
+                      value={newSocialMedia.emoji}
+                      onChange={(e) => setNewSocialMedia({...newSocialMedia, emoji: e.target.value})}
                       className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                      placeholder="https://i.imgur.com/example.png"
+                      placeholder="📱"
+                      maxLength="4"
                     />
                   </div>
 
