@@ -292,16 +292,24 @@ export default function ShopHome() {
           </div>
           
           {/* Logo / Titre */}
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ height: '80px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ textAlign: 'center', padding: '20px 0' }}>
+            <div style={{ 
+              height: '120px', 
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'center',
+              marginBottom: '20px'
+            }}>
               {config?.boutique?.logoUrl ? (
                 <img
                   src={config.boutique.logoUrl}
                   alt="FindYourPlug Logo"
                   style={{
-                    maxHeight: '70px',
-                    maxWidth: '300px',
-                    objectFit: 'contain'
+                    maxHeight: '100px',
+                    maxWidth: '350px',
+                    objectFit: 'contain',
+                    animation: 'pulse 2s ease-in-out infinite',
+                    filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.3))'
                   }}
                   onError={(e) => {
                     e.target.style.display = 'none'
@@ -317,9 +325,11 @@ export default function ShopHome() {
                   src="/images/logo.png" 
                   alt="FindYourPlug Logo" 
                   style={{
-                    maxHeight: '70px',
-                    maxWidth: '300px',
-                    objectFit: 'contain'
+                    maxHeight: '100px',
+                    maxWidth: '350px',
+                    objectFit: 'contain',
+                    animation: 'pulse 2s ease-in-out infinite',
+                    filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.3))'
                   }}
                 />
                 {config?.boutique?.headerSubtitle && (

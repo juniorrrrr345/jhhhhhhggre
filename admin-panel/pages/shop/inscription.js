@@ -225,13 +225,13 @@ export default function ShopInscription() {
             
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               {[
+                { icon: '👁️', text: t('inscription_why_visibility') },
                 { icon: '🔍', text: t('inscription_why_access') },
                 { icon: '⭐', text: t('inscription_why_votes') },
                 { icon: '📍', text: t('inscription_why_location') },
                 { icon: '🚚', text: t('inscription_why_delivery') },
                 { icon: '📱', text: t('inscription_why_interface') },
-                { icon: '🔔', text: t('inscription_why_notifications') },
-                { icon: '👁️', text: t('inscription_why_visibility') }
+                { icon: '🔔', text: t('inscription_why_notifications') }
               ].map((item, index) => (
                 <div key={index} style={{
                   display: 'flex',
