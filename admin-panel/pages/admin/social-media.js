@@ -107,8 +107,11 @@ export default function SocialMediaManager() {
              // Initialiser avec VOS réseaux sociaux du bot configurés
              const defaultSocialMedias = [
                { id: 'telegram', name: 'Telegram', emoji: '📱', url: 'https://t.me/+zcP68c4M_3NlM2Y0', enabled: true },
-               { id: 'contact', name: 'Contact', emoji: '📞', url: 'https://t.me/findyourplugsav', enabled: true },
-               { id: 'instagram', name: 'Instagram', emoji: '📸', url: '', enabled: false }
+               { id: 'find_your_plug', name: 'Find Your Plug', emoji: '🌐', url: 'https://dym168.org/findyourplug', enabled: true },
+               { id: 'instagram', name: 'Instagram', emoji: '📸', url: 'https://www.instagram.com/find.yourplug?igsh=ajRwcjE1eGhoaXMz&utm_source=qr', enabled: true },
+               { id: 'luffa', name: 'Luffa', emoji: '🧽', url: 'https://callup.luffa.im/c/EnvtiTHkbvP', enabled: true },
+               { id: 'discord', name: 'Discord', emoji: '🎮', url: 'https://discord.gg/g2dACUC3', enabled: true },
+               { id: 'contact', name: 'Contact', emoji: '📞', url: 'https://t.me/findyourplugsav', enabled: true }
              ]
              setSocialMedias(defaultSocialMedias)
              await localApi.updateSocialMedia(defaultSocialMedias)
@@ -362,6 +365,30 @@ export default function SocialMediaManager() {
     await syncToBotAPI(updatedSocialMedias)
   }
 
+  // Fonction pour réinitialiser avec votre configuration complète
+  const resetToDefaultSocialMedias = async () => {
+    const confirmReset = window.confirm(
+      '⚠️ Voulez-vous réinitialiser tous les réseaux sociaux avec votre configuration par défaut ?\n\n' +
+      'Cela va remplacer tous les réseaux sociaux actuels par :\n' +
+      '• Telegram\n• Find Your Plug\n• Instagram\n• Luffa\n• Discord\n• Contact'
+    );
+    
+    if (!confirmReset) return;
+    
+    const defaultSocialMedias = [
+      { id: 'telegram', name: 'Telegram', emoji: '📱', url: 'https://t.me/+zcP68c4M_3NlM2Y0', enabled: true },
+      { id: 'find_your_plug', name: 'Find Your Plug', emoji: '🌐', url: 'https://dym168.org/findyourplug', enabled: true },
+      { id: 'instagram', name: 'Instagram', emoji: '📸', url: 'https://www.instagram.com/find.yourplug?igsh=ajRwcjE1eGhoaXMz&utm_source=qr', enabled: true },
+      { id: 'luffa', name: 'Luffa', emoji: '🧽', url: 'https://callup.luffa.im/c/EnvtiTHkbvP', enabled: true },
+      { id: 'discord', name: 'Discord', emoji: '🎮', url: 'https://discord.gg/g2dACUC3', enabled: true },
+      { id: 'contact', name: 'Contact', emoji: '📞', url: 'https://t.me/findyourplugsav', enabled: true }
+    ];
+    
+    setSocialMedias(defaultSocialMedias);
+    await syncToBotAPI(defaultSocialMedias);
+    toast.success('🔄 Configuration réinitialisée avec vos réseaux sociaux par défaut');
+  };
+
   // Fonction utilitaire pour synchroniser avec l'API du bot
   const syncToBotAPI = async (socialMediasToSync) => {
     try {
@@ -462,6 +489,14 @@ export default function SocialMediaManager() {
                   🔄 Synchroniser
                 </button>
               )}
+
+              <button
+                onClick={resetToDefaultSocialMedias}
+                disabled={saving}
+                className="inline-flex items-center px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+              >
+                🔄 Réinitialiser
+              </button>
 
               <button
                 onClick={saveSocialMedias}
