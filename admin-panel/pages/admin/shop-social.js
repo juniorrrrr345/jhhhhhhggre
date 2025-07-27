@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/router'
 import Head from 'next/head'
 import Layout from '../../components/Layout'
@@ -10,6 +10,7 @@ export default function ShopSocialMediaManager() {
   const [socialMedias, setSocialMedias] = useState([])
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
+  const [isSyncing, setIsSyncing] = useState(false)
   const [editingId, setEditingId] = useState(null)
   const [newSocialMedia, setNewSocialMedia] = useState({
     name: '',
@@ -19,6 +20,7 @@ export default function ShopSocialMediaManager() {
   })
   const [isLocalMode, setIsLocalMode] = useState(false)
   const router = useRouter()
+  const updateTimeoutRef = useRef(null)
 
   useEffect(() => {
     const token = localStorage.getItem('adminToken')
@@ -27,6 +29,15 @@ export default function ShopSocialMediaManager() {
       return
     }
     fetchSocialMedias()
+  }, [])
+
+  // Cleanup du timeout au démontage
+  useEffect(() => {
+    return () => {
+      if (updateTimeoutRef.current) {
+        clearTimeout(updateTimeoutRef.current)
+      }
+    }
   }, [])
 
   const fetchSocialMedias = async () => {
@@ -114,6 +125,37 @@ export default function ShopSocialMediaManager() {
     }
   }
 
+  // Fonction de synchronisation automatique pour la boutique
+  const syncShopToBoutique = async (shopSocialMediasToSync) => {
+    try {
+      setIsSyncing(true)
+      const token = localStorage.getItem('adminToken') || 'JuniorAdmon123'
+
+      const configData = {
+        shopSocialMediaList: shopSocialMediasToSync
+      }
+
+      console.log('🏪 Synchronisation réseaux sociaux boutique vers accueil:', configData)
+      await simpleApi.updateConfig(token, configData)
+      console.log('✅ Réseaux sociaux boutique synchronisés vers accueil Vercel')
+
+      // Notification discrète
+      toast.success('🏪 Synchronisé avec l\'accueil boutique', {
+        duration: 2000,
+        icon: '✅'
+      })
+
+      // Sauvegarder localement
+      localStorage.setItem('shopSocialMediaBackup', JSON.stringify(shopSocialMediasToSync))
+
+    } catch (error) {
+      console.log('⚠️ Erreur synchronisation accueil boutique:', error.message)
+      toast.error('⚠️ Erreur synchronisation accueil', { duration: 3000 })
+    } finally {
+      setIsSyncing(false)
+    }
+  }
+
   const saveSocialMedias = async () => {
     try {
       setSaving(true)
@@ -182,7 +224,8 @@ export default function ShopSocialMediaManager() {
       enabled: newSocialMedia.enabled
     }
     
-    setSocialMedias([...socialMedias, newSocial])
+    const updatedSocialMedias = [...socialMedias, newSocial]
+    setSocialMedias(updatedSocialMedias)
     setNewSocialMedia({
       name: '',
       emoji: '',
@@ -191,25 +234,50 @@ export default function ShopSocialMediaManager() {
     })
     
     toast.success('Réseau social ajouté')
+    
+    // Synchronisation automatique immédiate
+    await syncShopToBoutique(updatedSocialMedias)
   }
 
   const updateSocialMedia = (id, field, value) => {
-    setSocialMedias(socialMedias.map(social => 
+    const updatedSocialMedias = socialMedias.map(social => 
       social.id === id ? { ...social, [field]: value } : social
-    ))
+    )
+    setSocialMedias(updatedSocialMedias)
+    
+    // Synchronisation automatique avec debounce
+    if (updateTimeoutRef.current) {
+      clearTimeout(updateTimeoutRef.current)
+    }
+    updateTimeoutRef.current = setTimeout(() => {
+      syncShopToBoutique(updatedSocialMedias)
+    }, 1500) // 1.5 secondes de debounce pour les modifications
   }
 
   const deleteSocialMedia = async (id) => {
     if (window.confirm('Êtes-vous sûr de vouloir supprimer ce réseau social ?')) {
-      setSocialMedias(socialMedias.filter(social => social.id !== id))
+      const updatedSocialMedias = socialMedias.filter(social => social.id !== id)
+      setSocialMedias(updatedSocialMedias)
       toast.success('Réseau social supprimé')
+      
+      // Synchronisation automatique immédiate
+      await syncShopToBoutique(updatedSocialMedias)
     }
   }
 
   const toggleEnabled = (id) => {
-    setSocialMedias(socialMedias.map(social => 
+    const updatedSocialMedias = socialMedias.map(social => 
       social.id === id ? { ...social, enabled: !social.enabled } : social
-    ))
+    )
+    setSocialMedias(updatedSocialMedias)
+    
+    // Synchronisation automatique avec debounce
+    if (updateTimeoutRef.current) {
+      clearTimeout(updateTimeoutRef.current)
+    }
+    updateTimeoutRef.current = setTimeout(() => {
+      syncShopToBoutique(updatedSocialMedias)
+    }, 1000) // 1 seconde pour les toggles
   }
 
   if (loading) {
@@ -244,12 +312,33 @@ export default function ShopSocialMediaManager() {
               <p className="mt-2 text-sm text-gray-700">
                 Gérez les réseaux sociaux qui apparaissent sur la page de recherche de la boutique.
               </p>
+              <div className="mt-3 bg-green-50 border border-green-200 rounded-md p-3">
+                <div className="flex">
+                  <div className="flex-shrink-0">
+                    <svg className="h-5 w-5 text-green-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                  <div className="ml-3">
+                    <p className="text-sm text-green-700">
+                      <strong>Synchronisation automatique :</strong> Les modifications se synchronisent automatiquement avec l'accueil de la boutique Vercel.
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
+            <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none space-x-2">
+              <button
+                onClick={() => syncShopToBoutique(socialMedias)}
+                disabled={isSyncing}
+                className="inline-flex items-center px-3 py-2 border border-green-300 rounded-md shadow-sm text-sm font-medium text-green-700 bg-green-100 hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50"
+              >
+                {isSyncing ? '🔄 Synchronisation...' : '🏪 Sync Accueil'}
+              </button>
               <button
                 onClick={saveSocialMedias}
                 disabled={saving}
-                className="block rounded-md bg-blue-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:opacity-50"
+                className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-600 disabled:opacity-50"
               >
                 {saving ? 'Sauvegarde...' : 'Sauvegarder'}
               </button>
