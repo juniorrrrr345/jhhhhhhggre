@@ -4169,9 +4169,9 @@ const handleUserAnalytics = async (req, res) => {
   }
 };
 
-// Routes pour user analytics (GET et POST) - sans auth pour debug
-app.get('/api/admin/user-analytics', handleUserAnalytics);
-app.post('/api/admin/user-analytics', handleUserAnalytics);
+// Routes pour user analytics (GET et POST) - avec auth admin
+app.get('/api/admin/user-analytics', authenticateAdmin, handleUserAnalytics);
+app.post('/api/admin/user-analytics', authenticateAdmin, handleUserAnalytics);
 
 // Test endpoint pour vérifier le proxy
 app.get('/api/test-proxy', (req, res) => {
