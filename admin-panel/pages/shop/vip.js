@@ -227,7 +227,7 @@ export default function ShopVIP() {
             WebkitTextFillColor: 'transparent',
             letterSpacing: '2px'
           }}>
-            ⭐ {t('vip')}
+            🎯 {t('vip')}
           </h1>
           <p style={{ 
             color: '#8e8e93', 
