@@ -383,6 +383,25 @@ export const simpleApi = {
     }
   },
 
+  // Méthode spécifique pour les analytics utilisateurs
+  getUserAnalytics: async (timeRange = 'all', token = null) => {
+    try {
+      console.log(`🔄 User Analytics request: ${timeRange}`);
+      const response = await makeProxyCall(`admin/user-analytics?timeRange=${timeRange}`, 'GET', token);
+      console.log(`✅ User Analytics response:`, response);
+      return { 
+        ok: true, 
+        data: response 
+      };
+    } catch (error) {
+      console.error(`❌ User Analytics error:`, error);
+      return { 
+        ok: false, 
+        error: error.message 
+      };
+    }
+  },
+
   // Fonction pour nettoyer le cache manuellement
   clearCache: () => {
     apiCache.clear();

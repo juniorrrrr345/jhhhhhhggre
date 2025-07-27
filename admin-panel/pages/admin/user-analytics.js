@@ -54,9 +54,15 @@ export default function UserAnalytics() {
       
       while (retryCount < maxRetries) {
         try {
-          apiResponse = await api.get(`admin/user-analytics?timeRange=${timeRange}`, adminToken)
+          apiResponse = await api.getUserAnalytics(timeRange, adminToken)
           console.log('📊 Response API user-analytics:', apiResponse)
-          break // Succès, sortir de la boucle
+          
+          // Vérifier si la réponse est valide
+          if (apiResponse && apiResponse.ok) {
+            break // Succès, sortir de la boucle
+          } else {
+            throw new Error(apiResponse?.error || 'Réponse invalide')
+          }
         } catch (error) {
           retryCount++
           console.log(`⚠️ Tentative ${retryCount}/${maxRetries} échouée:`, error.message)
