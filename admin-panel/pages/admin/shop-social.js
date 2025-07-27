@@ -199,7 +199,7 @@ export default function ShopSocialMediaManager() {
     }
   }
 
-  const addSocialMedia = () => {
+  const addSocialMedia = async () => {
     if (!newSocialMedia.name.trim() || !newSocialMedia.emoji.trim()) {
       toast.error('Nom et emoji sont requis')
       return
