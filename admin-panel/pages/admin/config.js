@@ -375,7 +375,7 @@ export default function BotConfiguration() {
                       className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                       placeholder="Bienvenue sur FindYourPlug! 🚀
 
-🏪 {shopsCount} boutiques | 👥 {usersCount} utilisateurs
+🏪 {shopsCount} boutiques/shops/negozi/tiendas/Shops | 👥 {usersCount} utilisateurs/users/utenti/usuarios/Benutzer
 
 Explorez nos services."
                     />
