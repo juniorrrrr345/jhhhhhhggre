@@ -1471,6 +1471,10 @@ const askWorkingCountries = async (ctx) => {
     `⸻\n\n` +
     `🌍 Étape 12 : Pays de travail\n\n` +
     `Il choisit un ou plusieurs pays où vous travaillez ou où le service est disponible.\n\n` +
+    `💡 Exemples :\n` +
+    `• Si vous êtes en France → Choisissez France\n` +
+    `• Si vous êtes en France et en Espagne → Choisissez France & Espagne\n` +
+    `• Si vous livrez dans plusieurs pays → Sélectionnez tous les pays\n\n` +
     (selectedCountries.length > 0 ? 
       `✅ Pays sélectionnés : ${selectedCountries.join(', ')}\n\n` : 
       `⚪ Aucun pays sélectionné\n\n`) +
@@ -3052,7 +3056,11 @@ const askMeetupPostalForCountry = async (ctx, countryIndex) => {
     `🤝 Service "Meet Up" - Codes postaux\n\n` +
     `📍 Pays actuel : ${currentCountry}\n` +
     `📊 Progression : ${countryIndex + 1}/${countries.length}\n\n` +
-    `Entrez le code postal pour ${currentCountry} :`;
+    `Entrez le code postal pour ${currentCountry} :\n\n` +
+    `💡 Vous pouvez entrer plusieurs codes postaux :\n` +
+    `• Un seul : 75001\n` +
+    `• Plusieurs : 75001, 75002, 75003\n` +
+    `• Départements : 75, 69, 13`;
   
   userForm.step = 'waiting_meetup_postal';
   userForm.data.currentCountryIndex = countryIndex;
@@ -3101,7 +3109,11 @@ const askDeliveryPostalForCountry = async (ctx, countryIndex) => {
     `🚚 Service "Livraison" - Codes postaux\n\n` +
     `📍 Pays actuel : ${currentCountry}\n` +
     `📊 Progression : ${countryIndex + 1}/${countries.length}\n\n` +
-    `Entrez le code postal pour ${currentCountry} :`;
+    `Entrez le code postal pour ${currentCountry} :\n\n` +
+    `💡 Vous pouvez entrer plusieurs codes postaux :\n` +
+    `• Un seul : 75001\n` +
+    `• Plusieurs : 75001, 75002, 75003\n` +
+    `• Départements : 75, 69, 13`;
   
   userForm.step = 'waiting_delivery_postal';
   userForm.data.currentCountryIndex = countryIndex;
