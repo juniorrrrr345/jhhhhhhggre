@@ -353,19 +353,31 @@ const showMainMenuInLanguage = async (ctx, config, language) => {
     // Message de bienvenue avec placeholders pour les statistiques
     const { getTranslation } = require('./src/utils/translations');
     
-    // Toujours utiliser les traductions par défaut qui contiennent les placeholders des statistiques
-    let welcomeMessage = getTranslation('messages_welcome', currentLang, customTranslations);
+    // Message fixe non modifiable avec les statistiques
+    const stats = await getBotStats();
+    console.log('📊 Statistiques récupérées:', stats);
     
-    // Forcer l'utilisation du message de traduction avec les placeholders
-    if (!welcomeMessage.includes('{shopsCount}') || !welcomeMessage.includes('{usersCount}')) {
-      console.log('⚠️ Message de traduction ne contient pas les placeholders, utilisation du message par défaut');
-      welcomeMessage = `Bienvenue sur FindYourPlug! Explorez nos services.\n\n🏪 {shopsCount} boutiques | 👥 {usersCount} utilisateurs`;
+    const shopsCount = stats.shopsCount || 0;
+    const usersCount = stats.usersCount || 0;
+    
+    // Message fixe selon la langue
+    let welcomeMessage;
+    if (currentLang === 'fr') {
+      welcomeMessage = `Bienvenue sur FindYourPlug! Explorez nos services.\n\n🏪 ${shopsCount} boutiques | 👥 ${usersCount} utilisateurs`;
+    } else if (currentLang === 'en') {
+      welcomeMessage = `Welcome to FindYourPlug! Explore our services.\n\n🏪 ${shopsCount} shops | 👥 ${usersCount} users`;
+    } else if (currentLang === 'it') {
+      welcomeMessage = `Benvenuto su FindYourPlug! Esplora i nostri servizi.\n\n🏪 ${shopsCount} negozi | 👥 ${usersCount} utenti`;
+    } else if (currentLang === 'es') {
+      welcomeMessage = `Bienvenido a FindYourPlug! Explora nuestros servicios.\n\n🏪 ${shopsCount} tiendas | 👥 ${usersCount} usuarios`;
+    } else if (currentLang === 'de') {
+      welcomeMessage = `Willkommen bei FindYourPlug! Entdecken Sie unsere Services.\n\n🏪 ${shopsCount} Shops | 👥 ${usersCount} Benutzer`;
+    } else {
+      // Fallback en français
+      welcomeMessage = `Bienvenue sur FindYourPlug! Explorez nos services.\n\n🏪 ${shopsCount} boutiques | 👥 ${usersCount} utilisateurs`;
     }
     
-    // Debug: vérifier le message de traduction
-    console.log('🔤 Message de traduction brut:', welcomeMessage);
-    console.log('🔤 Contient shopsCount:', welcomeMessage.includes('{shopsCount}'));
-    console.log('🔤 Contient usersCount:', welcomeMessage.includes('{usersCount}'));
+    console.log('📝 Message fixe avec stats:', welcomeMessage);
     
     console.log('🔤 Message de traduction récupéré:', welcomeMessage);
     console.log('🔤 Langue actuelle:', currentLang);
