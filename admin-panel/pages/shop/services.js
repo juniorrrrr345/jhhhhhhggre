@@ -250,8 +250,7 @@ export default function ShopServices() {
                 { icon: '📱', title: 'MiniApp moderne', desc: 'Interface web intégrée dans Telegram' },
                 { icon: '🔒', title: '100% sécurisé', desc: 'Ton bot t\'appartient, personne peut te le supprimer' },
                 { icon: '⚡', title: 'Installation rapide', desc: 'Livré en 48-72h maximum - Voir + en cas de demande spéciale' },
-                { icon: '🎨', title: 'Design personnalisé', desc: 'Couleurs et style adaptés à ton image' },
-                { icon: '👁️', title: 'Plus de visibilité', desc: 'Ça offre + de visibilité' }
+                { icon: '🎨', title: 'Design personnalisé', desc: 'Couleurs et style adaptés à ton image' }
               ].map((item, index) => (
                 <div key={index} style={{
                   display: 'flex',

@@ -230,7 +230,8 @@ export default function ShopInscription() {
                 { icon: '📍', text: 'Recherche par localisation' },
                 { icon: '🚚', text: 'Services de livraison' },
                 { icon: '📱', text: 'Interface simple et rapide' },
-                { icon: '🔔', text: 'Notifications en temps réel' }
+                { icon: '🔔', text: 'Notifications en temps réel' },
+                { icon: '👁️', text: 'Ça offre + de visibilité' }
               ].map((item, index) => (
                 <div key={index} style={{
                   display: 'flex',
