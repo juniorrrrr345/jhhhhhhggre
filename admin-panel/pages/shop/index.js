@@ -310,7 +310,7 @@ export default function ShopHome() {
       }}>
         {/* Header Titre Principal */}
         <div style={{ 
-          backgroundColor: '#000000',
+          backgroundColor: 'transparent',
           padding: '20px',
           position: 'relative'
         }}>

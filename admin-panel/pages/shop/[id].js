@@ -304,7 +304,15 @@ export default function ShopPlugDetail() {
           <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
         </Head>
         <div style={{ 
-          backgroundColor: '#000000', 
+          backgroundColor: '#1a1a1a',
+          backgroundImage: `
+            linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), 
+            url("https://i.imgur.com/ux7jV3y.jpeg")
+          `,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          backgroundAttachment: 'fixed',
           minHeight: '100vh',
           display: 'flex', 
           alignItems: 'center', 

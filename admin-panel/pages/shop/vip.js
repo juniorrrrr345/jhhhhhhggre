@@ -160,7 +160,21 @@ export default function ShopVIP() {
           <title>{t('loading')} VIP...</title>
           <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
         </Head>
-        <div style={{ backgroundColor: '#000000', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ 
+          backgroundColor: '#1a1a1a',
+          backgroundImage: `
+            linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), 
+            url("https://i.imgur.com/ux7jV3y.jpeg")
+          `,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          backgroundAttachment: 'fixed',
+          minHeight: '100vh', 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'center' 
+        }}>
           <div style={{ textAlign: 'center' }}>
             <div style={{ 
               width: '48px', 
@@ -187,19 +201,22 @@ export default function ShopVIP() {
         </Head>
 
       <div style={{ 
-        backgroundColor: '#000000', 
-        minHeight: '100vh',
-        color: '#ffffff',
-        fontFamily: '"SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
-        backgroundImage: config?.boutique?.backgroundImage ? `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url("${config.boutique.backgroundImage}")` : 'none',
+        backgroundColor: '#1a1a1a',
+        backgroundImage: `
+          linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), 
+          url("https://i.imgur.com/ux7jV3y.jpeg")
+        `,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
-        backgroundAttachment: 'fixed'
+        backgroundAttachment: 'fixed',
+        minHeight: '100vh',
+        color: '#ffffff',
+        fontFamily: '"SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'
       }}>
         {/* Header */}
         <header style={{ 
-          backgroundColor: '#000000',
+          backgroundColor: 'transparent',
           padding: '20px',
           textAlign: 'center',
           borderBottom: '1px solid #2a2a2a'

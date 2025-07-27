@@ -87,11 +87,13 @@ export default function ShopInscription() {
     return {
       backgroundColor: '#1a1a1a',
       backgroundImage: `
-        radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
-        radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
-        radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.2) 0%, transparent 50%),
-        linear-gradient(45deg, #1a1a1a 0%, #2d2d2d 100%)
+        linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), 
+        url("https://i.imgur.com/ux7jV3y.jpeg")
       `,
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      backgroundRepeat: 'no-repeat',
+      backgroundAttachment: 'fixed',
       color: '#ffffff'
     }
   }
@@ -111,7 +113,7 @@ export default function ShopInscription() {
       }}>
         {/* Header */}
         <div style={{ 
-          backgroundColor: '#000000',
+          backgroundColor: 'transparent',
           padding: '20px',
           position: 'relative'
         }}>
