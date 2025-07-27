@@ -130,7 +130,7 @@ export default function ShopServices() {
               color: '#ffffff',
               letterSpacing: '2px'
             }}>
-              🛠️ SERVICES
+              🛠️ {t('services_title')}
             </h1>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
               <span style={{ 
@@ -169,7 +169,7 @@ export default function ShopServices() {
               marginBottom: '16px',
               lineHeight: '1.3'
             }}>
-              😤 T'en as marre que ton canal saute ?
+              😤 {t('services_frustrated_title')}
             </h2>
             <p style={{
               fontSize: '18px',
@@ -177,14 +177,14 @@ export default function ShopServices() {
               marginBottom: '20px',
               opacity: 0.9
             }}>
-              On a LA solution ! 🔥
+              {t('services_solution_text')} 🔥
             </p>
             <div style={{
               fontSize: '16px',
               color: '#ffffff',
               fontWeight: '600'
             }}>
-              ⬇️ Découvre notre offre exclusive ⬇️
+              ⬇️ {t('services_discover_text')} ⬇️
             </div>
           </div>
 
@@ -296,7 +296,7 @@ export default function ShopServices() {
                 onMouseEnter={(e) => e.target.style.transform = 'translateY(-2px)'}
                 onMouseLeave={(e) => e.target.style.transform = 'translateY(0)'}
               >
-                💬 Commander maintenant
+                💬 {t('services_order_button')}
               </a>
             </div>
           </div>

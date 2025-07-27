@@ -3,6 +3,7 @@ import { useRouter } from 'next/router'
 import Layout from '../../components/Layout'
 import { simpleApi } from '../../lib/api-simple'
 import toast from 'react-hot-toast'
+import { useTranslation } from '../../components/LanguageSelector'
 
 export default function TelegramLinks() {
   const [loading, setLoading] = useState(true)
@@ -12,6 +13,7 @@ export default function TelegramLinks() {
     servicesTelegramLink: 'https://t.me/FindYourPlugBot'
   })
   const router = useRouter()
+  const { t } = useTranslation('fr') // Admin panel en français par défaut
 
   useEffect(() => {
     // Vérifier l'authentification
@@ -141,9 +143,9 @@ export default function TelegramLinks() {
       <div className="space-y-6">
         {/* En-tête */}
         <div className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg p-6 text-white">
-          <h1 className="text-2xl font-bold mb-2">🔗 Gestion des Liens Telegram</h1>
+          <h1 className="text-2xl font-bold mb-2">🔗 {t('telegram_links_title')}</h1>
           <p className="text-blue-100">
-            Configurez les liens Telegram utilisés sur les pages d'inscription et de services.
+            {t('telegram_links_description')}
           </p>
         </div>
 
@@ -154,7 +156,7 @@ export default function TelegramLinks() {
             {/* Lien d'inscription */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                📝 Lien Telegram - Page d'inscription
+                📝 {t('telegram_links_inscription_label')}
               </label>
               <div className="flex gap-2">
                 <input
@@ -168,18 +170,18 @@ export default function TelegramLinks() {
                   onClick={() => handleTestLink(config.inscriptionTelegramLink)}
                   className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                 >
-                  🔗 Tester
+                  🔗 {t('telegram_links_test')}
                 </button>
               </div>
               <p className="mt-1 text-sm text-gray-500">
-                Ce lien sera utilisé sur la page d'inscription pour rediriger vers le bot Telegram.
+                {t('telegram_links_inscription_desc')}
               </p>
             </div>
 
             {/* Lien de services */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                🛠️ Lien Telegram - Page de services
+                🛠️ {t('telegram_links_services_label')}
               </label>
               <div className="flex gap-2">
                 <input
@@ -193,11 +195,11 @@ export default function TelegramLinks() {
                   onClick={() => handleTestLink(config.servicesTelegramLink)}
                   className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                 >
-                  🔗 Tester
+                  🔗 {t('telegram_links_test')}
                 </button>
               </div>
               <p className="mt-1 text-sm text-gray-500">
-                Ce lien sera utilisé sur la page de services pour rediriger vers le bot Telegram.
+                {t('telegram_links_services_desc')}
               </p>
             </div>
 
@@ -211,10 +213,10 @@ export default function TelegramLinks() {
                 {saving ? (
                   <>
                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                    Sauvegarde...
+                    {t('telegram_links_saving')}
                   </>
                 ) : (
-                  '💾 Sauvegarder'
+                  `💾 ${t('telegram_links_save')}`
                 )}
               </button>
               

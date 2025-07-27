@@ -131,7 +131,7 @@ export default function ShopInscription() {
               color: '#ffffff',
               letterSpacing: '2px'
             }}>
-              📝 INSCRIPTION
+              📝 {t('inscription_title')}
             </h1>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
               <span style={{ 
@@ -162,7 +162,7 @@ export default function ShopInscription() {
               margin: '0 0 16px 0',
               color: '#ffffff'
             }}>
-              Rejoignez FindYourPlug 🚀
+              {t('inscription_join_title')} 🚀
             </h2>
             <p style={{
               fontSize: '16px',
@@ -171,7 +171,7 @@ export default function ShopInscription() {
               margin: '0 auto',
               lineHeight: '1.5'
             }}>
-              Inscrivez-vous directement via notre bot Telegram pour accéder à toutes les boutiques
+              {t('inscription_description')}
             </p>
           </div>
 
@@ -196,7 +196,7 @@ export default function ShopInscription() {
             onMouseEnter={(e) => e.target.style.transform = 'translateY(-2px)'}
             onMouseLeave={(e) => e.target.style.transform = 'translateY(0)'}
           >
-            🚀 S'inscrire maintenant
+            🚀 {t('inscription_button')}
           </a>
 
           {/* Avantages */}
