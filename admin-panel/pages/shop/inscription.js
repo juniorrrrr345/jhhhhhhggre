@@ -22,7 +22,17 @@ export default function ShopInscription() {
 
   const fetchConfig = async () => {
     try {
-      // Récupérer directement depuis l'API du bot
+      // Récupérer depuis le localStorage (configuré par le panel admin)
+      const savedLinks = localStorage.getItem('telegramLinks')
+      if (savedLinks) {
+        const links = JSON.parse(savedLinks)
+        setConfig({
+          inscriptionTelegramLink: links.inscriptionTelegramLink || 'https://t.me/FindYourPlugBot'
+        })
+        return
+      }
+      
+      // Fallback : essayer l'API du bot
       const botApiUrl = 'https://jhhhhhhggre.onrender.com'
       
       const response = await fetch(`${botApiUrl}/api/config`, {

@@ -28,7 +28,19 @@ export default function TelegramLinks() {
     try {
       console.log('🔍 Fetching telegram links config...')
       
-      // Utiliser l'API simple comme les autres pages
+      // D'abord essayer de charger depuis le localStorage
+      const savedLinks = localStorage.getItem('telegramLinks')
+      if (savedLinks) {
+        const links = JSON.parse(savedLinks)
+        setConfig({
+          inscriptionTelegramLink: links.inscriptionTelegramLink || 'https://t.me/FindYourPlugBot',
+          servicesTelegramLink: links.servicesTelegramLink || 'https://t.me/FindYourPlugBot'
+        })
+        setLoading(false)
+        return
+      }
+      
+      // Fallback : utiliser l'API simple
       const data = await simpleApi.getConfig(token)
       console.log('✅ Config loaded:', data)
       
@@ -68,6 +80,12 @@ export default function TelegramLinks() {
       
       // Sauvegarder la configuration complète
       await simpleApi.updateConfig(token, updatedConfig)
+      
+      // Sauvegarder aussi en localStorage pour les pages publiques
+      localStorage.setItem('telegramLinks', JSON.stringify({
+        inscriptionTelegramLink: config.inscriptionTelegramLink,
+        servicesTelegramLink: config.servicesTelegramLink
+      }))
       
       toast.success('Configuration sauvegardée avec succès !')
       console.log('✅ Telegram links config saved')
