@@ -21,17 +21,19 @@ export default async function handler(req, res) {
     
     if (!url) {
       console.log('❌ URL manquante')
-      return res.status(400).json({ error: 'URL d\'image requise' })
+      return redirectToFallbackImage(res, 'URL d\'image requise')
     }
 
     // Valider que l'URL est une image valide
     const isValidImage = url.match(/\.(jpg|jpeg|png|gif|webp|svg)$/i) || 
                         url.includes('postimg.cc') || 
-                        url.includes('imgur.com')
+                        url.includes('imgur.com') ||
+                        url.includes('i.imgur.com') ||
+                        url.includes('cdn.discordapp.com')
     
     if (!isValidImage) {
       console.log('❌ URL d\'image non valide:', url)
-      return res.status(400).json({ error: 'URL d\'image non valide' })
+      return redirectToFallbackImage(res, 'URL d\'image non valide')
     }
 
     console.log('🖼️ Proxy image vers:', url)
@@ -39,12 +41,15 @@ export default async function handler(req, res) {
     // Récupérer l'image
     const imageResponse = await fetch(url, {
       headers: {
-        'User-Agent': 'Mozilla/5.0 (compatible; BoutiqueBot/1.0)',
-        'Accept': 'image/*,*/*;q=0.8',
-        'Referer': 'https://postimg.cc/',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Accept': 'image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8',
+        'Accept-Language': 'en-US,en;q=0.9',
+        'Sec-Fetch-Dest': 'image',
+        'Sec-Fetch-Mode': 'no-cors',
+        'Referer': 'https://sfeplugslink.vercel.app/',
       },
-      // Timeout de 10 secondes pour les images
-      signal: AbortSignal.timeout(10000)
+      // Timeout de 15 secondes pour les images
+      signal: AbortSignal.timeout(15000)
     })
 
     console.log('📡 Réponse image:', {
@@ -56,23 +61,21 @@ export default async function handler(req, res) {
 
     if (!imageResponse.ok) {
       console.log('❌ Erreur récupération image:', imageResponse.status, imageResponse.statusText)
-      return res.status(imageResponse.status).json({ 
-        error: 'Impossible de récupérer l\'image',
-        status: imageResponse.status,
-        statusText: imageResponse.statusText,
-        url: url
-      })
+      return redirectToFallbackImage(res, `Erreur ${imageResponse.status}: ${imageResponse.statusText}`)
     }
 
     // Vérifier que c'est bien une image
     const contentType = imageResponse.headers.get('content-type')
-    if (!contentType || !contentType.startsWith('image/')) {
-      console.log('❌ Type de contenu invalide:', contentType)
-      return res.status(400).json({ error: 'Le contenu n\'est pas une image valide', contentType })
+    
+    // Si c'est du HTML (page d'erreur), utiliser fallback
+    if (contentType && contentType.includes('text/html')) {
+      console.log('❌ Page HTML reçue au lieu d\'image - utilisation fallback')
+      return redirectToFallbackImage(res, `Type de contenu invalide: ${contentType}`)
     }
 
     // Transférer les headers importants
-    res.setHeader('Content-Type', contentType)
+    const finalContentType = contentType && contentType.startsWith('image/') ? contentType : 'image/jpeg'
+    res.setHeader('Content-Type', finalContentType)
     res.setHeader('Cache-Control', 'public, max-age=3600') // Cache 1 heure
     
     if (imageResponse.headers.get('content-length')) {
@@ -80,8 +83,7 @@ export default async function handler(req, res) {
     }
 
     console.log('✅ Image proxifiée avec succès:', {
-      contentType,
-      contentLength: imageResponse.headers.get('content-length'),
+      contentType: finalContentType,
       url: url
     })
 
@@ -91,23 +93,21 @@ export default async function handler(req, res) {
     
   } catch (error) {
     console.error('❌ Erreur proxy image:', error)
-    
-    let errorMessage = error.message
-    let statusCode = 500
-    
-    if (error.name === 'AbortError' || error.message.includes('timeout')) {
-      errorMessage = 'Timeout lors du chargement de l\'image'
-      statusCode = 504
-    } else if (error.message.includes('fetch') || error.message.includes('Network')) {
-      errorMessage = 'Impossible de récupérer l\'image depuis la source'
-      statusCode = 503
-    }
-    
-    res.status(statusCode).json({ 
-      error: 'Erreur proxy image', 
-      message: errorMessage,
-      originalError: error.message,
-      timestamp: new Date().toISOString()
-    })
+    return redirectToFallbackImage(res, error.message)
   }
+}
+
+// Fonction pour rediriger vers une image de fallback
+function redirectToFallbackImage(res, reason) {
+  console.log('🔄 Redirection vers image de fallback:', reason)
+  
+  // Image de fallback par défaut
+  const fallbackImageUrl = 'https://i.imgur.com/PP2GVMv.png'
+  
+  // Redirection 302 vers l'image de fallback
+  res.writeHead(302, {
+    'Location': fallbackImageUrl,
+    'Cache-Control': 'public, max-age=300'
+  })
+  res.end()
 }
