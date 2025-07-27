@@ -6,13 +6,33 @@ import ShopNavigation from '../../components/ShopNavigation'
 
 export default function ShopInscription() {
   const [currentLanguage, setCurrentLanguage] = useState('fr')
+  const [config, setConfig] = useState({
+    inscriptionTelegramLink: 'https://t.me/FindYourPlugBot'
+  })
   const { t } = useTranslation(currentLanguage)
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
       setCurrentLanguage(getCurrentLanguage())
     }
+    
+    // Charger la configuration
+    fetchConfig()
   }, [])
+
+  const fetchConfig = async () => {
+    try {
+      const response = await fetch('/api/config')
+      if (response.ok) {
+        const data = await response.json()
+        setConfig({
+          inscriptionTelegramLink: data.inscriptionTelegramLink || 'https://t.me/FindYourPlugBot'
+        })
+      }
+    } catch (error) {
+      console.error('Erreur lors du chargement de la config:', error)
+    }
+  }
 
   const handleLanguageChange = (newLanguage) => {
     setCurrentLanguage(newLanguage)
@@ -125,7 +145,7 @@ export default function ShopInscription() {
 
           {/* Bouton d'inscription */}
           <a
-            href="https://t.me/FindYourPlugBot"
+            href={config.inscriptionTelegramLink}
             target="_blank"
             rel="noopener noreferrer"
             style={{

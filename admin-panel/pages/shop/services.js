@@ -5,13 +5,33 @@ import ShopNavigation from '../../components/ShopNavigation'
 
 export default function ShopServices() {
   const [currentLanguage, setCurrentLanguage] = useState('fr')
+  const [config, setConfig] = useState({
+    servicesTelegramLink: 'https://t.me/FindYourPlugBot'
+  })
   const { t } = useTranslation(currentLanguage)
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
       setCurrentLanguage(getCurrentLanguage())
     }
+    
+    // Charger la configuration
+    fetchConfig()
   }, [])
+
+  const fetchConfig = async () => {
+    try {
+      const response = await fetch('/api/config')
+      if (response.ok) {
+        const data = await response.json()
+        setConfig({
+          servicesTelegramLink: data.servicesTelegramLink || 'https://t.me/FindYourPlugBot'
+        })
+      }
+    } catch (error) {
+      console.error('Erreur lors du chargement de la config:', error)
+    }
+  }
 
   const handleLanguageChange = (newLanguage) => {
     setCurrentLanguage(newLanguage)
@@ -214,7 +234,7 @@ export default function ShopServices() {
             {/* Bouton de contact */}
             <div style={{ textAlign: 'center' }}>
               <a
-                href="https://t.me/FindYourPlugBot"
+                href={config.servicesTelegramLink}
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{
