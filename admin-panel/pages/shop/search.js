@@ -142,6 +142,11 @@ export default function ShopSearch() {
   const fetchConfig = async () => {
     try {
       const data = await api.getPublicConfig()
+      console.log('📱 Config récupérée pour recherche:', {
+        boutique: data?.boutique?.name,
+        socialMediaList: data?.socialMediaList?.length || 0,
+        socialMedia: data?.socialMedia
+      })
       setConfig(data)
     } catch (error) {
       console.error('Erreur chargement config:', error)

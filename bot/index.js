@@ -1760,7 +1760,8 @@ app.get('/api/public/config', async (req, res) => {
     console.log('📊 Config récupérée pour boutique:', {
       boutique: config?.boutique?.name || 'Non défini',
       logo: config?.boutique?.logo ? 'Défini' : 'Non défini',
-      background: config?.boutique?.backgroundImage ? 'Défini' : 'Non défini'
+      background: config?.boutique?.backgroundImage ? 'Défini' : 'Non défini',
+      socialMediaList: config?.socialMediaList?.length || 0
     });
     
     // Ne retourner que les données publiques nécessaires pour la boutique
@@ -1769,6 +1770,7 @@ app.get('/api/public/config', async (req, res) => {
       interface: config?.interface || {},
       welcome: config?.welcome || {},
       socialMedia: config?.socialMedia || {},
+      socialMediaList: config?.socialMediaList || [],
       messages: config?.messages || {},
       buttons: config?.buttons || {}
     };
