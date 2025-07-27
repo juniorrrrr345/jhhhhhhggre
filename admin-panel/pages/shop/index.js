@@ -315,7 +315,6 @@ export default function ShopHome() {
                       maxHeight: '100px',
                       maxWidth: '350px',
                       objectFit: 'contain',
-                      animation: 'pulse 2s ease-in-out infinite',
                       filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.3))',
                       borderRadius: '15px'
                     }}
@@ -344,7 +343,6 @@ export default function ShopHome() {
                       maxHeight: '100px',
                       maxWidth: '350px',
                       objectFit: 'contain',
-                      animation: 'pulse 2s ease-in-out infinite',
                       filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.3))',
                       borderRadius: '15px'
                     }}
