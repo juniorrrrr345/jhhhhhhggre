@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/router'
 import Head from 'next/head'
 import Layout from '../../components/Layout'
@@ -14,12 +14,32 @@ export default function SocialMediaManager() {
   const [editingId, setEditingId] = useState(null)
   const [newSocialMedia, setNewSocialMedia] = useState({
     name: '',
-    emoji: '',
     url: '',
+    logo: '',
     enabled: true
   })
   const [isLocalMode, setIsLocalMode] = useState(false)
+  const [isSyncing, setIsSyncing] = useState(false)
+  const updateTimeoutRef = useRef(null)
   const router = useRouter()
+
+  // Fonction pour assigner automatiquement un logo selon le nom
+  const getLogoByName = (name) => {
+    const lowercaseName = name.toLowerCase()
+    if (lowercaseName.includes('telegram')) return 'https://i.imgur.com/PP2GVMv.png'
+    if (lowercaseName.includes('discord')) return 'https://i.imgur.com/JgmWPPZ.png'
+    if (lowercaseName.includes('instagram')) return 'https://i.imgur.com/YBE4cnb.jpeg'
+    if (lowercaseName.includes('whatsapp')) return 'https://i.imgur.com/WhatsApp.png'
+    if (lowercaseName.includes('twitter') || lowercaseName.includes('x')) return 'https://i.imgur.com/twitter.png'
+    if (lowercaseName.includes('facebook')) return 'https://i.imgur.com/facebook.png'
+    if (lowercaseName.includes('tiktok')) return 'https://i.imgur.com/tiktok.png'
+    if (lowercaseName.includes('youtube')) return 'https://i.imgur.com/youtube.png'
+    if (lowercaseName.includes('snapchat')) return 'https://i.imgur.com/snapchat.png'
+    if (lowercaseName.includes('linkedin')) return 'https://i.imgur.com/linkedin.png'
+    if (lowercaseName.includes('potato')) return 'https://i.imgur.com/QR5gF1L.png'
+    if (lowercaseName.includes('luffa')) return 'https://i.imgur.com/zkZtY0m.png'
+    return 'https://i.imgur.com/PP2GVMv.png' // Fallback vers Telegram
+  }
 
   useEffect(() => {
     const token = localStorage.getItem('adminToken')
@@ -28,6 +48,13 @@ export default function SocialMediaManager() {
       return
     }
     fetchSocialMedias()
+    
+    // Nettoyage du timeout lors du démontage
+    return () => {
+      if (updateTimeoutRef.current) {
+        clearTimeout(updateTimeoutRef.current)
+      }
+    }
   }, [])
 
   const fetchSocialMedias = async () => {
@@ -43,32 +70,70 @@ export default function SocialMediaManager() {
       const config = await simpleApi.getConfig(token)
       
       if (config && config.socialMediaList) {
-        setSocialMedias(config.socialMediaList)
-        console.log('✅ Réseaux sociaux chargés depuis le serveur')
+        // S'assurer que tous les réseaux sociaux ont un ID unique et un logo
+        const socialMediasWithIds = config.socialMediaList.map((item, index) => {
+          if (!item.id) {
+            // Générer un ID basé sur le nom ou l'index
+            const baseId = item.name ? item.name.toLowerCase().replace(/[^a-z0-9]/g, '_') : `social_${index}`
+            item.id = baseId
+          }
+          // S'assurer qu'il y a un logo
+          if (!item.logo) {
+            item.logo = getLogoByName(item.name || '')
+          }
+          return item
+        })
+        setSocialMedias(socialMediasWithIds)
+        console.log('✅ Réseaux sociaux chargés depuis le serveur avec IDs:', socialMediasWithIds.map(s => ({ id: s.id, name: s.name })))
       } else {
         throw new Error('Configuration serveur vide')
       }
       
     } catch (error) {
-      console.error('Serveur indisponible, basculement en mode local:', error)
+      console.error('Erreur chargement réseaux sociaux:', error)
       
-      // Basculer en mode local
-      setIsLocalMode(true)
+      // Ne basculer en mode local que pour des erreurs critiques
+      if (error.message.includes('Failed to fetch') || 
+          error.message.includes('NetworkError') || 
+          error.message.includes('offline') ||
+          error.message.includes('502') ||
+          error.message.includes('503') ||
+          error.message.includes('504')) {
+        console.log('Basculement en mode local à cause de:', error.message)
+        setIsLocalMode(true)
+      } else {
+        // Pour les autres erreurs, ne pas activer le mode local
+        console.log('Erreur non critique, pas de mode local:', error.message)
+        setIsLocalMode(false)
+      }
       
              try {
          const localApi = getLocalApi()
          if (localApi) {
            const localConfig = await localApi.getConfig()
            if (localConfig && localConfig.socialMediaList) {
-             setSocialMedias(localConfig.socialMediaList)
-             console.log('📁 Réseaux sociaux chargés depuis le stockage local')
+             // S'assurer que tous les réseaux sociaux ont un ID unique et un logo
+             const socialMediasWithIds = localConfig.socialMediaList.map((item, index) => {
+               if (!item.id) {
+                 // Générer un ID basé sur le nom ou l'index
+                 const baseId = item.name ? item.name.toLowerCase().replace(/[^a-z0-9]/g, '_') : `social_${index}`
+                 item.id = baseId
+               }
+               // S'assurer qu'il y a un logo
+               if (!item.logo) {
+                 item.logo = getLogoByName(item.name || '')
+               }
+               return item
+             })
+             setSocialMedias(socialMediasWithIds)
+             console.log('📁 Réseaux sociaux chargés depuis le stockage local avec IDs:', socialMediasWithIds.map(s => ({ id: s.id, name: s.name })))
            } else {
-             // Initialiser avec des données par défaut
+             // Initialiser avec des données par défaut pour le bot Telegram
              const defaultSocialMedias = [
-               { id: 'telegram', name: 'Telegram', emoji: '📱', url: '', enabled: true },
-               { id: 'whatsapp', name: 'WhatsApp', emoji: '💬', url: '', enabled: true },
-               { id: 'discord', name: 'Discord', emoji: '🎮', url: '', enabled: false },
-               { id: 'instagram', name: 'Instagram', emoji: '📸', url: '', enabled: false }
+               { id: 'telegram', name: 'Telegram', emoji: '📱', url: '', logo: 'https://i.imgur.com/PP2GVMv.png', enabled: true },
+               { id: 'whatsapp', name: 'WhatsApp', emoji: '💬', url: '', logo: 'https://i.imgur.com/WhatsApp.png', enabled: true },
+               { id: 'discord', name: 'Discord', emoji: '🎮', url: '', logo: 'https://i.imgur.com/JgmWPPZ.png', enabled: false },
+               { id: 'instagram', name: 'Instagram', emoji: '📸', url: '', logo: 'https://i.imgur.com/YBE4cnb.jpeg', enabled: false }
              ]
              setSocialMedias(defaultSocialMedias)
              await localApi.updateSocialMedia(defaultSocialMedias)
@@ -102,7 +167,9 @@ export default function SocialMediaManager() {
           
           const configData = {
             socialMediaList: socialMedias,
-            // Maintenir compatibilité avec l'ancien format
+            // Synchroniser avec shopSocialMediaList pour la boutique
+            shopSocialMediaList: socialMedias,
+            // Maintenir compatibilité avec l'ancien format pour le bot Telegram
             socialMedia: {
               telegram: socialMedias.find(s => s.id === 'telegram')?.url || '',
               whatsapp: socialMedias.find(s => s.id === 'whatsapp')?.url || ''
@@ -119,9 +186,20 @@ export default function SocialMediaManager() {
           
           console.log('✅ Réseaux sociaux sauvegardés et synchronisés')
         } catch (serverError) {
-            console.log('Serveur indisponible, sauvegarde locale de secours')
-            // Fallback en mode local
-            setIsLocalMode(true)
+            console.log('Erreur sauvegarde serveur:', serverError.message)
+            
+            // Ne basculer en mode local que pour des erreurs critiques de réseau
+            if (serverError.message.includes('Failed to fetch') || 
+                serverError.message.includes('NetworkError') || 
+                serverError.message.includes('offline') ||
+                serverError.message.includes('502') ||
+                serverError.message.includes('503') ||
+                serverError.message.includes('504')) {
+              console.log('Basculement en mode local à cause de:', serverError.message)
+              setIsLocalMode(true)
+            } else {
+              console.log('Erreur sauvegarde non critique, pas de mode local:', serverError.message)
+            }
             const localApi = getLocalApi()
             if (localApi) {
               await localApi.updateSocialMedia(socialMedias)
@@ -138,8 +216,8 @@ export default function SocialMediaManager() {
   }
 
   const addSocialMedia = () => {
-    if (!newSocialMedia.name.trim() || !newSocialMedia.emoji.trim()) {
-      toast.error('Nom et emoji sont requis')
+    if (!newSocialMedia.name.trim()) {
+      toast.error('Nom du réseau est requis')
       return
     }
     
@@ -160,19 +238,43 @@ export default function SocialMediaManager() {
       ...newSocialMedia,
       id,
       name: newSocialMedia.name.trim(),
-      emoji: newSocialMedia.emoji.trim(),
-      url: newSocialMedia.url.trim()
+      emoji: '🔗', // Emoji par défaut pour compatibilité
+      url: newSocialMedia.url.trim(),
+      logo: newSocialMedia.logo.trim() || getLogoByName(newSocialMedia.name.trim())
     }
     
-    setSocialMedias([...socialMedias, newItem])
-    setNewSocialMedia({ name: '', emoji: '', url: '', enabled: true })
-          // Ajout silencieux
+    const updatedSocialMedias = [...socialMedias, newItem]
+    setSocialMedias(updatedSocialMedias)
+    setNewSocialMedia({ name: '', url: '', logo: '', enabled: true })
+    
+    // Synchronisation automatique après ajout
+    syncToBotAPI(updatedSocialMedias)
+    
+    toast.success(`Réseau social "${newItem.name}" ajouté et synchronisé`)
   }
 
   const updateSocialMedia = (id, field, value) => {
-    setSocialMedias(socialMedias.map(item => 
-      item.id === id ? { ...item, [field]: value } : item
-    ))
+    console.log('🔄 Mise à jour réseau social:', { id, field, value })
+    if (!id) {
+      console.error('❌ ID manquant pour la mise à jour')
+      toast.error('Erreur: ID manquant pour la mise à jour')
+      return
+    }
+    
+    setSocialMedias(prevSocialMedias => {
+      const updated = prevSocialMedias.map(item => 
+        item.id === id ? { ...item, [field]: value } : item
+      )
+      console.log('📝 Réseaux sociaux après mise à jour:', updated.map(s => ({ id: s.id, name: s.name, [field]: s[field] })))
+      
+      // Synchronisation automatique après modification (avec debounce)
+      clearTimeout(updateTimeoutRef.current)
+      updateTimeoutRef.current = setTimeout(() => {
+        syncToBotAPI(updated)
+      }, 1500) // Attendre 1.5 seconde après la dernière modification
+      
+      return updated
+    })
   }
 
   const deleteSocialMedia = async (id) => {
@@ -233,16 +335,29 @@ export default function SocialMediaManager() {
             const token = localStorage.getItem('adminToken') || 'JuniorAdmon123'
             
                          const configData = {
-               socialMediaList: updatedSocialMedias
+               socialMediaList: updatedSocialMedias,
+               // Synchroniser avec shopSocialMediaList pour la boutique
+               shopSocialMediaList: updatedSocialMedias
              }
              
              console.log('📤 Envoi au serveur - configData:', configData)
              await simpleApi.updateConfig(token, configData)
             console.log('✅ Réseau social supprimé et sauvegardé sur le serveur')
                        } catch (serverError) {
-               console.log('Serveur indisponible, sauvegarde locale de secours')
-               // Fallback en mode local
-               setIsLocalMode(true)
+               console.log('Erreur suppression serveur:', serverError.message)
+               
+               // Ne basculer en mode local que pour des erreurs critiques de réseau
+               if (serverError.message.includes('Failed to fetch') || 
+                   serverError.message.includes('NetworkError') || 
+                   serverError.message.includes('offline') ||
+                   serverError.message.includes('502') ||
+                   serverError.message.includes('503') ||
+                   serverError.message.includes('504')) {
+                 console.log('Basculement en mode local à cause de:', serverError.message)
+                 setIsLocalMode(true)
+               } else {
+                 console.log('Erreur suppression non critique, pas de mode local:', serverError.message)
+               }
                const localApi = getLocalApi()
                if (localApi) {
                  await localApi.updateSocialMedia(updatedSocialMedias)
@@ -260,10 +375,49 @@ export default function SocialMediaManager() {
     }
   }
 
-  const toggleEnabled = (id) => {
-    setSocialMedias(socialMedias.map(item => 
+  const toggleEnabled = async (id) => {
+    console.log('🔄 Toggle réseau social:', { id })
+    const updatedSocialMedias = socialMedias.map(item => 
       item.id === id ? { ...item, enabled: !item.enabled } : item
-    ))
+    )
+    
+    setSocialMedias(updatedSocialMedias)
+    
+    // Synchronisation automatique avec la boutique
+    await syncToBotAPI(updatedSocialMedias)
+  }
+
+  // Fonction utilitaire pour synchroniser avec l'API du bot
+  const syncToBotAPI = async (socialMediasToSync) => {
+    try {
+      setIsSyncing(true)
+      const token = localStorage.getItem('adminToken') || 'JuniorAdmon123'
+      
+      const configData = {
+        socialMediaList: socialMediasToSync,
+        shopSocialMediaList: socialMediasToSync,
+        socialMedia: {
+          telegram: socialMediasToSync.find(s => s.id === 'telegram')?.url || '',
+          whatsapp: socialMediasToSync.find(s => s.id === 'whatsapp')?.url || ''
+        }
+      }
+      
+      await simpleApi.updateConfig(token, configData)
+      console.log('🔄 Synchronisation automatique réussie')
+      console.log('📤 Données envoyées:', JSON.stringify(configData, null, 2))
+      
+      // Notification discrète pour confirmer la sync
+      toast.success('🔄 Synchronisé avec la boutique', { 
+        duration: 2000,
+        icon: '✅'
+      })
+      
+    } catch (error) {
+      console.log('⚠️ Erreur synchronisation automatique:', error.message)
+      toast.error('⚠️ Erreur de synchronisation', { duration: 3000 })
+    } finally {
+      setIsSyncing(false)
+    }
   }
 
   if (loading) {
@@ -275,8 +429,13 @@ export default function SocialMediaManager() {
         <Layout>
           <div className="min-h-screen bg-gray-50 flex items-center justify-center">
             <div className="text-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-              <p className="text-gray-600">Chargement des réseaux sociaux...</p>
+              <img 
+              src="https://i.imgur.com/VwBPgtw.jpeg" 
+              alt="Loading..." 
+              className="h-12 w-12 mx-auto mb-4 animate-pulse"
+              style={{ borderRadius: '50%' }}
+            />
+                              <p className="text-black">Chargement des réseaux sociaux...</p>
             </div>
           </div>
         </Layout>
@@ -296,8 +455,9 @@ export default function SocialMediaManager() {
             <div className="sm:flex-auto">
               <h1 className="text-2xl font-semibold leading-6 text-gray-900">Gestion des Réseaux Sociaux</h1>
               <p className="mt-2 text-sm text-gray-700">
-                Gérez les réseaux sociaux affichés dans le bot Telegram
+                Gérez les réseaux sociaux affichés dans le bot Telegram et la boutique
               </p>
+
             </div>
             <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none space-x-2">
               {isLocalMode && (
@@ -327,6 +487,7 @@ export default function SocialMediaManager() {
                   🔄 Synchroniser
                 </button>
               )}
+
               <button
                 onClick={saveSocialMedias}
                 disabled={saving}
@@ -345,12 +506,23 @@ export default function SocialMediaManager() {
                   <h3 className="text-lg leading-6 font-medium text-gray-900">
                     📱 Réseaux Sociaux Actuels
                   </h3>
-                  {isLocalMode && (
-                    <div className="flex items-center text-orange-600 text-sm bg-orange-100 px-2 py-1 rounded-md">
-                      <span className="mr-1">📁</span>
-                      Mode Local
-                    </div>
-                  )}
+                  <div className="flex items-center space-x-2">
+                    {isSyncing && (
+                      <div className="flex items-center text-blue-600 text-sm bg-blue-100 px-2 py-1 rounded-md">
+                        <svg className="animate-spin -ml-1 mr-1 h-4 w-4 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Synchronisation...
+                      </div>
+                    )}
+                    {isLocalMode && (
+                      <div className="flex items-center text-orange-600 text-sm bg-orange-100 px-2 py-1 rounded-md">
+                        <span className="mr-1">📁</span>
+                        Mode Local
+                      </div>
+                    )}
+                  </div>
                 </div>
                 
                 <div className="space-y-4">
@@ -358,7 +530,14 @@ export default function SocialMediaManager() {
                     <div key={social.id} className={`border rounded-lg p-4 ${social.enabled ? 'border-green-200 bg-green-50' : 'border-gray-200 bg-gray-50'}`}>
                       <div className="flex items-center justify-between mb-3">
                         <div className="flex items-center space-x-3">
-                          <span className="text-2xl">{social.emoji}</span>
+                          <img 
+                            src={social.logo || 'https://i.imgur.com/PP2GVMv.png'}
+                            alt={social.name}
+                            className="w-8 h-8 object-contain rounded"
+                            onError={(e) => {
+                              e.target.src = 'https://i.imgur.com/PP2GVMv.png';
+                            }}
+                          />
                           <div className="flex-1">
                             {editingId === social.id ? (
                               <input
@@ -403,17 +582,17 @@ export default function SocialMediaManager() {
                       
                       <div className="space-y-2">
                         <div>
-                          <label className="block text-xs font-medium text-gray-700">Emoji</label>
+                          <label className="block text-xs font-medium text-gray-700">Logo (URL)</label>
                           {editingId === social.id ? (
                             <input
-                              type="text"
-                              value={social.emoji}
-                              onChange={(e) => updateSocialMedia(social.id, 'emoji', e.target.value)}
+                              type="url"
+                              value={social.logo || ''}
+                              onChange={(e) => updateSocialMedia(social.id, 'logo', e.target.value)}
                               className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                              placeholder="📱"
+                              placeholder="https://i.imgur.com/example.png"
                             />
                           ) : (
-                            <p className="text-sm text-gray-600">{social.emoji}</p>
+                            <p className="text-sm text-gray-600 truncate">{social.logo || 'Aucun logo'}</p>
                           )}
                         </div>
                         
@@ -457,17 +636,22 @@ export default function SocialMediaManager() {
                     />
                   </div>
                   
+
+                  
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">Emoji</label>
+                    <label className="block text-sm font-medium text-gray-700">
+                      Logo (URL de l'image)
+                      <span className="text-xs text-gray-500 ml-1">(optionnel - auto-assigné selon le nom)</span>
+                    </label>
                     <input
-                      type="text"
-                      value={newSocialMedia.emoji}
-                      onChange={(e) => setNewSocialMedia({...newSocialMedia, emoji: e.target.value})}
+                      type="url"
+                      value={newSocialMedia.logo}
+                      onChange={(e) => setNewSocialMedia({...newSocialMedia, logo: e.target.value})}
                       className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                      placeholder="📸"
+                      placeholder="https://i.imgur.com/example.png"
                     />
                   </div>
-                  
+
                   <div>
                     <label className="block text-sm font-medium text-gray-700">URL/Lien</label>
                     <input
