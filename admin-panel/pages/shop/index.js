@@ -16,6 +16,7 @@ export default function ShopHome() {
   const [currentPage, setCurrentPage] = useState(1)
   const [likesSync, setLikesSync] = useState({}) // Pour synchroniser les likes en temps réel
   const [currentLanguage, setCurrentLanguage] = useState('fr')
+  const [shopSocialMedias, setShopSocialMedias] = useState([])
   const { t } = useTranslation(currentLanguage)
   const itemsPerPage = 50
 
@@ -109,6 +110,13 @@ export default function ShopHome() {
       // Récupérer la config publique du bot
       const data = await api.getPublicConfig()
       setConfig(data)
+      
+      // Récupérer les réseaux sociaux du shop avec leurs logos
+      if (data && data.shopSocialMediaList) {
+        const enabledSocialMedias = data.shopSocialMediaList.filter(social => social.enabled)
+        setShopSocialMedias(enabledSocialMedias)
+        console.log('✅ Réseaux sociaux shop chargés avec logos:', enabledSocialMedias)
+      }
       
       // Récupérer aussi les liens Telegram depuis l'API publique
       try {
@@ -459,6 +467,104 @@ export default function ShopHome() {
             </>
           )}
         </div>
+
+        {/* Section Réseaux Sociaux avec Logos */}
+        {shopSocialMedias.length > 0 && (
+          <div style={{ 
+            padding: '20px',
+            marginTop: '30px',
+            borderTop: '1px solid rgba(255, 255, 255, 0.1)',
+            textAlign: 'center'
+          }}>
+            <h3 style={{ 
+              fontSize: '16px', 
+              marginBottom: '15px',
+              color: '#ffffff',
+              fontWeight: '500',
+              textTransform: 'uppercase',
+              letterSpacing: '1px'
+            }}>
+              📱 Nos Réseaux
+            </h3>
+            <div style={{ 
+              display: 'flex', 
+              justifyContent: 'center', 
+              flexWrap: 'wrap',
+              gap: '12px'
+            }}>
+              {shopSocialMedias.map((social) => (
+                <a
+                  key={social.id}
+                  href={social.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '45px',
+                    height: '45px',
+                    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                    borderRadius: '12px',
+                    textDecoration: 'none',
+                    color: '#ffffff',
+                    fontSize: '12px',
+                    fontWeight: '500',
+                    transition: 'all 0.3s ease',
+                    backdropFilter: 'blur(10px)',
+                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                    position: 'relative',
+                    overflow: 'hidden'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.2)'
+                    e.currentTarget.style.transform = 'translateY(-3px) scale(1.05)'
+                    e.currentTarget.style.boxShadow = '0 8px 25px rgba(0, 0, 0, 0.3)'
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)'
+                    e.currentTarget.style.transform = 'translateY(0px) scale(1)'
+                    e.currentTarget.style.boxShadow = 'none'
+                  }}
+                >
+                  {social.logo && social.logo !== '#' && social.logo !== '' ? (
+                    <img 
+                      src={social.logo}
+                      alt={social.name}
+                      style={{
+                        width: '24px',
+                        height: '24px',
+                        objectFit: 'contain',
+                        filter: 'brightness(0) invert(1)'
+                      }}
+                      onError={(e) => {
+                        // Fallback vers l'emoji si l'image ne charge pas
+                        e.target.style.display = 'none'
+                        e.target.nextSibling.style.display = 'block'
+                      }}
+                    />
+                  ) : null}
+                  <span style={{ 
+                    fontSize: '18px',
+                    display: social.logo && social.logo !== '#' && social.logo !== '' ? 'none' : 'block'
+                  }}>
+                    {social.emoji}
+                  </span>
+                </a>
+              ))}
+            </div>
+            {shopSocialMedias.length > 0 && (
+              <p style={{
+                fontSize: '11px',
+                color: 'rgba(255, 255, 255, 0.6)',
+                marginTop: '10px',
+                fontWeight: '400'
+              }}>
+                Suivez-nous pour les dernières nouveautés
+              </p>
+            )}
+          </div>
+        )}
 
         {/* Navigation en bas - Style uniforme */}
         <ShopNavigation currentLanguage={currentLanguage} currentPage="home" />

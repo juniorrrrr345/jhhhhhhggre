@@ -15,6 +15,7 @@ export default function ShopSocialMediaManager() {
     name: '',
     emoji: '',
     url: '',
+    logo: '',
     enabled: true
   })
   const [isLocalMode, setIsLocalMode] = useState(false)
