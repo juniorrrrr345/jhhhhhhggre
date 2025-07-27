@@ -203,7 +203,7 @@ export default function ShopHome() {
     return (
       <>
         <Head>
-          <title>FINDYOURPLUG</title>
+          <title>FindYourPlug</title>
         </Head>
         <div style={{ 
           backgroundColor: '#000000', 
@@ -232,11 +232,11 @@ export default function ShopHome() {
 
   return (
     <>
-      <Head>
-        <title>{config?.boutique?.name || 'FINDYOURPLUG'}</title>
-        <meta name="description" content="Découvrez notre sélection de boutiques premium avec livraison et services disponibles." />
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-      </Head>
+              <Head>
+          <title>FindYourPlug</title>
+          <meta name="description" content="Découvrez notre sélection de boutiques premium avec livraison et services disponibles." />
+          <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+        </Head>
 
       <div style={{ 
         ...getThemeStyles(),
@@ -280,19 +280,19 @@ export default function ShopHome() {
                   }}
                 />
               ) : null}
-              {/* Fallback texte si pas de logo ou erreur */}
+              {/* Fallback logo si pas de logo configuré */}
               <div style={{ 
                 display: config?.boutique?.logoUrl ? 'none' : 'block'
               }}>
-                <h2 style={{ 
-                  fontSize: '32px', 
-                  fontWeight: 'bold', 
-                  margin: '0 0 8px 0',
-                  color: '#ffffff',
-                  letterSpacing: '2px'
-                }}>
-                  {config?.boutique?.headerTitle || 'FINDYOURPLUG'}
-                </h2>
+                <img 
+                  src="/images/logo.png" 
+                  alt="FindYourPlug Logo" 
+                  style={{
+                    maxHeight: '70px',
+                    maxWidth: '300px',
+                    objectFit: 'contain'
+                  }}
+                />
                 {config?.boutique?.headerSubtitle && (
                   <div style={{ 
                     backgroundColor: '#007AFF', 
@@ -301,7 +301,8 @@ export default function ShopHome() {
                     borderRadius: '12px',
                     fontSize: '12px',
                     fontWeight: 'bold',
-                    display: 'inline-block'
+                    display: 'inline-block',
+                    marginTop: '8px'
                   }}>
                     {config.boutique.headerSubtitle}
                   </div>

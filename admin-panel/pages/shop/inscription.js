@@ -95,15 +95,12 @@ export default function ShopInscription() {
             <div style={{
               width: '120px',
               height: '120px',
-              backgroundColor: '#0088cc',
-              borderRadius: '50%',
               margin: '0 auto 20px',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               fontSize: '60px',
-              color: '#ffffff',
-                             boxShadow: '0 8px 32px rgba(0, 136, 204, 0.3)'
+              color: '#ffffff'
              }}>
                
              </div>

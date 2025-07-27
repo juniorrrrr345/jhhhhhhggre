@@ -180,11 +180,11 @@ export default function ShopVIP() {
 
   return (
     <>
-      <Head>
-        <title>{t('vip')} - {config?.boutique?.name || 'FINDYOURPLUG'}</title>
-        <meta name="description" content={`${t('vip_desc') || 'Boutiques VIP exclusives'}`} />
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-      </Head>
+              <Head>
+          <title>{t('vip')} - FindYourPlug</title>
+          <meta name="description" content={`${t('vip_desc') || 'Boutiques VIP exclusives'}`} />
+          <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+        </Head>
 
       <div style={{ 
         backgroundColor: '#000000', 

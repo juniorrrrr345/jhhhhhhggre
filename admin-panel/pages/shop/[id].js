@@ -365,11 +365,11 @@ export default function ShopPlugDetail() {
 
   return (
     <>
-      <Head>
-        <title>{plug?.name || 'Boutique'} - {config?.boutique?.name || 'FINDYOURPLUG'}</title>
-        <meta name="description" content={plug?.description || ''} />
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-      </Head>
+              <Head>
+          <title>{plug?.name || 'Boutique'} - FindYourPlug</title>
+          <meta name="description" content={plug?.description || ''} />
+          <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+        </Head>
 
       <div style={{ 
         backgroundColor: '#000000', 
