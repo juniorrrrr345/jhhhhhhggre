@@ -1083,25 +1083,25 @@ const translations = {
       de: '1️⃣ Poste das FindYourPlug-Logo in einem deiner registrierten Netzwerke mit dem Text:\n"Registrierung läuft bei FindYourPlug"\nund tagge findyourplug'
     },
     'registration.step2Validation': {
-      fr: '2️⃣ Envoie une photo de ton stock avec\nFindYourPlug et la date du jour écrits sur papier\nà l\'admin : findyourplug_admin',
-      en: '2️⃣ Send a photo of your stock with\nFindYourPlug and today\'s date written on paper\nto admin: findyourplug_admin',
-      it: '2️⃣ Invia una foto del tuo stock con\nFindYourPlug e la data di oggi scritti su carta\nall\'admin: findyourplug_admin',
-      es: '2️⃣ Envía una foto de tu stock con\nFindYourPlug y la fecha de hoy escritos en papel\nal admin: findyourplug_admin',
-      de: '2️⃣ Sende ein Foto deines Lagers mit\nFindYourPlug und dem heutigen Datum auf Papier geschrieben\nan Admin: findyourplug_admin'
+      fr: 'Envoie une photo de ton stock avec\nFindYourPlug et la date du jour écrits sur papier\nà l\'admin : findyourplug_admin',
+      en: 'Send a photo of your stock with\nFindYourPlug and today\'s date written on paper\nto admin: findyourplug_admin',
+      it: 'Invia una foto del tuo stock con\nFindYourPlug e la data di oggi scritti su carta\nall\'admin: findyourplug_admin',
+      es: 'Envía una foto de tu stock con\nFindYourPlug y la fecha de hoy escritos en papel\nal admin: findyourplug_admin',
+      de: 'Sende ein Foto deines Lagers mit\nFindYourPlug und dem heutigen Datum auf Papier geschrieben\nan Admin: findyourplug_admin'
     },
     'registration.timeLimit': {
-      fr: '⏰ Tu as 24h pour faire ces 2 étapes.',
-      en: '⏰ You have 24h to complete these 2 steps.',
-      it: '⏰ Hai 24 ore per completare questi 2 passaggi.',
-      es: '⏰ Tienes 24h para completar estos 2 pasos.',
-      de: '⏰ Du hast 24 Stunden, um diese 2 Schritte zu erledigen.'
+      fr: '⏰ Tu as 24h pour faire cette étape.',
+      en: '⏰ You have 24h to complete this step.',
+      it: '⏰ Hai 24 ore per completare questo passaggio.',
+      es: '⏰ Tienes 24h para completar este paso.',
+      de: '⏰ Du hast 24 Stunden, um diesen Schritt zu erledigen.'
     },
     'registration.approvalTime': {
-      fr: 'ℹ️ La pré-approbation peut prendre 24 à 48h.\nTu seras notifié automatiquement de la décision.',
-      en: 'ℹ️ Pre-approval may take 24 to 48h.\nYou will be automatically notified of the decision.',
-      it: 'ℹ️ La pre-approvazione può richiedere da 24 a 48 ore.\nSarai notificato automaticamente della decisione.',
-      es: 'ℹ️ La pre-aprobación puede tomar de 24 a 48h.\nSerás notificado automáticamente de la decisión.',
-      de: 'ℹ️ Die Vorabgenehmigung kann 24 bis 48 Stunden dauern.\nDu wirst automatisch über die Entscheidung benachrichtigt.'
+      fr: 'ℹ️ La pré-approbation peut prendre 24 à 72h.\nTu seras notifié automatiquement de la décision.',
+      en: 'ℹ️ Pre-approval may take 24 to 72h.\nYou will be automatically notified of the decision.',
+      it: 'ℹ️ La pre-approvazione può richiedere da 24 a 72 ore.\nSarai notificato automaticamente della decisione.',
+      es: 'ℹ️ La pre-aprobación puede tomar de 24 a 72h.\nSerás notificado automáticamente de la decisión.',
+      de: 'ℹ️ Die Vorabgenehmigung kann 24 bis 72 Stunden dauern.\nDu wirst automatisch über die Entscheidung benachrichtigt.'
     },
 
     // === DÉPARTEMENTS ===

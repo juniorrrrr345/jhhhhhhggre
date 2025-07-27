@@ -2439,7 +2439,6 @@ const submitApplication = async (ctx) => {
       `${getTranslation('registration.finalStep', currentLang, customTranslations)}\n\n` +
       `${getTranslation('registration.formReceived', currentLang, customTranslations)}\n\n` +
       `${getTranslation('registration.validationInstructions', currentLang, customTranslations)}\n\n` +
-      `${getTranslation('registration.step1Validation', currentLang, customTranslations)}\n\n` +
       `${getTranslation('registration.step2Validation', currentLang, customTranslations)}\n\n` +
       `${getTranslation('registration.timeLimit', currentLang, customTranslations)}\n\n` +
       `${getTranslation('registration.approvalTime', currentLang, customTranslations)}`;
