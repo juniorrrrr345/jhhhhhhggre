@@ -90,10 +90,19 @@ const User = require('./src/models/User');
 const getBotStats = async () => {
   try {
     console.log('🔄 Récupération des statistiques...');
+    
+    // Vérifier que les modèles sont disponibles
+    if (!Plug || !User) {
+      console.error('❌ Modèles Plug ou User non disponibles');
+      return { shopsCount: 0, usersCount: 0 };
+    }
+    
     const [shopsCount, usersCount] = await Promise.all([
       Plug.countDocuments({ isActive: true }),
       User.countDocuments({ isActive: true })
     ]);
+    
+    console.log('📊 Résultats bruts:', { shopsCount, usersCount });
     
     const stats = {
       shopsCount: shopsCount || 0,
@@ -348,9 +357,17 @@ const showMainMenuInLanguage = async (ctx, config, language) => {
     // Remplacer les statistiques dans le message
     const stats = await getBotStats();
     console.log('📊 Statistiques récupérées:', stats);
+    
+    // Forcer l'affichage des statistiques même si elles sont à 0
+    const shopsCount = stats.shopsCount || 0;
+    const usersCount = stats.usersCount || 0;
+    
+    console.log('🔢 Valeurs à remplacer:', { shopsCount, usersCount });
+    
     welcomeMessage = welcomeMessage
-      .replace('{shopsCount}', stats.shopsCount)
-      .replace('{usersCount}', stats.usersCount);
+      .replace('{shopsCount}', shopsCount.toString())
+      .replace('{usersCount}', usersCount.toString());
+    
     console.log('📝 Message final avec stats:', welcomeMessage);
     
     // Créer le clavier principal avec traductions (AVEC le bouton langue)
