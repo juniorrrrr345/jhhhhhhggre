@@ -5,9 +5,9 @@ export default function ShopNavigation({ currentLanguage = 'fr', currentPage = '
   const { t } = useTranslation(currentLanguage)
 
   const navItems = [
-    { key: 'home', href: '/shop', label: t('home') },
-    { key: 'search', href: '/shop/search', label: t('search').replace('...', '') },
-    { key: 'vip', href: '/shop/vip', label: t('vip') }
+    { key: 'home', href: '/shop', label: t('home'), icon: '🏚️', activeIcon: '🏠' },
+    { key: 'search', href: '/shop/search', label: t('search').replace('...', ''), icon: '🔎', activeIcon: '🔍' },
+    { key: 'vip', href: '/shop/vip', label: t('vip'), icon: '✨', activeIcon: '⭐' }
   ]
 
   return (
@@ -16,12 +16,14 @@ export default function ShopNavigation({ currentLanguage = 'fr', currentPage = '
       bottom: '0', 
       left: '0', 
       right: '0', 
-      backgroundColor: '#000000',
-      borderTop: '1px solid #333333',
-      padding: '16px 20px',
+      background: 'linear-gradient(135deg, rgba(0, 0, 0, 0.95), rgba(20, 20, 20, 0.95))',
+      backdropFilter: 'blur(20px)',
+      borderTop: '1px solid rgba(255, 255, 255, 0.1)',
+      padding: '12px 20px 20px',
       display: 'flex',
       justifyContent: 'space-around',
-      zIndex: 1000
+      zIndex: 1000,
+      fontFamily: '"SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'
     }}>
       {navItems.map((item) => (
         <Link 
@@ -32,20 +34,26 @@ export default function ShopNavigation({ currentLanguage = 'fr', currentPage = '
             flexDirection: 'column',
             alignItems: 'center',
             textDecoration: 'none',
-            color: currentPage === item.key ? '#ffffff' : '#8e8e93',
-            fontSize: '12px',
-            fontWeight: currentPage === item.key ? 'bold' : 'normal',
-            transition: 'color 0.2s'
+            color: currentPage === item.key ? '#ffffff' : '#a0a0a0',
+            fontSize: '11px',
+            fontWeight: currentPage === item.key ? '600' : '500',
+            transition: 'all 0.3s ease',
+            padding: '8px 12px',
+            borderRadius: '12px',
+            background: currentPage === item.key ? 'rgba(0, 122, 255, 0.2)' : 'transparent',
+            border: currentPage === item.key ? '1px solid rgba(0, 122, 255, 0.3)' : '1px solid transparent',
+            letterSpacing: '0.3px',
+            textTransform: 'uppercase'
           }}
         >
           <div style={{ 
-            fontSize: '20px', 
-            marginBottom: '4px',
-            opacity: currentPage === item.key ? 1 : 0.7
+            fontSize: '22px', 
+            marginBottom: '6px',
+            filter: currentPage === item.key ? 'drop-shadow(0 0 8px rgba(0, 122, 255, 0.6))' : 'none',
+            transform: currentPage === item.key ? 'scale(1.1)' : 'scale(1)',
+            transition: 'all 0.3s ease'
           }}>
-            {item.key === 'home' && '🏠'}
-            {item.key === 'search' && '🔍'}
-            {item.key === 'vip' && '⭐'}
+            {currentPage === item.key ? item.activeIcon : item.icon}
           </div>
           {item.label}
         </Link>

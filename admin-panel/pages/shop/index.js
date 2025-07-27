@@ -241,7 +241,7 @@ export default function ShopHome() {
       <div style={{ 
         ...getThemeStyles(),
         minHeight: '100vh',
-        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+        fontFamily: '"SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'
       }}>
         {/* Header Titre Principal */}
         <div style={{ 
@@ -288,7 +288,86 @@ export default function ShopHome() {
           </div>
         </div>
 
-
+        {/* Section de présentation */}
+        <div style={{ 
+          padding: '30px 20px',
+          textAlign: 'center',
+          background: 'linear-gradient(135deg, rgba(0, 122, 255, 0.1), rgba(0, 122, 255, 0.05))',
+          borderBottom: '1px solid rgba(255, 255, 255, 0.1)'
+        }}>
+          <h1 style={{ 
+            fontSize: '28px', 
+            fontWeight: '700',
+            margin: '0 0 20px 0',
+            color: getThemeStyles().color || '#ffffff',
+            letterSpacing: '0.5px',
+            lineHeight: '1.3'
+          }}>
+            🎯 Bienvenue sur FindYourPlug
+          </h1>
+          
+          <div style={{ 
+            fontSize: '16px',
+            lineHeight: '1.6',
+            color: getThemeStyles().color === '#000000' ? '#666666' : '#e0e0e0',
+            maxWidth: '600px',
+            margin: '0 auto 20px',
+            fontWeight: '400'
+          }}>
+            <p style={{ margin: '0 0 12px 0' }}>
+              🔍 Utilisez la barre de recherche pour trouver un plug près de chez vous ou en envoi postal
+            </p>
+            <p style={{ margin: '0' }}>
+              ⭐ N'hésitez pas à voter pour votre Plug préféré
+            </p>
+          </div>
+          
+          {/* Statistiques rapides */}
+          <div style={{ 
+            display: 'flex', 
+            justifyContent: 'center', 
+            gap: '30px',
+            flexWrap: 'wrap',
+            marginTop: '25px'
+          }}>
+            <div style={{ textAlign: 'center' }}>
+              <div style={{ 
+                fontSize: '24px', 
+                fontWeight: 'bold', 
+                color: '#007AFF' 
+              }}>
+                {plugs.length}
+              </div>
+              <div style={{ 
+                fontSize: '12px', 
+                color: getThemeStyles().color === '#000000' ? '#888888' : '#b0b0b0',
+                textTransform: 'uppercase',
+                letterSpacing: '1px',
+                fontWeight: '600'
+              }}>
+                Plugs actifs
+              </div>
+            </div>
+            <div style={{ textAlign: 'center' }}>
+              <div style={{ 
+                fontSize: '24px', 
+                fontWeight: 'bold', 
+                color: '#007AFF' 
+              }}>
+                🌍
+              </div>
+              <div style={{ 
+                fontSize: '12px', 
+                color: getThemeStyles().color === '#000000' ? '#888888' : '#b0b0b0',
+                textTransform: 'uppercase',
+                letterSpacing: '1px',
+                fontWeight: '600'
+              }}>
+                International
+              </div>
+            </div>
+          </div>
+        </div>
 
         {/* Contenu Principal */}
         <div style={{ padding: '20px', paddingBottom: '120px' }}>
