@@ -14,8 +14,8 @@ export default function SocialMediaManager() {
   const [editingId, setEditingId] = useState(null)
   const [newSocialMedia, setNewSocialMedia] = useState({
     name: '',
+    emoji: '',
     url: '',
-    logo: '',
     enabled: true
   })
   const [isLocalMode, setIsLocalMode] = useState(false)
@@ -23,23 +23,7 @@ export default function SocialMediaManager() {
   const updateTimeoutRef = useRef(null)
   const router = useRouter()
 
-  // Fonction pour assigner automatiquement un logo selon le nom
-  const getLogoByName = (name) => {
-    const lowercaseName = name.toLowerCase()
-    if (lowercaseName.includes('telegram')) return 'https://i.imgur.com/PP2GVMv.png'
-    if (lowercaseName.includes('discord')) return 'https://i.imgur.com/JgmWPPZ.png'
-    if (lowercaseName.includes('instagram')) return 'https://i.imgur.com/YBE4cnb.jpeg'
-    if (lowercaseName.includes('whatsapp')) return 'https://i.imgur.com/WhatsApp.png'
-    if (lowercaseName.includes('twitter') || lowercaseName.includes('x')) return 'https://i.imgur.com/twitter.png'
-    if (lowercaseName.includes('facebook')) return 'https://i.imgur.com/facebook.png'
-    if (lowercaseName.includes('tiktok')) return 'https://i.imgur.com/tiktok.png'
-    if (lowercaseName.includes('youtube')) return 'https://i.imgur.com/youtube.png'
-    if (lowercaseName.includes('snapchat')) return 'https://i.imgur.com/snapchat.png'
-    if (lowercaseName.includes('linkedin')) return 'https://i.imgur.com/linkedin.png'
-    if (lowercaseName.includes('potato')) return 'https://i.imgur.com/ZSp8BX2.jpeg'
-    if (lowercaseName.includes('luffa')) return 'https://i.imgur.com/zkZtY0m.png'
-    return 'https://i.imgur.com/PP2GVMv.png' // Fallback vers Telegram
-  }
+
 
   useEffect(() => {
     const token = localStorage.getItem('adminToken')
@@ -70,51 +54,19 @@ export default function SocialMediaManager() {
       const config = await simpleApi.getConfig(token)
       
       if (config && config.socialMediaList) {
-        // S'assurer que tous les réseaux sociaux ont un ID unique et un logo
+        // S'assurer que tous les réseaux sociaux ont un ID unique
         const socialMediasWithIds = config.socialMediaList.map((item, index) => {
           if (!item.id) {
             // Générer un ID basé sur le nom ou l'index
             const baseId = item.name ? item.name.toLowerCase().replace(/[^a-z0-9]/g, '_') : `social_${index}`
             item.id = baseId
           }
-          // S'assurer qu'il y a un logo
-          if (!item.logo) {
-            item.logo = getLogoByName(item.name || '')
-          }
           return item
         })
         setSocialMedias(socialMediasWithIds)
-        console.log('✅ Réseaux sociaux chargés depuis le serveur avec IDs:', socialMediasWithIds.map(s => ({ id: s.id, name: s.name })))
+        console.log('✅ Réseaux sociaux chargés depuis le serveur:', socialMediasWithIds.map(s => ({ id: s.id, name: s.name })))
       } else {
-        // Initialiser avec vos réseaux sociaux du bot déjà configurés
-        const defaultBotSocialMedias = [
-          {
-            id: 'instagram',
-            name: 'Instagram',
-            url: 'https://www.instagram.com/find.yourplug?igsh=ajRwcjE1eGhoaXMz&utm_source=qr',
-            logo: 'https://i.imgur.com/YBE4cnb.jpeg',
-            emoji: '📸',
-            enabled: true
-          },
-          {
-            id: 'telegram',
-            name: 'Telegram',
-            url: 'https://t.me/+zcP68c4M_3NlM2Y0',
-            logo: 'https://i.imgur.com/PP2GVMv.png',
-            emoji: '📱',
-            enabled: true
-          },
-          {
-            id: 'contact',
-            name: 'Contact',
-            url: 'https://t.me/FindYourPlugBot',
-            logo: 'https://i.imgur.com/PP2GVMv.png',
-            emoji: '📞',
-            enabled: true
-          }
-        ]
-        setSocialMedias(defaultBotSocialMedias)
-        console.log('🔧 Initialisation réseaux sociaux bot avec votre configuration')
+        throw new Error('Configuration serveur vide')
       }
       
     } catch (error) {
@@ -140,52 +92,28 @@ export default function SocialMediaManager() {
          if (localApi) {
            const localConfig = await localApi.getConfig()
            if (localConfig && localConfig.socialMediaList) {
-             // S'assurer que tous les réseaux sociaux ont un ID unique et un logo
+             // S'assurer que tous les réseaux sociaux ont un ID unique
              const socialMediasWithIds = localConfig.socialMediaList.map((item, index) => {
                if (!item.id) {
                  // Générer un ID basé sur le nom ou l'index
                  const baseId = item.name ? item.name.toLowerCase().replace(/[^a-z0-9]/g, '_') : `social_${index}`
                  item.id = baseId
                }
-               // S'assurer qu'il y a un logo
-               if (!item.logo) {
-                 item.logo = getLogoByName(item.name || '')
-               }
                return item
              })
              setSocialMedias(socialMediasWithIds)
-             console.log('📁 Réseaux sociaux chargés depuis le stockage local avec IDs:', socialMediasWithIds.map(s => ({ id: s.id, name: s.name })))
+             console.log('📁 Réseaux sociaux chargés depuis le stockage local:', socialMediasWithIds.map(s => ({ id: s.id, name: s.name })))
            } else {
-             // Initialiser avec vos réseaux sociaux du bot déjà configurés
-             const defaultBotSocialMedias = [
-               {
-                 id: 'instagram',
-                 name: 'Instagram',
-                 url: 'https://www.instagram.com/find.yourplug?igsh=ajRwcjE1eGhoaXMz&utm_source=qr',
-                 logo: 'https://i.imgur.com/YBE4cnb.jpeg',
-                 emoji: '📸',
-                 enabled: true
-               },
-               {
-                 id: 'telegram',
-                 name: 'Telegram',
-                 url: 'https://t.me/+zcP68c4M_3NlM2Y0',
-                 logo: 'https://i.imgur.com/PP2GVMv.png',
-                 emoji: '📱',
-                 enabled: true
-               },
-               {
-                 id: 'contact',
-                 name: 'Contact',
-                 url: 'https://t.me/FindYourPlugBot',
-                 logo: 'https://i.imgur.com/PP2GVMv.png',
-                 emoji: '📞',
-                 enabled: true
-               }
+             // Initialiser avec des données par défaut simples
+             const defaultSocialMedias = [
+               { id: 'telegram', name: 'Telegram', emoji: '📱', url: '', enabled: true },
+               { id: 'whatsapp', name: 'WhatsApp', emoji: '💬', url: '', enabled: true },
+               { id: 'discord', name: 'Discord', emoji: '🎮', url: '', enabled: false },
+               { id: 'instagram', name: 'Instagram', emoji: '📸', url: '', enabled: false }
              ]
-             setSocialMedias(defaultBotSocialMedias)
-             await localApi.updateSocialMedia(defaultBotSocialMedias)
-             console.log('🔧 Réseaux sociaux bot initialisés avec votre configuration')
+             setSocialMedias(defaultSocialMedias)
+             await localApi.updateSocialMedia(defaultSocialMedias)
+             console.log('🔧 Réseaux sociaux initialisés en mode local')
            }
          }
       } catch (localError) {
