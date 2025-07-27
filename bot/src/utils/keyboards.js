@@ -119,11 +119,14 @@ const createMainKeyboard = (config) => {
     }
   }
   
-  // Bouton Top Des Plugs avec traduction
+  // Première ligne : MiniApp FindYourPlugs
+  buttons.push([Markup.button.webApp('🔌 FindYourPlugs', 'https://sfeplugslink.vercel.app')]);
+  
+  // Deuxième ligne : Bouton Top Des Plugs avec traduction
   const topPlugsText = config?.buttons?.topPlugs?.text || getTranslation('menu_topPlugs', currentLang, customTranslations);
   buttons.push([Markup.button.callback(topPlugsText, 'top_plugs')]);
   
-  // Boutons Contact et Info sur la même ligne avec traductions
+  // Troisième ligne : Boutons Contact et Info sur la même ligne avec traductions
   const secondRow = [];
   // Utiliser les traductions en priorité, puis fallback sur config panel admin
   const contactText = getTranslation('menu_contact', currentLang, customTranslations) || config?.buttons?.contact?.text;
@@ -133,12 +136,9 @@ const createMainKeyboard = (config) => {
   secondRow.push(Markup.button.callback(infoText, 'info'));
   buttons.push(secondRow);
 
-      // Troisième ligne : Inscription seul
+      // Quatrième ligne : Inscription seul
   const becomeDealerText = getTranslation('menu_inscription', currentLang, customTranslations) || '📋 Inscription';
   buttons.push([Markup.button.callback(becomeDealerText, 'start_application')]);
-  
-  // Quatrième ligne : MiniApp FindYourPlugs
-  buttons.push([Markup.button.webApp('🔌 FindYourPlugs', 'https://sfeplugslink.vercel.app')]);
   
   // Cinquième ligne : Bouton Traduction seul en bas
   const translationText = getTranslation('menu_changeLanguage', currentLang, customTranslations) || '🗣️ Change language';
