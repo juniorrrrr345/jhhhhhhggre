@@ -489,14 +489,15 @@ export default function ShopHome() {
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  width: '40px',
-                  height: '40px',
-                  backgroundColor: 'rgba(255,255,255,0.1)',
+                  width: '50px',
+                  height: '50px',
+                  backgroundColor: 'rgba(255,255,255,0.15)',
                   borderRadius: '50%',
-                  border: '1px solid rgba(255,255,255,0.2)',
+                  border: '2px solid rgba(255,255,255,0.3)',
                   textDecoration: 'none',
                   transition: 'all 0.2s ease',
-                  cursor: 'pointer'
+                  cursor: 'pointer',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.3)'
                 }}
                 onMouseEnter={(e) => {
                   e.target.style.backgroundColor = 'rgba(255,255,255,0.2)';
@@ -511,14 +512,14 @@ export default function ShopHome() {
                   src={social.logo}
                   alt={social.name}
                   style={{
-                    width: '28px',
-                    height: '28px',
+                    width: '35px',
+                    height: '35px',
                     objectFit: 'cover',
                     borderRadius: '50%',
-                    backgroundColor: 'rgba(255,255,255,0.15)',
-                    padding: '4px',
-                    boxShadow: '0 1px 3px rgba(0,0,0,0.3)',
-                    border: '1px solid rgba(255,255,255,0.2)'
+                    backgroundColor: 'rgba(255,255,255,0.2)',
+                    padding: '5px',
+                    boxShadow: '0 2px 6px rgba(0,0,0,0.4)',
+                    border: '1px solid rgba(255,255,255,0.3)'
                   }}
                   onError={(e) => {
                     // Fallback vers emoji si l'image ne charge pas
