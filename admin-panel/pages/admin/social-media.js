@@ -84,9 +84,10 @@ export default function SocialMediaManager() {
              // Initialiser avec des données par défaut
              const defaultSocialMedias = [
                { id: 'telegram', name: 'Telegram', emoji: '📱', url: '', enabled: true },
-               { id: 'whatsapp', name: 'WhatsApp', emoji: '💬', url: '', enabled: true },
-               { id: 'discord', name: 'Discord', emoji: '🎮', url: '', enabled: false },
-               { id: 'instagram', name: 'Instagram', emoji: '📸', url: '', enabled: false }
+               { id: 'potato', name: 'Potato', emoji: '🥔', url: '', enabled: true },
+               { id: 'instagram', name: 'Instagram', emoji: '📸', url: '', enabled: true },
+               { id: 'luffa', name: 'Luffa', emoji: '🧽', url: '', enabled: true },
+               { id: 'discord', name: 'Discord', emoji: '🎮', url: '', enabled: true }
              ]
              setSocialMedias(defaultSocialMedias)
              await localApi.updateSocialMedia(defaultSocialMedias)
@@ -123,7 +124,10 @@ export default function SocialMediaManager() {
             // Maintenir compatibilité avec l'ancien format
             socialMedia: {
               telegram: socialMedias.find(s => s.id === 'telegram')?.url || '',
-              whatsapp: socialMedias.find(s => s.id === 'whatsapp')?.url || ''
+              potato: socialMedias.find(s => s.id === 'potato')?.url || '',
+              instagram: socialMedias.find(s => s.id === 'instagram')?.url || '',
+              luffa: socialMedias.find(s => s.id === 'luffa')?.url || '',
+              discord: socialMedias.find(s => s.id === 'discord')?.url || ''
             }
           }
           
