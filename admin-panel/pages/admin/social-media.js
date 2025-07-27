@@ -530,14 +530,7 @@ export default function SocialMediaManager() {
                     <div key={social.id} className={`border rounded-lg p-4 ${social.enabled ? 'border-green-200 bg-green-50' : 'border-gray-200 bg-gray-50'}`}>
                       <div className="flex items-center justify-between mb-3">
                         <div className="flex items-center space-x-3">
-                          <img 
-                            src={social.logo || 'https://i.imgur.com/PP2GVMv.png'}
-                            alt={social.name}
-                            className="w-8 h-8 object-contain rounded"
-                            onError={(e) => {
-                              e.target.src = 'https://i.imgur.com/PP2GVMv.png';
-                            }}
-                          />
+                          <span className="text-2xl">{social.emoji || '🔗'}</span>
                           <div className="flex-1">
                             {editingId === social.id ? (
                               <input
