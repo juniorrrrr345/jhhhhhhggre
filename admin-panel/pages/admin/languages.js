@@ -157,7 +157,7 @@ export default function LanguagesAdmin() {
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <button
-              onClick={() => router.back()}
+              onClick={() => router.push('/admin')}
               style={{
                 background: 'none',
                 border: 'none',
