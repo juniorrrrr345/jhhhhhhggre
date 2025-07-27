@@ -41,11 +41,34 @@ export default function UserAnalytics() {
       setStats(prev => ({ ...prev, loading: true }))
       setNextUpdateIn(30) // Reset le compteur lors de l'actualisation manuelle
       
+      // Ajouter un délai pour éviter les erreurs 429/500
+      await new Promise(resolve => setTimeout(resolve, 500))
+      
       const adminToken = localStorage.getItem('adminToken') || 'ADMIN_TOKEN_F3F3FC574B8A95875449DBD68128C434CE3D7FB3F054567B0D3EAD3D9F1B01B1'
       console.log('🔑 Token utilisé:', adminToken ? 'Présent' : 'Manquant')
       
-      const apiResponse = await api.get(`admin/user-analytics?timeRange=${timeRange}`, adminToken)
-      console.log('📊 Response API user-analytics:', apiResponse)
+      // Système de retry avec délai progressif
+      let apiResponse
+      let retryCount = 0
+      const maxRetries = 3
+      
+      while (retryCount < maxRetries) {
+        try {
+          apiResponse = await api.get(`admin/user-analytics?timeRange=${timeRange}`, adminToken)
+          console.log('📊 Response API user-analytics:', apiResponse)
+          break // Succès, sortir de la boucle
+        } catch (error) {
+          retryCount++
+          console.log(`⚠️ Tentative ${retryCount}/${maxRetries} échouée:`, error.message)
+          
+          if (retryCount >= maxRetries) {
+            throw error // Relancer l'erreur après toutes les tentatives
+          }
+          
+          // Attendre avant de réessayer (délai progressif)
+          await new Promise(resolve => setTimeout(resolve, 1000 * retryCount))
+        }
+      }
         
         if (apiResponse && apiResponse.ok && apiResponse.data) {
           console.log('✅ DONNEES REÇUES:', apiResponse.data)
@@ -66,18 +89,42 @@ export default function UserAnalytics() {
           setStats(newStats)
         } else {
           console.error('❌ Erreur API response:', apiResponse)
+          
+          // Gestion spécifique des erreurs 500
+          let errorMessage = 'Erreur de chargement des données'
+          if (apiResponse?.error?.includes('500')) {
+            errorMessage = 'Erreur serveur (500). Réessayez dans quelques secondes.'
+          } else if (apiResponse?.error?.includes('429')) {
+            errorMessage = 'Serveur temporairement surchargé. Réessayez dans quelques secondes.'
+          } else if (apiResponse?.error) {
+            errorMessage = apiResponse.error
+          }
+          
           setStats(prev => ({ 
             ...prev, 
             loading: false,
-            error: apiResponse?.error || 'Erreur de chargement des données'
+            error: errorMessage
           }))
         }
     } catch (error) {
       console.error('❌ Erreur stats utilisateurs:', error)
+      
+      // Gestion spécifique des erreurs
+      let errorMessage = 'Erreur de connexion au serveur'
+      if (error.message.includes('500')) {
+        errorMessage = 'Erreur serveur (500). Réessayez dans quelques secondes.'
+      } else if (error.message.includes('429')) {
+        errorMessage = 'Serveur temporairement surchargé. Réessayez dans quelques secondes.'
+      } else if (error.message.includes('proxy')) {
+        errorMessage = 'Erreur de proxy. Réessayez dans quelques secondes.'
+      } else {
+        errorMessage = error.message || 'Erreur de connexion au serveur'
+      }
+      
       setStats(prev => ({ 
         ...prev, 
         loading: false,
-        error: error.message || 'Erreur de connexion au serveur'
+        error: errorMessage
       }))
     }
   }
