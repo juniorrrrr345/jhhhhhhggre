@@ -522,14 +522,15 @@ export default function ShopHome() {
                   src={social.logo}
                   alt={social.name}
                   style={{
-                    width: '35px',
-                    height: '35px',
-                    objectFit: 'cover',
+                    width: '32px',
+                    height: '32px',
+                    objectFit: 'contain',
                     borderRadius: '50%',
-                    backgroundColor: 'rgba(255,255,255,0.2)',
-                    padding: '5px',
-                    boxShadow: '0 2px 6px rgba(0,0,0,0.4)',
-                    border: '1px solid rgba(255,255,255,0.3)'
+                    backgroundColor: 'rgba(255,255,255,0.1)',
+                    padding: '3px',
+                    boxShadow: '0 1px 3px rgba(0,0,0,0.3)',
+                    border: '1px solid rgba(255,255,255,0.2)',
+                    filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.2))'
                   }}
                   onError={(e) => {
                     // Fallback vers emoji si l'image ne charge pas
