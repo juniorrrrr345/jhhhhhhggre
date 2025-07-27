@@ -452,51 +452,39 @@ export default function ShopHome() {
             gap: '12px',
             flexWrap: 'wrap'
           }}>
-            {/* Réseaux sociaux depuis la configuration */}
-            {(() => {
-              console.log('🔍 Debug réseaux sociaux accueil:', {
-                config: !!config,
-                shopSocialMediaList: config?.shopSocialMediaList,
-                length: config?.shopSocialMediaList?.length,
-                enabled: config?.shopSocialMediaList?.filter(s => s.enabled !== false)
-              });
-              return (config?.shopSocialMediaList && config.shopSocialMediaList.length > 0) ? config.shopSocialMediaList : [
+            {/* Réseaux sociaux avec vrais logos PNG */}
+            {[
               { 
                 name: 'Telegram', 
                 logo: 'https://i.imgur.com/PP2GVMv.png',
                 emoji: '📱',
-                url: 'https://t.me/FindYourPlugBot',
-                enabled: true
+                url: 'https://t.me/FindYourPlugBot' 
               },
               { 
                 name: 'Potato', 
                 logo: 'https://i.imgur.com/LaRHc9L.png',
                 emoji: '🥔',
-                url: '#',
-                enabled: true
+                url: '#' 
               },
               { 
                 name: 'Instagram', 
                 logo: 'https://i.imgur.com/YBE4cnb.jpeg',
                 emoji: '📸',
-                url: '#',
-                enabled: true
+                url: '#' 
               },
               { 
                 name: 'Luffa', 
                 logo: 'https://i.imgur.com/zkZtY0m.png',
                 emoji: '🧽',
-                url: '#',
-                enabled: true
+                url: '#' 
               },
               { 
                 name: 'Discord', 
                 logo: 'https://i.imgur.com/JgmWPPZ.png',
                 emoji: '🎮',
-                url: '#',
-                enabled: true
+                url: '#' 
               }
-            ]).filter(social => social && social.enabled !== false).map((social, index) => (
+            ].map((social, index) => (
               <a
                 key={index}
                 href={social.url}
