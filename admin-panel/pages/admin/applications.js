@@ -169,10 +169,101 @@ export default function Applications() {
     if (servicesList.length === 0) return null;
     
     return servicesList.map(service => (
-      <span key={service} className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-blue-100 text-blue-800 mr-1">
+      <span key={service} className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-blue-100 text-blue-800 mr-1 mb-1">
         {serviceLabels[service] || service}
       </span>
     ));
+  };
+
+  // Nouvelle fonction pour afficher les détails complets des services
+  const getServicesDetails = (app) => {
+    if (!app) return null;
+
+    const servicesData = [];
+    
+    // Vérifier les nouveaux services avec codes postaux
+    if (app.selectedServices && Array.isArray(app.selectedServices)) {
+      app.selectedServices.forEach(service => {
+        if (service === 'meetup' && app.meetupPostalCodes) {
+          servicesData.push({
+            type: 'meetup',
+            name: '🤝 Meet Up',
+            data: app.meetupPostalCodes
+          });
+        }
+        if (service === 'delivery' && app.deliveryPostalCodes) {
+          servicesData.push({
+            type: 'delivery', 
+            name: '🚚 Livraison',
+            data: app.deliveryPostalCodes
+          });
+        }
+        if (service === 'shipping') {
+          servicesData.push({
+            type: 'shipping',
+            name: '📦 Envoi postal',
+            data: app.workingCountries || ['Tous les pays sélectionnés']
+          });
+        }
+      });
+    }
+
+    // Vérifier l'ancien format
+    if (app.services && typeof app.services === 'object') {
+      if (app.services.meetup && app.departments?.meetup) {
+        servicesData.push({
+          type: 'meetup',
+          name: '🤝 Meet Up',
+          data: { [app.country || 'Pays']: app.departments.meetup }
+        });
+      }
+      if (app.services.delivery && app.departments?.delivery) {
+        servicesData.push({
+          type: 'delivery',
+          name: '🚚 Livraison', 
+          data: { [app.country || 'Pays']: app.departments.delivery }
+        });
+      }
+      if (app.services.shipping) {
+        servicesData.push({
+          type: 'shipping',
+          name: '📦 Envoi postal',
+          data: [app.country || 'Pays principal']
+        });
+      }
+    }
+
+    if (servicesData.length === 0) return null;
+
+    return (
+      <div className="space-y-3">
+        {servicesData.map((service, index) => (
+          <div key={index} className="border border-gray-200 rounded-lg p-3 bg-gray-50">
+            <h4 className="font-medium text-sm mb-2">{service.name}</h4>
+            {service.type === 'shipping' ? (
+              <div className="text-sm text-gray-600">
+                {Array.isArray(service.data) ? (
+                  <div>Pays: {service.data.join(', ')}</div>
+                ) : (
+                  <div>Service disponible dans tous les pays sélectionnés</div>
+                )}
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {Object.entries(service.data).map(([country, codes]) => (
+                  <div key={country} className="text-sm">
+                    <span className="font-medium text-gray-700">{country}:</span>
+                    <span className="ml-2 text-gray-600">
+                      {Array.isArray(codes) ? codes.join(', ') : codes}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    );
   };
 
   const filteredApplications = applications.filter(app => {
@@ -306,15 +397,18 @@ export default function Applications() {
             {/* Vue Mobile (cartes) */}
             <div className="mt-6 space-y-4 sm:hidden">
               {filteredApplications.map((app) => (
-                <div key={app._id} className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
+                <div key={app._id} className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow">
                   {/* En-tête de la carte */}
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex-1 min-w-0">
-                      <h3 className="text-sm font-medium text-gray-900 truncate">
+                      <h3 className="text-base font-semibold text-gray-900 truncate">
                         {app.name || app.plugName}
                       </h3>
-                      <p className="text-xs text-gray-500 mt-1">
-                        {app.firstName} {app.lastName} (@{app.username || app.userId})
+                      <p className="text-sm text-gray-500 mt-1">
+                        {app.firstName} {app.lastName}
+                      </p>
+                      <p className="text-xs text-gray-400">
+                        @{app.username || app.userId}
                       </p>
                     </div>
                     <div className="ml-3 flex-shrink-0">
@@ -322,27 +416,35 @@ export default function Applications() {
                     </div>
                   </div>
 
-                  {/* Localisation */}
-                  <div className="mb-3">
-                    <div className="flex items-center text-xs text-gray-600">
+                  {/* Localisation et pays de travail */}
+                  <div className="mb-3 space-y-1">
+                    <div className="flex items-center text-sm text-gray-600">
                       <span>📍</span>
-                      <span className="ml-1">{app.location?.city}, {app.location?.country}</span>
+                      <span className="ml-1">{app.location?.city || app.city}, {app.location?.country || app.country}</span>
                     </div>
+                    {app.workingCountries && app.workingCountries.length > 0 && (
+                      <div className="flex items-center text-sm text-gray-600">
+                        <span>🌍</span>
+                        <span className="ml-1">Travaille en: {app.workingCountries.join(', ')}</span>
+                      </div>
+                    )}
                   </div>
 
                   {/* Services */}
                   <div className="mb-3">
                     <div className="flex flex-wrap gap-1">
-                      {getServicesBadges(app.services)}
+                      {getServicesBadges(app.services || app.selectedServices)}
                     </div>
                   </div>
 
                   {/* Description */}
-                  <div className="mb-3">
-                    <p className="text-xs text-gray-600 line-clamp-2">
-                      {app.description}
-                    </p>
-                  </div>
+                  {app.description && (
+                    <div className="mb-3">
+                      <p className="text-sm text-gray-600 line-clamp-2">
+                        {app.description}
+                      </p>
+                    </div>
+                  )}
 
                   {/* Date et actions */}
                   <div className="flex items-center justify-between pt-3 border-t border-gray-100">
@@ -380,102 +482,113 @@ export default function Applications() {
               ))}
             </div>
 
-            {/* Vue Desktop (tableau) */}
-            <div className="mt-6 hidden sm:block overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
+            {/* Vue Desktop (tableau) - Responsive amélioré */}
+            <div className="mt-6 hidden sm:block overflow-x-auto shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
               <table className="min-w-full divide-y divide-gray-300">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/5">
                       Plug
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/6">
                       Utilisateur
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/6">
                       Localisation
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/5">
                       Services
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/8">
                       Statut
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/8">
                       Date
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/6">
                       Actions
                     </th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
                   {filteredApplications.map((app) => (
-                    <tr key={app._id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap">
+                    <tr key={app._id} className="hover:bg-gray-50 transition-colors">
+                      <td className="px-4 py-4">
                         <div className="flex items-center">
-                          <div className="flex-1">
-                            <div className="text-sm font-medium text-gray-900">{app.name || app.plugName}</div>
-                            <div className="text-sm text-gray-500 truncate max-w-xs">
-                              {app.description}
-                            </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="text-sm font-semibold text-gray-900 truncate">{app.name || app.plugName}</div>
+                            {app.description && (
+                              <div className="text-xs text-gray-500 truncate max-w-xs mt-1">
+                                {app.description}
+                              </div>
+                            )}
                           </div>
                           {(app.photo || app.photoUrl) && (
                             <div className="ml-2 flex-shrink-0">
-                              <svg className="h-5 w-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                              <svg className="h-4 w-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
                                 <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd" />
                               </svg>
                             </div>
                           )}
                         </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">
+                      <td className="px-4 py-4">
+                        <div className="text-sm font-medium text-gray-900">
                           {app.firstName} {app.lastName}
                         </div>
-                        <div className="text-sm text-gray-500">
+                        <div className="text-xs text-gray-500 truncate">
                           @{app.username || app.userId}
                         </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        <div>{app.location?.country}</div>
-                        <div className="text-gray-500">{app.location?.city}</div>
+                      <td className="px-4 py-4">
+                        <div className="text-sm text-gray-900">{app.location?.country || app.country}</div>
+                        <div className="text-xs text-gray-500">{app.location?.city || app.city}</div>
+                        {app.workingCountries && app.workingCountries.length > 0 && (
+                          <div className="text-xs text-blue-600 mt-1 truncate" title={`Travaille en: ${app.workingCountries.join(', ')}`}>
+                            🌍 {app.workingCountries.length} pays
+                          </div>
+                        )}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex flex-wrap">
-                          {getServicesBadges(app.services)}
+                      <td className="px-4 py-4">
+                        <div className="flex flex-wrap gap-1">
+                          {getServicesBadges(app.services || app.selectedServices)}
                         </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
+                      <td className="px-4 py-4">
                         {getStatusBadge(app.status)}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {formatDate(app.createdAt)}
+                      <td className="px-4 py-4">
+                        <div className="text-xs text-gray-500">
+                          {formatDate(app.createdAt)}
+                        </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <button
-                          onClick={() => setSelectedApp(app)}
-                          className="text-blue-600 hover:text-blue-900 mr-3"
-                        >
-                          Voir
-                        </button>
-                        {app.status === 'pending' && (
-                          <>
-                            <button
-                              onClick={() => handleAction(app._id, 'approved')}
-                              disabled={actionLoading === app._id}
-                              className="text-green-600 hover:text-green-900 mr-3"
-                            >
-                              Approuver
-                            </button>
-                            <button
-                              onClick={() => handleAction(app._id, 'rejected')}
-                              disabled={actionLoading === app._id}
-                              className="text-red-600 hover:text-red-900"
-                            >
-                              Refuser
-                            </button>
-                          </>
-                        )}
+                      <td className="px-4 py-4">
+                        <div className="flex flex-col space-y-1">
+                          <button
+                            onClick={() => setSelectedApp(app)}
+                            className="text-xs bg-blue-50 text-blue-600 hover:bg-blue-100 px-2 py-1 rounded transition-colors"
+                          >
+                            Détails
+                          </button>
+                          {app.status === 'pending' && (
+                            <>
+                              <button
+                                onClick={() => handleAction(app._id, 'approved')}
+                                disabled={actionLoading === app._id}
+                                className="text-xs bg-green-50 text-green-600 hover:bg-green-100 px-2 py-1 rounded transition-colors disabled:opacity-50"
+                              >
+                                ✓ Approuver
+                              </button>
+                              <button
+                                onClick={() => handleAction(app._id, 'rejected')}
+                                disabled={actionLoading === app._id}
+                                className="text-xs bg-red-50 text-red-600 hover:bg-red-100 px-2 py-1 rounded transition-colors disabled:opacity-50"
+                              >
+                                ✗ Refuser
+                              </button>
+                            </>
+                          )}
+                        </div>
                       </td>
                     </tr>
                   ))}
@@ -531,9 +644,17 @@ export default function Applications() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">Services proposés</label>
-                    <div className="mt-1">
-                      {getServicesBadges(selectedApp.services)}
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Services proposés</label>
+                    <div className="space-y-2">
+                      {/* Badges des services */}
+                      <div className="flex flex-wrap gap-1">
+                        {getServicesBadges(selectedApp.services || selectedApp.selectedServices)}
+                      </div>
+                      
+                      {/* Détails complets des services */}
+                      <div className="mt-3">
+                        {getServicesDetails(selectedApp)}
+                      </div>
                     </div>
                   </div>
 
