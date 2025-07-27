@@ -100,23 +100,9 @@ export default function ShopVIP() {
       setVipPlugs(sortedPlugs)
     } catch (error) {
       console.error('Erreur chargement VIP:', error)
-      // Mode offline VIP : données par défaut
-      const fallbackVipPlugs = [
-        {
-          _id: 'fallback_vip_1',
-          name: 'Boutique VIP Premium',
-          description: 'Serveur temporairement indisponible',
-          image: 'https://via.placeholder.com/300x200/fbbf24/000000?text=VIP',
-          isActive: true,
-          isVip: true,
-          likes: 100,
-          countries: ['France'],
-          services: ['Livraison Premium'],
-          departments: ['75']
-        }
-      ]
-      setVipPlugs(fallbackVipPlugs)
-      console.log('📱 Mode offline VIP: Données par défaut')
+      // Ne pas afficher les données de fallback, juste un tableau vide
+      setVipPlugs([])
+      console.log('📱 Erreur API VIP: Aucune boutique VIP affichée')
     } finally {
       setLoading(false)
     }

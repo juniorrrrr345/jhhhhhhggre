@@ -201,63 +201,9 @@ export default function ShopHome() {
     } catch (error) {
       console.error('❌ Erreur chargement boutiques:', error.message)
       
-      // Mode offline : afficher des données par défaut traduites
-      const fallbackPlugs = [
-        {
-          _id: 'fallback_1',
-          name: currentLanguage === 'fr' ? 'Boutique Example' : 
-                currentLanguage === 'en' ? 'Example Shop' :
-                currentLanguage === 'it' ? 'Negozio Esempio' :
-                currentLanguage === 'es' ? 'Tienda Ejemplo' :
-                'Beispiel Shop',
-          description: currentLanguage === 'fr' ? 'Service temporairement indisponible - Données de test' :
-                      currentLanguage === 'en' ? 'Service temporarily unavailable - Test data' :
-                      currentLanguage === 'it' ? 'Servizio temporaneamente non disponibile - Dati di test' :
-                      currentLanguage === 'es' ? 'Servicio temporalmente no disponible - Datos de prueba' :
-                      'Service vorübergehend nicht verfügbar - Testdaten',
-          image: 'https://via.placeholder.com/300x200/6366f1/ffffff?text=Shop',
-          isActive: true,
-          isVip: false,
-          likes: 15,
-          countries: ['France'],
-          services: {
-            delivery: { enabled: true }
-          },
-          departments: ['75'],
-          telegram: '@example_shop',
-          location: 'Paris'
-        },
-        {
-          _id: 'fallback_2',
-          name: currentLanguage === 'fr' ? 'Boutique Premium' : 
-                currentLanguage === 'en' ? 'Premium Shop' :
-                currentLanguage === 'it' ? 'Negozio Premium' :
-                currentLanguage === 'es' ? 'Tienda Premium' :
-                'Premium Shop',
-          description: currentLanguage === 'fr' ? 'Boutique VIP - Mode hors ligne' :
-                      currentLanguage === 'en' ? 'VIP Shop - Offline mode' :
-                      currentLanguage === 'it' ? 'Negozio VIP - Modalità offline' :
-                      currentLanguage === 'es' ? 'Tienda VIP - Modo fuera de línea' :
-                      'VIP Shop - Offline-Modus',
-          image: 'https://via.placeholder.com/300x200/f59e0b/ffffff?text=VIP',
-          isActive: true,
-          isVip: true,
-          likes: 42,
-          countries: ['Spain'],
-          services: {
-            meetup: { enabled: true },
-            postal: { enabled: true }
-          },
-          departments: ['28'],
-          telegram: '@premium_shop',
-          location: 'Madrid'
-        }
-      ]
-      
-      setPlugs(fallbackPlugs)
-      
-      // Pas d'erreur rouge, juste un message discret dans la console
-      console.log('📱 Mode offline: Affichage des données par défaut')
+      // Ne pas afficher les données de fallback, juste un tableau vide
+      setPlugs([])
+      console.log('📱 Erreur API: Aucune boutique affichée')
     } finally {
       setLoading(false)
     }
