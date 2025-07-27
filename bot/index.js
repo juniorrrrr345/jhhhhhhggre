@@ -3469,6 +3469,63 @@ app.get('/', (req, res) => {
 });
 
 // ============================================
+// ROUTE POUR ENVOYER DES MESSAGES
+// ============================================
+
+// Route pour envoyer un message à un utilisateur spécifique
+app.post('/api/send-message', authenticateAdmin, async (req, res) => {
+  try {
+    const { userId, message, imageBase64 } = req.body;
+    
+    if (!userId || !message) {
+      return res.status(400).json({
+        success: false,
+        error: 'userId et message sont requis'
+      });
+    }
+
+    console.log(`📤 Envoi message à ${userId}:`, message.substring(0, 50) + '...');
+
+    let sent = false;
+    let error = null;
+
+    try {
+      if (imageBase64) {
+        // Envoyer avec image
+        const imageSource = { source: Buffer.from(imageBase64.split(',')[1], 'base64') };
+        await bot.telegram.sendPhoto(userId, imageSource, {
+          caption: message,
+          parse_mode: 'HTML'
+        });
+      } else {
+        // Envoyer message simple
+        await bot.telegram.sendMessage(userId, message, {
+          parse_mode: 'HTML'
+        });
+      }
+      sent = true;
+    } catch (sendError) {
+      error = sendError.message;
+      console.error(`❌ Erreur envoi à ${userId}:`, sendError.message);
+    }
+
+    res.json({
+      success: sent,
+      sent,
+      error: error,
+      message: sent ? 'Message envoyé avec succès' : 'Erreur lors de l\'envoi'
+    });
+
+  } catch (error) {
+    console.error('❌ Erreur API send-message:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Erreur serveur: ' + error.message
+    });
+  }
+});
+
+// ============================================
 // ROUTES APPLICATIONS
 // ============================================
 
