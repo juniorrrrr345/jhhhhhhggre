@@ -365,7 +365,7 @@ export default function ShopHome() {
         </div>
 
         {/* Navigation en bas - Style uniforme */}
-        <ShopNavigation currentLanguage={currentLanguage} />
+        <ShopNavigation currentLanguage={currentLanguage} currentPage="home" />
       </div>
 
       <style jsx>{`
