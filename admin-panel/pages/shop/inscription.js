@@ -22,15 +22,33 @@ export default function ShopInscription() {
 
   const fetchConfig = async () => {
     try {
-      const response = await fetch('/api/config')
+      // Récupérer directement depuis l'API du bot
+      const botApiUrl = 'https://jhhhhhhggre.onrender.com'
+      
+      const response = await fetch(`${botApiUrl}/api/config`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      
       if (response.ok) {
         const data = await response.json()
         setConfig({
-          inscriptionTelegramLink: data.inscriptionTelegramLink || 'https://t.me/FindYourPlugBot'
+          inscriptionTelegramLink: data.boutique?.inscriptionTelegramLink || 'https://t.me/FindYourPlugBot'
+        })
+      } else {
+        // Fallback si l'API n'est pas disponible
+        setConfig({
+          inscriptionTelegramLink: 'https://t.me/FindYourPlugBot'
         })
       }
     } catch (error) {
       console.error('Erreur lors du chargement de la config:', error)
+      // Fallback en cas d'erreur
+      setConfig({
+        inscriptionTelegramLink: 'https://t.me/FindYourPlugBot'
+      })
     }
   }
 
