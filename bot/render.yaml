@@ -9,10 +9,10 @@ services:
     envVars:
       - key: NODE_ENV
         value: production
-      - key: TELEGRAM_BOT_TOKEN
+      - key: BOT_TOKEN
         sync: false
       - key: MONGODB_URI
-      value: mongodb+srv://teste:SfePlug@tesye.qazpla.mongodb.net/?retryWrites=true&w=majority&appName=Tesye
+      value: mongodb+srv://juniorrrrr345:juniorrrrr345@cluster0.mongodb.net/findyourplug?retryWrites=true&w=majority
         sync: false
       - key: ADMIN_PASSWORD
         sync: false
