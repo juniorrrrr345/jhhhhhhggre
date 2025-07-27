@@ -40,15 +40,12 @@ const makeProxyCall = async (endpoint, method = 'GET', token = null, data = null
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 6000);
     
-    const response = await fetch('/api/cors-proxy', {
-      method: 'POST',
+    // Appel direct au serveur bot
+    const botUrl = 'https://jhhhhhhggre.onrender.com';
+    const response = await fetch(`${botUrl}${endpoint}`, {
+      method: method,
       headers: headers,
-      body: JSON.stringify({
-        endpoint: endpoint,
-        method: method,
-        token: token,
-        data: data
-      }),
+      body: data ? JSON.stringify(data) : undefined,
       signal: controller.signal
     });
     
