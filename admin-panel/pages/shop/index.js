@@ -186,6 +186,22 @@ export default function ShopHome() {
             const backupData = JSON.parse(shopSocialBackup)
             console.log('🔄 Utilisation backup shopSocialMediaList depuis localStorage:', backupData)
             data = { ...data, shopSocialMediaList: backupData }
+          } else {
+            // Si pas de backup, utiliser réseaux par défaut avec VOTRE lien Telegram
+            console.log('🔧 Utilisation réseaux par défaut avec lien Telegram personnalisé')
+            data = { 
+              ...data, 
+              shopSocialMediaList: [
+                {
+                  id: 'telegram',
+                  name: 'Telegram',
+                  emoji: '📱',
+                  url: 'https://t.me/+zcP68c4M_3NlM2Y0',
+                  enabled: true,
+                  logo: 'https://i.imgur.com/PP2GVMv.png'
+                }
+              ]
+            }
           }
         } catch (e) {
           console.log('❌ Erreur lecture backup shopSocialMediaList:', e)
