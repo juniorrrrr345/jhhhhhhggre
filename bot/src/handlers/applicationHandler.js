@@ -357,6 +357,7 @@ const handleFormMessage = async (ctx) => {
             `${getTranslation('registration.telegramQuestion', currentLang, customTranslations)}`;
           
           const telegramKeyboard = Markup.inlineKeyboard([
+            [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_telegram')],
             [Markup.button.callback(getTranslation('registration.goBack', currentLang, customTranslations), 'go_back_name')],
             [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
           ]);
@@ -1119,6 +1120,7 @@ const askTelegram = async (ctx) => {
     `${getTranslation('registration.telegramQuestion', currentLang, customTranslations)}`;
   
   const keyboard = Markup.inlineKeyboard([
+    [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_telegram')],
     [Markup.button.callback(getTranslation('registration.goBack', currentLang, customTranslations), 'go_back_name')],
     [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
   ]);
