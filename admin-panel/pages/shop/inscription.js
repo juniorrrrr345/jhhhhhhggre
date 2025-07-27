@@ -162,7 +162,7 @@ export default function ShopInscription() {
               margin: '0 0 16px 0',
               color: '#ffffff'
             }}>
-              Rejoignez FindYourPlug
+              Rejoignez FindYourPlug 🚀
             </h2>
             <p style={{
               fontSize: '16px',
