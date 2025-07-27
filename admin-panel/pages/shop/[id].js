@@ -328,7 +328,24 @@ export default function ShopPlugDetail() {
           fontFamily: '"SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'
         }}>
           <div style={{ textAlign: 'center', padding: '20px' }}>
-            <div style={{ fontSize: '64px', marginBottom: '20px' }}>🏪</div>
+            <div style={{ 
+              width: '80px', 
+              height: '80px',
+              margin: '0 auto 20px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}>
+              <img 
+                src="https://i.imgur.com/VwBPgtw.jpeg" 
+                alt="FindYourPlug Logo"
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'contain'
+                }}
+              />
+            </div>
             <h3 style={{ fontSize: '24px', fontWeight: '600', marginBottom: '12px', color: '#ffffff' }}>
               {t('shop_not_found') || 'Boutique non trouvée'}
             </h3>

@@ -394,7 +394,24 @@ export default function ShopHome() {
               padding: '40px 20px',
               color: '#8e8e93'
             }}>
-              <div style={{ fontSize: '48px', marginBottom: '16px' }}>🏪</div>
+              <div style={{ 
+                width: '60px', 
+                height: '60px',
+                margin: '0 auto 16px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>
+                <img 
+                  src="https://i.imgur.com/VwBPgtw.jpeg" 
+                  alt="FindYourPlug Logo"
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'contain'
+                  }}
+                />
+              </div>
               <h3 style={{ fontSize: '18px', marginBottom: '8px' }}>{t('noShops')}</h3>
               <p style={{ fontSize: '14px' }}>
                 {currentLanguage === 'fr' && 'Revenez bientôt pour découvrir nos partenaires !'}
