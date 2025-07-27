@@ -142,7 +142,14 @@ const translations = {
     search_no_results: 'Aucun résultat trouvé',
     search_no_results_desc: 'Essayez de modifier vos critères de recherche',
     search_results_count: 'résultats trouvés',
-    search_loading_results: 'Chargement des résultats...'
+    search_loading_results: 'Chargement des résultats...',
+    // Traductions pour la navigation
+    nav_inscription: 'S\'inscrire',
+    nav_services: 'Services',
+    // Traductions pour la page détail boutique
+    detail_available_services: 'Services disponibles',
+    detail_available: 'Disponible',
+    detail_not_available: 'Non disponible'
   },
   en: {
     title: 'Language',
@@ -277,7 +284,14 @@ const translations = {
     search_no_results: 'No results found',
     search_no_results_desc: 'Try modifying your search criteria',
     search_results_count: 'results found',
-    search_loading_results: 'Loading results...'
+    search_loading_results: 'Loading results...',
+    // Traductions pour la navigation
+    nav_inscription: 'Register',
+    nav_services: 'Services',
+    // Traductions pour la page détail boutique
+    detail_available_services: 'Available services',
+    detail_available: 'Available',
+    detail_not_available: 'Not available'
   },
   es: {
     title: 'Idioma',
@@ -412,7 +426,14 @@ const translations = {
     search_no_results: 'No se encontraron resultados',
     search_no_results_desc: 'Intenta modificar tus criterios de búsqueda',
     search_results_count: 'resultados encontrados',
-    search_loading_results: 'Cargando resultados...'
+    search_loading_results: 'Cargando resultados...',
+    // Traductions pour la navigation
+    nav_inscription: 'Registrarse',
+    nav_services: 'Servicios',
+    // Traductions pour la page détail boutique
+    detail_available_services: 'Servicios disponibles',
+    detail_available: 'Disponible',
+    detail_not_available: 'No disponible'
   },
   it: {
     title: 'Lingua',
@@ -547,7 +568,14 @@ const translations = {
     search_no_results: 'Nessun risultato trovato',
     search_no_results_desc: 'Prova a modificare i tuoi criteri di ricerca',
     search_results_count: 'risultati trovati',
-    search_loading_results: 'Caricamento risultati...'
+    search_loading_results: 'Caricamento risultati...',
+    // Traductions pour la navigation
+    nav_inscription: 'Registrati',
+    nav_services: 'Servizi',
+    // Traductions pour la page détail boutique
+    detail_available_services: 'Servizi disponibili',
+    detail_available: 'Disponibile',
+    detail_not_available: 'Non disponibile'
   },
   de: {
     title: 'Sprache',
@@ -682,7 +710,14 @@ const translations = {
     search_no_results: 'Keine Ergebnisse gefunden',
     search_no_results_desc: 'Versuchen Sie, Ihre Suchkriterien zu ändern',
     search_results_count: 'Ergebnisse gefunden',
-    search_loading_results: 'Ergebnisse werden geladen...'
+    search_loading_results: 'Ergebnisse werden geladen...',
+    // Traductions pour la navigation
+    nav_inscription: 'Registrieren',
+    nav_services: 'Dienste',
+    // Traductions pour la page détail boutique
+    detail_available_services: 'Verfügbare Services',
+    detail_available: 'Verfügbar',
+    detail_not_available: 'Nicht verfügbar'
   }
 }
 

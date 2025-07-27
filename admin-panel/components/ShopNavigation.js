@@ -8,8 +8,8 @@ export default function ShopNavigation({ currentLanguage = 'fr', currentPage = '
     { key: 'home', href: '/shop', label: t('home') },
     { key: 'search', href: '/shop/search', label: t('search').replace('...', '') },
     { key: 'vip', href: '/shop/vip', label: t('vip') },
-    { key: 'inscription', href: '/shop/inscription', label: 'S\'inscrire' },
-    { key: 'services', href: '/shop/services', label: 'Services' }
+    { key: 'inscription', href: '/shop/inscription', label: t('nav_inscription') },
+    { key: 'services', href: '/shop/services', label: t('nav_services') }
   ]
 
   return (

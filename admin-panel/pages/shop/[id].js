@@ -718,7 +718,7 @@ export default function ShopPlugDetail() {
                   marginBottom: '16px',
                   color: '#ffffff'
                 }}>
-                  🚀 {t('available_services') || 'Services disponibles'}
+                  🚀 {t('detail_available_services')}
                 </h3>
                 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -784,7 +784,7 @@ export default function ShopPlugDetail() {
                       lineHeight: '1.2',
                       padding: '8px 4px'
                     }}>
-                      {plug?.services?.delivery?.enabled ? `✓ ${t('available') || 'Disponible'}` : `✗ ${t('not_available') || 'Non disponible'}`}
+                      {plug?.services?.delivery?.enabled ? `✓ ${t('detail_available')}` : `✗ ${t('detail_not_available')}`}
                     </div>
                   </div>
 
@@ -850,7 +850,7 @@ export default function ShopPlugDetail() {
                       lineHeight: '1.2',
                       padding: '8px 4px'
                     }}>
-                      {plug?.services?.postal?.enabled ? `✓ ${t('available') || 'Disponible'}` : `✗ ${t('not_available') || 'Non disponible'}`}
+                      {plug?.services?.postal?.enabled ? `✓ ${t('detail_available')}` : `✗ ${t('detail_not_available')}`}
                     </div>
                   </div>
 
@@ -916,7 +916,7 @@ export default function ShopPlugDetail() {
                       lineHeight: '1.2',
                       padding: '8px 4px'
                     }}>
-                      {plug?.services?.meetup?.enabled ? `✓ ${t('available') || 'Disponible'}` : `✗ ${t('not_available') || 'Non disponible'}`}
+                      {plug?.services?.meetup?.enabled ? `✓ ${t('detail_available')}` : `✗ ${t('detail_not_available')}`}
                     </div>
                   </div>
                 </div>
