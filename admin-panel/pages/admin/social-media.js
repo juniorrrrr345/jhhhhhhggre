@@ -86,7 +86,35 @@ export default function SocialMediaManager() {
         setSocialMedias(socialMediasWithIds)
         console.log('✅ Réseaux sociaux chargés depuis le serveur avec IDs:', socialMediasWithIds.map(s => ({ id: s.id, name: s.name })))
       } else {
-        throw new Error('Configuration serveur vide')
+        // Initialiser avec vos réseaux sociaux du bot déjà configurés
+        const defaultBotSocialMedias = [
+          {
+            id: 'instagram',
+            name: 'Instagram',
+            url: 'https://www.instagram.com/find.yourplug?igsh=ajRwcjE1eGhoaXMz&utm_source=qr',
+            logo: 'https://i.imgur.com/YBE4cnb.jpeg',
+            emoji: '📸',
+            enabled: true
+          },
+          {
+            id: 'telegram',
+            name: 'Telegram',
+            url: 'https://t.me/+zcP68c4M_3NlM2Y0',
+            logo: 'https://i.imgur.com/PP2GVMv.png',
+            emoji: '📱',
+            enabled: true
+          },
+          {
+            id: 'contact',
+            name: 'Contact',
+            url: 'https://t.me/FindYourPlugBot',
+            logo: 'https://i.imgur.com/PP2GVMv.png',
+            emoji: '📞',
+            enabled: true
+          }
+        ]
+        setSocialMedias(defaultBotSocialMedias)
+        console.log('🔧 Initialisation réseaux sociaux bot avec votre configuration')
       }
       
     } catch (error) {
@@ -128,16 +156,36 @@ export default function SocialMediaManager() {
              setSocialMedias(socialMediasWithIds)
              console.log('📁 Réseaux sociaux chargés depuis le stockage local avec IDs:', socialMediasWithIds.map(s => ({ id: s.id, name: s.name })))
            } else {
-             // Initialiser avec des données par défaut pour le bot Telegram
-             const defaultSocialMedias = [
-               { id: 'telegram', name: 'Telegram', emoji: '📱', url: '', logo: 'https://i.imgur.com/PP2GVMv.png', enabled: true },
-               { id: 'whatsapp', name: 'WhatsApp', emoji: '💬', url: '', logo: 'https://i.imgur.com/WhatsApp.png', enabled: true },
-               { id: 'discord', name: 'Discord', emoji: '🎮', url: '', logo: 'https://i.imgur.com/JgmWPPZ.png', enabled: false },
-               { id: 'instagram', name: 'Instagram', emoji: '📸', url: '', logo: 'https://i.imgur.com/YBE4cnb.jpeg', enabled: false }
+             // Initialiser avec vos réseaux sociaux du bot déjà configurés
+             const defaultBotSocialMedias = [
+               {
+                 id: 'instagram',
+                 name: 'Instagram',
+                 url: 'https://www.instagram.com/find.yourplug?igsh=ajRwcjE1eGhoaXMz&utm_source=qr',
+                 logo: 'https://i.imgur.com/YBE4cnb.jpeg',
+                 emoji: '📸',
+                 enabled: true
+               },
+               {
+                 id: 'telegram',
+                 name: 'Telegram',
+                 url: 'https://t.me/+zcP68c4M_3NlM2Y0',
+                 logo: 'https://i.imgur.com/PP2GVMv.png',
+                 emoji: '📱',
+                 enabled: true
+               },
+               {
+                 id: 'contact',
+                 name: 'Contact',
+                 url: 'https://t.me/FindYourPlugBot',
+                 logo: 'https://i.imgur.com/PP2GVMv.png',
+                 emoji: '📞',
+                 enabled: true
+               }
              ]
-             setSocialMedias(defaultSocialMedias)
-             await localApi.updateSocialMedia(defaultSocialMedias)
-             console.log('🔧 Réseaux sociaux initialisés en mode local')
+             setSocialMedias(defaultBotSocialMedias)
+             await localApi.updateSocialMedia(defaultBotSocialMedias)
+             console.log('🔧 Réseaux sociaux bot initialisés avec votre configuration')
            }
          }
       } catch (localError) {
