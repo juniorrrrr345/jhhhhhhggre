@@ -82,11 +82,11 @@ export default function ShopSocialMediaManager() {
           } else {
             // Initialiser avec des données par défaut pour la boutique
             const defaultSocialMedias = [
-              { id: 'telegram', name: 'Telegram', emoji: '📱', url: '', enabled: true },
-              { id: 'potato', name: 'Potato', emoji: '🥔', url: '', enabled: true },
-              { id: 'instagram', name: 'Instagram', emoji: '📸', url: '', enabled: true },
-              { id: 'luffa', name: 'Luffa', emoji: '🧽', url: '', enabled: true },
-              { id: 'discord', name: 'Discord', emoji: '🎮', url: '', enabled: true }
+              { id: 'telegram', name: 'Telegram', emoji: '📱', url: 'https://t.me/FindYourPlugBot', enabled: true },
+              { id: 'potato', name: 'Potato', emoji: '🥔', url: '#', enabled: true },
+              { id: 'instagram', name: 'Instagram', emoji: '📸', url: '#', enabled: true },
+              { id: 'luffa', name: 'Luffa', emoji: '🧽', url: '#', enabled: true },
+              { id: 'discord', name: 'Discord', emoji: '🎮', url: '#', enabled: true }
             ]
             setSocialMedias(defaultSocialMedias)
             await localApi.updateShopSocialMedia(defaultSocialMedias)
