@@ -89,15 +89,19 @@ const User = require('./src/models/User');
 // Fonction pour récupérer les statistiques du bot
 const getBotStats = async () => {
   try {
+    console.log('🔄 Récupération des statistiques...');
     const [shopsCount, usersCount] = await Promise.all([
       Plug.countDocuments({ isActive: true }),
       User.countDocuments({ isActive: true })
     ]);
     
-    return {
+    const stats = {
       shopsCount: shopsCount || 0,
       usersCount: usersCount || 0
     };
+    
+    console.log('✅ Statistiques récupérées avec succès:', stats);
+    return stats;
   } catch (error) {
     console.error('❌ Erreur récupération stats:', error);
     return { shopsCount: 0, usersCount: 0 };
@@ -343,9 +347,11 @@ const showMainMenuInLanguage = async (ctx, config, language) => {
     
     // Remplacer les statistiques dans le message
     const stats = await getBotStats();
+    console.log('📊 Statistiques récupérées:', stats);
     welcomeMessage = welcomeMessage
       .replace('{shopsCount}', stats.shopsCount)
       .replace('{usersCount}', stats.usersCount);
+    console.log('📝 Message final avec stats:', welcomeMessage);
     
     // Créer le clavier principal avec traductions (AVEC le bouton langue)
     const { createMainKeyboard } = require('./src/utils/keyboards');
