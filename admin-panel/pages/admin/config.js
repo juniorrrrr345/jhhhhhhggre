@@ -36,7 +36,8 @@ export default function BotConfiguration() {
     boutique: {
       backgroundImage: '',
       backgroundColor: '#000000',
-      theme: 'dark' // dark, light, custom
+      theme: 'dark', // dark, light, custom
+      telegramBotLink: 'https://t.me/FindYourPlugBot' // Lien vers le bot Telegram
     }
   })
 
