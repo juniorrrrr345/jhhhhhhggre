@@ -149,13 +149,39 @@ git push origin main
 # Puis configurer sur vercel.com
 ```
 
+### 4. 🔄 **Synchronisation temps réel admin → boutique**
+
+#### ❌ Problème
+- Modifications des réseaux sociaux dans l'admin non visibles sur la boutique
+- Pas de synchronisation entre `socialMediaList` et `shopSocialMediaList`
+- Utilisateur devait manuellement synchroniser
+
+#### ✅ Solution
+- **Synchronisation automatique** : Toute modification se synchronise automatiquement
+- **Debounce intelligent** : Évite le spam de requêtes (1.5s)
+- **Indicateurs visuels** : Spinner et notifications en temps réel
+- **Bouton sync manuel** : Pour forcer une synchronisation
+- **Double mise à jour** : `socialMediaList` ET `shopSocialMediaList` synchronisés
+
+#### 📁 Fichiers modifiés
+```
+admin-panel/pages/admin/social-media.js (+ 108 lignes)
+```
+
+#### 🔧 Fonctionnalités ajoutées
+- Synchronisation automatique sur modification, ajout, suppression, toggle
+- Interface utilisateur avec indicateurs de synchronisation
+- Gestion d'erreurs et notifications
+- Nettoyage automatique des timeouts
+
 ## ✨ Prochaines étapes
 
 1. **Déployer sur Vercel** en suivant le guide
-2. **Tester** les URLs recommandées
+2. **Tester** les URLs recommandées 
 3. **Vérifier** que les réseaux sociaux s'affichent
 4. **Confirmer** que le mode local ne s'active plus en permanence
-5. **Profiter** d'une application stable et fonctionnelle !
+5. **Tester la synchronisation** avec le guide `TEST_SYNCHRONISATION.md`
+6. **Profiter** d'une application stable et fonctionnelle !
 
 ---
 
