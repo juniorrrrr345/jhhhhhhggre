@@ -1589,11 +1589,20 @@ bot.action('go_back_photo', async (ctx) => {
     
     console.log('📝 Message préparé, longueur:', photoMessage.length);
     
+    // Supprimer l'ancien message (sélection des pays)
+    try {
+      await ctx.deleteMessage();
+      console.log('✅ Ancien message supprimé');
+    } catch (error) {
+      console.log('⚠️ Erreur suppression ancien message:', error.message);
+    }
+    
+    // Créer le nouveau message (question photo)
     await ctx.reply(photoMessage, {
       reply_markup: photoKeyboard.reply_markup,
       parse_mode: 'Markdown'
     });
-    console.log('✅ ctx.reply appelé avec succès');
+    console.log('✅ Nouveau message photo créé avec succès');
     
   } catch (error) {
     console.error('❌ Erreur go_back_photo:', error);
