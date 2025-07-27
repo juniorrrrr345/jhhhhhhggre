@@ -1589,11 +1589,11 @@ bot.action('go_back_photo', async (ctx) => {
     
     console.log('📝 Message préparé, longueur:', photoMessage.length);
     
-    await safeEditMessage(ctx, photoMessage, {
+    await ctx.reply(photoMessage, {
       reply_markup: photoKeyboard.reply_markup,
       parse_mode: 'Markdown'
     });
-    console.log('✅ safeEditMessage appelé avec succès');
+    console.log('✅ ctx.reply appelé avec succès');
     
   } catch (error) {
     console.error('❌ Erreur go_back_photo:', error);
