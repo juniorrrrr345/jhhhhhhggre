@@ -457,7 +457,7 @@ export default function ShopHome() {
               },
               { 
                 name: 'Potato', 
-                logo: 'https://i.imgur.com/o2umvWd.png',
+                logo: 'https://i.imgur.com/LaRHc9L.png',
                 emoji: '🥔',
                 url: '#' 
               },
