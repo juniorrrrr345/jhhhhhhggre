@@ -290,82 +290,36 @@ export default function ShopHome() {
 
         {/* Section de présentation */}
         <div style={{ 
-          padding: '30px 20px',
+          padding: '20px 15px',
           textAlign: 'center',
           background: 'linear-gradient(135deg, rgba(0, 122, 255, 0.1), rgba(0, 122, 255, 0.05))',
           borderBottom: '1px solid rgba(255, 255, 255, 0.1)'
         }}>
           <h1 style={{ 
-            fontSize: '28px', 
+            fontSize: '22px', 
             fontWeight: '700',
-            margin: '0 0 20px 0',
+            margin: '0 0 15px 0',
             color: getThemeStyles().color || '#ffffff',
-            letterSpacing: '0.5px',
-            lineHeight: '1.3'
+            letterSpacing: '0.3px',
+            lineHeight: '1.2'
           }}>
             🎯 Bienvenue sur FindYourPlug
           </h1>
           
           <div style={{ 
-            fontSize: '16px',
-            lineHeight: '1.6',
+            fontSize: '14px',
+            lineHeight: '1.4',
             color: getThemeStyles().color === '#000000' ? '#666666' : '#e0e0e0',
-            maxWidth: '600px',
-            margin: '0 auto 20px',
+            maxWidth: '400px',
+            margin: '0 auto',
             fontWeight: '400'
           }}>
-            <p style={{ margin: '0 0 12px 0' }}>
+            <p style={{ margin: '0 0 8px 0' }}>
               🔍 Utilisez la barre de recherche pour trouver un plug près de chez vous ou en envoi postal
             </p>
             <p style={{ margin: '0' }}>
               ⭐ N'hésitez pas à voter pour votre Plug préféré
             </p>
-          </div>
-          
-          {/* Statistiques rapides */}
-          <div style={{ 
-            display: 'flex', 
-            justifyContent: 'center', 
-            gap: '30px',
-            flexWrap: 'wrap',
-            marginTop: '25px'
-          }}>
-            <div style={{ textAlign: 'center' }}>
-              <div style={{ 
-                fontSize: '24px', 
-                fontWeight: 'bold', 
-                color: '#007AFF' 
-              }}>
-                {plugs.length}
-              </div>
-              <div style={{ 
-                fontSize: '12px', 
-                color: getThemeStyles().color === '#000000' ? '#888888' : '#b0b0b0',
-                textTransform: 'uppercase',
-                letterSpacing: '1px',
-                fontWeight: '600'
-              }}>
-                Plugs actifs
-              </div>
-            </div>
-            <div style={{ textAlign: 'center' }}>
-              <div style={{ 
-                fontSize: '24px', 
-                fontWeight: 'bold', 
-                color: '#007AFF' 
-              }}>
-                🌍
-              </div>
-              <div style={{ 
-                fontSize: '12px', 
-                color: getThemeStyles().color === '#000000' ? '#888888' : '#b0b0b0',
-                textTransform: 'uppercase',
-                letterSpacing: '1px',
-                fontWeight: '600'
-              }}>
-                International
-              </div>
-            </div>
           </div>
         </div>
 

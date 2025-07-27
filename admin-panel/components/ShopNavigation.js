@@ -34,16 +34,17 @@ export default function ShopNavigation({ currentLanguage = 'fr', currentPage = '
             flexDirection: 'column',
             alignItems: 'center',
             textDecoration: 'none',
-            color: currentPage === item.key ? '#ffffff' : '#a0a0a0',
-            fontSize: '11px',
-            fontWeight: currentPage === item.key ? '600' : '500',
+            color: currentPage === item.key ? '#ffffff' : '#ffffff',
+            fontSize: '13px',
+            fontWeight: currentPage === item.key ? '700' : '600',
             transition: 'all 0.3s ease',
             padding: '8px 12px',
             borderRadius: '12px',
-            background: currentPage === item.key ? 'rgba(0, 122, 255, 0.2)' : 'transparent',
-            border: currentPage === item.key ? '1px solid rgba(0, 122, 255, 0.3)' : '1px solid transparent',
-            letterSpacing: '0.3px',
-            textTransform: 'uppercase'
+            background: currentPage === item.key ? 'rgba(0, 122, 255, 0.3)' : 'rgba(255, 255, 255, 0.1)',
+            border: currentPage === item.key ? '1px solid rgba(0, 122, 255, 0.5)' : '1px solid rgba(255, 255, 255, 0.2)',
+            letterSpacing: '0.5px',
+            textTransform: 'uppercase',
+            textShadow: '0 1px 2px rgba(0, 0, 0, 0.5)'
           }}
         >
           <div style={{ 
