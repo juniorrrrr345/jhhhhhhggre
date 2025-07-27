@@ -353,8 +353,8 @@ const showMainMenuInLanguage = async (ctx, config, language) => {
     // Message de bienvenue avec placeholders pour les statistiques
     const { getTranslation } = require('./src/utils/translations');
     
-    // Toujours utiliser les traductions par défaut qui contiennent les placeholders des statistiques
-    let welcomeMessage = getTranslation('messages_welcome', currentLang, customTranslations);
+    // Utiliser le message personnalisé s'il existe, sinon les traductions par défaut
+    let welcomeMessage = freshConfig?.welcome?.text || getTranslation('messages_welcome', currentLang, customTranslations);
     
     console.log('🔤 Message de traduction récupéré:', welcomeMessage);
     console.log('🔤 Langue actuelle:', currentLang);
