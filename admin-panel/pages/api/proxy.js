@@ -22,7 +22,7 @@ export default async function handler(req, res) {
       process.env.API_BASE_URL,
       process.env.NEXT_PUBLIC_API_URL,
       'http://localhost:3000',
-      'https://jhhhhhhggre.onrender.com',
+      'https://telegram-bot-vip.onrender.com',
       'https://bot-telegram-render.onrender.com' // URL alternative possible
     ].filter(Boolean)
     
