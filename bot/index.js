@@ -91,7 +91,7 @@ const migrateSocialMedia = require('./scripts/migrate-social-media');
 
 // Initialisation
 const app = express();
-const bot = new Telegraf(process.env.TELEGRAM_BOT_TOKEN);
+const bot = new Telegraf(process.env.BOT_TOKEN || process.env.TELEGRAM_BOT_TOKEN);
 const PORT = process.env.PORT || 3000;
 
 // Middleware
@@ -1873,7 +1873,7 @@ app.get('/api/diagnostic/sync', async (req, res) => {
         nodeEnv: process.env.NODE_ENV,
         port: PORT,
         webhookUrl: process.env.WEBHOOK_URL || process.env.RENDER_URL || 'non configuré',
-        botToken: process.env.TELEGRAM_BOT_TOKEN ? 'configuré' : 'manquant'
+        botToken: (process.env.BOT_TOKEN || process.env.TELEGRAM_BOT_TOKEN) ? 'configuré' : 'manquant'
       }
     });
     
@@ -3674,10 +3674,10 @@ const start = async () => {
       
       // Construire l'URL de webhook avec fallback
       const baseUrl = process.env.WEBHOOK_URL || process.env.RENDER_URL || 'https://jhhhhhhggre.onrender.com';
-      const webhookUrl = `${baseUrl}/webhook/${process.env.TELEGRAM_BOT_TOKEN}`;
+      const webhookUrl = `${baseUrl}/webhook/${process.env.BOT_TOKEN || process.env.TELEGRAM_BOT_TOKEN}`;
       
       // Route pour le webhook
-      app.use(bot.webhookCallback(`/webhook/${process.env.TELEGRAM_BOT_TOKEN}`));
+              app.use(bot.webhookCallback(`/webhook/${process.env.BOT_TOKEN || process.env.TELEGRAM_BOT_TOKEN}`));
       
       // Définir le webhook avec retry et gestion d'erreur
       try {
