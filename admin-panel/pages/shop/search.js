@@ -519,6 +519,76 @@ export default function ShopSearch() {
           >
             🔄 {t('search_reset_filters')}
           </button>
+
+          {/* Section Réseaux Sociaux */}
+          {config?.socialMediaList && config.socialMediaList.length > 0 && (
+            <div style={{
+              marginTop: '20px',
+              textAlign: 'center',
+              padding: '16px',
+              backgroundColor: 'rgba(0,0,0,0.3)',
+              borderRadius: '12px',
+              border: '1px solid rgba(255,255,255,0.2)'
+            }}>
+              <p style={{
+                color: '#ffffff',
+                fontSize: '14px',
+                marginBottom: '12px',
+                fontWeight: '500',
+                textShadow: '0 1px 3px rgba(0,0,0,0.7)'
+              }}>
+                Rejoins nous sur tous nos réseaux 🔒🛜
+              </p>
+              
+              <div style={{
+                display: 'flex',
+                justifyContent: 'center',
+                gap: '12px',
+                flexWrap: 'wrap'
+              }}>
+                {config.socialMediaList
+                  .filter(social => social && social.enabled !== false && social.url)
+                  .map((social, index) => (
+                    <a
+                      key={index}
+                      href={social.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        width: '32px',
+                        height: '32px',
+                        backgroundColor: 'rgba(255,255,255,0.1)',
+                        borderRadius: '50%',
+                        border: '1px solid rgba(255,255,255,0.2)',
+                        textDecoration: 'none',
+                        transition: 'all 0.2s ease',
+                        cursor: 'pointer'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.target.style.backgroundColor = 'rgba(255,255,255,0.2)';
+                        e.target.style.transform = 'scale(1.1)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.target.style.backgroundColor = 'rgba(255,255,255,0.1)';
+                        e.target.style.transform = 'scale(1)';
+                      }}
+                    >
+                      <span style={{ fontSize: '16px' }}>
+                        {social.name === 'Telegram' && '📱'}
+                        {social.name === 'Potato' && '🥔'}
+                        {social.name === 'Instagram' && '📸'}
+                        {social.name === 'Luffa' && '🧽'}
+                        {social.name === 'Discord' && '🎮'}
+                        {!['Telegram', 'Potato', 'Instagram', 'Luffa', 'Discord'].includes(social.name) && '🌐'}
+                      </span>
+                    </a>
+                  ))}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Résultats */}
