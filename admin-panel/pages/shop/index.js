@@ -451,7 +451,7 @@ export default function ShopHome() {
             {[
               { 
                 name: 'Telegram', 
-                logo: 'https://i.imgur.com/o2umvWd.png',
+                logo: 'https://i.imgur.com/PP2GVMv.png',
                 emoji: '📱',
                 url: 'https://t.me/FindYourPlugBot' 
               },
@@ -511,9 +511,10 @@ export default function ShopHome() {
                   src={social.logo}
                   alt={social.name}
                   style={{
-                    width: '16px',
-                    height: '16px',
-                    objectFit: 'contain'
+                    width: '18px',
+                    height: '18px',
+                    objectFit: 'contain',
+                    borderRadius: '50%'
                   }}
                   onError={(e) => {
                     // Fallback vers emoji si l'image ne charge pas
