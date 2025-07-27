@@ -262,11 +262,51 @@ export default function ShopHome() {
             />
           </div>
           
-          {/* Logo placeholder */}
+          {/* Logo / Titre */}
           <div style={{ textAlign: 'center' }}>
-            {/* Espace réservé pour le logo */}
             <div style={{ height: '80px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              {/* Logo sera ajouté ici */}
+              {config?.boutique?.logoUrl ? (
+                <img
+                  src={config.boutique.logoUrl}
+                  alt="FindYourPlug Logo"
+                  style={{
+                    maxHeight: '70px',
+                    maxWidth: '300px',
+                    objectFit: 'contain'
+                  }}
+                  onError={(e) => {
+                    e.target.style.display = 'none'
+                    e.target.nextSibling.style.display = 'block'
+                  }}
+                />
+              ) : null}
+              {/* Fallback texte si pas de logo ou erreur */}
+              <div style={{ 
+                display: config?.boutique?.logoUrl ? 'none' : 'block'
+              }}>
+                <h2 style={{ 
+                  fontSize: '32px', 
+                  fontWeight: 'bold', 
+                  margin: '0 0 8px 0',
+                  color: '#ffffff',
+                  letterSpacing: '2px'
+                }}>
+                  {config?.boutique?.headerTitle || 'FINDYOURPLUG'}
+                </h2>
+                {config?.boutique?.headerSubtitle && (
+                  <div style={{ 
+                    backgroundColor: '#007AFF', 
+                    color: '#ffffff', 
+                    padding: '4px 8px', 
+                    borderRadius: '12px',
+                    fontSize: '12px',
+                    fontWeight: 'bold',
+                    display: 'inline-block'
+                  }}>
+                    {config.boutique.headerSubtitle}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
