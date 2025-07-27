@@ -447,13 +447,33 @@ export default function ShopHome() {
             gap: '12px',
             flexWrap: 'wrap'
           }}>
-            {/* Réseaux sociaux de test */}
+            {/* Réseaux sociaux avec vrais logos */}
             {[
-              { name: 'Telegram', emoji: '📱', url: 'https://t.me/FindYourPlugBot' },
-              { name: 'Potato', emoji: '🥔', url: '#' },
-              { name: 'Instagram', emoji: '📸', url: '#' },
-              { name: 'Luffa', emoji: '🧽', url: '#' },
-              { name: 'Discord', emoji: '🎮', url: '#' }
+              { 
+                name: 'Telegram', 
+                logo: 'https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg',
+                url: 'https://t.me/FindYourPlugBot' 
+              },
+              { 
+                name: 'Potato', 
+                logo: 'https://i.imgur.com/8XZQZQZ.png',
+                url: '#' 
+              },
+              { 
+                name: 'Instagram', 
+                logo: 'https://upload.wikimedia.org/wikipedia/commons/e/e7/Instagram_logo_2016.svg',
+                url: '#' 
+              },
+              { 
+                name: 'Luffa', 
+                logo: 'https://i.imgur.com/9Y9Y9Y9.png',
+                url: '#' 
+              },
+              { 
+                name: 'Discord', 
+                logo: 'https://upload.wikimedia.org/wikipedia/commons/9/98/Discord_logo.svg',
+                url: '#' 
+              }
             ].map((social, index) => (
               <a
                 key={index}
@@ -482,8 +502,31 @@ export default function ShopHome() {
                   e.target.style.transform = 'scale(1)';
                 }}
               >
-                <span style={{ fontSize: '16px' }}>
-                  {social.emoji}
+                <img 
+                  src={social.logo}
+                  alt={social.name}
+                  style={{
+                    width: '16px',
+                    height: '16px',
+                    objectFit: 'contain',
+                    filter: 'brightness(0) invert(1)'
+                  }}
+                  onError={(e) => {
+                    // Fallback vers emoji si l'image ne charge pas
+                    e.target.style.display = 'none';
+                    e.target.nextSibling.style.display = 'inline';
+                  }}
+                />
+                <span style={{ 
+                  fontSize: '16px',
+                  display: 'none'
+                }}>
+                  {social.name === 'Telegram' && '📱'}
+                  {social.name === 'Potato' && '🥔'}
+                  {social.name === 'Instagram' && '📸'}
+                  {social.name === 'Luffa' && '🧽'}
+                  {social.name === 'Discord' && '🎮'}
+                  {!['Telegram', 'Potato', 'Instagram', 'Luffa', 'Discord'].includes(social.name) && '🌐'}
                 </span>
               </a>
             ))}
