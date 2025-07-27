@@ -1,15 +1,14 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import Head from 'next/head'
 import Layout from '../../components/Layout'
 import { simpleApi } from '../../lib/api-simple'
 import { getLocalApi } from '../../lib/local-storage-api'
-import { getRobustSync } from '../../lib/robust-sync'
 import toast from 'react-hot-toast'
 
-// Logos par défaut pour les réseaux sociaux populaires
-const getDefaultLogo = (name) => {
-  const logos = {
+// Emojis par défaut pour les réseaux sociaux populaires
+const getDefaultEmoji = (name) => {
+  const emojis = {
     'instagram': '📸',
     'tiktok': '🎵',
     'youtube': '📺',
@@ -25,7 +24,7 @@ const getDefaultLogo = (name) => {
   }
   
   const lowerName = name.toLowerCase()
-  return logos[lowerName] || '🔗'
+  return emojis[lowerName] || '🔗'
 }
 
 // Réseaux sociaux populaires prédéfinis
@@ -48,12 +47,9 @@ export default function SocialMediaManager() {
   const [newSocialMedia, setNewSocialMedia] = useState({
     name: '',
     emoji: '',
-    url: '',
-    enabled: true
+    url: ''
   })
   const [isLocalMode, setIsLocalMode] = useState(false)
-  const [isSyncing, setIsSyncing] = useState(false)
-  const updateTimeoutRef = useRef(null)
   const router = useRouter()
 
   useEffect(() => {
@@ -63,12 +59,6 @@ export default function SocialMediaManager() {
       return
     }
     fetchSocialMedias()
-    
-    return () => {
-      if (updateTimeoutRef.current) {
-        clearTimeout(updateTimeoutRef.current)
-      }
-    }
   }, [])
 
   const fetchSocialMedias = async () => {
@@ -81,21 +71,24 @@ export default function SocialMediaManager() {
       const token = localStorage.getItem('adminToken') || 'JuniorAdmon123'
       const config = await simpleApi.getConfig(token)
       
-      if (config && config.socialMediaList) {
-        const socialMediasWithIds = config.socialMediaList.map((item, index) => {
-          if (!item.id) {
-            const baseId = item.name ? item.name.toLowerCase().replace(/[^a-z0-9]/g, '_') : `social_${index}`
-            item.id = baseId
-          }
-          return {
-            ...item,
-            emoji: item.emoji || getDefaultLogo(item.name || '')
-          }
-        })
-        setSocialMedias(socialMediasWithIds)
-        console.log('✅ Réseaux sociaux chargés depuis le serveur:', socialMediasWithIds.map(s => ({ id: s.id, name: s.name })))
+      if (config && config.socialMedia) {
+        // Utiliser socialMedia (pas socialMediaList) comme attendu par le bot
+        const socialMediaArray = Array.isArray(config.socialMedia) ? config.socialMedia : []
+        const socialMediasWithEmojis = socialMediaArray.map((item, index) => ({
+          ...item,
+          id: item.id || `social_${index}`,
+          emoji: item.emoji || getDefaultEmoji(item.name || '')
+        }))
+        setSocialMedias(socialMediasWithEmojis)
+        console.log('✅ Réseaux sociaux chargés depuis le serveur:', socialMediasWithEmojis)
       } else {
-        throw new Error('Configuration serveur vide')
+        // Initialiser avec des réseaux par défaut
+        const defaultSocialMedias = [
+          { id: 'telegram', name: 'Telegram', emoji: '📱', url: 'https://t.me/+zcP68c4M_3NlM2Y0' },
+          { id: 'contact', name: 'Contact', emoji: '📞', url: 'https://t.me/findyourplugsav' }
+        ]
+        setSocialMedias(defaultSocialMedias)
+        console.log('🔧 Réseaux sociaux initialisés avec valeurs par défaut')
       }
       
     } catch (error) {
@@ -103,47 +96,30 @@ export default function SocialMediaManager() {
       
       if (error.message.includes('Failed to fetch') || 
           error.message.includes('NetworkError') || 
-          error.message.includes('offline') ||
-          error.message.includes('502') ||
-          error.message.includes('503') ||
-          error.message.includes('504')) {
-        console.log('Basculement en mode local à cause de:', error.message)
+          error.message.includes('offline')) {
         setIsLocalMode(true)
-      } else {
-        console.log('Erreur non critique, pas de mode local:', error.message)
-        setIsLocalMode(false)
-      }
-      
-      try {
-        const localApi = getLocalApi()
-        if (localApi) {
-          const localConfig = await localApi.getConfig()
-          if (localConfig && localConfig.socialMediaList) {
-            const socialMediasWithIds = localConfig.socialMediaList.map((item, index) => {
-              if (!item.id) {
-                const baseId = item.name ? item.name.toLowerCase().replace(/[^a-z0-9]/g, '_') : `social_${index}`
-                item.id = baseId
-              }
-              return {
+        
+        try {
+          const localApi = getLocalApi()
+          if (localApi) {
+            const localConfig = await localApi.getConfig()
+            if (localConfig && localConfig.socialMedia) {
+              const socialMediaArray = Array.isArray(localConfig.socialMedia) ? localConfig.socialMedia : []
+              const socialMediasWithEmojis = socialMediaArray.map((item, index) => ({
                 ...item,
-                emoji: item.emoji || getDefaultLogo(item.name || '')
-              }
-            })
-            setSocialMedias(socialMediasWithIds)
-            console.log('📁 Réseaux sociaux chargés depuis le stockage local:', socialMediasWithIds.map(s => ({ id: s.id, name: s.name })))
-          } else {
-            const defaultSocialMedias = [
-              { id: 'telegram', name: 'Telegram', emoji: '📱', url: 'https://t.me/+zcP68c4M_3NlM2Y0', enabled: true },
-              { id: 'contact', name: 'Contact', emoji: '📞', url: 'https://t.me/findyourplugsav', enabled: true }
-            ]
-            setSocialMedias(defaultSocialMedias)
-            await localApi.updateSocialMedia(defaultSocialMedias)
-            console.log('🔧 Réseaux sociaux bot initialisés avec vos liens')
+                id: item.id || `social_${index}`,
+                emoji: item.emoji || getDefaultEmoji(item.name || '')
+              }))
+              setSocialMedias(socialMediasWithEmojis)
+              console.log('📁 Réseaux sociaux chargés depuis le stockage local')
+            }
           }
+        } catch (localError) {
+          console.error('Erreur mode local:', localError)
+          toast.error('Erreur de stockage local')
         }
-      } catch (localError) {
-        console.error('Erreur mode local:', localError)
-        toast.error('Erreur de stockage local')
+      } else {
+        toast.error('Erreur lors du chargement')
       }
     } finally {
       setLoading(false)
@@ -154,51 +130,41 @@ export default function SocialMediaManager() {
     try {
       setSaving(true)
       
+      // Préparer les données pour le bot (format attendu)
+      const socialMediaForBot = socialMedias.map(({ id, ...rest }) => rest)
+      
       if (isLocalMode) {
         const localApi = getLocalApi()
         if (localApi) {
-          await localApi.updateSocialMedia(socialMedias)
+          await localApi.updateConfig({ socialMedia: socialMediaForBot })
           console.log('💾 Réseaux sociaux sauvegardés localement')
+          toast.success('✅ Configuration sauvegardée localement')
         }
       } else {
         try {
           const token = localStorage.getItem('adminToken') || 'JuniorAdmon123'
           
           const configData = {
-            socialMediaList: socialMedias,
-            shopSocialMediaList: socialMedias,
-            socialMedia: {
-              telegram: socialMedias.find(s => s.id === 'telegram')?.url || '',
-              whatsapp: socialMedias.find(s => s.id === 'whatsapp')?.url || ''
-            }
+            socialMedia: socialMediaForBot
           }
           
           await simpleApi.updateConfig(token, configData)
-          
-          const robustSync = getRobustSync()
-          if (robustSync) {
-            robustSync.syncConfigUpdate(configData)
-          }
-          
-          console.log('✅ Réseaux sociaux sauvegardés et synchronisés')
+          console.log('✅ Réseaux sociaux sauvegardés sur le serveur')
           toast.success('✅ Configuration sauvegardée avec succès')
         } catch (serverError) {
           console.log('Erreur sauvegarde serveur:', serverError.message)
           
           if (serverError.message.includes('Failed to fetch') || 
               serverError.message.includes('NetworkError') || 
-              serverError.message.includes('offline') ||
-              serverError.message.includes('502') ||
-              serverError.message.includes('503') ||
-              serverError.message.includes('504')) {
-            console.log('Basculement en mode local à cause de:', serverError.message)
+              serverError.message.includes('offline')) {
             setIsLocalMode(true)
+            const localApi = getLocalApi()
+            if (localApi) {
+              await localApi.updateConfig({ socialMedia: socialMediaForBot })
+              toast.success('✅ Sauvegardé localement (serveur indisponible)')
+            }
           } else {
-            console.log('Erreur sauvegarde non critique, pas de mode local:', serverError.message)
-          }
-          const localApi = getLocalApi()
-          if (localApi) {
-            await localApi.updateSocialMedia(socialMedias)
+            toast.error('Erreur lors de la sauvegarde')
           }
         }
       }
@@ -217,6 +183,11 @@ export default function SocialMediaManager() {
       return
     }
     
+    if (!newSocialMedia.url.trim()) {
+      toast.error('URL est requise')
+      return
+    }
+    
     let baseId = newSocialMedia.name.toLowerCase().replace(/[^a-z0-9]/g, '_')
     let id = baseId
     let counter = 1
@@ -226,51 +197,32 @@ export default function SocialMediaManager() {
       counter++
     }
     
-    console.log('➕ Ajout nouveau réseau social avec ID:', id)
-    
     const newItem = {
-      ...newSocialMedia,
       id,
       name: newSocialMedia.name.trim(),
-      emoji: newSocialMedia.emoji || getDefaultLogo(newSocialMedia.name.trim()),
+      emoji: newSocialMedia.emoji || getDefaultEmoji(newSocialMedia.name.trim()),
       url: newSocialMedia.url.trim()
     }
     
     const updatedSocialMedias = [...socialMedias, newItem]
     setSocialMedias(updatedSocialMedias)
-    setNewSocialMedia({ name: '', emoji: '', url: '', enabled: true })
+    setNewSocialMedia({ name: '', emoji: '', url: '' })
     setShowAddForm(false)
     
     toast.success(`Réseau social "${newItem.name}" ajouté`)
   }
 
   const updateSocialMedia = (id, field, value) => {
-    console.log('🔄 Mise à jour réseau social:', { id, field, value })
-    if (!id) {
-      console.error('❌ ID manquant pour la mise à jour')
-      toast.error('Erreur: ID manquant pour la mise à jour')
-      return
-    }
-    
-    setSocialMedias(prevSocialMedias => {
-      const updated = prevSocialMedias.map(item => 
+    setSocialMedias(prevSocialMedias => 
+      prevSocialMedias.map(item => 
         item.id === id ? { ...item, [field]: value } : item
       )
-      console.log('📝 Réseaux sociaux après mise à jour:', updated.map(s => ({ id: s.id, name: s.name, [field]: s[field] })))
-      return updated
-    })
+    )
   }
 
-  const deleteSocialMedia = async (id) => {
-    if (!id) {
-      console.error('❌ ID manquant pour la suppression')
-      toast.error('Erreur: ID manquant')
-      return
-    }
-
+  const deleteSocialMedia = (id) => {
     const itemToDelete = socialMedias.find(item => item.id === id)
     if (!itemToDelete) {
-      console.error('❌ Réseau social non trouvé:', id)
       toast.error('Réseau social non trouvé')
       return
     }
@@ -282,21 +234,11 @@ export default function SocialMediaManager() {
     }
   }
 
-  const toggleEnabled = async (id) => {
-    console.log('🔄 Toggle réseau social:', { id })
-    const updatedSocialMedias = socialMedias.map(item => 
-      item.id === id ? { ...item, enabled: !item.enabled } : item
-    )
-    
-    setSocialMedias(updatedSocialMedias)
-  }
-
   const selectPopularSocial = (popular) => {
     setNewSocialMedia({
       name: popular.name,
       emoji: popular.emoji,
-      url: '',
-      enabled: true
+      url: ''
     })
   }
 
@@ -309,8 +251,8 @@ export default function SocialMediaManager() {
         <Layout>
           <div className="min-h-screen bg-gray-50 flex items-center justify-center">
             <div className="text-center">
-              <div className="w-12 h-12 mx-auto mb-4 bg-blue-600 rounded-full flex items-center justify-center animate-pulse">
-                <span className="text-white text-lg">📱</span>
+              <div className="w-16 h-16 mx-auto mb-4 bg-blue-600 rounded-full flex items-center justify-center animate-pulse">
+                <span className="text-white text-2xl">📱</span>
               </div>
               <p className="text-gray-600">Chargement des réseaux sociaux...</p>
             </div>
@@ -334,7 +276,7 @@ export default function SocialMediaManager() {
               <p className="text-gray-600">Gérez les réseaux sociaux affichés dans le bot Telegram</p>
             </div>
 
-            {/* Bouton Sauvegarder - Style du screenshot */}
+            {/* Bouton Sauvegarder */}
             <div className="mb-6">
               <button
                 onClick={saveSocialMedias}
@@ -351,19 +293,9 @@ export default function SocialMediaManager() {
                   Mode Local
                 </div>
               )}
-              
-              {isSyncing && (
-                <div className="ml-4 inline-flex items-center px-3 py-2 bg-blue-100 text-blue-800 text-sm font-medium rounded-lg">
-                  <svg className="animate-spin -ml-1 mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                  Synchronisation...
-                </div>
-              )}
             </div>
 
-            {/* Section Réseaux Sociaux Actuels - Style du screenshot */}
+            {/* Section Réseaux Sociaux Actuels */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-xl font-semibold text-gray-900 flex items-center">
@@ -375,11 +307,7 @@ export default function SocialMediaManager() {
               {socialMedias.length > 0 ? (
                 <div className="space-y-4">
                   {socialMedias.map((social) => (
-                    <div key={social.id} className={`border rounded-lg p-4 transition-all ${
-                      social.enabled 
-                        ? 'border-green-200 bg-green-50' 
-                        : 'border-gray-200 bg-gray-50'
-                    }`}>
+                    <div key={social.id} className="border rounded-lg p-4 bg-gray-50">
                       <div className="flex items-center justify-between mb-3">
                         <div className="flex items-center space-x-3">
                           <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center text-xl shadow-sm">
@@ -391,16 +319,13 @@ export default function SocialMediaManager() {
                           </div>
                         </div>
                         
-                        <div className="flex items-center space-x-2">
-                          <div className={`flex items-center px-3 py-1 rounded-full text-xs font-medium ${
-                            social.enabled 
-                              ? 'bg-green-100 text-green-800' 
-                              : 'bg-gray-100 text-gray-800'
-                          }`}>
-                            <span className="w-2 h-2 rounded-full mr-2 ${social.enabled ? 'bg-green-500' : 'bg-gray-400'}"></span>
-                            {social.enabled ? 'Activé par défaut' : 'Désactivé'}
-                          </div>
-                        </div>
+                        <button
+                          onClick={() => deleteSocialMedia(social.id)}
+                          className="inline-flex items-center px-3 py-1 text-sm text-red-600 hover:text-red-800 hover:bg-red-50 rounded-md transition-colors"
+                        >
+                          <span className="mr-1">🗑️</span>
+                          Supprimer
+                        </button>
                       </div>
                       
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -438,26 +363,6 @@ export default function SocialMediaManager() {
                           />
                         </div>
                       </div>
-                      
-                      <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-200">
-                        <div className="flex items-center">
-                          <input
-                            type="checkbox"
-                            checked={social.enabled}
-                            onChange={(e) => updateSocialMedia(social.id, 'enabled', e.target.checked)}
-                            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                          />
-                          <label className="ml-2 text-sm text-gray-700">Activé par défaut</label>
-                        </div>
-                        
-                        <button
-                          onClick={() => deleteSocialMedia(social.id)}
-                          className="inline-flex items-center px-3 py-1 text-sm text-red-600 hover:text-red-800 hover:bg-red-50 rounded-md transition-colors"
-                        >
-                          <span className="mr-1">🗑️</span>
-                          Supprimer
-                        </button>
-                      </div>
                     </div>
                   ))}
                 </div>
@@ -477,7 +382,7 @@ export default function SocialMediaManager() {
               )}
             </div>
 
-            {/* Section Ajouter un Réseau Social - Style du screenshot */}
+            {/* Section Ajouter un Réseau Social */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-xl font-semibold text-gray-900 flex items-center">
@@ -533,20 +438,10 @@ export default function SocialMediaManager() {
                     </div>
                   </div>
                   
-                  <div className="flex items-center">
-                    <input
-                      type="checkbox"
-                      checked={newSocialMedia.enabled}
-                      onChange={(e) => setNewSocialMedia({...newSocialMedia, enabled: e.target.checked})}
-                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                    />
-                    <label className="ml-2 text-sm text-gray-700">Activé par défaut</label>
-                  </div>
-                  
                   <div className="flex items-center space-x-4">
                     <button
                       onClick={addSocialMedia}
-                      disabled={!newSocialMedia.name.trim()}
+                      disabled={!newSocialMedia.name.trim() || !newSocialMedia.url.trim()}
                       className="inline-flex items-center px-6 py-3 bg-green-600 text-white font-medium rounded-lg shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                     >
                       <span className="mr-2">➕</span>
@@ -557,7 +452,7 @@ export default function SocialMediaManager() {
                       <button
                         onClick={() => {
                           setShowAddForm(false)
-                          setNewSocialMedia({ name: '', emoji: '', url: '', enabled: true })
+                          setNewSocialMedia({ name: '', emoji: '', url: '' })
                         }}
                         className="inline-flex items-center px-6 py-3 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors"
                       >
@@ -568,7 +463,7 @@ export default function SocialMediaManager() {
                 </div>
               )}
 
-              {/* Réseaux populaires - Style du screenshot */}
+              {/* Réseaux populaires */}
               <div className="mt-8 pt-6 border-t border-gray-200">
                 <h3 className="text-lg font-medium text-gray-900 mb-4 flex items-center">
                   <span className="mr-2">🌟</span>
