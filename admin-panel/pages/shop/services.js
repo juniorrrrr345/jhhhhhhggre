@@ -9,6 +9,7 @@ export default function ShopServices() {
   const [config, setConfig] = useState({
     servicesTelegramLink: 'https://t.me/FindYourPlugBot'
   })
+  const [shopSocialMedias, setShopSocialMedias] = useState([])
   const { t } = useTranslation(currentLanguage)
 
   useEffect(() => {
