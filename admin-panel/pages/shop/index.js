@@ -237,14 +237,21 @@ export default function ShopHome() {
         }}>
           <div style={{ textAlign: 'center' }}>
             <div style={{ 
-              width: '40px', 
-              height: '40px', 
-              border: '3px solid #007AFF',
-              borderTop: '3px solid transparent',
-              borderRadius: '50%',
+              width: '60px', 
+              height: '60px',
               animation: 'spin 1s linear infinite',
               margin: '0 auto 16px'
-            }} />
+            }}>
+              <img 
+                src="https://i.imgur.com/VwBPgtw.jpeg" 
+                alt="FindYourPlug Logo"
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'contain'
+                }}
+              />
+            </div>
             <p>Chargement...</p>
           </div>
         </div>
