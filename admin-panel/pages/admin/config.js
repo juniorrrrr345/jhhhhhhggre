@@ -236,6 +236,18 @@ export default function BotConfiguration() {
 
   // Fonctions pour la configuration de la boutique
   const updateBoutique = (field, value) => {
+    // Correction automatique des liens Imgur
+    if (field === 'backgroundImage' && value) {
+      // Corriger .jpeg en .jpg pour Imgur
+      if (value.includes('imgur.com') && value.endsWith('.jpeg')) {
+        value = value.replace('.jpeg', '.jpg');
+      }
+      // Forcer HTTPS pour les liens Imgur
+      if (value.includes('imgur.com') && value.startsWith('http://')) {
+        value = value.replace('http://', 'https://');
+      }
+    }
+    
     setConfig(prev => ({
       ...prev,
       boutique: {
@@ -519,6 +531,8 @@ export default function BotConfiguration() {
                     />
                     <p className="text-xs text-gray-500">
                       URL directe vers une image (JPG, PNG, WebP). Recommandé : 1920x1080px minimum.
+                      <br />
+                      <strong>Pour Imgur :</strong> Utilisez https://i.imgur.com/CODE.jpg (pas .jpeg)
                     </p>
                     
                     {/* Aperçu de l'image */}

@@ -7,7 +7,9 @@ export default function ShopNavigation({ currentLanguage = 'fr', currentPage = '
   const navItems = [
     { key: 'home', href: '/shop', label: t('home') },
     { key: 'search', href: '/shop/search', label: t('search').replace('...', '') },
-    { key: 'vip', href: '/shop/vip', label: t('vip') }
+    { key: 'vip', href: '/shop/vip', label: t('vip') },
+    { key: 'inscription', href: '/shop/inscription', label: 'Inscription' },
+    { key: 'services', href: '/shop/services', label: 'Services' }
   ]
 
   return (
@@ -34,20 +36,22 @@ export default function ShopNavigation({ currentLanguage = 'fr', currentPage = '
             alignItems: 'center',
             textDecoration: 'none',
             color: currentPage === item.key ? '#ffffff' : '#8e8e93',
-            fontSize: '12px',
+            fontSize: '10px',
             fontWeight: currentPage === item.key ? 'bold' : 'normal',
             transition: 'color 0.2s',
             textDecoration: 'none'
           }}
         >
           <div style={{ 
-            fontSize: '20px', 
+            fontSize: '18px', 
             marginBottom: '4px',
             opacity: currentPage === item.key ? 1 : 0.7
           }}>
             {item.key === 'home' && '🏠'}
             {item.key === 'search' && '🔍'}
             {item.key === 'vip' && '⭐'}
+            {item.key === 'inscription' && '📝'}
+            {item.key === 'services' && '🛠️'}
           </div>
           {item.label}
         </Link>
