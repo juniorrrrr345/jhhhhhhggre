@@ -291,7 +291,12 @@ const translations = {
     // Traductions pour la page détail boutique
     detail_available_services: 'Available services',
     detail_available: 'Available',
-    detail_not_available: 'Not available'
+    detail_not_available: 'Not available',
+    // Traductions pour la page d'accueil
+    welcome_title: 'Welcome to FindYourPlug',
+    welcome_search_desc: 'Use the search bar to find a plug near you or by postal delivery',
+    welcome_vote_desc: 'Don\'t hesitate to vote for your favorite Plug',
+    welcome_register_desc: 'Register directly via our Telegram bot to access all shops'
   },
   es: {
     title: 'Idioma',
@@ -433,7 +438,12 @@ const translations = {
     // Traductions pour la page détail boutique
     detail_available_services: 'Servicios disponibles',
     detail_available: 'Disponible',
-    detail_not_available: 'No disponible'
+    detail_not_available: 'No disponible',
+    // Traductions pour la page d'accueil
+    welcome_title: 'Bienvenue sur FindYourPlug',
+    welcome_search_desc: 'Utilisez la barre de recherche pour trouver un plug près de chez vous ou en envoi postal',
+    welcome_vote_desc: 'N\'hésitez pas à voter pour votre Plug préféré',
+    welcome_register_desc: 'Inscrivez-vous directement via notre bot Telegram pour accéder à toutes les boutiques'
   },
   it: {
     title: 'Lingua',
@@ -575,7 +585,12 @@ const translations = {
     // Traductions pour la page détail boutique
     detail_available_services: 'Servizi disponibili',
     detail_available: 'Disponibile',
-    detail_not_available: 'Non disponibile'
+    detail_not_available: 'Non disponibile',
+    // Traductions pour la page d'accueil
+    welcome_title: 'Benvenuto su FindYourPlug',
+    welcome_search_desc: 'Usa la barra di ricerca per trovare un plug vicino a casa tua o per spedizione postale',
+    welcome_vote_desc: 'Non esitare a votare per il tuo Plug preferito',
+    welcome_register_desc: 'Registrati direttamente tramite il nostro bot Telegram per accedere a tutti i negozi'
   },
   de: {
     title: 'Sprache',
@@ -717,7 +732,12 @@ const translations = {
     // Traductions pour la page détail boutique
     detail_available_services: 'Verfügbare Services',
     detail_available: 'Verfügbar',
-    detail_not_available: 'Nicht verfügbar'
+    detail_not_available: 'Nicht verfügbar',
+    // Traductions pour la page d'accueil
+    welcome_title: 'Willkommen bei FindYourPlug',
+    welcome_search_desc: 'Nutzen Sie die Suchleiste, um einen Plug in Ihrer Nähe oder per Postversand zu finden',
+    welcome_vote_desc: 'Zögern Sie nicht, für Ihren Lieblings-Plug zu stimmen',
+    welcome_register_desc: 'Registrieren Sie sich direkt über unseren Telegram-Bot, um Zugang zu allen Shops zu erhalten'
   }
 }
 
