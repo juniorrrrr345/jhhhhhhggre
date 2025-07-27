@@ -28,42 +28,18 @@ export default function TelegramLinks() {
     try {
       console.log('🔍 Fetching telegram links config...')
       
-      const botApiUrl = 'https://jhhhhhhggre.onrender.com'
+      // Utiliser l'API simple comme les autres pages
+      const data = await simpleApi.getConfig(token)
+      console.log('✅ Config loaded:', data)
       
-      try {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 10000);
-        
-        const response = await fetch(`${botApiUrl}/api/config`, {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${token || 'ADMIN_TOKEN_F3F3FC574B8A95875449DBD68128C434CE3D7FB3F054567B0D3EAD3D9F1B01B1'}`,
-            'Content-Type': 'application/json'
-          },
-          signal: controller.signal
-        })
-        
-        clearTimeout(timeoutId);
-        
-        if (response.ok) {
-          const data = await response.json()
-          console.log('✅ Config loaded:', data)
-          
-          // Extraire les liens Telegram de la config
-          setConfig({
-            inscriptionTelegramLink: data.inscriptionTelegramLink || 'https://t.me/FindYourPlugBot',
-            servicesTelegramLink: data.servicesTelegramLink || 'https://t.me/FindYourPlugBot'
-          })
-        } else {
-          throw new Error(`API responded with ${response.status}`)
-        }
-      } catch (apiError) {
-        console.error('Bot API failed:', apiError)
-        toast.error('Erreur lors du chargement de la configuration')
-      }
+      // Extraire les liens Telegram de la config
+      setConfig({
+        inscriptionTelegramLink: data.boutique?.inscriptionTelegramLink || 'https://t.me/FindYourPlugBot',
+        servicesTelegramLink: data.boutique?.servicesTelegramLink || 'https://t.me/FindYourPlugBot'
+      })
     } catch (error) {
       console.error('💥 Config fetch error:', error)
-      toast.error('Erreur de connexion')
+      toast.error('Erreur lors du chargement de la configuration')
     } finally {
       setLoading(false)
     }
@@ -76,35 +52,34 @@ export default function TelegramLinks() {
       console.log('💾 Saving telegram links config...')
       
       const token = localStorage.getItem('adminToken')
-      const botApiUrl = 'https://jhhhhhhggre.onrender.com'
       
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000);
+      // D'abord récupérer la config actuelle
+      const currentConfig = await simpleApi.getConfig(token)
       
-      const response = await fetch(`${botApiUrl}/api/config`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token || 'ADMIN_TOKEN_F3F3FC574B8A95875449DBD68128C434CE3D7FB3F054567B0D3EAD3D9F1B01B1'}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
+      // Mettre à jour avec les nouveaux liens Telegram
+      const updatedConfig = {
+        ...currentConfig,
+        boutique: {
+          ...currentConfig.boutique,
           inscriptionTelegramLink: config.inscriptionTelegramLink,
           servicesTelegramLink: config.servicesTelegramLink
-        }),
-        signal: controller.signal
-      })
-      
-      clearTimeout(timeoutId);
-      
-      if (response.ok) {
-        toast.success('Configuration sauvegardée avec succès !')
-        console.log('✅ Telegram links config saved')
-      } else {
-        throw new Error(`API responded with ${response.status}`)
+        }
       }
+      
+      // Sauvegarder la configuration complète
+      await simpleApi.updateConfig(token, updatedConfig)
+      
+      toast.success('Configuration sauvegardée avec succès !')
+      console.log('✅ Telegram links config saved')
     } catch (error) {
       console.error('💥 Save error:', error)
-      toast.error('Erreur lors de la sauvegarde')
+      
+      // Gestion d'erreur plus détaillée
+      if (error.message.includes('500') || error.message.includes('429')) {
+        toast.error('Serveur temporairement indisponible. Réessayez dans quelques instants.')
+      } else {
+        toast.error(`Erreur lors de la sauvegarde: ${error.message}`)
+      }
     } finally {
       setSaving(false)
     }

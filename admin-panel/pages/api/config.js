@@ -16,8 +16,8 @@ export default async function handler(req, res) {
         
         // Retourner seulement les liens Telegram
         res.status(200).json({
-          inscriptionTelegramLink: data.inscriptionTelegramLink || 'https://t.me/FindYourPlugBot',
-          servicesTelegramLink: data.servicesTelegramLink || 'https://t.me/FindYourPlugBot'
+          inscriptionTelegramLink: data.boutique?.inscriptionTelegramLink || 'https://t.me/FindYourPlugBot',
+          servicesTelegramLink: data.boutique?.servicesTelegramLink || 'https://t.me/FindYourPlugBot'
         })
       } else {
         // Fallback si l'API du bot n'est pas disponible
