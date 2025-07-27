@@ -475,7 +475,7 @@ export default function ShopHome() {
               },
               { 
                 name: 'Discord', 
-                logo: 'https://i.imgur.com/o2umvWd.png',
+                logo: 'https://i.imgur.com/JgmWPPZ.png',
                 emoji: '🎮',
                 url: '#' 
               }
@@ -511,12 +511,14 @@ export default function ShopHome() {
                   src={social.logo}
                   alt={social.name}
                   style={{
-                    width: '20px',
-                    height: '20px',
+                    width: '22px',
+                    height: '22px',
                     objectFit: 'cover',
                     borderRadius: '50%',
-                    backgroundColor: 'rgba(255,255,255,0.1)',
-                    padding: '2px'
+                    backgroundColor: 'rgba(255,255,255,0.15)',
+                    padding: '3px',
+                    boxShadow: '0 1px 3px rgba(0,0,0,0.3)',
+                    border: '1px solid rgba(255,255,255,0.2)'
                   }}
                   onError={(e) => {
                     // Fallback vers emoji si l'image ne charge pas
