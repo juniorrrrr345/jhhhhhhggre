@@ -526,7 +526,7 @@ export default function ShopSearch() {
           </button>
 
           {/* Section Réseaux Sociaux */}
-          {config?.socialMediaList && config.socialMediaList.length > 0 && (
+          {config?.shopSocialMediaList && config.shopSocialMediaList.length > 0 && (
             <div style={{
               marginTop: '20px',
               textAlign: 'center',
@@ -555,7 +555,7 @@ export default function ShopSearch() {
                 gap: '12px',
                 flexWrap: 'wrap'
               }}>
-                {config.socialMediaList
+                {config.shopSocialMediaList
                   .filter(social => social && social.enabled !== false && social.url)
                   .map((social, index) => (
                     <a
