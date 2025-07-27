@@ -1093,10 +1093,10 @@ bot.action(/^like_([a-f\d]{24})$/, async (ctx) => {
           inline_keyboard: currentKeyboard.inline_keyboard.map(row => 
             row.map(button => {
               if (button.callback_data && button.callback_data.startsWith(`like_${plugId}`)) {
-                                  return {
-                    ...button,
-                    text: `👍 Déjà voté (2h)`
-                  };
+                return {
+                  ...button,
+                  text: `👍 Déjà voté - 2h restant`
+                };
               }
               return button;
             })

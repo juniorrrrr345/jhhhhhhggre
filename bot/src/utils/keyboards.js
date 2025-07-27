@@ -254,59 +254,38 @@ const createPlugKeyboard = (plug, returnContext = 'top_plugs', userId = null, cu
   // Import de getTranslation si pas déjà disponible
   const { getTranslation } = require('./translations');
   
-  // Première ligne : Bouton de vote avec traduction
-  if (userId) {
-    const User = require('../models/User');
-    
-    User.findOne({ userId: userId })
-      .then(user => {
-        const hasVoted = user?.votedPlugs?.includes(plug._id.toString());
-        const votesCount = plug.likes || 0;
-        const voteText = votesCount === 1 ? 
-          getTranslation('vote_count_singular', currentLang, customTranslations) : 
-          getTranslation('vote_count_plural', currentLang, customTranslations);
-        
-        let voteButtonText;
-        if (hasVoted) {
-          const cooldownDate = user.lastVoteDate ? new Date(user.lastVoteDate) : new Date(0);
-          const now = new Date();
-          const timeDiff = now - cooldownDate;
-          const hours = Math.floor(timeDiff / (1000 * 60 * 60));
-          const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
-          
-          const alreadyVotedText = getTranslation('already_voted', currentLang, customTranslations);
-          voteButtonText = `👍 ${alreadyVotedText} (${votesCount}) - ${hours}h${minutes}m`;
-        } else {
-          const voteForShopText = getTranslation('vote_for_shop', currentLang, customTranslations);
-          voteButtonText = `👍 ${voteForShopText} (${votesCount})`;
-        }
-        
-        return voteButtonText;
-      })
-      .catch(err => {
-        console.error('Erreur récupération user pour vote:', err);
-        const votesCount = plug.likes || 0;
-        const voteText = votesCount === 1 ? 
-          getTranslation('vote_count_singular', currentLang, customTranslations) : 
-          getTranslation('vote_count_plural', currentLang, customTranslations);
-        const voteForShopText = getTranslation('vote_for_shop', currentLang, customTranslations);
-        return `👍 ${voteForShopText} (${votesCount})`;
-      });
-  }
-  
-  // Afficher le nombre de votes actuel avec traduction
+  // Vérifier l'état du vote pour ce user et ce plug
   const votesCount = plug.likes || 0;
-  const voteText = votesCount === 1 ? 
-    getTranslation('vote_count_singular', currentLang, customTranslations) : 
-    getTranslation('vote_count_plural', currentLang, customTranslations);
-  
   let voteButtonText;
   
-  if (userId) {
-    // Vérification simplifiée pour l'affichage immédiat
-    const voteForShopText = getTranslation('vote_for_shop', currentLang, customTranslations);
-    voteButtonText = `👍 ${voteForShopText} (${votesCount})`;
+  if (userId && plug.likedBy && plug.likedBy.includes(userId)) {
+    // L'utilisateur a déjà voté, vérifier le cooldown
+    const userLikeHistory = plug.likeHistory?.find(h => h.userId == userId);
+    
+    if (userLikeHistory) {
+      const lastLikeTime = new Date(userLikeHistory.timestamp);
+      const now = new Date();
+      const timeDiff = now - lastLikeTime;
+      const cooldownTime = 2 * 60 * 60 * 1000; // 2 heures
+      
+      if (timeDiff < cooldownTime) {
+        // Encore en cooldown
+        const remainingTime = cooldownTime - timeDiff;
+        const hours = Math.floor(remainingTime / (60 * 60 * 1000));
+        const minutes = Math.floor((remainingTime % (60 * 60 * 1000)) / (60 * 1000));
+        
+        voteButtonText = `👍 Déjà voté (${votesCount}) - ${hours}h${minutes}m`;
+      } else {
+        // Cooldown terminé, peut voter à nouveau
+        const voteForShopText = getTranslation('vote_for_shop', currentLang, customTranslations);
+        voteButtonText = `👍 ${voteForShopText} (${votesCount})`;
+      }
+    } else {
+      // A voté mais pas d'historique (ancien système), assumer cooldown actif
+      voteButtonText = `👍 Déjà voté (${votesCount}) - 2h`;
+    }
   } else {
+    // N'a pas encore voté
     const voteForShopText = getTranslation('vote_for_shop', currentLang, customTranslations);
     voteButtonText = `👍 ${voteForShopText} (${votesCount})`;
   }
