@@ -356,6 +356,17 @@ const showMainMenuInLanguage = async (ctx, config, language) => {
     // Toujours utiliser les traductions par défaut qui contiennent les placeholders des statistiques
     let welcomeMessage = getTranslation('messages_welcome', currentLang, customTranslations);
     
+    // Forcer l'utilisation du message de traduction avec les placeholders
+    if (!welcomeMessage.includes('{shopsCount}') || !welcomeMessage.includes('{usersCount}')) {
+      console.log('⚠️ Message de traduction ne contient pas les placeholders, utilisation du message par défaut');
+      welcomeMessage = `Bienvenue sur FindYourPlug! Explorez nos services.\n\n🏪 {shopsCount} boutiques | 👥 {usersCount} utilisateurs`;
+    }
+    
+    // Debug: vérifier le message de traduction
+    console.log('🔤 Message de traduction brut:', welcomeMessage);
+    console.log('🔤 Contient shopsCount:', welcomeMessage.includes('{shopsCount}'));
+    console.log('🔤 Contient usersCount:', welcomeMessage.includes('{usersCount}'));
+    
     console.log('🔤 Message de traduction récupéré:', welcomeMessage);
     console.log('🔤 Langue actuelle:', currentLang);
     
