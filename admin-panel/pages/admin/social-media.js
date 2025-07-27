@@ -23,24 +23,7 @@ export default function SocialMediaManager() {
   const updateTimeoutRef = useRef(null)
   const router = useRouter()
 
-  // Fonction pour assigner automatiquement un logo selon le nom
-  const getLogoByName = (name) => {
-    const lowercaseName = name.toLowerCase()
-    if (lowercaseName.includes('telegram')) return 'https://i.imgur.com/PP2GVMv.png'
-    if (lowercaseName.includes('discord')) return 'https://i.imgur.com/JgmWPPZ.png'
-    if (lowercaseName.includes('instagram')) return 'https://i.imgur.com/YBE4cnb.jpeg'
-    if (lowercaseName.includes('whatsapp')) return 'https://i.imgur.com/WhatsApp.png'
-    if (lowercaseName.includes('twitter') || lowercaseName.includes('x')) return 'https://i.imgur.com/twitter.png'
-    if (lowercaseName.includes('facebook')) return 'https://i.imgur.com/facebook.png'
-    if (lowercaseName.includes('tiktok')) return 'https://i.imgur.com/tiktok.png'
-    if (lowercaseName.includes('youtube')) return 'https://i.imgur.com/youtube.png'
-    if (lowercaseName.includes('snapchat')) return 'https://i.imgur.com/snapchat.png'
-    if (lowercaseName.includes('linkedin')) return 'https://i.imgur.com/linkedin.png'
-    if (lowercaseName.includes('potato')) return 'https://i.imgur.com/1iCRHRB.jpeg'
-    if (lowercaseName.includes('luffa')) return 'https://i.imgur.com/zkZtY0m.png'
-    if (lowercaseName.includes('find your plug') || lowercaseName.includes('findyourplug')) return 'https://i.imgur.com/VwBPgtw.jpeg'
-    return 'https://i.imgur.com/PP2GVMv.png' // Fallback vers Telegram
-  }
+
 
   useEffect(() => {
     const token = localStorage.getItem('adminToken')
@@ -71,19 +54,15 @@ export default function SocialMediaManager() {
       const config = await simpleApi.getConfig(token)
       
       if (config && config.socialMediaList) {
-        // S'assurer que tous les réseaux sociaux ont un ID unique et un logo
-        const socialMediasWithIds = config.socialMediaList.map((item, index) => {
-          if (!item.id) {
-            // Générer un ID basé sur le nom ou l'index
-            const baseId = item.name ? item.name.toLowerCase().replace(/[^a-z0-9]/g, '_') : `social_${index}`
-            item.id = baseId
-          }
-          // S'assurer qu'il y a un logo
-          if (!item.logo) {
-            item.logo = getLogoByName(item.name || '')
-          }
-          return item
-        })
+                     // S'assurer que tous les réseaux sociaux ont un ID unique
+             const socialMediasWithIds = config.socialMediaList.map((item, index) => {
+               if (!item.id) {
+                 // Générer un ID basé sur le nom ou l'index
+                 const baseId = item.name ? item.name.toLowerCase().replace(/[^a-z0-9]/g, '_') : `social_${index}`
+                 item.id = baseId
+               }
+               return item
+             })
         setSocialMedias(socialMediasWithIds)
         console.log('✅ Réseaux sociaux chargés depuis le serveur avec IDs:', socialMediasWithIds.map(s => ({ id: s.id, name: s.name })))
       } else {
@@ -113,16 +92,12 @@ export default function SocialMediaManager() {
          if (localApi) {
            const localConfig = await localApi.getConfig()
            if (localConfig && localConfig.socialMediaList) {
-             // S'assurer que tous les réseaux sociaux ont un ID unique et un logo
+             // S'assurer que tous les réseaux sociaux ont un ID unique
              const socialMediasWithIds = localConfig.socialMediaList.map((item, index) => {
                if (!item.id) {
                  // Générer un ID basé sur le nom ou l'index
                  const baseId = item.name ? item.name.toLowerCase().replace(/[^a-z0-9]/g, '_') : `social_${index}`
                  item.id = baseId
-               }
-               // S'assurer qu'il y a un logo
-               if (!item.logo) {
-                 item.logo = getLogoByName(item.name || '')
                }
                return item
              })
@@ -239,14 +214,13 @@ export default function SocialMediaManager() {
       ...newSocialMedia,
       id,
       name: newSocialMedia.name.trim(),
-      emoji: '🔗', // Emoji par défaut pour compatibilité
-      url: newSocialMedia.url.trim(),
-      logo: newSocialMedia.logo.trim() || getLogoByName(newSocialMedia.name.trim())
+      emoji: newSocialMedia.emoji.trim() || '🔗', // Emoji saisi ou par défaut
+      url: newSocialMedia.url.trim()
     }
     
     const updatedSocialMedias = [...socialMedias, newItem]
     setSocialMedias(updatedSocialMedias)
-    setNewSocialMedia({ name: '', url: '', logo: '', enabled: true })
+    setNewSocialMedia({ name: '', emoji: '', url: '', enabled: true })
     
     // Synchronisation automatique après ajout
     syncToBotAPI(updatedSocialMedias)
