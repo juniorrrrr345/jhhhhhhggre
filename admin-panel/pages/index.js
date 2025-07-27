@@ -13,7 +13,8 @@ export default function Login() {
   // Redirection automatique vers la boutique
   useEffect(() => {
     // Rediriger automatiquement vers la boutique publique
-    router.push('/shop');
+    // Temporairement désactivé pour debug
+    // router.push('/shop');
   }, [router]);
 
   const handleLogin = async (e) => {
