@@ -215,14 +215,13 @@ export default function SocialMediaManager() {
       ...newSocialMedia,
       id,
       name: newSocialMedia.name.trim(),
-      emoji: '🔗', // Emoji par défaut pour compatibilité
-      url: newSocialMedia.url.trim(),
-      logo: newSocialMedia.logo.trim() || getLogoByName(newSocialMedia.name.trim())
+      emoji: newSocialMedia.emoji.trim() || getEmojiByName(newSocialMedia.name.trim()),
+      url: newSocialMedia.url.trim()
     }
     
     const updatedSocialMedias = [...socialMedias, newItem]
     setSocialMedias(updatedSocialMedias)
-    setNewSocialMedia({ name: '', url: '', logo: '', enabled: true })
+    setNewSocialMedia({ name: '', url: '', emoji: '', enabled: true })
     
     // Synchronisation automatique après ajout
     syncToBotAPI(updatedSocialMedias)
@@ -362,6 +361,24 @@ export default function SocialMediaManager() {
     
     // Synchronisation automatique avec la boutique
     await syncToBotAPI(updatedSocialMedias)
+  }
+
+  // Fonction pour assigner automatiquement un emoji selon le nom
+  const getEmojiByName = (name) => {
+    const lowercaseName = name.toLowerCase()
+    if (lowercaseName.includes('telegram')) return '📱'
+    if (lowercaseName.includes('contact')) return '📞'
+    if (lowercaseName.includes('discord')) return '🎮'
+    if (lowercaseName.includes('instagram')) return '📸'
+    if (lowercaseName.includes('whatsapp')) return '💬'
+    if (lowercaseName.includes('twitter') || lowercaseName.includes('x')) return '🐦'
+    if (lowercaseName.includes('facebook')) return '📘'
+    if (lowercaseName.includes('tiktok')) return '🎵'
+    if (lowercaseName.includes('youtube')) return '📺'
+    if (lowercaseName.includes('snapchat')) return '👻'
+    if (lowercaseName.includes('linkedin')) return '💼'
+    if (lowercaseName.includes('website') || lowercaseName.includes('site')) return '🌐'
+    return '🔗' // Emoji par défaut
   }
 
   // Fonction utilitaire pour synchroniser avec l'API du bot
@@ -509,14 +526,9 @@ export default function SocialMediaManager() {
                     <div key={social.id} className={`border rounded-lg p-4 ${social.enabled ? 'border-green-200 bg-green-50' : 'border-gray-200 bg-gray-50'}`}>
                       <div className="flex items-center justify-between mb-3">
                         <div className="flex items-center space-x-3">
-                          <img 
-                            src={social.logo || 'https://i.imgur.com/PP2GVMv.png'}
-                            alt={social.name}
-                            className="w-8 h-8 object-contain rounded"
-                            onError={(e) => {
-                              e.target.src = 'https://i.imgur.com/PP2GVMv.png';
-                            }}
-                          />
+                          <div className="w-8 h-8 flex items-center justify-center text-2xl">
+                            {social.emoji || '🔗'}
+                          </div>
                           <div className="flex-1">
                             {editingId === social.id ? (
                               <input
@@ -561,17 +573,18 @@ export default function SocialMediaManager() {
                       
                       <div className="space-y-2">
                         <div>
-                          <label className="block text-xs font-medium text-gray-700">Logo (URL)</label>
+                          <label className="block text-xs font-medium text-gray-700">Emoji</label>
                           {editingId === social.id ? (
                             <input
-                              type="url"
-                              value={social.logo || ''}
-                              onChange={(e) => updateSocialMedia(social.id, 'logo', e.target.value)}
+                              type="text"
+                              value={social.emoji || ''}
+                              onChange={(e) => updateSocialMedia(social.id, 'emoji', e.target.value)}
                               className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                              placeholder="https://i.imgur.com/example.png"
+                              placeholder="📱 📞 📸 🌐"
+                              maxLength="2"
                             />
                           ) : (
-                            <p className="text-sm text-gray-600 truncate">{social.logo || 'Aucun logo'}</p>
+                            <p className="text-sm text-gray-600">{social.emoji || '🔗'}</p>
                           )}
                         </div>
                         
@@ -619,15 +632,16 @@ export default function SocialMediaManager() {
                   
                   <div>
                     <label className="block text-sm font-medium text-gray-700">
-                      Logo (URL de l'image)
+                      Emoji
                       <span className="text-xs text-gray-500 ml-1">(optionnel - auto-assigné selon le nom)</span>
                     </label>
                     <input
-                      type="url"
-                      value={newSocialMedia.logo}
-                      onChange={(e) => setNewSocialMedia({...newSocialMedia, logo: e.target.value})}
+                      type="text"
+                      value={newSocialMedia.emoji}
+                      onChange={(e) => setNewSocialMedia({...newSocialMedia, emoji: e.target.value})}
                       className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                      placeholder="https://i.imgur.com/example.png"
+                      placeholder="📱 📞 📸 🌐"
+                      maxLength="2"
                     />
                   </div>
 
