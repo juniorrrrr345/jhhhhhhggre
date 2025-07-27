@@ -103,10 +103,10 @@ export default function ShopInscription() {
               justifyContent: 'center',
               fontSize: '60px',
               color: '#ffffff',
-              boxShadow: '0 8px 32px rgba(0, 136, 204, 0.3)'
-            }}>
-              ✈️
-            </div>
+                             boxShadow: '0 8px 32px rgba(0, 136, 204, 0.3)'
+             }}>
+               📱
+             </div>
             <h2 style={{
               fontSize: '28px',
               fontWeight: '700',

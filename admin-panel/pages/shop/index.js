@@ -262,28 +262,11 @@ export default function ShopHome() {
             />
           </div>
           
-          {/* Titre centré */}
+          {/* Logo placeholder */}
           <div style={{ textAlign: 'center' }}>
-            <h2 style={{ 
-              fontSize: '32px', 
-              fontWeight: 'bold', 
-              margin: '0 0 8px 0',
-              color: '#ffffff',
-              letterSpacing: '2px'
-            }}>
-              {t('findyourplug')}
-            </h2>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-              <span style={{ 
-                backgroundColor: '#007AFF', 
-                color: '#ffffff', 
-                padding: '4px 8px', 
-                borderRadius: '12px',
-                fontSize: '12px',
-                fontWeight: 'bold'
-              }}>
-                TELEGRAM
-              </span>
+            {/* Espace réservé pour le logo */}
+            <div style={{ height: '80px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              {/* Logo sera ajouté ici */}
             </div>
           </div>
         </div>
