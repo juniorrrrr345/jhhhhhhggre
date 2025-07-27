@@ -16,12 +16,31 @@ export default function SocialMediaManager() {
     name: '',
     emoji: '',
     url: '',
+    logo: '',
     enabled: true
   })
   const [isLocalMode, setIsLocalMode] = useState(false)
   const [isSyncing, setIsSyncing] = useState(false)
   const updateTimeoutRef = useRef(null)
   const router = useRouter()
+
+  // Fonction pour assigner automatiquement un logo selon le nom
+  const getLogoByName = (name) => {
+    const lowercaseName = name.toLowerCase()
+    if (lowercaseName.includes('telegram')) return 'https://i.imgur.com/PP2GVMv.png'
+    if (lowercaseName.includes('discord')) return 'https://i.imgur.com/JgmWPPZ.png'
+    if (lowercaseName.includes('instagram')) return 'https://i.imgur.com/YBE4cnb.jpeg'
+    if (lowercaseName.includes('whatsapp')) return 'https://i.imgur.com/WhatsApp.png'
+    if (lowercaseName.includes('twitter') || lowercaseName.includes('x')) return 'https://i.imgur.com/twitter.png'
+    if (lowercaseName.includes('facebook')) return 'https://i.imgur.com/facebook.png'
+    if (lowercaseName.includes('tiktok')) return 'https://i.imgur.com/tiktok.png'
+    if (lowercaseName.includes('youtube')) return 'https://i.imgur.com/youtube.png'
+    if (lowercaseName.includes('snapchat')) return 'https://i.imgur.com/snapchat.png'
+    if (lowercaseName.includes('linkedin')) return 'https://i.imgur.com/linkedin.png'
+    if (lowercaseName.includes('potato')) return 'https://i.imgur.com/LaRHc9L.png'
+    if (lowercaseName.includes('luffa')) return 'https://i.imgur.com/zkZtY0m.png'
+    return 'https://i.imgur.com/PP2GVMv.png' // Fallback vers Telegram
+  }
 
   useEffect(() => {
     const token = localStorage.getItem('adminToken')
@@ -52,12 +71,16 @@ export default function SocialMediaManager() {
       const config = await simpleApi.getConfig(token)
       
       if (config && config.socialMediaList) {
-        // S'assurer que tous les réseaux sociaux ont un ID unique
+        // S'assurer que tous les réseaux sociaux ont un ID unique et un logo
         const socialMediasWithIds = config.socialMediaList.map((item, index) => {
           if (!item.id) {
             // Générer un ID basé sur le nom ou l'index
             const baseId = item.name ? item.name.toLowerCase().replace(/[^a-z0-9]/g, '_') : `social_${index}`
             item.id = baseId
+          }
+          // S'assurer qu'il y a un logo
+          if (!item.logo) {
+            item.logo = getLogoByName(item.name || '')
           }
           return item
         })
@@ -90,12 +113,16 @@ export default function SocialMediaManager() {
          if (localApi) {
            const localConfig = await localApi.getConfig()
            if (localConfig && localConfig.socialMediaList) {
-             // S'assurer que tous les réseaux sociaux ont un ID unique
+             // S'assurer que tous les réseaux sociaux ont un ID unique et un logo
              const socialMediasWithIds = localConfig.socialMediaList.map((item, index) => {
                if (!item.id) {
                  // Générer un ID basé sur le nom ou l'index
                  const baseId = item.name ? item.name.toLowerCase().replace(/[^a-z0-9]/g, '_') : `social_${index}`
                  item.id = baseId
+               }
+               // S'assurer qu'il y a un logo
+               if (!item.logo) {
+                 item.logo = getLogoByName(item.name || '')
                }
                return item
              })
@@ -104,10 +131,10 @@ export default function SocialMediaManager() {
            } else {
              // Initialiser avec des données par défaut pour le bot Telegram
              const defaultSocialMedias = [
-               { id: 'telegram', name: 'Telegram', emoji: '📱', url: '', enabled: true },
-               { id: 'whatsapp', name: 'WhatsApp', emoji: '💬', url: '', enabled: true },
-               { id: 'discord', name: 'Discord', emoji: '🎮', url: '', enabled: false },
-               { id: 'instagram', name: 'Instagram', emoji: '📸', url: '', enabled: false }
+               { id: 'telegram', name: 'Telegram', emoji: '📱', url: '', logo: 'https://i.imgur.com/PP2GVMv.png', enabled: true },
+               { id: 'whatsapp', name: 'WhatsApp', emoji: '💬', url: '', logo: 'https://i.imgur.com/WhatsApp.png', enabled: true },
+               { id: 'discord', name: 'Discord', emoji: '🎮', url: '', logo: 'https://i.imgur.com/JgmWPPZ.png', enabled: false },
+               { id: 'instagram', name: 'Instagram', emoji: '📸', url: '', logo: 'https://i.imgur.com/YBE4cnb.jpeg', enabled: false }
              ]
              setSocialMedias(defaultSocialMedias)
              await localApi.updateSocialMedia(defaultSocialMedias)
@@ -213,12 +240,13 @@ export default function SocialMediaManager() {
       id,
       name: newSocialMedia.name.trim(),
       emoji: newSocialMedia.emoji.trim(),
-      url: newSocialMedia.url.trim()
+      url: newSocialMedia.url.trim(),
+      logo: newSocialMedia.logo.trim() || getLogoByName(newSocialMedia.name.trim())
     }
     
     const updatedSocialMedias = [...socialMedias, newItem]
     setSocialMedias(updatedSocialMedias)
-    setNewSocialMedia({ name: '', emoji: '', url: '', enabled: true })
+    setNewSocialMedia({ name: '', emoji: '', url: '', logo: '', enabled: true })
     
     // Synchronisation automatique après ajout
     syncToBotAPI(updatedSocialMedias)
@@ -631,6 +659,20 @@ export default function SocialMediaManager() {
                     />
                   </div>
                   
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">
+                      Logo (URL de l'image)
+                      <span className="text-xs text-gray-500 ml-1">(optionnel - auto-assigné selon le nom)</span>
+                    </label>
+                    <input
+                      type="url"
+                      value={newSocialMedia.logo}
+                      onChange={(e) => setNewSocialMedia({...newSocialMedia, logo: e.target.value})}
+                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                      placeholder="https://i.imgur.com/example.png"
+                    />
+                  </div>
+
                   <div>
                     <label className="block text-sm font-medium text-gray-700">URL/Lien</label>
                     <input
