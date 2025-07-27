@@ -50,7 +50,7 @@ export default function ShopPlugDetail() {
 
   const fetchConfig = async () => {
     try {
-      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
+      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://jhhhhhhggre.onrender.com'
       const timestamp = new Date().getTime()
       
       let data
@@ -104,7 +104,7 @@ export default function ShopPlugDetail() {
   const fetchPlug = async (id) => {
     try {
       setLoading(true)
-      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
+      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://jhhhhhhggre.onrender.com'
       const timestamp = new Date().getTime()
       
       let data

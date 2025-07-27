@@ -317,7 +317,7 @@ export const simpleApi = {
     }
     
     try {
-      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_BOT_URL || 'http://localhost:3000'
+      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_BOT_URL || 'https://jhhhhhhggre.onrender.com'
       
       // Essayer direct d'abord
       const controller = new AbortController()
