@@ -301,37 +301,55 @@ export default function ShopHome() {
               marginBottom: '20px'
             }}>
               {config?.boutique?.logoUrl ? (
-                <img
-                  src={config.boutique.logoUrl}
-                  alt="FindYourPlug Logo"
-                  style={{
-                    maxHeight: '100px',
-                    maxWidth: '350px',
-                    objectFit: 'contain',
-                    animation: 'pulse 2s ease-in-out infinite',
-                    filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.3))'
-                  }}
-                  onError={(e) => {
-                    e.target.style.display = 'none'
-                    e.target.nextSibling.style.display = 'block'
-                  }}
-                />
+                <div style={{
+                  backgroundColor: '#000000',
+                  borderRadius: '20px',
+                  padding: '20px',
+                  display: 'inline-block',
+                  boxShadow: '0 8px 32px rgba(0,0,0,0.5)'
+                }}>
+                  <img
+                    src={config.boutique.logoUrl}
+                    alt="FindYourPlug Logo"
+                    style={{
+                      maxHeight: '100px',
+                      maxWidth: '350px',
+                      objectFit: 'contain',
+                      animation: 'pulse 2s ease-in-out infinite',
+                      filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.3))',
+                      borderRadius: '15px'
+                    }}
+                    onError={(e) => {
+                      e.target.style.display = 'none'
+                      e.target.nextSibling.style.display = 'block'
+                    }}
+                  />
+                </div>
               ) : null}
               {/* Fallback logo si pas de logo configuré */}
               <div style={{ 
                 display: config?.boutique?.logoUrl ? 'none' : 'block'
               }}>
-                <img 
-                  src="/images/logo.png" 
-                  alt="FindYourPlug Logo" 
-                  style={{
-                    maxHeight: '100px',
-                    maxWidth: '350px',
-                    objectFit: 'contain',
-                    animation: 'pulse 2s ease-in-out infinite',
-                    filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.3))'
-                  }}
-                />
+                <div style={{
+                  backgroundColor: '#000000',
+                  borderRadius: '20px',
+                  padding: '20px',
+                  display: 'inline-block',
+                  boxShadow: '0 8px 32px rgba(0,0,0,0.5)'
+                }}>
+                  <img 
+                    src="/images/logo.png" 
+                    alt="FindYourPlug Logo" 
+                    style={{
+                      maxHeight: '100px',
+                      maxWidth: '350px',
+                      objectFit: 'contain',
+                      animation: 'pulse 2s ease-in-out infinite',
+                      filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.3))',
+                      borderRadius: '15px'
+                    }}
+                  />
+                </div>
                 {config?.boutique?.headerSubtitle && (
                   <div style={{ 
                     backgroundColor: '#007AFF', 
