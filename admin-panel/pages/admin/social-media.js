@@ -147,7 +147,9 @@ export default function SocialMediaManager() {
             // Maintenir compatibilité avec l'ancien format pour le bot Telegram
             socialMedia: {
               telegram: socialMedias.find(s => s.id === 'telegram')?.url || '',
-              whatsapp: socialMedias.find(s => s.id === 'whatsapp')?.url || ''
+              whatsapp: socialMedias.find(s => s.id === 'whatsapp')?.url || '',
+              instagram: socialMedias.find(s => s.id === 'instagram')?.url || '',
+              contact: socialMedias.find(s => s.id === 'contact')?.url || ''
             }
           }
           
@@ -373,7 +375,9 @@ export default function SocialMediaManager() {
         shopSocialMediaList: socialMediasToSync,
         socialMedia: {
           telegram: socialMediasToSync.find(s => s.id === 'telegram')?.url || '',
-          whatsapp: socialMediasToSync.find(s => s.id === 'whatsapp')?.url || ''
+          whatsapp: socialMediasToSync.find(s => s.id === 'whatsapp')?.url || '',
+          instagram: socialMediasToSync.find(s => s.id === 'instagram')?.url || '',
+          contact: socialMediasToSync.find(s => s.id === 'contact')?.url || ''
         }
       }
       
