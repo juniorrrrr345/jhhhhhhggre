@@ -48,30 +48,35 @@ export default function ShopSocialMediaManager() {
       // Vérifier si on est côté client
       if (typeof window === 'undefined') return
       
-      // Essayer d'abord le serveur
+      // PRIORITÉ 1: Vérifier d'abord le localStorage (vos réseaux ajoutés)
+      let savedSocialMedias = null
+      try {
+        const shopSocialBackup = localStorage.getItem('shopSocialMediaBackup')
+        if (shopSocialBackup) {
+          savedSocialMedias = JSON.parse(shopSocialBackup)
+          console.log('💾 Réseaux sociaux trouvés dans localStorage:', savedSocialMedias)
+        }
+      } catch (e) {
+        console.log('❌ Erreur lecture localStorage:', e)
+      }
+      
+      // Si on a des réseaux sauvegardés, les utiliser directement
+      if (savedSocialMedias && savedSocialMedias.length > 0) {
+        console.log('✅ Utilisation de VOS réseaux sociaux sauvegardés')
+        setSocialMedias(savedSocialMedias)
+        return // Sortir ici, ne pas charger depuis l'API
+      }
+      
+      // PRIORITÉ 2: Seulement si pas de données locales, essayer l'API
       const token = localStorage.getItem('adminToken') || 'JuniorAdmon123'
       const config = await simpleApi.getConfig(token)
       
       console.log('📡 Config reçue pour shop-social:', config)
       
-      // Si la config existe (même si shopSocialMediaList est vide), c'est OK
-      if (config) {
-        let shopSocialList = config.shopSocialMediaList || []
-        
-        // Si shopSocialMediaList est vide, initialiser avec des données par défaut
-        if (shopSocialList.length === 0) {
-          shopSocialList = [
-            { id: 'telegram', name: 'Telegram', emoji: '📱', url: 'https://t.me/FindYourPlugBot', enabled: true },
-            { id: 'instagram', name: 'Instagram', emoji: '📸', url: '#', enabled: true },
-            { id: 'discord', name: 'Discord', emoji: '🎮', url: '#', enabled: true }
-          ]
-          console.log('🔧 Initialisation shopSocialMediaList avec données par défaut')
-        }
-        
+      if (config && config.shopSocialMediaList && config.shopSocialMediaList.length > 0) {
         // S'assurer que tous les réseaux sociaux ont un ID unique
-        const socialMediasWithIds = shopSocialList.map((item, index) => {
+        const socialMediasWithIds = config.shopSocialMediaList.map((item, index) => {
           if (!item.id) {
-            // Générer un ID basé sur le nom ou l'index
             const baseId = item.name ? item.name.toLowerCase().replace(/[^a-z0-9]/g, '_') : `social_${index}`
             item.id = baseId
           }
@@ -79,62 +84,80 @@ export default function ShopSocialMediaManager() {
         })
         
         setSocialMedias(socialMediasWithIds)
-        console.log('✅ Réseaux sociaux shop configurés:', socialMediasWithIds.map(s => ({ id: s.id, name: s.name, url: s.url })))
+        console.log('✅ Réseaux sociaux chargés depuis API:', socialMediasWithIds.map(s => ({ id: s.id, name: s.name, url: s.url })))
         
+        // Sauvegarder dans localStorage pour la prochaine fois
+        localStorage.setItem('shopSocialMediaBackup', JSON.stringify(socialMediasWithIds))
       } else {
-        throw new Error('Aucune configuration reçue du serveur')
+        // PRIORITÉ 3: Initialiser avec vos vrais réseaux sociaux
+        const defaultSocialMedias = [
+          { 
+            id: 'telegram', 
+            name: 'Telegram', 
+            emoji: '📱', 
+            url: 'https://t.me/+zcP68c4M_3NlM2Y0', 
+            enabled: true 
+          },
+          { 
+            id: 'find_your_plug', 
+            name: 'Find Your Plug', 
+            emoji: '🌐', 
+            url: 'https://dym168.org/findyourplug', 
+            enabled: true 
+          },
+          { 
+            id: 'instagram', 
+            name: 'Instagram', 
+            emoji: '📸', 
+            url: 'https://www.instagram.com/find.yourplug?igsh=ajRwcjE1eGhoaXMz&utm_source=qr', 
+            enabled: true 
+          },
+          { 
+            id: 'luffa', 
+            name: 'Luffa', 
+            emoji: '🧽', 
+            url: 'https://callup.luffa.im/c/EnvtiTHkbvP', 
+            enabled: true 
+          },
+          { 
+            id: 'discord', 
+            name: 'Discord', 
+            emoji: '🎮', 
+            url: 'https://discord.gg/g2dACUC3', 
+            enabled: true 
+          }
+        ]
+        
+        setSocialMedias(defaultSocialMedias)
+        console.log('🔧 Initialisation avec VOS réseaux sociaux')
+        
+        // Sauvegarder immédiatement dans localStorage
+        localStorage.setItem('shopSocialMediaBackup', JSON.stringify(defaultSocialMedias))
       }
       
     } catch (error) {
       console.error('❌ Erreur chargement réseaux sociaux shop:', error)
       
-      // Ne basculer en mode local QUE pour des erreurs critiques de réseau
-      if (error.message.includes('Failed to fetch') || 
-          error.message.includes('NetworkError') || 
-          error.message.includes('ERR_NETWORK') ||
-          error.message.includes('offline') ||
-          error.message.includes('502') ||
-          error.message.includes('503') ||
-          error.message.includes('504') ||
-          error.name === 'TypeError') {
-        console.log('🔴 Basculement en mode local à cause de:', error.message)
-        setIsLocalMode(true)
-        
-        // Essayer de charger depuis le stockage local
-        try {
-          const localApi = getLocalApi()
-          if (localApi) {
-            const localConfig = await localApi.getConfig()
-            if (localConfig && localConfig.shopSocialMediaList) {
-              setSocialMedias(localConfig.shopSocialMediaList)
-              console.log('📁 Données chargées depuis le stockage local')
-            } else {
-              // Initialiser avec des données par défaut en mode local
-              const defaultSocialMedias = [
-                { id: 'telegram', name: 'Telegram', emoji: '📱', url: 'https://t.me/FindYourPlugBot', enabled: true },
-                { id: 'instagram', name: 'Instagram', emoji: '📸', url: '#', enabled: true },
-                { id: 'discord', name: 'Discord', emoji: '🎮', url: '#', enabled: true }
-              ]
-              setSocialMedias(defaultSocialMedias)
-              console.log('🔧 Données par défaut en mode local')
-            }
-          }
-        } catch (localError) {
-          console.error('❌ Erreur mode local:', localError)
-          toast.error('Erreur de stockage local')
+      // En cas d'erreur, toujours essayer de récupérer depuis localStorage
+      try {
+        const shopSocialBackup = localStorage.getItem('shopSocialMediaBackup')
+        if (shopSocialBackup) {
+          const backupData = JSON.parse(shopSocialBackup)
+          setSocialMedias(backupData)
+          console.log('🔄 Récupération depuis localStorage après erreur')
+          return
         }
-      } else {
-        // Pour les autres erreurs, ne pas activer le mode local mais initialiser quand même
-        console.log('⚠️ Erreur non critique, initialisation par défaut:', error.message)
-        setIsLocalMode(false)
-        
-        const defaultSocialMedias = [
-          { id: 'telegram', name: 'Telegram', emoji: '📱', url: 'https://t.me/FindYourPlugBot', enabled: true },
-          { id: 'instagram', name: 'Instagram', emoji: '📸', url: '#', enabled: true },
-          { id: 'discord', name: 'Discord', emoji: '🎮', url: '#', enabled: true }
-        ]
-        setSocialMedias(defaultSocialMedias)
+      } catch (e) {
+        console.log('❌ Erreur récupération localStorage:', e)
       }
+      
+      // Dernier recours: initialiser avec vos réseaux
+      const fallbackSocialMedias = [
+        { id: 'telegram', name: 'Telegram', emoji: '📱', url: 'https://t.me/+zcP68c4M_3NlM2Y0', enabled: true }
+      ]
+      setSocialMedias(fallbackSocialMedias)
+      console.log('🆘 Fallback avec Telegram')
+      
     } finally {
       setLoading(false)
     }
