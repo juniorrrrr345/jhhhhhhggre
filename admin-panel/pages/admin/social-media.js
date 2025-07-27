@@ -43,8 +43,17 @@ export default function SocialMediaManager() {
       const config = await simpleApi.getConfig(token)
       
       if (config && config.socialMediaList) {
-        setSocialMedias(config.socialMediaList)
-        console.log('✅ Réseaux sociaux chargés depuis le serveur')
+        // S'assurer que tous les réseaux sociaux ont un ID unique
+        const socialMediasWithIds = config.socialMediaList.map((item, index) => {
+          if (!item.id) {
+            // Générer un ID basé sur le nom ou l'index
+            const baseId = item.name ? item.name.toLowerCase().replace(/[^a-z0-9]/g, '_') : `social_${index}`
+            item.id = baseId
+          }
+          return item
+        })
+        setSocialMedias(socialMediasWithIds)
+        console.log('✅ Réseaux sociaux chargés depuis le serveur avec IDs:', socialMediasWithIds.map(s => ({ id: s.id, name: s.name })))
       } else {
         throw new Error('Configuration serveur vide')
       }
@@ -60,8 +69,17 @@ export default function SocialMediaManager() {
          if (localApi) {
            const localConfig = await localApi.getConfig()
            if (localConfig && localConfig.socialMediaList) {
-             setSocialMedias(localConfig.socialMediaList)
-             console.log('📁 Réseaux sociaux chargés depuis le stockage local')
+             // S'assurer que tous les réseaux sociaux ont un ID unique
+             const socialMediasWithIds = localConfig.socialMediaList.map((item, index) => {
+               if (!item.id) {
+                 // Générer un ID basé sur le nom ou l'index
+                 const baseId = item.name ? item.name.toLowerCase().replace(/[^a-z0-9]/g, '_') : `social_${index}`
+                 item.id = baseId
+               }
+               return item
+             })
+             setSocialMedias(socialMediasWithIds)
+             console.log('📁 Réseaux sociaux chargés depuis le stockage local avec IDs:', socialMediasWithIds.map(s => ({ id: s.id, name: s.name })))
            } else {
              // Initialiser avec des données par défaut
              const defaultSocialMedias = [
@@ -171,11 +189,19 @@ export default function SocialMediaManager() {
 
   const updateSocialMedia = (id, field, value) => {
     console.log('🔄 Mise à jour réseau social:', { id, field, value })
-    setSocialMedias(prevSocialMedias => 
-      prevSocialMedias.map(item => 
+    if (!id) {
+      console.error('❌ ID manquant pour la mise à jour')
+      toast.error('Erreur: ID manquant pour la mise à jour')
+      return
+    }
+    
+    setSocialMedias(prevSocialMedias => {
+      const updated = prevSocialMedias.map(item => 
         item.id === id ? { ...item, [field]: value } : item
       )
-    )
+      console.log('📝 Réseaux sociaux après mise à jour:', updated.map(s => ({ id: s.id, name: s.name, [field]: s[field] })))
+      return updated
+    })
   }
 
   const deleteSocialMedia = async (id) => {
