@@ -404,6 +404,7 @@ export default function SocialMediaManager() {
       
       await simpleApi.updateConfig(token, configData)
       console.log('🔄 Synchronisation automatique réussie')
+      console.log('📤 Données envoyées:', JSON.stringify(configData, null, 2))
       
       // Notification discrète pour confirmer la sync
       toast.success('🔄 Synchronisé avec la boutique', { 

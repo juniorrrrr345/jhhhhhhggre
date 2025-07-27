@@ -19,6 +19,24 @@ export default function ShopHome() {
   const { t } = useTranslation(currentLanguage)
   const itemsPerPage = 50
 
+  // Fonction pour assigner automatiquement un logo selon le nom (identique à l'admin)
+  const getLogoByName = (name) => {
+    const lowercaseName = name.toLowerCase()
+    if (lowercaseName.includes('telegram')) return 'https://i.imgur.com/PP2GVMv.png'
+    if (lowercaseName.includes('discord')) return 'https://i.imgur.com/JgmWPPZ.png'
+    if (lowercaseName.includes('instagram')) return 'https://i.imgur.com/YBE4cnb.jpeg'
+    if (lowercaseName.includes('whatsapp')) return 'https://i.imgur.com/WhatsApp.png'
+    if (lowercaseName.includes('twitter') || lowercaseName.includes('x')) return 'https://i.imgur.com/twitter.png'
+    if (lowercaseName.includes('facebook')) return 'https://i.imgur.com/facebook.png'
+    if (lowercaseName.includes('tiktok')) return 'https://i.imgur.com/tiktok.png'
+    if (lowercaseName.includes('youtube')) return 'https://i.imgur.com/youtube.png'
+    if (lowercaseName.includes('snapchat')) return 'https://i.imgur.com/snapchat.png'
+    if (lowercaseName.includes('linkedin')) return 'https://i.imgur.com/linkedin.png'
+    if (lowercaseName.includes('potato')) return 'https://i.imgur.com/LaRHc9L.png'
+    if (lowercaseName.includes('luffa')) return 'https://i.imgur.com/zkZtY0m.png'
+    return 'https://i.imgur.com/PP2GVMv.png' // Fallback vers Telegram
+  }
+
   // Fonction pour calculer les styles de thème
   const getThemeStyles = () => {
     if (!config?.boutique) return { 
@@ -106,8 +124,21 @@ export default function ShopHome() {
 
   const fetchConfig = async () => {
     try {
-      // Récupérer la config publique du bot
-      const data = await api.getPublicConfig()
+      // Récupérer la config depuis l'API bot directement
+      const response = await fetch('https://jhhhhhhggre.onrender.com/api/public/config', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      
+      let data = null
+      if (response.ok) {
+        data = await response.json()
+      } else {
+        // Fallback vers l'API simple si l'API publique échoue
+        data = await api.getPublicConfig()
+      }
       console.log('📱 Config récupérée pour accueil:', {
         boutique: data?.boutique?.name,
         shopSocialMediaList: data?.shopSocialMediaList?.length || 0,
@@ -115,12 +146,15 @@ export default function ShopHome() {
         socialMedia: data?.socialMedia
       })
       
-      // Si shopSocialMediaList est vide mais socialMediaList a des données, utiliser socialMediaList
-      if (data && (!data.shopSocialMediaList || data.shopSocialMediaList.length === 0) && 
-          data.socialMediaList && data.socialMediaList.length > 0) {
-        console.log('📱 Utilisation de socialMediaList comme fallback pour shopSocialMediaList')
-        data.shopSocialMediaList = data.socialMediaList
+      // Debug des réseaux sociaux
+      if (data?.socialMediaList && data.socialMediaList.length > 0) {
+        console.log('🔍 Réseaux sociaux dans socialMediaList:', data.socialMediaList)
       }
+      if (data?.shopSocialMediaList && data.shopSocialMediaList.length > 0) {
+        console.log('🔍 Réseaux sociaux dans shopSocialMediaList:', data.shopSocialMediaList)
+      }
+      
+              // La boutique utilise directement socialMediaList synchronisé depuis l'admin
       setConfig(data)
       
       // Récupérer aussi les liens Telegram depuis l'API publique
@@ -460,22 +494,12 @@ export default function ShopHome() {
             gap: '12px',
             flexWrap: 'wrap'
           }}>
-            {/* Réseaux sociaux avec configuration + fallback */}
-            {(config?.shopSocialMediaList && config.shopSocialMediaList.length > 0 
-              ? config.shopSocialMediaList 
-              : config?.socialMediaList && config.socialMediaList.length > 0 
-                ? config.socialMediaList.map(social => ({
-                    ...social,
-                    logo: social.name.toLowerCase().includes('telegram') 
-                      ? 'https://i.imgur.com/PP2GVMv.png'
-                      : social.name.toLowerCase().includes('discord')
-                        ? 'https://i.imgur.com/JgmWPPZ.png'
-                        : social.name.toLowerCase().includes('instagram')
-                          ? 'https://i.imgur.com/YBE4cnb.jpeg'
-                          : social.name.toLowerCase().includes('whatsapp')
-                            ? 'https://i.imgur.com/WhatsApp.png'
-                            : 'https://i.imgur.com/PP2GVMv.png' // fallback
-                  }))
+            {/* Réseaux sociaux depuis l'API synchronisée */}
+            {(config?.socialMediaList && config.socialMediaList.length > 0 
+              ? config.socialMediaList.map(social => ({
+                  ...social,
+                  logo: social.logo || getLogoByName(social.name || '')
+                }))
                 : [
                     { 
                       name: 'Telegram', 
