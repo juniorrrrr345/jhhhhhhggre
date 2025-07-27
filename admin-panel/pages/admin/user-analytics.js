@@ -163,7 +163,12 @@ export default function UserAnalytics() {
       <AdminLayout>
         <div className="flex justify-center items-center h-96 text-white">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500 mx-auto mb-4"></div>
+            <img 
+              src="https://i.imgur.com/VwBPgtw.jpeg" 
+              alt="Loading..." 
+              className="h-12 w-12 mx-auto mb-4 animate-pulse"
+              style={{ borderRadius: '50%' }}
+            />
             <div>⏳ Chargement des statistiques utilisateurs...</div>
           </div>
         </div>

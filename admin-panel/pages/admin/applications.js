@@ -305,7 +305,12 @@ export default function Applications() {
     return (
       <Layout>
         <div className="flex justify-center items-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+                      <img 
+              src="https://i.imgur.com/VwBPgtw.jpeg" 
+              alt="Loading..." 
+              className="h-12 w-12 mx-auto animate-pulse"
+              style={{ borderRadius: '50%' }}
+            />
           <span className="ml-4 text-gray-600">Chargement des demandes...</span>
         </div>
       </Layout>

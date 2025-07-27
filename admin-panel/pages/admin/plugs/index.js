@@ -182,7 +182,12 @@ export default function AccueilAdmin() {
     return (
       <Layout title="Accueil">
         <div className="flex items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+                      <img 
+              src="https://i.imgur.com/VwBPgtw.jpeg" 
+              alt="Loading..." 
+              className="h-12 w-12 mx-auto animate-pulse"
+              style={{ borderRadius: '50%' }}
+            />
         </div>
       </Layout>
     )

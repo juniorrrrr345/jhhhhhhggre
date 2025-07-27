@@ -132,7 +132,12 @@ export default function TelegramLinks() {
     return (
       <Layout title="Liens Telegram">
         <div className="flex items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+                      <img 
+              src="https://i.imgur.com/VwBPgtw.jpeg" 
+              alt="Loading..." 
+              className="h-12 w-12 mx-auto animate-pulse"
+              style={{ borderRadius: '50%' }}
+            />
         </div>
       </Layout>
     )
@@ -212,7 +217,12 @@ export default function TelegramLinks() {
               >
                 {saving ? (
                   <>
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                    <img 
+                  src="https://i.imgur.com/VwBPgtw.jpeg" 
+                  alt="Loading..." 
+                  className="h-4 w-4 mr-2 animate-pulse"
+                  style={{ borderRadius: '50%' }}
+                />
                     {t('telegram_links_saving')}
                   </>
                 ) : (

@@ -174,7 +174,12 @@ export default function PlugDetails() {
         </Head>
         <div className="max-w-4xl mx-auto">
           <div className="text-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto"></div>
+            <img 
+              src="https://i.imgur.com/VwBPgtw.jpeg" 
+              alt="Loading..." 
+              className="h-12 w-12 mx-auto animate-pulse"
+              style={{ borderRadius: '50%' }}
+            />
             <p className="mt-4">Chargement...</p>
           </div>
         </div>
