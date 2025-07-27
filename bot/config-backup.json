@@ -1,0 +1,57 @@
+{
+  "_id": "main",
+  "buttons": {
+    "socialMedia": {
+      "enabled": true,
+      "text": "📱 Réseaux Sociaux",
+      "content": "Rejoignez notre communauté sur nos différents réseaux sociaux ! 🚀"
+    }
+  },
+  "welcome": {
+    "text": "Bienvenue sur notre bot !",
+    "socialMedia": [
+      {
+        "name": "Telegram",
+        "emoji": "📱",
+        "url": "https://t.me/+zcP68c4M_3NlM2Y0",
+        "order": 1
+      },
+      {
+        "name": "Contact",
+        "emoji": "📞",
+        "url": "https://t.me/findyourplugsav",
+        "order": 2
+      }
+    ]
+  },
+  "socialMedia": [
+    {
+      "name": "Telegram",
+      "emoji": "📱",
+      "url": "https://t.me/+zcP68c4M_3NlM2Y0",
+      "order": 1
+    },
+    {
+      "name": "Contact",
+      "emoji": "📞",
+      "url": "https://t.me/findyourplugsav",
+      "order": 2
+    }
+  ],
+  "socialMediaList": [
+    {
+      "name": "Telegram",
+      "emoji": "📱",
+      "url": "https://t.me/+zcP68c4M_3NlM2Y0",
+      "order": 1,
+      "enabled": true
+    },
+    {
+      "name": "Contact",
+      "emoji": "📞",
+      "url": "https://t.me/findyourplugsav",
+      "order": 2,
+      "enabled": true
+    }
+  ]
+}
