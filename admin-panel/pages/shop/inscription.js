@@ -110,20 +110,8 @@ export default function ShopInscription() {
           textAlign: 'center',
           paddingBottom: '120px'
         }}>
-          {/* Logo Telegram */}
+          {/* Titre principal */}
           <div style={{ marginBottom: '40px' }}>
-            <div style={{
-              width: '120px',
-              height: '120px',
-              margin: '0 auto 20px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: '60px',
-              color: '#ffffff'
-             }}>
-               
-             </div>
             <h2 style={{
               fontSize: '28px',
               fontWeight: '700',
