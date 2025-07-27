@@ -36,7 +36,7 @@ export default function SocialMediaManager() {
     if (lowercaseName.includes('youtube')) return 'https://i.imgur.com/youtube.png'
     if (lowercaseName.includes('snapchat')) return 'https://i.imgur.com/snapchat.png'
     if (lowercaseName.includes('linkedin')) return 'https://i.imgur.com/linkedin.png'
-    if (lowercaseName.includes('potato')) return 'https://i.imgur.com/LaRHc9L.png'
+    if (lowercaseName.includes('potato')) return 'https://i.imgur.com/ZSp8BX2.jpeg'
     if (lowercaseName.includes('luffa')) return 'https://i.imgur.com/zkZtY0m.png'
     return 'https://i.imgur.com/PP2GVMv.png' // Fallback vers Telegram
   }
