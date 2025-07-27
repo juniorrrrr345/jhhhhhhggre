@@ -247,8 +247,9 @@ export default function ShopServices() {
                 { icon: '👥', title: 'Conserve tes clients', desc: 'Plus de perte de clients lors de fermetures de canaux' },
                 { icon: '📱', title: 'MiniApp moderne', desc: 'Interface web intégrée dans Telegram' },
                 { icon: '🔒', title: '100% sécurisé', desc: 'Ton bot t\'appartient, personne peut te le supprimer' },
-                { icon: '⚡', title: 'Installation rapide', desc: 'Livré en 48-72h maximum' },
-                { icon: '🎨', title: 'Design personnalisé', desc: 'Couleurs et style adaptés à ton image' }
+                { icon: '⚡', title: 'Installation rapide', desc: 'Livré en 48-72h maximum - Voir + en cas de demande spéciale' },
+                { icon: '🎨', title: 'Design personnalisé', desc: 'Couleurs et style adaptés à ton image' },
+                { icon: '👁️', title: 'Plus de visibilité', desc: 'Ça offre + de visibilité' }
               ].map((item, index) => (
                 <div key={index} style={{
                   display: 'flex',
@@ -297,6 +298,118 @@ export default function ShopServices() {
                   fontSize: '18px',
                   fontWeight: 'bold',
                   boxShadow: '0 4px 16px rgba(0, 122, 255, 0.3)',
+                  transition: 'transform 0.2s ease'
+                }}
+                onMouseEnter={(e) => e.target.style.transform = 'translateY(-2px)'}
+                onMouseLeave={(e) => e.target.style.transform = 'translateY(0)'}
+              >
+                💬 {t('services_order_button')}
+              </a>
+            </div>
+          </div>
+
+          {/* Option Site Web */}
+          <div style={{
+            maxWidth: '700px',
+            margin: '0 auto 30px',
+            backgroundColor: '#1a1a1a',
+            borderRadius: '20px',
+            padding: '30px',
+            border: '2px solid #FF6B35',
+            boxShadow: '0 8px 32px rgba(255, 107, 53, 0.2)'
+          }}>
+            <div style={{ textAlign: 'center', marginBottom: '30px' }}>
+              <div style={{
+                fontSize: '48px',
+                marginBottom: '16px'
+              }}>
+                🌐✨
+              </div>
+              <h3 style={{
+                fontSize: '28px',
+                fontWeight: '700',
+                color: '#ffffff',
+                marginBottom: '16px'
+              }}>
+                Site Web Professionnel
+              </h3>
+              <div style={{
+                fontSize: '36px',
+                fontWeight: '900',
+                color: '#FF6B35',
+                marginBottom: '8px'
+              }}>
+                800€
+              </div>
+              <p style={{
+                color: '#8e8e93',
+                fontSize: '14px'
+              }}>
+                Site web complet et responsive
+              </p>
+            </div>
+
+            {/* Avantages Site Web */}
+            <div style={{
+              display: 'grid',
+              gap: '16px',
+              marginBottom: '30px'
+            }}>
+              {[
+                { icon: '📱', title: 'Responsive design', desc: 'Site optimisé mobile, tablette et desktop' },
+                { icon: '⚡', title: 'Performance optimisée', desc: 'Chargement rapide et SEO friendly' },
+                { icon: '🎨', title: 'Design moderne', desc: 'Interface élégante et professionnelle' },
+                { icon: '🔧', title: 'Maintenance incluse', desc: 'Mises à jour et support technique' },
+                { icon: '📊', title: 'Analytics intégrés', desc: 'Suivi des visiteurs et statistiques' },
+                { icon: '🔒', title: 'Sécurisé', desc: 'Certificat SSL et protection des données' }
+              ].map((item, index) => (
+                <div key={index} style={{
+                  display: 'flex',
+                  gap: '16px',
+                  padding: '16px',
+                  backgroundColor: '#2a2a2a',
+                  borderRadius: '12px',
+                  border: '1px solid #333333'
+                }}>
+                  <span style={{ fontSize: '24px', flexShrink: 0 }}>{item.icon}</span>
+                  <div>
+                    <h4 style={{
+                      color: '#ffffff',
+                      fontSize: '16px',
+                      fontWeight: '600',
+                      margin: '0 0 4px 0'
+                    }}>
+                      {item.title}
+                    </h4>
+                    <p style={{
+                      color: '#8e8e93',
+                      fontSize: '14px',
+                      margin: 0,
+                      lineHeight: '1.4'
+                    }}>
+                      {item.desc}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Bouton de contact Site Web */}
+            <div style={{ textAlign: 'center' }}>
+              <a
+                href={config.servicesTelegramLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: 'inline-block',
+                  backgroundColor: '#FF6B35',
+                  color: '#ffffff',
+                  padding: '16px 32px',
+                  borderRadius: '25px',
+                  textDecoration: 'none',
+                  fontSize: '18px',
+                  fontWeight: 'bold',
+                  boxShadow: '0 4px 16px rgba(255, 107, 53, 0.3)',
                   transition: 'transform 0.2s ease'
                 }}
                 onMouseEnter={(e) => e.target.style.transform = 'translateY(-2px)'}
