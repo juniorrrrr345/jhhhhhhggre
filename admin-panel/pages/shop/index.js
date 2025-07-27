@@ -94,15 +94,36 @@ export default function ShopHome() {
   }
 
   useEffect(() => {
-    // Initialiser la langue depuis localStorage
-    if (typeof window !== 'undefined') {
-      setCurrentLanguage(getCurrentLanguage())
-    }
+    if (typeof window === 'undefined') return
     
-    fetchConfig()
-    fetchPlugs()
+    // Configuration initiale
+    initializeData()
     
     // Boutique initialisée
+  }, [])
+
+  // Listener pour les changements de localStorage (synchronisation temps réel)
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+
+    const handleStorageChange = (e) => {
+      if (e.key === 'shopSocialMediaBackup' && e.newValue) {
+        try {
+          const newShopSocialMedia = JSON.parse(e.newValue)
+          console.log('🔄 Mise à jour temps réel shopSocialMediaList:', newShopSocialMedia)
+          setConfig(prev => ({
+            ...prev,
+            shopSocialMediaList: newShopSocialMedia
+          }))
+          toast.success('🏪 Réseaux sociaux boutique mis à jour', { duration: 2000 })
+        } catch (e) {
+          console.log('❌ Erreur parsing shopSocialMediaBackup:', e)
+        }
+      }
+    }
+
+    window.addEventListener('storage', handleStorageChange)
+    return () => window.removeEventListener('storage', handleStorageChange)
   }, [])
 
   // Config mise à jour
@@ -122,6 +143,16 @@ export default function ShopHome() {
     setCurrentLanguage(newLanguage)
   }
 
+  const initializeData = () => {
+    // Initialiser la langue depuis localStorage
+    if (typeof window !== 'undefined') {
+      setCurrentLanguage(getCurrentLanguage())
+    }
+    
+    fetchConfig()
+    fetchPlugs()
+  }
+
   const fetchConfig = async () => {
     try {
       // Récupérer la config depuis l'API bot directement
@@ -139,12 +170,27 @@ export default function ShopHome() {
         // Fallback vers l'API simple si l'API publique échoue
         data = await api.getPublicConfig()
       }
+      
       console.log('📱 Config récupérée pour accueil:', {
         boutique: data?.boutique?.name,
         shopSocialMediaList: data?.shopSocialMediaList?.length || 0,
         socialMediaList: data?.socialMediaList?.length || 0,
         socialMedia: data?.socialMedia
       })
+      
+      // Si shopSocialMediaList est vide, essayer de récupérer depuis localStorage
+      if (!data?.shopSocialMediaList || data.shopSocialMediaList.length === 0) {
+        try {
+          const shopSocialBackup = localStorage.getItem('shopSocialMediaBackup')
+          if (shopSocialBackup) {
+            const backupData = JSON.parse(shopSocialBackup)
+            console.log('🔄 Utilisation backup shopSocialMediaList depuis localStorage:', backupData)
+            data = { ...data, shopSocialMediaList: backupData }
+          }
+        } catch (e) {
+          console.log('❌ Erreur lecture backup shopSocialMediaList:', e)
+        }
+      }
       
       // Debug des réseaux sociaux
       if (data?.socialMediaList && data.socialMediaList.length > 0) {
@@ -154,7 +200,7 @@ export default function ShopHome() {
         console.log('🔍 Réseaux sociaux dans shopSocialMediaList:', data.shopSocialMediaList)
       }
       
-              // La boutique utilise directement socialMediaList synchronisé depuis l'admin
+              // La boutique utilise directement les données synchronisées
       setConfig(data)
       
       // Récupérer aussi les liens Telegram depuis l'API publique
@@ -494,12 +540,17 @@ export default function ShopHome() {
             gap: '12px',
             flexWrap: 'wrap'
           }}>
-            {/* Réseaux sociaux depuis l'API synchronisée */}
-            {(config?.socialMediaList && config.socialMediaList.length > 0 
-              ? config.socialMediaList.map(social => ({
+            {/* Réseaux sociaux depuis l'API synchronisée - priorité shopSocialMediaList */}
+            {(config?.shopSocialMediaList && config.shopSocialMediaList.length > 0 
+              ? config.shopSocialMediaList.map(social => ({
                   ...social,
                   logo: social.logo || getLogoByName(social.name || '')
                 }))
+              : config?.socialMediaList && config.socialMediaList.length > 0 
+                ? config.socialMediaList.map(social => ({
+                    ...social,
+                    logo: social.logo || getLogoByName(social.name || '')
+                  }))
                 : [
                     { 
                       name: 'Telegram', 
