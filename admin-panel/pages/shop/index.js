@@ -604,8 +604,7 @@ export default function ShopHome() {
                   enabled: true
                 }
               ]
-            })()
-            ).filter(social => social && social.enabled !== false).map((social, index) => (
+            })().filter(social => social && social.enabled !== false).map((social, index) => (
               <a
                 key={index}
                 href={social.url}
