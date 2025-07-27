@@ -121,8 +121,9 @@ const showLanguageSelection = async (ctx, config, stats = { shopsCount: 0, users
   try {
     const { createLanguageKeyboard } = require('../utils/translations');
     
-    // Message de bienvenue en multilingue
-      const welcomeText = `🌍 Welcome! Bienvenue! Bienvenido! Benvenuto! Willkommen!\n\n` +
+    // Message de bienvenue en multilingue avec statistiques
+    const welcomeText = `🌍 Welcome! Bienvenue! Bienvenido! Benvenuto! Willkommen!\n\n` +
+      `🏪 ${stats.shopsCount} boutiques | 👥 ${stats.usersCount} utilisateurs\n\n` +
     `Please select your language / Sélectionnez votre langue / Elige tu idioma / Seleziona la tua lingua / Wählen Sie Ihre Sprache:`;
     
     // Créer le clavier de sélection de langue

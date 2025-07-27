@@ -86,6 +86,24 @@ const Plug = require('./src/models/Plug');
 const Config = require('./src/models/Config');
 const User = require('./src/models/User');
 
+// Fonction pour récupérer les statistiques du bot
+const getBotStats = async () => {
+  try {
+    const [shopsCount, usersCount] = await Promise.all([
+      Plug.countDocuments({ isActive: true }),
+      User.countDocuments({ isActive: true })
+    ]);
+    
+    return {
+      shopsCount: shopsCount || 0,
+      usersCount: usersCount || 0
+    };
+  } catch (error) {
+    console.error('❌ Erreur récupération stats:', error);
+    return { shopsCount: 0, usersCount: 0 };
+  }
+};
+
 // Migration automatique
 const migrateSocialMedia = require('./scripts/migrate-social-media');
 
@@ -321,7 +339,13 @@ const showMainMenuInLanguage = async (ctx, config, language) => {
     
     // Message de bienvenue du panel admin ou traduit en fallback
     const { getTranslation } = require('./src/utils/translations');
-    const welcomeMessage = freshConfig?.welcome?.text || getTranslation('messages_welcome', currentLang, customTranslations);
+    let welcomeMessage = freshConfig?.welcome?.text || getTranslation('messages_welcome', currentLang, customTranslations);
+    
+    // Remplacer les statistiques dans le message
+    const stats = await getBotStats();
+    welcomeMessage = welcomeMessage
+      .replace('{shopsCount}', stats.shopsCount)
+      .replace('{usersCount}', stats.usersCount);
     
     // Créer le clavier principal avec traductions (AVEC le bouton langue)
     const { createMainKeyboard } = require('./src/utils/keyboards');
