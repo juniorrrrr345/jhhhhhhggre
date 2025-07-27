@@ -129,7 +129,7 @@ export default function ShopSocialMediaManager() {
       
       // En cas d'erreur: au minimum votre Telegram
       const fallbackSocialMedias = [
-        { id: 'telegram', name: 'Telegram', emoji: '📱', url: 'https://t.me/+zcP68c4M_3NlM2Y0', enabled: true }
+                       { id: 'telegram', name: 'Telegram', emoji: '📱', url: 'https://t.me/+zcP68c4M_3NlM2Y0', enabled: true }
       ]
       setSocialMedias(fallbackSocialMedias)
       console.log('🆘 Fallback avec Telegram')
