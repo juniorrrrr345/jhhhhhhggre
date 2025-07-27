@@ -281,14 +281,21 @@ export default function ShopPlugDetail() {
         <div style={{ backgroundColor: '#000000', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <div style={{ textAlign: 'center' }}>
             <div style={{ 
-              width: '48px', 
-              height: '48px', 
-              border: '2px solid transparent',
-              borderTop: '2px solid #ffffff',
-              borderRadius: '50%',
+              width: '60px', 
+              height: '60px',
               animation: 'spin 1s linear infinite',
               margin: '0 auto 16px'
-            }}></div>
+            }}>
+              <img 
+                src="https://i.imgur.com/VwBPgtw.jpeg" 
+                alt="FindYourPlug Logo"
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'contain'
+                }}
+              />
+            </div>
             <p style={{ color: '#ffffff', fontWeight: '500' }}>{t('loading_shop') || 'Chargement de la boutique'}...</p>
           </div>
         </div>
@@ -356,14 +363,21 @@ export default function ShopPlugDetail() {
         <div style={{ backgroundColor: '#000000', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <div style={{ textAlign: 'center' }}>
             <div style={{ 
-              width: '48px', 
-              height: '48px', 
-              border: '2px solid transparent',
-              borderTop: '2px solid #ffffff',
-              borderRadius: '50%',
+              width: '60px', 
+              height: '60px',
               animation: 'spin 1s linear infinite',
               margin: '0 auto 16px'
-            }}></div>
+            }}>
+              <img 
+                src="https://i.imgur.com/VwBPgtw.jpeg" 
+                alt="FindYourPlug Logo"
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'contain'
+                }}
+              />
+            </div>
             <p style={{ color: '#ffffff', fontWeight: '500' }}>{t('loading_shop') || 'Chargement de la boutique'}...</p>
           </div>
         </div>
