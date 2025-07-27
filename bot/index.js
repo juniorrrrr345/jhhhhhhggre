@@ -356,6 +356,9 @@ const showMainMenuInLanguage = async (ctx, config, language) => {
     // Toujours utiliser les traductions par défaut qui contiennent les placeholders des statistiques
     let welcomeMessage = getTranslation('messages_welcome', currentLang, customTranslations);
     
+    console.log('🔤 Message de traduction récupéré:', welcomeMessage);
+    console.log('🔤 Langue actuelle:', currentLang);
+    
     // Remplacer les statistiques dans le message
     const stats = await getBotStats();
     console.log('📊 Statistiques récupérées:', stats);
@@ -365,6 +368,12 @@ const showMainMenuInLanguage = async (ctx, config, language) => {
     const usersCount = stats.usersCount || 0;
     
     console.log('🔢 Valeurs à remplacer:', { shopsCount, usersCount });
+    
+    // Vérifier si les placeholders sont présents
+    console.log('🔍 Placeholders présents:', {
+      hasShopsCount: welcomeMessage.includes('{shopsCount}'),
+      hasUsersCount: welcomeMessage.includes('{usersCount}')
+    });
     
     welcomeMessage = welcomeMessage
       .replace('{shopsCount}', shopsCount.toString())
