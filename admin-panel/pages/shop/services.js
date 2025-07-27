@@ -84,7 +84,13 @@ export default function ShopServices() {
   // Fonction pour calculer les styles de thème
   const getThemeStyles = () => {
     return {
-      backgroundColor: '#000000',
+      backgroundColor: '#1a1a1a',
+      backgroundImage: `
+        radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.2) 0%, transparent 50%),
+        linear-gradient(45deg, #1a1a1a 0%, #2d2d2d 100%)
+      `,
       color: '#ffffff'
     }
   }
