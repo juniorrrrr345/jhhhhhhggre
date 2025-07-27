@@ -162,14 +162,24 @@ export default function ShopHome() {
       setLoading(true)
       
       // APPEL DIRECT au bot pour récupérer les VRAIES boutiques
+      console.log('📡 Tentative de connexion à l\'API...')
       const response = await fetch('https://jhhhhhhggre.onrender.com/api/public/plugs?limit=50', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json'
-        }
+        },
+        // Ajouter un timeout
+        signal: AbortSignal.timeout(10000) // 10 secondes
       })
       
+      console.log('📡 Réponse reçue:', response.status, response.statusText)
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`)
+      }
+      
       const data = await response.json()
+      console.log('📡 Données reçues:', data)
       
       if (data && data.plugs) {
         console.log('🎯 Boutiques récupérées:', data.plugs.length)
@@ -184,11 +194,12 @@ export default function ShopHome() {
         })
         setLikesSync(likesData)
       } else {
+        console.log('⚠️ Aucune boutique trouvée dans la réponse')
         setPlugs([])
       }
       
     } catch (error) {
-      console.error('Erreur chargement boutiques:', error)
+      console.error('❌ Erreur chargement boutiques:', error.message)
       
       // Mode offline : afficher des données par défaut traduites
       const fallbackPlugs = [
