@@ -104,15 +104,16 @@ export default function SocialMediaManager() {
              setSocialMedias(socialMediasWithIds)
              console.log('📁 Réseaux sociaux chargés depuis le stockage local:', socialMediasWithIds.map(s => ({ id: s.id, name: s.name })))
            } else {
-             // Initialiser avec VOS réseaux sociaux du bot configurés
+             // Initialiser avec des données par défaut simples
              const defaultSocialMedias = [
-               { id: 'telegram', name: 'Telegram', emoji: '📱', url: 'https://t.me/+zcP68c4M_3NlM2Y0', enabled: true },
-               { id: 'contact', name: 'Contact', emoji: '📞', url: 'https://t.me/findyourplugsav', enabled: true },
+               { id: 'telegram', name: 'Telegram', emoji: '📱', url: '', enabled: true },
+               { id: 'whatsapp', name: 'WhatsApp', emoji: '💬', url: '', enabled: true },
+               { id: 'discord', name: 'Discord', emoji: '🎮', url: '', enabled: false },
                { id: 'instagram', name: 'Instagram', emoji: '📸', url: '', enabled: false }
              ]
              setSocialMedias(defaultSocialMedias)
              await localApi.updateSocialMedia(defaultSocialMedias)
-             console.log('🔧 Réseaux sociaux bot initialisés avec vos liens')
+             console.log('🔧 Réseaux sociaux initialisés en mode local')
            }
          }
       } catch (localError) {
@@ -557,22 +558,6 @@ export default function SocialMediaManager() {
                       
                       <div className="space-y-2">
                         <div>
-                          <label className="block text-xs font-medium text-gray-700">Emoji</label>
-                          {editingId === social.id ? (
-                            <input
-                              type="text"
-                              value={social.emoji || ''}
-                              onChange={(e) => updateSocialMedia(social.id, 'emoji', e.target.value)}
-                              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                              placeholder="📱"
-                              maxLength="2"
-                            />
-                          ) : (
-                            <p className="text-sm text-gray-600">{social.emoji || 'Aucun emoji'}</p>
-                          )}
-                        </div>
-                        
-                        <div>
                           <label className="block text-xs font-medium text-gray-700">Logo (URL)</label>
                           {editingId === social.id ? (
                             <input
@@ -623,21 +608,11 @@ export default function SocialMediaManager() {
                       value={newSocialMedia.name}
                       onChange={(e) => setNewSocialMedia({...newSocialMedia, name: e.target.value})}
                       className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                      placeholder="Telegram"
+                      placeholder="Instagram"
                     />
                   </div>
                   
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">Emoji</label>
-                    <input
-                      type="text"
-                      value={newSocialMedia.emoji}
-                      onChange={(e) => setNewSocialMedia({...newSocialMedia, emoji: e.target.value})}
-                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                      placeholder="📱"
-                      maxLength="2"
-                    />
-                  </div>
+
                   
                   <div>
                     <label className="block text-sm font-medium text-gray-700">
