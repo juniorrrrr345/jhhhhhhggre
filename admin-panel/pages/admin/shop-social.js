@@ -44,13 +44,56 @@ export default function ShopSocialMediaManager() {
         setSocialMedias(config.shopSocialMediaList)
         console.log('✅ Réseaux sociaux shop chargés depuis le serveur')
       } else {
-        // Initialiser avec des valeurs par défaut pour le shop
+        // Initialiser avec VOS réseaux de boutique avec logos
         const defaultShopSocialMedias = [
-          { id: 'telegram', name: 'Telegram', emoji: '📱', url: 'https://t.me/FindYourPlugBot', enabled: true },
-          { id: 'instagram', name: 'Instagram', emoji: '📸', url: '#', enabled: false },
-          { id: 'tiktok', name: 'TikTok', emoji: '🎵', url: '#', enabled: false },
-          { id: 'youtube', name: 'YouTube', emoji: '📺', url: '#', enabled: false },
-          { id: 'twitter', name: 'Twitter', emoji: '🐦', url: '#', enabled: false }
+          { 
+            id: 'telegram', 
+            name: 'Telegram', 
+            emoji: '📱', 
+            url: 'https://t.me/+zcP68c4M_3NlM2Y0', 
+            enabled: true,
+            logo: 'https://i.imgur.com/telegram.png'
+          },
+          { 
+            id: 'find_your_plug', 
+            name: 'Find Your Plug', 
+            emoji: '🌐', 
+            url: 'https://dym168.org/findyourplug', 
+            enabled: true,
+            logo: 'https://i.imgur.com/VwBPgtw.jpeg'
+          },
+          { 
+            id: 'instagram', 
+            name: 'Instagram', 
+            emoji: '📸', 
+            url: 'https://www.instagram.com/find.yourplug?igsh=ajRwcjE1eGhoaXMz&utm_source=qr', 
+            enabled: true,
+            logo: 'https://i.imgur.com/instagram.png'
+          },
+          { 
+            id: 'luffa', 
+            name: 'Luffa', 
+            emoji: '🧽', 
+            url: 'https://callup.luffa.im/c/EnvtiTHkbvP', 
+            enabled: true,
+            logo: 'https://i.imgur.com/zkZtY0m.png'
+          },
+          { 
+            id: 'discord', 
+            name: 'Discord', 
+            emoji: '🎮', 
+            url: 'https://discord.gg/g2dACUC3', 
+            enabled: true,
+            logo: 'https://i.imgur.com/discord.png'
+          },
+          { 
+            id: 'potato', 
+            name: 'Potato', 
+            emoji: '🥔', 
+            url: 'https://potato.com', 
+            enabled: true,
+            logo: 'https://i.imgur.com/1iCRHRB.jpeg'
+          }
         ]
         setSocialMedias(defaultShopSocialMedias)
         console.log('🔧 Réseaux sociaux shop initialisés avec valeurs par défaut')
@@ -69,11 +112,54 @@ export default function ShopSocialMediaManager() {
             console.log('📁 Réseaux sociaux shop chargés depuis le stockage local')
           } else {
             const defaultShopSocialMedias = [
-              { id: 'telegram', name: 'Telegram', emoji: '📱', url: 'https://t.me/FindYourPlugBot', enabled: true },
-              { id: 'instagram', name: 'Instagram', emoji: '📸', url: '#', enabled: false },
-              { id: 'tiktok', name: 'TikTok', emoji: '🎵', url: '#', enabled: false },
-              { id: 'youtube', name: 'YouTube', emoji: '📺', url: '#', enabled: false },
-              { id: 'twitter', name: 'Twitter', emoji: '🐦', url: '#', enabled: false }
+              { 
+                id: 'telegram', 
+                name: 'Telegram', 
+                emoji: '📱', 
+                url: 'https://t.me/+zcP68c4M_3NlM2Y0', 
+                enabled: true,
+                logo: 'https://i.imgur.com/telegram.png'
+              },
+              { 
+                id: 'find_your_plug', 
+                name: 'Find Your Plug', 
+                emoji: '🌐', 
+                url: 'https://dym168.org/findyourplug', 
+                enabled: true,
+                logo: 'https://i.imgur.com/VwBPgtw.jpeg'
+              },
+              { 
+                id: 'instagram', 
+                name: 'Instagram', 
+                emoji: '📸', 
+                url: 'https://www.instagram.com/find.yourplug?igsh=ajRwcjE1eGhoaXMz&utm_source=qr', 
+                enabled: true,
+                logo: 'https://i.imgur.com/instagram.png'
+              },
+              { 
+                id: 'luffa', 
+                name: 'Luffa', 
+                emoji: '🧽', 
+                url: 'https://callup.luffa.im/c/EnvtiTHkbvP', 
+                enabled: true,
+                logo: 'https://i.imgur.com/zkZtY0m.png'
+              },
+              { 
+                id: 'discord', 
+                name: 'Discord', 
+                emoji: '🎮', 
+                url: 'https://discord.gg/g2dACUC3', 
+                enabled: true,
+                logo: 'https://i.imgur.com/discord.png'
+              },
+              { 
+                id: 'potato', 
+                name: 'Potato', 
+                emoji: '🥔', 
+                url: 'https://potato.com', 
+                enabled: true,
+                logo: 'https://i.imgur.com/1iCRHRB.jpeg'
+              }
             ]
             setSocialMedias(defaultShopSocialMedias)
             await localApi.updateShopSocialMedia(defaultShopSocialMedias)
@@ -257,7 +343,14 @@ export default function ShopSocialMediaManager() {
                     <div key={social.id} className={`border rounded-lg p-4 ${social.enabled ? 'border-green-200 bg-green-50' : 'border-gray-200 bg-gray-50'}`}>
                       <div className="flex items-center justify-between mb-3">
                         <div className="flex items-center space-x-3">
-                          <span className="text-2xl">{social.emoji}</span>
+                          <img 
+                            src={social.logo || 'https://i.imgur.com/PP2GVMv.png'}
+                            alt={social.name}
+                            className="w-8 h-8 object-contain rounded"
+                            onError={(e) => {
+                              e.target.src = 'https://i.imgur.com/PP2GVMv.png';
+                            }}
+                          />
                           <div className="flex-1">
                             {editingId === social.id ? (
                               <input
