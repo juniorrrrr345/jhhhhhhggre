@@ -105,7 +105,7 @@ export default function ShopInscription() {
               color: '#ffffff',
                              boxShadow: '0 8px 32px rgba(0, 136, 204, 0.3)'
              }}>
-               📱
+               
              </div>
             <h2 style={{
               fontSize: '28px',
