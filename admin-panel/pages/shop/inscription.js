@@ -10,7 +10,7 @@ export default function ShopInscription() {
   const [config, setConfig] = useState({
     inscriptionTelegramLink: 'https://t.me/FindYourPlugBot'
   })
-  const [shopSocialMedias, setShopSocialMedias] = useState([])
+
   const { t } = useTranslation(currentLanguage)
 
   useEffect(() => {
@@ -44,12 +44,6 @@ export default function ShopInscription() {
         setConfig({
           inscriptionTelegramLink: data.boutique?.inscriptionTelegramLink || 'https://t.me/FindYourPlugBot'
         })
-        
-        // Charger les réseaux sociaux du shop
-        if (data && data.shopSocialMediaList) {
-          const enabledSocialMedias = data.shopSocialMediaList.filter(social => social.enabled)
-          setShopSocialMedias(enabledSocialMedias)
-        }
         return
       }
       

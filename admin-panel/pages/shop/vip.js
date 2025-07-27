@@ -151,7 +151,7 @@ export default function ShopVIP() {
           backgroundColor: '#1a1a1a',
           backgroundImage: `
             linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), 
-            url("https://i.imgur.com/VwBPgtw.jpeg")
+            url("https://i.imgur.com/iISKonz.jpeg")
           `,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
@@ -198,7 +198,7 @@ export default function ShopVIP() {
         backgroundColor: '#1a1a1a',
         backgroundImage: `
           linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), 
-          url("https://i.imgur.com/VwBPgtw.jpeg")
+          url("https://i.imgur.com/iISKonz.jpeg")
         `,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
