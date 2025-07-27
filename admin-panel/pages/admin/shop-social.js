@@ -398,7 +398,7 @@ export default function ShopSocialMediaManager() {
                         <tr key={social.id}>
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div className="flex items-center">
-                              <span className="text-2xl mr-3">{social.emoji}</span>
+                              <span className="text-2xl mr-3">{social.emoji || '🔗'}</span>
                               <div>
                                 <div className="text-sm font-medium text-gray-900">{social.name}</div>
                                 <div className="text-sm text-gray-500">ID: {social.id}</div>
