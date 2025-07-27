@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/router'
 import Head from 'next/head'
 import Layout from '../../components/Layout'
@@ -19,6 +19,8 @@ export default function SocialMediaManager() {
     enabled: true
   })
   const [isLocalMode, setIsLocalMode] = useState(false)
+  const [isSyncing, setIsSyncing] = useState(false)
+  const updateTimeoutRef = useRef(null)
   const router = useRouter()
 
   useEffect(() => {
@@ -28,6 +30,13 @@ export default function SocialMediaManager() {
       return
     }
     fetchSocialMedias()
+    
+    // Nettoyage du timeout lors du démontage
+    return () => {
+      if (updateTimeoutRef.current) {
+        clearTimeout(updateTimeoutRef.current)
+      }
+    }
   }, [])
 
   const fetchSocialMedias = async () => {
@@ -132,6 +141,8 @@ export default function SocialMediaManager() {
           
           const configData = {
             socialMediaList: socialMedias,
+            // Synchroniser avec shopSocialMediaList pour la boutique
+            shopSocialMediaList: socialMedias,
             // Maintenir compatibilité avec l'ancien format pour le bot Telegram
             socialMedia: {
               telegram: socialMedias.find(s => s.id === 'telegram')?.url || '',
@@ -205,9 +216,14 @@ export default function SocialMediaManager() {
       url: newSocialMedia.url.trim()
     }
     
-    setSocialMedias([...socialMedias, newItem])
+    const updatedSocialMedias = [...socialMedias, newItem]
+    setSocialMedias(updatedSocialMedias)
     setNewSocialMedia({ name: '', emoji: '', url: '', enabled: true })
-          // Ajout silencieux
+    
+    // Synchronisation automatique après ajout
+    syncToBotAPI(updatedSocialMedias)
+    
+    toast.success(`Réseau social "${newItem.name}" ajouté et synchronisé`)
   }
 
   const updateSocialMedia = (id, field, value) => {
@@ -223,6 +239,13 @@ export default function SocialMediaManager() {
         item.id === id ? { ...item, [field]: value } : item
       )
       console.log('📝 Réseaux sociaux après mise à jour:', updated.map(s => ({ id: s.id, name: s.name, [field]: s[field] })))
+      
+      // Synchronisation automatique après modification (avec debounce)
+      clearTimeout(updateTimeoutRef.current)
+      updateTimeoutRef.current = setTimeout(() => {
+        syncToBotAPI(updated)
+      }, 1500) // Attendre 1.5 seconde après la dernière modification
+      
       return updated
     })
   }
@@ -285,7 +308,9 @@ export default function SocialMediaManager() {
             const token = localStorage.getItem('adminToken') || 'JuniorAdmon123'
             
                          const configData = {
-               socialMediaList: updatedSocialMedias
+               socialMediaList: updatedSocialMedias,
+               // Synchroniser avec shopSocialMediaList pour la boutique
+               shopSocialMediaList: updatedSocialMedias
              }
              
              console.log('📤 Envoi au serveur - configData:', configData)
@@ -323,13 +348,48 @@ export default function SocialMediaManager() {
     }
   }
 
-  const toggleEnabled = (id) => {
+  const toggleEnabled = async (id) => {
     console.log('🔄 Toggle réseau social:', { id })
-    setSocialMedias(prevSocialMedias => 
-      prevSocialMedias.map(item => 
-        item.id === id ? { ...item, enabled: !item.enabled } : item
-      )
+    const updatedSocialMedias = socialMedias.map(item => 
+      item.id === id ? { ...item, enabled: !item.enabled } : item
     )
+    
+    setSocialMedias(updatedSocialMedias)
+    
+    // Synchronisation automatique avec la boutique
+    await syncToBotAPI(updatedSocialMedias)
+  }
+
+  // Fonction utilitaire pour synchroniser avec l'API du bot
+  const syncToBotAPI = async (socialMediasToSync) => {
+    try {
+      setIsSyncing(true)
+      const token = localStorage.getItem('adminToken') || 'JuniorAdmon123'
+      
+      const configData = {
+        socialMediaList: socialMediasToSync,
+        shopSocialMediaList: socialMediasToSync,
+        socialMedia: {
+          telegram: socialMediasToSync.find(s => s.id === 'telegram')?.url || '',
+          whatsapp: socialMediasToSync.find(s => s.id === 'whatsapp')?.url || ''
+        }
+      }
+      
+      await simpleApi.updateConfig(token, configData)
+      console.log('🔄 Synchronisation automatique réussie')
+      
+      // Notification discrète pour confirmer la sync
+      toast.success('🔄 Synchronisé avec la boutique', { 
+        duration: 2000,
+        icon: '✅'
+      })
+      
+    } catch (error) {
+      console.log('⚠️ Erreur synchronisation automatique:', error.message)
+      toast.error('⚠️ Erreur de synchronisation', { duration: 3000 })
+    } finally {
+      setIsSyncing(false)
+    }
   }
 
   if (loading) {
@@ -367,8 +427,22 @@ export default function SocialMediaManager() {
             <div className="sm:flex-auto">
               <h1 className="text-2xl font-semibold leading-6 text-gray-900">Gestion des Réseaux Sociaux</h1>
               <p className="mt-2 text-sm text-gray-700">
-                Gérez les réseaux sociaux affichés dans le bot Telegram
+                Gérez les réseaux sociaux affichés dans le bot Telegram et la boutique
               </p>
+              <div className="mt-3 bg-blue-50 border border-blue-200 rounded-md p-3">
+                <div className="flex">
+                  <div className="flex-shrink-0">
+                    <svg className="h-5 w-5 text-blue-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                  <div className="ml-3">
+                    <p className="text-sm text-blue-700">
+                      <strong>Synchronisation automatique :</strong> Les modifications sont automatiquement synchronisées avec la boutique en temps réel.
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
             <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none space-x-2">
               {isLocalMode && (
@@ -399,6 +473,13 @@ export default function SocialMediaManager() {
                 </button>
               )}
               <button
+                onClick={() => syncToBotAPI(socialMedias)}
+                disabled={isSyncing}
+                className="inline-flex items-center px-3 py-2 border border-green-300 rounded-md shadow-sm text-sm font-medium text-green-700 bg-green-100 hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50"
+              >
+                {isSyncing ? '🔄 Synchronisation...' : '🔄 Sync Boutique'}
+              </button>
+              <button
                 onClick={saveSocialMedias}
                 disabled={saving}
                 className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-600 disabled:opacity-50"
@@ -416,12 +497,23 @@ export default function SocialMediaManager() {
                   <h3 className="text-lg leading-6 font-medium text-gray-900">
                     📱 Réseaux Sociaux Actuels
                   </h3>
-                  {isLocalMode && (
-                    <div className="flex items-center text-orange-600 text-sm bg-orange-100 px-2 py-1 rounded-md">
-                      <span className="mr-1">📁</span>
-                      Mode Local
-                    </div>
-                  )}
+                  <div className="flex items-center space-x-2">
+                    {isSyncing && (
+                      <div className="flex items-center text-blue-600 text-sm bg-blue-100 px-2 py-1 rounded-md">
+                        <svg className="animate-spin -ml-1 mr-1 h-4 w-4 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Synchronisation...
+                      </div>
+                    )}
+                    {isLocalMode && (
+                      <div className="flex items-center text-orange-600 text-sm bg-orange-100 px-2 py-1 rounded-md">
+                        <span className="mr-1">📁</span>
+                        Mode Local
+                      </div>
+                    )}
+                  </div>
                 </div>
                 
                 <div className="space-y-4">
