@@ -144,13 +144,12 @@ export default function SocialMediaManager() {
             socialMediaList: socialMedias,
             // Synchroniser avec shopSocialMediaList pour la boutique
             shopSocialMediaList: socialMedias,
-            // Maintenir compatibilité avec l'ancien format pour le bot Telegram
-            socialMedia: {
-              telegram: socialMedias.find(s => s.id === 'telegram')?.url || '',
-              whatsapp: socialMedias.find(s => s.id === 'whatsapp')?.url || '',
-              instagram: socialMedias.find(s => s.id === 'instagram')?.url || '',
-              contact: socialMedias.find(s => s.id === 'contact')?.url || ''
-            }
+            // Format socialMedia pour le bot Telegram (array avec name, emoji, url)
+            socialMedia: socialMedias.filter(s => s.enabled).map(s => ({
+              name: s.name,
+              emoji: s.emoji || '🔗',
+              url: s.url
+            }))
           }
           
                     await simpleApi.updateConfig(token, configData)
@@ -390,12 +389,12 @@ export default function SocialMediaManager() {
       const configData = {
         socialMediaList: socialMediasToSync,
         shopSocialMediaList: socialMediasToSync,
-        socialMedia: {
-          telegram: socialMediasToSync.find(s => s.id === 'telegram')?.url || '',
-          whatsapp: socialMediasToSync.find(s => s.id === 'whatsapp')?.url || '',
-          instagram: socialMediasToSync.find(s => s.id === 'instagram')?.url || '',
-          contact: socialMediasToSync.find(s => s.id === 'contact')?.url || ''
-        }
+        // Format socialMedia pour le bot Telegram (array avec name, emoji, url)
+        socialMedia: socialMediasToSync.filter(s => s.enabled).map(s => ({
+          name: s.name,
+          emoji: s.emoji || '🔗',
+          url: s.url
+        }))
       }
       
       await simpleApi.updateConfig(token, configData)
