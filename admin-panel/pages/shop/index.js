@@ -565,13 +565,13 @@ export default function ShopHome() {
                 url: 'https://t.me/+zcP68c4M_3NlM2Y0',
                 enabled: true
               },
-                             { 
-                 name: 'Find Your Plug', 
-                 logo: 'https://i.imgur.com/ZSp8BX2.jpeg',
-                 emoji: '🌐',
-                 url: 'https://dym168.org/findyourplug',
-                 enabled: true
-               },
+              { 
+                name: 'Find Your Plug', 
+                logo: 'https://i.imgur.com/ZSp8BX2.jpeg',
+                emoji: '🌐',
+                url: 'https://dym168.org/findyourplug',
+                enabled: true
+              },
               { 
                 name: 'Instagram', 
                 logo: 'https://i.imgur.com/YBE4cnb.jpeg',
