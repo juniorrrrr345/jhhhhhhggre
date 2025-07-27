@@ -557,18 +557,10 @@ export default function ShopHome() {
                     filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.2))'
                   }}
                   onError={(e) => {
-                    // Fallback vers emoji si l'image ne charge pas
-                    e.target.style.display = 'none';
-                    e.target.nextSibling.style.display = 'inline';
+                    // Fallback vers un logo par défaut si l'image ne charge pas
+                    e.target.src = 'https://i.imgur.com/PP2GVMv.png'; // Logo Telegram par défaut
                   }}
                 />
-                <span style={{ 
-                  fontSize: '16px',
-                  display: 'none',
-                  filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.3))'
-                }}>
-                  {social.emoji}
-                </span>
               </a>
             ))}
           </div>
