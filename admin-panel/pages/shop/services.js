@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import Head from 'next/head'
 import LanguageSelector, { useTranslation, getCurrentLanguage } from '../../components/LanguageSelector'
 import ShopNavigation from '../../components/ShopNavigation'
+import telegramLinksSync from '../../lib/telegram-links-sync'
 
 export default function ShopServices() {
   const [currentLanguage, setCurrentLanguage] = useState('fr')
@@ -17,24 +18,19 @@ export default function ShopServices() {
     
     // Charger la configuration
     fetchConfig()
+    
+    // Écouter les mises à jour des liens
+    telegramLinksSync.onLinksUpdate((links) => {
+      setConfig({
+        servicesTelegramLink: links.servicesTelegramLink || 'https://t.me/FindYourPlugBot'
+      })
+    })
   }, [])
 
   const fetchConfig = async () => {
     try {
-      // Récupérer depuis le localStorage (configuré par le panel admin)
-      const savedLinks = localStorage.getItem('telegramLinks')
-      if (savedLinks) {
-        const links = JSON.parse(savedLinks)
-        setConfig({
-          servicesTelegramLink: links.servicesTelegramLink || 'https://t.me/FindYourPlugBot'
-        })
-        return
-      }
-      
-      // Fallback : essayer l'API du bot
-      const botApiUrl = 'https://jhhhhhhggre.onrender.com'
-      
-      const response = await fetch(`${botApiUrl}/api/config`, {
+      // Priorité 1: API publique du bot
+      const response = await fetch('https://jhhhhhhggre.onrender.com/api/public/config', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json'
@@ -46,18 +42,38 @@ export default function ShopServices() {
         setConfig({
           servicesTelegramLink: data.boutique?.servicesTelegramLink || 'https://t.me/FindYourPlugBot'
         })
+        return
+      }
+      
+      // Priorité 2: localStorage (configuré par le panel admin)
+      const savedLinks = localStorage.getItem('telegramLinks')
+      if (savedLinks) {
+        const links = JSON.parse(savedLinks)
+        setConfig({
+          servicesTelegramLink: links.servicesTelegramLink || 'https://t.me/FindYourPlugBot'
+        })
+        return
+      }
+      
+      // Priorité 3: Lien par défaut
+      setConfig({
+        servicesTelegramLink: 'https://t.me/FindYourPlugBot'
+      })
+    } catch (error) {
+      console.error('Erreur lors du chargement de la config:', error)
+      
+      // Fallback vers localStorage en cas d'erreur
+      const savedLinks = localStorage.getItem('telegramLinks')
+      if (savedLinks) {
+        const links = JSON.parse(savedLinks)
+        setConfig({
+          servicesTelegramLink: links.servicesTelegramLink || 'https://t.me/FindYourPlugBot'
+        })
       } else {
-        // Fallback si l'API n'est pas disponible
         setConfig({
           servicesTelegramLink: 'https://t.me/FindYourPlugBot'
         })
       }
-    } catch (error) {
-      console.error('Erreur lors du chargement de la config:', error)
-      // Fallback en cas d'erreur
-      setConfig({
-        servicesTelegramLink: 'https://t.me/FindYourPlugBot'
-      })
     }
   }
 

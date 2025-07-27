@@ -84,8 +84,51 @@ export default function ShopHome() {
 
   const fetchConfig = async () => {
     try {
+      // Récupérer la config publique du bot
       const data = await api.getPublicConfig()
       setConfig(data)
+      
+      // Récupérer aussi les liens Telegram depuis l'API publique
+      try {
+        const response = await fetch('https://jhhhhhhggre.onrender.com/api/public/config', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+        
+        if (response.ok) {
+          const publicData = await response.json()
+          // Mettre à jour la config avec les liens Telegram
+          setConfig(prev => ({
+            ...prev,
+            telegramLinks: {
+              inscription: publicData.boutique?.inscriptionTelegramLink || 'https://t.me/FindYourPlugBot',
+              services: publicData.boutique?.servicesTelegramLink || 'https://t.me/FindYourPlugBot'
+            }
+          }))
+          
+          // Sauvegarder aussi en localStorage pour les autres pages
+          localStorage.setItem('telegramLinks', JSON.stringify({
+            inscriptionTelegramLink: publicData.boutique?.inscriptionTelegramLink || 'https://t.me/FindYourPlugBot',
+            servicesTelegramLink: publicData.boutique?.servicesTelegramLink || 'https://t.me/FindYourPlugBot'
+          }))
+        }
+      } catch (telegramError) {
+        console.log('Erreur récupération liens Telegram:', telegramError)
+        // Fallback vers localStorage
+        const savedLinks = localStorage.getItem('telegramLinks')
+        if (savedLinks) {
+          const links = JSON.parse(savedLinks)
+          setConfig(prev => ({
+            ...prev,
+            telegramLinks: {
+              inscription: links.inscriptionTelegramLink || 'https://t.me/FindYourPlugBot',
+              services: links.servicesTelegramLink || 'https://t.me/FindYourPlugBot'
+            }
+          }))
+        }
+      }
     } catch (error) {
       console.error('Erreur chargement config:', error)
     }
