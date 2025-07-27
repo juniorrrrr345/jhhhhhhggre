@@ -453,7 +453,14 @@ export default function ShopHome() {
             flexWrap: 'wrap'
           }}>
             {/* Réseaux sociaux depuis la configuration */}
-            {(config?.shopSocialMediaList || [
+            {(() => {
+              console.log('🔍 Debug réseaux sociaux accueil:', {
+                config: !!config,
+                shopSocialMediaList: config?.shopSocialMediaList,
+                length: config?.shopSocialMediaList?.length,
+                enabled: config?.shopSocialMediaList?.filter(s => s.enabled !== false)
+              });
+              return (config?.shopSocialMediaList && config.shopSocialMediaList.length > 0) ? config.shopSocialMediaList : [
               { 
                 name: 'Telegram', 
                 logo: 'https://i.imgur.com/PP2GVMv.png',
@@ -489,7 +496,7 @@ export default function ShopHome() {
                 url: '#',
                 enabled: true
               }
-            ]).filter(social => social && social.enabled !== false && social.url).map((social, index) => (
+            ]).filter(social => social && social.enabled !== false).map((social, index) => (
               <a
                 key={index}
                 href={social.url}
