@@ -298,66 +298,7 @@ export default function ShopServices() {
             </div>
           </div>
 
-          {/* Témoignages fictifs */}
-          <div style={{
-            maxWidth: '600px',
-            margin: '40px auto 0',
-            textAlign: 'center'
-          }}>
-            <h3 style={{
-              fontSize: '20px',
-              fontWeight: '600',
-              color: '#ffffff',
-              marginBottom: '24px'
-            }}>
-              💬 Ce qu'ils en pensent
-            </h3>
-            
-            <div style={{
-              backgroundColor: '#1a1a1a',
-              borderRadius: '16px',
-              padding: '20px',
-              border: '1px solid #333333',
-              marginBottom: '16px'
-            }}>
-              <p style={{
-                color: '#ffffff',
-                fontSize: '16px',
-                fontStyle: 'italic',
-                marginBottom: '12px'
-              }}>
-                "Depuis que j'ai mon bot, je n'ai plus peur que mon canal soit supprimé ! Mes clients me trouvent toujours 🔥"
-              </p>
-              <span style={{
-                color: '#8e8e93',
-                fontSize: '14px'
-              }}>
-                - @PlugDealer92
-              </span>
-            </div>
 
-            <div style={{
-              backgroundColor: '#1a1a1a',
-              borderRadius: '16px',
-              padding: '20px',
-              border: '1px solid #333333'
-            }}>
-              <p style={{
-                color: '#ffffff',
-                fontSize: '16px',
-                fontStyle: 'italic',
-                marginBottom: '12px'
-              }}>
-                "Le MiniApp est génial ! Mes clients adorent consulter le menu directement dans Telegram 👌"
-              </p>
-              <span style={{
-                color: '#8e8e93',
-                fontSize: '14px'
-              }}>
-                - @TopShop75
-              </span>
-            </div>
-          </div>
         </div>
 
         {/* Navigation */}

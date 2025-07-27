@@ -8,7 +8,7 @@ export default function ShopNavigation({ currentLanguage = 'fr', currentPage = '
     { key: 'home', href: '/shop', label: t('home') },
     { key: 'search', href: '/shop/search', label: t('search').replace('...', '') },
     { key: 'vip', href: '/shop/vip', label: t('vip') },
-    { key: 'inscription', href: '/shop/inscription', label: 'Inscription' },
+    { key: 'inscription', href: '/shop/inscription', label: 'S\'inscrire' },
     { key: 'services', href: '/shop/services', label: 'Services' }
   ]
 
@@ -35,11 +35,12 @@ export default function ShopNavigation({ currentLanguage = 'fr', currentPage = '
             flexDirection: 'column',
             alignItems: 'center',
             textDecoration: 'none',
-            color: currentPage === item.key ? '#ffffff' : '#8e8e93',
-            fontSize: '10px',
-            fontWeight: currentPage === item.key ? 'bold' : 'normal',
+            color: currentPage === item.key ? '#ffffff' : '#cccccc',
+            fontSize: '11px',
+            fontWeight: currentPage === item.key ? 'bold' : '600',
             transition: 'color 0.2s',
-            textDecoration: 'none'
+            textDecoration: 'none',
+            textShadow: '0 1px 2px rgba(0, 0, 0, 0.8)'
           }}
         >
           <div style={{ 
