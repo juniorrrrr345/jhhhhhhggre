@@ -1727,6 +1727,7 @@ app.get('/api/public/config', async (req, res) => {
       interface: config?.interface || {},
       welcome: config?.welcome || {},
       socialMedia: config?.socialMedia || {},
+      shopSocialMediaList: config?.shopSocialMediaList || [],
       messages: config?.messages || {},
       buttons: config?.buttons || {}
     };
