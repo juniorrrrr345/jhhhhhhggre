@@ -52,9 +52,24 @@ export default function ShopSocialMediaManager() {
       const token = localStorage.getItem('adminToken') || 'JuniorAdmon123'
       const config = await simpleApi.getConfig(token)
       
-      if (config && config.shopSocialMediaList) {
+      console.log('📡 Config reçue pour shop-social:', config)
+      
+      // Si la config existe (même si shopSocialMediaList est vide), c'est OK
+      if (config) {
+        let shopSocialList = config.shopSocialMediaList || []
+        
+        // Si shopSocialMediaList est vide, initialiser avec des données par défaut
+        if (shopSocialList.length === 0) {
+          shopSocialList = [
+            { id: 'telegram', name: 'Telegram', emoji: '📱', url: 'https://t.me/FindYourPlugBot', enabled: true },
+            { id: 'instagram', name: 'Instagram', emoji: '📸', url: '#', enabled: true },
+            { id: 'discord', name: 'Discord', emoji: '🎮', url: '#', enabled: true }
+          ]
+          console.log('🔧 Initialisation shopSocialMediaList avec données par défaut')
+        }
+        
         // S'assurer que tous les réseaux sociaux ont un ID unique
-        const socialMediasWithIds = config.shopSocialMediaList.map((item, index) => {
+        const socialMediasWithIds = shopSocialList.map((item, index) => {
           if (!item.id) {
             // Générer un ID basé sur le nom ou l'index
             const baseId = item.name ? item.name.toLowerCase().replace(/[^a-z0-9]/g, '_') : `social_${index}`
@@ -62,63 +77,63 @@ export default function ShopSocialMediaManager() {
           }
           return item
         })
+        
         setSocialMedias(socialMediasWithIds)
-        console.log('✅ Réseaux sociaux shop chargés depuis le serveur avec IDs:', socialMediasWithIds.map(s => ({ id: s.id, name: s.name })))
+        console.log('✅ Réseaux sociaux shop configurés:', socialMediasWithIds.map(s => ({ id: s.id, name: s.name, url: s.url })))
+        
       } else {
-        throw new Error('Configuration serveur vide')
+        throw new Error('Aucune configuration reçue du serveur')
       }
       
     } catch (error) {
-      console.error('Erreur chargement réseaux sociaux shop:', error)
+      console.error('❌ Erreur chargement réseaux sociaux shop:', error)
       
-      // Ne basculer en mode local que pour des erreurs critiques
+      // Ne basculer en mode local QUE pour des erreurs critiques de réseau
       if (error.message.includes('Failed to fetch') || 
           error.message.includes('NetworkError') || 
+          error.message.includes('ERR_NETWORK') ||
           error.message.includes('offline') ||
           error.message.includes('502') ||
           error.message.includes('503') ||
-          error.message.includes('504')) {
-        console.log('Basculement en mode local à cause de:', error.message)
+          error.message.includes('504') ||
+          error.name === 'TypeError') {
+        console.log('🔴 Basculement en mode local à cause de:', error.message)
         setIsLocalMode(true)
-      } else {
-        // Pour les autres erreurs, ne pas activer le mode local
-        console.log('Erreur non critique, pas de mode local:', error.message)
-        setIsLocalMode(false)
-      }
-      
-      try {
-        const localApi = getLocalApi()
-        if (localApi) {
-          const localConfig = await localApi.getConfig()
-          if (localConfig && localConfig.shopSocialMediaList) {
-            // S'assurer que tous les réseaux sociaux ont un ID unique
-            const socialMediasWithIds = localConfig.shopSocialMediaList.map((item, index) => {
-              if (!item.id) {
-                // Générer un ID basé sur le nom ou l'index
-                const baseId = item.name ? item.name.toLowerCase().replace(/[^a-z0-9]/g, '_') : `social_${index}`
-                item.id = baseId
-              }
-              return item
-            })
-            setSocialMedias(socialMediasWithIds)
-            console.log('📁 Réseaux sociaux shop chargés depuis le stockage local avec IDs:', socialMediasWithIds.map(s => ({ id: s.id, name: s.name })))
-          } else {
-            // Initialiser avec des données par défaut pour la boutique
-            const defaultSocialMedias = [
-              { id: 'telegram', name: 'Telegram', emoji: '📱', url: 'https://t.me/FindYourPlugBot', enabled: true },
-              { id: 'potato', name: 'Potato', emoji: '🥔', url: '#', enabled: true },
-              { id: 'instagram', name: 'Instagram', emoji: '📸', url: '#', enabled: true },
-              { id: 'luffa', name: 'Luffa', emoji: '🧽', url: '#', enabled: true },
-              { id: 'discord', name: 'Discord', emoji: '🎮', url: '#', enabled: true }
-            ]
-            setSocialMedias(defaultSocialMedias)
-            await localApi.updateShopSocialMedia(defaultSocialMedias)
-            console.log('🔧 Réseaux sociaux shop initialisés en mode local')
+        
+        // Essayer de charger depuis le stockage local
+        try {
+          const localApi = getLocalApi()
+          if (localApi) {
+            const localConfig = await localApi.getConfig()
+            if (localConfig && localConfig.shopSocialMediaList) {
+              setSocialMedias(localConfig.shopSocialMediaList)
+              console.log('📁 Données chargées depuis le stockage local')
+            } else {
+              // Initialiser avec des données par défaut en mode local
+              const defaultSocialMedias = [
+                { id: 'telegram', name: 'Telegram', emoji: '📱', url: 'https://t.me/FindYourPlugBot', enabled: true },
+                { id: 'instagram', name: 'Instagram', emoji: '📸', url: '#', enabled: true },
+                { id: 'discord', name: 'Discord', emoji: '🎮', url: '#', enabled: true }
+              ]
+              setSocialMedias(defaultSocialMedias)
+              console.log('🔧 Données par défaut en mode local')
+            }
           }
+        } catch (localError) {
+          console.error('❌ Erreur mode local:', localError)
+          toast.error('Erreur de stockage local')
         }
-      } catch (localError) {
-        console.error('Erreur mode local:', localError)
-        toast.error('Erreur de stockage local')
+      } else {
+        // Pour les autres erreurs, ne pas activer le mode local mais initialiser quand même
+        console.log('⚠️ Erreur non critique, initialisation par défaut:', error.message)
+        setIsLocalMode(false)
+        
+        const defaultSocialMedias = [
+          { id: 'telegram', name: 'Telegram', emoji: '📱', url: 'https://t.me/FindYourPlugBot', enabled: true },
+          { id: 'instagram', name: 'Instagram', emoji: '📸', url: '#', enabled: true },
+          { id: 'discord', name: 'Discord', emoji: '🎮', url: '#', enabled: true }
+        ]
+        setSocialMedias(defaultSocialMedias)
       }
     } finally {
       setLoading(false)
