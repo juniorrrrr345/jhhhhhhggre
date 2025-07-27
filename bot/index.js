@@ -350,9 +350,9 @@ const showMainMenuInLanguage = async (ctx, config, language) => {
     
     console.log(`🌍 Affichage menu principal en langue: ${currentLang}`);
     
-    // Message de bienvenue du panel admin ou traduit en fallback
+    // Message de bienvenue avec placeholders pour les statistiques
     const { getTranslation } = require('./src/utils/translations');
-    let welcomeMessage = freshConfig?.welcome?.text || getTranslation('messages_welcome', currentLang, customTranslations);
+    let welcomeMessage = getTranslation('messages_welcome', currentLang, customTranslations);
     
     // Remplacer les statistiques dans le message
     const stats = await getBotStats();
