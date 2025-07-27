@@ -31,7 +31,14 @@ const isSpamClick = (userId, action, params = '') => {
 // 🔘 SYSTÈME TOP PLUGS - Bouton principal avec pays, filtres et liste
 const handleTopPlugs = async (ctx) => {
   try {
-    await ctx.answerCbQuery();
+    const userId = ctx.from?.id;
+    
+    // 🚫 Prévention spam - vérifier si c'est un clic répété
+    if (isSpamClick(userId, 'top_plugs')) {
+      return await ctx.answerCbQuery();
+    }
+    
+    await ctx.answerCbQuery('🔄 Chargement...');
     
     // Récupérer la config pour les traductions
     const config = await Config.findById('main');
