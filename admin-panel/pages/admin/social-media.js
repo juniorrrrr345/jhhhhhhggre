@@ -161,6 +161,9 @@ export default function SocialMediaManager() {
             robustSync.syncConfigUpdate(configData)
           }
           
+          // Force le rechargement immédiat du bot
+          await forceReloadBot()
+          
           console.log('✅ Réseaux sociaux sauvegardés et synchronisés')
         } catch (serverError) {
             console.log('Erreur sauvegarde serveur:', serverError.message)
@@ -224,7 +227,10 @@ export default function SocialMediaManager() {
     setNewSocialMedia({ name: '', url: '', emoji: '', enabled: true })
     
     // Synchronisation automatique après ajout
-    syncToBotAPI(updatedSocialMedias)
+    await syncToBotAPI(updatedSocialMedias)
+    
+    // Force le rechargement immédiat du bot pour afficher le nouveau réseau
+    await forceReloadBot()
     
     toast.success(`Réseau social "${newItem.name}" ajouté et synchronisé`)
   }
@@ -361,6 +367,9 @@ export default function SocialMediaManager() {
     
     // Synchronisation automatique avec la boutique
     await syncToBotAPI(updatedSocialMedias)
+    
+    // Force le rechargement immédiat du bot
+    await forceReloadBot()
   }
 
   // Fonction pour assigner automatiquement un emoji selon le nom
@@ -379,6 +388,31 @@ export default function SocialMediaManager() {
     if (lowercaseName.includes('linkedin')) return '💼'
     if (lowercaseName.includes('website') || lowercaseName.includes('site')) return '🌐'
     return '🔗' // Emoji par défaut
+  }
+
+  // Fonction pour forcer le rechargement immédiat du bot
+  const forceReloadBot = async () => {
+    try {
+      const botUrl = process.env.NEXT_PUBLIC_BOT_URL || 'https://findyourplug-bot.onrender.com'
+      const response = await fetch(`${botUrl}/api/cache/refresh`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          operation: 'force_reload_social_media',
+          timestamp: Date.now()
+        })
+      })
+      
+      if (response.ok) {
+        console.log('✅ Bot rechargé avec succès')
+      } else {
+        console.warn('⚠️ Erreur rechargement bot:', response.status)
+      }
+    } catch (error) {
+      console.warn('⚠️ Impossible de recharger le bot:', error.message)
+    }
   }
 
   // Fonction utilitaire pour synchroniser avec l'API du bot
@@ -483,6 +517,24 @@ export default function SocialMediaManager() {
                   🔄 Synchroniser
                 </button>
               )}
+
+              <button
+                onClick={async () => {
+                  try {
+                    setSaving(true)
+                    await forceReloadBot()
+                    toast.success('✅ Bot rechargé avec succès')
+                  } catch (error) {
+                    toast.error('❌ Erreur rechargement bot')
+                  } finally {
+                    setSaving(false)
+                  }
+                }}
+                disabled={saving}
+                className="inline-flex items-center px-3 py-2 border border-blue-300 rounded-md shadow-sm text-sm font-medium text-blue-700 bg-blue-100 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+              >
+                🤖 Recharger Bot
+              </button>
 
               <button
                 onClick={saveSocialMedias}
