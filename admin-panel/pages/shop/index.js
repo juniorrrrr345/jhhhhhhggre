@@ -326,7 +326,7 @@ export default function ShopHome() {
             letterSpacing: '0.3px',
             lineHeight: '1.2'
           }}>
-            🎯 Bienvenue sur FindYourPlug
+            👋 Bienvenue sur FindYourPlug
           </h1>
           
           <div style={{ 

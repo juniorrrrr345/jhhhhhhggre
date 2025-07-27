@@ -354,7 +354,7 @@ export default function ShopSearch() {
             color: '#ffffff',
             letterSpacing: '2px'
           }}>
-            🎯 {t('search')}
+            🔍 {t('search')}
           </h1>
           <p style={{ 
             color: '#8e8e93', 
@@ -380,7 +380,7 @@ export default function ShopSearch() {
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-                              placeholder={`🎯 ${t('search_placeholder') || 'Rechercher une boutique'}...`}
+                              placeholder={`🔍 ${t('search_placeholder') || 'Rechercher une boutique'}...`}
               style={{
                 width: '100%',
                 padding: '12px 16px',
@@ -480,7 +480,7 @@ export default function ShopSearch() {
                 boxSizing: 'border-box'
               }}
             >
-                              <option value="">🎯 {t('all_types') || 'Tous types'}</option>
+                              <option value="">🔍 {t('all_types') || 'Tous types'}</option>
               <option value="vip">👑 {t('vip') || 'VIP'} {t('only') || 'uniquement'}</option>
               <option value="standard">🔹 {t('standard') || 'Standard'} {t('only') || 'uniquement'}</option>
             </select>
@@ -548,7 +548,7 @@ export default function ShopSearch() {
               minHeight: '300px',
               textAlign: 'center'
             }}>
-                              <div style={{ fontSize: '64px', marginBottom: '20px' }}>🎯</div>
+                              <div style={{ fontSize: '64px', marginBottom: '20px' }}>🔍</div>
               <h3 style={{ 
                 color: '#ffffff', 
                 fontSize: '24px', 
