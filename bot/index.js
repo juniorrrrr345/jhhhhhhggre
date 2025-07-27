@@ -328,7 +328,7 @@ const showMainMenuInLanguage = async (ctx, config, language) => {
     const keyboard = await createMainKeyboard(freshConfig);
     
     // Modifier le message existant avec la nouvelle langue
-    const { editMessageWithImage } = require('./src/utils/messageHelper');
+    const { editMessageWithImage, safeEditMessage } = require('./src/utils/messageHelper');
     await editMessageWithImage(ctx, welcomeMessage, keyboard, freshConfig, { 
       parse_mode: 'Markdown' 
     });
