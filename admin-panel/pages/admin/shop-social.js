@@ -48,110 +48,86 @@ export default function ShopSocialMediaManager() {
       // Vérifier si on est côté client
       if (typeof window === 'undefined') return
       
-      // PRIORITÉ 1: Vérifier d'abord le localStorage (vos réseaux ajoutés)
+      // INITIALISATION FORCÉE: Vos 5 réseaux sociaux complets
+      const yourCompleteSocialMedias = [
+        { 
+          id: 'telegram', 
+          name: 'Telegram', 
+          emoji: '📱', 
+          url: 'https://t.me/+zcP68c4M_3NlM2Y0', 
+          enabled: true 
+        },
+        { 
+          id: 'find_your_plug', 
+          name: 'Find Your Plug', 
+          emoji: '🌐', 
+          url: 'https://dym168.org/findyourplug', 
+          enabled: true 
+        },
+        { 
+          id: 'instagram', 
+          name: 'Instagram', 
+          emoji: '📸', 
+          url: 'https://www.instagram.com/find.yourplug?igsh=ajRwcjE1eGhoaXMz&utm_source=qr', 
+          enabled: true 
+        },
+        { 
+          id: 'luffa', 
+          name: 'Luffa', 
+          emoji: '🧽', 
+          url: 'https://callup.luffa.im/c/EnvtiTHkbvP', 
+          enabled: true 
+        },
+        { 
+          id: 'discord', 
+          name: 'Discord', 
+          emoji: '🎮', 
+          url: 'https://discord.gg/g2dACUC3', 
+          enabled: true 
+        }
+      ]
+      
+      // PRIORITÉ 1: Vérifier le localStorage (vos modifications)
       let savedSocialMedias = null
       try {
         const shopSocialBackup = localStorage.getItem('shopSocialMediaBackup')
         if (shopSocialBackup) {
           savedSocialMedias = JSON.parse(shopSocialBackup)
           console.log('💾 Réseaux sociaux trouvés dans localStorage:', savedSocialMedias)
+          
+          // Vérifier que toutes vos plateformes sont présentes
+          const savedIds = savedSocialMedias.map(s => s.id)
+          const yourIds = yourCompleteSocialMedias.map(s => s.id)
+          const missingNetworks = yourCompleteSocialMedias.filter(network => !savedIds.includes(network.id))
+          
+          if (missingNetworks.length > 0) {
+            console.log('🔧 Ajout des réseaux manquants:', missingNetworks.map(n => n.name))
+            savedSocialMedias = [...savedSocialMedias, ...missingNetworks]
+          }
         }
       } catch (e) {
         console.log('❌ Erreur lecture localStorage:', e)
       }
       
-      // Si on a des réseaux sauvegardés, les utiliser directement
-      if (savedSocialMedias && savedSocialMedias.length > 0) {
-        console.log('✅ Utilisation de VOS réseaux sociaux sauvegardés')
+      // Si on a des réseaux sauvegardés complets, les utiliser
+      if (savedSocialMedias && savedSocialMedias.length >= 5) {
+        console.log('✅ Utilisation de VOS réseaux sociaux sauvegardés (complets)')
         setSocialMedias(savedSocialMedias)
-        return // Sortir ici, ne pas charger depuis l'API
+        return
       }
       
-      // PRIORITÉ 2: Seulement si pas de données locales, essayer l'API
-      const token = localStorage.getItem('adminToken') || 'JuniorAdmon123'
-      const config = await simpleApi.getConfig(token)
+      // SINON: Utiliser vos réseaux complets et les sauvegarder
+      console.log('🔧 Initialisation complète avec VOS 5 réseaux sociaux')
+      setSocialMedias(yourCompleteSocialMedias)
       
-      console.log('📡 Config reçue pour shop-social:', config)
-      
-      if (config && config.shopSocialMediaList && config.shopSocialMediaList.length > 0) {
-        // S'assurer que tous les réseaux sociaux ont un ID unique
-        const socialMediasWithIds = config.shopSocialMediaList.map((item, index) => {
-          if (!item.id) {
-            const baseId = item.name ? item.name.toLowerCase().replace(/[^a-z0-9]/g, '_') : `social_${index}`
-            item.id = baseId
-          }
-          return item
-        })
-        
-        setSocialMedias(socialMediasWithIds)
-        console.log('✅ Réseaux sociaux chargés depuis API:', socialMediasWithIds.map(s => ({ id: s.id, name: s.name, url: s.url })))
-        
-        // Sauvegarder dans localStorage pour la prochaine fois
-        localStorage.setItem('shopSocialMediaBackup', JSON.stringify(socialMediasWithIds))
-      } else {
-        // PRIORITÉ 3: Initialiser avec vos vrais réseaux sociaux
-        const defaultSocialMedias = [
-          { 
-            id: 'telegram', 
-            name: 'Telegram', 
-            emoji: '📱', 
-            url: 'https://t.me/+zcP68c4M_3NlM2Y0', 
-            enabled: true 
-          },
-          { 
-            id: 'find_your_plug', 
-            name: 'Find Your Plug', 
-            emoji: '🌐', 
-            url: 'https://dym168.org/findyourplug', 
-            enabled: true 
-          },
-          { 
-            id: 'instagram', 
-            name: 'Instagram', 
-            emoji: '📸', 
-            url: 'https://www.instagram.com/find.yourplug?igsh=ajRwcjE1eGhoaXMz&utm_source=qr', 
-            enabled: true 
-          },
-          { 
-            id: 'luffa', 
-            name: 'Luffa', 
-            emoji: '🧽', 
-            url: 'https://callup.luffa.im/c/EnvtiTHkbvP', 
-            enabled: true 
-          },
-          { 
-            id: 'discord', 
-            name: 'Discord', 
-            emoji: '🎮', 
-            url: 'https://discord.gg/g2dACUC3', 
-            enabled: true 
-          }
-        ]
-        
-        setSocialMedias(defaultSocialMedias)
-        console.log('🔧 Initialisation avec VOS réseaux sociaux')
-        
-        // Sauvegarder immédiatement dans localStorage
-        localStorage.setItem('shopSocialMediaBackup', JSON.stringify(defaultSocialMedias))
-      }
+      // Sauvegarder immédiatement dans localStorage
+      localStorage.setItem('shopSocialMediaBackup', JSON.stringify(yourCompleteSocialMedias))
+      console.log('💾 Sauvegarde automatique dans localStorage terminée')
       
     } catch (error) {
       console.error('❌ Erreur chargement réseaux sociaux shop:', error)
       
-      // En cas d'erreur, toujours essayer de récupérer depuis localStorage
-      try {
-        const shopSocialBackup = localStorage.getItem('shopSocialMediaBackup')
-        if (shopSocialBackup) {
-          const backupData = JSON.parse(shopSocialBackup)
-          setSocialMedias(backupData)
-          console.log('🔄 Récupération depuis localStorage après erreur')
-          return
-        }
-      } catch (e) {
-        console.log('❌ Erreur récupération localStorage:', e)
-      }
-      
-      // Dernier recours: initialiser avec vos réseaux
+      // En cas d'erreur: au minimum votre Telegram
       const fallbackSocialMedias = [
         { id: 'telegram', name: 'Telegram', emoji: '📱', url: 'https://t.me/+zcP68c4M_3NlM2Y0', enabled: true }
       ]
