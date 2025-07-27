@@ -43,6 +43,12 @@ export default function ShopServices() {
         setConfig({
           servicesTelegramLink: data.boutique?.servicesTelegramLink || 'https://t.me/FindYourPlugBot'
         })
+        
+        // Charger les réseaux sociaux du shop
+        if (data && data.shopSocialMediaList) {
+          const enabledSocialMedias = data.shopSocialMediaList.filter(social => social.enabled)
+          setShopSocialMedias(enabledSocialMedias)
+        }
         return
       }
       
@@ -483,7 +489,82 @@ export default function ShopServices() {
             </div>
           </div>
 
-
+          {/* Réseaux sociaux */}
+          {shopSocialMedias.length > 0 && (
+            <div style={{ 
+              padding: '20px',
+              marginTop: '30px',
+              textAlign: 'center'
+            }}>
+              <h4 style={{
+                fontSize: '14px',
+                color: '#8e8e93',
+                marginBottom: '15px',
+                fontWeight: '500'
+              }}>
+                📱 Suivez-nous
+              </h4>
+              <div style={{ 
+                display: 'flex', 
+                justifyContent: 'center', 
+                flexWrap: 'wrap',
+                gap: '10px'
+              }}>
+                {shopSocialMedias.map((social) => (
+                  <a
+                    key={social.id}
+                    href={social.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      width: '40px',
+                      height: '40px',
+                      backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                      borderRadius: '10px',
+                      textDecoration: 'none',
+                      color: '#ffffff',
+                      transition: 'all 0.2s ease',
+                      border: '1px solid rgba(255, 255, 255, 0.2)'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.2)'
+                      e.currentTarget.style.transform = 'translateY(-2px)'
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)'
+                      e.currentTarget.style.transform = 'translateY(0px)'
+                    }}
+                  >
+                    {social.logo && social.logo !== '#' && social.logo !== '' ? (
+                      <img 
+                        src={social.logo}
+                        alt={social.name}
+                        style={{
+                          width: '20px',
+                          height: '20px',
+                          objectFit: 'contain',
+                          filter: 'brightness(0) invert(1)'
+                        }}
+                        onError={(e) => {
+                          e.target.style.display = 'none'
+                          e.target.nextSibling.style.display = 'block'
+                        }}
+                      />
+                    ) : null}
+                    <span style={{ 
+                      fontSize: '16px',
+                      display: social.logo && social.logo !== '#' && social.logo !== '' ? 'none' : 'block'
+                    }}>
+                      {social.emoji}
+                    </span>
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Navigation */}

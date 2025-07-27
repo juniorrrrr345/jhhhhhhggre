@@ -16,6 +16,7 @@ export default function ShopVIP() {
   const [initialLoading, setInitialLoading] = useState(true)
   const [currentPage, setCurrentPage] = useState(1)
   const [currentLanguage, setCurrentLanguage] = useState('fr')
+  const [shopSocialMedias, setShopSocialMedias] = useState([])
   const { t } = useTranslation(currentLanguage)
   const itemsPerPage = 20
 
