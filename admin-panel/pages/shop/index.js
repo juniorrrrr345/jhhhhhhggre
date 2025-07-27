@@ -304,7 +304,7 @@ export default function ShopHome() {
                 <div style={{
                   backgroundColor: '#000000',
                   borderRadius: '20px',
-                  padding: '20px',
+                  padding: '8px',
                   display: 'inline-block',
                   boxShadow: '0 8px 32px rgba(0,0,0,0.5)'
                 }}>
@@ -332,7 +332,7 @@ export default function ShopHome() {
                 <div style={{
                   backgroundColor: '#000000',
                   borderRadius: '20px',
-                  padding: '20px',
+                  padding: '8px',
                   display: 'inline-block',
                   boxShadow: '0 8px 32px rgba(0,0,0,0.5)'
                 }}>
