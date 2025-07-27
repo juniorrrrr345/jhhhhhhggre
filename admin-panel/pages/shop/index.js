@@ -451,31 +451,31 @@ export default function ShopHome() {
             {[
               { 
                 name: 'Telegram', 
-                logo: 'https://cdn-icons-png.flaticon.com/512/2111/2111646.png',
+                logo: 'https://i.imgur.com/o2umvWd.png',
                 emoji: '📱',
                 url: 'https://t.me/FindYourPlugBot' 
               },
               { 
                 name: 'Potato', 
-                logo: 'https://cdn-icons-png.flaticon.com/512/2111/2111646.png',
+                logo: 'https://i.imgur.com/o2umvWd.png',
                 emoji: '🥔',
                 url: '#' 
               },
               { 
                 name: 'Instagram', 
-                logo: 'https://cdn-icons-png.flaticon.com/512/174/174855.png',
+                logo: 'https://i.imgur.com/o2umvWd.png',
                 emoji: '📸',
                 url: '#' 
               },
               { 
                 name: 'Luffa', 
-                logo: 'https://cdn-icons-png.flaticon.com/512/2111/2111646.png',
+                logo: 'https://i.imgur.com/o2umvWd.png',
                 emoji: '🧽',
                 url: '#' 
               },
               { 
                 name: 'Discord', 
-                logo: 'https://cdn-icons-png.flaticon.com/512/3670/3670157.png',
+                logo: 'https://i.imgur.com/o2umvWd.png',
                 emoji: '🎮',
                 url: '#' 
               }
