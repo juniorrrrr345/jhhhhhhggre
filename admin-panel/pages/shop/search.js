@@ -359,18 +359,29 @@ export default function ShopSearch() {
           
           <h1 style={{ 
             fontSize: 'clamp(24px, 5vw, 32px)', 
-            fontWeight: 'bold', 
-            margin: '0 0 8px 0',
+            fontWeight: '800', 
+            margin: '0 0 12px 0',
             color: '#ffffff',
-            letterSpacing: '2px'
+            letterSpacing: '2px',
+            textShadow: '0 2px 4px rgba(0,0,0,0.8)',
+            background: 'linear-gradient(135deg, #ffffff, #f0f0f0)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text'
           }}>
             🔍 {t('search')}
           </h1>
           <p style={{ 
-            color: '#8e8e93', 
-            fontSize: '16px',
+            color: '#ffffff', 
+            fontSize: '18px',
             margin: '0',
-            fontWeight: '400'
+            fontWeight: '500',
+            textShadow: '0 1px 3px rgba(0,0,0,0.7)',
+            padding: '8px 12px',
+            backgroundColor: 'rgba(0,0,0,0.3)',
+            borderRadius: '8px',
+            border: '1px solid rgba(255,255,255,0.2)',
+            display: 'inline-block'
           }}>
             {t('search_desc') || 'Recherchez vos boutiques préférées'}
           </p>

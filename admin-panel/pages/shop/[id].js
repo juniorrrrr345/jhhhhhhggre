@@ -346,10 +346,26 @@ export default function ShopPlugDetail() {
                 }}
               />
             </div>
-            <h3 style={{ fontSize: '24px', fontWeight: '600', marginBottom: '12px', color: '#ffffff' }}>
+            <h3 style={{ 
+              fontSize: '24px', 
+              fontWeight: '800', 
+              marginBottom: '12px', 
+              color: '#ffffff',
+              textShadow: '0 2px 4px rgba(0,0,0,0.8)'
+            }}>
               {t('shop_not_found') || 'Boutique non trouvée'}
             </h3>
-            <p style={{ color: '#8e8e93', marginBottom: '32px', fontSize: '16px' }}>
+            <p style={{ 
+              color: '#ffffff', 
+              marginBottom: '32px', 
+              fontSize: '16px',
+              textShadow: '0 1px 3px rgba(0,0,0,0.7)',
+              padding: '8px 12px',
+              backgroundColor: 'rgba(0,0,0,0.3)',
+              borderRadius: '8px',
+              border: '1px solid rgba(255,255,255,0.2)',
+              display: 'inline-block'
+            }}>
               {t('shop_not_found_desc') || 'Cette boutique n\'existe pas ou a été supprimée.'}
             </p>
             <Link href="/shop" style={{ 

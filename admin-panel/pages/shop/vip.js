@@ -287,17 +287,23 @@ export default function ShopVIP() {
                   <div style={{ fontSize: '80px', marginBottom: '20px' }}>👑</div>
                   <h3 style={{ 
                     fontSize: '24px', 
-                    fontWeight: '600', 
+                    fontWeight: '800', 
                     marginBottom: '12px',
-                    color: '#FFD700'
+                    color: '#FFD700',
+                    textShadow: '0 2px 4px rgba(0,0,0,0.8)'
                   }}>
                     {t('no_vip_shops') || 'Aucune boutique VIP'}
                   </h3>
                   <p style={{ 
-                    color: '#8e8e93', 
+                    color: '#ffffff', 
                     fontSize: '16px',
                     maxWidth: '300px',
-                    lineHeight: '1.5'
+                    lineHeight: '1.5',
+                    textShadow: '0 1px 3px rgba(0,0,0,0.7)',
+                    padding: '8px 12px',
+                    backgroundColor: 'rgba(0,0,0,0.3)',
+                    borderRadius: '8px',
+                    border: '1px solid rgba(255,255,255,0.2)'
                   }}>
                     {t('no_vip_shops_desc') || 'Aucune boutique VIP n\'est disponible pour le moment.'}
                   </p>
