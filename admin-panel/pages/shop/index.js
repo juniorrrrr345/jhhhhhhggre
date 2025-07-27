@@ -469,7 +469,7 @@ export default function ShopHome() {
               },
               { 
                 name: 'Luffa', 
-                logo: 'https://i.imgur.com/o2umvWd.png',
+                logo: 'https://i.imgur.com/zkZtY0m.png',
                 emoji: '🧽',
                 url: '#' 
               },
@@ -511,10 +511,12 @@ export default function ShopHome() {
                   src={social.logo}
                   alt={social.name}
                   style={{
-                    width: '18px',
-                    height: '18px',
-                    objectFit: 'contain',
-                    borderRadius: '50%'
+                    width: '20px',
+                    height: '20px',
+                    objectFit: 'cover',
+                    borderRadius: '50%',
+                    backgroundColor: 'rgba(255,255,255,0.1)',
+                    padding: '2px'
                   }}
                   onError={(e) => {
                     // Fallback vers emoji si l'image ne charge pas
