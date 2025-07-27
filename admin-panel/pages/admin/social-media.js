@@ -170,9 +170,12 @@ export default function SocialMediaManager() {
   }
 
   const updateSocialMedia = (id, field, value) => {
-    setSocialMedias(socialMedias.map(item => 
-      item.id === id ? { ...item, [field]: value } : item
-    ))
+    console.log('🔄 Mise à jour réseau social:', { id, field, value })
+    setSocialMedias(prevSocialMedias => 
+      prevSocialMedias.map(item => 
+        item.id === id ? { ...item, [field]: value } : item
+      )
+    )
   }
 
   const deleteSocialMedia = async (id) => {
@@ -261,9 +264,12 @@ export default function SocialMediaManager() {
   }
 
   const toggleEnabled = (id) => {
-    setSocialMedias(socialMedias.map(item => 
-      item.id === id ? { ...item, enabled: !item.enabled } : item
-    ))
+    console.log('🔄 Toggle réseau social:', { id })
+    setSocialMedias(prevSocialMedias => 
+      prevSocialMedias.map(item => 
+        item.id === id ? { ...item, enabled: !item.enabled } : item
+      )
+    )
   }
 
   if (loading) {
