@@ -19,6 +19,40 @@ export default function ShopHome() {
   const { t } = useTranslation(currentLanguage)
   const itemsPerPage = 50
 
+  // Fonction pour calculer les styles de thème
+  const getThemeStyles = () => {
+    if (!config?.boutique) return { backgroundColor: '#000000' }
+    
+    const { theme, backgroundColor, backgroundImage } = config.boutique
+    
+    switch (theme) {
+      case 'light':
+        return {
+          backgroundColor: '#ffffff',
+          color: '#000000',
+          backgroundImage: 'linear-gradient(135deg, #f3f4f6, #e5e7eb)'
+        }
+      case 'custom':
+        return {
+          backgroundColor: backgroundColor || '#000000',
+          color: '#ffffff',
+          backgroundImage: backgroundImage ? 
+            `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url("${backgroundImage}")` : 
+            'none',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          backgroundAttachment: 'fixed'
+        }
+      case 'dark':
+      default:
+        return {
+          backgroundColor: backgroundColor || '#000000',
+          color: '#ffffff'
+        }
+    }
+  }
+
   useEffect(() => {
     // Initialiser la langue depuis localStorage
     if (typeof window !== 'undefined') {
@@ -205,15 +239,9 @@ export default function ShopHome() {
       </Head>
 
       <div style={{ 
-        backgroundColor: '#000000', 
+        ...getThemeStyles(),
         minHeight: '100vh',
-        color: '#ffffff',
-        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-        backgroundImage: config?.boutique?.backgroundImage ? `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url("${config.boutique.backgroundImage}")` : 'none',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat',
-        backgroundAttachment: 'fixed'
+        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
       }}>
         {/* Header Titre Principal */}
         <div style={{ 
