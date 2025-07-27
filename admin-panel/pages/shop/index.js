@@ -447,13 +447,38 @@ export default function ShopHome() {
             gap: '12px',
             flexWrap: 'wrap'
           }}>
-            {/* Réseaux sociaux avec emojis (plus fiable) */}
+            {/* Réseaux sociaux avec vrais logos PNG */}
             {[
-              { name: 'Telegram', emoji: '📱', url: 'https://t.me/FindYourPlugBot' },
-              { name: 'Potato', emoji: '🥔', url: '#' },
-              { name: 'Instagram', emoji: '📸', url: '#' },
-              { name: 'Luffa', emoji: '🧽', url: '#' },
-              { name: 'Discord', emoji: '🎮', url: '#' }
+              { 
+                name: 'Telegram', 
+                logo: 'https://cdn-icons-png.flaticon.com/512/2111/2111646.png',
+                emoji: '📱',
+                url: 'https://t.me/FindYourPlugBot' 
+              },
+              { 
+                name: 'Potato', 
+                logo: 'https://cdn-icons-png.flaticon.com/512/2111/2111646.png',
+                emoji: '🥔',
+                url: '#' 
+              },
+              { 
+                name: 'Instagram', 
+                logo: 'https://cdn-icons-png.flaticon.com/512/174/174855.png',
+                emoji: '📸',
+                url: '#' 
+              },
+              { 
+                name: 'Luffa', 
+                logo: 'https://cdn-icons-png.flaticon.com/512/2111/2111646.png',
+                emoji: '🧽',
+                url: '#' 
+              },
+              { 
+                name: 'Discord', 
+                logo: 'https://cdn-icons-png.flaticon.com/512/3670/3670157.png',
+                emoji: '🎮',
+                url: '#' 
+              }
             ].map((social, index) => (
               <a
                 key={index}
@@ -482,8 +507,23 @@ export default function ShopHome() {
                   e.target.style.transform = 'scale(1)';
                 }}
               >
+                <img 
+                  src={social.logo}
+                  alt={social.name}
+                  style={{
+                    width: '16px',
+                    height: '16px',
+                    objectFit: 'contain'
+                  }}
+                  onError={(e) => {
+                    // Fallback vers emoji si l'image ne charge pas
+                    e.target.style.display = 'none';
+                    e.target.nextSibling.style.display = 'inline';
+                  }}
+                />
                 <span style={{ 
                   fontSize: '16px',
+                  display: 'none',
                   filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.3))'
                 }}>
                   {social.emoji}
