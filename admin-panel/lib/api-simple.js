@@ -36,9 +36,9 @@ const makeProxyCall = async (endpoint, method = 'GET', token = null, data = null
     // Marquer l'appel pour l'anti-spam
     apiCache.markCall(cacheKey);
     
-    // Timeout réduit à 6 secondes pour éviter les erreurs 502
+    // Timeout augmenté à 15 secondes pour réduire les fausses erreurs
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 6000);
+    const timeoutId = setTimeout(() => controller.abort(), 15000);
     
     // Appel direct au serveur bot
     const botUrl = 'https://jhhhhhhggre.onrender.com';
@@ -76,7 +76,7 @@ const makeProxyCall = async (endpoint, method = 'GET', token = null, data = null
           return fallbackData;
         } else {
           console.log(`🚫 ABANDON immédiat pour ${endpoint} - serveur indisponible`);
-          throw new Error(`Serveur temporairement indisponible (${response.status}). Mode local activé.`);
+          throw new Error(`Erreur serveur ${response.status}: ${errorData.error || 'Service temporairement indisponible'}`);
         }
       }
       

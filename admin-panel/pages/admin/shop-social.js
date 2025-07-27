@@ -58,10 +58,22 @@ export default function ShopSocialMediaManager() {
       }
       
     } catch (error) {
-      console.error('Serveur indisponible, basculement en mode local:', error)
+      console.error('Erreur chargement réseaux sociaux shop:', error)
       
-      // Basculer en mode local
-      setIsLocalMode(true)
+      // Ne basculer en mode local que pour des erreurs critiques
+      if (error.message.includes('Failed to fetch') || 
+          error.message.includes('NetworkError') || 
+          error.message.includes('offline') ||
+          error.message.includes('502') ||
+          error.message.includes('503') ||
+          error.message.includes('504')) {
+        console.log('Basculement en mode local à cause de:', error.message)
+        setIsLocalMode(true)
+      } else {
+        // Pour les autres erreurs, ne pas activer le mode local
+        console.log('Erreur non critique, pas de mode local:', error.message)
+        setIsLocalMode(false)
+      }
       
       try {
         const localApi = getLocalApi()

@@ -59,10 +59,22 @@ export default function SocialMediaManager() {
       }
       
     } catch (error) {
-      console.error('Serveur indisponible, basculement en mode local:', error)
+      console.error('Erreur chargement réseaux sociaux:', error)
       
-      // Basculer en mode local
-      setIsLocalMode(true)
+      // Ne basculer en mode local que pour des erreurs critiques
+      if (error.message.includes('Failed to fetch') || 
+          error.message.includes('NetworkError') || 
+          error.message.includes('offline') ||
+          error.message.includes('502') ||
+          error.message.includes('503') ||
+          error.message.includes('504')) {
+        console.log('Basculement en mode local à cause de:', error.message)
+        setIsLocalMode(true)
+      } else {
+        // Pour les autres erreurs, ne pas activer le mode local
+        console.log('Erreur non critique, pas de mode local:', error.message)
+        setIsLocalMode(false)
+      }
       
              try {
          const localApi = getLocalApi()
@@ -137,9 +149,20 @@ export default function SocialMediaManager() {
           
           console.log('✅ Réseaux sociaux sauvegardés et synchronisés')
         } catch (serverError) {
-            console.log('Serveur indisponible, sauvegarde locale de secours')
-            // Fallback en mode local
-            setIsLocalMode(true)
+            console.log('Erreur sauvegarde serveur:', serverError.message)
+            
+            // Ne basculer en mode local que pour des erreurs critiques de réseau
+            if (serverError.message.includes('Failed to fetch') || 
+                serverError.message.includes('NetworkError') || 
+                serverError.message.includes('offline') ||
+                serverError.message.includes('502') ||
+                serverError.message.includes('503') ||
+                serverError.message.includes('504')) {
+              console.log('Basculement en mode local à cause de:', serverError.message)
+              setIsLocalMode(true)
+            } else {
+              console.log('Erreur sauvegarde non critique, pas de mode local:', serverError.message)
+            }
             const localApi = getLocalApi()
             if (localApi) {
               await localApi.updateSocialMedia(socialMedias)
@@ -269,9 +292,20 @@ export default function SocialMediaManager() {
              await simpleApi.updateConfig(token, configData)
             console.log('✅ Réseau social supprimé et sauvegardé sur le serveur')
                        } catch (serverError) {
-               console.log('Serveur indisponible, sauvegarde locale de secours')
-               // Fallback en mode local
-               setIsLocalMode(true)
+               console.log('Erreur suppression serveur:', serverError.message)
+               
+               // Ne basculer en mode local que pour des erreurs critiques de réseau
+               if (serverError.message.includes('Failed to fetch') || 
+                   serverError.message.includes('NetworkError') || 
+                   serverError.message.includes('offline') ||
+                   serverError.message.includes('502') ||
+                   serverError.message.includes('503') ||
+                   serverError.message.includes('504')) {
+                 console.log('Basculement en mode local à cause de:', serverError.message)
+                 setIsLocalMode(true)
+               } else {
+                 console.log('Erreur suppression non critique, pas de mode local:', serverError.message)
+               }
                const localApi = getLocalApi()
                if (localApi) {
                  await localApi.updateSocialMedia(updatedSocialMedias)

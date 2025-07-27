@@ -111,8 +111,16 @@ export default function ShopHome() {
       console.log('📱 Config récupérée pour accueil:', {
         boutique: data?.boutique?.name,
         shopSocialMediaList: data?.shopSocialMediaList?.length || 0,
+        socialMediaList: data?.socialMediaList?.length || 0,
         socialMedia: data?.socialMedia
       })
+      
+      // Si shopSocialMediaList est vide mais socialMediaList a des données, utiliser socialMediaList
+      if (data && (!data.shopSocialMediaList || data.shopSocialMediaList.length === 0) && 
+          data.socialMediaList && data.socialMediaList.length > 0) {
+        console.log('📱 Utilisation de socialMediaList comme fallback pour shopSocialMediaList')
+        data.shopSocialMediaList = data.socialMediaList
+      }
       setConfig(data)
       
       // Récupérer aussi les liens Telegram depuis l'API publique
@@ -453,43 +461,59 @@ export default function ShopHome() {
             flexWrap: 'wrap'
           }}>
             {/* Réseaux sociaux avec configuration + fallback */}
-            {(config?.shopSocialMediaList || [
-              { 
-                name: 'Telegram', 
-                logo: 'https://i.imgur.com/PP2GVMv.png',
-                emoji: '📱',
-                url: 'https://t.me/FindYourPlugBot',
-                enabled: true
-              },
-              { 
-                name: 'Potato', 
-                logo: 'https://i.imgur.com/LaRHc9L.png',
-                emoji: '🥔',
-                url: '#',
-                enabled: true
-              },
-              { 
-                name: 'Instagram', 
-                logo: 'https://i.imgur.com/YBE4cnb.jpeg',
-                emoji: '📸',
-                url: '#',
-                enabled: true
-              },
-              { 
-                name: 'Luffa', 
-                logo: 'https://i.imgur.com/zkZtY0m.png',
-                emoji: '🧽',
-                url: '#',
-                enabled: true
-              },
-              { 
-                name: 'Discord', 
-                logo: 'https://i.imgur.com/JgmWPPZ.png',
-                emoji: '🎮',
-                url: '#',
-                enabled: true
-              }
-            ]).filter(social => social && social.enabled !== false).map((social, index) => (
+            {(config?.shopSocialMediaList && config.shopSocialMediaList.length > 0 
+              ? config.shopSocialMediaList 
+              : config?.socialMediaList && config.socialMediaList.length > 0 
+                ? config.socialMediaList.map(social => ({
+                    ...social,
+                    logo: social.name.toLowerCase().includes('telegram') 
+                      ? 'https://i.imgur.com/PP2GVMv.png'
+                      : social.name.toLowerCase().includes('discord')
+                        ? 'https://i.imgur.com/JgmWPPZ.png'
+                        : social.name.toLowerCase().includes('instagram')
+                          ? 'https://i.imgur.com/YBE4cnb.jpeg'
+                          : social.name.toLowerCase().includes('whatsapp')
+                            ? 'https://i.imgur.com/WhatsApp.png'
+                            : 'https://i.imgur.com/PP2GVMv.png' // fallback
+                  }))
+                : [
+                    { 
+                      name: 'Telegram', 
+                      logo: 'https://i.imgur.com/PP2GVMv.png',
+                      emoji: '📱',
+                      url: 'https://t.me/FindYourPlugBot',
+                      enabled: true
+                    },
+                    { 
+                      name: 'Potato', 
+                      logo: 'https://i.imgur.com/LaRHc9L.png',
+                      emoji: '🥔',
+                      url: '#',
+                      enabled: true
+                    },
+                    { 
+                      name: 'Instagram', 
+                      logo: 'https://i.imgur.com/YBE4cnb.jpeg',
+                      emoji: '📸',
+                      url: '#',
+                      enabled: true
+                    },
+                    { 
+                      name: 'Luffa', 
+                      logo: 'https://i.imgur.com/zkZtY0m.png',
+                      emoji: '🧽',
+                      url: '#',
+                      enabled: true
+                    },
+                    { 
+                      name: 'Discord', 
+                      logo: 'https://i.imgur.com/JgmWPPZ.png',
+                      emoji: '🎮',
+                      url: '#',
+                      enabled: true
+                    }
+                  ]
+            ).filter(social => social && social.enabled !== false).map((social, index) => (
               <a
                 key={index}
                 href={social.url}
