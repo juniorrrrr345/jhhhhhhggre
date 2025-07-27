@@ -313,6 +313,78 @@ export default function ShopSearch() {
             <p style={{ color: '#ffffff', fontWeight: '500' }}>{t('search_loading')}</p>
           </div>
         </div>
+
+        {/* Section Réseaux Sociaux de test (toujours visible) */}
+        <div style={{
+          marginTop: '20px',
+          textAlign: 'center',
+          padding: '16px',
+          backgroundColor: 'rgba(0,0,0,0.3)',
+          borderRadius: '12px',
+          border: '1px solid rgba(255,255,255,0.2)'
+        }}>
+          <p style={{
+            color: '#ffffff',
+            fontSize: '14px',
+            marginBottom: '12px',
+            fontWeight: '500',
+            textShadow: '0 1px 3px rgba(0,0,0,0.7)'
+          }}>
+            {currentLanguage === 'fr' && 'Rejoins nous sur tous nos réseaux 🔒🛜'}
+            {currentLanguage === 'en' && 'Join us on all our networks 🔒🛜'}
+            {currentLanguage === 'it' && 'Unisciti a tutti i nostri network 🔒🛜'}
+            {currentLanguage === 'es' && 'Únete a todas nuestras redes 🔒🛜'}
+            {currentLanguage === 'de' && 'Tritt allen unseren Netzwerken bei 🔒🛜'}
+          </p>
+          
+          <div style={{
+            display: 'flex',
+            justifyContent: 'center',
+            gap: '12px',
+            flexWrap: 'wrap'
+          }}>
+            {/* Réseaux sociaux de test */}
+            {[
+              { name: 'Telegram', emoji: '📱', url: 'https://t.me/FindYourPlugBot' },
+              { name: 'Potato', emoji: '🥔', url: '#' },
+              { name: 'Instagram', emoji: '📸', url: '#' },
+              { name: 'Luffa', emoji: '🧽', url: '#' },
+              { name: 'Discord', emoji: '🎮', url: '#' }
+            ].map((social, index) => (
+              <a
+                key={index}
+                href={social.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: '32px',
+                  height: '32px',
+                  backgroundColor: 'rgba(255,255,255,0.1)',
+                  borderRadius: '50%',
+                  border: '1px solid rgba(255,255,255,0.2)',
+                  textDecoration: 'none',
+                  transition: 'all 0.2s ease',
+                  cursor: 'pointer'
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.backgroundColor = 'rgba(255,255,255,0.2)';
+                  e.target.style.transform = 'scale(1.1)';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.backgroundColor = 'rgba(255,255,255,0.1)';
+                  e.target.style.transform = 'scale(1)';
+                }}
+              >
+                <span style={{ fontSize: '16px' }}>
+                  {social.emoji}
+                </span>
+              </a>
+            ))}
+          </div>
+        </div>
       </>
     )
   }
@@ -526,7 +598,15 @@ export default function ShopSearch() {
           </button>
 
           {/* Section Réseaux Sociaux */}
-          {config?.shopSocialMediaList && config.shopSocialMediaList.length > 0 && (
+          {(() => {
+            console.log('🔍 Debug réseaux sociaux:', {
+              config: !!config,
+              shopSocialMediaList: config?.shopSocialMediaList,
+              length: config?.shopSocialMediaList?.length,
+              enabled: config?.shopSocialMediaList?.filter(s => s.enabled !== false && s.url)
+            });
+            return config?.shopSocialMediaList && config.shopSocialMediaList.length > 0;
+          })() && (
             <div style={{
               marginTop: '20px',
               textAlign: 'center',
