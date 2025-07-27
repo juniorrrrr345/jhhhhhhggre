@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import toast from 'react-hot-toast'
 // Heroicons remplacés par des emojis
@@ -9,6 +9,12 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const router = useRouter()
+
+  // Redirection automatique vers la boutique
+  useEffect(() => {
+    // Rediriger automatiquement vers la boutique publique
+    router.push('/shop');
+  }, [router]);
 
   const handleLogin = async (e) => {
     e.preventDefault()
