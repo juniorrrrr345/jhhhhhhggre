@@ -220,18 +220,18 @@ export default function ShopInscription() {
               marginBottom: '20px',
               textAlign: 'center'
             }}>
-              ✨ Pourquoi s'inscrire ?
+              ✨ {t('inscription_why_title')}
             </h3>
             
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               {[
-                { icon: '🔍', text: 'Accès à toutes les boutiques' },
-                { icon: '⭐', text: 'Système de votes et avis' },
-                { icon: '📍', text: 'Recherche par localisation' },
-                { icon: '🚚', text: 'Services de livraison' },
-                { icon: '📱', text: 'Interface simple et rapide' },
-                { icon: '🔔', text: 'Notifications en temps réel' },
-                { icon: '👁️', text: 'Ça offre + de visibilité' }
+                { icon: '🔍', text: t('inscription_why_access') },
+                { icon: '⭐', text: t('inscription_why_votes') },
+                { icon: '📍', text: t('inscription_why_location') },
+                { icon: '🚚', text: t('inscription_why_delivery') },
+                { icon: '📱', text: t('inscription_why_interface') },
+                { icon: '🔔', text: t('inscription_why_notifications') },
+                { icon: '👁️', text: t('inscription_why_visibility') }
               ].map((item, index) => (
                 <div key={index} style={{
                   display: 'flex',
@@ -270,7 +270,7 @@ export default function ShopInscription() {
               color: '#0088cc',
               marginBottom: '12px'
             }}>
-              📋 Comment ça marche ?
+              📋 {t('inscription_how_title')}
             </h4>
             <ol style={{
               color: '#8e8e93',
@@ -279,11 +279,11 @@ export default function ShopInscription() {
               paddingLeft: '20px',
               margin: 0
             }}>
-              <li>Cliquez sur "S'inscrire maintenant"</li>
-              <li>Vous serez redirigé vers Telegram</li>
-              <li>Tapez /start dans le bot</li>
-              <li>Suivez les instructions d'inscription</li>
-              <li>Profitez de FindYourPlug !</li>
+              <li>{t('inscription_how_step1')}</li>
+              <li>{t('inscription_how_step2')}</li>
+              <li>{t('inscription_how_step3')}</li>
+              <li>{t('inscription_how_step4')}</li>
+              <li>{t('inscription_how_step5')}</li>
             </ol>
           </div>
         </div>

@@ -220,7 +220,7 @@ export default function ShopServices() {
                 color: '#ffffff',
                 marginBottom: '16px'
               }}>
-                Bot Telegram + MiniApp
+                {t('services_bot_title')}
               </h3>
               <div style={{
                 fontSize: '36px',
@@ -228,13 +228,13 @@ export default function ShopServices() {
                 color: '#007AFF',
                 marginBottom: '8px'
               }}>
-                500€
+                {t('services_bot_price')}
               </div>
               <p style={{
                 color: '#8e8e93',
                 fontSize: '14px'
               }}>
-                Solution complète clé en main
+                {t('services_bot_subtitle')}
               </p>
             </div>
 
@@ -245,12 +245,12 @@ export default function ShopServices() {
               marginBottom: '30px'
             }}>
               {[
-                { icon: '🏪', title: 'Menu boutique intégré', desc: 'Tes clients consultent ton menu directement sur ton bot' },
-                { icon: '👥', title: 'Conserve tes clients', desc: 'Plus de perte de clients lors de fermetures de canaux' },
-                { icon: '📱', title: 'MiniApp moderne', desc: 'Interface web intégrée dans Telegram' },
-                { icon: '🔒', title: '100% sécurisé', desc: 'Ton bot t\'appartient, personne peut te le supprimer' },
-                { icon: '⚡', title: 'Installation rapide', desc: 'Livré en 48-72h maximum - Voir + en cas de demande spéciale' },
-                { icon: '🎨', title: 'Design personnalisé', desc: 'Couleurs et style adaptés à ton image' }
+                { icon: '🏪', title: t('services_bot_menu'), desc: t('services_bot_menu_desc') },
+                { icon: '👥', title: t('services_bot_clients'), desc: t('services_bot_clients_desc') },
+                { icon: '📱', title: t('services_bot_miniapp'), desc: t('services_bot_miniapp_desc') },
+                { icon: '🔒', title: t('services_bot_secure'), desc: t('services_bot_secure_desc') },
+                { icon: '⚡', title: t('services_bot_fast'), desc: t('services_bot_fast_desc') },
+                { icon: '🎨', title: t('services_bot_design'), desc: t('services_bot_design_desc') }
               ].map((item, index) => (
                 <div key={index} style={{
                   display: 'flex',
@@ -332,7 +332,7 @@ export default function ShopServices() {
                 color: '#ffffff',
                 marginBottom: '16px'
               }}>
-                Site Web Professionnel
+                {t('services_web_title')}
               </h3>
               <div style={{
                 fontSize: '36px',
@@ -340,13 +340,13 @@ export default function ShopServices() {
                 color: '#FF6B35',
                 marginBottom: '8px'
               }}>
-                800€
+                {t('services_web_price')}
               </div>
               <p style={{
                 color: '#8e8e93',
                 fontSize: '14px'
               }}>
-                Site web complet et responsive
+                {t('services_web_subtitle')}
               </p>
             </div>
 
@@ -357,12 +357,12 @@ export default function ShopServices() {
               marginBottom: '30px'
             }}>
               {[
-                { icon: '📱', title: 'Responsive design', desc: 'Site optimisé mobile, tablette et desktop' },
-                { icon: '⚡', title: 'Performance optimisée', desc: 'Chargement rapide et SEO friendly' },
-                { icon: '🎨', title: 'Design moderne', desc: 'Interface élégante et professionnelle' },
-                { icon: '🔧', title: 'Maintenance incluse', desc: 'Mises à jour et support technique' },
-                { icon: '📊', title: 'Analytics intégrés', desc: 'Suivi des visiteurs et statistiques' },
-                { icon: '🔒', title: 'Sécurisé', desc: 'Certificat SSL et protection des données' }
+                { icon: '📱', title: t('services_web_responsive'), desc: t('services_web_responsive_desc') },
+                { icon: '⚡', title: t('services_web_performance'), desc: t('services_web_performance_desc') },
+                { icon: '🎨', title: t('services_web_design'), desc: t('services_web_design_desc') },
+                { icon: '🔧', title: t('services_web_maintenance'), desc: t('services_web_maintenance_desc') },
+                { icon: '📊', title: t('services_web_analytics'), desc: t('services_web_analytics_desc') },
+                { icon: '🔒', title: t('services_web_secure'), desc: t('services_web_secure_desc') }
               ].map((item, index) => (
                 <div key={index} style={{
                   display: 'flex',
@@ -403,21 +403,21 @@ export default function ShopServices() {
                 rel="noopener noreferrer"
                 style={{
                   display: 'inline-block',
-                  backgroundColor: '#FF6B35',
-                  color: '#ffffff',
-                  padding: '16px 32px',
-                  borderRadius: '25px',
-                  textDecoration: 'none',
-                  fontSize: '18px',
-                  fontWeight: 'bold',
-                  boxShadow: '0 4px 16px rgba(255, 107, 53, 0.3)',
-                  transition: 'transform 0.2s ease'
-                }}
-                onMouseEnter={(e) => e.target.style.transform = 'translateY(-2px)'}
-                onMouseLeave={(e) => e.target.style.transform = 'translateY(0)'}
-              >
-                💬 {t('services_order_button')}
-              </a>
+                                  backgroundColor: '#FF6B35',
+                color: '#ffffff',
+                padding: '16px 32px',
+                borderRadius: '25px',
+                textDecoration: 'none',
+                fontSize: '18px',
+                fontWeight: 'bold',
+                boxShadow: '0 4px 16px rgba(255, 107, 53, 0.3)',
+                transition: 'transform 0.2s ease'
+              }}
+              onMouseEnter={(e) => e.target.style.transform = 'translateY(-2px)'}
+              onMouseLeave={(e) => e.target.style.transform = 'translateY(0)'}
+            >
+              💬 {t('services_web_order')}
+            </a>
             </div>
           </div>
 
