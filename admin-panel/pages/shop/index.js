@@ -556,8 +556,8 @@ export default function ShopHome() {
             gap: '12px',
             flexWrap: 'wrap'
           }}>
-            {/* Réseaux sociaux - logique simplifiée pour éviter doublons */}
-            {(() => {
+            {/* Réseaux sociaux - affichage uniquement après chargement pour éviter double rendu */}
+            {!loading && (() => {
               // Priorité 1: shopSocialMediaList configuré
               if (config?.shopSocialMediaList && config.shopSocialMediaList.length > 0) {
                 return config.shopSocialMediaList.map(social => ({
