@@ -363,11 +363,7 @@ export default function ShopSearch() {
             margin: '0 0 12px 0',
             color: '#ffffff',
             letterSpacing: '2px',
-            textShadow: '0 2px 4px rgba(0,0,0,0.8)',
-            background: 'linear-gradient(135deg, #ffffff, #f0f0f0)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            backgroundClip: 'text'
+            textShadow: '0 2px 4px rgba(0,0,0,0.8)'
           }}>
             🔍 {t('search')}
           </h1>

@@ -381,11 +381,7 @@ export default function ShopHome() {
             color: '#ffffff',
             letterSpacing: '0.5px',
             lineHeight: '1.2',
-            textShadow: '0 2px 4px rgba(0,0,0,0.8)',
-            background: 'linear-gradient(135deg, #ffffff, #f0f0f0)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            backgroundClip: 'text'
+            textShadow: '0 2px 4px rgba(0,0,0,0.8)'
           }}>
             👋 Bienvenue sur FindYourPlug
           </h1>
