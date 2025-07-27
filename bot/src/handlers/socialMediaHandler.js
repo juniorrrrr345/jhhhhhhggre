@@ -53,28 +53,11 @@ const handleSocialMedia = async (ctx) => {
     
     const keyboard = Markup.inlineKeyboard(socialButtons);
 
-    if (config?.welcome?.image) {
-      try {
-        await ctx.editMessageMedia({
-          type: 'photo',
-          media: config.welcome.image,
-          caption: message,
-          parse_mode: 'Markdown'
-        }, {
-          reply_markup: keyboard.reply_markup
-        });
-      } catch (error) {
-        await ctx.editMessageText(message, {
-          reply_markup: keyboard.reply_markup,
-          parse_mode: 'Markdown'
-        });
-      }
-    } else {
-      await ctx.editMessageText(message, {
-        reply_markup: keyboard.reply_markup,
-        parse_mode: 'Markdown'
-      });
-    }
+    // Afficher seulement le texte sans photo pour les réseaux sociaux
+    await ctx.editMessageText(message, {
+      reply_markup: keyboard.reply_markup,
+      parse_mode: 'Markdown'
+    });
 
   } catch (error) {
     console.error('Erreur dans handleSocialMedia:', error);
