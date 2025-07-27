@@ -298,7 +298,7 @@ export default function ShopSearch() {
               animation: 'spin 1s linear infinite',
               margin: '0 auto 16px'
             }}></div>
-            <p style={{ color: '#ffffff', fontWeight: '500' }}>Chargement de la recherche...</p>
+            <p style={{ color: '#ffffff', fontWeight: '500' }}>{t('search_loading')}</p>
           </div>
         </div>
       </>
@@ -418,7 +418,7 @@ export default function ShopSearch() {
                 boxSizing: 'border-box'
               }}
             >
-              <option value="">🌍 {t('all_countries') || 'Tous pays'}</option>
+              <option value="">🌍 {t('search_all_countries')}</option>
               {getAvailableCountries().map(country => (
                 <option key={country} value={country}>{country}</option>
               ))}
@@ -437,10 +437,10 @@ export default function ShopSearch() {
                 boxSizing: 'border-box'
               }}
             >
-              <option value="">🚀 {t('all_services') || 'Tous services'}</option>
-              <option value="delivery">🛵 {t('delivery') || 'Livraison'}</option>
-              <option value="postal">📬 {t('postal') || 'Postal'}</option>
-              <option value="meetup">🤝 {t('meetup') || 'Meetup'}</option>
+              <option value="">🚀 {t('search_all_services')}</option>
+              <option value="delivery">🛵 {t('delivery')}</option>
+              <option value="postal">📬 {t('postal')}</option>
+              <option value="meetup">🤝 {t('meetup')}</option>
             </select>
 
             <select
@@ -461,8 +461,8 @@ export default function ShopSearch() {
             >
               <option value="">
                 🗺️ {countryFilter ? 
-                  `Département (${countryFilter})` : 
-                  'Sélectionnez un pays d\'abord'
+                  `${t('search_department')} (${countryFilter})` : 
+                  t('search_select_country_first')
                 }
               </option>
               {countryFilter && getAvailableDepartments().map(department => (
@@ -483,9 +483,9 @@ export default function ShopSearch() {
                 boxSizing: 'border-box'
               }}
             >
-                              <option value="">🔍 {t('all_types') || 'Tous types'}</option>
-              <option value="vip">👑 {t('vip') || 'VIP'} {t('only') || 'uniquement'}</option>
-              <option value="standard">🔹 {t('standard') || 'Standard'} {t('only') || 'uniquement'}</option>
+                              <option value="">🔍 {t('search_all_types')}</option>
+              <option value="vip">👑 {t('vip')} {t('search_vip_only')}</option>
+              <option value="standard">🔹 {t('standard')} {t('search_standard_only')}</option>
             </select>
           </div>
 
@@ -503,7 +503,7 @@ export default function ShopSearch() {
               fontWeight: '500'
             }}
           >
-            🔄 {t('reset') || 'Réinitialiser'}
+            🔄 {t('search_reset_filters')}
           </button>
         </div>
 
@@ -517,8 +517,8 @@ export default function ShopSearch() {
             fontSize: '14px'
           }}>
             {loading ? 
-              `${t('searching') || 'Recherche en cours'}...` : 
-              `${plugs.length} ${t('shops') || 'boutique(s)'} ${t('found') || 'trouvée(s)'}`
+              `${t('search_loading_results')}` : 
+              `${plugs.length} ${t('search_results_count')}`
             }
           </div>
 
@@ -539,7 +539,7 @@ export default function ShopSearch() {
                   animation: 'spin 1s linear infinite',
                   margin: '0 auto 16px'
                 }}></div>
-                <p style={{ color: '#ffffff' }}>{t('searching') || 'Recherche en cours'}...</p>
+                <p style={{ color: '#ffffff' }}>{t('search_loading_results')}</p>
               </div>
             </div>
           ) : plugs.length === 0 ? (
@@ -558,7 +558,7 @@ export default function ShopSearch() {
                 fontWeight: '600', 
                 marginBottom: '12px'
               }}>
-                {t('no_shops_found') || 'Aucune boutique trouvée'}
+                {t('search_no_results')}
               </h3>
               <p style={{ 
                 color: '#8e8e93', 
@@ -567,7 +567,7 @@ export default function ShopSearch() {
                 maxWidth: '400px',
                 lineHeight: '1.5'
               }}>
-                {t('try_different_criteria') || 'Essayez de modifier vos critères de recherche.'}
+                {t('search_no_results_desc')}
               </p>
             </div>
           ) : (

@@ -128,7 +128,21 @@ const translations = {
     services_web_analytics_desc: 'Suivi des visiteurs et statistiques',
     services_web_secure: 'Sécurisé',
     services_web_secure_desc: 'Certificat SSL et protection des données',
-    services_web_order: 'Commander maintenant'
+    services_web_order: 'Commander maintenant',
+    // Traductions pour la page recherche
+    search_loading: 'Chargement de la recherche...',
+    search_select_country_first: 'Sélectionnez un pays d\'abord',
+    search_department: 'Département',
+    search_all_countries: 'Tous pays',
+    search_all_services: 'Tous services',
+    search_all_types: 'Tous types',
+    search_vip_only: 'VIP uniquement',
+    search_standard_only: 'Standard uniquement',
+    search_reset_filters: 'Réinitialiser',
+    search_no_results: 'Aucun résultat trouvé',
+    search_no_results_desc: 'Essayez de modifier vos critères de recherche',
+    search_results_count: 'résultats trouvés',
+    search_loading_results: 'Chargement des résultats...'
   },
   en: {
     title: 'Language',
@@ -249,7 +263,21 @@ const translations = {
     services_web_analytics_desc: 'Visitor tracking and statistics',
     services_web_secure: 'Secure',
     services_web_secure_desc: 'SSL certificate and data protection',
-    services_web_order: 'Order now'
+    services_web_order: 'Order now',
+    // Traductions pour la page recherche
+    search_loading: 'Loading search...',
+    search_select_country_first: 'Select a country first',
+    search_department: 'Department',
+    search_all_countries: 'All countries',
+    search_all_services: 'All services',
+    search_all_types: 'All types',
+    search_vip_only: 'VIP only',
+    search_standard_only: 'Standard only',
+    search_reset_filters: 'Reset',
+    search_no_results: 'No results found',
+    search_no_results_desc: 'Try modifying your search criteria',
+    search_results_count: 'results found',
+    search_loading_results: 'Loading results...'
   },
   es: {
     title: 'Idioma',
@@ -370,7 +398,21 @@ const translations = {
     services_web_analytics_desc: 'Seguimiento de visitantes y estadísticas',
     services_web_secure: 'Seguro',
     services_web_secure_desc: 'Certificado SSL y protección de datos',
-    services_web_order: 'Pedir ahora'
+    services_web_order: 'Pedir ahora',
+    // Traductions pour la page recherche
+    search_loading: 'Cargando búsqueda...',
+    search_select_country_first: 'Selecciona un país primero',
+    search_department: 'Departamento',
+    search_all_countries: 'Todos los países',
+    search_all_services: 'Todos los servicios',
+    search_all_types: 'Todos los tipos',
+    search_vip_only: 'Solo VIP',
+    search_standard_only: 'Solo estándar',
+    search_reset_filters: 'Restablecer',
+    search_no_results: 'No se encontraron resultados',
+    search_no_results_desc: 'Intenta modificar tus criterios de búsqueda',
+    search_results_count: 'resultados encontrados',
+    search_loading_results: 'Cargando resultados...'
   },
   it: {
     title: 'Lingua',
@@ -491,7 +533,21 @@ const translations = {
     services_web_analytics_desc: 'Monitoraggio visitatori e statistiche',
     services_web_secure: 'Sicuro',
     services_web_secure_desc: 'Certificato SSL e protezione dati',
-    services_web_order: 'Ordina ora'
+    services_web_order: 'Ordina ora',
+    // Traductions pour la page recherche
+    search_loading: 'Caricamento ricerca...',
+    search_select_country_first: 'Seleziona prima un paese',
+    search_department: 'Dipartimento',
+    search_all_countries: 'Tutti i paesi',
+    search_all_services: 'Tutti i servizi',
+    search_all_types: 'Tutti i tipi',
+    search_vip_only: 'Solo VIP',
+    search_standard_only: 'Solo standard',
+    search_reset_filters: 'Ripristina',
+    search_no_results: 'Nessun risultato trovato',
+    search_no_results_desc: 'Prova a modificare i tuoi criteri di ricerca',
+    search_results_count: 'risultati trovati',
+    search_loading_results: 'Caricamento risultati...'
   },
   de: {
     title: 'Sprache',
@@ -612,7 +668,21 @@ const translations = {
     services_web_analytics_desc: 'Besucher-Tracking und Statistiken',
     services_web_secure: 'Sicher',
     services_web_secure_desc: 'SSL-Zertifikat und Datenschutz',
-    services_web_order: 'Jetzt bestellen'
+    services_web_order: 'Jetzt bestellen',
+    // Traductions pour la page recherche
+    search_loading: 'Suche wird geladen...',
+    search_select_country_first: 'Wählen Sie zuerst ein Land',
+    search_department: 'Abteilung',
+    search_all_countries: 'Alle Länder',
+    search_all_services: 'Alle Services',
+    search_all_types: 'Alle Typen',
+    search_vip_only: 'Nur VIP',
+    search_standard_only: 'Nur Standard',
+    search_reset_filters: 'Zurücksetzen',
+    search_no_results: 'Keine Ergebnisse gefunden',
+    search_no_results_desc: 'Versuchen Sie, Ihre Suchkriterien zu ändern',
+    search_results_count: 'Ergebnisse gefunden',
+    search_loading_results: 'Ergebnisse werden geladen...'
   }
 }
 
