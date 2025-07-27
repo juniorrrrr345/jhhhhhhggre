@@ -8,8 +8,8 @@ class RobustSync {
     this.lastSync = null
     this.retryCount = 0
     this.maxRetries = 2 // Réduit de 3 à 2
-    this.baseDelay = 2000 // Réduit à 2 secondes pour réseaux sociaux
-    this.minInterval = 5000 // Réduit à 5 secondes pour une sync plus rapide
+    this.baseDelay = 5000 // Délai standard
+    this.minInterval = 10000 // Intervalle standard
     
     if (this.isClient) {
       this.init()

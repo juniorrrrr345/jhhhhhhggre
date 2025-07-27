@@ -155,10 +155,10 @@ export default function SocialMediaManager() {
           
                     await simpleApi.updateConfig(token, configData)
           
-          // Synchroniser avec le bot avec priorité haute pour les réseaux sociaux
+          // Synchroniser avec le bot
           const robustSync = getRobustSync()
           if (robustSync) {
-            robustSync.addOperation('config_update', configData, 'high')
+            robustSync.syncConfigUpdate(configData)
           }
           
           console.log('✅ Réseaux sociaux sauvegardés et synchronisés')
