@@ -81,13 +81,12 @@ export default function SocialMediaManager() {
              setSocialMedias(socialMediasWithIds)
              console.log('📁 Réseaux sociaux chargés depuis le stockage local avec IDs:', socialMediasWithIds.map(s => ({ id: s.id, name: s.name })))
            } else {
-             // Initialiser avec des données par défaut
+             // Initialiser avec des données par défaut pour le bot Telegram
              const defaultSocialMedias = [
                { id: 'telegram', name: 'Telegram', emoji: '📱', url: '', enabled: true },
-               { id: 'potato', name: 'Potato', emoji: '🥔', url: '', enabled: true },
-               { id: 'instagram', name: 'Instagram', emoji: '📸', url: '', enabled: true },
-               { id: 'luffa', name: 'Luffa', emoji: '🧽', url: '', enabled: true },
-               { id: 'discord', name: 'Discord', emoji: '🎮', url: '', enabled: true }
+               { id: 'whatsapp', name: 'WhatsApp', emoji: '💬', url: '', enabled: true },
+               { id: 'discord', name: 'Discord', emoji: '🎮', url: '', enabled: false },
+               { id: 'instagram', name: 'Instagram', emoji: '📸', url: '', enabled: false }
              ]
              setSocialMedias(defaultSocialMedias)
              await localApi.updateSocialMedia(defaultSocialMedias)
@@ -121,13 +120,10 @@ export default function SocialMediaManager() {
           
           const configData = {
             socialMediaList: socialMedias,
-            // Maintenir compatibilité avec l'ancien format
+            // Maintenir compatibilité avec l'ancien format pour le bot Telegram
             socialMedia: {
               telegram: socialMedias.find(s => s.id === 'telegram')?.url || '',
-              potato: socialMedias.find(s => s.id === 'potato')?.url || '',
-              instagram: socialMedias.find(s => s.id === 'instagram')?.url || '',
-              luffa: socialMedias.find(s => s.id === 'luffa')?.url || '',
-              discord: socialMedias.find(s => s.id === 'discord')?.url || ''
+              whatsapp: socialMedias.find(s => s.id === 'whatsapp')?.url || ''
             }
           }
           
