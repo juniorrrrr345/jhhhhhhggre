@@ -34,6 +34,7 @@ export default function ShopHome() {
     if (lowercaseName.includes('linkedin')) return 'https://i.imgur.com/linkedin.png'
     if (lowercaseName.includes('potato')) return 'https://i.imgur.com/1iCRHRB.jpeg'
     if (lowercaseName.includes('luffa')) return 'https://i.imgur.com/zkZtY0m.png'
+    if (lowercaseName.includes('find your plug') || lowercaseName.includes('findyourplug')) return 'https://i.imgur.com/VwBPgtw.jpeg'
     return 'https://i.imgur.com/PP2GVMv.png' // Fallback vers Telegram
   }
 
@@ -556,44 +557,8 @@ export default function ShopHome() {
             gap: '12px',
             flexWrap: 'wrap'
           }}>
-            {/* VOS réseaux sociaux */}
-            {[
-              { 
-                name: 'Telegram', 
-                logo: 'https://i.imgur.com/PP2GVMv.png',
-                emoji: '📱',
-                url: 'https://t.me/+zcP68c4M_3NlM2Y0',
-                enabled: true
-              },
-                             { 
-                 name: 'Find Your Plug', 
-                 logo: 'https://i.imgur.com/QR5gF1L.png',
-                 emoji: '🌐',
-                 url: 'https://dym168.org/findyourplug',
-                 enabled: true
-               },
-              { 
-                name: 'Instagram', 
-                logo: 'https://i.imgur.com/YBE4cnb.jpeg',
-                emoji: '📸',
-                url: 'https://www.instagram.com/find.yourplug?igsh=ajRwcjE1eGhoaXMz&utm_source=qr',
-                enabled: true
-              },
-              { 
-                name: 'Luffa', 
-                logo: 'https://i.imgur.com/zkZtY0m.png',
-                emoji: '🧽',
-                url: 'https://callup.luffa.im/c/EnvtiTHkbvP',
-                enabled: true
-              },
-              { 
-                name: 'Discord', 
-                logo: 'https://i.imgur.com/JgmWPPZ.png',
-                emoji: '🎮',
-                url: 'https://discord.gg/g2dACUC3',
-                enabled: true
-              }
-            ].filter(social => social && social.enabled !== false).map((social, index) => (
+            {/* Réseaux sociaux depuis la configuration shop */}
+            {(config?.shopSocialMediaList || []).filter(social => social && social.enabled !== false).map((social, index) => (
               <a
                 key={index}
                 href={social.url}
@@ -623,7 +588,7 @@ export default function ShopHome() {
                 }}
               >
                 <img 
-                  src={social.logo}
+                  src={social.logo || getLogoByName(social.name)}
                   alt={social.name}
                   style={{
                     width: '32px',
@@ -638,7 +603,7 @@ export default function ShopHome() {
                   }}
                   onError={(e) => {
                     // Fallback vers un logo par défaut si l'image ne charge pas
-                    e.target.src = 'https://i.imgur.com/PP2GVMv.png'; // Logo Telegram par défaut
+                    e.target.src = getLogoByName(social.name) || 'https://i.imgur.com/PP2GVMv.png';
                   }}
                 />
               </a>
