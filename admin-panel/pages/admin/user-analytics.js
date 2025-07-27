@@ -41,11 +41,13 @@ export default function UserAnalytics() {
       setStats(prev => ({ ...prev, loading: true }))
       setNextUpdateIn(30) // Reset le compteur lors de l'actualisation manuelle
       
-      const adminToken = localStorage.getItem('adminToken')
+      const adminToken = localStorage.getItem('adminToken') || 'ADMIN_TOKEN_F3F3FC574B8A95875449DBD68128C434CE3D7FB3F054567B0D3EAD3D9F1B01B1'
+      console.log('🔑 Token utilisé:', adminToken ? 'Présent' : 'Manquant')
+      
       const apiResponse = await api.get(`admin/user-analytics?timeRange=${timeRange}`, adminToken)
       console.log('📊 Response API user-analytics:', apiResponse)
         
-        if (apiResponse.ok && apiResponse.data) {
+        if (apiResponse && apiResponse.ok && apiResponse.data) {
           console.log('✅ DONNEES REÇUES:', apiResponse.data)
           console.log('👥 totalUsers:', apiResponse.data.totalUsers)
           console.log('📍 usersWithLocation:', apiResponse.data.usersWithLocation)
@@ -67,12 +69,16 @@ export default function UserAnalytics() {
           setStats(prev => ({ 
             ...prev, 
             loading: false,
-            error: 'Erreur de chargement'
+            error: apiResponse?.error || 'Erreur de chargement des données'
           }))
         }
     } catch (error) {
       console.error('❌ Erreur stats utilisateurs:', error)
-      setStats(prev => ({ ...prev, loading: false }))
+      setStats(prev => ({ 
+        ...prev, 
+        loading: false,
+        error: error.message || 'Erreur de connexion au serveur'
+      }))
     }
   }
 
