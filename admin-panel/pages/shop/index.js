@@ -108,6 +108,11 @@ export default function ShopHome() {
     try {
       // Récupérer la config publique du bot
       const data = await api.getPublicConfig()
+      console.log('📱 Config récupérée pour accueil:', {
+        boutique: data?.boutique?.name,
+        shopSocialMediaList: data?.shopSocialMediaList?.length || 0,
+        socialMedia: data?.socialMedia
+      })
       setConfig(data)
       
       // Récupérer aussi les liens Telegram depuis l'API publique
@@ -447,39 +452,44 @@ export default function ShopHome() {
             gap: '12px',
             flexWrap: 'wrap'
           }}>
-            {/* Réseaux sociaux avec vrais logos PNG */}
-            {[
+            {/* Réseaux sociaux depuis la configuration */}
+            {(config?.shopSocialMediaList || [
               { 
                 name: 'Telegram', 
                 logo: 'https://i.imgur.com/PP2GVMv.png',
                 emoji: '📱',
-                url: 'https://t.me/FindYourPlugBot' 
+                url: 'https://t.me/FindYourPlugBot',
+                enabled: true
               },
               { 
                 name: 'Potato', 
                 logo: 'https://i.imgur.com/LaRHc9L.png',
                 emoji: '🥔',
-                url: '#' 
+                url: '#',
+                enabled: true
               },
               { 
                 name: 'Instagram', 
                 logo: 'https://i.imgur.com/YBE4cnb.jpeg',
                 emoji: '📸',
-                url: '#' 
+                url: '#',
+                enabled: true
               },
               { 
                 name: 'Luffa', 
                 logo: 'https://i.imgur.com/zkZtY0m.png',
                 emoji: '🧽',
-                url: '#' 
+                url: '#',
+                enabled: true
               },
               { 
                 name: 'Discord', 
                 logo: 'https://i.imgur.com/JgmWPPZ.png',
                 emoji: '🎮',
-                url: '#' 
+                url: '#',
+                enabled: true
               }
-            ].map((social, index) => (
+            ]).filter(social => social && social.enabled !== false && social.url).map((social, index) => (
               <a
                 key={index}
                 href={social.url}
