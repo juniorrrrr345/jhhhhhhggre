@@ -556,55 +556,44 @@ export default function ShopHome() {
             gap: '12px',
             flexWrap: 'wrap'
           }}>
-            {/* Réseaux sociaux - affichage uniquement après chargement pour éviter double rendu */}
-            {!loading && (() => {
-              // Priorité 1: shopSocialMediaList configuré
-              if (config?.shopSocialMediaList && config.shopSocialMediaList.length > 0) {
-                return config.shopSocialMediaList.map(social => ({
-                  ...social,
-                  logo: social.logo || getLogoByName(social.name || '')
-                }))
+            {/* VOS réseaux sociaux */}
+            {[
+              { 
+                name: 'Telegram', 
+                logo: 'https://i.imgur.com/PP2GVMv.png',
+                emoji: '📱',
+                url: 'https://t.me/+zcP68c4M_3NlM2Y0',
+                enabled: true
+              },
+              { 
+                name: 'Find Your Plug', 
+                logo: 'https://i.imgur.com/LaRHc9L.png',
+                emoji: '🌐',
+                url: 'https://dym168.org/findyourplug',
+                enabled: true
+              },
+              { 
+                name: 'Instagram', 
+                logo: 'https://i.imgur.com/YBE4cnb.jpeg',
+                emoji: '📸',
+                url: 'https://www.instagram.com/find.yourplug?igsh=ajRwcjE1eGhoaXMz&utm_source=qr',
+                enabled: true
+              },
+              { 
+                name: 'Luffa', 
+                logo: 'https://i.imgur.com/zkZtY0m.png',
+                emoji: '🧽',
+                url: 'https://callup.luffa.im/c/EnvtiTHkbvP',
+                enabled: true
+              },
+              { 
+                name: 'Discord', 
+                logo: 'https://i.imgur.com/JgmWPPZ.png',
+                emoji: '🎮',
+                url: 'https://discord.gg/g2dACUC3',
+                enabled: true
               }
-              
-              // Priorité 2: Réseaux par défaut avec VOTRE Telegram
-              return [
-                { 
-                  name: 'Telegram', 
-                  logo: 'https://i.imgur.com/PP2GVMv.png',
-                  emoji: '📱',
-                  url: 'https://t.me/+zcP68c4M_3NlM2Y0',
-                  enabled: true
-                },
-                { 
-                  name: 'Potato', 
-                  logo: 'https://i.imgur.com/LaRHc9L.png',
-                  emoji: '🥔',
-                  url: '#',
-                  enabled: true
-                },
-                { 
-                  name: 'Instagram', 
-                  logo: 'https://i.imgur.com/YBE4cnb.jpeg',
-                  emoji: '📸',
-                  url: '#',
-                  enabled: true
-                },
-                { 
-                  name: 'Luffa', 
-                  logo: 'https://i.imgur.com/zkZtY0m.png',
-                  emoji: '🧽',
-                  url: '#',
-                  enabled: true
-                },
-                { 
-                  name: 'Discord', 
-                  logo: 'https://i.imgur.com/JgmWPPZ.png',
-                  emoji: '🎮',
-                  url: '#',
-                  enabled: true
-                }
-              ]
-            })().filter(social => social && social.enabled !== false).map((social, index) => (
+            ].filter(social => social && social.enabled !== false).map((social, index) => (
               <a
                 key={index}
                 href={social.url}
