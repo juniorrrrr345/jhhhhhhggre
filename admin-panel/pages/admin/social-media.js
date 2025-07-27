@@ -161,9 +161,6 @@ export default function SocialMediaManager() {
             robustSync.syncConfigUpdate(configData)
           }
           
-          // Force le rechargement immédiat du bot
-          await forceReloadBot()
-          
           console.log('✅ Réseaux sociaux sauvegardés et synchronisés')
         } catch (serverError) {
             console.log('Erreur sauvegarde serveur:', serverError.message)
@@ -227,10 +224,7 @@ export default function SocialMediaManager() {
     setNewSocialMedia({ name: '', url: '', emoji: '', enabled: true })
     
     // Synchronisation automatique après ajout
-    await syncToBotAPI(updatedSocialMedias)
-    
-    // Force le rechargement immédiat du bot pour afficher le nouveau réseau
-    await forceReloadBot()
+    syncToBotAPI(updatedSocialMedias)
     
     toast.success(`Réseau social "${newItem.name}" ajouté et synchronisé`)
   }
@@ -367,9 +361,6 @@ export default function SocialMediaManager() {
     
     // Synchronisation automatique avec la boutique
     await syncToBotAPI(updatedSocialMedias)
-    
-    // Force le rechargement immédiat du bot
-    await forceReloadBot()
   }
 
   // Fonction pour assigner automatiquement un emoji selon le nom
@@ -517,24 +508,6 @@ export default function SocialMediaManager() {
                   🔄 Synchroniser
                 </button>
               )}
-
-              <button
-                onClick={async () => {
-                  try {
-                    setSaving(true)
-                    await forceReloadBot()
-                    toast.success('✅ Bot rechargé avec succès')
-                  } catch (error) {
-                    toast.error('❌ Erreur rechargement bot')
-                  } finally {
-                    setSaving(false)
-                  }
-                }}
-                disabled={saving}
-                className="inline-flex items-center px-3 py-2 border border-blue-300 rounded-md shadow-sm text-sm font-medium text-blue-700 bg-blue-100 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
-              >
-                🤖 Recharger Bot
-              </button>
 
               <button
                 onClick={saveSocialMedias}
