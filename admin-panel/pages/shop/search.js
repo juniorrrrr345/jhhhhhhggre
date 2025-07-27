@@ -142,6 +142,11 @@ export default function ShopSearch() {
   const fetchConfig = async () => {
     try {
       const data = await api.getPublicConfig()
+      console.log('📱 Config récupérée pour recherche:', {
+        boutique: data?.boutique?.name,
+        socialMediaList: data?.socialMediaList?.length || 0,
+        socialMedia: data?.socialMedia
+      })
       setConfig(data)
     } catch (error) {
       console.error('Erreur chargement config:', error)
@@ -308,6 +313,78 @@ export default function ShopSearch() {
             <p style={{ color: '#ffffff', fontWeight: '500' }}>{t('search_loading')}</p>
           </div>
         </div>
+
+        {/* Section Réseaux Sociaux de test (toujours visible) */}
+        <div style={{
+          marginTop: '20px',
+          textAlign: 'center',
+          padding: '16px',
+          backgroundColor: 'rgba(0,0,0,0.3)',
+          borderRadius: '12px',
+          border: '1px solid rgba(255,255,255,0.2)'
+        }}>
+          <p style={{
+            color: '#ffffff',
+            fontSize: '14px',
+            marginBottom: '12px',
+            fontWeight: '500',
+            textShadow: '0 1px 3px rgba(0,0,0,0.7)'
+          }}>
+            {currentLanguage === 'fr' && 'Rejoins nous sur tous nos réseaux 🔒🛜'}
+            {currentLanguage === 'en' && 'Join us on all our networks 🔒🛜'}
+            {currentLanguage === 'it' && 'Unisciti a tutti i nostri network 🔒🛜'}
+            {currentLanguage === 'es' && 'Únete a todas nuestras redes 🔒🛜'}
+            {currentLanguage === 'de' && 'Tritt allen unseren Netzwerken bei 🔒🛜'}
+          </p>
+          
+          <div style={{
+            display: 'flex',
+            justifyContent: 'center',
+            gap: '12px',
+            flexWrap: 'wrap'
+          }}>
+            {/* Réseaux sociaux de test */}
+            {[
+              { name: 'Telegram', emoji: '📱', url: 'https://t.me/FindYourPlugBot' },
+              { name: 'Potato', emoji: '🥔', url: '#' },
+              { name: 'Instagram', emoji: '📸', url: '#' },
+              { name: 'Luffa', emoji: '🧽', url: '#' },
+              { name: 'Discord', emoji: '🎮', url: '#' }
+            ].map((social, index) => (
+              <a
+                key={index}
+                href={social.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: '32px',
+                  height: '32px',
+                  backgroundColor: 'rgba(255,255,255,0.1)',
+                  borderRadius: '50%',
+                  border: '1px solid rgba(255,255,255,0.2)',
+                  textDecoration: 'none',
+                  transition: 'all 0.2s ease',
+                  cursor: 'pointer'
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.backgroundColor = 'rgba(255,255,255,0.2)';
+                  e.target.style.transform = 'scale(1.1)';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.backgroundColor = 'rgba(255,255,255,0.1)';
+                  e.target.style.transform = 'scale(1)';
+                }}
+              >
+                <span style={{ fontSize: '16px' }}>
+                  {social.emoji}
+                </span>
+              </a>
+            ))}
+          </div>
+        </div>
       </>
     )
   }
@@ -359,18 +436,25 @@ export default function ShopSearch() {
           
           <h1 style={{ 
             fontSize: 'clamp(24px, 5vw, 32px)', 
-            fontWeight: 'bold', 
-            margin: '0 0 8px 0',
+            fontWeight: '800', 
+            margin: '0 0 12px 0',
             color: '#ffffff',
-            letterSpacing: '2px'
+            letterSpacing: '2px',
+            textShadow: '0 2px 4px rgba(0,0,0,0.8)'
           }}>
             🔍 {t('search')}
           </h1>
           <p style={{ 
-            color: '#8e8e93', 
-            fontSize: '16px',
+            color: '#ffffff', 
+            fontSize: '18px',
             margin: '0',
-            fontWeight: '400'
+            fontWeight: '500',
+            textShadow: '0 1px 3px rgba(0,0,0,0.7)',
+            padding: '8px 12px',
+            backgroundColor: 'rgba(0,0,0,0.3)',
+            borderRadius: '8px',
+            border: '1px solid rgba(255,255,255,0.2)',
+            display: 'inline-block'
           }}>
             {t('search_desc') || 'Recherchez vos boutiques préférées'}
           </p>
@@ -512,6 +596,8 @@ export default function ShopSearch() {
           >
             🔄 {t('search_reset_filters')}
           </button>
+
+
         </div>
 
         {/* Résultats */}

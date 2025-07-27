@@ -211,8 +211,16 @@ export default function Messages() {
   if (loading) {
     return (
       <Layout title="Messages">
-        <div className="flex justify-center items-center h-64">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+                  <div className="flex justify-center items-center h-64">
+            <div className="text-center">
+                            <img 
+                src="https://i.imgur.com/VwBPgtw.jpeg" 
+                alt="Loading..." 
+                className="h-8 w-8 mx-auto animate-pulse"
+                style={{ borderRadius: '50%' }}
+              />
+              <p className="text-black mt-4">Chargement des messages...</p>
+            </div>
         </div>
       </Layout>
     )
@@ -339,7 +347,12 @@ export default function Messages() {
               >
                 {sending ? (
                   <>
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                    <img 
+                  src="https://i.imgur.com/VwBPgtw.jpeg" 
+                  alt="Loading..." 
+                  className="h-4 w-4 mr-2 animate-pulse"
+                  style={{ borderRadius: '50%' }}
+                />
                     Envoi en cours...
                   </>
                 ) : (

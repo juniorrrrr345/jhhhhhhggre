@@ -86,12 +86,43 @@ const Plug = require('./src/models/Plug');
 const Config = require('./src/models/Config');
 const User = require('./src/models/User');
 
+// Fonction pour récupérer les statistiques du bot
+const getBotStats = async () => {
+  try {
+    console.log('🔄 Récupération des statistiques...');
+    
+    // Vérifier que les modèles sont disponibles
+    if (!Plug || !User) {
+      console.error('❌ Modèles Plug ou User non disponibles');
+      return { shopsCount: 0, usersCount: 0 };
+    }
+    
+    const [shopsCount, usersCount] = await Promise.all([
+      Plug.countDocuments({ isActive: true }),
+      User.countDocuments({ isActive: true })
+    ]);
+    
+    console.log('📊 Résultats bruts:', { shopsCount, usersCount });
+    
+    const stats = {
+      shopsCount: shopsCount || 0,
+      usersCount: usersCount || 0
+    };
+    
+    console.log('✅ Statistiques récupérées avec succès:', stats);
+    return stats;
+  } catch (error) {
+    console.error('❌ Erreur récupération stats:', error);
+    return { shopsCount: 0, usersCount: 0 };
+  }
+};
+
 // Migration automatique
 const migrateSocialMedia = require('./scripts/migrate-social-media');
 
 // Initialisation
 const app = express();
-const bot = new Telegraf(process.env.TELEGRAM_BOT_TOKEN);
+const bot = new Telegraf(process.env.BOT_TOKEN || process.env.TELEGRAM_BOT_TOKEN);
 const PORT = process.env.PORT || 3000;
 
 // Middleware
@@ -319,9 +350,34 @@ const showMainMenuInLanguage = async (ctx, config, language) => {
     
     console.log(`🌍 Affichage menu principal en langue: ${currentLang}`);
     
-    // Message de bienvenue du panel admin ou traduit en fallback
+    // Message de bienvenue avec placeholders pour les statistiques
     const { getTranslation } = require('./src/utils/translations');
-    const welcomeMessage = freshConfig?.welcome?.text || getTranslation('messages_welcome', currentLang, customTranslations);
+    
+    // Message fixe non modifiable avec les statistiques
+    const stats = await getBotStats();
+    console.log('📊 Statistiques récupérées:', stats);
+    
+    const shopsCount = stats.shopsCount || 0;
+    const usersCount = stats.usersCount || 0;
+    
+    // Message fixe selon la langue
+    let welcomeMessage;
+    if (currentLang === 'fr') {
+      welcomeMessage = `Bienvenue sur FindYourPlug! Explorez nos services.\n\n🏪 ${shopsCount} boutiques | 👥 ${usersCount} utilisateurs`;
+    } else if (currentLang === 'en') {
+      welcomeMessage = `Welcome to FindYourPlug! Explore our services.\n\n🏪 ${shopsCount} shops | 👥 ${usersCount} users`;
+    } else if (currentLang === 'it') {
+      welcomeMessage = `Benvenuto su FindYourPlug! Esplora i nostri servizi.\n\n🏪 ${shopsCount} negozi | 👥 ${usersCount} utenti`;
+    } else if (currentLang === 'es') {
+      welcomeMessage = `Bienvenido a FindYourPlug! Explora nuestros servicios.\n\n🏪 ${shopsCount} tiendas | 👥 ${usersCount} usuarios`;
+    } else if (currentLang === 'de') {
+      welcomeMessage = `Willkommen bei FindYourPlug! Entdecken Sie unsere Services.\n\n🏪 ${shopsCount} Shops | 👥 ${usersCount} Benutzer`;
+    } else {
+      // Fallback en français
+      welcomeMessage = `Bienvenue sur FindYourPlug! Explorez nos services.\n\n🏪 ${shopsCount} boutiques | 👥 ${usersCount} utilisateurs`;
+    }
+    
+    console.log('📝 Message fixe avec stats:', welcomeMessage);
     
     // Créer le clavier principal avec traductions (AVEC le bouton langue)
     const { createMainKeyboard } = require('./src/utils/keyboards');
@@ -1702,7 +1758,8 @@ app.get('/api/public/config', async (req, res) => {
     console.log('📊 Config récupérée pour boutique:', {
       boutique: config?.boutique?.name || 'Non défini',
       logo: config?.boutique?.logo ? 'Défini' : 'Non défini',
-      background: config?.boutique?.backgroundImage ? 'Défini' : 'Non défini'
+      background: config?.boutique?.backgroundImage ? 'Défini' : 'Non défini',
+      socialMediaList: config?.socialMediaList?.length || 0
     });
     
     // Ne retourner que les données publiques nécessaires pour la boutique
@@ -1711,6 +1768,8 @@ app.get('/api/public/config', async (req, res) => {
       interface: config?.interface || {},
       welcome: config?.welcome || {},
       socialMedia: config?.socialMedia || {},
+      socialMediaList: config?.socialMediaList || [],
+      shopSocialMediaList: config?.shopSocialMediaList || [],
       messages: config?.messages || {},
       buttons: config?.buttons || {}
     };
@@ -1873,7 +1932,7 @@ app.get('/api/diagnostic/sync', async (req, res) => {
         nodeEnv: process.env.NODE_ENV,
         port: PORT,
         webhookUrl: process.env.WEBHOOK_URL || process.env.RENDER_URL || 'non configuré',
-        botToken: process.env.TELEGRAM_BOT_TOKEN ? 'configuré' : 'manquant'
+        botToken: (process.env.BOT_TOKEN || process.env.TELEGRAM_BOT_TOKEN) ? 'configuré' : 'manquant'
       }
     });
     
@@ -3469,6 +3528,63 @@ app.get('/', (req, res) => {
 });
 
 // ============================================
+// ROUTE POUR ENVOYER DES MESSAGES
+// ============================================
+
+// Route pour envoyer un message à un utilisateur spécifique
+app.post('/api/send-message', authenticateAdmin, async (req, res) => {
+  try {
+    const { userId, message, imageBase64 } = req.body;
+    
+    if (!userId || !message) {
+      return res.status(400).json({
+        success: false,
+        error: 'userId et message sont requis'
+      });
+    }
+
+    console.log(`📤 Envoi message à ${userId}:`, message.substring(0, 50) + '...');
+
+    let sent = false;
+    let error = null;
+
+    try {
+      if (imageBase64) {
+        // Envoyer avec image
+        const imageSource = { source: Buffer.from(imageBase64.split(',')[1], 'base64') };
+        await bot.telegram.sendPhoto(userId, imageSource, {
+          caption: message,
+          parse_mode: 'HTML'
+        });
+      } else {
+        // Envoyer message simple
+        await bot.telegram.sendMessage(userId, message, {
+          parse_mode: 'HTML'
+        });
+      }
+      sent = true;
+    } catch (sendError) {
+      error = sendError.message;
+      console.error(`❌ Erreur envoi à ${userId}:`, sendError.message);
+    }
+
+    res.json({
+      success: sent,
+      sent,
+      error: error,
+      message: sent ? 'Message envoyé avec succès' : 'Erreur lors de l\'envoi'
+    });
+
+  } catch (error) {
+    console.error('❌ Erreur API send-message:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Erreur serveur: ' + error.message
+    });
+  }
+});
+
+// ============================================
 // ROUTES APPLICATIONS
 // ============================================
 
@@ -3674,10 +3790,10 @@ const start = async () => {
       
       // Construire l'URL de webhook avec fallback
       const baseUrl = process.env.WEBHOOK_URL || process.env.RENDER_URL || 'https://jhhhhhhggre.onrender.com';
-      const webhookUrl = `${baseUrl}/webhook/${process.env.TELEGRAM_BOT_TOKEN}`;
+      const webhookUrl = `${baseUrl}/webhook/${process.env.BOT_TOKEN || process.env.TELEGRAM_BOT_TOKEN}`;
       
       // Route pour le webhook
-      app.use(bot.webhookCallback(`/webhook/${process.env.TELEGRAM_BOT_TOKEN}`));
+              app.use(bot.webhookCallback(`/webhook/${process.env.BOT_TOKEN || process.env.TELEGRAM_BOT_TOKEN}`));
       
       // Définir le webhook avec retry et gestion d'erreur
       try {
@@ -4112,9 +4228,9 @@ const handleUserAnalytics = async (req, res) => {
   }
 };
 
-// Routes pour user analytics (GET et POST) - sans auth pour debug
-app.get('/api/admin/user-analytics', handleUserAnalytics);
-app.post('/api/admin/user-analytics', handleUserAnalytics);
+// Routes pour user analytics (GET et POST) - avec auth admin
+app.get('/api/admin/user-analytics', authenticateAdmin, handleUserAnalytics);
+app.post('/api/admin/user-analytics', authenticateAdmin, handleUserAnalytics);
 
 // Test endpoint pour vérifier le proxy
 app.get('/api/test-proxy', (req, res) => {

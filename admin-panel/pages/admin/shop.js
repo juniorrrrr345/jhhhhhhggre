@@ -115,8 +115,13 @@ export default function ShopConfiguration() {
         </Head>
         <div className="min-h-screen bg-gray-50 flex items-center justify-center">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-            <p>Chargement de la configuration...</p>
+            <img 
+              src="https://i.imgur.com/VwBPgtw.jpeg" 
+              alt="Loading..." 
+              className="h-12 w-12 mx-auto mb-4 animate-pulse"
+              style={{ borderRadius: '50%' }}
+            />
+                          <p className="text-black">Chargement de la configuration...</p>
           </div>
         </div>
       </>
@@ -134,7 +139,7 @@ export default function ShopConfiguration() {
           {/* Header */}
           <div className="mb-8">
             <button
-              onClick={() => router.back()}
+              onClick={() => router.push('/admin')}
               className="mb-4 inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
             >
               ← Retour

@@ -268,8 +268,13 @@ export default function BotConfiguration() {
         </Head>
         <div className="min-h-screen bg-gray-50 flex items-center justify-center">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-            <p>Chargement de la configuration...</p>
+            <img 
+              src="https://i.imgur.com/VwBPgtw.jpeg" 
+              alt="Loading..." 
+              className="h-12 w-12 mx-auto mb-4 animate-pulse"
+              style={{ borderRadius: '50%' }}
+            />
+                          <p className="text-black">Chargement de la configuration...</p>
           </div>
         </div>
       </>
@@ -287,10 +292,10 @@ export default function BotConfiguration() {
           {/* Header */}
           <div className="mb-8">
             <button
-              onClick={() => router.back()}
+              onClick={() => router.push('/admin')}
               className="mb-4 inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
             >
-              ← Retour
+              ← Retour au Dashboard
             </button>
             
             <div className="md:flex md:items-center md:justify-between">
@@ -368,7 +373,11 @@ export default function BotConfiguration() {
                       onChange={(e) => updateWelcome('text', e.target.value)}
                       rows={4}
                       className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                      placeholder="Bienvenue sur notre bot Telegram !"
+                      placeholder="Bienvenue sur FindYourPlug! 🚀
+
+🏪 {shopsCount} boutiques/shops/negozi/tiendas/Shops | 👥 {usersCount} utilisateurs/users/utenti/usuarios/Benutzer
+
+Explorez nos services."
                     />
                   </div>
                   
@@ -476,163 +485,9 @@ export default function BotConfiguration() {
             </div>
           </div>
 
-          {/* Configuration du thème de la boutique */}
-          <div className="bg-white shadow rounded-lg mt-6">
-            <div className="px-4 py-5 sm:p-6">
-              <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">
-                🎨 Thème de la Boutique Vercel
-              </h3>
-              <p className="text-sm text-gray-500 mb-6">
-                Personnalisez l'apparence de votre boutique en ligne. Les changements seront visibles immédiatement.
-              </p>
+
               
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {/* Thème prédéfini */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-3">
-                    Thème prédéfini
-                  </label>
-                  <div className="space-y-2">
-                    {[
-                      { value: 'dark', label: '🌙 Sombre (actuel)', desc: 'Fond noir élégant' },
-                      { value: 'light', label: '☀️ Clair', desc: 'Fond blanc moderne' },
-                      { value: 'custom', label: '🎨 Personnalisé', desc: 'Image de fond custom' }
-                    ].map(theme => (
-                      <label key={theme.value} className="flex items-center">
-                        <input
-                          type="radio"
-                          name="theme"
-                          value={theme.value}
-                          checked={config.boutique?.theme === theme.value}
-                          onChange={(e) => updateBoutique('theme', e.target.value)}
-                          className="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300"
-                        />
-                        <span className="ml-3">
-                          <span className="text-sm font-medium text-gray-900">{theme.label}</span>
-                          <span className="text-sm text-gray-500 block">{theme.desc}</span>
-                        </span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Image de fond personnalisée */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Image de fond personnalisée
-                  </label>
-                  <div className="space-y-3">
-                    <input
-                      type="url"
-                      value={config.boutique?.backgroundImage || ''}
-                      onChange={(e) => updateBoutique('backgroundImage', e.target.value)}
-                      className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                      placeholder="https://example.com/image.jpg"
-                      disabled={config.boutique?.theme !== 'custom'}
-                    />
-                    <p className="text-xs text-gray-500">
-                      URL directe vers une image (JPG, PNG, WebP). Recommandé : 1920x1080px minimum.
-                      <br />
-                      <strong>Pour Imgur :</strong> Utilisez https://i.imgur.com/CODE.jpg (pas .jpeg)
-                    </p>
-                    
-                    {/* Aperçu de l'image */}
-                    {config.boutique?.backgroundImage && config.boutique?.theme === 'custom' && (
-                      <div className="mt-3">
-                        <label className="block text-xs font-medium text-gray-700 mb-1">Aperçu</label>
-                        <div className="relative h-24 w-full rounded-lg overflow-hidden border border-gray-300">
-                          <img
-                            src={config.boutique.backgroundImage}
-                            alt="Aperçu du fond"
-                            className="w-full h-full object-cover"
-                            onError={(e) => {
-                              e.target.style.display = 'none'
-                              e.target.nextSibling.style.display = 'flex'
-                            }}
-                          />
-                          <div 
-                            className="absolute inset-0 bg-gray-100 flex items-center justify-center text-gray-500 text-xs"
-                            style={{display: 'none'}}
-                          >
-                            Image non accessible
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {/* Couleur de fond de secours */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Couleur de fond de secours
-                  </label>
-                  <div className="flex items-center space-x-3">
-                    <input
-                      type="color"
-                      value={config.boutique?.backgroundColor || '#000000'}
-                      onChange={(e) => updateBoutique('backgroundColor', e.target.value)}
-                      className="h-10 w-20 border border-gray-300 rounded-md cursor-pointer"
-                    />
-                    <input
-                      type="text"
-                      value={config.boutique?.backgroundColor || '#000000'}
-                      onChange={(e) => updateBoutique('backgroundColor', e.target.value)}
-                      className="block w-32 border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm"
-                      placeholder="#000000"
-                    />
-                  </div>
-                  <p className="text-xs text-gray-500 mt-1">
-                    Utilisée si l'image ne charge pas ou pour les thèmes unis.
-                  </p>
-                </div>
-
-                {/* Prévisualisation */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Prévisualisation
-                  </label>
-                  <div 
-                    className="h-24 w-full rounded-lg border border-gray-300 relative overflow-hidden"
-                    style={{
-                      backgroundColor: config.boutique?.backgroundColor || '#000000',
-                      backgroundImage: config.boutique?.theme === 'custom' && config.boutique?.backgroundImage ? 
-                        `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url("${config.boutique.backgroundImage}")` : 
-                        config.boutique?.theme === 'light' ? 'linear-gradient(135deg, #f3f4f6, #e5e7eb)' : 'none',
-                      backgroundSize: 'cover',
-                      backgroundPosition: 'center'
-                    }}
-                  >
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="text-center">
-                        <div className={`text-lg font-bold ${config.boutique?.theme === 'light' ? 'text-gray-900' : 'text-white'}`}>
-                          FindYourPlug
-                        </div>
-                        <div className={`text-sm ${config.boutique?.theme === 'light' ? 'text-gray-600' : 'text-gray-300'}`}>
-                          Boutique en ligne
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Bouton pour voir la boutique */}
-              <div className="mt-6 pt-4 border-t border-gray-200">
-                <a
-                  href="/shop"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                >
-                  🛍️ Voir la boutique
-                  <svg className="ml-2 -mr-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                  </svg>
-                </a>
-              </div>
-            </div>
-          </div>
+              
 
         </div>
       </div>

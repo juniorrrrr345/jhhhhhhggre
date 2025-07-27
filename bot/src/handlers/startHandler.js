@@ -86,8 +86,11 @@ const handleStart = async (ctx) => {
     // Obtenir la config
     const config = await getConfigHelper();
     
+    // Récupérer les statistiques
+    const stats = await getBotStats();
+    
     // NOUVEAU : Proposer directement les langues au /start
-    await showLanguageSelection(ctx, config);
+    await showLanguageSelection(ctx, config, stats);
     
   } catch (error) {
     console.error('❌ Erreur dans handleStart:', error);
@@ -95,13 +98,31 @@ const handleStart = async (ctx) => {
   }
 };
 
+// Fonction pour récupérer les statistiques du bot
+const getBotStats = async () => {
+  try {
+    const [shopsCount, usersCount] = await Promise.all([
+      Plug.countDocuments({ isActive: true }),
+      User.countDocuments({ isActive: true })
+    ]);
+    
+    return {
+      shopsCount: shopsCount || 0,
+      usersCount: usersCount || 0
+    };
+  } catch (error) {
+    console.error('❌ Erreur récupération stats:', error);
+    return { shopsCount: 0, usersCount: 0 };
+  }
+};
+
 // Nouvelle fonction pour afficher directement la sélection de langue
-const showLanguageSelection = async (ctx, config) => {
+const showLanguageSelection = async (ctx, config, stats = { shopsCount: 0, usersCount: 0 }) => {
   try {
     const { createLanguageKeyboard } = require('../utils/translations');
     
     // Message de bienvenue en multilingue
-      const welcomeText = `🌍 Welcome! Bienvenue! Bienvenido! Benvenuto! Willkommen!\n\n` +
+    const welcomeText = `🌍 Welcome! Bienvenue! Bienvenido! Benvenuto! Willkommen!\n\n` +
     `Please select your language / Sélectionnez votre langue / Elige tu idioma / Seleziona la tua lingua / Wählen Sie Ihre Sprache:`;
     
     // Créer le clavier de sélection de langue
@@ -135,7 +156,13 @@ const showLanguageSelection = async (ctx, config) => {
     const customTranslations = config?.languages?.translations;
     
     // Utiliser directement les traductions pour que le message change selon la langue
-    const welcomeMessage = getTranslation('messages_welcome', currentLang, customTranslations);
+    let welcomeMessage = getTranslation('messages_welcome', currentLang, customTranslations);
+    
+    // Remplacer les placeholders par les vraies statistiques
+    welcomeMessage = welcomeMessage
+      .replace('{shopsCount}', stats.shopsCount)
+      .replace('{usersCount}', stats.usersCount);
+    
     console.log('📝 Message d\'accueil (fallback) utilisé:', welcomeMessage);
     const keyboard = await createMainKeyboard(config);
     
@@ -168,8 +195,17 @@ const handleBackMain = async (ctx) => {
     
     console.log(`🌍 Langue actuelle pour le retour: ${currentLang}`);
 
+    // Récupérer les statistiques pour le retour au menu
+    const stats = await getBotStats();
+
     // Utiliser directement les traductions pour que le message change selon la langue
-    const welcomeMessage = getTranslation('messages_welcome', currentLang, customTranslations);
+    let welcomeMessage = getTranslation('messages_welcome', currentLang, customTranslations);
+    
+    // Remplacer les placeholders par les vraies statistiques
+    welcomeMessage = welcomeMessage
+      .replace('{shopsCount}', stats.shopsCount)
+      .replace('{usersCount}', stats.usersCount);
+    
     console.log('📝 Message d\'accueil (retour menu) utilisé:', welcomeMessage);
     
     const keyboard = createMainKeyboard(config);

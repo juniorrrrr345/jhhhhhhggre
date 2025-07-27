@@ -181,8 +181,16 @@ export default function AccueilAdmin() {
   if (loading) {
     return (
       <Layout title="Accueil">
-        <div className="flex items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+                  <div className="flex items-center justify-center h-64">
+            <div className="text-center">
+                            <img 
+                src="https://i.imgur.com/VwBPgtw.jpeg" 
+                alt="Loading..." 
+                className="h-12 w-12 mx-auto animate-pulse"
+                style={{ borderRadius: '50%' }}
+              />
+              <p className="text-black mt-4">Chargement des boutiques...</p>
+            </div>
         </div>
       </Layout>
     )

@@ -36,19 +36,16 @@ const makeProxyCall = async (endpoint, method = 'GET', token = null, data = null
     // Marquer l'appel pour l'anti-spam
     apiCache.markCall(cacheKey);
     
-    // Timeout réduit à 6 secondes pour éviter les erreurs 502
+    // Timeout augmenté à 15 secondes pour réduire les fausses erreurs
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 6000);
+    const timeoutId = setTimeout(() => controller.abort(), 15000);
     
-    const response = await fetch('/api/cors-proxy', {
-      method: 'POST',
+    // Appel direct au serveur bot
+    const botUrl = 'https://jhhhhhhggre.onrender.com';
+    const response = await fetch(`${botUrl}${endpoint}`, {
+      method: method,
       headers: headers,
-      body: JSON.stringify({
-        endpoint: endpoint,
-        method: method,
-        token: token,
-        data: data
-      }),
+      body: data ? JSON.stringify(data) : undefined,
       signal: controller.signal
     });
     
@@ -79,7 +76,7 @@ const makeProxyCall = async (endpoint, method = 'GET', token = null, data = null
           return fallbackData;
         } else {
           console.log(`🚫 ABANDON immédiat pour ${endpoint} - serveur indisponible`);
-          throw new Error(`Serveur temporairement indisponible (${response.status}). Mode local activé.`);
+          throw new Error(`Erreur serveur ${response.status}: ${errorData.error || 'Service temporairement indisponible'}`);
         }
       }
       
@@ -376,6 +373,25 @@ export const simpleApi = {
       };
     } catch (error) {
       console.error(`❌ GET error ${endpoint}:`, error);
+      return { 
+        ok: false, 
+        error: error.message 
+      };
+    }
+  },
+
+  // Méthode spécifique pour les analytics utilisateurs
+  getUserAnalytics: async (timeRange = 'all', token = null) => {
+    try {
+      console.log(`🔄 User Analytics request: ${timeRange}`);
+      const response = await makeProxyCall(`admin/user-analytics?timeRange=${timeRange}`, 'GET', token);
+      console.log(`✅ User Analytics response:`, response);
+      return { 
+        ok: true, 
+        data: response 
+      };
+    } catch (error) {
+      console.error(`❌ User Analytics error:`, error);
       return { 
         ok: false, 
         error: error.message 

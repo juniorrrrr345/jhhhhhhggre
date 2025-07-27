@@ -99,6 +99,12 @@ class LocalStorageAPI {
     return this.save(config)
   }
 
+  async updateShopSocialMedia(socialMediaList) {
+    const config = this.load() || {}
+    config.shopSocialMediaList = socialMediaList
+    return this.save(config)
+  }
+
   async updateLanguages(languagesConfig) {
     const config = this.load() || {}
     config.languages = { ...config.languages, ...languagesConfig }

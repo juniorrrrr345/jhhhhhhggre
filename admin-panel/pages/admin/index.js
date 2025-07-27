@@ -100,60 +100,12 @@ export default function Dashboard() {
         
         // Gestion silencieuse des timeouts
         
-        // FALLBACK avec VOS vraies boutiques récupérées plus tôt
-        console.log('🔄 Using REAL fallback data from your actual bot...')
-        const realFallbackShops = [
-          {
-            _id: '687e233151eb51ad38c5b9e7',
-            name: 'Plugs pour tester',
-            description: 'Plug de test pour les likes',
-            image: 'https://i.imgur.com/DD5OU6o.jpeg',
-            isVip: true,
-            isActive: true,
-            likes: 5,
-            services: {
-              delivery: { enabled: true, description: 'Op' },
-              postal: { enabled: true, description: 'Op' },
-              meetup: { enabled: true, description: '90' }
-            },
-            countries: ['France', 'Canada', 'Tunisie'],
-            socialMedia: [
-              {
-                name: 'Instagram',
-                emoji: '📲',
-                url: 'https://www.instagram.com/legrosj3/'
-              }
-            ]
-          },
-          {
-            _id: '687e2227792aa1be313ead28',
-            name: 'Boutique Teste2',
-            description: 'Description du plugs ci nécessaire',
-            image: 'https://i.imgur.com/DD5OU6o.jpeg',
-            isVip: true,
-            isActive: true,
-            likes: 5,
-            services: {
-              delivery: { enabled: true, description: 'Description de livraison' },
-              postal: { enabled: true, description: 'Envoi Postaux possible' },
-              meetup: { enabled: true, description: 'Pareil meetup' }
-            },
-            countries: ['Canada', 'France', 'Belgique', 'Suisse'],
-            socialMedia: [
-              {
-                name: 'Les Réseaux',
-                emoji: '📲',
-                url: 'https://www.instagram.com/legrosj3/'
-              }
-            ]
-          }
-        ]
-        
-
+        // Fallback en cas d'erreur API
+        console.log('🔄 Fallback: Aucune donnée disponible')
         setStats({
-          totalPlugs: 2,
-          activePlugs: 2,
-          vipPlugs: 2,
+          totalPlugs: 0,
+          activePlugs: 0,
+          vipPlugs: 0,
           totalUsers: 0
         })
       }
@@ -161,9 +113,9 @@ export default function Dashboard() {
     } catch (error) {
       console.error('❌ Global error:', error)
       setStats({
-        totalPlugs: 2,
-        activePlugs: 2,
-        vipPlugs: 2,
+        totalPlugs: 0,
+        activePlugs: 0,
+        vipPlugs: 0,
         totalUsers: 0
       })
     } finally {
@@ -245,7 +197,12 @@ export default function Dashboard() {
     return (
       <Layout title="Dashboard">
         <div className="flex items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+          <img 
+          src="https://i.imgur.com/VwBPgtw.jpeg" 
+          alt="Loading..." 
+          className="h-12 w-12 mx-auto animate-pulse"
+          style={{ borderRadius: '50%' }}
+        />
         </div>
       </Layout>
     )

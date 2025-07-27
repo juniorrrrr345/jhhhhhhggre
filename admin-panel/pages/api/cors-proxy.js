@@ -90,7 +90,16 @@ export default async function handler(req, res) {
       fetchOptions.body = JSON.stringify(data)
     }
     
-    const response = await fetch(`${apiUrl}${endpoint}`, fetchOptions)
+    // Ajouter un timeout pour éviter les blocages
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 15000) // 15 secondes max
+    
+    const response = await fetch(`${apiUrl}${endpoint}`, {
+      ...fetchOptions,
+      signal: controller.signal
+    })
+    
+    clearTimeout(timeoutId)
     
     console.log(`📡 Proxy response: ${response.status}`)
     
@@ -116,16 +125,38 @@ export default async function handler(req, res) {
         const jsonData = JSON.parse(responseText)
         res.status(response.status).json(jsonData)
       } catch (parseError) {
+        console.log('⚠️ Erreur parsing JSON, retour texte brut')
         res.status(response.status).json({ data: responseText })
       }
     } else {
-      res.status(response.status).json({ error: responseText })
+      // Gestion spécifique des erreurs
+      let errorMessage = responseText
+      if (response.status === 500) {
+        errorMessage = 'Erreur serveur (500) - Réessayez dans quelques secondes'
+      } else if (response.status === 429) {
+        errorMessage = 'Serveur temporairement surchargé (429) - Réessayez plus tard'
+      } else if (response.status === 404) {
+        errorMessage = 'Endpoint non trouvé (404)'
+      }
+      
+      res.status(response.status).json({ error: errorMessage })
     }
     
   } catch (error) {
     console.error('❌ Proxy error:', error.message)
+    
+    // Gestion spécifique des erreurs
+    let errorMessage = 'Erreur proxy'
+    if (error.name === 'AbortError') {
+      errorMessage = 'Timeout - La requête a pris trop de temps'
+    } else if (error.message.includes('fetch')) {
+      errorMessage = 'Erreur de connexion au serveur'
+    } else {
+      errorMessage = `Erreur proxy: ${error.message}`
+    }
+    
     res.status(500).json({ 
-      error: 'Erreur proxy', 
+      error: errorMessage, 
       details: error.message 
     })
   }

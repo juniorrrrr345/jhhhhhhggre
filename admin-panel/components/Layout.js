@@ -19,6 +19,7 @@ const navigation = [
   { name: 'Messages', href: '/admin/messages', icon: ChartBarIcon },
   { name: 'Demandes', href: '/admin/applications', icon: ChartBarIcon },
   { name: 'Réseaux Sociaux', href: '/admin/social-media', icon: UserGroupIcon },
+  { name: 'Réseaux Shop', href: '/admin/shop-social', icon: UserGroupIcon },
   { name: 'Liens Telegram', href: '/admin/telegram-links', icon: UserGroupIcon },
   { name: 'Configuration', href: '/admin/config', icon: CogIcon }
 ]

@@ -89,7 +89,7 @@ const translations = {
     inscription_why_delivery: 'Services de livraison',
     inscription_why_interface: 'Interface simple et rapide',
     inscription_why_notifications: 'Notifications en temps réel',
-    inscription_why_visibility: 'Ça offre + de visibilité',
+          inscription_why_visibility: 'Ça offre + de visibilité pour votre boutique !',
     inscription_how_title: 'Comment ça marche ?',
     inscription_how_step1: 'Cliquez sur "S\'inscrire maintenant"',
     inscription_how_step2: 'Vous serez redirigé vers Telegram',
@@ -231,7 +231,7 @@ const translations = {
     inscription_why_delivery: 'Delivery services',
     inscription_why_interface: 'Simple and fast interface',
     inscription_why_notifications: 'Real-time notifications',
-    inscription_why_visibility: 'Offers + visibility',
+          inscription_why_visibility: 'Offers + visibility for your shop!',
     inscription_how_title: 'How does it work?',
     inscription_how_step1: 'Click on "Register now"',
     inscription_how_step2: 'You will be redirected to Telegram',
@@ -291,7 +291,12 @@ const translations = {
     // Traductions pour la page détail boutique
     detail_available_services: 'Available services',
     detail_available: 'Available',
-    detail_not_available: 'Not available'
+    detail_not_available: 'Not available',
+    // Traductions pour la page d'accueil
+    welcome_title: 'Welcome to FindYourPlug',
+    welcome_search_desc: 'Use the search bar to find a plug near you or by postal delivery',
+    welcome_vote_desc: 'Don\'t hesitate to vote for your favorite Plug',
+    welcome_register_desc: 'Register directly via our Telegram bot to access all shops'
   },
   es: {
     title: 'Idioma',
@@ -373,7 +378,7 @@ const translations = {
     inscription_why_delivery: 'Servicios de entrega',
     inscription_why_interface: 'Interfaz simple y rápida',
     inscription_why_notifications: 'Notificaciones en tiempo real',
-    inscription_why_visibility: 'Ofrece + visibilidad',
+          inscription_why_visibility: 'Ofrece + visibilidad para tu tienda!',
     inscription_how_title: '¿Cómo funciona?',
     inscription_how_step1: 'Haz clic en "Registrarse ahora"',
     inscription_how_step2: 'Serás redirigido a Telegram',
@@ -433,7 +438,12 @@ const translations = {
     // Traductions pour la page détail boutique
     detail_available_services: 'Servicios disponibles',
     detail_available: 'Disponible',
-    detail_not_available: 'No disponible'
+    detail_not_available: 'No disponible',
+    // Traductions pour la page d'accueil
+    welcome_title: 'Bienvenue sur FindYourPlug',
+    welcome_search_desc: 'Utilisez la barre de recherche pour trouver un plug près de chez vous ou en envoi postal',
+    welcome_vote_desc: 'N\'hésitez pas à voter pour votre Plug préféré',
+    welcome_register_desc: 'Inscrivez-vous directement via notre bot Telegram pour accéder à toutes les boutiques'
   },
   it: {
     title: 'Lingua',
@@ -515,7 +525,7 @@ const translations = {
     inscription_why_delivery: 'Servizi di consegna',
     inscription_why_interface: 'Interfaccia semplice e veloce',
     inscription_why_notifications: 'Notifiche in tempo reale',
-    inscription_why_visibility: 'Offre + visibilità',
+          inscription_why_visibility: 'Offre + visibilità per il tuo negozio!',
     inscription_how_title: 'Come funziona?',
     inscription_how_step1: 'Clicca su "Registrati ora"',
     inscription_how_step2: 'Sarai reindirizzato a Telegram',
@@ -575,7 +585,12 @@ const translations = {
     // Traductions pour la page détail boutique
     detail_available_services: 'Servizi disponibili',
     detail_available: 'Disponibile',
-    detail_not_available: 'Non disponibile'
+    detail_not_available: 'Non disponibile',
+    // Traductions pour la page d'accueil
+    welcome_title: 'Benvenuto su FindYourPlug',
+    welcome_search_desc: 'Usa la barra di ricerca per trovare un plug vicino a casa tua o per spedizione postale',
+    welcome_vote_desc: 'Non esitare a votare per il tuo Plug preferito',
+    welcome_register_desc: 'Registrati direttamente tramite il nostro bot Telegram per accedere a tutti i negozi'
   },
   de: {
     title: 'Sprache',
@@ -657,7 +672,7 @@ const translations = {
     inscription_why_delivery: 'Lieferservices',
     inscription_why_interface: 'Einfache und schnelle Benutzeroberfläche',
     inscription_why_notifications: 'Echtzeit-Benachrichtigungen',
-    inscription_why_visibility: 'Bietet + Sichtbarkeit',
+          inscription_why_visibility: 'Bietet + Sichtbarkeit für Ihren Shop!',
     inscription_how_title: 'Wie funktioniert es?',
     inscription_how_step1: 'Klicke auf "Jetzt registrieren"',
     inscription_how_step2: 'Du wirst zu Telegram weitergeleitet',
@@ -717,7 +732,12 @@ const translations = {
     // Traductions pour la page détail boutique
     detail_available_services: 'Verfügbare Services',
     detail_available: 'Verfügbar',
-    detail_not_available: 'Nicht verfügbar'
+    detail_not_available: 'Nicht verfügbar',
+    // Traductions pour la page d'accueil
+    welcome_title: 'Willkommen bei FindYourPlug',
+    welcome_search_desc: 'Nutzen Sie die Suchleiste, um einen Plug in Ihrer Nähe oder per Postversand zu finden',
+    welcome_vote_desc: 'Zögern Sie nicht, für Ihren Lieblings-Plug zu stimmen',
+    welcome_register_desc: 'Registrieren Sie sich direkt über unseren Telegram-Bot, um Zugang zu allen Shops zu erhalten'
   }
 }
 
