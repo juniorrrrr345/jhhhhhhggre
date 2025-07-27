@@ -353,26 +353,8 @@ const showMainMenuInLanguage = async (ctx, config, language) => {
     // Message de bienvenue avec placeholders pour les statistiques
     const { getTranslation } = require('./src/utils/translations');
     
-    // Utiliser le message personnalisé s'il existe, sinon les traductions par défaut
-    let welcomeMessage = freshConfig?.welcome?.text || getTranslation('messages_welcome', currentLang, customTranslations);
-    
-    // Si le message personnalisé ne contient pas les placeholders, les ajouter selon la langue
-    if (freshConfig?.welcome?.text && !welcomeMessage.includes('{shopsCount}')) {
-      const statsText = {
-        fr: '🏪 {shopsCount} boutiques | 👥 {usersCount} utilisateurs',
-        en: '🏪 {shopsCount} shops | 👥 {usersCount} users',
-        it: '🏪 {shopsCount} negozi | 👥 {usersCount} utenti',
-        es: '🏪 {shopsCount} tiendas | 👥 {usersCount} usuarios',
-        de: '🏪 {shopsCount} Shops | 👥 {usersCount} Benutzer'
-      };
-      
-      const currentStatsText = statsText[currentLang] || statsText.fr;
-      
-      welcomeMessage = welcomeMessage.replace(
-        'Explorez nos services.',
-        `${currentStatsText}\n\nExplorez nos services.`
-      );
-    }
+    // Toujours utiliser les traductions par défaut qui contiennent les placeholders des statistiques
+    let welcomeMessage = getTranslation('messages_welcome', currentLang, customTranslations);
     
     // Remplacer les statistiques dans le message
     const stats = await getBotStats();
