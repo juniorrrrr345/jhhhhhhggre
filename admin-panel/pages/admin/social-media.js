@@ -313,7 +313,7 @@ export default function SocialMediaManager() {
               className="h-12 w-12 mx-auto mb-4 animate-pulse"
               style={{ borderRadius: '50%' }}
             />
-              <p className="text-gray-600">Chargement des réseaux sociaux...</p>
+                              <p className="text-black">Chargement des réseaux sociaux...</p>
             </div>
           </div>
         </Layout>

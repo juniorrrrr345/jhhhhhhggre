@@ -211,13 +211,16 @@ export default function Messages() {
   if (loading) {
     return (
       <Layout title="Messages">
-        <div className="flex justify-center items-center h-64">
-                      <img 
-              src="https://i.imgur.com/VwBPgtw.jpeg" 
-              alt="Loading..." 
-              className="h-8 w-8 mx-auto animate-pulse"
-              style={{ borderRadius: '50%' }}
-            />
+                  <div className="flex justify-center items-center h-64">
+            <div className="text-center">
+                            <img 
+                src="https://i.imgur.com/VwBPgtw.jpeg" 
+                alt="Loading..." 
+                className="h-8 w-8 mx-auto animate-pulse"
+                style={{ borderRadius: '50%' }}
+              />
+              <p className="text-black mt-4">Chargement des messages...</p>
+            </div>
         </div>
       </Layout>
     )

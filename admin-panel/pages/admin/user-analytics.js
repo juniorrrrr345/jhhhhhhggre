@@ -169,7 +169,7 @@ export default function UserAnalytics() {
               className="h-12 w-12 mx-auto mb-4 animate-pulse"
               style={{ borderRadius: '50%' }}
             />
-            <div>⏳ Chargement des statistiques utilisateurs...</div>
+                          <div className="text-black">⏳ Chargement des statistiques utilisateurs...</div>
           </div>
         </div>
       </AdminLayout>

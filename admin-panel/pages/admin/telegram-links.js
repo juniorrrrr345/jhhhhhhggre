@@ -131,13 +131,16 @@ export default function TelegramLinks() {
   if (loading) {
     return (
       <Layout title="Liens Telegram">
-        <div className="flex items-center justify-center h-64">
-                      <img 
-              src="https://i.imgur.com/VwBPgtw.jpeg" 
-              alt="Loading..." 
-              className="h-12 w-12 mx-auto animate-pulse"
-              style={{ borderRadius: '50%' }}
-            />
+                            <div className="flex items-center justify-center h-64">
+            <div className="text-center">
+              <img 
+                src="https://i.imgur.com/VwBPgtw.jpeg" 
+                alt="Loading..." 
+                className="h-12 w-12 mx-auto animate-pulse"
+                style={{ borderRadius: '50%' }}
+              />
+              <p className="text-black mt-4">Chargement des liens Telegram...</p>
+            </div>
         </div>
       </Layout>
     )

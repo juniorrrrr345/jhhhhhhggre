@@ -311,7 +311,7 @@ export default function Applications() {
               className="h-12 w-12 mx-auto animate-pulse"
               style={{ borderRadius: '50%' }}
             />
-          <span className="ml-4 text-gray-600">Chargement des demandes...</span>
+                      <span className="ml-4 text-black">Chargement des demandes...</span>
         </div>
       </Layout>
     );

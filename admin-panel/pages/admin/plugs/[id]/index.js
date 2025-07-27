@@ -180,7 +180,7 @@ export default function PlugDetails() {
               className="h-12 w-12 mx-auto animate-pulse"
               style={{ borderRadius: '50%' }}
             />
-            <p className="mt-4">Chargement...</p>
+                          <p className="mt-4 text-black">Chargement...</p>
           </div>
         </div>
       </div>

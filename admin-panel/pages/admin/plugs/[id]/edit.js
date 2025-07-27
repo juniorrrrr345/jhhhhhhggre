@@ -406,7 +406,7 @@ export default function EditPlug() {
               className="h-12 w-12 mx-auto mb-4 animate-pulse"
               style={{ borderRadius: '50%' }}
             />
-            <p className="text-gray-600 font-medium">Chargement de la boutique...</p>
+                          <p className="text-black font-medium">Chargement de la boutique...</p>
           </div>
         </div>
       </>

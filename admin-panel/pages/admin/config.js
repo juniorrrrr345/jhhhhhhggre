@@ -274,7 +274,7 @@ export default function BotConfiguration() {
               className="h-12 w-12 mx-auto mb-4 animate-pulse"
               style={{ borderRadius: '50%' }}
             />
-            <p>Chargement de la configuration...</p>
+                          <p className="text-black">Chargement de la configuration...</p>
           </div>
         </div>
       </>
