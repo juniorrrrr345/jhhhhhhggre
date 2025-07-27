@@ -620,7 +620,6 @@ export default function BotConfiguration() {
           </div>
 
         </div>
-        </div>
       </div>
       
       <Toaster position="top-right" />
