@@ -104,16 +104,15 @@ export default function SocialMediaManager() {
              setSocialMedias(socialMediasWithIds)
              console.log('📁 Réseaux sociaux chargés depuis le stockage local:', socialMediasWithIds.map(s => ({ id: s.id, name: s.name })))
            } else {
-             // Initialiser avec des données par défaut simples
+             // Initialiser avec VOS réseaux sociaux du bot configurés
              const defaultSocialMedias = [
-               { id: 'telegram', name: 'Telegram', emoji: '📱', url: '', enabled: true },
-               { id: 'whatsapp', name: 'WhatsApp', emoji: '💬', url: '', enabled: true },
-               { id: 'discord', name: 'Discord', emoji: '🎮', url: '', enabled: false },
+               { id: 'telegram', name: 'Telegram', emoji: '📱', url: 'https://t.me/+zcP68c4M_3NlM2Y0', enabled: true },
+               { id: 'contact', name: 'Contact', emoji: '📞', url: 'https://t.me/findyourplugsav', enabled: true },
                { id: 'instagram', name: 'Instagram', emoji: '📸', url: '', enabled: false }
              ]
              setSocialMedias(defaultSocialMedias)
              await localApi.updateSocialMedia(defaultSocialMedias)
-             console.log('🔧 Réseaux sociaux initialisés en mode local')
+             console.log('🔧 Réseaux sociaux bot initialisés avec vos liens')
            }
          }
       } catch (localError) {
