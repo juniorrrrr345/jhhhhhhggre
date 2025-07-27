@@ -319,9 +319,25 @@ const showMainMenuInLanguage = async (ctx, config, language) => {
     
     console.log(`🌍 Affichage menu principal en langue: ${currentLang}`);
     
-    // Message de bienvenue du panel admin ou traduit en fallback
+    // Message de bienvenue avec statistiques dynamiques
     const { getTranslation } = require('./src/utils/translations');
-    const welcomeMessage = freshConfig?.welcome?.text || getTranslation('messages_welcome', currentLang, customTranslations);
+    
+    // Récupérer les statistiques
+    let userCount = 0;
+    let shopCount = 0;
+    
+    try {
+      const User = require('./src/models/User');
+      const Plug = require('./src/models/Plug');
+      userCount = await User.countDocuments({ isActive: true });
+      shopCount = await Plug.countDocuments({ status: 'approved' });
+    } catch (statsError) {
+      console.log('⚠️ Erreur récupération statistiques:', statsError.message);
+    }
+    
+    // Message de base avec statistiques
+    const baseMessage = freshConfig?.welcome?.text || getTranslation('messages_welcome', currentLang, customTranslations);
+    const welcomeMessage = `${baseMessage}\n\n📊 **${userCount}** utilisateurs actifs\n🏪 **${shopCount}** boutiques disponibles`;
     
     // Créer le clavier principal avec traductions (AVEC le bouton langue)
     const { createMainKeyboard } = require('./src/utils/keyboards');
