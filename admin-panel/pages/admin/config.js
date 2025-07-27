@@ -373,7 +373,11 @@ export default function BotConfiguration() {
                       onChange={(e) => updateWelcome('text', e.target.value)}
                       rows={4}
                       className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                      placeholder="Bienvenue sur notre bot Telegram !"
+                      placeholder="Bienvenue sur FindYourPlug! 🚀
+
+🏪 {shopsCount} boutiques | 👥 {usersCount} utilisateurs
+
+Explorez nos services."
                     />
                   </div>
                   
