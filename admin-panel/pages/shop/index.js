@@ -463,7 +463,7 @@ export default function ShopHome() {
               },
               { 
                 name: 'Instagram', 
-                logo: 'https://i.imgur.com/o2umvWd.png',
+                logo: 'https://i.imgur.com/YBE4cnb.jpeg',
                 emoji: '📸',
                 url: '#' 
               },
