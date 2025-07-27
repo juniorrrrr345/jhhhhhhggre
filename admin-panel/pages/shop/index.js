@@ -404,9 +404,75 @@ export default function ShopHome() {
             <p style={{ margin: '0 0 8px 0' }}>
               🔍 Utilisez la barre de recherche pour trouver un plug près de chez vous ou en envoi postal
             </p>
-            <p style={{ margin: '0' }}>
+            <p style={{ margin: '0 0 15px 0' }}>
               ⭐ N'hésitez pas à voter pour votre Plug préféré
             </p>
+
+            {/* Réseaux sociaux sous le message de bienvenue */}
+            {shopSocialMedias.length > 0 && (
+              <div style={{ 
+                display: 'flex', 
+                justifyContent: 'center', 
+                flexWrap: 'wrap',
+                gap: '8px',
+                marginTop: '15px'
+              }}>
+                {shopSocialMedias.map((social) => (
+                  <a
+                    key={social.id}
+                    href={social.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      width: '40px',
+                      height: '40px',
+                      backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                      borderRadius: '10px',
+                      textDecoration: 'none',
+                      color: '#ffffff',
+                      transition: 'all 0.2s ease',
+                      backdropFilter: 'blur(5px)',
+                      border: '1px solid rgba(255, 255, 255, 0.2)'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.2)'
+                      e.currentTarget.style.transform = 'translateY(-2px)'
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)'
+                      e.currentTarget.style.transform = 'translateY(0px)'
+                    }}
+                  >
+                    {social.logo && social.logo !== '#' && social.logo !== '' ? (
+                      <img 
+                        src={social.logo}
+                        alt={social.name}
+                        style={{
+                          width: '20px',
+                          height: '20px',
+                          objectFit: 'contain',
+                          filter: 'brightness(0) invert(1)'
+                        }}
+                        onError={(e) => {
+                          // Fallback vers l'emoji si l'image ne charge pas
+                          e.target.style.display = 'none'
+                          e.target.nextSibling.style.display = 'block'
+                        }}
+                      />
+                    ) : null}
+                    <span style={{ 
+                      fontSize: '16px',
+                      display: social.logo && social.logo !== '#' && social.logo !== '' ? 'none' : 'block'
+                    }}>
+                      {social.emoji}
+                    </span>
+                  </a>
+                ))}
+              </div>
+            )}
           </div>
         </div>
 

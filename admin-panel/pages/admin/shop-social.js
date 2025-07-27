@@ -149,12 +149,13 @@ export default function ShopSocialMediaManager() {
       id,
       name: newSocialMedia.name.trim(),
       emoji: newSocialMedia.emoji || '🔗',
-      url: newSocialMedia.url.trim() || '#'
+      url: newSocialMedia.url.trim() || '#',
+      logo: newSocialMedia.logo.trim() || ''
     }
     
     const updatedSocialMedias = [...socialMedias, newItem]
     setSocialMedias(updatedSocialMedias)
-    setNewSocialMedia({ name: '', emoji: '', url: '', enabled: true })
+    setNewSocialMedia({ name: '', emoji: '', url: '', logo: '', enabled: true })
     
     toast.success(`Réseau social shop "${newItem.name}" ajouté`)
   }
@@ -314,6 +315,21 @@ export default function ShopSocialMediaManager() {
                             <p className="text-sm text-gray-600">{social.emoji}</p>
                           )}
                         </div>
+
+                        <div>
+                          <label className="block text-xs font-medium text-gray-700">Logo (URL)</label>
+                          {editingId === social.id ? (
+                            <input
+                              type="url"
+                              value={social.logo || ''}
+                              onChange={(e) => updateSocialMedia(social.id, 'logo', e.target.value)}
+                              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                              placeholder="https://i.imgur.com/example.png"
+                            />
+                          ) : (
+                            <p className="text-sm text-gray-600 truncate">{social.logo || 'Aucun logo'}</p>
+                          )}
+                        </div>
                         
                         <div>
                           <label className="block text-xs font-medium text-gray-700">URL/Lien</label>
@@ -363,6 +379,17 @@ export default function ShopSocialMediaManager() {
                       onChange={(e) => setNewSocialMedia({...newSocialMedia, emoji: e.target.value})}
                       className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                       placeholder="📸"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Logo (URL)</label>
+                    <input
+                      type="url"
+                      value={newSocialMedia.logo}
+                      onChange={(e) => setNewSocialMedia({...newSocialMedia, logo: e.target.value})}
+                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                      placeholder="https://i.imgur.com/example.png"
                     />
                   </div>
 
