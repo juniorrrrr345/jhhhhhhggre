@@ -557,6 +557,22 @@ export default function SocialMediaManager() {
                       
                       <div className="space-y-2">
                         <div>
+                          <label className="block text-xs font-medium text-gray-700">Emoji</label>
+                          {editingId === social.id ? (
+                            <input
+                              type="text"
+                              value={social.emoji || ''}
+                              onChange={(e) => updateSocialMedia(social.id, 'emoji', e.target.value)}
+                              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                              placeholder="📱"
+                              maxLength="2"
+                            />
+                          ) : (
+                            <p className="text-sm text-gray-600">{social.emoji || 'Aucun emoji'}</p>
+                          )}
+                        </div>
+                        
+                        <div>
                           <label className="block text-xs font-medium text-gray-700">Logo (URL)</label>
                           {editingId === social.id ? (
                             <input
@@ -607,11 +623,21 @@ export default function SocialMediaManager() {
                       value={newSocialMedia.name}
                       onChange={(e) => setNewSocialMedia({...newSocialMedia, name: e.target.value})}
                       className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                      placeholder="Instagram"
+                      placeholder="Telegram"
                     />
                   </div>
                   
-
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Emoji</label>
+                    <input
+                      type="text"
+                      value={newSocialMedia.emoji}
+                      onChange={(e) => setNewSocialMedia({...newSocialMedia, emoji: e.target.value})}
+                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                      placeholder="📱"
+                      maxLength="2"
+                    />
+                  </div>
                   
                   <div>
                     <label className="block text-sm font-medium text-gray-700">
