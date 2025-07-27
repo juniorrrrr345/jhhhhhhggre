@@ -537,7 +537,11 @@ export default function ShopSearch() {
                 fontWeight: '500',
                 textShadow: '0 1px 3px rgba(0,0,0,0.7)'
               }}>
-                Rejoins nous sur tous nos réseaux 🔒🛜
+                {currentLanguage === 'fr' && 'Rejoins nous sur tous nos réseaux 🔒🛜'}
+                {currentLanguage === 'en' && 'Join us on all our networks 🔒🛜'}
+                {currentLanguage === 'it' && 'Unisciti a tutti i nostri network 🔒🛜'}
+                {currentLanguage === 'es' && 'Únete a todas nuestras redes 🔒🛜'}
+                {currentLanguage === 'de' && 'Tritt allen unseren Netzwerken bei 🔒🛜'}
               </p>
               
               <div style={{
@@ -576,7 +580,32 @@ export default function ShopSearch() {
                         e.target.style.transform = 'scale(1)';
                       }}
                     >
-                      <span style={{ fontSize: '16px' }}>
+                      <img 
+                        src={
+                          social.name === 'Telegram' ? 'https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg' :
+                          social.name === 'Potato' ? 'https://i.imgur.com/8XZQZQZ.png' :
+                          social.name === 'Instagram' ? 'https://upload.wikimedia.org/wikipedia/commons/e/e7/Instagram_logo_2016.svg' :
+                          social.name === 'Luffa' ? 'https://i.imgur.com/9Y9Y9Y9.png' :
+                          social.name === 'Discord' ? 'https://upload.wikimedia.org/wikipedia/commons/9/98/Discord_logo.svg' :
+                          'https://i.imgur.com/7Z7Z7Z7.png'
+                        }
+                        alt={social.name}
+                        style={{
+                          width: '16px',
+                          height: '16px',
+                          objectFit: 'contain',
+                          filter: 'brightness(0) invert(1)'
+                        }}
+                        onError={(e) => {
+                          // Fallback vers emoji si l'image ne charge pas
+                          e.target.style.display = 'none';
+                          e.target.nextSibling.style.display = 'inline';
+                        }}
+                      />
+                      <span style={{ 
+                        fontSize: '16px',
+                        display: 'none'
+                      }}>
                         {social.name === 'Telegram' && '📱'}
                         {social.name === 'Potato' && '🥔'}
                         {social.name === 'Instagram' && '📸'}
