@@ -137,7 +137,10 @@ const createMainKeyboard = (config) => {
   const becomeDealerText = getTranslation('menu_inscription', currentLang, customTranslations) || '📋 Inscription';
   buttons.push([Markup.button.callback(becomeDealerText, 'start_application')]);
   
-  // Quatrième ligne : Bouton Traduction seul en bas
+  // Quatrième ligne : MiniApp FindYourPlugs
+  buttons.push([Markup.button.webApp('🔌 FindYourPlugs', 'https://sfeplugslink.vercel.app')]);
+  
+  // Cinquième ligne : Bouton Traduction seul en bas
   const translationText = getTranslation('menu_changeLanguage', currentLang, customTranslations) || '🗣️ Change language';
   buttons.push([Markup.button.callback(translationText, 'select_language')]);
   
