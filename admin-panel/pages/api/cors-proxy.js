@@ -1,13 +1,19 @@
 // Proxy CORS pour contourner les restrictions
-// Système de protection anti-flood 429
+// Système de protection anti-flood 429 (RÉINITIALISÉ)
 let last429Count = 0;
 let last429Time = 0;
-const MAX_429_PER_MINUTE = 5; // Max 5 erreurs 429 par minute (ultra-strict)
-const EMERGENCY_BLOCK_DURATION = 60000; // Bloquer 1 minute si trop d'erreurs
+const MAX_429_PER_MINUTE = 10; // Augmenté de 5 à 10 pour être moins strict
+const EMERGENCY_BLOCK_DURATION = 30000; // Réduit de 60s à 30s
 
 export default async function handler(req, res) {
-  // Vérification urgence: Si trop d'erreurs 429 récentes, bloquer temporairement
+  // Réinitialiser les compteurs si plus de 2 minutes se sont écoulées
   const now = Date.now();
+  if (now - last429Time > 120000) { // 2 minutes
+    last429Count = 0;
+    last429Time = 0;
+  }
+  
+  // Vérification urgence: Si trop d'erreurs 429 récentes, bloquer temporairement
   if (now - last429Time < EMERGENCY_BLOCK_DURATION && last429Count >= MAX_429_PER_MINUTE) {
     console.log(`🚫 EMERGENCY BLOCK: Trop d'erreurs 429 (${last429Count}) - proxy bloqué temporairement`);
     return res.status(503).json({
