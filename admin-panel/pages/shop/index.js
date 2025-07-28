@@ -156,9 +156,10 @@ export default function ShopHome() {
 
   const fetchConfig = async () => {
     try {
-      // Récupérer la config depuis l'API admin directement
+      // Récupérer la config depuis l'API admin directement (avec cache-busting)
       const token = 'JuniorAdmon123' // Token par défaut pour lecture publique
-      let data = await api.getConfig(token)
+      const timestamp = Date.now() // Pour éviter le cache
+      let data = await api.getConfig(token + '?t=' + timestamp)
       
       console.log('📱 Config récupérée pour accueil:', {
         boutique: data?.boutique?.name,

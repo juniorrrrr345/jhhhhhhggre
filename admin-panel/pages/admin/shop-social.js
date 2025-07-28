@@ -93,7 +93,20 @@ export default function ShopSocialMediaManager() {
         shopSocialMediaList: socialMedias
       }
       
-      await simpleApi.updateConfig(token, configData)
+      console.log('📤 Envoi des données:', configData)
+      const result = await simpleApi.updateConfig(token, configData)
+      console.log('📨 Réponse API:', result)
+      
+      // Test : relire immédiatement pour vérifier
+      setTimeout(async () => {
+        try {
+          const verifyConfig = await simpleApi.getConfig(token)
+          console.log('🔍 Vérification après sauvegarde:', verifyConfig?.shopSocialMediaList)
+        } catch (e) {
+          console.log('❌ Erreur vérification:', e)
+        }
+      }, 1000)
+      
       toast.success('✅ Réseaux sociaux sauvegardés !')
       
     } catch (error) {
