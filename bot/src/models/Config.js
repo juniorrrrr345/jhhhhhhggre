@@ -295,6 +295,18 @@ const configSchema = new mongoose.Schema({
     }
   },
   
+  // Configuration des notifications
+  notifications: {
+    newShopChatId: {
+      type: String,
+      default: ''
+    },
+    enabled: {
+      type: Boolean,
+      default: true
+    }
+  },
+  
   updatedAt: {
     type: Date,
     default: Date.now

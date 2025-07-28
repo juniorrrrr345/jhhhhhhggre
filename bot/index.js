@@ -90,6 +90,134 @@ const User = require('./src/models/User');
 // Migration automatique
 const migrateSocialMedia = require('./scripts/migrate-social-media');
 
+// FONCTION POUR AFFICHER UNE NOUVELLE BOUTIQUE SUR LE BOT
+const displayNewShopOnBot = async (savedPlug) => {
+  try {
+    console.log('🤖 Début affichage nouvelle boutique:', savedPlug.name);
+    
+    // Récupérer la config pour les traductions
+    const config = await Config.findById('main');
+    const currentLang = config?.languages?.currentLanguage || 'fr';
+    const customTranslations = config?.languages?.translations;
+    
+    // Importer les utilitaires nécessaires
+    const { getCountryFlag } = require('./src/utils/helpers');
+    const { translateShopName, translateDescription, translateServiceDescription } = require('./src/utils/translations');
+    
+    // Construire le message traduit de la nouvelle boutique
+    const countryFlag = savedPlug.countries && savedPlug.countries.length > 0 ? getCountryFlag(savedPlug.countries[0]) : '';
+    const translatedName = translateShopName(savedPlug.name, currentLang, savedPlug.translations);
+    
+    let message = `🆕 **NOUVELLE BOUTIQUE AJOUTÉE !**\n\n`;
+    message += `${countryFlag} ${savedPlug.isVip ? '⭐ ' : ''}**${translatedName}**\n\n`;
+    
+    const translatedDescription = translateDescription(savedPlug.description, currentLang, savedPlug.translations);
+    message += `${getTranslation('shop_description_label', currentLang, customTranslations)} ${translatedDescription}\n\n`;
+
+    // Services disponibles avec départements et descriptions traduites
+    const services = [];
+    if (savedPlug.services?.delivery?.enabled) {
+      const serviceName = getTranslation('service_delivery', currentLang, customTranslations);
+      const departments = savedPlug.services.delivery.departments || [];
+      if (departments.length > 0) {
+        const departmentsText = departments.sort((a, b) => parseInt(a) - parseInt(b)).join(', ');
+        services.push(`📦 **${serviceName}** : ${departmentsText}`);
+      } else {
+        services.push(`📦 **${serviceName}** : Tous départements`);
+      }
+      
+      // Ajouter la description si disponible
+      if (savedPlug.services.delivery.description) {
+        const translatedDesc = translateServiceDescription(savedPlug.services.delivery.description, currentLang, savedPlug.translations, 'delivery');
+        services.push(`   📝 ${translatedDesc}`);
+      }
+    }
+    
+    if (savedPlug.services?.meetup?.enabled) {
+      const serviceName = getTranslation('service_meetup', currentLang, customTranslations);
+      const departments = savedPlug.services.meetup.departments || [];
+      if (departments.length > 0) {
+        const departmentsText = departments.sort((a, b) => parseInt(a) - parseInt(b)).join(', ');
+        services.push(`🤝 **${serviceName}** : ${departmentsText}`);
+      } else {
+        services.push(`🤝 **${serviceName}** : Tous départements`);
+      }
+      
+      // Ajouter la description si disponible
+      if (savedPlug.services.meetup.description) {
+        const translatedDesc = translateServiceDescription(savedPlug.services.meetup.description, currentLang, savedPlug.translations, 'meetup');
+        services.push(`   📝 ${translatedDesc}`);
+      }
+    }
+    
+    if (savedPlug.services?.postal?.enabled) {
+      const serviceName = getTranslation('service_postal', currentLang, customTranslations);
+      services.push(`📬 **${serviceName}**`);
+      
+      if (savedPlug.services.postal.description) {
+        const translatedDesc = translateServiceDescription(savedPlug.services.postal.description, currentLang, savedPlug.translations, 'postal');
+        services.push(`   📝 ${translatedDesc}`);
+      }
+      
+      if (savedPlug.services.postal.countries && savedPlug.services.postal.countries.length > 0) {
+        services.push(`   🌍 Pays: ${savedPlug.services.postal.countries.join(', ')}`);
+      }
+    }
+
+    if (services.length > 0) {
+      const servicesTitle = getTranslation('services_available', currentLang, customTranslations);
+      message += `**🔧 ${servicesTitle} :**\n${services.join('\n')}\n\n`;
+    }
+
+    // Pays desservis
+    if (savedPlug.countries && savedPlug.countries.length > 0) {
+      const countriesTitle = getTranslation('countries_served', currentLang, customTranslations);
+      message += `🌍 **${countriesTitle} :** ${savedPlug.countries.join(', ')}\n\n`;
+    }
+    
+    // Ajouter infos supplémentaires
+    message += `🆔 **ID:** ${savedPlug._id}\n`;
+    message += `📊 **Statut:** ${savedPlug.isVip ? '👑 VIP' : '✅ Standard'}\n`;
+    message += `❤️ **Likes:** ${savedPlug.likes}\n\n`;
+    
+    message += `✨ *Boutique créée avec traductions automatiques en ${currentLang}*`;
+    
+    // Créer un clavier simple pour voir les détails
+    const keyboard = Markup.inlineKeyboard([
+      [Markup.button.callback('👀 Voir détails complets', `plug_${savedPlug._id}_from_new`)]
+    ]);
+    
+    // Envoyer dans un channel ou à l'admin (tu peux modifier l'ID selon tes besoins)
+    // Pour l'instant, on log juste le message - tu peux décommenter et ajouter un chat ID
+    console.log('📱 Message boutique prêt:', message.substring(0, 200) + '...');
+    console.log('⌨️ Clavier créé pour les détails');
+    
+    // Récupérer l'ID du chat de notification depuis la config
+    const notificationChatId = config?.notifications?.newShopChatId;
+    
+    if (notificationChatId) {
+      try {
+        await bot.telegram.sendMessage(notificationChatId, message, {
+          parse_mode: 'Markdown',
+          reply_markup: keyboard.reply_markup
+        });
+        console.log('✅ Notification nouvelle boutique envoyée au chat:', notificationChatId);
+      } catch (sendError) {
+        console.error('❌ Erreur envoi notification:', sendError);
+        // Continuer même si l'envoi échoue
+      }
+    } else {
+      console.log('ℹ️ Pas de chat ID configuré pour les notifications de nouvelles boutiques');
+    }
+    
+    return { success: true, message: 'Boutique affichée sur le bot' };
+    
+  } catch (error) {
+    console.error('❌ Erreur affichage nouvelle boutique sur bot:', error);
+    throw error;
+  }
+};
+
 // Initialisation
 const app = express();
 const bot = new Telegraf(process.env.TELEGRAM_BOT_TOKEN);
@@ -642,6 +770,13 @@ bot.action(/^plug_(.+)_from_top_dept$/, (ctx) => {
 
 bot.action(/^plug_(.+)_from_postal$/, (ctx) => {
   const plugId = ctx.match[1];
+  return handlePlugDetails(ctx, plugId, 'top_plugs');
+});
+
+// Gestionnaire pour les nouvelles boutiques créées
+bot.action(/^plug_(.+)_from_new$/, (ctx) => {
+  const plugId = ctx.match[1];
+  console.log('🆕 Affichage détails nouvelle boutique:', plugId);
   return handlePlugDetails(ctx, plugId, 'top_plugs');
 });
 bot.action('skip_telegram', (ctx) => handleSkipStep(ctx, 'telegram'));
@@ -2643,6 +2778,16 @@ app.post('/api/plugs', limits.admin, authenticateAdmin, async (req, res) => {
     }
     
     console.log('🔄 CACHE TOTALEMENT VIDÉ pour affichage instantané mini app');
+    
+    // AFFICHER LA NOUVELLE BOUTIQUE SUR LE BOT AVEC TRADUCTIONS
+    try {
+      console.log('🤖 Affichage automatique de la nouvelle boutique sur le bot...');
+      await displayNewShopOnBot(savedPlug);
+      console.log('✅ Nouvelle boutique affichée sur le bot avec traductions');
+    } catch (botDisplayError) {
+      console.error('⚠️ Erreur affichage boutique sur bot:', botDisplayError);
+      // Continuer même si l'affichage échoue
+    }
     
     res.status(201).json(savedPlug);
   } catch (error) {
