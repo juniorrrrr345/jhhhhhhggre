@@ -842,6 +842,8 @@ export default function LanguageSelector({ onLanguageChange, currentLanguage = '
   const handleLanguageSelect = (langCode) => {
     if (typeof window !== 'undefined') {
       localStorage.setItem('shop_language', langCode)
+      // Déclencher un événement global pour synchroniser toutes les pages
+      window.dispatchEvent(new CustomEvent('shopLanguageChanged', { detail: { language: langCode } }))
     }
     setIsOpen(false)
     if (onLanguageChange) {
