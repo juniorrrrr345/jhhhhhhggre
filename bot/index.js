@@ -4440,3 +4440,253 @@ app.post('/api/force-update-potato-emoji', async (req, res) => {
     res.status(500).json({ error: 'Erreur serveur' });
   }
 });
+
+// Endpoint pour forcer la mise à jour COMPLÈTE de toutes les traductions
+app.post('/api/force-update-all-translations', async (req, res) => {
+  try {
+    console.log('🔧 Mise à jour COMPLÈTE de toutes les traductions du bot...');
+    
+    const config = await Config.findById('main');
+    if (!config) {
+      return res.status(404).json({ error: 'Configuration non trouvée' });
+    }
+    
+    // TOUTES LES TRADUCTIONS COMPLETES
+    const completeTranslations = {
+      // Menu principal
+      'menu_topPlugs': {
+        fr: 'VOTER POUR VOTRE PLUG 🗳️',
+        en: 'VOTE FOR YOUR PLUG 🗳️',
+        it: 'VOTA PER IL TUO PLUG 🗳️',
+        es: 'VOTA POR TU PLUG 🗳️',
+        de: 'STIMME FÜR DEINEN PLUG 🗳️'
+      },
+      'menu_contact': {
+        fr: '📞 Contact',
+        en: '📞 Contact',
+        it: '📞 Contatto',
+        es: '📞 Contacto',
+        de: '📞 Kontakt'
+      },
+      'menu_info': {
+        fr: 'ℹ️ Info',
+        en: 'ℹ️ Info',
+        it: 'ℹ️ Informazioni',
+        es: 'ℹ️ Información',
+        de: 'ℹ️ Informationen'
+      },
+      'menu_inscription': {
+        fr: '📋 Inscription',
+        en: '📋 Registration',
+        it: '📋 Registrazione',
+        es: '📋 Inscripción',
+        de: '📋 Anmeldung'
+      },
+      'menu_changeLanguage': {
+        fr: '🗣️ Changer de langue',
+        en: '🗣️ Change language',
+        it: '🗣️ Cambia lingua',
+        es: '🗣️ Cambiar idioma',
+        de: '🗣️ Sprache ändern'
+      },
+      'menu_refresh': {
+        fr: '🔄 Actualiser',
+        en: '🔄 Refresh',
+        it: '🔄 Aggiorna',
+        es: '🔄 Actualizar',
+        de: '🔄 Aktualisieren'
+      },
+      'menu_language': {
+        fr: '🌍 Langue',
+        en: '🌍 Language',
+        it: '🌍 Lingua',
+        es: '🌍 Idioma',
+        de: '🌍 Sprache'
+      },
+      'menu_selectLanguage': {
+        fr: 'Sélectionnez votre langue préférée :',
+        en: 'Select your preferred language:',
+        it: 'Seleziona la tua lingua preferita:',
+        es: 'Selecciona tu idioma preferido:',
+        de: 'Wählen Sie Ihre bevorzugte Sprache:'
+      },
+      // Messages
+      'messages_welcome': {
+        fr: 'Bienvenue sur FindYourPlug! Explorez nos services.',
+        en: 'Welcome to FindYourPlug! Explore our services.',
+        it: 'Benvenuto su FindYourPlug! Esplora i nostri servizi.',
+        es: 'Bienvenido a FindYourPlug! Explora nuestros servicios.',
+        de: 'Willkommen bei FindYourPlug! Entdecken Sie unsere Services.'
+      },
+      'messages_sortedByVotes': {
+        fr: 'Triés par nombre de votes',
+        en: 'Sorted by number of votes',
+        it: 'Ordinati per numero di voti',
+        es: 'Ordenados por número de votos',
+        de: 'Sortiert nach Anzahl der Stimmen'
+      },
+      'messages_shopsAvailable': {
+        fr: 'boutiques disponibles',
+        en: 'shops available',
+        it: 'negozi disponibili',
+        es: 'tiendas disponibles',
+        de: 'Shops verfügbar'
+      },
+      'messages_noShops': {
+        fr: '❌ Aucun plug disponible pour le moment.',
+        en: '❌ No plugs available at the moment.',
+        it: '❌ Nessun negozio disponibile al momento.',
+        es: '❌ No hay tiendas disponibles en este momento.',
+        de: '❌ Momentan sind keine Shops verfügbar.'
+      },
+      // Services
+      'service_delivery': {
+        fr: 'Livraison',
+        en: 'Delivery',
+        it: 'Consegna',
+        es: 'Entrega',
+        de: 'Lieferung'
+      },
+      'service_meetup': {
+        fr: 'Meetup',
+        en: 'Meetup',
+        it: 'Incontro',
+        es: 'Encuentro',
+        de: 'Treffen'
+      },
+      'service_postal': {
+        fr: 'Envoi postal',
+        en: 'Postal shipping',
+        it: 'Spedizione postale',
+        es: 'Envío postal',
+        de: 'Postversand'
+      },
+      // Navigation
+      'back_to_menu': {
+        fr: 'Retour au menu',
+        en: 'Back to menu',
+        it: 'Torna al menu',
+        es: 'Volver al menú',
+        de: 'Zurück zum Menü'
+      },
+      'back_to_shops': {
+        fr: 'Retour aux boutiques',
+        en: 'Back to shops',
+        it: 'Torna ai negozi',
+        es: 'Volver a las tiendas',
+        de: 'Zurück zu den Geschäften'
+      },
+      // Erreurs
+      'error_loading': {
+        fr: 'Erreur lors du chargement',
+        en: 'Error loading',
+        it: 'Errore durante il caricamento',
+        es: 'Error al cargar',
+        de: 'Fehler beim Laden'
+      },
+      // Boutiques
+      'vote_for_shop': {
+        fr: 'Voter Pour ce Plug',
+        en: 'Vote for this Plug',
+        it: 'Vota per questo negozio',
+        es: 'Votar por esta tienda',
+        de: 'Für diesen Shop stimmen'
+      },
+      'vote_count_singular': {
+        fr: 'vote',
+        en: 'vote',
+        it: 'voto',
+        es: 'voto',
+        de: 'Stimme'
+      },
+      'vote_count_plural': {
+        fr: 'votes',
+        en: 'votes',
+        it: 'voti',
+        es: 'votos',
+        de: 'Stimmen'
+      }
+    };
+    
+    // Initialiser les langues si nécessaire
+    if (!config.languages) {
+      config.languages = {
+        enabled: true,
+        currentLanguage: 'fr',
+        availableLanguages: [
+          { code: 'fr', name: 'Français', flag: '🇫🇷', enabled: true },
+          { code: 'en', name: 'English', flag: '🇬🇧', enabled: true },
+          { code: 'it', name: 'Italiano', flag: '🇮🇹', enabled: true },
+          { code: 'es', name: 'Español', flag: '🇪🇸', enabled: true },
+          { code: 'de', name: 'Deutsch', flag: '🇩🇪', enabled: true }
+        ],
+        translations: new Map()
+      };
+    }
+    
+    if (!config.languages.translations) {
+      config.languages.translations = new Map();
+    }
+    
+    // Ajouter TOUTES les traductions
+    let translationsAdded = 0;
+    Object.entries(completeTranslations).forEach(([key, langs]) => {
+      const langMap = new Map();
+      Object.entries(langs).forEach(([langCode, text]) => {
+        langMap.set(langCode, text);
+      });
+      config.languages.translations.set(key, langMap);
+      translationsAdded++;
+    });
+    
+    // Mettre à jour tous les boutons
+    if (!config.buttons) config.buttons = {};
+    
+    config.buttons.topPlugs = {
+      text: 'VOTER POUR VOTRE PLUG 🗳️',
+      enabled: true
+    };
+    config.buttons.contact = {
+      text: '📞 Contact',
+      enabled: true
+    };
+    config.buttons.info = {
+      text: 'ℹ️ Info',
+      enabled: true
+    };
+    
+    // Mettre à jour tous les textes
+    if (!config.botTexts) config.botTexts = {};
+    config.botTexts.topPlugsTitle = 'VOTER POUR VOTRE PLUG 🗳️';
+    config.botTexts.welcomeMessage = 'Bienvenue sur FindYourPlug! Explorez nos services.';
+    
+    // Sauvegarder
+    await config.save();
+    
+    // Invalider tous les caches
+    configCache = null;
+    plugsCache = null;
+    clearAllCaches();
+    
+    console.log('🚀 TOUTES les traductions mises à jour');
+    
+    res.json({ 
+      success: true, 
+      message: 'TOUTES les traductions ont été mises à jour',
+      translationsAdded: translationsAdded,
+      languages: ['fr', 'en', 'it', 'es', 'de'],
+      buttonsUpdated: ['topPlugs', 'contact', 'info'],
+      sample: {
+        fr: completeTranslations.menu_topPlugs.fr,
+        en: completeTranslations.menu_topPlugs.en,
+        it: completeTranslations.menu_topPlugs.it,
+        es: completeTranslations.menu_topPlugs.es,
+        de: completeTranslations.menu_topPlugs.de
+      }
+    });
+    
+  } catch (error) {
+    console.error('❌ Erreur mise à jour complète traductions:', error);
+    res.status(500).json({ error: 'Erreur serveur' });
+  }
+});
