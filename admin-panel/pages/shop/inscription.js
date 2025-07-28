@@ -53,14 +53,14 @@ export default function ShopInscription() {
       if (savedLinks) {
         const links = JSON.parse(savedLinks)
         setConfig({
-          inscriptionTelegramLink: links.inscriptionTelegramLink || 'https://t.me/FindYourPlugBot'
+          inscriptionTelegramLink: links.inscriptionTelegramLink || 'https://t.me/findyourplugsav'
         })
         return
       }
       
       // Priorité 3: Lien par défaut
       setConfig({
-        inscriptionTelegramLink: 'https://t.me/FindYourPlugBot'
+        inscriptionTelegramLink: 'https://t.me/findyourplugsav'
       })
     } catch (error) {
       console.error('Erreur lors du chargement de la config:', error)
