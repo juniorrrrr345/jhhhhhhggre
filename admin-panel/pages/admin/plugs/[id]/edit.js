@@ -102,76 +102,54 @@ export default function EditPlug() {
       setLoading(true)
       console.log('🔍 Chargement du plug ID:', id)
       
-      let data = null
-      let success = false
+      // Utiliser simpleApi pour plus de fiabilité
+      console.log('📡 Chargement via simpleApi...')
+      let listData
       
-      // Méthode 1: Essayer l'endpoint individuel via cors-proxy
       try {
-        console.log('📡 Tentative chargement via endpoint individuel...')
-        const response = await fetch('/api/cors-proxy', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            endpoint: `plugs/${id}`,
-            method: 'GET',
-            token: token
-          })
+        listData = await simpleApi.getPlugs(token)
+        console.log('📋 Données reçues via simpleApi:', listData)
+      } catch (apiError) {
+        console.log('❌ simpleApi échoué, tentative directe...')
+        // Fallback direct
+        const response = await fetch('/api/plugs', {
+          headers: { 
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
         })
-
         if (response.ok) {
-          data = await response.json()
-          success = true
-          console.log('✅ Plug chargé via endpoint individuel')
+          listData = await response.json()
+          console.log('📋 Données reçues via fallback direct:', listData)
         } else {
-          console.log('❌ Endpoint individuel échoué:', response.status)
+          throw new Error('Impossible de charger les données des boutiques')
         }
-      } catch (error) {
-        console.log('❌ Endpoint individuel erreur:', error.message)
       }
       
-      // Méthode 2: Fallback via liste des plugs
-      if (!success) {
-        try {
-          console.log('📡 Fallback: chargement via liste des plugs...')
-          const response = await fetch('/api/cors-proxy', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              endpoint: 'plugs',
-              method: 'GET',
-              token: token
-            })
-          })
-
-          if (response.ok) {
-            const listData = await response.json()
-            console.log('📋 Liste des plugs récupérée:', listData)
-            
-            // Chercher le plug dans la liste
-            const plugs = listData.plugs || listData
-            const foundPlug = Array.isArray(plugs) ? plugs.find(p => p._id === id || p.id === id) : null
-            
-            if (foundPlug) {
-              data = foundPlug
-              success = true
-              console.log('✅ Plug trouvé dans la liste:', data.name)
-            } else {
-              console.log('❌ Plug non trouvé dans la liste')
-            }
-          } else {
-            console.log('❌ Liste des plugs échouée:', response.status)
-          }
-        } catch (error) {
-          console.log('❌ Liste des plugs erreur:', error.message)
-        }
+      // Chercher le plug dans la liste
+      const plugs = listData.plugs || listData || []
+      const foundPlug = Array.isArray(plugs) ? plugs.find(p => 
+        (p._id && p._id === id) || 
+        (p.id && p.id === id) ||
+        (p._id && p._id.toString() === id) ||
+        (p.id && p.id.toString() === id)
+      ) : null
+      
+      if (!foundPlug) {
+        console.error('❌ Plug non trouvé dans la liste. ID recherché:', id)
+        console.error('📋 Plugs disponibles:', plugs.map(p => ({ id: p._id || p.id, name: p.name })))
+        throw new Error('Boutique non trouvée')
       }
+      
+             console.log('✅ Plug trouvé:', foundPlug.name)
+       const data = foundPlug
 
-      if (success && data) {
-        const plugData = {
-          name: data.name || '',
-          description: data.description || '',
-          image: data.image || '',
-          telegramLink: data.telegramLink || '',
+      // Peupler les données du formulaire
+      const plugData = {
+        name: data.name || '',
+        description: data.description || '',
+        image: data.image || '',
+        telegramLink: data.telegramLink || '',
           isVip: data.isVip || false,
           isActive: data.isActive !== undefined ? data.isActive : true,
           countries: data.countries || [],
@@ -195,14 +173,11 @@ export default function EditPlug() {
           socialMedia: Array.isArray(data.socialMedia) ? data.socialMedia : []
         }
         
-        setFormData(plugData)
-        setOriginalData(plugData)
-        setSelectedCountries(plugData.countries || [])
-        safeToast.success('Plug chargé avec succès')
-      } else {
-        console.error('❌ Impossible de charger le plug')
-        safeToast.error('Impossible de charger les données du plug')
-      }
+      setFormData(plugData)
+      setOriginalData(plugData)
+      setSelectedCountries(plugData.countries || [])
+      safeToast.success('Plug chargé avec succès')
+      console.log('✅ Données chargées:', plugData)
     } catch (error) {
       console.error('💥 Erreur:', error)
       safeToast.error(`Erreur: ${error.message}`)
