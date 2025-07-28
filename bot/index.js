@@ -3025,6 +3025,16 @@ app.put('/api/plugs/:id', authenticateAdmin, async (req, res) => {
     
     console.log('🔄 CACHE TOTALEMENT VIDÉ pour mise à jour instantanée mini app');
     
+    // AFFICHER LA BOUTIQUE MODIFIÉE SUR LE BOT AVEC TRADUCTIONS
+    try {
+      console.log('🤖 Affichage automatique de la boutique modifiée sur le bot...');
+      await displayUpdatedShopOnBot(updatedPlug);
+      console.log('✅ Boutique modifiée affichée sur le bot avec traductions');
+    } catch (botDisplayError) {
+      console.error('⚠️ Erreur affichage boutique modifiée sur bot:', botDisplayError);
+      // Continuer même si l'affichage échoue
+    }
+    
     res.json(updatedPlug);
   } catch (error) {
     console.error('Erreur modification plug:', error);
@@ -3058,6 +3068,16 @@ app.delete('/api/plugs/:id', authenticateAdmin, async (req, res) => {
     }
     
     console.log('🔄 CACHE TOTALEMENT VIDÉ pour suppression instantanée mini app');
+    
+    // NOTIFIER LA SUPPRESSION SUR LE BOT
+    try {
+      console.log('🤖 Notification suppression boutique sur le bot...');
+      await displayDeletedShopOnBot(plug);
+      console.log('✅ Suppression boutique notifiée sur le bot');
+    } catch (botDisplayError) {
+      console.error('⚠️ Erreur notification suppression sur bot:', botDisplayError);
+      // Continuer même si l'affichage échoue
+    }
     
     res.json({ message: 'Plug supprimé avec succès' });
   } catch (error) {
