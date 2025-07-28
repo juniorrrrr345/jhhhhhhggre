@@ -77,6 +77,25 @@ export default function SocialMediaManager() {
           }
           return item
         })
+        
+        // Vérifier si Potato existe, sinon l'ajouter
+        const hasPotatoInList = socialMediasWithIds.some(item => 
+          item.name && item.name.toLowerCase().includes('potato')
+        )
+        
+        if (!hasPotatoInList) {
+          console.log('🥔 Potato manquant, ajout automatique avec emoji 🏴‍☠️')
+          socialMediasWithIds.push({
+            id: 'potato',
+            name: 'Potato',
+            emoji: '🏴‍☠️',
+            url: 'https://dym168.org/findyourplug',
+            enabled: true
+          })
+          // Sauvegarder la mise à jour
+          localStorage.setItem('botSocialMediaList', JSON.stringify(socialMediasWithIds))
+        }
+        
         setSocialMedias(socialMediasWithIds)
         console.log('✅ Réseaux sociaux bot chargés depuis localStorage:', socialMediasWithIds.map(s => ({ id: s.id, name: s.name })))
       } else {
