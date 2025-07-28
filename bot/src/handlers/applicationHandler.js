@@ -2460,38 +2460,9 @@ const submitApplication = async (ctx) => {
     userForms.delete(userId);
     lastBotMessages.delete(userId);
     
-    // Récupérer la langue pour les traductions
-    const Config = require('../models/Config');
-    const config = await Config.findById('main');
-    const currentLang = config?.languages?.currentLanguage || 'fr';
-    const customTranslations = config?.languages?.translations;
-    
-    const message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
-      `⸻\n\n` +
-      `${getTranslation('registration.finalStep', currentLang, customTranslations)}\n\n` +
-      `${getTranslation('registration.formReceived', currentLang, customTranslations)}\n\n` +
-      `${getTranslation('registration.validationInstructions', currentLang, customTranslations)}\n\n` +
-      `${getTranslation('registration.step2Validation', currentLang, customTranslations)}\n\n` +
-      `${getTranslation('registration.timeLimit', currentLang, customTranslations)}\n\n` +
-      `${getTranslation('registration.approvalTime', currentLang, customTranslations)}`;
-    
-    const keyboard = Markup.inlineKeyboard([
-      [Markup.button.callback(getTranslation('registration.backToMenu', currentLang, customTranslations), 'back_main')]
-    ]);
-    
-    // Utiliser editMessageText simple sans formatage pour éviter les problèmes
-    try {
-      await ctx.editMessageText(message, {
-        reply_markup: keyboard.reply_markup
-        // Pas de parse_mode pour éviter les erreurs de formatage
-      });
-    } catch (editError) {
-      // Fallback: nouveau message si édition impossible
-      await ctx.reply(message, {
-        reply_markup: keyboard.reply_markup
-        // Pas de parse_mode pour éviter les erreurs de formatage
-      });
-    }
+    // Retourner directement au menu principal sans message de vérification
+    const { showMainMenu } = require('./menuHandler');
+    await showMainMenu(ctx);
     
   } catch (error) {
     console.error('❌ SUBMIT ERROR: Detailed error in submitApplication:', {
