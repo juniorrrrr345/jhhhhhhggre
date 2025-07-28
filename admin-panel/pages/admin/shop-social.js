@@ -60,15 +60,7 @@ export default function ShopSocialMediaManager() {
             emoji: '📱', 
             url: 'https://t.me/+zcP68c4M_3NlM2Y0', 
             enabled: true,
-            logo: 'https://i.imgur.com/telegram.png'
-          },
-          { 
-            id: 'find_your_plug', 
-            name: 'Find Your Plug', 
-            emoji: '🌐', 
-            url: 'https://dym168.org/findyourplug', 
-            enabled: true,
-            logo: 'https://i.imgur.com/VwBPgtw.jpeg'
+            logo: 'https://i.imgur.com/PP2GVMv.png'
           },
           { 
             id: 'instagram', 
@@ -76,7 +68,7 @@ export default function ShopSocialMediaManager() {
             emoji: '📸', 
             url: 'https://www.instagram.com/find.yourplug?igsh=ajRwcjE1eGhoaXMz&utm_source=qr', 
             enabled: true,
-            logo: 'https://i.imgur.com/instagram.png'
+            logo: 'https://i.imgur.com/YBE4cnb.jpeg'
           },
           { 
             id: 'luffa', 
@@ -92,7 +84,7 @@ export default function ShopSocialMediaManager() {
             emoji: '🎮', 
             url: 'https://discord.gg/g2dACUC3', 
             enabled: true,
-            logo: 'https://i.imgur.com/discord.png'
+            logo: 'https://i.imgur.com/JgmWPPZ.png'
           },
           { 
             id: 'potato', 
@@ -104,7 +96,15 @@ export default function ShopSocialMediaManager() {
           }
         ]
         setSocialMedias(defaultShopSocialMedias)
-        console.log('🔧 Réseaux sociaux shop initialisés avec valeurs par défaut')
+        
+        // Sauvegarder automatiquement ces réseaux par défaut
+        try {
+          const configData = { shopSocialMediaList: defaultShopSocialMedias }
+          await simpleApi.updateConfig(token, configData)
+          console.log('🔧 Réseaux sociaux shop initialisés et sauvegardés')
+        } catch (saveError) {
+          console.log('⚠️ Erreur sauvegarde initialisation:', saveError.message)
+        }
       }
       
     } catch (error) {
