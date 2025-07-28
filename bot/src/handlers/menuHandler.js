@@ -3,17 +3,60 @@ const { createMainKeyboard } = require('../utils/keyboards');
 const { getTranslation } = require('../utils/translations');
 const { getFreshConfig } = require('../utils/configHelper');
 
-// Gestionnaire pour le bouton Contact - Affiche simplement @findyourplugsav
+// Gestionnaire pour le bouton Contact - Affiche le texte configurable comme Info
 const handleContact = async (ctx) => {
   try {
-    console.log('📞 Contact : @findyourplugsav');
+    // Confirmer immédiatement la callback pour éviter le loading
+    await ctx.answerCbQuery();
     
-    // Afficher simplement le contact sans redirection
-    await ctx.answerCbQuery('📞 Contactez @findyourplugsav pour le support');
+    const config = await getFreshConfig();
+    
+    if (!config) {
+      return;
+    }
+
+    // Récupérer la langue actuelle et les traductions
+    const currentLang = config?.languages?.currentLanguage || 'fr';
+    const customTranslations = config?.languages?.translations;
+    
+    // Affichage contact avec texte configurable (comme Info)
+    const contactTitle = getTranslation('menu_contact', currentLang, customTranslations);
+    const defaultContactText = getTranslation('contact_default_text', currentLang, customTranslations) || 'Contactez-nous pour plus d\'informations !';
+    
+    // Utiliser le texte configuré dans l'admin en priorité, puis fallback sur traductions
+    const finalContactText = config?.buttons?.contact?.content || defaultContactText;
+    console.log('📞 Contact content utilisé:', finalContactText);
+    
+    const message = `${contactTitle}\n\n${finalContactText}`;
+
+    const keyboard = createMainKeyboard(config);
+
+    if (config?.welcome?.image) {
+      try {
+        await ctx.editMessageMedia({
+          type: 'photo',
+          media: config.welcome.image,
+          caption: message,
+          parse_mode: 'Markdown'
+        }, {
+          reply_markup: keyboard.reply_markup
+        });
+      } catch (error) {
+        await ctx.editMessageText(message, {
+          reply_markup: keyboard.reply_markup,
+          parse_mode: 'Markdown'
+        });
+      }
+    } else {
+      await ctx.editMessageText(message, {
+        reply_markup: keyboard.reply_markup,
+        parse_mode: 'Markdown'
+      });
+    }
 
   } catch (error) {
     console.error('Erreur dans handleContact:', error);
-    await ctx.answerCbQuery('📞 Support: @findyourplugsav').catch(() => {});
+    await ctx.answerCbQuery('❌ Erreur lors du chargement').catch(() => {});
   }
 };
 
