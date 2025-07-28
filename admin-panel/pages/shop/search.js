@@ -38,13 +38,21 @@ export default function ShopSearch() {
     // Marquer les boutiques comme chargées
     setTimeout(() => setInitialLoading(false), 1000)
     
-    // SYSTÈME SIMPLE : Refresh seulement au retour dans la page
+    // SYSTÈME SIMPLE : Toujours refresh au retour dans recherche
+    let lastVisibilityRefresh = 0;
     const handleVisibilityChange = () => {
       if (!document.hidden) {
-        console.log('📱 Retour page recherche - Refresh boutiques...');
-        setTimeout(() => {
-          fetchPlugs();
-        }, 500);
+        const now = Date.now();
+        // Throttling: minimum 10 secondes entre chaque refresh
+        if (now - lastVisibilityRefresh > 10000) {
+          console.log('📱 Retour page recherche - FORCE refresh boutiques...');
+          lastVisibilityRefresh = now;
+          
+          setTimeout(() => {
+            console.log('🔄 FORCE fetch recherche après retour');
+            fetchPlugs();
+          }, 500);
+        }
       }
     };
     
@@ -183,17 +191,9 @@ export default function ShopSearch() {
         setLoading(false);
       }, 8000);
       
-      // Cache intelligent recherche : Évite les reloads inutiles
-      const lastFetch = sessionStorage.getItem('search_miniapp_last_fetch');
+      // PAS DE CACHE RECHERCHE - Toujours charger pour éviter problème d'affichage
       const now = Date.now();
-      
-      // Si données récentes (moins de 3 minutes) et qu'on a déjà des boutiques
-      if (lastFetch && (now - parseInt(lastFetch)) < 180000 && allPlugs.length > 0) {
-        console.log('🔍 Boutiques recherche mini app en cache (moins de 3min) - Skip fetch');
-        clearTimeout(safetyTimeout);
-        setLoading(false);
-        return;
-      }
+      console.log('🔍 Fetch recherche forcé pour garantir affichage boutiques');
       
       // APPEL DIRECT OPTIMISÉ RECHERCHE MINI APP
       const response = await fetch('https://jhhhhhhggre.onrender.com/api/public/plugs?limit=100&t=' + now, {
@@ -216,9 +216,6 @@ export default function ShopSearch() {
       if (data && data.plugs) {
         console.log('🔍 Plugs recherche mini app chargés:', data.plugs.length, 'boutiques')
         setAllPlugs(data.plugs)
-        
-        // Marquer la dernière récupération
-        sessionStorage.setItem('search_miniapp_last_fetch', now.toString());
       } else {
         console.log('⚠️ Aucune boutique recherche mini app trouvée')
         setAllPlugs([])

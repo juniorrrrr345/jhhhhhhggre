@@ -105,24 +105,21 @@ export default function ShopHome() {
       tg.enableClosingConfirmation();
       console.log('✅ Telegram Mini App initialisée');
       
-      // SYSTÈME INTELLIGENT : Refresh au retour si nécessaire
+      // SYSTÈME SIMPLE : Toujours refresh au retour
       let lastVisibilityRefresh = 0;
       const handleVisibilityChange = () => {
         if (!document.hidden) {
           const now = Date.now();
-          // Throttling: minimum 30 secondes entre chaque refresh de visibilité
-          if (now - lastVisibilityRefresh > 30000) {
-            console.log('📱 Retour Mini App - Check nouvelles boutiques...');
+          // Throttling: minimum 10 secondes entre chaque refresh
+          if (now - lastVisibilityRefresh > 10000) {
+            console.log('📱 Retour Mini App - FORCE refresh boutiques...');
             lastVisibilityRefresh = now;
             
-            // Forcer un nouveau fetch en invalidant le cache si nécessaire
-            const lastFetch = sessionStorage.getItem('miniapp_last_fetch');
-            if (!lastFetch || (now - parseInt(lastFetch)) > 120000) {
-              console.log('🔄 Refresh boutiques après retour Mini App');
-              setTimeout(() => {
-                fetchPlugs();
-              }, 800);
-            }
+            // TOUJOURS forcer un nouveau fetch au retour
+            setTimeout(() => {
+              console.log('🔄 FORCE fetch boutiques après retour');
+              fetchPlugs();
+            }, 500);
           }
         }
       };
@@ -284,17 +281,9 @@ useEffect(() => {
         setLoading(false);
       }, 8000);
       
-      // Cache intelligent mini app : Évite les reloads inutiles
-      const lastFetch = sessionStorage.getItem('miniapp_last_fetch');
+      // PAS DE CACHE - Toujours charger pour éviter problème d'affichage
       const now = Date.now();
-      
-      // Si données récentes (moins de 3 minutes) et qu'on a déjà des boutiques
-      if (lastFetch && (now - parseInt(lastFetch)) < 180000 && plugs.length > 0) {
-        console.log('📱 Boutiques mini app en cache (moins de 3min) - Skip fetch');
-        clearTimeout(safetyTimeout);
-        setLoading(false);
-        return;
-      }
+      console.log('📱 Fetch forcé pour garantir affichage boutiques');
       
       // APPEL DIRECT OPTIMISÉ MINI APP
       const response = await fetch('https://jhhhhhhggre.onrender.com/api/public/plugs?limit=50&t=' + now, {
@@ -317,9 +306,6 @@ useEffect(() => {
       if (data && data.plugs) {
         console.log('🎯 Boutiques mini app récupérées:', data.plugs.length)
         setPlugs(data.plugs)
-        
-        // Marquer la dernière récupération
-        sessionStorage.setItem('miniapp_last_fetch', now.toString());
         
         // Synchroniser les likes en temps réel
         const likesData = {}
