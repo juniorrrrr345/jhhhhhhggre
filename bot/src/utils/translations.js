@@ -1354,6 +1354,34 @@ const translations = {
       es: 'votos',
       de: 'Stimmen'
     },
+    'vote_cooldown_message': {
+      fr: 'Déjà voté - 2h restant',
+      en: 'Already voted - 2h remaining',
+      it: 'Già votato - 2h rimanenti',
+      es: 'Ya votado - 2h restantes',
+      de: 'Bereits abgestimmt - 2h verbleibend'
+    },
+    'vote_cooldown_time': {
+      fr: 'Déjà voté ({votes}) - {hours}h{minutes}m',
+      en: 'Already voted ({votes}) - {hours}h{minutes}m',
+      it: 'Già votato ({votes}) - {hours}h{minutes}m',
+      es: 'Ya votado ({votes}) - {hours}h{minutes}m',
+      de: 'Bereits abgestimmt ({votes}) - {hours}h{minutes}m'
+    },
+    'vote_success_message': {
+      fr: '👍 Vous avez voté pour {plugName} ! ({likes} votes)',
+      en: '👍 You voted for {plugName}! ({likes} votes)',
+      it: '👍 Hai votato per {plugName}! ({likes} voti)',
+      es: '👍 ¡Has votado por {plugName}! ({likes} votos)',
+      de: '👍 Sie haben für {plugName} gestimmt! ({likes} Stimmen)'
+    },
+    'vote_cooldown_alert': {
+      fr: '⏰ Vous avez déjà voté pour cette boutique ! Vous pourrez voter à nouveau dans {remainingTime}.',
+      en: '⏰ You have already voted for this shop! You can vote again in {remainingTime}.',
+      it: '⏰ Hai già votato per questo negozio! Potrai votare di nuovo tra {remainingTime}.',
+      es: '⏰ ¡Ya has votado por esta tienda! Podrás votar de nuevo en {remainingTime}.',
+      de: '⏰ Sie haben bereits für diesen Shop gestimmt! Sie können in {remainingTime} erneut abstimmen.'
+    },
 
     // === NAVIGATION ===
     'back_to_filters': {

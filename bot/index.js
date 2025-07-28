@@ -1472,10 +1472,10 @@ bot.action(/^like_([a-f\d]{24})$/, async (ctx) => {
     if (!response.ok) {
       if (response.status === 429) {
         // Cooldown actif
-        return ctx.answerCbQuery(
-          `⏰ Vous avez déjà liké cette boutique ! Vous pourrez liker à nouveau dans ${result.remainingTime}.`,
-          { show_alert: true }
-        );
+        const cooldownAlert = getTranslation('vote_cooldown_alert', currentLang)
+          .replace('{remainingTime}', result.remainingTime);
+        
+        return ctx.answerCbQuery(cooldownAlert, { show_alert: true });
       }
       return ctx.answerCbQuery('❌ Erreur lors du like');
     }
@@ -1494,7 +1494,16 @@ bot.action(/^like_([a-f\d]{24})$/, async (ctx) => {
     }
     
     // Notification du vote ajouté
-    await ctx.answerCbQuery(`👍 Vous avez voté pour ${result.plugName} ! (${result.likes} votes)`);
+    const Config = require('./src/models/Config');
+    const config = await Config.findById('main');
+    const currentLang = config?.languages?.currentLanguage || 'fr';
+    const { getTranslation } = require('./src/utils/translations');
+    
+    const successMsg = getTranslation('vote_success_message', currentLang)
+      .replace('{plugName}', result.plugName)
+      .replace('{likes}', result.likes);
+    
+    await ctx.answerCbQuery(successMsg);
     
     // Mise à jour du bouton like en temps réel
     try {
@@ -1505,9 +1514,10 @@ bot.action(/^like_([a-f\d]{24})$/, async (ctx) => {
           inline_keyboard: currentKeyboard.inline_keyboard.map(row => 
             row.map(button => {
               if (button.callback_data && button.callback_data.startsWith(`like_${plugId}`)) {
+                const cooldownMsg = getTranslation('vote_cooldown_message', currentLang);
                 return {
                   ...button,
-                  text: `👍 Déjà voté - 2h restant`
+                  text: `👍 ${cooldownMsg}`
                 };
               }
               return button;

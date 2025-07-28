@@ -314,7 +314,11 @@ const createPlugKeyboard = (plug, returnContext = 'top_plugs', userId = null, cu
         const hours = Math.floor(remainingTime / (60 * 60 * 1000));
         const minutes = Math.floor((remainingTime % (60 * 60 * 1000)) / (60 * 1000));
         
-        voteButtonText = `👍 Déjà voté (${votesCount}) - ${hours}h${minutes}m`;
+        const cooldownText = getTranslation('vote_cooldown_time', currentLang, customTranslations)
+          .replace('{votes}', votesCount)
+          .replace('{hours}', hours)
+          .replace('{minutes}', minutes);
+        voteButtonText = `👍 ${cooldownText}`;
       } else {
         // Cooldown terminé, peut voter à nouveau
         const voteForShopText = getTranslation('vote_for_shop', currentLang, customTranslations);
@@ -322,7 +326,8 @@ const createPlugKeyboard = (plug, returnContext = 'top_plugs', userId = null, cu
       }
     } else {
       // A voté mais pas d'historique (ancien système), assumer cooldown actif
-      voteButtonText = `👍 Déjà voté (${votesCount}) - 2h`;
+      const cooldownMsg = getTranslation('vote_cooldown_message', currentLang, customTranslations);
+      voteButtonText = `👍 ${cooldownMsg.replace('Déjà voté', `Déjà voté (${votesCount})`).replace('Already voted', `Already voted (${votesCount})`).replace('Già votato', `Già votato (${votesCount})`).replace('Ya votado', `Ya votado (${votesCount})`).replace('Bereits abgestimmt', `Bereits abgestimmt (${votesCount})`)}`;
     }
   } else {
     // N'a pas encore voté
