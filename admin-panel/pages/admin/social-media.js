@@ -382,7 +382,7 @@ export default function SocialMediaManager() {
       console.log('📤 Données envoyées:', JSON.stringify(configData, null, 2))
       
       // Notification discrète pour confirmer la sync
-      toast.success('🔄 Synchronisé avec la boutique', { 
+      toast.success('🔄 Synchronisé sur le bot', { 
         duration: 2000,
         icon: '✅'
       })
