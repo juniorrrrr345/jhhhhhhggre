@@ -433,61 +433,6 @@ export default function EditPlug() {
     return JSON.stringify(formData) !== JSON.stringify(originalData)
   }
 
-  // BOUTON SAUVEGARDER SIMPLE
-  const savePlug = async () => {
-    if (!formData.name?.trim()) {
-      toast.error('Le nom de la boutique est requis')
-      return
-    }
-
-    setSaving(true)
-
-    try {
-      // Préparer les données
-      const cleanData = {
-        name: formData.name.trim(),
-        image: formData.image || '',
-        telegramLink: formData.telegramLink || '',
-        countries: formData.countries || [],
-        isActive: formData.isActive !== undefined ? formData.isActive : true,
-        isVip: formData.isVip || false,
-        vipOrder: formData.vipOrder || 1,
-        services: {
-          delivery: {
-            enabled: formData.services?.delivery?.enabled || false,
-            description: formData.services?.delivery?.description || '',
-            departments: formData.services?.delivery?.departments || []
-          },
-          postal: {
-            enabled: formData.services?.postal?.enabled || false,
-            description: formData.services?.postal?.description || '',
-            countries: formData.services?.postal?.countries || []
-          },
-          meetup: {
-            enabled: formData.services?.meetup?.enabled || false,
-            description: formData.services?.meetup?.description || '',
-            departments: formData.services?.meetup?.departments || []
-          }
-        },
-        socialMedia: formData.socialMedia?.filter(sm => sm.name && sm.url) || []
-      }
-      
-      // Sauvegarder en local
-      await fetch(`/api/local-plugs?id=${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(cleanData)
-      })
-
-      toast.success('✅ Boutique modifiée !')
-      
-    } catch (error) {
-      toast.success('✅ Boutique modifiée !')
-    } finally {
-      setSaving(false)
-    }
-  }
-
   if (loading) {
     return (
       <>
