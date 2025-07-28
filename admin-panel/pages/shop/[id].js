@@ -50,9 +50,16 @@ export default function ShopPlugDetail() {
       const handleForceRefresh = (event) => {
         console.log('🚀 Signal panel admin reçu DÉTAILS BOUTIQUE - FORCE refresh...');
         console.log('📊 Détails:', event.detail);
+        
+        // Si c'est une suppression, on peut déjà savoir que la page va devenir invalide
+        if (event.detail?.changeType === 'shop_deleted') {
+          console.log('🗑️ Boutique supprimée - refresh pour vérifier si cette boutique existe encore');
+        }
+        
         setTimeout(() => {
           fetchPlug(id);
           fetchConfig();
+          console.log('🔄 DÉTAILS: Boutique et config rechargées après modification panel admin');
         }, 200);
       };
       
