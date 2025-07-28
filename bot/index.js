@@ -312,53 +312,38 @@ bot.action('select_language', async (ctx) => {
 // Fonction pour afficher le menu principal dans la langue sélectionnée
 const showMainMenuInLanguage = async (ctx, config, language) => {
   try {
-    // Récupérer la config fraîche avec la nouvelle langue
+    // TOUJOURS récupérer la config fraîche et actuelle (pas celle passée en paramètre)
     const freshConfig = await Config.findById('main');
     const currentLang = freshConfig?.languages?.currentLanguage || language;
     const customTranslations = freshConfig?.languages?.translations;
     
-    console.log(`🌍 Affichage menu principal en langue: ${currentLang}`);
+    console.log(`🌍 Affichage menu principal en langue ACTUELLE: ${currentLang}`);
     
-    // Message de bienvenue avec statistiques dynamiques
-    const { getTranslation } = require('./src/utils/translations');
+    // Utiliser la fonction centralisée pour construire le message avec la config ACTUELLE
+    const { buildWelcomeMessage } = require('./src/utils/messageBuilder');
+    const welcomeMessage = await buildWelcomeMessage(freshConfig, currentLang, customTranslations, false);
     
-    // Récupérer les statistiques
-    let userCount = 0;
-    let shopCount = 0;
+    console.log('📝 Message d\'accueil ACTUEL construit:', welcomeMessage.substring(0, 100) + '...');
     
-    try {
-      const User = require('./src/models/User');
-      const Plug = require('./src/models/Plug');
-      userCount = await User.countDocuments({ isActive: true });
-      shopCount = await Plug.countDocuments({ isActive: true });
-      console.log(`📊 Statistiques: ${userCount} utilisateurs, ${shopCount} boutiques`);
-    } catch (statsError) {
-      console.log('⚠️ Erreur récupération statistiques:', statsError.message);
-    }
-    
-    // Message de base avec statistiques traduites + horodatage pour forcer la mise à jour
-    const baseMessage = freshConfig?.welcome?.text || getTranslation('messages_welcome', currentLang, customTranslations);
-    const activeUsersText = getTranslation('messages_activeUsers', currentLang, customTranslations);
-    const availableShopsText = getTranslation('messages_availableShops', currentLang, customTranslations);
-    const refreshedAtText = getTranslation('messages_refreshedAt', currentLang, customTranslations);
-    const timestamp = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
-    const welcomeMessage = `${baseMessage}\n\n📊 **${userCount}** ${activeUsersText}\n🏪 **${shopCount}** ${availableShopsText}\n\n🔄 *${refreshedAtText} ${timestamp}*`;
-    
-    // Créer le clavier principal avec traductions (AVEC le bouton langue)
+    // Créer le clavier principal avec la configuration ACTUELLE
     const { createMainKeyboard } = require('./src/utils/keyboards');
     const keyboard = await createMainKeyboard(freshConfig);
     
     // Modifier le message existant avec la nouvelle langue
-    const { editMessageWithImage, safeEditMessage } = require('./src/utils/messageHelper');
+    const { editMessageWithImage } = require('./src/utils/messageHelper');
     await editMessageWithImage(ctx, welcomeMessage, keyboard, freshConfig, { 
       parse_mode: 'Markdown' 
     });
     
-    console.log('✅ Menu principal affiché dans la nouvelle langue');
+    console.log('✅ Menu principal affiché dans la langue ACTUELLE avec configuration ACTUELLE');
   } catch (error) {
     console.error('❌ Erreur affichage menu principal dans langue:', error);
-    // Fallback
-    await ctx.reply('❌ Erreur lors du changement de langue').catch(() => {});
+    // Fallback simple
+    try {
+      await ctx.answerCbQuery('❌ Erreur lors du changement de langue').catch(() => {});
+    } catch (cbError) {
+      console.error('❌ Erreur fallback showMainMenuInLanguage:', cbError);
+    }
   }
 };
 
@@ -428,49 +413,30 @@ bot.action('refresh_and_main', async (ctx) => {
     
     console.log('🔄 Actualisation effectuée, affichage du menu principal');
     
-    // Récupérer la config fraîche avec la nouvelle langue
+    // TOUJOURS récupérer la config fraîche et actuelle
     const freshConfig = await Config.findById('main');
     const currentLang = freshConfig?.languages?.currentLanguage || 'fr';
     const customTranslations = freshConfig?.languages?.translations;
     
-    console.log(`🌍 Affichage menu principal en langue: ${currentLang}`);
+    console.log(`🌍 Affichage menu principal en langue ACTUELLE: ${currentLang}`);
     
-    // Message de bienvenue avec statistiques dynamiques - MÊME LOGIQUE que showMainMenuInLanguage
-    const { getTranslation } = require('./src/utils/translations');
+    // Utiliser la fonction centralisée avec timestamp pour l'actualisation
+    const { buildWelcomeMessage } = require('./src/utils/messageBuilder');
+    const welcomeMessage = await buildWelcomeMessage(freshConfig, currentLang, customTranslations, true);
     
-    // Récupérer les statistiques
-    let userCount = 0;
-    let shopCount = 0;
+    console.log('📝 Message d\'accueil ACTUEL avec timestamp construit');
     
-    try {
-      const User = require('./src/models/User');
-      const Plug = require('./src/models/Plug');
-      userCount = await User.countDocuments({ isActive: true });
-      shopCount = await Plug.countDocuments({ isActive: true });
-      console.log(`📊 Statistiques actualisées: ${userCount} utilisateurs, ${shopCount} boutiques`);
-    } catch (statsError) {
-      console.log('⚠️ Erreur récupération statistiques:', statsError.message);
-    }
-    
-    // Message de base avec statistiques traduites + horodatage pour forcer la mise à jour
-    const baseMessage = freshConfig?.welcome?.text || getTranslation('messages_welcome', currentLang, customTranslations);
-    const activeUsersText = getTranslation('messages_activeUsers', currentLang, customTranslations);
-    const availableShopsText = getTranslation('messages_availableShops', currentLang, customTranslations);
-    const refreshedAtText = getTranslation('messages_refreshedAt', currentLang, customTranslations);
-    const timestamp = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
-    const welcomeMessage = `${baseMessage}\n\n📊 **${userCount}** ${activeUsersText}\n🏪 **${shopCount}** ${availableShopsText}\n\n🔄 *${refreshedAtText} ${timestamp}*`;
-    
-    // Créer le clavier principal avec traductions (AVEC le bouton actualiser)
+    // Créer le clavier principal avec la configuration ACTUELLE
     const { createMainKeyboard } = require('./src/utils/keyboards');
     const keyboard = await createMainKeyboard(freshConfig);
     
-    // Modifier le message existant avec la nouvelle langue
+    // Modifier le message existant avec la configuration ACTUELLE
     const { editMessageWithImage } = require('./src/utils/messageHelper');
     await editMessageWithImage(ctx, welcomeMessage, keyboard, freshConfig, { 
       parse_mode: 'Markdown' 
     });
     
-    console.log('✅ Menu principal actualisé');
+    console.log('✅ Menu principal actualisé avec configuration ACTUELLE');
     
   } catch (error) {
     console.error('❌ Erreur lors de l\'actualisation:', error);

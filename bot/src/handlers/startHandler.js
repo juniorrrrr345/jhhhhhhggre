@@ -8,6 +8,7 @@ const { handleReferral } = require('./referralHandler');
 const { getTranslation } = require('../utils/translations');
 const { getFreshConfig: getConfigHelper } = require('../utils/configHelper');
 const locationService = require('../services/locationService');
+const { buildWelcomeMessage } = require('../utils/messageBuilder');
 
 // Configuration helper centralisé remplace l'ancien système getFreshConfig
 
@@ -176,51 +177,35 @@ const handleBackMain = async (ctx) => {
     // Confirmer immédiatement la callback pour éviter le loading
     await ctx.answerCbQuery();
     
-    // Toujours récupérer la config fraîche
+    // TOUJOURS récupérer la config fraîche et actuelle
     const config = await getConfigHelper();
     if (!config) {
       console.log('❌ Configuration non trouvée');
       return;
     }
 
-    console.log('📋 Configuration récupérée pour le retour');
+    console.log('📋 Configuration ACTUELLE récupérée pour le retour');
 
-    // Récupérer la langue actuelle et les traductions
+    // Récupérer la langue ACTUELLE
     const currentLang = config?.languages?.currentLanguage || 'fr';
     const customTranslations = config?.languages?.translations;
     
-    console.log(`🌍 Langue actuelle pour le retour: ${currentLang}`);
+    console.log(`🌍 Langue ACTUELLE pour le retour: ${currentLang}`);
 
-    // Récupérer les statistiques (même logique que showMainMenuInLanguage)
-    let userCount = 0;
-    let shopCount = 0;
+    // Construire le message d'accueil avec la configuration ACTUELLE
+    const welcomeMessage = await buildWelcomeMessage(config, currentLang, customTranslations, false);
     
-    try {
-      const User = require('../models/User');
-      const Plug = require('../models/Plug');
-      userCount = await User.countDocuments({ isActive: true });
-      shopCount = await Plug.countDocuments({ isActive: true });
-      console.log(`📊 Statistiques (retour menu): ${userCount} utilisateurs, ${shopCount} boutiques`);
-    } catch (statsError) {
-      console.log('⚠️ Erreur récupération statistiques (retour menu):', statsError.message);
-    }
-
-    // Construire le message complet avec statistiques traduites (même format que showMainMenuInLanguage)
-    const baseMessage = config?.welcome?.text || getTranslation('messages_welcome', currentLang, customTranslations);
-    const activeUsersText = getTranslation('messages_activeUsers', currentLang, customTranslations);
-    const availableShopsText = getTranslation('messages_availableShops', currentLang, customTranslations);
-    const welcomeMessage = `${baseMessage}\n\n📊 **${userCount}** ${activeUsersText}\n🏪 **${shopCount}** ${availableShopsText}`;
+    console.log('📝 Message d\'accueil ACTUEL utilisé:', welcomeMessage.substring(0, 100) + '...');
     
-    console.log('📝 Message d\'accueil complet (retour menu) utilisé:', welcomeMessage);
+    // Créer le clavier avec la configuration ACTUELLE
+    const keyboard = await createMainKeyboard(config);
     
-    const keyboard = createMainKeyboard(config);
-    
-    console.log('📝 Message d\'accueil préparé pour le retour avec traduction et statistiques');
+    console.log('📝 Message d\'accueil préparé avec configuration ACTUELLE');
     
     // Utiliser la fonction helper pour gérer l'image de façon cohérente
     await editMessageWithImage(ctx, welcomeMessage, keyboard, config, { parse_mode: 'Markdown' });
     
-    console.log('✅ Retour au menu principal terminé avec message cohérent');
+    console.log('✅ Retour au menu principal terminé avec configuration ACTUELLE');
   } catch (error) {
     console.error('❌ Erreur dans handleBackMain:', error);
     // Fallback : répondre avec le message de démarrage
