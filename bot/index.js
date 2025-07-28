@@ -733,11 +733,44 @@ bot.action('refresh_and_main', async (ctx) => {
     
     // Modifier le message existant avec la configuration ACTUELLE
     const { editMessageWithImage } = require('./src/utils/messageHelper');
-    await editMessageWithImage(ctx, welcomeMessage, keyboard, freshConfig, { 
-      parse_mode: 'Markdown' 
-    });
-    
-    console.log('✅ Menu principal actualisé avec configuration ACTUELLE');
+    try {
+      await editMessageWithImage(ctx, welcomeMessage, keyboard, freshConfig, { 
+        parse_mode: 'Markdown',
+        isPlugDetails: false  // Préciser que ce n'est pas des détails de plug
+      });
+      console.log('✅ Menu principal actualisé avec configuration ACTUELLE');
+    } catch (editError) {
+      console.error('❌ Erreur édition menu principal, tentative avec caption:', editError);
+      // Fallback : essayer d'éditer seulement le caption
+      try {
+        await ctx.editMessageCaption(welcomeMessage, {
+          reply_markup: keyboard.reply_markup,
+          parse_mode: 'Markdown'
+        });
+        console.log('✅ Menu principal actualisé via caption');
+      } catch (captionError) {
+        console.error('❌ Erreur édition caption:', captionError);
+        // Dernier fallback : supprimer et renvoyer nouveau message
+        try {
+          await ctx.deleteMessage();
+          if (freshConfig?.welcome?.image) {
+            await ctx.replyWithPhoto(freshConfig.welcome.image, {
+              caption: welcomeMessage,
+              reply_markup: keyboard.reply_markup,
+              parse_mode: 'Markdown'
+            });
+          } else {
+            await ctx.reply(welcomeMessage, {
+              reply_markup: keyboard.reply_markup,
+              parse_mode: 'Markdown'
+            });
+          }
+          console.log('✅ Nouveau menu principal envoyé');
+        } catch (newError) {
+          console.error('❌ Impossible de refresh le menu:', newError);
+        }
+      }
+    }
     
   } catch (error) {
     console.error('❌ Erreur lors de l\'actualisation:', error);

@@ -74,36 +74,41 @@ const editMessageWithImage = async (ctx, message, keyboard, config, options = {}
   } catch (error) {
     console.error('❌ Erreur modification message avec image:', error);
     
-    // Si c'est pour les détails d'un plug (isPlugDetails), envoyer un nouveau message
+    // Si c'est pour les détails d'un plug (isPlugDetails), modifier avec l'image appropriée
     if (options.isPlugDetails) {
       try {
-        console.log('🔄 Fallback pour détails plug: envoi nouveau message');
+        console.log('🔄 Fallback pour détails plug: modification avec image appropriée');
         
-        // Supprimer l'ancien message si possible
-        try {
-          await ctx.deleteMessage();
-        } catch (deleteError) {
-          console.log('⚠️ Impossible de supprimer l\'ancien message');
+        // Utiliser l'image du plug ou l'image d'accueil par défaut
+        let imageToUse = options.plugImage;
+        if (!imageToUse && config?.welcome?.image) {
+          imageToUse = config.welcome.image;
+          console.log('📸 Utilisation image d\'accueil pour détails plug sans image');
         }
         
-        // Envoyer un nouveau message avec l'image du plug si disponible
-        if (options.plugImage) {
-          await ctx.replyWithPhoto(options.plugImage, {
+        if (imageToUse) {
+          // Modifier avec l'image appropriée
+          await ctx.editMessageMedia({
+            type: 'photo',
+            media: imageToUse,
             caption: message,
+            parse_mode: options.parse_mode || 'Markdown'
+          }, {
+            reply_markup: keyboard.reply_markup
+          });
+          console.log('✅ Détails plug affichés avec image');
+        } else {
+          // Pas d'image disponible, éditer seulement le caption
+          await ctx.editMessageCaption(message, {
             reply_markup: keyboard.reply_markup,
             parse_mode: options.parse_mode || 'Markdown'
           });
-        } else {
-          await ctx.reply(message, {
-            reply_markup: keyboard.reply_markup,
-            parse_mode: options.parse_mode || 'Markdown',
-            disable_web_page_preview: true
-          });
+          console.log('✅ Détails plug affichés sans image');
         }
-        console.log('✅ Nouveau message détails plug envoyé');
         return;
       } catch (newMessageError) {
-        console.error('❌ Erreur envoi nouveau message détails:', newMessageError);
+        console.error('❌ Erreur modification détails plug:', newMessageError);
+        // Continuer vers le fallback standard
       }
     }
     
