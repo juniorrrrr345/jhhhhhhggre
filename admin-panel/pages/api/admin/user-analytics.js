@@ -26,9 +26,13 @@ export default async function handler(req, res) {
     }
 
     console.log(`📊 Génération stats utilisateurs pour période: ${timeRange}`)
+    console.log(`🔗 URL du bot: ${process.env.NEXT_PUBLIC_BOT_API_URL || 'https://jhhhhhhggre.onrender.com'}`)
 
     // Utiliser le proxy CORS pour récupérer les données depuis le bot
-    const botResponse = await fetch(`${process.env.NEXT_PUBLIC_BOT_API_URL || 'https://jhhhhhhggre.onrender.com'}/api/admin/user-analytics`, {
+    const botUrl = `${process.env.NEXT_PUBLIC_BOT_API_URL || 'https://jhhhhhhggre.onrender.com'}/api/admin/user-analytics`
+    console.log(`📡 Appel vers: ${botUrl}`)
+    
+    const botResponse = await fetch(botUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -36,13 +40,17 @@ export default async function handler(req, res) {
       body: JSON.stringify({ timeRange, dateFilter })
     })
 
+    console.log(`📡 Statut réponse bot: ${botResponse.status}`)
+    console.log(`📡 Headers réponse:`, Object.fromEntries(botResponse.headers.entries()))
+
     if (!botResponse.ok) {
-      throw new Error(`Erreur bot API: ${botResponse.status}`)
+      const errorText = await botResponse.text()
+      console.error(`❌ Erreur bot API: ${botResponse.status} - ${errorText}`)
+      throw new Error(`Erreur bot API: ${botResponse.status} - ${errorText}`)
     }
 
     const data = await botResponse.json()
-    
-    console.log(`✅ Stats récupérées: ${data.totalUsers} utilisateurs, ${data.countryStats?.length || 0} pays`)
+    console.log(`✅ Stats récupérées:`, data)
     
     res.status(200).json(data)
     
