@@ -58,39 +58,82 @@ export default function AccueilAdmin() {
 
   const fetchPlugs = async (token) => {
     try {
-      console.log('🔄 Chargement des boutiques...')
-      console.log('🔑 Token:', token?.substring(0, 10) + '...')
-      console.log('📋 Params:', { page: currentPage, limit: 6, search, filter })
+      console.log('🔄 Admin: Chargement TOUTES les boutiques (serveur + local)...')
       
-      const data = await simpleApi.getPlugs(token, {
-        page: currentPage,
-        limit: 6,
-        search,
-        filter
-      })
+      let allPlugs = []
       
-      console.log('✅ Données reçues:', data)
-      console.log('📦 Plugs count:', data.plugs?.length)
+      // 1. Récupérer boutiques du serveur principal
+      try {
+        const serverData = await simpleApi.getPlugs(token, {
+          page: currentPage,
+          limit: 100,
+          search,
+          filter
+        })
+        allPlugs = [...(serverData.plugs || [])]
+        console.log('✅ Serveur principal:', allPlugs.length, 'boutiques')
+      } catch (error) {
+        console.warn('⚠️ Serveur principal indisponible:', error.message)
+      }
       
-      setPlugs(data.plugs || [])
-      setTotalPages(data.totalPages || 1)
+      // 2. Récupérer boutiques locales
+      try {
+        const localResponse = await fetch('/api/local-plugs', {
+          method: 'GET',
+          headers: { 'Content-Type': 'application/json' }
+        })
+        
+        if (localResponse.ok) {
+          const localData = await localResponse.json()
+          const localPlugs = localData.plugs || []
+          
+          // Fusionner en évitant les doublons
+          localPlugs.forEach(localPlug => {
+            const exists = allPlugs.find(p => p._id === localPlug._id)
+            if (!exists) {
+              allPlugs.push(localPlug)
+            }
+          })
+          
+          console.log('✅ API locale:', localPlugs.length, 'boutiques ajoutées')
+        }
+      } catch (error) {
+        console.warn('⚠️ API locale indisponible:', error.message)
+      }
+      
+      console.log('📦 TOTAL boutiques admin:', allPlugs.length)
+      
+      // Filtrage par search si nécessaire
+      if (search) {
+        allPlugs = allPlugs.filter(plug => 
+          plug.name.toLowerCase().includes(search.toLowerCase())
+        )
+      }
+      
+      // Pagination
+      const start = (currentPage - 1) * 6
+      const paginatedPlugs = allPlugs.slice(start, start + 6)
+      const totalPages = Math.ceil(allPlugs.length / 6)
+      
+      setPlugs(paginatedPlugs)
+      setTotalPages(totalPages)
       
       // Calculer les stats
-      const totalPlugs = data.total || 0
-      const activePlugs = (data.plugs || []).filter(p => p.isActive).length
-      const vipPlugs = (data.plugs || []).filter(p => p.isVip).length
+      const activePlugs = allPlugs.filter(p => p.isActive).length
+      const vipPlugs = allPlugs.filter(p => p.isVip).length
       
       setStats(prev => ({
         ...prev,
-        totalPlugs,
+        totalPlugs: allPlugs.length,
         activePlugs,
         vipPlugs
       }))
       
-      console.log('✅ Boutiques chargées:', data.plugs?.length)
-      return data
+      console.log('✅ Admin: Boutiques affichées:', paginatedPlugs.length)
+      return { plugs: paginatedPlugs, total: allPlugs.length, totalPages }
+      
     } catch (error) {
-      console.error('❌ Erreur chargement plugs:', error)
+      console.error('❌ Erreur chargement admin plugs:', error)
       throw error
     }
   }

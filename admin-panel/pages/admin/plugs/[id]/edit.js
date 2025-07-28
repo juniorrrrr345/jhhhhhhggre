@@ -438,28 +438,33 @@ export default function EditPlug() {
     return JSON.stringify(formData) !== JSON.stringify(originalData)
   }
 
-  // AUTO-SAUVEGARDE SIMPLE
+  // AUTO-SAUVEGARDE SIMPLE (seulement si données chargées)
   useEffect(() => {
-    if (!id || !formData.name) return
+    if (!id || !formData.name || loading) return
+    
+    // Éviter l'auto-save pendant le chargement initial
+    if (JSON.stringify(formData) === JSON.stringify(originalData)) return
     
     // Annuler le timeout précédent
     if (autoSaveTimeout.current) {
       clearTimeout(autoSaveTimeout.current)
     }
     
-    // Auto-save après 2 secondes d'inactivité
+    // Auto-save après 3 secondes d'inactivité
     autoSaveTimeout.current = setTimeout(() => {
       autoSave()
-    }, 2000)
+    }, 3000)
     
     return () => {
       if (autoSaveTimeout.current) {
         clearTimeout(autoSaveTimeout.current)
       }
     }
-  }, [formData, id])
+  }, [formData, id, loading])
   
   const autoSave = async () => {
+    if (!id || !formData.name || autoSaving) return
+    
     try {
       setAutoSaving(true)
       
@@ -469,8 +474,8 @@ export default function EditPlug() {
         image: formData.image || '',
         telegramLink: formData.telegramLink || '',
         countries: formData.countries || [],
-        isActive: formData.isActive,
-        isVip: formData.isVip,
+        isActive: formData.isActive !== undefined ? formData.isActive : true,
+        isVip: formData.isVip || false,
         vipOrder: formData.vipOrder || 1,
         services: {
           delivery: {
@@ -492,29 +497,34 @@ export default function EditPlug() {
         socialMedia: formData.socialMedia?.filter(sm => sm.name && sm.url) || []
       }
       
-      // Sauvegarder directement dans l'API locale
-      await fetch('/api/local-plugs', {
+      // Sauvegarder directement dans l'API locale avec l'ID correct
+      const response = await fetch(`/api/local-plugs?id=${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id, ...cleanData })
+        body: JSON.stringify(cleanData)
       })
       
-      // Synchroniser avec le serveur principal (en arrière-plan)
-      fetch('/api/cors-proxy', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          endpoint: `plugs/${id}`,
-          method: 'PUT',
-          token: localStorage.getItem('adminToken'),
-          data: cleanData
-        })
-      }).catch(() => {}) // Ignorer les erreurs
+      if (response.ok) {
+        setLastSaved(new Date())
+        console.log('✅ Auto-save local réussi')
+      }
       
-      setLastSaved(new Date())
+      // Synchroniser avec le serveur principal (en arrière-plan, sans attendre)
+      setTimeout(() => {
+        fetch('/api/cors-proxy', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            endpoint: `plugs/${id}`,
+            method: 'PUT',
+            token: localStorage.getItem('adminToken'),
+            data: cleanData
+          })
+        }).catch(() => {}) // Ignorer les erreurs serveur
+      }, 100)
       
     } catch (error) {
-      console.log('Auto-save silent error:', error.message)
+      console.log('Auto-save error (ignored):', error.message)
     } finally {
       setAutoSaving(false)
     }
