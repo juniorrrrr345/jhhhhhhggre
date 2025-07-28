@@ -1,0 +1,10 @@
+/DEPLOY.md
+/deploy.sh
+/pages/api/config.ts
+/pages/api/products.ts
+/pages/api/socket.ts
+.next/
+node_modules/
+.env.local
+.env
+*.log
