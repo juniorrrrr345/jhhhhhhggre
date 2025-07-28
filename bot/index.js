@@ -410,13 +410,10 @@ bot.action(/^lang_(.+)$/, async (ctx) => {
   }
 });
 
-// Gestionnaire pour le bouton "Actualiser" après sélection de langue
+// Gestionnaire pour le bouton "Actualiser" 
 bot.action('refresh_and_main', async (ctx) => {
   try {
     await ctx.answerCbQuery('🔄 Actualisation en cours...');
-    
-    // Récupérer la config fraîche pour les dernières mises à jour
-    const config = await Config.findById('main');
     
     // Invalider les caches pour forcer le rechargement
     configCache = null;
@@ -425,10 +422,10 @@ bot.action('refresh_and_main', async (ctx) => {
       clearAllCaches();
     }
     
-    console.log('🔄 Actualisation effectuée, affichage du menu principal');
+    console.log('🔄 Actualisation effectuée, retour au menu principal');
     
-    // Afficher le menu principal avec les dernières données
-    await showMainMenuInLanguage(ctx, config, config?.languages?.currentLanguage || 'fr');
+    // Utiliser handleBackMain qui fonctionne déjà bien
+    await handleBackMain(ctx);
     
   } catch (error) {
     console.error('❌ Erreur lors de l\'actualisation:', error);
