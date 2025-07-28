@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { useState } from 'react'
 import { getProxiedImageUrl } from '../lib/imageUtils'
+import { translateCountry, translateCountries, getCountryFlag } from '../lib/country-translations'
 
 export default function ShopCard({ plug, index, layout = 'grid', currentLanguage = 'fr', showCountry = false, filteredCountry = '' }) {
   const [likes, setLikes] = useState(plug.likes || 0)

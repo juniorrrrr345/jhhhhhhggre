@@ -357,22 +357,7 @@ export default function ShopSearch() {
     return `${globalIndex + 1}°`
   }
 
-  const getCountryFlag = (countries) => {
-    if (!countries || countries.length === 0) return '🌍'
-    const countryFlagMap = {
-      'France': '🇫🇷',
-      'Belgique': '🇧🇪',
-      'Suisse': '🇨🇭',
-      'Canada': '🇨🇦',
-      'Allemagne': '🇩🇪',
-      'Espagne': '🇪🇸',
-      'Italie': '🇮🇹',
-      'Portugal': '🇵🇹',
-      'Royaume-Uni': '🇬🇧',
-      'Pays-Bas': '🇳🇱'
-    }
-    return countryFlagMap[countries[0]] || '🌍'
-  }
+
 
   if (initialLoading) {
     return (
@@ -543,7 +528,9 @@ export default function ShopSearch() {
             >
               <option value="">🌍 {t('search_all_countries')}</option>
               {getAvailableCountries().map(country => (
-                <option key={country} value={country}>{country}</option>
+                <option key={country} value={country}>
+                  {getCountryFlag(country)} {translateCountry(country, currentLanguage)}
+                </option>
               ))}
             </select>
 
