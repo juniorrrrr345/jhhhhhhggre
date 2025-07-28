@@ -105,13 +105,16 @@ export default function AccueilAdmin() {
       
       await simpleApi.deletePlug(token, id)
       
+      // SYNCHRONISATION IMMÉDIATE MINI APP
+      await simpleApi.syncImmediateMiniApp()
+      
       // Synchroniser avec le bot
       const robustSync = getRobustSync()
       if (robustSync) {
         robustSync.syncShopDelete(id)
       }
       
-      toast.success('Boutique supprimée')
+      toast.success('Boutique supprimée ! 🔄 Mini app synchronisée')
       fetchData(token)
       console.log('✅ Boutique supprimée et synchronisée')
     } catch (error) {

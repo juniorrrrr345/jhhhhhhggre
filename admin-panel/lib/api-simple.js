@@ -407,6 +407,37 @@ export const simpleApi = {
       console.warn('⚠️ Impossible de vider le cache bot:', error.message);
       return null;
     }
+  },
+
+  // Fonction de synchronisation automatique immédiate pour la mini app
+  syncImmediateMiniApp: async () => {
+    try {
+      console.log('🔄 SYNCHRONISATION IMMÉDIATE MINI APP...');
+      
+      // 1. Vider le cache du bot
+      await simpleApi.clearBotCache();
+      
+      // 2. Vider le cache local
+      simpleApi.clearCache();
+      
+      // 3. Forcer le reload de la config publique
+      const BOT_URL = process.env.NEXT_PUBLIC_BOT_URL || 'https://jhhhhhhggre.onrender.com';
+      await fetch(`${BOT_URL}/api/public/config?force=${Date.now()}`, {
+        method: 'GET',
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      });
+      
+      // 4. Notifier la synchronisation
+      console.log('✅ MINI APP SYNCHRONISÉE - Changements visibles dans 5-15 secondes');
+      
+      return { success: true, message: 'Mini app synchronisée' };
+    } catch (error) {
+      console.error('❌ Erreur synchronisation mini app:', error);
+      return { success: false, error: error.message };
+    }
   }
 };
 

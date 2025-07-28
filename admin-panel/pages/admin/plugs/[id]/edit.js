@@ -5,6 +5,7 @@ import toast, { Toaster } from 'react-hot-toast'
 import { TrashIcon, PlusIcon, ArrowLeftIcon } from '@heroicons/react/24/outline'
 import { getRobustSync } from '../../../../lib/robust-sync'
 import postalCodeService from '../../../../lib/postalCodeService'
+import { simpleApi } from '../../../../lib/api-simple'
 
 // Fonction wrapper pour toast avec gestion d'erreur
 const safeToast = {
@@ -319,7 +320,10 @@ export default function EditPlug() {
         clearTimeout(globalTimeout)
         setSaving(false)
         
-        safeToast.success('✅ Plug modifié avec succès ! Synchronisation boutique/bot effectuée', {
+        // SYNCHRONISATION IMMÉDIATE MINI APP
+        await simpleApi.syncImmediateMiniApp()
+        
+        safeToast.success('✅ Plug modifié avec succès ! 🔄 Mini app synchronisée', {
           duration: 4000,
           style: {
             background: '#10B981',

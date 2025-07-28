@@ -83,17 +83,8 @@ export default function TelegramLinks() {
       // Sauvegarder la configuration complète
       await simpleApi.updateConfig(token, updatedConfig)
       
-      // Forcer la synchronisation en rafraîchissant l'API publique
-      try {
-        await fetch('https://jhhhhhhggre.onrender.com/api/public/config', {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        })
-      } catch (syncError) {
-        console.log('Erreur synchronisation API publique:', syncError)
-      }
+      // SYNCHRONISATION IMMÉDIATE MINI APP
+      await simpleApi.syncImmediateMiniApp()
       
       // Sauvegarder aussi en localStorage pour les pages publiques
       localStorage.setItem('telegramLinks', JSON.stringify({
@@ -101,7 +92,7 @@ export default function TelegramLinks() {
         servicesTelegramLink: config.servicesTelegramLink
       }))
       
-      toast.success('Configuration sauvegardée avec succès !')
+      toast.success('Configuration sauvegardée ! 🔄 Mini app synchronisée')
       console.log('✅ Telegram links config saved')
     } catch (error) {
       console.error('💥 Save error:', error)

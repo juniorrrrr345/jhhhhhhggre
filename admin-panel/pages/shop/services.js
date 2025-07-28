@@ -65,7 +65,7 @@ export default function ShopServices() {
       
       // Priorité 3: Lien par défaut
       setConfig({
-        servicesTelegramLink: 'https://t.me/FindYourPlugBot'
+        servicesTelegramLink: 'https://t.me/findyourplugsav'
       })
     } catch (error) {
       console.error('Erreur lors du chargement de la config:', error)
@@ -75,11 +75,11 @@ export default function ShopServices() {
       if (savedLinks) {
         const links = JSON.parse(savedLinks)
         setConfig({
-          servicesTelegramLink: links.servicesTelegramLink || 'https://t.me/FindYourPlugBot'
+          servicesTelegramLink: links.servicesTelegramLink || 'https://t.me/findyourplugsav'
         })
       } else {
         setConfig({
-          servicesTelegramLink: 'https://t.me/FindYourPlugBot'
+          servicesTelegramLink: 'https://t.me/findyourplugsav'
         })
       }
     }

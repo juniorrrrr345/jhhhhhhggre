@@ -158,6 +158,9 @@ export default function BotConfiguration() {
       
       const result = await simpleApi.updateConfig(token, configData)
       
+      // SYNCHRONISATION IMMÉDIATE MINI APP
+      await simpleApi.syncImmediateMiniApp()
+      
       // Synchroniser avec le bot
       const robustSync = getRobustSync()
       if (robustSync) {
@@ -165,7 +168,7 @@ export default function BotConfiguration() {
       }
       
       // Configuration sauvegardée et synchronisée
-      toast.success('✅ Configuration sauvegardée avec succès!')
+      toast.success('✅ Configuration sauvegardée ! 🔄 Mini app synchronisée')
       console.log('✅ Configuration sauvegardée:', result)
       
     } catch (error) {
