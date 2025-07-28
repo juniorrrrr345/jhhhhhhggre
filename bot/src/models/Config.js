@@ -177,14 +177,14 @@ const configSchema = new mongoose.Schema({
       default: ''
     },
     // Liens Telegram pour la mini app
-    inscriptionTelegramLink: {
-      type: String,
-      default: 'https://t.me/FindYourPlugBot'
-    },
-    servicesTelegramLink: {
-      type: String,
-      default: 'https://t.me/FindYourPlugBot'
-    }
+          inscriptionTelegramLink: {
+        type: String,
+        default: 'https://t.me/findyourplugsav'
+      },
+      servicesTelegramLink: {
+        type: String,
+        default: 'https://t.me/findyourplugsav'
+      }
   },
 
   // Configuration de l'interface

@@ -1764,7 +1764,12 @@ app.get('/api/public/config', async (req, res) => {
       socialMedia: config?.socialMedia || {},
       shopSocialMediaList: config?.shopSocialMediaList || [],
       messages: config?.messages || {},
-      buttons: config?.buttons || {}
+      buttons: config?.buttons || {},
+      // AJOUT : Liens Telegram pour les boutons Mini App
+      telegramLinks: {
+        inscriptionTelegramLink: config?.boutique?.inscriptionTelegramLink || 'https://t.me/findyourplugsav',
+        servicesTelegramLink: config?.boutique?.servicesTelegramLink || 'https://t.me/findyourplugsav'
+      }
     };
     
     // Headers pour CORS et cache forcé
@@ -4825,6 +4830,50 @@ app.get('/api/admin/user-analytics', async (req, res) => {
       error: 'Erreur lors de la récupération des analytics',
       details: error.message 
     });
+  }
+});
+
+// API pour forcer la mise à jour des liens Telegram vers findyourplugsav
+app.post('/api/force-update-telegram-links', async (req, res) => {
+  try {
+    console.log('🔗 MISE À JOUR FORCÉE des liens Telegram vers findyourplugsav');
+    
+    const config = await Config.findById('main');
+    if (!config) {
+      return res.status(404).json({ error: 'Configuration non trouvée' });
+    }
+    
+    // Forcer la mise à jour des liens
+    if (!config.boutique) {
+      config.boutique = {};
+    }
+    
+    config.boutique.inscriptionTelegramLink = 'https://t.me/findyourplugsav';
+    config.boutique.servicesTelegramLink = 'https://t.me/findyourplugsav';
+    
+    await config.save();
+    
+    // Invalider tous les caches
+    configCache = null;
+    plugsCache = null;
+    if (typeof clearAllCaches === 'function') {
+      clearAllCaches();
+    }
+    
+    console.log('✅ Liens Telegram forcés vers: https://t.me/findyourplugsav');
+    
+    res.json({ 
+      success: true, 
+      message: 'Liens Telegram mis à jour vers findyourplugsav',
+      links: {
+        inscriptionTelegramLink: 'https://t.me/findyourplugsav',
+        servicesTelegramLink: 'https://t.me/findyourplugsav'
+      }
+    });
+    
+  } catch (error) {
+    console.error('❌ Erreur mise à jour liens Telegram:', error);
+    res.status(500).json({ error: 'Erreur serveur' });
   }
 });
 

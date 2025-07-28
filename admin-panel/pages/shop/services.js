@@ -40,8 +40,9 @@ export default function ShopServices() {
       
       if (response.ok) {
         const data = await response.json()
+        console.log('🔗 Config reçue de l\'API bot pour services:', data.telegramLinks)
         setConfig({
-          servicesTelegramLink: data.boutique?.servicesTelegramLink || 'https://t.me/FindYourPlugBot'
+          servicesTelegramLink: data.telegramLinks?.servicesTelegramLink || 'https://t.me/findyourplugsav'
         })
         
         // Charger les réseaux sociaux du shop

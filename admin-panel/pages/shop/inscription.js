@@ -41,8 +41,9 @@ export default function ShopInscription() {
       
       if (response.ok) {
         const data = await response.json()
+        console.log('🔗 Config reçue de l\'API bot:', data.telegramLinks)
         setConfig({
-          inscriptionTelegramLink: data.boutique?.inscriptionTelegramLink || 'https://t.me/FindYourPlugBot'
+          inscriptionTelegramLink: data.telegramLinks?.inscriptionTelegramLink || 'https://t.me/findyourplugsav'
         })
         return
       }

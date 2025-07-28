@@ -9,8 +9,8 @@ export default function TelegramLinks() {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [config, setConfig] = useState({
-    inscriptionTelegramLink: 'https://t.me/FindYourPlugBot',
-    servicesTelegramLink: 'https://t.me/FindYourPlugBot'
+    inscriptionTelegramLink: 'https://t.me/findyourplugsav',
+    servicesTelegramLink: 'https://t.me/findyourplugsav'
   })
   const router = useRouter()
   const { t } = useTranslation('fr') // Admin panel en français par défaut
