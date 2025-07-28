@@ -23,7 +23,7 @@ export default function ShopHome() {
   const getLogoByName = (name) => {
     const lowercaseName = name.toLowerCase()
     if (lowercaseName.includes('telegram')) return 'https://i.imgur.com/PP2GVMv.png'
-    if (lowercaseName.includes('discord')) return 'https://i.imgur.com/JgmWPPZ.png'
+    if (lowercaseName.includes('discord')) return 'https://i.imgur.com/oXPAefr.png'
     if (lowercaseName.includes('instagram')) return 'https://i.imgur.com/O5TxmOS.jpeg'
     if (lowercaseName.includes('whatsapp')) return 'https://i.imgur.com/WhatsApp.png'
     if (lowercaseName.includes('twitter') || lowercaseName.includes('x')) return 'https://i.imgur.com/twitter.png'
@@ -566,7 +566,7 @@ export default function ShopHome() {
                 },
                 { 
                   name: 'Discord', 
-                  logo: 'https://i.imgur.com/JgmWPPZ.png',
+                  logo: 'https://i.imgur.com/oXPAefr.png',
                   url: 'https://discord.gg/g2dACUC3'
                 },
                 { 

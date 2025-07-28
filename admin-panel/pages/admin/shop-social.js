@@ -68,7 +68,7 @@ export default function ShopSocialMediaManager() {
             emoji: '📸', 
             url: 'https://www.instagram.com/find.yourplug?igsh=ajRwcjE1eGhoaXMz&utm_source=qr', 
             enabled: true,
-            logo: 'https://i.imgur.com/YBE4cnb.jpeg'
+            logo: 'https://i.imgur.com/O5TxmOS.jpeg'
           },
           { 
             id: 'luffa', 
@@ -76,7 +76,7 @@ export default function ShopSocialMediaManager() {
             emoji: '🧽', 
             url: 'https://callup.luffa.im/c/EnvtiTHkbvP', 
             enabled: true,
-            logo: 'https://i.imgur.com/zkZtY0m.png'
+            logo: 'https://i.imgur.com/PtqXOhb.png'
           },
           { 
             id: 'discord', 
@@ -84,7 +84,7 @@ export default function ShopSocialMediaManager() {
             emoji: '🎮', 
             url: 'https://discord.gg/g2dACUC3', 
             enabled: true,
-            logo: 'https://i.imgur.com/JgmWPPZ.png'
+            logo: 'https://i.imgur.com/oXPAefr.png'
           },
           { 
             id: 'potato', 
@@ -92,7 +92,7 @@ export default function ShopSocialMediaManager() {
             emoji: '🥔', 
             url: 'https://potato.com', 
             enabled: true,
-            logo: 'https://i.imgur.com/1iCRHRB.jpeg'
+            logo: 'https://i.imgur.com/44ScFxY.jpeg'
           }
         ]
         setSocialMedias(defaultShopSocialMedias)
@@ -142,7 +142,7 @@ export default function ShopSocialMediaManager() {
                 emoji: '📸', 
                 url: 'https://www.instagram.com/find.yourplug?igsh=ajRwcjE1eGhoaXMz&utm_source=qr', 
                 enabled: true,
-                logo: 'https://i.imgur.com/instagram.png'
+                logo: 'https://i.imgur.com/O5TxmOS.jpeg'
               },
               { 
                 id: 'luffa', 
@@ -150,7 +150,7 @@ export default function ShopSocialMediaManager() {
                 emoji: '🧽', 
                 url: 'https://callup.luffa.im/c/EnvtiTHkbvP', 
                 enabled: true,
-                logo: 'https://i.imgur.com/zkZtY0m.png'
+                logo: 'https://i.imgur.com/PtqXOhb.png'
               },
               { 
                 id: 'discord', 
@@ -158,7 +158,7 @@ export default function ShopSocialMediaManager() {
                 emoji: '🎮', 
                 url: 'https://discord.gg/g2dACUC3', 
                 enabled: true,
-                logo: 'https://i.imgur.com/discord.png'
+                logo: 'https://i.imgur.com/oXPAefr.png'
               },
               { 
                 id: 'potato', 
@@ -166,7 +166,7 @@ export default function ShopSocialMediaManager() {
                 emoji: '🥔', 
                 url: 'https://potato.com', 
                 enabled: true,
-                logo: 'https://i.imgur.com/1iCRHRB.jpeg'
+                logo: 'https://i.imgur.com/44ScFxY.jpeg'
               }
             ]
             setSocialMedias(defaultShopSocialMedias)
