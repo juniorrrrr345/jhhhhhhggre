@@ -4431,6 +4431,60 @@ app.post('/api/force-update-potato-emoji', async (req, res) => {
   }
 });
 
+// API pour mettre à jour les liens Telegram depuis le panel admin
+app.post('/api/update-telegram-links', authenticateAdmin, async (req, res) => {
+  try {
+    console.log('🔗 Mise à jour des liens Telegram depuis le panel admin');
+    
+    const { inscriptionTelegramLink, servicesTelegramLink } = req.body;
+    
+    if (!inscriptionTelegramLink || !servicesTelegramLink) {
+      return res.status(400).json({ error: 'Liens Telegram manquants' });
+    }
+    
+    const config = await Config.findById('main');
+    if (!config) {
+      return res.status(404).json({ error: 'Configuration non trouvée' });
+    }
+    
+    // Initialiser boutique si nécessaire
+    if (!config.boutique) {
+      config.boutique = {};
+    }
+    
+    // Mettre à jour les liens
+    config.boutique.inscriptionTelegramLink = inscriptionTelegramLink;
+    config.boutique.servicesTelegramLink = servicesTelegramLink;
+    
+    await config.save();
+    
+    // Invalider les caches
+    configCache = null;
+    plugsCache = null;
+    if (typeof clearAllCaches === 'function') {
+      clearAllCaches();
+    }
+    
+    console.log('✅ Liens Telegram mis à jour:', {
+      inscription: inscriptionTelegramLink,
+      services: servicesTelegramLink
+    });
+    
+    res.json({ 
+      success: true, 
+      message: 'Liens Telegram mis à jour avec succès',
+      links: {
+        inscriptionTelegramLink,
+        servicesTelegramLink
+      }
+    });
+    
+  } catch (error) {
+    console.error('❌ Erreur mise à jour liens Telegram:', error);
+    res.status(500).json({ error: 'Erreur serveur' });
+  }
+});
+
 // Endpoint pour forcer la mise à jour COMPLÈTE de toutes les traductions
 app.post('/api/force-update-all-translations', async (req, res) => {
   try {
