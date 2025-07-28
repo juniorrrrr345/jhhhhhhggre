@@ -3,6 +3,7 @@ import { useRouter } from 'next/router'
 import Layout from '../../components/Layout'
 import toast from 'react-hot-toast'
 import { simpleApi } from '../../lib/api-simple'
+import api from '../../lib/api-enhanced'
 // Heroicons remplacés par des emojis
 
 export default function ReferralsPage() {
@@ -46,8 +47,17 @@ export default function ReferralsPage() {
     try {
       setLoading(true)
       
-      // Charger toutes les boutiques via l'API simple
-      const plugsResponse = await simpleApi.getPlugs(token)
+      // Configurer le token pour l'API améliorée
+      api.setToken(token)
+      
+      // Charger toutes les boutiques avec retry automatique
+      let plugsResponse
+      try {
+        plugsResponse = await api.getPlugs()
+      } catch (apiError) {
+        console.warn('⚠️ API principale échouée, tentative avec simpleApi...')
+        plugsResponse = await simpleApi.getPlugs(token)
+      }
       console.log('📊 Réponse API plugs:', plugsResponse)
       
       // L'API renvoie {plugs: [...]}
@@ -89,28 +99,51 @@ export default function ReferralsPage() {
       }
     } catch (error) {
       console.error('❌ Erreur chargement parrainage:', error)
-      toast.error(`Erreur lors du chargement: ${error.message}`)
-      // En cas d'erreur, au moins afficher les boutiques sans parrainage
+      
+      // En cas d'erreur, essayer de charger depuis l'API locale
       try {
-        const plugsData = await simpleApi.getPlugs(token)
-        if (plugsData && Array.isArray(plugsData)) {
-          const plugsWithoutReferrals = plugsData.map(plug => ({
-            ...plug,
-            referralLink: null,
-            referralCode: null,
-            totalReferred: 0,
-            referredUsers: []
-          }))
-          setPlugs(plugsWithoutReferrals)
-          setTotalStats({
-            totalPlugs: plugsData.length,
-            totalReferred: 0,
-            totalUsers: 0
+        console.log('🔄 Tentative de chargement depuis l\'API locale...')
+        const localResponse = await fetch('/api/local-plugs')
+        
+        if (localResponse.ok) {
+          const localData = await localResponse.json()
+          const plugsData = localData.plugs || localData || []
+          
+          toast.warning('⚠️ Mode local activé - Serveur principal indisponible', {
+            duration: 4000
           })
+          
+          if (plugsData && Array.isArray(plugsData)) {
+            const plugsWithReferrals = plugsData.map(plug => ({
+              ...plug,
+              totalReferred: plug.totalReferred || 0,
+              referredUsers: plug.referredUsers || [],
+              referralLink: plug.referralLink || null,
+              referralCode: plug.referralCode || null
+            }))
+            
+            setPlugs(plugsWithReferrals)
+            setTotalStats({
+              totalPlugs: plugsData.length,
+              totalReferred: plugsWithReferrals.reduce((sum, p) => sum + (p.totalReferred || 0), 0),
+              totalUsers: 0
+            })
+            
+            return // Sortir de la fonction
+          }
         }
       } catch (fallbackError) {
         console.error('❌ Erreur fallback:', fallbackError)
       }
+      
+      // Si tout échoue, afficher un message d'erreur clair
+      toast.error('Impossible de charger les données. Vérifiez votre connexion.', {
+        duration: 5000
+      })
+      
+      // Mettre des données vides
+      setPlugs([])
+      setTotalStats({ totalPlugs: 0, totalReferred: 0, totalUsers: 0 })
     } finally {
       setLoading(false)
     }
