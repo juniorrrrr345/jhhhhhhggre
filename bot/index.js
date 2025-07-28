@@ -2894,23 +2894,23 @@ app.post('/api/plugs', limits.admin, authenticateAdmin, async (req, res) => {
     const plugData = req.body;
     
     // Validation renforcée des champs requis
-    if (!plugData.name || !plugData.description) {
+    if (!plugData.name) {
       return res.status(400).json({ 
-        error: 'Le nom et la description sont requis' 
+        error: 'Le nom de la boutique est requis' 
       });
     }
 
     // Validation de sécurité pour empêcher les injections
-    if (typeof plugData.name !== 'string' || typeof plugData.description !== 'string') {
+    if (typeof plugData.name !== 'string') {
       return res.status(400).json({ 
         error: 'Format de données invalide' 
       });
     }
 
     // Validation de longueur pour éviter les abus
-    if (plugData.name.length > 100 || plugData.description.length > 1000) {
+    if (plugData.name.length > 100) {
       return res.status(400).json({ 
-        error: 'Données trop volumineuses' 
+        error: 'Nom de boutique trop long' 
       });
     }
     
@@ -2919,7 +2919,6 @@ app.post('/api/plugs', limits.admin, authenticateAdmin, async (req, res) => {
     
     const newPlug = new Plug({
       name: plugData.name,
-      description: plugData.description,
       image: plugData.image || '',
       telegramLink: plugData.telegramLink || '',
       isVip: plugData.isVip || false,
@@ -3174,7 +3173,6 @@ app.put('/api/plugs/:id', authenticateAdmin, async (req, res) => {
     
     // Mettre à jour les champs
     plug.name = updateData.name;
-    plug.description = updateData.description;
     plug.image = updateData.image || '';
     plug.telegramLink = updateData.telegramLink || '';
     plug.isVip = updateData.isVip || false;
