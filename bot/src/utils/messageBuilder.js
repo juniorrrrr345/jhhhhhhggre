@@ -66,17 +66,21 @@ const buildWelcomeMessage = async (config, currentLang = 'fr', customTranslation
     if (includeTimestamp) {
       const refreshedAtText = getTranslation('messages_refreshedAt', currentLang, customTranslations);
       
-      // Formatter l'heure selon la langue choisie
-      const localeMap = {
-        'fr': 'fr-FR',
-        'en': 'en-US', 
-        'it': 'it-IT',
-        'es': 'es-ES',
-        'de': 'de-DE'
+      // Formatter l'heure selon la langue et le fuseau horaire du pays
+      const localeTimezoneMap = {
+        'fr': { locale: 'fr-FR', timezone: 'Europe/Paris' },
+        'en': { locale: 'en-GB', timezone: 'Europe/London' }, // UK time pour l'anglais
+        'it': { locale: 'it-IT', timezone: 'Europe/Rome' },
+        'es': { locale: 'es-ES', timezone: 'Europe/Madrid' },
+        'de': { locale: 'de-DE', timezone: 'Europe/Berlin' }
       };
       
-      const locale = localeMap[currentLang] || 'fr-FR';
-      const timestamp = new Date().toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' });
+      const config = localeTimezoneMap[currentLang] || localeTimezoneMap['fr'];
+      const timestamp = new Date().toLocaleTimeString(config.locale, { 
+        hour: '2-digit', 
+        minute: '2-digit',
+        timeZone: config.timezone
+      });
       welcomeMessage += `\n\n🔄 *${refreshedAtText} ${timestamp}*`;
     }
     
