@@ -1259,11 +1259,11 @@ const translations = {
 
     // === NAVIGATION ===
     'back_to_filters': {
-      fr: 'Retour aux filtres',
-      en: 'Back to filters',
-      it: 'Torna ai filtri',
-      es: 'Volver a filtros',
-      de: 'Zurück zu Filtern'
+      fr: 'Retour aux boutiques',
+      en: 'Back to shops',
+      it: 'Torna ai negozi',
+      es: 'Volver a las tiendas',
+      de: 'Zurück zu den Geschäften'
     },
     'back_to_menu': {
       fr: 'Retour au menu',
