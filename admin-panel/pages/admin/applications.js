@@ -688,7 +688,7 @@ export default function Applications() {
                       )}
                       {selectedApp.contact?.potato && (
                         <div className="flex items-center space-x-2">
-                          <span className="text-yellow-600 font-medium">🏴‍☠️ Potato:</span>
+                          <span className="text-yellow-600 font-medium">🥔 Potato:</span>
                           <span className="text-sm text-gray-900">{selectedApp.contact.potato}</span>
                         </div>
                       )}

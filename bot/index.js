@@ -4787,7 +4787,7 @@ app.get('/api/admin/user-analytics', async (req, res) => {
 // API pour mettre à jour l'emoji Potato en base de données
 app.post('/api/force-update-potato-emoji', async (req, res) => {
   try {
-    console.log('🏴‍☠️ Mise à jour emoji Potato : 🥔 → 🏴‍☠️');
+    console.log('🥔 Mise à jour emoji Potato : 🏴‍☠️ → 🥔');
     
     const config = await Config.findById('main');
     if (!config) {
@@ -4802,25 +4802,25 @@ app.post('/api/force-update-potato-emoji', async (req, res) => {
       
       if (potatoIndex !== -1) {
         console.log('🔧 Potato trouvé dans socialMediaList, mise à jour...');
-        config.socialMediaList[potatoIndex].emoji = '🏴‍☠️';
+        config.socialMediaList[potatoIndex].emoji = '🥔';
         console.log('✅ Emoji Potato mis à jour dans socialMediaList');
       } else {
         console.log('⚠️ Potato non trouvé dans socialMediaList, ajout...');
         config.socialMediaList.push({
           id: 'potato',
           name: 'Potato',
-          emoji: '🏴‍☠️',
+          emoji: '🥔',
           url: 'https://potato.com',
           enabled: true
         });
-        console.log('✅ Potato ajouté à socialMediaList avec 🏴‍☠️');
+        console.log('✅ Potato ajouté à socialMediaList avec 🥔');
       }
     } else {
       console.log('🔧 Initialisation socialMediaList avec Potato...');
       config.socialMediaList = [{
         id: 'potato',
         name: 'Potato',
-        emoji: '🏴‍☠️',
+        emoji: '🥔',
         url: 'https://potato.com',
         enabled: true
       }];
@@ -4834,13 +4834,13 @@ app.post('/api/force-update-potato-emoji', async (req, res) => {
     plugsCache = null;
     clearAllCaches();
     
-    console.log('🚀 Emoji Potato mis à jour : 🥔 → 🏴‍☠️');
+    console.log('🚀 Emoji Potato mis à jour : 🏴‍☠️ → 🥔');
     
     res.json({ 
       success: true, 
       message: 'Emoji Potato mis à jour avec succès',
-      oldEmoji: '🥔',
-      newEmoji: '🏴‍☠️',
+      oldEmoji: '🏴‍☠️',
+      newEmoji: '🥔',
       socialMediaUpdated: true
     });
     

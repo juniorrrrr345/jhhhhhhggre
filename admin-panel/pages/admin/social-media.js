@@ -84,11 +84,11 @@ export default function SocialMediaManager() {
         )
         
         if (!hasPotatoInList) {
-          console.log('🏴‍☠️ Potato manquant, ajout automatique avec emoji 🏴‍☠️')
+          console.log('🥔 Potato manquant, ajout automatique avec emoji 🥔')
           socialMediasWithIds.push({
             id: 'potato',
             name: 'Potato',
-            emoji: '🏴‍☠️',
+            emoji: '🥔',
             url: 'https://dym168.org/findyourplug',
             enabled: true
           })
@@ -107,7 +107,7 @@ export default function SocialMediaManager() {
           { id: 'luffa', name: 'Luffa', emoji: '🧽', url: 'https://callup.luffa.im/c/EnvtiTHkbvP', enabled: true },
           { id: 'discord', name: 'Discord', emoji: '🎮', url: 'https://discord.gg/g2dACUC3', enabled: true },
           { id: 'contact', name: 'Contact', emoji: '📞', url: 'https://t.me/contact', enabled: true },
-          { id: 'potato', name: 'Potato', emoji: '🏴‍☠️', url: 'https://dym168.org/findyourplug', enabled: true }
+          { id: 'potato', name: 'Potato', emoji: '🥔', url: 'https://dym168.org/findyourplug', enabled: true }
         ]
         setSocialMedias(defaultSocialMedias)
         // Sauvegarder immédiatement pour la prochaine fois

@@ -35,13 +35,13 @@ export default function ShopSocialMediaManager() {
       url: 'https://discord.gg/g2dACUC3',
       logo: 'https://i.imgur.com/oXPAefr.png'
     },
-    {
-      id: 'potato',
-      name: 'Potato',
-      emoji: '🏴‍☠️',
-      url: 'https://potato.com',
-      logo: 'https://i.imgur.com/nLVf0Hk.jpeg'
-    }
+            {
+          id: 'potato',
+          name: 'Potato',
+          emoji: '🥔',
+          url: 'https://potato.com',
+          logo: 'https://i.imgur.com/nLVf0Hk.jpeg'
+        }
   ])
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
