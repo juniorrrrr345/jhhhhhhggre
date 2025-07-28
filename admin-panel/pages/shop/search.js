@@ -23,6 +23,7 @@ export default function ShopSearch() {
   const [vipFilter, setVipFilter] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
   const [currentLanguage, setCurrentLanguage] = useState('fr')
+  const [likesSync, setLikesSync] = useState({}) // Pour synchroniser les likes en temps réel
   const { t } = useTranslation(currentLanguage)
   const itemsPerPage = 20
 
@@ -231,6 +232,16 @@ export default function ShopSearch() {
       if (data && data.plugs && Array.isArray(data.plugs)) {
         console.log('🔍 Plugs recherche mini app chargés:', data.plugs.length, 'boutiques')
         setAllPlugs(data.plugs)
+        
+        // Synchroniser les likes en temps réel
+        const likesData = {}
+        data.plugs.forEach(plug => {
+          if (plug._id && plug.likes !== undefined) {
+            likesData[plug._id] = plug.likes
+          }
+        })
+        setLikesSync(likesData)
+        console.log('❤️ Likes synchronisés pour recherche:', Object.keys(likesData).length, 'boutiques')
       } else {
         console.log('⚠️ Structure données recherche invalide:', data)
         setAllPlugs([])
@@ -287,10 +298,24 @@ export default function ShopSearch() {
       return matches
     })
 
+    // Tri intelligent par VIP puis par likes synchronisés
     filtered = filtered.sort((a, b) => {
+      // 1. VIP en priorité absolue
       if (a.isVip && !b.isVip) return -1
       if (!a.isVip && b.isVip) return 1
-      return (b.likes || 0) - (a.likes || 0)
+      
+      // 2. Ensuite par likes (utiliser likesSync pour les données temps réel)
+      const aLikes = likesSync[a._id] !== undefined ? likesSync[a._id] : (a.likes || 0)
+      const bLikes = likesSync[b._id] !== undefined ? likesSync[b._id] : (b.likes || 0)
+      
+      if (bLikes !== aLikes) {
+        return bLikes - aLikes
+      }
+      
+      // 3. En cas d'égalité de likes, trier par date de création (plus récent en premier)
+      const aDate = new Date(a.createdAt || 0)
+      const bDate = new Date(b.createdAt || 0)
+      return bDate - aDate
     })
 
     console.log(`🎯 Résultats filtrés: ${filtered.length}/${allPlugs.length} boutiques`)
@@ -314,10 +339,12 @@ export default function ShopSearch() {
   )
 
   const getPositionBadge = (index) => {
-    if (index === 0) return '🥇'
-    if (index === 1) return '🥈'
-    if (index === 2) return '🥉'
-    return null
+    const globalIndex = (currentPage - 1) * itemsPerPage + index
+    if (globalIndex === 0) return '🥇'
+    if (globalIndex === 1) return '🥈'
+    if (globalIndex === 2) return '🥉'
+    if (globalIndex < 10) return `${globalIndex + 1}⭐`
+    return `${globalIndex + 1}°`
   }
 
   const getCountryFlag = (countries) => {
@@ -595,7 +622,7 @@ export default function ShopSearch() {
 
         {/* Résultats */}
         <main style={{ padding: '0 20px 90px', maxWidth: '1200px', margin: '0 auto' }}>
-          {/* Compteur de résultats */}
+          {/* Compteur de résultats avec classement */}
           <div style={{ 
             textAlign: 'center', 
             marginBottom: '20px',
@@ -604,7 +631,16 @@ export default function ShopSearch() {
           }}>
             {loading ? 
               `${t('search_loading_results')}` : 
-              `${plugs.length} ${t('search_results_count')}`
+              <>
+                <div style={{ marginBottom: '8px', color: '#ffffff', fontWeight: '600' }}>
+                  🏆 {plugs.length} {t('search_results_count')} - Classement par likes
+                </div>
+                {plugs.length > 0 && (
+                  <div style={{ fontSize: '12px', opacity: 0.8 }}>
+                    🥇 VIP en premier • 👍 Puis par nombre de likes • 📅 Puis par récence
+                  </div>
+                )}
+              </>
             }
           </div>
 
@@ -665,16 +701,19 @@ export default function ShopSearch() {
                 gap: '16px',
                 marginBottom: '20px'
               }}>
-                {currentPlugs.map((plug) => (
-                  <ShopCard 
-                    key={plug._id} 
-                    plug={plug} 
-                    config={config}
-                    currentLanguage={currentLanguage}
-                    showCountry={countryFilter ? true : false}
-                    filteredCountry={countryFilter}
-                  />
-                ))}
+                              {currentPlugs.map((plug, index) => (
+                <ShopCard 
+                  key={plug._id} 
+                  plug={plug} 
+                  config={config}
+                  currentLanguage={currentLanguage}
+                  showCountry={countryFilter ? true : false}
+                  filteredCountry={countryFilter}
+                  index={(currentPage - 1) * itemsPerPage + index}
+                  likes={likesSync[plug._id] !== undefined ? likesSync[plug._id] : (plug.likes || 0)}
+                  getPositionBadge={getPositionBadge}
+                />
+              ))}
               </div>
 
               {/* Pagination */}
