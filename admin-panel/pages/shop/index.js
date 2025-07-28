@@ -8,6 +8,7 @@ import Pagination from '../../components/Pagination'
 import ShopCard from '../../components/ShopCard'
 import LanguageSelector, { useTranslation, getCurrentLanguage } from '../../components/LanguageSelector'
 import ShopNavigation from '../../components/ShopNavigation'
+import { useLanguage } from '../../hooks/useLanguage'
 
 export default function ShopHome() {
   const [plugs, setPlugs] = useState([])
@@ -15,7 +16,8 @@ export default function ShopHome() {
   const [loading, setLoading] = useState(true)
   const [currentPage, setCurrentPage] = useState(1)
   const [likesSync, setLikesSync] = useState({}) // Pour synchroniser les likes en temps réel
-  const [currentLanguage, setCurrentLanguage] = useState('fr')
+  const currentLanguage = useLanguage()
+  const [, setCurrentLanguage] = useState('fr') // Gardé pour la compatibilité
   const { t } = useTranslation(currentLanguage)
   const itemsPerPage = 50
 

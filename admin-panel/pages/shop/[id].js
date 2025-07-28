@@ -7,6 +7,7 @@ import { getProxiedImageUrl } from '../../lib/imageUtils'
 import toast from 'react-hot-toast'
 import LanguageSelector, { useTranslation, getCurrentLanguage } from '../../components/LanguageSelector'
 import ShopNavigation from '../../components/ShopNavigation'
+import { useLanguage } from '../../hooks/useLanguage'
 
 export default function ShopPlugDetail() {
   const router = useRouter()
@@ -18,7 +19,8 @@ export default function ShopPlugDetail() {
   const [notFound, setNotFound] = useState(false)
   const [likes, setLikes] = useState(0)
   const [isVoting, setIsVoting] = useState(false)
-  const [currentLanguage, setCurrentLanguage] = useState('fr')
+  const currentLanguage = useLanguage()
+  const [, setCurrentLanguage] = useState('fr') // Gardé pour la compatibilité
   const { t } = useTranslation(currentLanguage)
 
   useEffect(() => {

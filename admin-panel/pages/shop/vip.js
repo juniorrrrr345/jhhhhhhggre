@@ -8,6 +8,7 @@ import Pagination from '../../components/Pagination'
 import ShopCard from '../../components/ShopCard'
 import LanguageSelector, { useTranslation, getCurrentLanguage } from '../../components/LanguageSelector'
 import ShopNavigation from '../../components/ShopNavigation'
+import { useLanguage } from '../../hooks/useLanguage'
 
 export default function ShopVIP() {
   const [vipPlugs, setVipPlugs] = useState([])
@@ -15,7 +16,8 @@ export default function ShopVIP() {
   const [loading, setLoading] = useState(true)
   const [initialLoading, setInitialLoading] = useState(true)
   const [currentPage, setCurrentPage] = useState(1)
-  const [currentLanguage, setCurrentLanguage] = useState('fr')
+  const currentLanguage = useLanguage()
+  const [, setCurrentLanguage] = useState('fr') // Gardé pour la compatibilité
   const [shopSocialMedias, setShopSocialMedias] = useState([])
   const [likesSync, setLikesSync] = useState({}) // Pour synchroniser les likes en temps réel
   const { t } = useTranslation(currentLanguage)

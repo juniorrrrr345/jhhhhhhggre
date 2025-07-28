@@ -10,6 +10,7 @@ import LanguageSelector, { useTranslation, getCurrentLanguage } from '../../comp
 import ShopNavigation from '../../components/ShopNavigation'
 import postalCodeService from '../../lib/postalCodeService'
 import { translateCountry, translateCountries, getCountryFlag } from '../../lib/country-translations'
+import { useLanguage } from '../../hooks/useLanguage'
 
 export default function ShopSearch() {
   const [plugs, setPlugs] = useState([])
@@ -23,7 +24,8 @@ export default function ShopSearch() {
   const [departmentFilter, setDepartmentFilter] = useState('')
   const [vipFilter, setVipFilter] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
-  const [currentLanguage, setCurrentLanguage] = useState('fr')
+  const currentLanguage = useLanguage()
+  const [, setCurrentLanguage] = useState('fr') // Gardé pour la compatibilité
   const [likesSync, setLikesSync] = useState({}) // Pour synchroniser les likes en temps réel
   const { t } = useTranslation(currentLanguage)
   const itemsPerPage = 20

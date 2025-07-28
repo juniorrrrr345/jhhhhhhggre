@@ -468,14 +468,14 @@ export default function ShopServices() {
                 fontWeight: '600',
                 marginBottom: '12px'
               }}>
-                SAV 7J/7
+                {t('services_support_title')}
               </h4>
               <p style={{
                 color: '#8e8e93',
                 fontSize: '14px',
                 lineHeight: '1.5'
               }}>
-                Support technique disponible tous les jours pour t'aider en cas de problème
+                {t('services_support_desc')}
               </p>
             </div>
 
@@ -494,14 +494,14 @@ export default function ShopServices() {
                 fontWeight: '600',
                 marginBottom: '12px'
               }}>
-                Satisfaction garantie
+                {t('services_guarantee_title')}
               </h4>
               <p style={{
                 color: '#8e8e93',
                 fontSize: '14px',
                 lineHeight: '1.5'
               }}>
-                Si tu n'es pas satisfait, on reprend ton bot et on te rembourse
+                {t('services_guarantee_desc')}
               </p>
             </div>
           </div>

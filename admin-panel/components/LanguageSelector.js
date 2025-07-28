@@ -141,6 +141,11 @@ const translations = {
     services_web_secure: 'Sécurisé',
     services_web_secure_desc: 'Certificat SSL et protection des données',
     services_web_order: 'Commander maintenant',
+    // Support et garanties
+    services_support_title: 'SAV 7J/7',
+    services_support_desc: 'Support technique disponible tous les jours pour t\'aider en cas de problème',
+    services_guarantee_title: 'Satisfaction garantie',
+    services_guarantee_desc: 'Si tu n\'es pas satisfait, on reprend ton bot et on te rembourse',
     // Traductions pour la page recherche
     search_loading: 'Chargement de la recherche...',
     search_select_country_first: 'Sélectionnez un pays d\'abord',
@@ -302,6 +307,11 @@ const translations = {
     services_web_secure: 'Secure',
     services_web_secure_desc: 'SSL certificate and data protection',
     services_web_order: 'Order now',
+    // Support et garanties
+    services_support_title: 'Support 24/7',
+    services_support_desc: 'Technical support available every day to help you with any issues',
+    services_guarantee_title: 'Satisfaction guaranteed',
+    services_guarantee_desc: 'If you\'re not satisfied, we\'ll take back your bot and refund you',
     // Traductions pour la page recherche
     search_loading: 'Loading search...',
     search_select_country_first: 'Select a country first',
@@ -467,6 +477,11 @@ const translations = {
     services_web_secure: 'Seguro',
     services_web_secure_desc: 'Certificado SSL y protección de datos',
     services_web_order: 'Pedir ahora',
+    // Support et garanties
+    services_support_title: 'Soporte 7/7',
+    services_support_desc: 'Soporte técnico disponible todos los días para ayudarte en caso de problemas',
+    services_guarantee_title: 'Satisfacción garantizada',
+    services_guarantee_desc: 'Si no estás satisfecho, recuperamos tu bot y te reembolsamos',
     // Traductions pour la page recherche
     search_loading: 'Cargando búsqueda...',
     search_select_country_first: 'Selecciona un país primero',
@@ -632,6 +647,11 @@ const translations = {
     services_web_secure: 'Sicuro',
     services_web_secure_desc: 'Certificato SSL e protezione dati',
     services_web_order: 'Ordina ora',
+    // Support et garanties
+    services_support_title: 'Assistenza 7/7',
+    services_support_desc: 'Supporto tecnico disponibile tutti i giorni per aiutarti in caso di problemi',
+    services_guarantee_title: 'Soddisfazione garantita',
+    services_guarantee_desc: 'Se non sei soddisfatto, riprendiamo il tuo bot e ti rimborsiamo',
     // Traductions pour la page recherche
     search_loading: 'Caricamento ricerca...',
     search_select_country_first: 'Seleziona prima un paese',
@@ -797,6 +817,11 @@ const translations = {
     services_web_secure: 'Sicher',
     services_web_secure_desc: 'SSL-Zertifikat und Datenschutz',
     services_web_order: 'Jetzt bestellen',
+    // Support et garanties
+    services_support_title: 'Support 7/7',
+    services_support_desc: 'Technischer Support jeden Tag verfügbar, um dir bei Problemen zu helfen',
+    services_guarantee_title: 'Zufriedenheitsgarantie',
+    services_guarantee_desc: 'Wenn du nicht zufrieden bist, nehmen wir deinen Bot zurück und erstatten dir',
     // Traductions pour la page recherche
     search_loading: 'Suche wird geladen...',
     search_select_country_first: 'Wählen Sie zuerst ein Land',
