@@ -158,7 +158,7 @@ export default function ShopHome() {
     try {
       // Récupérer la config depuis l'API admin directement
       const token = 'JuniorAdmon123' // Token par défaut pour lecture publique
-      const data = await api.getConfig(token)
+      let data = await api.getConfig(token)
       
       console.log('📱 Config récupérée pour accueil:', {
         boutique: data?.boutique?.name,
