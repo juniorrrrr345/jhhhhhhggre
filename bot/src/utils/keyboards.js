@@ -122,8 +122,9 @@ const createMainKeyboard = (config) => {
   // Première ligne : MiniApp FindYourPlugs
   buttons.push([Markup.button.webApp('MINI-APP 🔌', 'https://sfeplugslink.vercel.app/shop')]);
   
-  // Deuxième ligne : Bouton Voter - TEXTE FIXE "VOTER POUR VOTRE PLUG 🗳️" dans toutes les langues
-  buttons.push([Markup.button.callback('VOTER POUR VOTRE PLUG 🗳️', 'top_plugs')]);
+  // Deuxième ligne : Bouton Voter - TRADUIT avec emoji 🗳️ dans toutes les langues
+  const topPlugsText = getTranslation('menu_topPlugs', currentLang, customTranslations);
+  buttons.push([Markup.button.callback(topPlugsText, 'top_plugs')]);
   
   // Troisième ligne : Boutons Contact et Info sur la même ligne avec traductions
   const secondRow = [];
