@@ -67,6 +67,13 @@ const translations = {
       es: '🔙 Volver a las tiendas',
       de: '🔙 Zurück zu den Geschäften'
     },
+    'back_to_shops': {
+      fr: 'Retour aux boutiques',
+      en: 'Back to shops',
+      it: 'Torna ai negozi',
+      es: 'Volver a las tiendas',
+      de: 'Zurück zu den Geschäften'
+    },
     'menu_selectLanguage': {
       fr: 'Sélectionnez votre langue préférée :',
       en: 'Select your preferred language:',

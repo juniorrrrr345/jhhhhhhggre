@@ -107,10 +107,6 @@ const handleTopCountryFilter = async (ctx, country) => {
     const userId = ctx.from.id;
     
     // 🚫 Prévention spam
-    if (isSpamClick(userId, 'country', country)) {
-      await ctx.answerCbQuery('🔄');
-      return;
-    }
     
     await ctx.answerCbQuery();
     
@@ -178,10 +174,6 @@ const handleTopServiceFilter = async (ctx, serviceType, selectedCountry = null) 
     }
     
     // 🚫 Prévention spam (seulement pour postal)
-    if (isSpamClick(userId, 'service', `${serviceType}_${selectedCountry || 'none'}`)) {
-      await ctx.answerCbQuery('🔄');
-      return;
-    }
     
     await ctx.answerCbQuery();
     
@@ -263,10 +255,6 @@ const handlePostalCodeFilter = async (ctx, serviceType, selectedCountry = null, 
     const userId = ctx.from.id;
     
     // 🚫 Prévention spam
-    if (isSpamClick(userId, 'postal', `${serviceType}_${selectedCountry || 'none'}_${page}`)) {
-      await ctx.answerCbQuery('🔄');
-      return;
-    }
     
     await ctx.answerCbQuery();
     
@@ -403,10 +391,6 @@ const handleShopsByPostalCode = async (ctx, country, postalCode, serviceType = n
     const userId = ctx.from.id;
     
     // 🚫 Prévention spam
-    if (isSpamClick(userId, 'shops_postal', `${country}_${postalCode}_${serviceType || 'all'}`)) {
-      await ctx.answerCbQuery('🔄');
-      return;
-    }
     
     await ctx.answerCbQuery();
     
@@ -513,8 +497,6 @@ const handleDepartmentFilter = async (ctx, serviceType, selectedCountry = null) 
     const userId = ctx.from.id;
     
     // 🚫 Prévention spam - DÉSACTIVÉ temporairement pour debug
-    // if (isSpamClick(userId, 'service', `${serviceType}_${selectedCountry || 'none'}`)) {
-    //   console.log(`🔄 Spam détecté pour ${serviceType}_${selectedCountry || 'none'}`);
     //   await ctx.answerCbQuery('🔄');
     //   return;
     // }
@@ -795,10 +777,6 @@ const handleResetFilters = async (ctx) => {
     const userId = ctx.from.id;
     
     // 🚫 Prévention spam pour réinitialisation
-    if (isSpamClick(userId, 'reset', 'filters')) {
-      await ctx.answerCbQuery('🔄');
-      return;
-    }
     
     const config = await Config.findById('main');
     const currentLang = config?.languages?.currentLanguage || 'fr';
@@ -1577,11 +1555,6 @@ const handleAllDepartments = async (ctx) => {
     const userId = ctx.from.id;
     
     // 🚫 Prévention spam
-    if (isSpamClick(userId, 'all_departments', 'main')) {
-      console.log('🔄 Spam détecté dans handleAllDepartments');
-      await ctx.answerCbQuery('🔄');
-      return;
-    }
     
     console.log('✅ handleAllDepartments: Pas de spam, continue...');
     await ctx.answerCbQuery();
@@ -2080,10 +2053,6 @@ const handleCountryServiceShops = async (ctx, serviceType, country) => {
     const userId = ctx.from.id;
     
     // 🚫 Prévention spam
-    if (isSpamClick(userId, 'country_service', `${serviceType}_${country}`)) {
-      await ctx.answerCbQuery('🔄');
-      return;
-    }
     
     await ctx.answerCbQuery();
     

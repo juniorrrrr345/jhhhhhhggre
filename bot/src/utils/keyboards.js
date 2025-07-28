@@ -308,8 +308,8 @@ const createPlugKeyboard = (plug, returnContext = 'top_plugs', userId = null, cu
     backButtonText = getTranslation('back_to_menu', currentLang, customTranslations);
     backAction = 'back_main';
   } else {
-    // Dans tous les autres cas, retourner vers les boutiques disponibles
-    backButtonText = getTranslation('back_to_filters', currentLang, customTranslations);
+    // Dans tous les autres cas, retourner vers les boutiques disponibles (VOTER POUR VOTRE PLUGS)
+    backButtonText = getTranslation('back_to_shops', currentLang, customTranslations);
     backAction = 'top_plugs'; // Toujours retourner vers les boutiques disponibles
   }
   
