@@ -4364,26 +4364,14 @@ app.post('/api/force-update-button-text', async (req, res) => {
   }
 });
 
-// Endpoint pour forcer la mise à jour de l'emoji Potato
+// API pour mettre à jour l'emoji Potato vers 🥔 DÉFINITIVEMENT
 app.post('/api/force-update-potato-emoji', async (req, res) => {
   try {
-    console.log('🔧 Forçage mise à jour emoji Potato vers 🏴‍☠️');
+    console.log('🥔 CORRECTION DÉFINITIVE emoji Potato : 🏴‍☠️ → 🥔');
     
     const config = await Config.findById('main');
     if (!config) {
       return res.status(404).json({ error: 'Configuration non trouvée' });
-    }
-    
-    // Mettre à jour l'emoji Potato dans socialMedia si il existe
-    if (config.socialMedia && Array.isArray(config.socialMedia)) {
-      const potatoIndex = config.socialMedia.findIndex(item => 
-        item.name && item.name.toLowerCase().includes('potato')
-      );
-      
-      if (potatoIndex !== -1) {
-        config.socialMedia[potatoIndex].emoji = '🏴‍☠️';
-        console.log('✅ Emoji Potato mis à jour dans socialMedia');
-      }
     }
     
     // Mettre à jour dans socialMediaList si il existe
@@ -4393,29 +4381,29 @@ app.post('/api/force-update-potato-emoji', async (req, res) => {
       );
       
       if (potatoIndex !== -1) {
-        config.socialMediaList[potatoIndex].emoji = '🏴‍☠️';
+        console.log('🔧 Potato trouvé dans socialMediaList, mise à jour...');
+        config.socialMediaList[potatoIndex].emoji = '🥔';
         console.log('✅ Emoji Potato mis à jour dans socialMediaList');
+      } else {
+        console.log('➕ Potato pas trouvé, ajout...');
+        config.socialMediaList.push({
+          id: 'potato',
+          name: 'Potato',
+          emoji: '🥔',
+          url: 'https://dym168.org/findyourplug',
+          enabled: true
+        });
+        console.log('✅ Potato ajouté à socialMediaList avec 🥔');
       }
-    }
-    
-    // Ajouter Potato avec emoji 🏴‍☠️ si il n'existe pas
-    if (!config.socialMediaList) {
-      config.socialMediaList = [];
-    }
-    
-    const hasPotatoInList = config.socialMediaList.some(item => 
-      item.name && item.name.toLowerCase().includes('potato')
-    );
-    
-    if (!hasPotatoInList) {
-      config.socialMediaList.push({
+    } else {
+      console.log('📝 Création socialMediaList avec Potato...');
+      config.socialMediaList = [{
         id: 'potato',
         name: 'Potato',
-        emoji: '🏴‍☠️',
+        emoji: '🥔',
         url: 'https://dym168.org/findyourplug',
         enabled: true
-      });
-      console.log('✅ Potato ajouté avec emoji 🏴‍☠️');
+      }];
     }
     
     await config.save();
@@ -4423,16 +4411,18 @@ app.post('/api/force-update-potato-emoji', async (req, res) => {
     // Invalider les caches
     configCache = null;
     plugsCache = null;
-    clearAllCaches();
+    if (typeof clearAllCaches === 'function') {
+      clearAllCaches();
+    }
     
-    console.log('🚀 Configuration mise à jour et caches invalidés');
+    console.log('🚀 Emoji Potato mis à jour : 🏴‍☠️ → 🥔');
     
     res.json({ 
       success: true, 
-      message: 'Emoji Potato mis à jour vers 🏴‍☠️',
-      socialMediaList: config.socialMediaList?.filter(item => 
-        item.name && item.name.toLowerCase().includes('potato')
-      )
+      message: 'Emoji Potato mis à jour avec succès',
+      oldEmoji: '🏴‍☠️',
+      newEmoji: '🥔',
+      socialMediaUpdated: true
     });
     
   } catch (error) {
