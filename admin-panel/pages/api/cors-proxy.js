@@ -1,4 +1,8 @@
-// Proxy CORS pour contourner les restrictions
+// Proxy CORS amélioré avec gestion d'erreurs robuste
+import { API_CONFIG, getBestApiUrl } from '../../lib/api-config';
+import { ApiError, handleApiError, retryWithBackoff } from '../../lib/error-handler';
+import { cache, CACHE_TYPES, cachedApiCall } from '../../lib/unified-cache';
+
 // Système de protection anti-flood 429 (RÉINITIALISÉ)
 let last429Count = 0;
 let last429Time = 0;
@@ -49,7 +53,7 @@ export default async function handler(req, res) {
 
   try {
     const { endpoint, method = 'GET', token, data } = req.body || {}
-    const apiUrl = process.env.BOT_API_URL || 'https://jhhhhhhggre.onrender.com'
+    const apiUrl = getBestApiUrl()
     
     console.log(`🔄 Proxy request: ${method} ${endpoint}`)
     console.log(`🔑 Token provided: ${token ? 'Yes' : 'No'}`)
@@ -130,8 +134,17 @@ export default async function handler(req, res) {
     
   } catch (error) {
     console.error('❌ Proxy error:', error.message)
+    
+    // Gestion d'erreur améliorée
+    const errorResponse = handleApiError(error, { 
+      operation: 'cors-proxy',
+      endpoint,
+      method 
+    });
+    
     res.status(500).json({ 
-      error: 'Erreur proxy', 
+      error: errorResponse.error,
+      technical: error.message, 
       details: error.message 
     })
   }

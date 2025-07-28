@@ -6,6 +6,7 @@ import { TrashIcon, PlusIcon, ArrowLeftIcon } from '@heroicons/react/24/outline'
 import { getRobustSync } from '../../../../lib/robust-sync'
 import postalCodeService from '../../../../lib/postalCodeService'
 import { simpleApi } from '../../../../lib/api-simple'
+import api from '../../../../lib/api-enhanced'
 
 // Fonction wrapper pour toast avec gestion d'erreur
 const safeToast = {
@@ -316,24 +317,16 @@ export default function EditPlug() {
         cleanData.services.meetup.departments = cleanData.services.meetup.departments || []
       }
 
-      // SAUVEGARDE SIMPLE ET DIRECTE
-      console.log('💾 Sauvegarde simple...')
+      // SAUVEGARDE AVEC LA NOUVELLE API
+      console.log('💾 Sauvegarde avec API améliorée...')
       
       try {
-        const response = await fetch('/api/cors-proxy', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            endpoint: `/api/plugs/${id}`,
-            method: 'PUT',
-            token: token,
-            data: cleanData
-          })
-        })
-
-        if (response.ok) {
-          const result = await response.json()
-          console.log('✅ Sauvegarde réussie')
+        // Configurer le token
+        api.setToken(token)
+        
+        // Sauvegarder avec retry automatique et gestion d'erreurs
+        const result = await api.updatePlug(id, cleanData)
+        console.log('✅ Sauvegarde réussie:', result)
           
           clearTimeout(globalTimeout)
           setSaving(false)
@@ -346,28 +339,8 @@ export default function EditPlug() {
             }
           })
           
-          // FORCER RAFRAÎCHISSEMENT MINI-APP ET BOT
-          try {
-            console.log('🔄 Rafraîchissement mini-app et bot...')
-            
-            // 1. Vider le cache du bot pour forcer refresh
-            await fetch('https://jhhhhhhggre.onrender.com/api/cache/refresh', {
-              method: 'POST'
-            }).catch(() => console.log('Cache bot non vidé'))
-            
-            // 2. Attendre un peu que le cache soit vidé
-            await new Promise(resolve => setTimeout(resolve, 1000))
-            
-            // 3. Forcer refresh des données publiques du bot
-            await fetch('https://jhhhhhhggre.onrender.com/api/public/plugs?force=' + Date.now(), {
-              method: 'GET',
-              headers: { 'Cache-Control': 'no-cache' }
-            }).catch(() => console.log('Refresh public échoué'))
-            
-            console.log('✅ Mini-app et bot vont se rafraîchir')
-          } catch (e) {
-            console.log('⚠️ Erreur rafraîchissement:', e.message)
-          }
+          // Le rafraîchissement est maintenant géré automatiquement par api.updatePlug()
+          console.log('✅ Cache et bot rafraîchis automatiquement')
           
           // Mettre à jour les données originales
           setOriginalData(formData)
@@ -377,16 +350,27 @@ export default function EditPlug() {
             router.push('/admin/plugs')
           }, 1500)
           
-        } else {
-          throw new Error(`Erreur ${response.status}`)
-        }
         
       } catch (error) {
         clearTimeout(globalTimeout)
         setSaving(false)
         
         console.error('❌ Erreur sauvegarde:', error)
-        safeToast.error('❌ Erreur de sauvegarde. Vérifiez votre connexion et réessayez.', {
+        
+        // Message d'erreur plus précis selon le type
+        let errorMessage = '❌ Erreur de sauvegarde.'
+        
+        if (error.message.includes('timeout')) {
+          errorMessage = '⏱️ La sauvegarde a pris trop de temps. Réessayez.'
+        } else if (error.status === 401) {
+          errorMessage = '🔐 Session expirée. Reconnectez-vous.'
+        } else if (error.status === 500 || error.status === 502) {
+          errorMessage = '🔧 Serveur temporairement indisponible. Réessayez dans quelques instants.'
+        } else if (error.message.includes('network')) {
+          errorMessage = '📡 Problème de connexion. Vérifiez votre internet.'
+        }
+        
+        safeToast.error(errorMessage, {
           duration: 5000
         })
       }

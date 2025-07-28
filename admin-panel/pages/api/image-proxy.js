@@ -36,13 +36,25 @@ export default async function handler(req, res) {
 
     console.log('🖼️ Proxy image vers:', url)
     
-    // Récupérer l'image
+    // Récupérer l'image avec headers appropriés pour Imgur
+    const headers = {
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+      'Accept': 'image/webp,image/apng,image/*,*/*;q=0.8',
+      'Accept-Language': 'en-US,en;q=0.9',
+      'Cache-Control': 'no-cache',
+      'Pragma': 'no-cache'
+    };
+    
+    // Headers spécifiques pour Imgur
+    if (url.includes('imgur.com')) {
+      headers['Referer'] = 'https://imgur.com/';
+    } else if (url.includes('postimg.cc')) {
+      headers['Referer'] = 'https://postimg.cc/';
+    }
+    
     const imageResponse = await fetch(url, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (compatible; BoutiqueBot/1.0)',
-        'Accept': 'image/*,*/*;q=0.8',
-        'Referer': 'https://postimg.cc/',
-      },
+      headers,
+      redirect: 'follow',
       // Timeout de 10 secondes pour les images
       signal: AbortSignal.timeout(10000)
     })
