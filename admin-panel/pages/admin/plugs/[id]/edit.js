@@ -341,8 +341,14 @@ export default function EditPlug() {
       }
       
       if (success) {
-        const result = await response.json()
-        // console.log('✅ Sauvegarde réussie:', result) // Debug supprimé
+        let result;
+        try {
+          result = await response.json()
+          console.log('✅ Sauvegarde réussie:', result)
+        } catch (jsonError) {
+          console.log('⚠️ Impossible de parser JSON, mais sauvegarde réussie')
+          result = { success: true }
+        }
         
         clearTimeout(globalTimeout)
         setSaving(false)
@@ -367,7 +373,13 @@ export default function EditPlug() {
         }, 2000)
         
       } else {
-        const errorText = await response.text()
+        let errorText = 'Erreur inconnue';
+        try {
+          errorText = await response.text()
+        } catch (textError) {
+          console.log('⚠️ Impossible de lire le texte d\'erreur')
+        }
+        
         console.error('❌ Erreur sauvegarde:', response.status, errorText)
         
         clearTimeout(globalTimeout)
@@ -376,7 +388,7 @@ export default function EditPlug() {
         if (response.status === 404) {
           safeToast.error('❌ Endpoint non trouvé. Le serveur bot doit être redéployé avec les nouveaux endpoints.')
         } else {
-          safeToast.error(`❌ Erreur ${response.status}: ${response.statusText}`)
+          safeToast.error(`❌ Erreur ${response.status}: ${response.statusText || errorText}`)
         }
       }
       

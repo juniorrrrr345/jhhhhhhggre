@@ -53,14 +53,20 @@ async function syncWithMainServer() {
     console.log('🔄 Tentative de synchronisation avec le serveur principal...');
     const apiUrl = process.env.BOT_API_URL || 'https://jhhhhhhggre.onrender.com';
     
+    // Utiliser AbortController pour timeout plus propre
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 8000);
+    
     const response = await fetch(`${apiUrl}/api/public/plugs`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
         'User-Agent': 'Local-API-Sync/1.0'
       },
-      timeout: 5000
+      signal: controller.signal
     });
+    
+    clearTimeout(timeoutId);
     
     if (response.ok) {
       const data = await response.json();
@@ -71,9 +77,15 @@ async function syncWithMainServer() {
         console.log(`✅ Synchronisation réussie: ${data.plugs.length} boutiques récupérées`);
         return;
       }
+    } else {
+      console.log(`⚠️ Réponse serveur: ${response.status}`);
     }
   } catch (error) {
-    console.log('⚠️ Sync échouée, utilisation des données par défaut:', error.message);
+    if (error.name === 'AbortError') {
+      console.log('⚠️ Timeout de synchronisation');
+    } else {
+      console.log('⚠️ Sync échouée:', error.message);
+    }
   }
   
   // Fallback: utiliser les données par défaut
