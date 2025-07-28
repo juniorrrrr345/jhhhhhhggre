@@ -31,116 +31,57 @@ export default function SocialMediaManager() {
       router.push('/')
       return
     }
-    fetchSocialMedias()
     
-    // Nettoyage du timeout lors du démontage
-    return () => {
-      if (updateTimeoutRef.current) {
-        clearTimeout(updateTimeoutRef.current)
-      }
-    }
+    // Charger immédiatement au démarrage
+    loadInitialData()
   }, [])
 
-  const fetchSocialMedias = async () => {
+  const loadInitialData = () => {
+    if (typeof window === 'undefined') return
+    
+    // Charger d'abord depuis localStorage (plus fiable)
+    let socialMediasFromLocal = []
     try {
-      setLoading(true)
-      setIsLocalMode(false)
-      
-      // Vérifier si on est côté client
-      if (typeof window === 'undefined') return
-      
-      // Charger d'abord depuis localStorage (plus fiable)
-      let socialMediasFromLocal = []
-      try {
-        const saved = localStorage.getItem('botSocialMediaList')
-        if (saved) {
-          socialMediasFromLocal = JSON.parse(saved)
-          console.log('📱 Réseaux bot depuis localStorage:', socialMediasFromLocal)
-        }
-      } catch (e) {
-        console.log('❌ Erreur lecture localStorage bot:', e)
+      const saved = localStorage.getItem('botSocialMediaList')
+      if (saved) {
+        socialMediasFromLocal = JSON.parse(saved)
+        console.log('📱 Réseaux bot depuis localStorage:', socialMediasFromLocal)
       }
-
-      if (socialMediasFromLocal && socialMediasFromLocal.length > 0) {
-        // Utiliser les données localStorage en priorité
-        const socialMediasWithIds = socialMediasFromLocal.map((item, index) => {
-          if (!item.id) {
-            const baseId = item.name ? item.name.toLowerCase().replace(/[^a-z0-9]/g, '_') : `social_${index}`
-            item.id = baseId
-          }
-          return item
-        })
-        setSocialMedias(socialMediasWithIds)
-        console.log('✅ Réseaux sociaux bot chargés depuis localStorage:', socialMediasWithIds.map(s => ({ id: s.id, name: s.name })))
-      } else {
-        // Fallback : réseaux par défaut si rien en local
-        const defaultSocialMedias = [
-          { id: 'telegram', name: 'Telegram', emoji: '📱', url: 'https://t.me/+zcP68c4M_3NlM2Y0', enabled: true },
-          { id: 'find_your_plug', name: 'Find Your Plug', emoji: '🌐', url: 'https://dym168.org/findyourplug', enabled: true },
-          { id: 'instagram', name: 'Instagram', emoji: '📸', url: 'https://www.instagram.com/find.yourplug', enabled: true },
-          { id: 'luffa', name: 'Luffa', emoji: '🧽', url: 'https://callup.luffa.im/c/EnvtiTHkbvP', enabled: true },
-          { id: 'discord', name: 'Discord', emoji: '🎮', url: 'https://discord.gg/g2dACUC3', enabled: true },
-          { id: 'contact', name: 'Contact', emoji: '📞', url: 'https://t.me/contact', enabled: true },
-          { id: 'potato', name: 'Potato', emoji: '🫙', url: 'https://dym168.org/findyourplug', enabled: true }
-        ]
-        setSocialMedias(defaultSocialMedias)
-        console.log('🔧 Réseaux sociaux bot initialisés avec valeurs par défaut')
-      }
-      
-    } catch (error) {
-      console.error('Erreur chargement réseaux sociaux:', error)
-      
-      // Ne basculer en mode local que pour des erreurs critiques
-      if (error.message.includes('Failed to fetch') || 
-          error.message.includes('NetworkError') || 
-          error.message.includes('offline') ||
-          error.message.includes('502') ||
-          error.message.includes('503') ||
-          error.message.includes('504')) {
-        console.log('Basculement en mode local à cause de:', error.message)
-        setIsLocalMode(true)
-      } else {
-        // Pour les autres erreurs, ne pas activer le mode local
-        console.log('Erreur non critique, pas de mode local:', error.message)
-        setIsLocalMode(false)
-      }
-      
-             try {
-         const localApi = getLocalApi()
-         if (localApi) {
-           const localConfig = await localApi.getConfig()
-           if (localConfig && localConfig.socialMediaList) {
-             // S'assurer que tous les réseaux sociaux ont un ID unique
-             const socialMediasWithIds = localConfig.socialMediaList.map((item, index) => {
-               if (!item.id) {
-                 // Générer un ID basé sur le nom ou l'index
-                 const baseId = item.name ? item.name.toLowerCase().replace(/[^a-z0-9]/g, '_') : `social_${index}`
-                 item.id = baseId
-               }
-               return item
-             })
-             setSocialMedias(socialMediasWithIds)
-             console.log('📁 Réseaux sociaux chargés depuis le stockage local avec IDs:', socialMediasWithIds.map(s => ({ id: s.id, name: s.name })))
-           } else {
-             // Initialiser avec des données par défaut pour le bot Telegram
-             const defaultSocialMedias = [
-               { id: 'telegram', name: 'Telegram', emoji: '📱', url: '', enabled: true },
-               { id: 'whatsapp', name: 'WhatsApp', emoji: '💬', url: '', enabled: false },
-               { id: 'discord', name: 'Discord', emoji: '🎮', url: '', enabled: false },
-               { id: 'instagram', name: 'Instagram', emoji: '📸', url: '', enabled: false }
-             ]
-             setSocialMedias(defaultSocialMedias)
-             await localApi.updateSocialMedia(defaultSocialMedias)
-             console.log('🔧 Réseaux sociaux initialisés en mode local')
-           }
-         }
-      } catch (localError) {
-        console.error('Erreur mode local:', localError)
-        toast.error('Erreur de stockage local')
-      }
-    } finally {
-      setLoading(false)
+    } catch (e) {
+      console.log('❌ Erreur lecture localStorage bot:', e)
     }
+
+    if (socialMediasFromLocal && socialMediasFromLocal.length > 0) {
+      // Utiliser les données localStorage en priorité
+      const socialMediasWithIds = socialMediasFromLocal.map((item, index) => {
+        if (!item.id) {
+          const baseId = item.name ? item.name.toLowerCase().replace(/[^a-z0-9]/g, '_') : `social_${index}`
+          item.id = baseId
+        }
+        return item
+      })
+      setSocialMedias(socialMediasWithIds)
+      console.log('✅ Réseaux sociaux bot chargés depuis localStorage:', socialMediasWithIds.map(s => ({ id: s.id, name: s.name })))
+    } else {
+      // Fallback : réseaux par défaut si rien en local
+      const defaultSocialMedias = [
+        { id: 'telegram', name: 'Telegram', emoji: '📱', url: 'https://t.me/+zcP68c4M_3NlM2Y0', enabled: true },
+        { id: 'find_your_plug', name: 'Find Your Plug', emoji: '🌐', url: 'https://dym168.org/findyourplug', enabled: true },
+        { id: 'instagram', name: 'Instagram', emoji: '📸', url: 'https://www.instagram.com/find.yourplug', enabled: true },
+        { id: 'luffa', name: 'Luffa', emoji: '🧽', url: 'https://callup.luffa.im/c/EnvtiTHkbvP', enabled: true },
+        { id: 'discord', name: 'Discord', emoji: '🎮', url: 'https://discord.gg/g2dACUC3', enabled: true },
+        { id: 'contact', name: 'Contact', emoji: '📞', url: 'https://t.me/contact', enabled: true },
+        { id: 'potato', name: 'Potato', emoji: '🫙', url: 'https://dym168.org/findyourplug', enabled: true } // Added Potato
+      ]
+      setSocialMedias(defaultSocialMedias)
+      // Sauvegarder immédiatement pour la prochaine fois
+      localStorage.setItem('botSocialMediaList', JSON.stringify(defaultSocialMedias))
+    }
+  }
+
+  const loadSocialMedias = async () => {
+    // Fonction remplacée par loadInitialData
+    loadInitialData()
   }
 
   const saveSocialMedias = async () => {

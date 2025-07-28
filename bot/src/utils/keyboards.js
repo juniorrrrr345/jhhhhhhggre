@@ -317,10 +317,10 @@ const createPlugKeyboard = (plug, returnContext = 'top_plugs', userId = null, cu
     backAction = 'plugs_all'; // Retour vers toutes les boutiques
   } else if (returnContext.startsWith('service_')) {
     backButtonText = getTranslation('back_to_filters', currentLang, customTranslations);
-    backAction = returnContext; // Retour vers le service spécifique
+    backAction = `return_${returnContext}`; // return_service_delivery, etc.
   } else if (returnContext.startsWith('country_')) {
     backButtonText = getTranslation('back_to_filters', currentLang, customTranslations);
-    backAction = returnContext; // Retour vers le pays spécifique
+    backAction = `return_${returnContext}`; // return_country_france, etc.
   } else if (returnContext.startsWith('postal_')) {
     backButtonText = getTranslation('back_to_filters', currentLang, customTranslations);
     backAction = returnContext; // Retour vers les codes postaux

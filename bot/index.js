@@ -4301,3 +4301,16 @@ app.get('/api/debug/config-reload', async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+
+// Actions pour les contextes de retour spécifiques (boutons "Retour")
+bot.action(/^return_service_(.+)$/, (ctx) => {
+  const serviceType = ctx.match[1];
+  console.log(`🔄 Retour vers service: ${serviceType}`);
+  return handleServiceFilter(ctx, serviceType, 0);
+});
+
+bot.action(/^return_country_(.+)$/, (ctx) => {
+  const country = ctx.match[1];
+  console.log(`🔄 Retour vers pays: ${country}`);
+  return handleCountryFilter(ctx, country, 0);
+});
