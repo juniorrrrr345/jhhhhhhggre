@@ -795,6 +795,18 @@ export default function ShopPlugDetail() {
                       }}>
                         {translateService('delivery') || 'Livraison'}
                       </div>
+                      {/* Départements livraison */}
+                      {plug?.services?.delivery?.enabled && plug?.services?.delivery?.departments && plug.services.delivery.departments.length > 0 && (
+                        <div style={{ 
+                          fontSize: '11px', 
+                          color: '#22c55e',
+                          lineHeight: '1.2',
+                          marginBottom: '2px',
+                          fontWeight: '500'
+                        }}>
+                          📍 {plug.services.delivery.departments.sort((a, b) => parseInt(a) - parseInt(b)).join(', ')}
+                        </div>
+                      )}
                       {plug?.services?.delivery?.price && (
                         <div style={{ 
                           fontSize: '12px', 
@@ -927,6 +939,18 @@ export default function ShopPlugDetail() {
                       }}>
                         {translateService('meetup') || 'Meetup'}
                       </div>
+                      {/* Départements meetup */}
+                      {plug?.services?.meetup?.enabled && plug?.services?.meetup?.departments && plug.services.meetup.departments.length > 0 && (
+                        <div style={{ 
+                          fontSize: '11px', 
+                          color: '#f59e0b',
+                          lineHeight: '1.2',
+                          marginBottom: '2px',
+                          fontWeight: '500'
+                        }}>
+                          📍 {plug.services.meetup.departments.sort((a, b) => parseInt(a) - parseInt(b)).join(', ')}
+                        </div>
+                      )}
                       {plug?.services?.meetup?.price && (
                         <div style={{ 
                           fontSize: '12px', 

@@ -198,7 +198,7 @@ export default function ShopSearch() {
       
       const matchesCountry = countryFilter === '' || 
         (plug.countries && plug.countries.some(country => 
-          country.toLowerCase().includes(countryFilter.toLowerCase())
+          country.toLowerCase() === countryFilter.toLowerCase()
         ))
       
       const matchesService = serviceFilter === '' || 
