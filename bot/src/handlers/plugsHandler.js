@@ -986,16 +986,28 @@ const getCountryFlag = (country) => {
     'malte': '🇲🇹', 'malta': '🇲🇹',
     'chypre': '🇨🇾', 'cyprus': '🇨🇾',
 
+    // Micro-États européens
+    'monaco': '🇲🇨',
+    'andorre': '🇦🇩', 'andorra': '🇦🇩',
+    'saint-marin': '🇸🇲', 'san marino': '🇸🇲',
+    'vatican': '🇻🇦',
+    'liechtenstein': '🇱🇮',
+
     // Autres pays européens
     'moldavie': '🇲🇩', 'moldova': '🇲🇩',
     'ukraine': '🇺🇦',
     'biélorussie': '🇧🇾', 'belarus': '🇧🇾',
 
-    // Hors Europe
+    // Pays supplémentaires demandés
     'maroc': '🇲🇦', 'morocco': '🇲🇦',
     'canada': '🇨🇦',
     'usa': '🇺🇸', 'états-unis': '🇺🇸', 'united states': '🇺🇸',
-    'thailand': '🇹🇭', 'thaïlande': '🇹🇭'
+    'thaïlande': '🇹🇭', 'thailand': '🇹🇭',
+
+    // Pays existants
+    'tunisie': '🇹🇳', 'tunisia': '🇹🇳',
+    'algérie': '🇩🇿', 'algeria': '🇩🇿',
+    'autre': '🌍'
   };
   
   if (!country) return '🌍';

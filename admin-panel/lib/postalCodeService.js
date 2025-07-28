@@ -4,130 +4,54 @@ class PostalCodeService {
     this.lastReload = new Date();
     // Base de données des codes postaux par pays - TOUS LES PAYS D'EUROPE + PAYS SUPPLÉMENTAIRES
     this.postalCodes = {
-      // 🇫🇷 FRANCE (01-99 départements + DOM-TOM)
-      'France 🇫🇷': this.generateFrenchPostalCodes(),
-      
-      // 🇧🇪 BELGIQUE (1000-9999)
-      'Belgique 🇧🇪': this.generateBelgianPostalCodes(),
-      
-      // 🇨🇭 SUISSE (1000-9999)
-      'Suisse 🇨🇭': this.generateSwissPostalCodes(),
-      
-      // 🇳🇱 PAYS-BAS (1000-9999)
-      'Pays-Bas 🇳🇱': this.generateDutchPostalCodes(),
-      
-      // 🇩🇪 ALLEMAGNE
-      'Allemagne 🇩🇪': this.generateGermanPostalCodes(),
-      
-      // 🇮🇹 ITALIE
-      'Italie 🇮🇹': this.generateItalianPostalCodes(),
-      
-      // 🇪🇸 ESPAGNE
-      'Espagne 🇪🇸': this.generateSpanishPostalCodes(),
-      
-      // 🇵🇹 PORTUGAL
-      'Portugal 🇵🇹': this.generatePortuguesePostalCodes(),
-      
-      // 🇬🇧 ROYAUME-UNI
-      'Royaume-Uni 🇬🇧': this.generateUKPostalCodes(),
-      
-      // 🇦🇹 AUTRICHE
-      'Autriche 🇦🇹': this.generateAustrianPostalCodes(),
-      
-      // 🇸🇪 SUÈDE
-      'Suède 🇸🇪': this.generateSwedishPostalCodes(),
-      
-      // 🇳🇴 NORVÈGE
-      'Norvège 🇳🇴': this.generateNorwegianPostalCodes(),
-      
-      // 🇩🇰 DANEMARK
-      'Danemark 🇩🇰': this.generateDanishPostalCodes(),
-      
-      // 🇫🇮 FINLANDE
-      'Finlande 🇫🇮': this.generateFinnishPostalCodes(),
-      
-      // 🇵🇱 POLOGNE
-      'Pologne 🇵🇱': this.generatePolishPostalCodes(),
-      
-      // 🇨🇿 RÉPUBLIQUE TCHÈQUE
-      'République Tchèque 🇨🇿': this.generateCzechPostalCodes(),
-      
-      // 🇸🇰 SLOVAQUIE
-      'Slovaquie 🇸🇰': this.generateSlovakPostalCodes(),
-      
-      // 🇭🇺 HONGRIE
-      'Hongrie 🇭🇺': this.generateHungarianPostalCodes(),
-      
-      // 🇷🇴 ROUMANIE
-      'Roumanie 🇷🇴': this.generateRomanianPostalCodes(),
-      
-      // 🇧🇬 BULGARIE
-      'Bulgarie 🇧🇬': this.generateBulgarianPostalCodes(),
-      
-      // 🇬🇷 GRÈCE
-      'Grèce 🇬🇷': this.generateGreekPostalCodes(),
-      
-      // 🇭🇷 CROATIE
-      'Croatie 🇭🇷': this.generateCroatianPostalCodes(),
-      
-      // 🇸🇮 SLOVÉNIE
-      'Slovénie 🇸🇮': this.generateSlovenianPostalCodes(),
-      
-      // 🇪🇪 ESTONIE
-      'Estonie 🇪🇪': this.generateEstonianPostalCodes(),
-      
-      // 🇱🇻 LETTONIE
-      'Lettonie 🇱🇻': this.generateLatvianPostalCodes(),
-      
-      // 🇱🇹 LITUANIE
-      'Lituanie 🇱🇹': this.generateLithuanianPostalCodes(),
-      
-      // 🇮🇪 IRLANDE
-      'Irlande 🇮🇪': this.generateIrishPostalCodes(),
-      
-      // 🇮🇸 ISLANDE
-      'Islande 🇮🇸': this.generateIcelandicPostalCodes(),
-      
-      // 🇱🇺 LUXEMBOURG
-      'Luxembourg 🇱🇺': this.generateLuxembourgPostalCodes(),
-      
-      // 🇲🇹 MALTE
-      'Malte 🇲🇹': this.generateMaltesePostalCodes(),
-      
-      // 🇨🇾 CHYPRE
-      'Chypre 🇨🇾': this.generateCypriotPostalCodes(),
-      
-      // 🇲🇨 MONACO
-      'Monaco 🇲🇨': this.generateMonacoPostalCodes(),
-      
-      // 🇸🇲 SAINT-MARIN
-      'Saint-Marin 🇸🇲': this.generateSanMarinoPostalCodes(),
-      
-      // 🇻🇦 VATICAN
-      'Vatican 🇻🇦': this.generateVaticanPostalCodes(),
-      
-      // 🇦🇩 ANDORRE
-      'Andorre 🇦🇩': this.generateAndorranPostalCodes(),
-      
-      // 🇱🇮 LIECHTENSTEIN
-      'Liechtenstein 🇱🇮': this.generateLiechtensteinPostalCodes(),
+      // PAYS EUROPÉENS
+      'France': this.generateFrenchPostalCodes(),
+      'Allemagne': this.generateGermanPostalCodes(),
+      'Italie': this.generateItalianPostalCodes(),
+      'Espagne': this.generateSpanishPostalCodes(),
+      'Portugal': this.generatePortuguesePostalCodes(),
+      'Royaume-Uni': this.generateUKPostalCodes(),
+      'Belgique': this.generateBelgianPostalCodes(),
+      'Pays-Bas': this.generateDutchPostalCodes(),
+      'Suisse': this.generateSwissPostalCodes(),
+      'Autriche': this.generateAustrianPostalCodes(),
+      'Luxembourg': this.generateLuxembourgPostalCodes(),
+      'Irlande': this.generateIrishPostalCodes(),
+      'Danemark': this.generateDanishPostalCodes(),
+      'Suède': this.generateSwedishPostalCodes(),
+      'Norvège': this.generateNorwegianPostalCodes(),
+      'Finlande': this.generateFinnishPostalCodes(),
+      'Islande': this.generateIcelandicPostalCodes(),
+      'Pologne': this.generatePolishPostalCodes(),
+      'République Tchèque': this.generateCzechPostalCodes(),
+      'Slovaquie': this.generateSlovakPostalCodes(),
+      'Hongrie': this.generateHungarianPostalCodes(),
+      'Slovénie': this.generateSlovenianPostalCodes(),
+      'Croatie': this.generateCroatianPostalCodes(),
+      'Roumanie': this.generateRomanianPostalCodes(),
+      'Bulgarie': this.generateBulgarianPostalCodes(),
+      'Grèce': this.generateGreekPostalCodes(),
+      'Chypre': this.generateCypriotPostalCodes(),
+      'Malte': this.generateMaltesePostalCodes(),
+      'Estonie': this.generateEstonianPostalCodes(),
+      'Lettonie': this.generateLatvianPostalCodes(),
+      'Lituanie': this.generateLithuanianPostalCodes(),
+      'Monaco': this.generateMonacoPostalCodes(),
+      'Andorre': this.generateAndorranPostalCodes(),
+      'Saint-Marin': this.generateSanMarinoPostalCodes(),
+      'Vatican': this.generateVaticanPostalCodes(),
+      'Liechtenstein': this.generateLiechtensteinPostalCodes(),
       
       // PAYS SUPPLÉMENTAIRES DEMANDÉS
+      'Maroc': this.generateMoroccanPostalCodes(),
+      'Canada': this.generateCanadianPostalCodes(),
+      'USA': this.generateUSPostalCodes(),
+      'Thaïlande': this.generateThaiPostalCodes(),
       
-      // 🇲🇦 MAROC
-      'Maroc 🇲🇦': this.generateMoroccanPostalCodes(),
-      
-      // 🇨🇦 CANADA
-      'Canada 🇨🇦': this.generateCanadianPostalCodes(),
-      
-      // 🇺🇸 USA
-      'USA 🇺🇸': this.generateUSPostalCodes(),
-      
-      // 🇹🇭 THAÏLANDE
-      'Thaïlande 🇹🇭': this.generateThaiPostalCodes(),
-      
-      // 🏴 AUTRE (codes génériques)
-      'Autre 🌍': this.generateGenericPostalCodes()
+      // PAYS EXISTANTS
+      'Tunisie': this.generateGenericPostalCodes(),
+      'Algérie': this.generateGenericPostalCodes(),
+      'Autre': this.generateGenericPostalCodes()
     };
   }
 
@@ -659,6 +583,329 @@ class PostalCodeService {
     return {
       inline_keyboard: keyboard
     };
+  }
+
+  // Fonctions pour générer les codes postaux des nouveaux pays européens
+  
+  generateGermanPostalCodes() {
+    const codes = [];
+    // Allemagne: 01000-99999
+    for (let i = 1000; i <= 99999; i += 1000) {
+      codes.push(i.toString().padStart(5, '0'));
+    }
+    return codes.slice(0, 50); // Limiter pour performance
+  }
+
+  generateItalianPostalCodes() {
+    const codes = [];
+    // Italie: 00100-98168
+    for (let i = 100; i <= 98000; i += 1000) {
+      codes.push(i.toString().padStart(5, '0'));
+    }
+    return codes.slice(0, 50);
+  }
+
+  generatePortuguesePostalCodes() {
+    const codes = [];
+    // Portugal: 1000-9999
+    for (let i = 1000; i <= 9999; i += 100) {
+      codes.push(i.toString() + '-001');
+    }
+    return codes.slice(0, 50);
+  }
+
+  generateUKPostalCodes() {
+    const codes = [];
+    // Royaume-Uni: codes alphanumériques
+    const areas = ['B', 'E', 'EC', 'M', 'N', 'NW', 'S', 'SE', 'SW', 'W', 'WC'];
+    areas.forEach(area => {
+      for (let i = 1; i <= 20; i++) {
+        codes.push(`${area}${i} 1AA`);
+      }
+    });
+    return codes.slice(0, 50);
+  }
+
+  generateAustrianPostalCodes() {
+    const codes = [];
+    // Autriche: 1000-9999
+    for (let i = 1000; i <= 9999; i += 100) {
+      codes.push(i.toString());
+    }
+    return codes.slice(0, 50);
+  }
+
+  generateLuxembourgPostalCodes() {
+    const codes = [];
+    // Luxembourg: 1000-9999
+    for (let i = 1000; i <= 9999; i += 100) {
+      codes.push(i.toString());
+    }
+    return codes.slice(0, 30);
+  }
+
+  generateIrishPostalCodes() {
+    const codes = [];
+    // Irlande: système Eircode
+    const areas = ['D01', 'D02', 'D03', 'D04', 'D06', 'D07', 'D08', 'D09', 'D10', 'D11'];
+    areas.forEach(area => {
+      codes.push(`${area} A1B2`);
+    });
+    return codes;
+  }
+
+  generateDanishPostalCodes() {
+    const codes = [];
+    // Danemark: 1000-9999
+    for (let i = 1000; i <= 9999; i += 100) {
+      codes.push(i.toString());
+    }
+    return codes.slice(0, 50);
+  }
+
+  generateSwedishPostalCodes() {
+    const codes = [];
+    // Suède: 10000-99999
+    for (let i = 10000; i <= 99999; i += 1000) {
+      codes.push(i.toString().substring(0, 3) + ' ' + i.toString().substring(3));
+    }
+    return codes.slice(0, 50);
+  }
+
+  generateNorwegianPostalCodes() {
+    const codes = [];
+    // Norvège: 0001-9999
+    for (let i = 1; i <= 9999; i += 100) {
+      codes.push(i.toString().padStart(4, '0'));
+    }
+    return codes.slice(0, 50);
+  }
+
+  generateFinnishPostalCodes() {
+    const codes = [];
+    // Finlande: 00100-99999
+    for (let i = 100; i <= 99999; i += 1000) {
+      codes.push(i.toString().padStart(5, '0'));
+    }
+    return codes.slice(0, 50);
+  }
+
+  generateIcelandicPostalCodes() {
+    const codes = [];
+    // Islande: 101-999
+    for (let i = 101; i <= 999; i += 10) {
+      codes.push(i.toString());
+    }
+    return codes;
+  }
+
+  generatePolishPostalCodes() {
+    const codes = [];
+    // Pologne: 00-001 à 99-999
+    for (let i = 0; i <= 99; i++) {
+      codes.push(i.toString().padStart(2, '0') + '-001');
+    }
+    return codes.slice(0, 50);
+  }
+
+  generateCzechPostalCodes() {
+    const codes = [];
+    // République Tchèque: 100 00 à 999 99
+    for (let i = 100; i <= 999; i += 10) {
+      codes.push(i.toString() + ' 00');
+    }
+    return codes.slice(0, 50);
+  }
+
+  generateSlovakPostalCodes() {
+    const codes = [];
+    // Slovaquie: 010 01 à 999 99
+    for (let i = 10; i <= 999; i += 10) {
+      codes.push(i.toString().padStart(3, '0') + ' 01');
+    }
+    return codes.slice(0, 50);
+  }
+
+  generateHungarianPostalCodes() {
+    const codes = [];
+    // Hongrie: 1000-9999
+    for (let i = 1000; i <= 9999; i += 100) {
+      codes.push(i.toString());
+    }
+    return codes.slice(0, 50);
+  }
+
+  generateSlovenianPostalCodes() {
+    const codes = [];
+    // Slovénie: 1000-9999
+    for (let i = 1000; i <= 9999; i += 100) {
+      codes.push(i.toString());
+    }
+    return codes.slice(0, 30);
+  }
+
+  generateCroatianPostalCodes() {
+    const codes = [];
+    // Croatie: 10000-99999
+    for (let i = 10000; i <= 99999; i += 1000) {
+      codes.push(i.toString());
+    }
+    return codes.slice(0, 50);
+  }
+
+  generateRomanianPostalCodes() {
+    const codes = [];
+    // Roumanie: 010001-900001
+    for (let i = 10001; i <= 900001; i += 10000) {
+      codes.push(i.toString());
+    }
+    return codes.slice(0, 50);
+  }
+
+  generateBulgarianPostalCodes() {
+    const codes = [];
+    // Bulgarie: 1000-9999
+    for (let i = 1000; i <= 9999; i += 100) {
+      codes.push(i.toString());
+    }
+    return codes.slice(0, 50);
+  }
+
+  generateGreekPostalCodes() {
+    const codes = [];
+    // Grèce: 10001-99999
+    for (let i = 10001; i <= 99999; i += 1000) {
+      codes.push(i.toString());
+    }
+    return codes.slice(0, 50);
+  }
+
+  generateCypriotPostalCodes() {
+    const codes = [];
+    // Chypre: 1000-9999
+    for (let i = 1000; i <= 9999; i += 100) {
+      codes.push(i.toString());
+    }
+    return codes.slice(0, 30);
+  }
+
+  generateMaltesePostalCodes() {
+    const codes = [];
+    // Malte: codes alphanumériques
+    const areas = ['BZN', 'FGR', 'GZR', 'HMR', 'MDN', 'MST', 'QRM', 'SPB', 'VLT', 'ZBR'];
+    areas.forEach(area => {
+      codes.push(`${area} 1000`);
+    });
+    return codes;
+  }
+
+  generateEstonianPostalCodes() {
+    const codes = [];
+    // Estonie: 10001-99999
+    for (let i = 10001; i <= 99999; i += 1000) {
+      codes.push(i.toString());
+    }
+    return codes.slice(0, 30);
+  }
+
+  generateLatvianPostalCodes() {
+    const codes = [];
+    // Lettonie: LV-1000 à LV-9999
+    for (let i = 1000; i <= 9999; i += 100) {
+      codes.push(`LV-${i}`);
+    }
+    return codes.slice(0, 30);
+  }
+
+  generateLithuanianPostalCodes() {
+    const codes = [];
+    // Lituanie: LT-01000 à LT-99999
+    for (let i = 1000; i <= 99999; i += 1000) {
+      codes.push(`LT-${i.toString().padStart(5, '0')}`);
+    }
+    return codes.slice(0, 30);
+  }
+
+  generateMonacoPostalCodes() {
+    const codes = [];
+    // Monaco: 98000
+    codes.push('98000');
+    return codes;
+  }
+
+  generateAndorranPostalCodes() {
+    const codes = [];
+    // Andorre: AD100-AD999
+    for (let i = 100; i <= 999; i += 100) {
+      codes.push(`AD${i}`);
+    }
+    return codes;
+  }
+
+  generateSanMarinoPostalCodes() {
+    const codes = [];
+    // Saint-Marin: 47890-47899
+    for (let i = 47890; i <= 47899; i++) {
+      codes.push(i.toString());
+    }
+    return codes;
+  }
+
+  generateVaticanPostalCodes() {
+    const codes = [];
+    // Vatican: 00120
+    codes.push('00120');
+    return codes;
+  }
+
+  generateLiechtensteinPostalCodes() {
+    const codes = [];
+    // Liechtenstein: 9485-9498
+    for (let i = 9485; i <= 9498; i++) {
+      codes.push(i.toString());
+    }
+    return codes;
+  }
+
+  // Pays supplémentaires demandés
+
+  generateMoroccanPostalCodes() {
+    const codes = [];
+    // Maroc: 10000-99999
+    for (let i = 10000; i <= 99999; i += 1000) {
+      codes.push(i.toString());
+    }
+    return codes.slice(0, 50);
+  }
+
+  generateCanadianPostalCodes() {
+    const codes = [];
+    // Canada: format A1A 1A1
+    const letters = ['A', 'B', 'C', 'G', 'H', 'J', 'K', 'L', 'M', 'N', 'P', 'R', 'S', 'T', 'V', 'X', 'Y'];
+    letters.forEach(l1 => {
+      for (let i = 1; i <= 9; i++) {
+        codes.push(`${l1}${i}A 1A1`);
+      }
+    });
+    return codes.slice(0, 50);
+  }
+
+  generateUSPostalCodes() {
+    const codes = [];
+    // USA: ZIP codes 10001-99999
+    for (let i = 10001; i <= 99999; i += 1000) {
+      codes.push(i.toString());
+    }
+    return codes.slice(0, 50);
+  }
+
+  generateThaiPostalCodes() {
+    const codes = [];
+    // Thaïlande: 10000-99999
+    for (let i = 10000; i <= 99999; i += 1000) {
+      codes.push(i.toString());
+    }
+    return codes.slice(0, 50);
   }
 }
 
