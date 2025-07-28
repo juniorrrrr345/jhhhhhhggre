@@ -422,10 +422,47 @@ bot.action('refresh_and_main', async (ctx) => {
       clearAllCaches();
     }
     
-    console.log('🔄 Actualisation effectuée, retour au menu principal');
+    console.log('🔄 Actualisation effectuée, affichage du menu principal');
     
-    // Utiliser handleBackMain qui fonctionne déjà bien
-    await handleBackMain(ctx);
+    // Récupérer la config fraîche avec la nouvelle langue
+    const freshConfig = await Config.findById('main');
+    const currentLang = freshConfig?.languages?.currentLanguage || 'fr';
+    const customTranslations = freshConfig?.languages?.translations;
+    
+    console.log(`🌍 Affichage menu principal en langue: ${currentLang}`);
+    
+    // Message de bienvenue avec statistiques dynamiques - MÊME LOGIQUE que showMainMenuInLanguage
+    const { getTranslation } = require('./src/utils/translations');
+    
+    // Récupérer les statistiques
+    let userCount = 0;
+    let shopCount = 0;
+    
+    try {
+      const User = require('./src/models/User');
+      const Plug = require('./src/models/Plug');
+      userCount = await User.countDocuments({ isActive: true });
+      shopCount = await Plug.countDocuments({ isActive: true });
+      console.log(`📊 Statistiques actualisées: ${userCount} utilisateurs, ${shopCount} boutiques`);
+    } catch (statsError) {
+      console.log('⚠️ Erreur récupération statistiques:', statsError.message);
+    }
+    
+    // Message de base avec statistiques
+    const baseMessage = freshConfig?.welcome?.text || getTranslation('messages_welcome', currentLang, customTranslations);
+    const welcomeMessage = `${baseMessage}\n\n📊 **${userCount}** utilisateurs actifs\n🏪 **${shopCount}** boutiques disponibles`;
+    
+    // Créer le clavier principal avec traductions (AVEC le bouton actualiser)
+    const { createMainKeyboard } = require('./src/utils/keyboards');
+    const keyboard = await createMainKeyboard(freshConfig);
+    
+    // Modifier le message existant avec la nouvelle langue
+    const { editMessageWithImage } = require('./src/utils/messageHelper');
+    await editMessageWithImage(ctx, welcomeMessage, keyboard, freshConfig, { 
+      parse_mode: 'Markdown' 
+    });
+    
+    console.log('✅ Menu principal actualisé');
     
   } catch (error) {
     console.error('❌ Erreur lors de l\'actualisation:', error);
