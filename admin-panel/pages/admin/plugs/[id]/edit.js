@@ -111,18 +111,33 @@ export default function EditPlug() {
         console.log('📋 Données reçues via simpleApi:', listData)
       } catch (apiError) {
         console.log('❌ simpleApi échoué, tentative directe...')
-        // Fallback direct
-        const response = await fetch('/api/plugs', {
-          headers: { 
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
+        
+        try {
+          // Fallback direct vers API principale
+          const response = await fetch('/api/plugs', {
+            headers: { 
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            }
+          })
+          if (response.ok) {
+            listData = await response.json()
+            console.log('📋 Données reçues via fallback direct:', listData)
+          } else {
+            throw new Error('API principale indisponible')
           }
-        })
-        if (response.ok) {
-          listData = await response.json()
-          console.log('📋 Données reçues via fallback direct:', listData)
-        } else {
-          throw new Error('Impossible de charger les données des boutiques')
+        } catch (directError) {
+          console.log('❌ API principale échouée, utilisation mode local...')
+          
+          // Fallback ultime vers API locale
+          const localResponse = await fetch('/api/local-plugs')
+          if (localResponse.ok) {
+            listData = await localResponse.json()
+            console.log('📋 Données reçues via mode local:', listData)
+            safeToast.info('⚠️ Mode local activé - Serveur principal indisponible')
+          } else {
+            throw new Error('Impossible de charger les données (tous les systèmes indisponibles)')
+          }
         }
       }
       
@@ -272,26 +287,60 @@ export default function EditPlug() {
       
       console.log('📦 Données à sauvegarder:', cleanData)
 
-      // Sauvegarde via cors-proxy avec timeout
-      const response = await Promise.race([
-        fetch('/api/cors-proxy', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            endpoint: `plugs/${id}`,
-            method: 'PUT',
-            token: token,
-            data: cleanData
-          })
-        }),
-        new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('Timeout sauvegarde')), 10000)
-        )
-      ])
-
-      console.log('📊 Response:', response.status)
+      // Tentative 1: cors-proxy
+      let response
+      let success = false
       
-      if (response.ok) {
+      try {
+        response = await Promise.race([
+          fetch('/api/cors-proxy', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              endpoint: `plugs/${id}`,
+              method: 'PUT',
+              token: token,
+              data: cleanData
+            })
+          }),
+          new Promise((_, reject) => 
+            setTimeout(() => reject(new Error('Timeout sauvegarde')), 8000)
+          )
+        ])
+
+        console.log('📊 Response cors-proxy:', response.status)
+        
+        if (response.ok) {
+          const result = await response.json()
+          success = true
+          console.log('✅ Sauvegarde via cors-proxy réussie')
+        }
+      } catch (corsError) {
+        console.log('❌ cors-proxy échoué:', corsError.message)
+      }
+      
+      // Tentative 2: API locale si cors-proxy échoue
+      if (!success) {
+        try {
+          console.log('🔄 Fallback vers API locale...')
+          response = await fetch(`/api/local-plugs?id=${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(cleanData)
+          })
+          
+          if (response.ok) {
+            const result = await response.json()
+            success = true
+            console.log('✅ Sauvegarde via API locale réussie')
+            safeToast.info('⚠️ Sauvegarde locale - Synchronisation avec le serveur plus tard')
+          }
+        } catch (localError) {
+          console.log('❌ API locale échouée:', localError.message)
+        }
+      }
+      
+      if (success) {
         const result = await response.json()
         // console.log('✅ Sauvegarde réussie:', result) // Debug supprimé
         
