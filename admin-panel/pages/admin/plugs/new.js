@@ -164,11 +164,6 @@ export default function NewPlug() {
       return
     }
 
-    if (!formData.description.trim()) {
-      toast.error('La description est requise')
-      return
-    }
-
     if (formData.countries.length === 0) {
       toast.error('Sélectionnez au moins un pays')
       return

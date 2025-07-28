@@ -259,11 +259,6 @@ export default function EditPlug() {
       return
     }
     
-    if (!formData.description.trim()) {
-      safeToast.error('La description est requise')
-      return
-    }
-    
     console.log('💾 Début sauvegarde plug...')
     setSaving(true)
     
