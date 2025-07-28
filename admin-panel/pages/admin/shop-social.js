@@ -87,27 +87,17 @@ export default function ShopSocialMediaManager() {
   const saveSocialMedias = async () => {
     try {
       setSaving(true)
-      const token = localStorage.getItem('adminToken') || 'JuniorAdmon123'
       
-      const configData = {
-        shopSocialMediaList: socialMedias
-      }
+      // Sauvegarde LOCALE seulement pour éviter les erreurs 429
+      localStorage.setItem('shopSocialMediaList', JSON.stringify(socialMedias))
+      console.log('💾 Sauvegarde locale réussie:', socialMedias)
       
-      console.log('📤 Envoi des données:', configData)
-      const result = await simpleApi.updateConfig(token, configData)
-      console.log('📨 Réponse API:', result)
+      // Déclencher un événement pour que l'accueil se mette à jour
+      window.dispatchEvent(new CustomEvent('shopSocialMediaUpdated', { 
+        detail: socialMedias 
+      }))
       
-      // Test : relire immédiatement pour vérifier
-      setTimeout(async () => {
-        try {
-          const verifyConfig = await simpleApi.getConfig(token)
-          console.log('🔍 Vérification après sauvegarde:', verifyConfig?.shopSocialMediaList)
-        } catch (e) {
-          console.log('❌ Erreur vérification:', e)
-        }
-      }, 1000)
-      
-      toast.success('✅ Réseaux sociaux sauvegardés !')
+      toast.success('✅ Réseaux sociaux sauvegardés localement !')
       
     } catch (error) {
       console.error('Erreur sauvegarde:', error)

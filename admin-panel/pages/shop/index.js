@@ -109,6 +109,21 @@ const forceRefresh = () => {
   fetchConfig()
 }
 
+// Écouter les mises à jour des réseaux sociaux
+useEffect(() => {
+  const handleSocialMediaUpdate = (event) => {
+    console.log('🔄 Réseaux sociaux mis à jour, rechargement...')
+    // Forcer un re-render en modifiant un état
+    setConfig(prev => ({ ...prev, _updated: Date.now() }))
+  }
+
+  window.addEventListener('shopSocialMediaUpdated', handleSocialMediaUpdate)
+  
+  return () => {
+    window.removeEventListener('shopSocialMediaUpdated', handleSocialMediaUpdate)
+  }
+}, [])
+
   // Listener pour les changements de localStorage (synchronisation temps réel)
   useEffect(() => {
     if (typeof window === 'undefined') return
@@ -579,38 +594,52 @@ const forceRefresh = () => {
             flexWrap: 'wrap'
           }}>
             {/* Réseaux sociaux fixes pour la boutique */}
-            {[
-              { 
-                id: 'telegram',
-                name: config?.shopSocialMediaList?.find(s => s.id === 'telegram')?.name || 'Telegram',
-                logo: 'https://i.imgur.com/PP2GVMv.png',
-                url: config?.shopSocialMediaList?.find(s => s.id === 'telegram')?.url || 'https://t.me/+zcP68c4M_3NlM2Y0'
-              },
-              { 
-                id: 'instagram',
-                name: config?.shopSocialMediaList?.find(s => s.id === 'instagram')?.name || 'Instagram',
-                logo: 'https://i.imgur.com/O5TxmOS.jpeg',
-                url: config?.shopSocialMediaList?.find(s => s.id === 'instagram')?.url || 'https://www.instagram.com/find.yourplug?igsh=ajRwcjE1eGhoaXMz&utm_source=qr'
-              },
-              { 
-                id: 'luffa',
-                name: config?.shopSocialMediaList?.find(s => s.id === 'luffa')?.name || 'Luffa',
-                logo: 'https://i.imgur.com/PtqXOhb.png',
-                url: config?.shopSocialMediaList?.find(s => s.id === 'luffa')?.url || 'https://callup.luffa.im/c/EnvtiTHkbvP'
-              },
-              { 
-                id: 'discord',
-                name: config?.shopSocialMediaList?.find(s => s.id === 'discord')?.name || 'Discord',
-                logo: 'https://i.imgur.com/oXPAefr.png',
-                url: config?.shopSocialMediaList?.find(s => s.id === 'discord')?.url || 'https://discord.gg/g2dACUC3'
-              },
-              { 
-                id: 'potato',
-                name: config?.shopSocialMediaList?.find(s => s.id === 'potato')?.name || 'Potato',
-                logo: 'https://i.imgur.com/44ScFxY.jpeg',
-                url: config?.shopSocialMediaList?.find(s => s.id === 'potato')?.url || 'https://potato.com'
+            {(() => {
+              // Lire depuis localStorage en priorité (plus fiable)
+              let localSocialMedia = []
+              try {
+                const saved = localStorage.getItem('shopSocialMediaList')
+                if (saved) {
+                  localSocialMedia = JSON.parse(saved)
+                  console.log('📱 Réseaux sociaux depuis localStorage:', localSocialMedia)
+                }
+              } catch (e) {
+                console.log('❌ Erreur lecture localStorage:', e)
               }
-            ].map((social, index) => (
+
+              return [
+                { 
+                  id: 'telegram',
+                  name: localSocialMedia?.find(s => s.id === 'telegram')?.name || 'Telegram',
+                  logo: 'https://i.imgur.com/PP2GVMv.png',
+                  url: localSocialMedia?.find(s => s.id === 'telegram')?.url || 'https://t.me/+zcP68c4M_3NlM2Y0'
+                },
+                { 
+                  id: 'instagram',
+                  name: localSocialMedia?.find(s => s.id === 'instagram')?.name || 'Instagram',
+                  logo: 'https://i.imgur.com/O5TxmOS.jpeg',
+                  url: localSocialMedia?.find(s => s.id === 'instagram')?.url || 'https://www.instagram.com/find.yourplug?igsh=ajRwcjE1eGhoaXMz&utm_source=qr'
+                },
+                { 
+                  id: 'luffa',
+                  name: localSocialMedia?.find(s => s.id === 'luffa')?.name || 'Luffa',
+                  logo: 'https://i.imgur.com/PtqXOhb.png',
+                  url: localSocialMedia?.find(s => s.id === 'luffa')?.url || 'https://callup.luffa.im/c/EnvtiTHkbvP'
+                },
+                { 
+                  id: 'discord',
+                  name: localSocialMedia?.find(s => s.id === 'discord')?.name || 'Discord',
+                  logo: 'https://i.imgur.com/oXPAefr.png',
+                  url: localSocialMedia?.find(s => s.id === 'discord')?.url || 'https://discord.gg/g2dACUC3'
+                },
+                { 
+                  id: 'potato',
+                  name: localSocialMedia?.find(s => s.id === 'potato')?.name || 'Potato',
+                  logo: 'https://i.imgur.com/44ScFxY.jpeg',
+                  url: localSocialMedia?.find(s => s.id === 'potato')?.url || 'https://potato.com'
+                }
+              ]
+            })().map((social, index) => (
               <a
                 key={index}
                 href={social.url}
