@@ -438,6 +438,88 @@ export default function EditPlug() {
     return JSON.stringify(formData) !== JSON.stringify(originalData)
   }
 
+  // AUTO-SAUVEGARDE SIMPLE
+  useEffect(() => {
+    if (!id || !formData.name) return
+    
+    // Annuler le timeout précédent
+    if (autoSaveTimeout.current) {
+      clearTimeout(autoSaveTimeout.current)
+    }
+    
+    // Auto-save après 2 secondes d'inactivité
+    autoSaveTimeout.current = setTimeout(() => {
+      autoSave()
+    }, 2000)
+    
+    return () => {
+      if (autoSaveTimeout.current) {
+        clearTimeout(autoSaveTimeout.current)
+      }
+    }
+  }, [formData, id])
+  
+  const autoSave = async () => {
+    try {
+      setAutoSaving(true)
+      
+      // Préparer les données propres
+      const cleanData = {
+        name: formData.name.trim(),
+        image: formData.image || '',
+        telegramLink: formData.telegramLink || '',
+        countries: formData.countries || [],
+        isActive: formData.isActive,
+        isVip: formData.isVip,
+        vipOrder: formData.vipOrder || 1,
+        services: {
+          delivery: {
+            enabled: formData.services?.delivery?.enabled || false,
+            description: formData.services?.delivery?.description || '',
+            departments: formData.services?.delivery?.departments || []
+          },
+          postal: {
+            enabled: formData.services?.postal?.enabled || false,
+            description: formData.services?.postal?.description || '',
+            countries: formData.services?.postal?.countries || []
+          },
+          meetup: {
+            enabled: formData.services?.meetup?.enabled || false,
+            description: formData.services?.meetup?.description || '',
+            departments: formData.services?.meetup?.departments || []
+          }
+        },
+        socialMedia: formData.socialMedia?.filter(sm => sm.name && sm.url) || []
+      }
+      
+      // Sauvegarder directement dans l'API locale
+      await fetch('/api/local-plugs', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, ...cleanData })
+      })
+      
+      // Synchroniser avec le serveur principal (en arrière-plan)
+      fetch('/api/cors-proxy', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          endpoint: `plugs/${id}`,
+          method: 'PUT',
+          token: localStorage.getItem('adminToken'),
+          data: cleanData
+        })
+      }).catch(() => {}) // Ignorer les erreurs
+      
+      setLastSaved(new Date())
+      
+    } catch (error) {
+      console.log('Auto-save silent error:', error.message)
+    } finally {
+      setAutoSaving(false)
+    }
+  }
+
   if (loading) {
     return (
       <>
