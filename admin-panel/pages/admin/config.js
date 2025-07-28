@@ -159,7 +159,7 @@ export default function BotConfiguration() {
       const result = await simpleApi.updateConfig(token, configData)
       
       // SYNCHRONISATION IMMÉDIATE MINI APP
-      await simpleApi.syncImmediateMiniApp()
+              await simpleApi.syncImmediateMiniApp('config_updated')
       
       // Synchroniser avec le bot
       const robustSync = getRobustSync()

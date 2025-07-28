@@ -62,8 +62,20 @@ export default function ShopSearch() {
     const handleForceRefresh = (event) => {
       console.log('🚀 Signal panel admin reçu RECHERCHE - FORCE refresh boutiques...');
       console.log('📊 Détails:', event.detail);
+      
+      // Vider les filtres si c'est une suppression pour éviter les erreurs
+      if (event.detail?.reason === 'shop_deleted') {
+        console.log('🗑️ Boutique supprimée - Reset filtres pour éviter les erreurs');
+        setSearch('')
+        setCountryFilter('')
+        setServiceFilter('')
+        setDepartmentFilter('')
+        setVipFilter('')
+      }
+      
       setTimeout(() => {
         fetchPlugs();
+        console.log('🔄 RECHERCHE: Données mises à jour, filtres et départements recalculés automatiquement');
       }, 200);
     };
     
@@ -93,7 +105,9 @@ export default function ShopSearch() {
       }
     })
     
-    return Array.from(shopsCountries).sort()
+    const countriesArray = Array.from(shopsCountries).sort()
+    console.log('🌍 Pays auto-détectés depuis boutiques:', countriesArray.length, 'pays -', countriesArray)
+    return countriesArray
   }
 
   // Utiliser le service postal partagé pour obtenir les départements corrects
@@ -131,7 +145,9 @@ export default function ShopSearch() {
           })
         }
       })
-      return Array.from(departments).sort((a, b) => a.localeCompare(b, undefined, { numeric: true }))
+      const deptArray = Array.from(departments).sort((a, b) => a.localeCompare(b, undefined, { numeric: true }))
+      console.log('🏢 Départements auto-détectés depuis boutiques:', deptArray.length, 'départements')
+      return deptArray
     }
 
     // Si un pays est sélectionné, afficher TOUS les départements de ce pays (même sans boutiques)
@@ -229,6 +245,15 @@ export default function ShopSearch() {
   }
 
   const filterPlugs = () => {
+    console.log('🔍 Filtrage avec:', { 
+      search, 
+      countryFilter, 
+      serviceFilter, 
+      departmentFilter, 
+      vipFilter, 
+      totalPlugs: allPlugs.length 
+    })
+    
     let filtered = allPlugs.filter(plug => {
       const matchesSearch = search === '' || 
         plug.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -252,7 +277,14 @@ export default function ShopSearch() {
         (vipFilter === 'vip' && plug.isVip) ||
         (vipFilter === 'standard' && !plug.isVip)
       
-      return matchesSearch && matchesCountry && matchesService && matchesDepartment && matchesVip
+      const matches = matchesSearch && matchesCountry && matchesService && matchesDepartment && matchesVip
+      
+      // Debug pour voir quelles boutiques passent les filtres
+      if (!matches && (serviceFilter || vipFilter || departmentFilter)) {
+        console.log(`❌ ${plug.name}: service=${matchesService}, vip=${matchesVip}, dept=${matchesDepartment}`)
+      }
+      
+      return matches
     })
 
     filtered = filtered.sort((a, b) => {
@@ -261,6 +293,7 @@ export default function ShopSearch() {
       return (b.likes || 0) - (a.likes || 0)
     })
 
+    console.log(`🎯 Résultats filtrés: ${filtered.length}/${allPlugs.length} boutiques`)
     setPlugs(filtered)
     setCurrentPage(1)
   }

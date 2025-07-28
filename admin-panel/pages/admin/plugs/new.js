@@ -185,7 +185,7 @@ export default function NewPlug() {
       const result = await simpleApi.createPlug(token, formData)
       
       // SYNCHRONISATION IMMÉDIATE MINI APP
-      await simpleApi.syncImmediateMiniApp()
+              await simpleApi.syncImmediateMiniApp('shop_created')
       
       // Synchroniser avec le bot
       const robustSync = getRobustSync()

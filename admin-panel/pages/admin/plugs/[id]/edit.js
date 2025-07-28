@@ -321,7 +321,7 @@ export default function EditPlug() {
         setSaving(false)
         
         // SYNCHRONISATION IMMÉDIATE MINI APP
-        await simpleApi.syncImmediateMiniApp()
+        await simpleApi.syncImmediateMiniApp('shop_updated')
         
         safeToast.success('✅ Plug modifié avec succès ! 🔄 Mini app synchronisée', {
           duration: 4000,

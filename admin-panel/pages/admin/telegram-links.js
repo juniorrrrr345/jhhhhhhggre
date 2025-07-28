@@ -84,7 +84,7 @@ export default function TelegramLinks() {
       await simpleApi.updateConfig(token, updatedConfig)
       
       // SYNCHRONISATION IMMÉDIATE MINI APP
-      await simpleApi.syncImmediateMiniApp()
+              await simpleApi.syncImmediateMiniApp('telegram_links_updated')
       
       // Sauvegarder aussi en localStorage pour les pages publiques
       localStorage.setItem('telegramLinks', JSON.stringify({

@@ -106,7 +106,7 @@ export default function AccueilAdmin() {
       await simpleApi.deletePlug(token, id)
       
       // SYNCHRONISATION IMMÉDIATE MINI APP
-      await simpleApi.syncImmediateMiniApp()
+              await simpleApi.syncImmediateMiniApp('shop_deleted')
       
       // Synchroniser avec le bot
       const robustSync = getRobustSync()

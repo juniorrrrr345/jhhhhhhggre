@@ -410,7 +410,7 @@ export const simpleApi = {
   },
 
   // Fonction de synchronisation automatique immédiate pour la mini app
-  syncImmediateMiniApp: async () => {
+  syncImmediateMiniApp: async (changeType = 'general') => {
     try {
       console.log('🚀 SYNCHRONISATION IMMÉDIATE MINI APP PANEL ADMIN...');
       
@@ -452,9 +452,13 @@ export const simpleApi = {
           sessionStorage.removeItem('miniapp_last_fetch');
           sessionStorage.removeItem('search_miniapp_last_fetch');
           
-          // Broadcast event pour forcer refresh mini app
+          // Broadcast event pour forcer refresh mini app avec type de changement
           window.dispatchEvent(new CustomEvent('forceRefreshMiniApp', {
-            detail: { reason: 'admin_panel_sync', timestamp: Date.now() }
+            detail: { 
+              reason: 'admin_panel_sync', 
+              changeType: changeType,
+              timestamp: Date.now() 
+            }
           }));
           console.log('✅ Signal refresh mini app envoyé');
         } catch (e) {
