@@ -175,21 +175,38 @@ export default function ShopSearch() {
   const fetchPlugs = async () => {
     try {
       setLoading(true)
-      console.log('🔍 Chargement boutiques recherche (simple)...')
+      console.log('🔍 Chargement boutiques recherche mini app...')
       
-      // TIMEOUT DE SÉCURITÉ : Forcer loading=false après 10 secondes
+      // TIMEOUT DE SÉCURITÉ : Forcer loading=false après 8 secondes
       const safetyTimeout = setTimeout(() => {
-        console.log('⏰ TIMEOUT SÉCURITÉ RECHERCHE: Force loading=false après 10s');
+        console.log('⏰ TIMEOUT SÉCURITÉ RECHERCHE: Force loading=false après 8s');
         setLoading(false);
-      }, 10000);
+      }, 8000);
       
-      // APPEL DIRECT SIMPLE (sans cache pour éviter problèmes)
-      const response = await fetch('https://jhhhhhhggre.onrender.com/api/public/plugs?limit=100', {
+      // Cache intelligent recherche : Évite les reloads inutiles
+      const lastFetch = sessionStorage.getItem('search_miniapp_last_fetch');
+      const now = Date.now();
+      
+      // Si données récentes (moins de 3 minutes) et qu'on a déjà des boutiques
+      if (lastFetch && (now - parseInt(lastFetch)) < 180000 && allPlugs.length > 0) {
+        console.log('🔍 Boutiques recherche mini app en cache (moins de 3min) - Skip fetch');
+        clearTimeout(safetyTimeout);
+        setLoading(false);
+        return;
+      }
+      
+      // APPEL DIRECT OPTIMISÉ RECHERCHE MINI APP
+      const response = await fetch('https://jhhhhhhggre.onrender.com/api/public/plugs?limit=100&t=' + now, {
         method: 'GET',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Cache-Control': 'no-cache'
         }
       })
+      
+      if (!response.ok) {
+        throw new Error(`Search API failed: ${response.status}`);
+      }
       
       const data = await response.json()
 
@@ -197,16 +214,22 @@ export default function ShopSearch() {
       clearTimeout(safetyTimeout);
 
       if (data && data.plugs) {
-        console.log('🔍 Plugs recherche chargés:', data.plugs.length, 'boutiques')
+        console.log('🔍 Plugs recherche mini app chargés:', data.plugs.length, 'boutiques')
         setAllPlugs(data.plugs)
+        
+        // Marquer la dernière récupération
+        sessionStorage.setItem('search_miniapp_last_fetch', now.toString());
       } else {
-        console.log('⚠️ Aucune boutique recherche trouvée')
+        console.log('⚠️ Aucune boutique recherche mini app trouvée')
         setAllPlugs([])
       }
       
     } catch (error) {
-      console.error('Erreur chargement plugs recherche:', error)
-      setAllPlugs([])
+      console.error('Erreur chargement plugs recherche mini app:', error)
+      // En cas d'erreur, garder les boutiques existantes si on en a
+      if (allPlugs.length === 0) {
+        setAllPlugs([])
+      }
     } finally {
       setLoading(false)
     }
