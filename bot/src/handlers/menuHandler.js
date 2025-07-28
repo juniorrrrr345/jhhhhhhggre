@@ -2,6 +2,7 @@ const Config = require('../models/Config');
 const { createMainKeyboard } = require('../utils/keyboards');
 const { getTranslation } = require('../utils/translations');
 const { getFreshConfig } = require('../utils/configHelper');
+const { editMessageWithImage } = require('../utils/messageHelper');
 
 // Gestionnaire pour le bouton Contact - Affiche le texte configurable comme Info
 const handleContact = async (ctx) => {
@@ -9,50 +10,37 @@ const handleContact = async (ctx) => {
     // Confirmer immédiatement la callback pour éviter le loading
     await ctx.answerCbQuery();
     
-    const config = await getFreshConfig();
+    // TOUJOURS récupérer la config ACTUELLE
+    const config = await getFreshConfig(true);
     
     if (!config) {
+      console.log('❌ Configuration ACTUELLE non trouvée pour Contact');
       return;
     }
 
-    // Récupérer la langue actuelle et les traductions
+    // Récupérer la langue ACTUELLE et les traductions
     const currentLang = config?.languages?.currentLanguage || 'fr';
     const customTranslations = config?.languages?.translations;
+    
+    console.log(`📞 Contact affiché en langue ACTUELLE: ${currentLang}`);
     
     // Affichage contact avec texte configurable (comme Info)
     const contactTitle = getTranslation('menu_contact', currentLang, customTranslations);
     const defaultContactText = getTranslation('contact_default_text', currentLang, customTranslations) || 'Contactez-nous pour plus d\'informations !';
     
-    // Utiliser le texte configuré dans l'admin en priorité, puis fallback sur traductions
+    // Utiliser le texte configuré dans l'admin ACTUEL en priorité, puis fallback sur traductions
     const finalContactText = config?.buttons?.contact?.content || defaultContactText;
-    console.log('📞 Contact content utilisé:', finalContactText);
+    console.log('📞 Contact content ACTUEL utilisé:', finalContactText);
     
     const message = `${contactTitle}\n\n${finalContactText}`;
 
-    const keyboard = createMainKeyboard(config);
+    // Créer le clavier avec la config ACTUELLE
+    const keyboard = await createMainKeyboard(config);
 
-    if (config?.welcome?.image) {
-      try {
-        await ctx.editMessageMedia({
-          type: 'photo',
-          media: config.welcome.image,
-          caption: message,
-          parse_mode: 'Markdown'
-        }, {
-          reply_markup: keyboard.reply_markup
-        });
-      } catch (error) {
-        await ctx.editMessageText(message, {
-          reply_markup: keyboard.reply_markup,
-          parse_mode: 'Markdown'
-        });
-      }
-    } else {
-      await ctx.editMessageText(message, {
-        reply_markup: keyboard.reply_markup,
-        parse_mode: 'Markdown'
-      });
-    }
+    // Utiliser la fonction centralisée pour l'affichage
+    await editMessageWithImage(ctx, message, keyboard, config, { parse_mode: 'Markdown' });
+    
+    console.log('✅ Contact affiché avec configuration ACTUELLE');
 
   } catch (error) {
     console.error('Erreur dans handleContact:', error);
@@ -114,9 +102,11 @@ const handleInfo = async (ctx) => {
     // Confirmer immédiatement la callback pour éviter le loading
     await ctx.answerCbQuery();
     
-    const config = await getFreshConfig();
+    // TOUJOURS récupérer la config ACTUELLE
+    const config = await getFreshConfig(true);
     
     if (!config) {
+      console.log('❌ Configuration ACTUELLE non trouvée pour Info');
       return;
     }
 
@@ -125,44 +115,29 @@ const handleInfo = async (ctx) => {
       return handleInfoMenu(ctx, config);
     }
 
-    // Récupérer la langue actuelle et les traductions
+    // Récupérer la langue ACTUELLE et les traductions
     const currentLang = config?.languages?.currentLanguage || 'fr';
     const customTranslations = config?.languages?.translations;
     
-    // Affichage info avec texte configurable depuis l'admin
+    console.log(`ℹ️ Info affiché en langue ACTUELLE: ${currentLang}`);
+    
+    // Affichage info avec texte configurable depuis l'admin ACTUEL
     const infoTitle = getTranslation('menu_info', currentLang, customTranslations);
     const defaultInfoText = getTranslation('info_default_text', currentLang, customTranslations) || 'Découvrez notre plateforme premium.';
     
-    // Utiliser le texte configuré dans l'admin en priorité, puis fallback sur traductions
+    // Utiliser le texte configuré dans l'admin ACTUEL en priorité, puis fallback sur traductions
     const finalInfoText = config?.buttons?.info?.content || defaultInfoText;
-    console.log('ℹ️ Info content utilisé:', finalInfoText);
+    console.log('ℹ️ Info content ACTUEL utilisé:', finalInfoText);
     
     const message = `${infoTitle}\n\n${finalInfoText}`;
 
-    const keyboard = createMainKeyboard(config);
+    // Créer le clavier avec la config ACTUELLE
+    const keyboard = await createMainKeyboard(config);
 
-    if (config?.welcome?.image) {
-      try {
-        await ctx.editMessageMedia({
-          type: 'photo',
-          media: config.welcome.image,
-          caption: message,
-          parse_mode: 'Markdown'
-        }, {
-          reply_markup: keyboard.reply_markup
-        });
-      } catch (error) {
-        await ctx.editMessageText(message, {
-          reply_markup: keyboard.reply_markup,
-          parse_mode: 'Markdown'
-        });
-      }
-    } else {
-      await ctx.editMessageText(message, {
-        reply_markup: keyboard.reply_markup,
-        parse_mode: 'Markdown'
-      });
-    }
+    // Utiliser la fonction centralisée pour l'affichage
+    await editMessageWithImage(ctx, message, keyboard, config, { parse_mode: 'Markdown' });
+    
+    console.log('✅ Info affiché avec configuration ACTUELLE');
 
   } catch (error) {
     console.error('Erreur dans handleInfo:', error);
