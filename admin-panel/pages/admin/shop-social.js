@@ -259,9 +259,6 @@ export default function ShopSocialMediaManager() {
       item.id === id ? { ...item, [field]: value } : item
     )
     setSocialMedias(updatedSocialMedias)
-    
-    // Feedback visuel de la modification
-    toast.success(`${field} modifié (cliquez "Sauvegarder" pour synchroniser)`, { duration: 2000 })
   }
 
   const deleteSocialMedia = (id) => {
