@@ -20,12 +20,31 @@ const handleSocialMedia = async (ctx) => {
     // Créer les boutons des réseaux sociaux
     const socialButtons = [];
     
-    if (config?.socialMedia && Array.isArray(config.socialMedia) && config.socialMedia.length > 0) {
+    // Utiliser socialMediaList (depuis l'admin) en priorité, puis socialMedia (ancien format)
+    let socialMediaData = config?.socialMediaList || [];
+    
+    // Si socialMediaList est vide, essayer l'ancien format socialMedia
+    if (socialMediaData.length === 0 && config?.socialMedia) {
+      if (Array.isArray(config.socialMedia)) {
+        socialMediaData = config.socialMedia;
+      } else if (typeof config.socialMedia === 'object') {
+        // Convertir l'ancien format objet en array
+        socialMediaData = Object.entries(config.socialMedia).map(([key, url]) => ({
+          id: key,
+          name: key.charAt(0).toUpperCase() + key.slice(1),
+          emoji: key === 'telegram' ? '📱' : key === 'whatsapp' ? '💬' : '🌐',
+          url: url,
+          enabled: true
+        })).filter(social => social.url && social.url.trim() !== '');
+      }
+    }
+    
+    if (Array.isArray(socialMediaData) && socialMediaData.length > 0) {
       // Grouper les réseaux sociaux par lignes de 2
       const socialRows = [];
       let currentRow = [];
       
-      config.socialMedia.forEach((social, index) => {
+      socialMediaData.filter(social => social.enabled !== false).forEach((social, index) => {
         if (social.name && social.url) {
           const cleanedUrl = cleanUrl(social.url);
           if (cleanedUrl) {
@@ -34,7 +53,7 @@ const handleSocialMedia = async (ctx) => {
             currentRow.push(Markup.button.url(buttonText, cleanedUrl));
             
             // Créer une nouvelle ligne tous les 2 boutons ou au dernier élément
-            if (currentRow.length === 2 || index === config.socialMedia.length - 1) {
+            if (currentRow.length === 2 || index === socialMediaData.filter(s => s.enabled !== false).length - 1) {
               socialRows.push([...currentRow]);
               currentRow = [];
             }
