@@ -175,6 +175,15 @@ const configSchema = new mongoose.Schema({
     searchSubtitle: {
       type: String,
       default: ''
+    },
+    // Liens Telegram pour la mini app
+    inscriptionTelegramLink: {
+      type: String,
+      default: 'https://t.me/FindYourPlugBot'
+    },
+    servicesTelegramLink: {
+      type: String,
+      default: 'https://t.me/FindYourPlugBot'
     }
   },
 
