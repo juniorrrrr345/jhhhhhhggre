@@ -295,6 +295,7 @@ export default function ShopSocialMediaManager() {
   }
 
   const deleteSocialMedia = async (id) => {
+    alert(`Test suppression: ${id}`) // TEST TEMPORAIRE
     console.log('🗑️ Tentative de suppression:', id)
     console.log('📝 socialMedias actuels:', socialMedias)
     
@@ -485,7 +486,11 @@ export default function ShopSocialMediaManager() {
                           </button>
                           
                           <button
-                            onClick={() => deleteSocialMedia(social.id)}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              deleteSocialMedia(social.id);
+                            }}
                             className="text-red-600 hover:text-red-800 text-sm"
                           >
                             🗑️
