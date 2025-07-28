@@ -135,12 +135,34 @@ export default function ShopHome() {
         }, 200);
       };
       
+      // LISTENER pour rechargement BRUTAL
+      const handleBrutalRefresh = (event) => {
+        console.log('💥 RECHARGEMENT BRUTAL reçu:', event.detail);
+        
+        // Vider tout
+        try {
+          localStorage.clear();
+          sessionStorage.clear();
+          console.log('🗑️ Storage vidé avant rechargement');
+        } catch (e) {
+          console.log('⚠️ Erreur nettoyage storage');
+        }
+        
+        // Rechargement immédiat et brutal de la page
+        setTimeout(() => {
+          console.log('🔄 RECHARGEMENT COMPLET de la mini-app');
+          window.location.reload(true);
+        }, 500);
+      };
+      
       window.addEventListener('forceRefreshMiniApp', handleForceRefresh);
+      window.addEventListener('FORCE_BRUTAL_REFRESH', handleBrutalRefresh);
       
       // Cleanup
       return () => {
         document.removeEventListener('visibilitychange', handleVisibilityChange);
         window.removeEventListener('forceRefreshMiniApp', handleForceRefresh);
+        window.removeEventListener('FORCE_BRUTAL_REFRESH', handleBrutalRefresh);
       };
     }
     

@@ -415,52 +415,59 @@ export const simpleApi = {
   // Fonction principale pour forcer sync immédiate mini-app
   syncImmediateMiniApp: async (changeType) => {
     try {
-      console.log(`🔄 SYNC IMMEDIATE: ${changeType}`)
+      console.log(`🔄 SYNC IMMEDIATE RADICALE: ${changeType}`)
       
-      // 1. Vider tous les caches
+      // 1. Forcer un rechargement BRUTAL de toute la mini-app
       if (typeof window !== 'undefined') {
-        // Cache du navigateur
-        ['apiCache', 'configCache', 'plugsCache'].forEach(key => {
-          localStorage.removeItem(key)
-          sessionStorage.removeItem(key)
-        })
+        console.log('💥 RECHARGEMENT BRUTAL de la mini-app...')
         
-        console.log('🗑️ Caches navigateur vidés')
-      }
-      
-      // 2. Déclencher l'événement pour forcer refresh mini-app
-      if (typeof window !== 'undefined') {
-        const event = new CustomEvent('forceRefreshMiniApp', {
-          detail: { changeType, timestamp: Date.now() }
+        // Méthode 1: Réinitialiser complètement le localStorage/sessionStorage
+        try {
+          localStorage.clear()
+          sessionStorage.clear()
+          console.log('🗑️ Storage complètement vidé')
+        } catch (e) {
+          console.log('⚠️ Erreur nettoyage storage:', e.message)
+        }
+        
+        // Méthode 2: Recharger la page entière après un délai
+        setTimeout(() => {
+          try {
+            if (window.location.href.includes('/shop')) {
+              console.log('🔄 RECHARGEMENT FORCÉ de la page mini-app')
+              window.location.reload(true) // Force reload depuis le serveur
+            }
+          } catch (e) {
+            console.log('⚠️ Erreur rechargement:', e.message)
+          }
+        }, 1000)
+        
+        // Méthode 3: Event custom pour forcer refresh immédiat
+        const event = new CustomEvent('FORCE_BRUTAL_REFRESH', {
+          detail: { 
+            changeType, 
+            timestamp: Date.now(),
+            action: 'FULL_RELOAD'
+          }
         })
         window.dispatchEvent(event)
-        console.log(`📡 Événement dispatché: ${changeType}`)
+        console.log(`📡 Événement BRUTAL dispatché: ${changeType}`)
       }
       
-      // 3. Essayer de syncer avec le serveur principal (best effort)
-      try {
-        const response = await fetch('/api/sync-bot', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ type: changeType }),
-          signal: AbortSignal.timeout(3000) // Timeout court
-        })
-        
-        if (response.ok) {
-          console.log('✅ Sync bot réussie')
-        } else {
-          console.log('⚠️ Sync bot échouée mais continue...')
+      // 2. Notification brutale pour l'utilisateur
+      if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
+        try {
+          window.Telegram.WebApp.showAlert('✅ Modifications sauvegardées ! La mini-app va se recharger...')
+        } catch (e) {
+          console.log('⚠️ Alerte Telegram échouée')
         }
-      } catch (syncError) {
-        console.log('⚠️ Sync bot impossible, mais données locales OK')
       }
       
-      // 4. Notification utilisateur
-      console.log(`🎯 Synchronisation ${changeType} terminée`)
+      console.log(`🎯 SYNCHRONISATION BRUTALE ${changeType} TERMINÉE`)
       return true
       
     } catch (error) {
-      console.error('💥 Erreur sync immédiate:', error)
+      console.error('💥 Erreur sync brutale:', error)
       return false
     }
   }

@@ -66,7 +66,11 @@ export default async function handler(req, res) {
         syncResults.processed++;
         
         // Appeler l'API locale pour sauvegarder/mettre à jour
-        const localResponse = await fetch(`${req.headers.origin}/api/local-plugs${plug._id ? `?id=${plug._id}` : ''}`, {
+        const localUrl = plug._id ? 
+          `${req.headers.origin || 'https://sfeplugslink.vercel.app'}/api/local-plugs?id=${plug._id}` :
+          `${req.headers.origin || 'https://sfeplugslink.vercel.app'}/api/local-plugs`;
+        
+        const localResponse = await fetch(localUrl, {
           method: plug._id ? 'PUT' : 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(plug)
