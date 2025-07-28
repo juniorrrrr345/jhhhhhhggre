@@ -4,9 +4,11 @@ import Link from 'next/link'
 import LanguageSelector, { useTranslation, getCurrentLanguage } from '../../components/LanguageSelector'
 import ShopNavigation from '../../components/ShopNavigation'
 import telegramLinksSync from '../../lib/telegram-links-sync'
+import { useLanguage } from '../../hooks/useLanguage'
 
 export default function ShopInscription() {
-  const [currentLanguage, setCurrentLanguage] = useState('fr')
+  const currentLanguage = useLanguage()
+  const [, setCurrentLanguage] = useState('fr') // Gardé pour la compatibilité
   const [config, setConfig] = useState({
     inscriptionTelegramLink: 'https://t.me/findyourplugsav'
   })

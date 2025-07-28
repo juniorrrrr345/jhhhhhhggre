@@ -3,9 +3,11 @@ import Head from 'next/head'
 import LanguageSelector, { useTranslation, getCurrentLanguage } from '../../components/LanguageSelector'
 import ShopNavigation from '../../components/ShopNavigation'
 import telegramLinksSync from '../../lib/telegram-links-sync'
+import { useLanguage } from '../../hooks/useLanguage'
 
 export default function ShopServices() {
-  const [currentLanguage, setCurrentLanguage] = useState('fr')
+  const currentLanguage = useLanguage()
+  const [, setCurrentLanguage] = useState('fr') // Gardé pour la compatibilité
   const [config, setConfig] = useState({
     servicesTelegramLink: 'https://t.me/findyourplugsav'
   })
