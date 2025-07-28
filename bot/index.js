@@ -2567,7 +2567,9 @@ app.post('/api/plugs', limits.admin, authenticateAdmin, async (req, res) => {
       });
     }
     
-    // Créer le nouveau plug
+    // Créer le nouveau plug avec logging détaillé
+    console.log('🔨 Création objet Plug...');
+    
     const newPlug = new Plug({
       name: plugData.name,
       description: plugData.description,
@@ -2595,30 +2597,29 @@ app.post('/api/plugs', limits.admin, authenticateAdmin, async (req, res) => {
       likedBy: []
     });
     
+    console.log('💾 Sauvegarde en base de données...');
     const savedPlug = await newPlug.save();
+    console.log('✅ Plug sauvegardé avec succès:', savedPlug._id);
     
-    // TRADUCTION AUTOMATIQUE de la boutique
+    // TRADUCTION AUTOMATIQUE de la boutique (DÉSACTIVÉE temporairement pour debug)
     try {
-      console.log('🌍 Démarrage traduction automatique...');
-      const translatedShop = await translationService.translateShop(savedPlug.toObject());
-      
-      // Sauvegarder les traductions dans la base de données
-      savedPlug.translations = translatedShop.translations;
-      await savedPlug.save();
-      
-      console.log('✅ Traduction automatique terminée pour:', savedPlug.name);
+      console.log('🌍 Traduction automatique temporairement désactivée pour éviter erreur 500');
+      // const translatedShop = await translationService.translateShop(savedPlug.toObject());
+      // savedPlug.translations = translatedShop.translations;
+      // await savedPlug.save();
+      console.log('⏭️ Traduction automatique skippée pour:', savedPlug.name);
     } catch (translationError) {
       console.error('⚠️ Erreur traduction automatique:', translationError);
-      // Continuer même si la traduction échoue
     }
     
-    // Générer automatiquement le lien de parrainage
+    // Générer automatiquement le lien de parrainage (DÉSACTIVÉ temporairement pour debug)
     try {
-      const botInfo = await bot.telegram.getMe();
-      savedPlug.referralCode = savedPlug.generateReferralCode();
-      savedPlug.referralLink = savedPlug.generateReferralLink(botInfo.username);
-      await savedPlug.save();
-      console.log('🔗 Lien de parrainage généré:', savedPlug.referralLink);
+      console.log('🔗 Génération lien parrainage temporairement désactivée pour éviter erreur 500');
+      // const botInfo = await bot.telegram.getMe();
+      // savedPlug.referralCode = savedPlug.generateReferralCode();
+      // savedPlug.referralLink = savedPlug.generateReferralLink(botInfo.username);
+      // await savedPlug.save();
+      console.log('⏭️ Lien de parrainage skippé pour:', savedPlug.name);
     } catch (linkError) {
       console.error('⚠️ Erreur génération lien de parrainage:', linkError);
     }
