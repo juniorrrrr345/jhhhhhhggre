@@ -105,15 +105,17 @@ export default function EditPlug() {
       let data = null
       let success = false
       
-      // Méthode 1: Essayer l'endpoint individuel via proxy
+      // Méthode 1: Essayer l'endpoint individuel via cors-proxy
       try {
         console.log('📡 Tentative chargement via endpoint individuel...')
-        const response = await fetch(`/api/proxy?endpoint=/api/plugs/${id}&t=${Date.now()}`, {
-          headers: { 
-            'Authorization': token,
-            'Content-Type': 'application/json',
-            'Cache-Control': 'no-cache'
-          }
+        const response = await fetch('/api/cors-proxy', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            endpoint: `plugs/${id}`,
+            method: 'GET',
+            token: token
+          })
         })
 
         if (response.ok) {
@@ -131,12 +133,14 @@ export default function EditPlug() {
       if (!success) {
         try {
           console.log('📡 Fallback: chargement via liste des plugs...')
-          const response = await fetch(`/api/proxy?endpoint=/api/plugs&t=${Date.now()}`, {
-            headers: { 
-              'Authorization': token,
-              'Content-Type': 'application/json',
-              'Cache-Control': 'no-cache'
-            }
+          const response = await fetch('/api/cors-proxy', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              endpoint: 'plugs',
+              method: 'GET',
+              token: token
+            })
           })
 
           if (response.ok) {
