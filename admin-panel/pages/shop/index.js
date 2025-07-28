@@ -126,9 +126,21 @@ export default function ShopHome() {
       
       document.addEventListener('visibilitychange', handleVisibilityChange);
       
+      // LISTENER pour signaux du panel admin
+      const handleForceRefresh = (event) => {
+        console.log('🚀 Signal panel admin reçu - FORCE refresh boutiques...');
+        console.log('📊 Détails:', event.detail);
+        setTimeout(() => {
+          fetchPlugs();
+        }, 200);
+      };
+      
+      window.addEventListener('forceRefreshMiniApp', handleForceRefresh);
+      
       // Cleanup
       return () => {
         document.removeEventListener('visibilitychange', handleVisibilityChange);
+        window.removeEventListener('forceRefreshMiniApp', handleForceRefresh);
       };
     }
     

@@ -58,9 +58,21 @@ export default function ShopSearch() {
     
     document.addEventListener('visibilitychange', handleVisibilityChange);
     
+    // LISTENER pour signaux du panel admin
+    const handleForceRefresh = (event) => {
+      console.log('🚀 Signal panel admin reçu RECHERCHE - FORCE refresh boutiques...');
+      console.log('📊 Détails:', event.detail);
+      setTimeout(() => {
+        fetchPlugs();
+      }, 200);
+    };
+    
+    window.addEventListener('forceRefreshMiniApp', handleForceRefresh);
+    
     // Cleanup
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('forceRefreshMiniApp', handleForceRefresh);
     };
   }, [])
 
