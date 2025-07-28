@@ -236,8 +236,7 @@ export default function EditPlug() {
     
     console.log(`🏢 Toggle département ${department} pour ${service}:`, {
       avant: currentDepartments,
-      après: newDepartments,
-      hasChanges: hasChanges()
+      après: newDepartments
     })
     
     updateFormData(`services.${service}.departments`, newDepartments)
@@ -265,6 +264,9 @@ export default function EditPlug() {
       safeToast.error('Le nom de la boutique est requis')
       return
     }
+    
+    // Toujours sauvegarder, même s'il n'y a pas de changements détectés
+    console.log('💾 Sauvegarde forcée demandée par l\'utilisateur')
     
     console.log('💾 Début sauvegarde plug...')
     setSaving(true)
@@ -470,53 +472,14 @@ export default function EditPlug() {
 
 
 
+  // Fonction hasChanges commentée car non utilisée (bouton toujours actif)
+  /*
   const hasChanges = () => {
-    // Comparaison plus robuste pour détecter tous les changements
-    try {
-      // Vérifier si les données de base ont changé
-      if (formData.name !== originalData.name ||
-          formData.image !== originalData.image ||
-          formData.telegramLink !== originalData.telegramLink ||
-          formData.isVip !== originalData.isVip ||
-          formData.isActive !== originalData.isActive) {
-        return true;
-      }
-      
-      // Vérifier les pays
-      if (JSON.stringify(formData.countries?.sort()) !== JSON.stringify(originalData.countries?.sort())) {
-        return true;
-      }
-      
-      // Vérifier les services
-      if (formData.services?.delivery?.enabled !== originalData.services?.delivery?.enabled ||
-          formData.services?.delivery?.description !== originalData.services?.delivery?.description ||
-          JSON.stringify(formData.services?.delivery?.departments?.sort()) !== JSON.stringify(originalData.services?.delivery?.departments?.sort())) {
-        return true;
-      }
-      
-      if (formData.services?.postal?.enabled !== originalData.services?.postal?.enabled ||
-          formData.services?.postal?.description !== originalData.services?.postal?.description ||
-          JSON.stringify(formData.services?.postal?.countries?.sort()) !== JSON.stringify(originalData.services?.postal?.countries?.sort())) {
-        return true;
-      }
-      
-      if (formData.services?.meetup?.enabled !== originalData.services?.meetup?.enabled ||
-          formData.services?.meetup?.description !== originalData.services?.meetup?.description ||
-          JSON.stringify(formData.services?.meetup?.departments?.sort()) !== JSON.stringify(originalData.services?.meetup?.departments?.sort())) {
-        return true;
-      }
-      
-      // Vérifier les réseaux sociaux
-      if (JSON.stringify(formData.socialMedia) !== JSON.stringify(originalData.socialMedia)) {
-        return true;
-      }
-      
-      return false;
-    } catch (error) {
-      // En cas d'erreur, considérer qu'il y a des changements
-      return true;
-    }
+    // Cette fonction n'est plus utilisée car le bouton Sauvegarder
+    // est toujours actif selon la demande de l'utilisateur
+    return true;
   }
+  */
 
   if (loading) {
     return (
@@ -560,28 +523,19 @@ export default function EditPlug() {
                 </button>
                 <div>
                   <h1 className="text-xl font-semibold text-gray-900">Modifier la boutique</h1>
-                  {hasChanges() && (
-                    <div className="flex items-center space-x-2 mt-1">
-                      <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                        📝 Modifications en cours
-                      </span>
-                    </div>
-                  )}
                 </div>
               </div>
               <div className="flex space-x-3">
                 <button
                   onClick={savePlug}
-                  disabled={saving || !hasChanges()}
+                  disabled={saving}
                   className={`px-6 py-2 rounded-lg font-medium transition-colors ${
                     saving 
                       ? 'bg-gray-400 text-white cursor-not-allowed' 
-                      : hasChanges()
-                        ? 'bg-blue-600 text-white hover:bg-blue-700'
-                        : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                      : 'bg-blue-600 text-white hover:bg-blue-700'
                   }`}
                 >
-                  {saving ? '💾 Sauvegarde...' : hasChanges() ? '💾 Sauvegarder' : '✅ Sauvegardé'}
+                  {saving ? '💾 Sauvegarde...' : '💾 Sauvegarder'}
                 </button>
               </div>
             </div>
