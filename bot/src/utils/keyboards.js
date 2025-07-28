@@ -122,7 +122,7 @@ const createMainKeyboard = (config) => {
   // Première ligne : MiniApp FindYourPlugs - URL avec cache busting RENFORCÉ pour forcer refresh
   const cacheTime = Date.now();
   const randomId = Math.random().toString(36).substring(2, 15);
-  buttons.push([Markup.button.webApp('MINI-APP 🔌', `https://sfeplugslink.vercel.app/shop?v=${cacheTime}&refresh=${randomId}&force=true`)]);
+  buttons.push([Markup.button.webApp('MINI-APP 🔌', `https://sfeplugslink.vercel.app/shop?v=${cacheTime}&r=${randomId}&f=${Math.floor(Date.now()/5000)}&nocache=1`)]);
   
   // Deuxième ligne : Bouton Voter - TRADUIT avec emoji 🗳️ dans toutes les langues
   const topPlugsText = getTranslation('menu_topPlugs', currentLang, customTranslations);

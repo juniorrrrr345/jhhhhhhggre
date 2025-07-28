@@ -104,6 +104,15 @@ export default function ShopHome() {
       tg.expand();
       tg.enableClosingConfirmation();
       console.log('✅ Telegram Mini App initialisée');
+      
+      // Forcer le refresh des données dès l'ouverture (une seule fois)
+      if (!sessionStorage.getItem('miniapp_refreshed')) {
+        console.log('🔄 Premier chargement mini app - force refresh données...');
+        sessionStorage.setItem('miniapp_refreshed', 'true');
+        setTimeout(() => {
+          window.location.reload();
+        }, 800);
+      }
     }
     
       // Configuration initiale
@@ -351,6 +360,9 @@ useEffect(() => {
           <title>FindYourPlug</title>
           <meta name="description" content="Découvrez notre sélection de boutiques premium avec livraison et services disponibles." />
           <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+          <meta httpEquiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+          <meta httpEquiv="Pragma" content="no-cache" />
+          <meta httpEquiv="Expires" content="0" />
           <script src="https://telegram.org/js/telegram-web-app.js"></script>
         </Head>
 
