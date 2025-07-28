@@ -104,52 +104,59 @@ export default function ShopPlugDetail() {
   const fetchPlug = async (id) => {
     try {
       setLoading(true)
-      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://jhhhhhhggre.onrender.com'
-      const timestamp = new Date().getTime()
+      console.log('🔍 Recherche boutique ID:', id)
       
-      let data
+      let data = null
+      
+      // APPEL DIRECT au bot d'abord (même logique que la page principale)
       try {
-        // Méthode 1: Essayer l'API directe avec tous les plugs
-        const directResponse = await fetch(`${apiBaseUrl}/api/public/plugs?limit=1000&t=${timestamp}`, {
+        console.log('📡 Tentative connexion DIRECTE pour détail boutique...')
+        const directResponse = await fetch('https://jhhhhhhggre.onrender.com/api/public/plugs?limit=100', {
           method: 'GET',
           headers: {
-            'Content-Type': 'application/json',
-            'Cache-Control': 'no-cache, no-store, must-revalidate',
-            'Pragma': 'no-cache',
-            'Expires': '0'
-          }
+            'Content-Type': 'application/json'
+          },
+          signal: AbortSignal.timeout(8000) // 8 secondes
         })
         
         if (directResponse.ok) {
           data = await directResponse.json()
-          console.log('✅ API détail directe réussie, recherche plug:', id)
+          console.log('✅ Connexion DIRECTE détail réussie:', data.plugs?.length || 0, 'boutiques')
         } else {
-          throw new Error(`Direct API failed: HTTP ${directResponse.status}`)
+          throw new Error(`Direct API failed: ${directResponse.status}`)
         }
       } catch (directError) {
-        console.log('❌ API directe échouée:', directError.message)
+        console.log('⚠️ Connexion directe détail échouée:', directError.message)
         
+        // FALLBACK: Utiliser le proxy Vercel
         try {
-          // Méthode 2: Fallback via proxy
-          const proxyResponse = await fetch(`/api/proxy?endpoint=/api/public/plugs&limit=1000&t=${new Date().getTime()}`, {
+          console.log('🔄 Tentative via PROXY Vercel pour détail...')
+          const proxyResponse = await fetch('/api/cors-proxy?endpoint=/api/public/plugs&limit=100', {
             method: 'GET',
             headers: {
-              'Content-Type': 'application/json',
-              'Cache-Control': 'no-cache'
-            }
+              'Content-Type': 'application/json'
+            },
+            signal: AbortSignal.timeout(8000)
           })
           
           if (proxyResponse.ok) {
             data = await proxyResponse.json()
-            console.log('✅ Plug détail via proxy réussi')
+            console.log('✅ Connexion PROXY détail réussie:', data.plugs?.length || 0, 'boutiques')
           } else {
-            throw new Error(`Proxy failed: HTTP ${proxyResponse.status}`)
+            throw new Error(`Proxy failed: ${proxyResponse.status}`)
           }
         } catch (proxyError) {
-          console.log('❌ Proxy échoué:', proxyError.message)
+          console.error('❌ Proxy détail aussi échoué:', proxyError.message)
           setNotFound(true)
           return
         }
+      }
+
+      // Traiter les données récupérées
+      if (!data || (!data.plugs && !Array.isArray(data))) {
+        console.error('❌ Aucune donnée de boutiques reçue:', data)
+        setNotFound(true)
+        return
       }
 
       let plugsArray = []
@@ -158,33 +165,35 @@ export default function ShopPlugDetail() {
       } else if (Array.isArray(data)) {
         plugsArray = data
       } else {
-        console.error('❌ Structure de données détail inattendue:', data)
+        console.error('❌ Structure de données inattendue:', data)
         setNotFound(true)
         return
       }
 
-      const foundPlug = plugsArray.find(p => p._id === id)
+      console.log('🔍 Recherche ID:', id, 'dans', plugsArray.length, 'boutiques')
+      console.log('📋 IDs disponibles:', plugsArray.map(p => p._id).slice(0, 5))
+
+      // Rechercher la boutique avec l'ID exact
+      const foundPlug = plugsArray.find(p => p._id && p._id.toString() === id.toString())
+      
       if (foundPlug) {
-        console.log('✅ Plug trouvé:', foundPlug.name)
+        console.log('✅ Boutique trouvée:', foundPlug.name)
         
-        // Vérifier que le plug a les propriétés nécessaires
-        if (!foundPlug.name) {
-          console.warn('⚠️ Plug sans nom:', foundPlug)
-        }
+        // S'assurer que les services existent
         if (!foundPlug.services) {
-          console.warn('⚠️ Plug sans services:', foundPlug.name)
           foundPlug.services = {
-            delivery: { enabled: false },
-            postal: { enabled: false },
-            meetup: { enabled: false }
+            delivery: { enabled: false, departments: [] },
+            postal: { enabled: false, description: '' },
+            meetup: { enabled: false, departments: [] }
           }
         }
         
         setPlug(foundPlug)
         setLikes(foundPlug.likes || 0)
+        setNotFound(false)
       } else {
-        console.log('❌ Plug non trouvé avec ID:', id)
-        console.log('📋 Plugs disponibles:', plugsArray.map(p => ({ id: p._id, name: p.name })))
+        console.log('❌ Boutique non trouvée avec ID:', id)
+        console.log('📋 Toutes les boutiques:', plugsArray.map(p => ({ id: p._id, name: p.name })))
         setNotFound(true)
       }
     } catch (error) {
