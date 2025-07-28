@@ -214,20 +214,59 @@ export default function ShopSearch() {
       setLoading(true)
       console.log('🔍 Chargement boutiques recherche mini app...')
       
-      // APPEL DIRECT SIMPLIFIÉ
-      const response = await fetch('https://jhhhhhhggre.onrender.com/api/public/plugs?limit=100', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json'
+      let data = null
+      
+      // ÉTAPE 1: Essayer le serveur principal
+      try {
+        console.log('📡 Tentative serveur principal (recherche)...')
+        const controller = new AbortController()
+        const timeoutId = setTimeout(() => controller.abort(), 8000)
+        
+        const response = await fetch('https://jhhhhhhggre.onrender.com/api/public/plugs?limit=100', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Cache-Control': 'no-cache'
+          },
+          signal: controller.signal
+        })
+        
+        clearTimeout(timeoutId)
+        
+        if (response.ok) {
+          data = await response.json()
+          console.log('✅ Serveur principal OK (recherche):', data?.plugs?.length || 0, 'boutiques')
+        } else {
+          throw new Error(`Serveur principal: ${response.status}`)
         }
-      })
-      
-      if (!response.ok) {
-        throw new Error(`Search API failed: ${response.status}`);
+      } catch (primaryError) {
+        console.warn('⚠️ Serveur principal indisponible (recherche):', primaryError.message)
+        
+        // ÉTAPE 2: Fallback vers API locale
+        try {
+          console.log('🔄 Fallback vers API locale (recherche)...')
+          const localResponse = await fetch('/api/local-plugs', {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' }
+          })
+          
+          if (localResponse.ok) {
+            const localData = await localResponse.json()
+            console.log('✅ API locale OK (recherche):', localData?.plugs?.length || 0, 'boutiques')
+            
+            // Adapter le format de l'API locale au format attendu
+            data = {
+              plugs: localData.plugs || [],
+              pagination: { page: 1, pages: 1, total: localData.plugs?.length || 0 }
+            }
+          } else {
+            throw new Error(`API locale: ${localResponse.status}`)
+          }
+        } catch (localError) {
+          console.error('❌ API locale aussi indisponible (recherche):', localError.message)
+          data = { plugs: [] }
+        }
       }
-      
-      const data = await response.json()
-      console.log('📊 Données recherche reçues:', data);
 
       if (data && data.plugs && Array.isArray(data.plugs)) {
         console.log('🔍 Plugs recherche mini app chargés:', data.plugs.length, 'boutiques')
@@ -243,12 +282,12 @@ export default function ShopSearch() {
         setLikesSync(likesData)
         console.log('❤️ Likes synchronisés pour recherche:', Object.keys(likesData).length, 'boutiques')
       } else {
-        console.log('⚠️ Structure données recherche invalide:', data)
+        console.log('⚠️ Aucune boutique trouvée (recherche)')
         setAllPlugs([])
       }
       
     } catch (error) {
-      console.error('Erreur chargement plugs recherche mini app:', error)
+      console.error('❌ Erreur fatale chargement recherche:', error)
       setAllPlugs([])
     } finally {
       setLoading(false)

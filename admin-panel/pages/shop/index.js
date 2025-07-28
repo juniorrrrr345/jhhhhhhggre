@@ -293,22 +293,61 @@ useEffect(() => {
       console.log('🔍 Chargement boutiques mini app...')
       setLoading(true)
       
-      // SIMPLE : Directement le serveur principal
-      const response = await fetch('https://jhhhhhhggre.onrender.com/api/public/plugs?limit=50', {
-        method: 'GET',
-        headers: { 
-          'Content-Type': 'application/json',
-          'Cache-Control': 'no-cache'
-        }
-      })
+      let data = null
       
-      if (!response.ok) {
-        throw new Error(`Erreur serveur: ${response.status}`)
+      // ÉTAPE 1: Essayer le serveur principal
+      try {
+        console.log('📡 Tentative serveur principal...')
+        const controller = new AbortController()
+        const timeoutId = setTimeout(() => controller.abort(), 8000)
+        
+        const response = await fetch('https://jhhhhhhggre.onrender.com/api/public/plugs?limit=50', {
+          method: 'GET',
+          headers: { 
+            'Content-Type': 'application/json',
+            'Cache-Control': 'no-cache'
+          },
+          signal: controller.signal
+        })
+        
+        clearTimeout(timeoutId)
+        
+        if (response.ok) {
+          data = await response.json()
+          console.log('✅ Serveur principal OK:', data?.plugs?.length || 0, 'boutiques')
+        } else {
+          throw new Error(`Serveur principal: ${response.status}`)
+        }
+      } catch (primaryError) {
+        console.warn('⚠️ Serveur principal indisponible:', primaryError.message)
+        
+        // ÉTAPE 2: Fallback vers API locale
+        try {
+          console.log('🔄 Fallback vers API locale...')
+          const localResponse = await fetch('/api/local-plugs', {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' }
+          })
+          
+          if (localResponse.ok) {
+            const localData = await localResponse.json()
+            console.log('✅ API locale OK:', localData?.plugs?.length || 0, 'boutiques')
+            
+            // Adapter le format de l'API locale au format attendu
+            data = {
+              plugs: localData.plugs || [],
+              pagination: { page: 1, pages: 1, total: localData.plugs?.length || 0 }
+            }
+          } else {
+            throw new Error(`API locale: ${localResponse.status}`)
+          }
+        } catch (localError) {
+          console.error('❌ API locale aussi indisponible:', localError.message)
+          data = { plugs: [] }
+        }
       }
       
-      const data = await response.json()
-      console.log('📊 Données reçues:', data)
-      
+      // TRAITEMENT DES DONNÉES
       if (data && data.plugs && Array.isArray(data.plugs)) {
         console.log('🎯 Boutiques mini app récupérées:', data.plugs.length)
         
@@ -349,12 +388,12 @@ useEffect(() => {
           })
         }
       } else {
-        console.log('⚠️ Structure de données invalide:', data)
+        console.log('⚠️ Aucune boutique trouvée')
         setPlugs([])
       }
       
     } catch (error) {
-      console.error('❌ Erreur chargement boutiques mini app:', error.message)
+      console.error('❌ Erreur fatale chargement boutiques:', error.message)
       setPlugs([])
     } finally {
       setLoading(false)

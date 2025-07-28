@@ -93,20 +93,59 @@ export default function ShopVIP() {
       setLoading(true)
       console.log('👑 Chargement boutiques VIP...')
       
-      // APPEL DIRECT au bot pour récupérer TOUTES les boutiques puis filtrer
-      const response = await fetch('https://jhhhhhhggre.onrender.com/api/public/plugs?limit=100', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json'
+      let data = null
+      
+      // ÉTAPE 1: Essayer le serveur principal
+      try {
+        console.log('📡 Tentative serveur principal (VIP)...')
+        const controller = new AbortController()
+        const timeoutId = setTimeout(() => controller.abort(), 8000)
+        
+        const response = await fetch('https://jhhhhhhggre.onrender.com/api/public/plugs?limit=100', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Cache-Control': 'no-cache'
+          },
+          signal: controller.signal
+        })
+        
+        clearTimeout(timeoutId)
+        
+        if (response.ok) {
+          data = await response.json()
+          console.log('✅ Serveur principal OK (VIP):', data?.plugs?.length || 0, 'boutiques')
+        } else {
+          throw new Error(`Serveur principal: ${response.status}`)
         }
-      })
-      
-      if (!response.ok) {
-        throw new Error(`VIP API failed: ${response.status}`);
+      } catch (primaryError) {
+        console.warn('⚠️ Serveur principal indisponible (VIP):', primaryError.message)
+        
+        // ÉTAPE 2: Fallback vers API locale
+        try {
+          console.log('🔄 Fallback vers API locale (VIP)...')
+          const localResponse = await fetch('/api/local-plugs', {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' }
+          })
+          
+          if (localResponse.ok) {
+            const localData = await localResponse.json()
+            console.log('✅ API locale OK (VIP):', localData?.plugs?.length || 0, 'boutiques')
+            
+            // Adapter le format de l'API locale au format attendu
+            data = {
+              plugs: localData.plugs || [],
+              pagination: { page: 1, pages: 1, total: localData.plugs?.length || 0 }
+            }
+          } else {
+            throw new Error(`API locale: ${localResponse.status}`)
+          }
+        } catch (localError) {
+          console.error('❌ API locale aussi indisponible (VIP):', localError.message)
+          data = { plugs: [] }
+        }
       }
-      
-      const data = await response.json()
-      console.log('📊 Données VIP reçues:', data);
 
       if (data && data.plugs && Array.isArray(data.plugs)) {
         // Filtrer SEULEMENT les boutiques VIP
@@ -147,7 +186,7 @@ export default function ShopVIP() {
           })
         }
       } else {
-        console.log('⚠️ Structure données VIP invalide:', data)
+        console.log('⚠️ Aucune boutique VIP trouvée')
         setVipPlugs([])
       }
       
