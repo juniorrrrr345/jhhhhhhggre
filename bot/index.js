@@ -194,8 +194,9 @@ const displayNewShopOnBot = async (savedPlug) => {
     
     // Récupérer l'ID du chat de notification depuis la config
     const notificationChatId = config?.notifications?.newShopChatId;
+    const notificationsEnabled = config?.notifications?.enabled !== false;
     
-    if (notificationChatId) {
+    if (notificationChatId && notificationsEnabled) {
       try {
         await bot.telegram.sendMessage(notificationChatId, message, {
           parse_mode: 'Markdown',
@@ -5410,6 +5411,79 @@ app.post('/api/sync-contact-info-texts', async (req, res) => {
   } catch (error) {
     console.error('❌ Erreur synchronisation Contact/Info:', error);
     res.status(500).json({ error: 'Erreur serveur' });
+  }
+});
+
+// Endpoint pour configurer le chat ID des notifications de nouvelles boutiques
+app.post('/api/admin/notifications/chat-id', authenticateAdmin, async (req, res) => {
+  try {
+    console.log('🔔 Configuration chat ID notifications...');
+    
+    const { chatId, enabled } = req.body;
+    
+    const config = await Config.findById('main');
+    if (!config) {
+      return res.status(404).json({ error: 'Configuration non trouvée' });
+    }
+    
+    // Initialiser les notifications si pas encore fait
+    if (!config.notifications) {
+      config.notifications = {
+        newShopChatId: '',
+        enabled: true
+      };
+    }
+    
+    // Mettre à jour les valeurs
+    if (chatId !== undefined) {
+      config.notifications.newShopChatId = chatId.toString();
+    }
+    if (enabled !== undefined) {
+      config.notifications.enabled = Boolean(enabled);
+    }
+    
+    await config.save();
+    
+    // Vider les caches
+    configCache = null;
+    if (typeof clearAllCaches === 'function') {
+      clearAllCaches();
+    }
+    
+    console.log('✅ Configuration notifications mise à jour:', {
+      chatId: config.notifications.newShopChatId,
+      enabled: config.notifications.enabled
+    });
+    
+    res.json({ 
+      success: true, 
+      message: 'Configuration des notifications mise à jour',
+      notifications: config.notifications
+    });
+  } catch (error) {
+    console.error('❌ Erreur configuration notifications:', error);
+    res.status(500).json({ error: 'Erreur lors de la configuration' });
+  }
+});
+
+// Endpoint pour récupérer la configuration des notifications
+app.get('/api/admin/notifications', authenticateAdmin, async (req, res) => {
+  try {
+    const config = await Config.findById('main');
+    if (!config) {
+      return res.status(404).json({ error: 'Configuration non trouvée' });
+    }
+    
+    res.json({
+      success: true,
+      notifications: config.notifications || {
+        newShopChatId: '',
+        enabled: true
+      }
+    });
+  } catch (error) {
+    console.error('❌ Erreur récupération notifications:', error);
+    res.status(500).json({ error: 'Erreur lors de la récupération' });
   }
 });
 
