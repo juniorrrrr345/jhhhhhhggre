@@ -126,7 +126,7 @@ export default function ShopSocialMediaManager() {
                 emoji: '📱', 
                 url: 'https://t.me/+zcP68c4M_3NlM2Y0', 
                 enabled: true,
-                logo: 'https://i.imgur.com/telegram.png'
+                logo: 'https://i.imgur.com/PP2GVMv.png'
               },
               { 
                 id: 'find_your_plug', 
