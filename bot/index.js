@@ -473,7 +473,7 @@ bot.action('refresh_and_main', async (ctx) => {
 
 bot.action('top_plugs', handleTopPlugs);
 bot.action('plugs_all', (ctx) => handleAllPlugs(ctx, 0));
-// bot.action('plugs_vip', (ctx) => handleVipPlugs(ctx, 0)); // SUPPRIMÉ - Boutique VIP retirée
+bot.action('plugs_vip', (ctx) => handleVipPlugs(ctx, 0)); // Réactivé car encore utilisé dans le code
 bot.action('filter_service', handleFilterService);
 bot.action('filter_country', handleFilterCountry);
 bot.action('contact', handleContact);
@@ -1075,7 +1075,7 @@ bot.action(/^page_(.+)_(\d+)$/, (ctx) => {
   
   if (context === 'all' || context === 'plugs_all') {
     return handleAllPlugs(ctx, page);
-  } else if (context === 'vip') {
+  } else if (context === 'vip' || context === 'plugs_vip') {
     return handleVipPlugs(ctx, page);
   } else if (context.startsWith('service_')) {
     const serviceType = context.split('_')[1];

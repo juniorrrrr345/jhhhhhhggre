@@ -59,6 +59,22 @@ export default function ShopSocialMediaManager() {
   const loadSocialMedias = async () => {
     try {
       setLoading(true)
+      
+      // Priorité 1: Charger depuis localStorage (plus fiable et persistant)
+      try {
+        const saved = localStorage.getItem('shopSocialMediaList')
+        if (saved) {
+          const localData = JSON.parse(saved)
+          console.log('📱 Réseaux shop depuis localStorage:', localData)
+          setSocialMedias(localData)
+          setLoading(false)
+          return // Utiliser localStorage en priorité
+        }
+      } catch (e) {
+        console.log('❌ Erreur lecture localStorage shop:', e)
+      }
+      
+      // Priorité 2: Fallback vers API (seulement si localStorage vide)
       const token = localStorage.getItem('adminToken') || 'JuniorAdmon123'
       const config = await simpleApi.getConfig(token)
       
@@ -69,10 +85,14 @@ export default function ShopSocialMediaManager() {
           return savedSocial ? { ...defaultSocial, ...savedSocial } : defaultSocial
         })
         setSocialMedias(updatedSocialMedias)
+        
+        // Sauvegarder immédiatement en localStorage pour la prochaine fois
+        localStorage.setItem('shopSocialMediaList', JSON.stringify(updatedSocialMedias))
       }
     } catch (error) {
       console.log('Erreur chargement:', error.message)
-      toast.error('Erreur de chargement')
+      // En cas d'erreur API, continuer avec les valeurs par défaut (déjà dans l'état)
+      toast.error('Utilisation des valeurs par défaut')
     } finally {
       setLoading(false)
     }
