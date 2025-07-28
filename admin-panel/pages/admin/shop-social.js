@@ -265,13 +265,28 @@ export default function ShopSocialMediaManager() {
       clearTimeout(updateTimeoutRef.current)
     }
     updateTimeoutRef.current = setTimeout(async () => {
-      try {
-        const token = localStorage.getItem('adminToken') || 'JuniorAdmon123'
-        const configData = { shopSocialMediaList: updatedSocialMedias }
-        await simpleApi.updateConfig(token, configData)
-        console.log('✅ Modification synchronisée avec l\'accueil boutique')
-      } catch (error) {
-        console.log('⚠️ Erreur synchronisation modification:', error.message)
+      if (isLocalMode) {
+        const localApi = getLocalApi()
+        if (localApi) {
+          await localApi.updateShopSocialMedia(updatedSocialMedias)
+          console.log('💾 Modification sauvegardée localement')
+        }
+      } else {
+        try {
+          const token = localStorage.getItem('adminToken') || 'JuniorAdmon123'
+          const configData = { shopSocialMediaList: updatedSocialMedias }
+          await simpleApi.updateConfig(token, configData)
+          console.log('✅ Modification synchronisée avec l\'accueil boutique')
+        } catch (error) {
+          console.log('⚠️ Erreur synchronisation modification:', error.message)
+          // Fallback en mode local
+          setIsLocalMode(true)
+          const localApi = getLocalApi()
+          if (localApi) {
+            await localApi.updateShopSocialMedia(updatedSocialMedias)
+            console.log('💾 Modification sauvegardée en mode local (fallback)')
+          }
+        }
       }
     }, 1500) // Attendre 1.5 seconde après la dernière modification
   }
@@ -288,13 +303,30 @@ export default function ShopSocialMediaManager() {
       setSocialMedias(updatedSocialMedias)
       
       // Synchroniser automatiquement après suppression
-      try {
-        const token = localStorage.getItem('adminToken') || 'JuniorAdmon123'
-        const configData = { shopSocialMediaList: updatedSocialMedias }
-        await simpleApi.updateConfig(token, configData)
-        console.log('✅ Suppression synchronisée avec l\'accueil boutique')
-      } catch (error) {
-        console.log('⚠️ Erreur synchronisation suppression:', error.message)
+      if (isLocalMode) {
+        // Mode local : sauvegarde directe
+        const localApi = getLocalApi()
+        if (localApi) {
+          await localApi.updateShopSocialMedia(updatedSocialMedias)
+          console.log('💾 Suppression sauvegardée localement')
+        }
+      } else {
+        // Mode serveur : essayer de sauvegarder sur le serveur
+        try {
+          const token = localStorage.getItem('adminToken') || 'JuniorAdmon123'
+          const configData = { shopSocialMediaList: updatedSocialMedias }
+          await simpleApi.updateConfig(token, configData)
+          console.log('✅ Suppression synchronisée avec l\'accueil boutique')
+        } catch (serverError) {
+          console.log('Erreur suppression serveur:', serverError.message)
+          // Fallback en mode local si erreur serveur
+          setIsLocalMode(true)
+          const localApi = getLocalApi()
+          if (localApi) {
+            await localApi.updateShopSocialMedia(updatedSocialMedias)
+            console.log('💾 Suppression sauvegardée en mode local (fallback)')
+          }
+        }
       }
       
       toast.success(`Réseau social "${itemToDelete.name}" supprimé et synchronisé`)
@@ -308,13 +340,28 @@ export default function ShopSocialMediaManager() {
     setSocialMedias(updatedSocialMedias)
     
     // Synchroniser automatiquement après toggle
-    try {
-      const token = localStorage.getItem('adminToken') || 'JuniorAdmon123'
-      const configData = { shopSocialMediaList: updatedSocialMedias }
-      await simpleApi.updateConfig(token, configData)
-      console.log('✅ Toggle synchronisé avec l\'accueil boutique')
-    } catch (error) {
-      console.log('⚠️ Erreur synchronisation toggle:', error.message)
+    if (isLocalMode) {
+      const localApi = getLocalApi()
+      if (localApi) {
+        await localApi.updateShopSocialMedia(updatedSocialMedias)
+        console.log('💾 Toggle sauvegardé localement')
+      }
+    } else {
+      try {
+        const token = localStorage.getItem('adminToken') || 'JuniorAdmon123'
+        const configData = { shopSocialMediaList: updatedSocialMedias }
+        await simpleApi.updateConfig(token, configData)
+        console.log('✅ Toggle synchronisé avec l\'accueil boutique')
+      } catch (error) {
+        console.log('⚠️ Erreur synchronisation toggle:', error.message)
+        // Fallback en mode local
+        setIsLocalMode(true)
+        const localApi = getLocalApi()
+        if (localApi) {
+          await localApi.updateShopSocialMedia(updatedSocialMedias)
+          console.log('💾 Toggle sauvegardé en mode local (fallback)')
+        }
+      }
     }
   }
 
