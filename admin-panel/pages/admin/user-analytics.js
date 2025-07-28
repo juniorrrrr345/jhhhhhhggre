@@ -72,7 +72,11 @@ export default function UserAnalytics() {
         }
     } catch (error) {
       console.error('❌ Erreur stats utilisateurs:', error)
-      setStats(prev => ({ ...prev, loading: false }))
+      setStats(prev => ({ 
+        ...prev, 
+        loading: false,
+        error: `Erreur de chargement: ${error.message}`
+      }))
     }
   }
 

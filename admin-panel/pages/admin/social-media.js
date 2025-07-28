@@ -39,6 +39,8 @@ export default function SocialMediaManager() {
   const loadInitialData = () => {
     if (typeof window === 'undefined') return
     
+    setLoading(true) // Démarrer le loading
+    
     // Charger d'abord depuis localStorage (plus fiable)
     let socialMediasFromLocal = []
     try {
@@ -77,6 +79,8 @@ export default function SocialMediaManager() {
       // Sauvegarder immédiatement pour la prochaine fois
       localStorage.setItem('botSocialMediaList', JSON.stringify(defaultSocialMedias))
     }
+    
+    setLoading(false) // Terminer le loading
   }
 
   const loadSocialMedias = async () => {
