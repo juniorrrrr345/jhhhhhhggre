@@ -12,11 +12,11 @@ const translations = {
   defaultTranslations: {
     // === MENU PRINCIPAL ===
     'menu_topPlugs': {
-      fr: '🔝 Top Des Plugs',
-      en: '🔝 Top Plugs',
-      it: '🔝 Top Negozi',
-      es: '🔝 Top Tiendas',
-      de: '🔝 Top Shops'
+      fr: 'VOTER POUR VOTRE PLUG 🗳️',
+      en: 'VOTE FOR YOUR PLUG 🗳️',
+      it: 'VOTA PER IL TUO PLUG 🗳️',
+      es: 'VOTA POR TU PLUG 🗳️',
+      de: 'STIMME FÜR DEINEN PLUG 🗳️'
     },
     'menu_contact': {
       fr: '📞 Contact',
