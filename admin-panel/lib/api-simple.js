@@ -5,13 +5,13 @@ import { fallbackApi } from './fallback-api';
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 const makeProxyCall = async (endpoint, method = 'GET', token = null, data = null, retryCount = 0) => {
-  const maxRetries = 2; // Réduit de 3 à 2 retries
+  const maxRetries = 1; // Réduit drastiquement : 1 seul retry
   const cacheKey = `${method}:${endpoint}:${token?.substring(0,10) || 'no-token'}`;
   const fallbackKey = `${method}_${endpoint.replace(/[^a-zA-Z0-9]/g, '_')}`;
   
   // Vérifier le cache d'abord (sauf pour les mutations)
   if (method === 'GET') {
-    const cached = apiCache.get(cacheKey, 45000); // Augmenté à 45 secondes pour réduire les requêtes
+    const cached = apiCache.get(cacheKey, 120000); // Cache très long : 2 minutes
     if (cached) {
       console.log(`💾 Cache hit pour: ${endpoint}`);
       // Sauvegarder en fallback aussi
@@ -20,10 +20,10 @@ const makeProxyCall = async (endpoint, method = 'GET', token = null, data = null
     }
   }
   
-  // Vérifier l'anti-spam - délai plus long pour espacer les requêtes
+  // Anti-spam TRÈS strict pour éviter le rate limiting
   if (retryCount === 0 && !apiCache.canMakeCall(cacheKey)) {
     console.log(`⏳ Rate limit local - attente pour: ${endpoint}`);
-    await sleep(5000); // Augmenté à 5 secondes
+    await sleep(8000); // Augmenté à 8 secondes pour espacer davantage
   }
   
   console.log(`🔄 Simple Proxy Call (tentative ${retryCount + 1}): ${method} ${endpoint}`);
@@ -83,12 +83,15 @@ const makeProxyCall = async (endpoint, method = 'GET', token = null, data = null
         }
       }
       
-      // Autres erreurs serveur avec retry réduit
-      if (response.status >= 500 && retryCount < 1) { // Réduit le retry pour 500+
-        const retryDelay = 4000; // Augmenté à 4 secondes pour éviter la surcharge
-        console.log(`🔄 Erreur ${response.status} - Retry dans ${retryDelay}ms`);
-        await sleep(retryDelay);
-        return makeProxyCall(endpoint, method, token, data, retryCount + 1);
+      // Autres erreurs serveur : AUCUN retry pour éviter le rate limiting
+      if (response.status >= 500) {
+        console.log(`🚫 Erreur ${response.status} - AUCUN retry pour éviter rate limiting`);
+        // Utiliser fallback immédiatement si disponible
+        const fallbackData = fallbackApi.get(fallbackKey);
+        if (fallbackData && method === 'GET') {
+          console.log(`💾 Utilisation fallback pour erreur ${response.status}`);
+          return fallbackData;
+        }
       }
       
       throw new Error(`Erreur API: ${response.status} - ${errorData.error || 'Erreur inconnue'}`);
