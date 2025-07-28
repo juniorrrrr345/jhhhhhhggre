@@ -93,7 +93,7 @@ const translations = {
     inscription_why_delivery: 'Services de livraison',
     inscription_why_interface: 'Interface simple et rapide',
     inscription_why_notifications: 'Notifications en temps réel',
-    inscription_why_visibility: 'Ça offre + de visibilité à votre boutique',
+    inscription_why_visibility: '👀Booster la visibilité de votre boutique 🚀',
     // Traductions pour la page shop - textes de bienvenue
     shop_welcome_title: '👋 Bienvenue sur FindYourPlug',
     shop_welcome_search: '🔍 Utilisez la barre de recherche pour trouver un plug près de chez vous ou en envoi postal',
@@ -243,7 +243,7 @@ const translations = {
     inscription_why_delivery: 'Delivery services',
     inscription_why_interface: 'Simple and fast interface',
     inscription_why_notifications: 'Real-time notifications',
-    inscription_why_visibility: 'Offers + visibility',
+    inscription_why_visibility: '👀Boost your shop visibility 🚀',
     // Traductions pour la page shop - textes de bienvenue
     shop_welcome_title: '👋 Welcome to FindYourPlug',
     shop_welcome_search: '🔍 Use the search bar to find a plug near you or for postal delivery',
@@ -397,7 +397,7 @@ const translations = {
     inscription_why_delivery: 'Servicios de entrega',
     inscription_why_interface: 'Interfaz simple y rápida',
     inscription_why_notifications: 'Notificaciones en tiempo real',
-    inscription_why_visibility: 'Ofrece + visibilidad',
+    inscription_why_visibility: '👀Impulsa la visibilidad de tu tienda 🚀',
     // Traductions pour la page shop - textes de bienvenue
     shop_welcome_title: '👋 Bienvenido a FindYourPlug',
     shop_welcome_search: '🔍 Usa la barra de búsqueda para encontrar un plug cerca de ti o para envío postal',
@@ -551,7 +551,7 @@ const translations = {
     inscription_why_delivery: 'Servizi di consegna',
     inscription_why_interface: 'Interfaccia semplice e veloce',
     inscription_why_notifications: 'Notifiche in tempo reale',
-    inscription_why_visibility: 'Offre + visibilità',
+    inscription_why_visibility: '👀Aumenta la visibilità del tuo negozio 🚀',
     // Traductions pour la page shop - textes de bienvenue
     shop_welcome_title: '👋 Benvenuto su FindYourPlug',
     shop_welcome_search: '🔍 Usa la barra di ricerca per trovare un plug vicino a te o per spedizione postale',
@@ -705,7 +705,7 @@ const translations = {
     inscription_why_delivery: 'Lieferservices',
     inscription_why_interface: 'Einfache und schnelle Benutzeroberfläche',
     inscription_why_notifications: 'Echtzeit-Benachrichtigungen',
-    inscription_why_visibility: 'Bietet + Sichtbarkeit',
+    inscription_why_visibility: '👀Steigern Sie die Sichtbarkeit Ihres Shops 🚀',
     // Traductions pour la page shop - textes de bienvenue
     shop_welcome_title: '👋 Willkommen bei FindYourPlug',
     shop_welcome_search: '🔍 Verwende die Suchleiste, um einen Plug in deiner Nähe oder für Postversand zu finden',
