@@ -433,18 +433,18 @@ const translations = {
       de: '🟦 Schritt 4: Potato Chat 🏴‍☠️'
     },
     'registration.telegramQuestion': {
-      fr: '🔗 Entrez votre lien Telegram (format : @username)',
-      en: '🔗 Enter your Telegram link (format: @username)',
-      it: '🔗 Inserisci il tuo link Telegram (formato: @username)',
-      es: '🔗 Introduce tu enlace de Telegram (formato: @username)',
-      de: '🔗 Geben Sie Ihren Telegram-Link ein (Format: @username)'
+      fr: '🔗 Entrez votre lien Telegram (format : @username ou https://t.me/username)',
+      en: '🔗 Enter your Telegram link (format: @username or https://t.me/username)',
+      it: '🔗 Inserisci il tuo link Telegram (formato: @username o https://t.me/username)',
+      es: '🔗 Introduce tu enlace de Telegram (formato: @username o https://t.me/username)',
+      de: '🔗 Geben Sie Ihren Telegram-Link ein (Format: @username oder https://t.me/username)'
     },
     'registration.telegramChannelQuestion': {
-      fr: '🔗 Entrez le lien de votre canal Telegram',
-      en: '🔗 Enter your Telegram channel link',
-      it: '🔗 Inserisci il link del tuo canale Telegram',
-      es: '🔗 Introduce el enlace de tu canal de Telegram',
-      de: '🔗 Geben Sie den Link zu Ihrem Telegram-Kanal ein'
+      fr: '🔗 Entrez le lien de votre canal Telegram (format : @channel ou https://t.me/channel)',
+      en: '🔗 Enter your Telegram channel link (format: @channel or https://t.me/channel)',
+      it: '🔗 Inserisci il link del tuo canale Telegram (formato: @channel o https://t.me/channel)',
+      es: '🔗 Introduce el enlace de tu canal de Telegram (formato: @channel o https://t.me/channel)',
+      de: '🔗 Geben Sie den Link zu Ihrem Telegram-Kanal ein (Format: @channel oder https://t.me/channel)'
     },
     'registration.instagramQuestion': {
       fr: '📸 Entrez votre lien Instagram',
