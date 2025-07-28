@@ -588,345 +588,199 @@ class PostalCodeService {
   // Fonctions pour générer les codes postaux des nouveaux pays européens
   
   generateGermanPostalCodes() {
-    // Allemagne: codes postaux réels par région
+    // Allemagne: principales villes avec codes simplifiés
     return [
-      '10115', '10117', '10119', '10178', '10179', // Berlin
-      '20095', '20097', '20099', '20144', '20146', // Hambourg
-      '80331', '80333', '80335', '80336', '80337', // Munich
-      '50667', '50668', '50670', '50672', '50674', // Cologne
-      '60311', '60313', '60314', '60316', '60318', // Francfort
-      '70173', '70174', '70176', '70178', '70180', // Stuttgart
-      '40210', '40211', '40212', '40213', '40215', // Düsseldorf
-      '04109', '04155', '04157', '04159', '04177', // Leipzig
-      '01067', '01069', '01097', '01099', '01109', // Dresde
-      '30159', '30161', '30163', '30165', '30167'  // Hanovre
+      '10115', '20095', '80331', '50667', '60311', // Berlin, Hambourg, Munich, Cologne, Francfort
+      '70173', '40210', '04109', '01067', '30159', // Stuttgart, Düsseldorf, Leipzig, Dresde, Hanovre
+      '44135', '28195', '45127', '68159', '76133', // Dortmund, Brême, Essen, Mannheim, Karlsruhe
+      '90402', '99084', '24103', '72070', '85049'  // Nuremberg, Erfurt, Kiel, Tübingen, Ingolstadt
     ];
   }
 
   generateItalianPostalCodes() {
-    // Italie: codes postaux réels par région
+    // Italie: principales villes avec codes simplifiés
     return [
-      '00118', '00119', '00121', '00122', '00123', // Rome
-      '20121', '20122', '20123', '20124', '20125', // Milan
-      '10121', '10122', '10123', '10124', '10125', // Turin
-      '80121', '80122', '80123', '80124', '80125', // Naples
-      '40121', '40122', '40123', '40124', '40125', // Bologne
-      '50121', '50122', '50123', '50124', '50125', // Florence
-      '16121', '16122', '16123', '16124', '16125', // Gênes
-      '70121', '70122', '70123', '70124', '70125', // Bari
-      '90121', '90122', '90123', '90124', '90125', // Palerme
-      '35121', '35122', '35123', '35124', '35125'  // Padoue
+      '00121', '20121', '10121', '80121', '40121', // Rome, Milan, Turin, Naples, Bologne
+      '50121', '16121', '70121', '90121', '35121', // Florence, Gênes, Bari, Palerme, Padoue
+      '37121', '95121', '06121', '47121', '43121'  // Vérone, Catane, Pérouse, Forlì, Parme
     ];
   }
 
   generatePortuguesePostalCodes() {
-    // Portugal: codes postaux réels par région
+    // Portugal: principales villes simplifiées
     return [
-      '1000-001', '1050-001', '1070-001', '1100-001', '1150-001', // Lisbonne
-      '4000-001', '4050-001', '4100-001', '4150-001', '4200-001', // Porto
-      '3000-001', '3030-001', '3040-001', '3080-001', '3810-001', // Coimbra
-      '2500-001', '2510-001', '2520-001', '2530-001', '2540-001', // Caldas da Rainha
-      '8000-001', '8005-001', '8100-001', '8200-001', '8300-001', // Faro
-      '9000-001', '9020-001', '9050-001', '9060-001', '9100-001', // Funchal
-      '2700-001', '2710-001', '2720-001', '2730-001', '2740-001', // Sintra
-      '2800-001', '2810-001', '2820-001', '2830-001', '2840-001', // Almada
-      '4700-001', '4710-001', '4720-001', '4730-001', '4750-001', // Braga
-      '3500-001', '3510-001', '3520-001', '3530-001', '3540-001'  // Viseu
+      '1000-001', '4000-001', '3000-001', '8000-001', '9000-001', // Lisbonne, Porto, Coimbra, Faro, Funchal
+      '2700-001', '2800-001', '4700-001', '3500-001', '7000-001'  // Sintra, Almada, Braga, Viseu, Évora
     ];
   }
 
   generateUKPostalCodes() {
-    const codes = [];
-    // Royaume-Uni: codes alphanumériques
-    const areas = ['B', 'E', 'EC', 'M', 'N', 'NW', 'S', 'SE', 'SW', 'W', 'WC'];
-    areas.forEach(area => {
-      for (let i = 1; i <= 20; i++) {
-        codes.push(`${area}${i} 1AA`);
-      }
-    });
-    return codes.slice(0, 50);
+    // Royaume-Uni: principales villes avec codes réels
+    return [
+      'SW1A 1AA', 'W1A 0AX', 'EC1A 1BB', 'SE1 9PX', 'NW1 2DB', // Londres centre
+      'M1 1AA', 'M13 9PL', 'B1 1AA', 'LS1 1AA', 'S1 1AA',      // Manchester, Birmingham, Leeds, Sheffield
+      'L1 1AA', 'EH1 1AA', 'CF10 1AA', 'BT1 1AA', 'G1 1AA'     // Liverpool, Édimbourg, Cardiff, Belfast, Glasgow
+    ];
   }
 
   generateAustrianPostalCodes() {
-    const codes = [];
-    // Autriche: 1000-9999
-    for (let i = 1000; i <= 9999; i += 100) {
-      codes.push(i.toString());
-    }
-    return codes.slice(0, 50);
+    // Autriche: principales villes
+    return [
+      '1010', '1020', '1030', '1040', '1050', // Vienne
+      '8010', '4020', '6020', '5020', '9020'  // Graz, Linz, Innsbruck, Salzbourg, Klagenfurt
+    ];
   }
 
   generateLuxembourgPostalCodes() {
-    const codes = [];
-    // Luxembourg: 1000-9999
-    for (let i = 1000; i <= 9999; i += 100) {
-      codes.push(i.toString());
-    }
-    return codes.slice(0, 30);
+    // Luxembourg: principales communes
+    return ['1111', '1212', '1313', '2222', '3333'];
   }
 
   generateIrishPostalCodes() {
-    const codes = [];
-    // Irlande: système Eircode
-    const areas = ['D01', 'D02', 'D03', 'D04', 'D06', 'D07', 'D08', 'D09', 'D10', 'D11'];
-    areas.forEach(area => {
-      codes.push(`${area} A1B2`);
-    });
-    return codes;
+    // Irlande: principales villes
+    return ['D01 A1B2', 'D02 C3D4', 'T12 E5F6', 'H91 G7H8', 'V94 J9K0'];
   }
 
   generateDanishPostalCodes() {
-    const codes = [];
-    // Danemark: 1000-9999
-    for (let i = 1000; i <= 9999; i += 100) {
-      codes.push(i.toString());
-    }
-    return codes.slice(0, 50);
+    // Danemark: principales villes
+    return ['1000', '2000', '5000', '8000', '9000']; // Copenhague, Frederiksberg, Odense, Aarhus, Aalborg
   }
 
   generateSwedishPostalCodes() {
-    const codes = [];
-    // Suède: 10000-99999
-    for (let i = 10000; i <= 99999; i += 1000) {
-      codes.push(i.toString().substring(0, 3) + ' ' + i.toString().substring(3));
-    }
-    return codes.slice(0, 50);
+    // Suède: principales villes
+    return ['111 11', '222 22', '333 33', '444 44', '555 55']; // Stockholm, Göteborg, Malmö, Uppsala, Västerås
   }
 
   generateNorwegianPostalCodes() {
-    const codes = [];
-    // Norvège: 0001-9999
-    for (let i = 1; i <= 9999; i += 100) {
-      codes.push(i.toString().padStart(4, '0'));
-    }
-    return codes.slice(0, 50);
+    // Norvège: principales villes
+    return ['0001', '5001', '7001', '9001', '4001']; // Oslo, Bergen, Trondheim, Tromsø, Stavanger
   }
 
   generateFinnishPostalCodes() {
-    const codes = [];
-    // Finlande: 00100-99999
-    for (let i = 100; i <= 99999; i += 1000) {
-      codes.push(i.toString().padStart(5, '0'));
-    }
-    return codes.slice(0, 50);
+    // Finlande: principales villes
+    return ['00100', '20100', '33100', '40100', '65100']; // Helsinki, Turku, Tampere, Jyväskylä, Vaasa
   }
 
   generateIcelandicPostalCodes() {
-    const codes = [];
-    // Islande: 101-999
-    for (let i = 101; i <= 999; i += 10) {
-      codes.push(i.toString());
-    }
-    return codes;
+    // Islande: principales villes
+    return ['101', '201', '220', '600', '700']; // Reykjavik, Kópavogur, Hafnarfjörður, Akureyri, Egilsstaðir
   }
 
   generatePolishPostalCodes() {
-    const codes = [];
-    // Pologne: 00-001 à 99-999
-    for (let i = 0; i <= 99; i++) {
-      codes.push(i.toString().padStart(2, '0') + '-001');
-    }
-    return codes.slice(0, 50);
+    // Pologne: principales villes
+    return ['00-001', '30-001', '50-001', '80-001', '90-001']; // Varsovie, Cracovie, Wrocław, Gdańsk, Łódź
   }
 
   generateCzechPostalCodes() {
-    const codes = [];
-    // République Tchèque: 100 00 à 999 99
-    for (let i = 100; i <= 999; i += 10) {
-      codes.push(i.toString() + ' 00');
-    }
-    return codes.slice(0, 50);
+    // République Tchèque: principales villes
+    return ['110 00', '602 00', '702 00', '370 01', '460 01']; // Prague, Brno, Ostrava, České Budějovice, Liberec
   }
 
   generateSlovakPostalCodes() {
-    const codes = [];
-    // Slovaquie: 010 01 à 999 99
-    for (let i = 10; i <= 999; i += 10) {
-      codes.push(i.toString().padStart(3, '0') + ' 01');
-    }
-    return codes.slice(0, 50);
+    // Slovaquie: principales villes
+    return ['811 01', '949 01', '040 01', '974 01', '010 01']; // Bratislava, Nitra, Košice, Banská Bystrica, Žilina
   }
 
   generateHungarianPostalCodes() {
-    const codes = [];
-    // Hongrie: 1000-9999
-    for (let i = 1000; i <= 9999; i += 100) {
-      codes.push(i.toString());
-    }
-    return codes.slice(0, 50);
+    // Hongrie: principales villes
+    return ['1011', '4025', '6720', '7621', '3525']; // Budapest, Debrecen, Szeged, Pécs, Miskolc
   }
 
   generateSlovenianPostalCodes() {
-    const codes = [];
-    // Slovénie: 1000-9999
-    for (let i = 1000; i <= 9999; i += 100) {
-      codes.push(i.toString());
-    }
-    return codes.slice(0, 30);
+    // Slovénie: principales villes
+    return ['1000', '2000', '3000', '4000', '8000']; // Ljubljana, Maribor, Celje, Kranj, Novo Mesto
   }
 
   generateCroatianPostalCodes() {
-    const codes = [];
-    // Croatie: 10000-99999
-    for (let i = 10000; i <= 99999; i += 1000) {
-      codes.push(i.toString());
-    }
-    return codes.slice(0, 50);
+    // Croatie: principales villes
+    return ['10000', '21000', '31000', '51000', '23000']; // Zagreb, Split, Osijek, Rijeka, Zadar
   }
 
   generateRomanianPostalCodes() {
-    const codes = [];
-    // Roumanie: 010001-900001
-    for (let i = 10001; i <= 900001; i += 10000) {
-      codes.push(i.toString());
-    }
-    return codes.slice(0, 50);
+    // Roumanie: principales villes
+    return ['010001', '400001', '700001', '300001', '800001']; // Bucarest, Cluj-Napoca, Iași, Timișoara, Constanța
   }
 
   generateBulgarianPostalCodes() {
-    const codes = [];
-    // Bulgarie: 1000-9999
-    for (let i = 1000; i <= 9999; i += 100) {
-      codes.push(i.toString());
-    }
-    return codes.slice(0, 50);
+    // Bulgarie: principales villes
+    return ['1000', '4000', '6000', '8000', '9000']; // Sofia, Plovdiv, Stara Zagora, Burgas, Varna
   }
 
   generateGreekPostalCodes() {
-    const codes = [];
-    // Grèce: 10001-99999
-    for (let i = 10001; i <= 99999; i += 1000) {
-      codes.push(i.toString());
-    }
-    return codes.slice(0, 50);
+    // Grèce: principales villes
+    return ['10001', '54001', '26001', '70001', '85001']; // Athènes, Thessalonique, Patras, Héraklion, Rhodes
   }
 
   generateCypriotPostalCodes() {
-    const codes = [];
-    // Chypre: 1000-9999
-    for (let i = 1000; i <= 9999; i += 100) {
-      codes.push(i.toString());
-    }
-    return codes.slice(0, 30);
+    // Chypre: principales villes
+    return ['1000', '3000', '4000', '5000', '6000']; // Nicosie, Limassol, Larnaca, Paphos, Famagouste
   }
 
   generateMaltesePostalCodes() {
-    const codes = [];
-    // Malte: codes alphanumériques
-    const areas = ['BZN', 'FGR', 'GZR', 'HMR', 'MDN', 'MST', 'QRM', 'SPB', 'VLT', 'ZBR'];
-    areas.forEach(area => {
-      codes.push(`${area} 1000`);
-    });
-    return codes;
+    // Malte: principales zones
+    return ['VLT 1000', 'BZN 1000', 'GZR 1000', 'MST 1000', 'QRM 1000'];
   }
 
   generateEstonianPostalCodes() {
-    const codes = [];
-    // Estonie: 10001-99999
-    for (let i = 10001; i <= 99999; i += 1000) {
-      codes.push(i.toString());
-    }
-    return codes.slice(0, 30);
+    // Estonie: principales villes
+    return ['10001', '50001', '20001', '30001', '80001']; // Tallinn, Tartu, Narva, Kohtla-Järve, Pärnu
   }
 
   generateLatvianPostalCodes() {
-    const codes = [];
-    // Lettonie: LV-1000 à LV-9999
-    for (let i = 1000; i <= 9999; i += 100) {
-      codes.push(`LV-${i}`);
-    }
-    return codes.slice(0, 30);
+    // Lettonie: principales villes
+    return ['LV-1000', 'LV-2000', 'LV-3000', 'LV-4000', 'LV-5000']; // Riga, Daugavpils, Liepāja, Jelgava, Jūrmala
   }
 
   generateLithuanianPostalCodes() {
-    const codes = [];
-    // Lituanie: LT-01000 à LT-99999
-    for (let i = 1000; i <= 99999; i += 1000) {
-      codes.push(`LT-${i.toString().padStart(5, '0')}`);
-    }
-    return codes.slice(0, 30);
+    // Lituanie: principales villes
+    return ['LT-01000', 'LT-44000', 'LT-45000', 'LT-76000', 'LT-62000']; // Vilnius, Kaunas, Klaipėda, Šiauliai, Alytus
   }
 
   generateMonacoPostalCodes() {
-    const codes = [];
-    // Monaco: 98000
-    codes.push('98000');
-    return codes;
+    // Monaco: code unique
+    return ['98000'];
   }
 
   generateAndorranPostalCodes() {
-    const codes = [];
-    // Andorre: AD100-AD999
-    for (let i = 100; i <= 999; i += 100) {
-      codes.push(`AD${i}`);
-    }
-    return codes;
+    // Andorre: principales paroisses
+    return ['AD100', 'AD200', 'AD300', 'AD400', 'AD500'];
   }
 
   generateSanMarinoPostalCodes() {
-    const codes = [];
-    // Saint-Marin: 47890-47899
-    for (let i = 47890; i <= 47899; i++) {
-      codes.push(i.toString());
-    }
-    return codes;
+    // Saint-Marin: codes principaux
+    return ['47890', '47891', '47892', '47893', '47894'];
   }
 
   generateVaticanPostalCodes() {
-    const codes = [];
-    // Vatican: 00120
-    codes.push('00120');
-    return codes;
+    // Vatican: code unique
+    return ['00120'];
   }
 
   generateLiechtensteinPostalCodes() {
-    const codes = [];
-    // Liechtenstein: 9485-9498
-    for (let i = 9485; i <= 9498; i++) {
-      codes.push(i.toString());
-    }
-    return codes;
+    // Liechtenstein: principales communes
+    return ['9485', '9490', '9493', '9494', '9495'];
   }
 
   // Pays supplémentaires demandés
 
   generateMoroccanPostalCodes() {
-    const codes = [];
-    // Maroc: 10000-99999
-    for (let i = 10000; i <= 99999; i += 1000) {
-      codes.push(i.toString());
-    }
-    return codes.slice(0, 50);
+    // Maroc: principales villes
+    return ['10000', '20000', '30000', '40000', '50000']; // Rabat, Casablanca, Fès, Marrakech, Tanger
   }
 
   generateCanadianPostalCodes() {
-    const codes = [];
-    // Canada: format A1A 1A1
-    const letters = ['A', 'B', 'C', 'G', 'H', 'J', 'K', 'L', 'M', 'N', 'P', 'R', 'S', 'T', 'V', 'X', 'Y'];
-    letters.forEach(l1 => {
-      for (let i = 1; i <= 9; i++) {
-        codes.push(`${l1}${i}A 1A1`);
-      }
-    });
-    return codes.slice(0, 50);
+    // Canada: principales villes
+    return ['K1A 0A1', 'M5V 3A8', 'H3A 0G4', 'T2P 2M5', 'V6C 2X8']; // Ottawa, Toronto, Montréal, Calgary, Vancouver
   }
 
   generateUSPostalCodes() {
-    const codes = [];
-    // USA: ZIP codes 10001-99999
-    for (let i = 10001; i <= 99999; i += 1000) {
-      codes.push(i.toString());
-    }
-    return codes.slice(0, 50);
+    // USA: principales villes
+    return ['10001', '90210', '60601', '77001', '85001']; // New York, Los Angeles, Chicago, Houston, Phoenix
   }
 
   generateThaiPostalCodes() {
-    const codes = [];
-    // Thaïlande: 10000-99999
-    for (let i = 10000; i <= 99999; i += 1000) {
-      codes.push(i.toString());
-    }
-    return codes.slice(0, 50);
+    // Thaïlande: principales villes
+    return ['10100', '50000', '80000', '30000', '20000']; // Bangkok, Chiang Mai, Phuket, Nakhon Ratchasima, Chonburi
   }
 }
 
