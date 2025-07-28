@@ -6,13 +6,6 @@ const MAX_429_PER_MINUTE = 5; // Max 5 erreurs 429 par minute (ultra-strict)
 const EMERGENCY_BLOCK_DURATION = 60000; // Bloquer 1 minute si trop d'erreurs
 
 export default async function handler(req, res) {
-  // DÉSACTIVATION TEMPORAIRE POUR ARRÊTER LES ERREURS 429
-  return res.status(503).json({
-    error: 'Proxy temporairement désactivé pour éviter les erreurs 429',
-    reason: 'maintenance_mode',
-    suggestion: 'Les fonctionnalités de base restent disponibles'
-  });
-
   // Vérification urgence: Si trop d'erreurs 429 récentes, bloquer temporairement
   const now = Date.now();
   if (now - last429Time < EMERGENCY_BLOCK_DURATION && last429Count >= MAX_429_PER_MINUTE) {
