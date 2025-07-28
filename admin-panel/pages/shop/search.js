@@ -158,7 +158,9 @@ export default function ShopSearch() {
   const fetchPlugs = async () => {
     try {
       setLoading(true)
-      // APPEL DIRECT au bot pour récupérer les VRAIES boutiques
+      console.log('🔍 Chargement boutiques recherche (simple)...')
+      
+      // APPEL DIRECT SIMPLE
       const response = await fetch('https://jhhhhhhggre.onrender.com/api/public/plugs?limit=100', {
         method: 'GET',
         headers: {
@@ -168,23 +170,17 @@ export default function ShopSearch() {
       
       const data = await response.json()
 
-      let plugsArray = []
-      if (data && Array.isArray(data.plugs)) {
-        plugsArray = data.plugs
-      } else if (Array.isArray(data)) {
-        plugsArray = data
+      if (data && data.plugs) {
+        console.log('🔍 Plugs recherche chargés:', data.plugs.length, 'boutiques')
+        setAllPlugs(data.plugs)
       } else {
-        console.error('❌ Structure de données recherche inattendue:', data)
-        plugsArray = []
+        console.log('⚠️ Aucune boutique recherche trouvée')
+        setAllPlugs([])
       }
-
-      console.log('🔍 Plugs recherche chargés:', plugsArray.length, 'boutiques')
-      setAllPlugs(plugsArray)
+      
     } catch (error) {
       console.error('Erreur chargement plugs recherche:', error)
-      // Ne pas afficher les données de fallback, juste un tableau vide
       setAllPlugs([])
-      console.log('📱 Erreur API recherche: Aucune boutique affichée')
     } finally {
       setLoading(false)
     }

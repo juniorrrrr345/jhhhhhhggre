@@ -105,71 +105,12 @@ export default function ShopHome() {
       tg.enableClosingConfirmation();
       console.log('✅ Telegram Mini App initialisée');
       
-      // GESTION AVANCÉE DE LA VISIBILITÉ
-      // Générer un timestamp unique pour cette session
-      const sessionId = Date.now();
-      const lastSessionId = sessionStorage.getItem('miniapp_session_id');
+      // SYSTÈME SIMPLE - Pas de refresh automatique
+      // Juste marquer que la session est active
+      sessionStorage.setItem('miniapp_session_id', Date.now().toString());
       
-      // Si c'est une nouvelle session ou un retour après fermeture
-      if (!lastSessionId || (sessionId - parseInt(lastSessionId)) > 10000) {
-        console.log('🔄 Nouvelle session Mini App détectée - refresh données...');
-        sessionStorage.setItem('miniapp_session_id', sessionId.toString());
-        
-        // Effacer tous les caches potentiels
-        sessionStorage.removeItem('config_cache');
-        sessionStorage.removeItem('plugs_cache');
-        
-        // Au lieu d'un reload complet, juste rafraîchir les données
-        setTimeout(() => {
-          fetchPlugs();
-          fetchConfig();
-        }, 1000);
-      }
-      
-      // LISTENER pour détection de retour d'arrière-plan (avec throttling)
-      let lastVisibilityRefresh = 0;
-      const handleVisibilityChange = () => {
-        if (!document.hidden) {
-          const now = Date.now();
-          // Throttling: minimum 10 secondes entre chaque refresh de visibilité
-          if (now - lastVisibilityRefresh > 10000) {
-            console.log('📱 Mini App revenue au premier plan - refresh données...');
-            lastVisibilityRefresh = now;
-            setTimeout(() => {
-              fetchPlugs();
-              fetchConfig();
-            }, 500); // Petit délai pour stabilité
-          }
-        }
-      };
-      
-      // LISTENER pour événements Telegram (avec throttling)
-      let lastTelegramRefresh = 0;
-      const handleWebAppEvent = (event) => {
-        const now = Date.now();
-        // Throttling: minimum 5 secondes entre chaque refresh Telegram
-        if (now - lastTelegramRefresh > 5000) {
-          console.log('📱 Événement Telegram détecté (throttled):', event);
-          lastTelegramRefresh = now;
-          if (event.type === 'web_app_expand' || event.type === 'viewport_changed') {
-            setTimeout(() => {
-              fetchPlugs();
-              fetchConfig();
-            }, 1000); // Délai plus long pour stabilité
-          }
-        }
-      };
-      
-      document.addEventListener('visibilitychange', handleVisibilityChange);
-      window.addEventListener('focus', handleVisibilityChange);
-      tg.onEvent && tg.onEvent('web_app_expand', handleWebAppEvent);
-      tg.onEvent && tg.onEvent('viewport_changed', handleWebAppEvent);
-      
-      // Cleanup
-      return () => {
-        document.removeEventListener('visibilitychange', handleVisibilityChange);
-        window.removeEventListener('focus', handleVisibilityChange);
-      };
+      // PAS DE LISTENERS AUTO-REFRESH - Trop de rechargements
+      // Listeners supprimés pour éviter les refreshes constants
     }
     
       // Configuration initiale
@@ -236,20 +177,8 @@ useEffect(() => {
     }
   }, [currentLanguage])
 
-  // AUTO-REFRESH STABLE pour boutiques  
-  useEffect(() => {
-    // Refresh modéré toutes les 45 secondes (très stable)
-    const refreshInterval = setInterval(() => {
-      console.log('🔄 Auto-refresh boutiques (stable)...');
-      fetchPlugs();
-    }, 45000); // 45 secondes - très stable
-
-    // Nettoyer l'interval au démontage
-    return () => {
-      clearInterval(refreshInterval);
-      console.log('🧹 Auto-refresh nettoyé');
-    };
-  }, []) // Plus de dépendance loading
+  // PAS D'AUTO-REFRESH - Charger seulement au besoin
+  // useEffect supprimé pour éviter les rechargements constants
 
   const handleLanguageChange = (newLanguage) => {
     setCurrentLanguage(newLanguage)
@@ -323,66 +252,22 @@ useEffect(() => {
   }
 
   const fetchPlugs = async () => {
-    let safetyTimeout = null;
-    
     try {
-      console.log('🔍 Chargement boutiques depuis le bot...')
+      console.log('🔍 Chargement boutiques (simple)...')
       setLoading(true)
       
-      // TIMEOUT DE SÉCURITÉ : Forcer loading=false après 15 secondes max
-      safetyTimeout = setTimeout(() => {
-        console.log('⏰ TIMEOUT SÉCURITÉ: Forcer fin loading après 15s');
-        setLoading(false);
-      }, 15000);
-      
-      let data = null
-      
-      // APPEL DIRECT au bot d'abord
-      try {
-        console.log('📡 Tentative connexion DIRECTE à l\'API bot...')
-        const directResponse = await fetch('https://jhhhhhhggre.onrender.com/api/public/plugs?limit=50', {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          signal: AbortSignal.timeout(5000) // 5 secondes max
-        })
-        
-        if (directResponse.ok) {
-          data = await directResponse.json()
-          console.log('✅ Connexion DIRECTE réussie:', data.plugs?.length || 0, 'boutiques')
-        } else {
-          throw new Error(`Direct API failed: ${directResponse.status}`)
+      // APPEL DIRECT SIMPLE comme dans search
+      const response = await fetch('https://jhhhhhhggre.onrender.com/api/public/plugs?limit=50', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
         }
-      } catch (directError) {
-        console.log('⚠️ Connexion directe échouée:', directError.message)
-        
-        // FALLBACK: Utiliser le proxy Vercel
-        try {
-          console.log('🔄 Tentative via PROXY Vercel...')
-          const proxyResponse = await fetch('/api/cors-proxy?endpoint=/api/public/plugs&limit=50', {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            signal: AbortSignal.timeout(5000) // 5 secondes max
-          })
-          
-          if (proxyResponse.ok) {
-            data = await proxyResponse.json()
-            console.log('✅ Connexion PROXY réussie:', data.plugs?.length || 0, 'boutiques')
-          } else {
-            throw new Error(`Proxy failed: ${proxyResponse.status}`)
-          }
-        } catch (proxyError) {
-          console.error('❌ Proxy aussi échoué:', proxyError.message)
-          throw new Error('Toutes les connexions ont échoué')
-        }
-      }
+      })
       
-      // Traiter les données récupérées
+      const data = await response.json()
+      
       if (data && data.plugs) {
-        console.log('🎯 Boutiques récupérées:', data.plugs.length)
+        console.log('🎯 Boutiques récupérées (simple):', data.plugs.length)
         setPlugs(data.plugs)
         
         // Synchroniser les likes en temps réel
@@ -394,46 +279,16 @@ useEffect(() => {
         })
         setLikesSync(likesData)
       } else {
-        console.log('⚠️ Aucune boutique trouvée dans la réponse')
+        console.log('⚠️ Aucune boutique trouvée')
         setPlugs([])
       }
       
     } catch (error) {
       console.error('❌ Erreur chargement boutiques:', error.message)
-      
-      // FALLBACK: Utiliser des boutiques de demo si tout échoue
-      console.log('🔄 Tentative fallback boutiques demo...')
-      setPlugs([
-        {
-          _id: 'demo1',
-          name: 'Boutique Demo 1',
-          description: 'Boutique de démonstration en attendant la connexion API',
-          country: 'France',
-          likes: 0,
-          isActive: true,
-          categories: ['delivery'],
-          createdAt: new Date().toISOString()
-        },
-        {
-          _id: 'demo2', 
-          name: 'Boutique Demo 2',
-          description: 'Boutique de démonstration en attendant la connexion API',
-          country: 'Belgique',
-          likes: 0,
-          isActive: true,
-          categories: ['meetup'],
-          createdAt: new Date().toISOString()
-        }
-      ])
-      
-      console.log('📱 Erreur API: Boutiques demo affichées en fallback')
+      setPlugs([])
     } finally {
-      // Clear le timeout de sécurité
-      if (safetyTimeout) {
-        clearTimeout(safetyTimeout);
-      }
       setLoading(false)
-      console.log('✅ Loading terminé (fetchPlugs)')
+      console.log('✅ Loading terminé (simple)')
     }
   }
 
