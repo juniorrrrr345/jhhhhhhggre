@@ -105,14 +105,56 @@ export default function ShopHome() {
       tg.enableClosingConfirmation();
       console.log('✅ Telegram Mini App initialisée');
       
-      // Forcer le refresh des données dès l'ouverture (une seule fois)
-      if (!sessionStorage.getItem('miniapp_refreshed')) {
-        console.log('🔄 Premier chargement mini app - force refresh données...');
-        sessionStorage.setItem('miniapp_refreshed', 'true');
+      // GESTION AVANCÉE DE LA VISIBILITÉ
+      // Générer un timestamp unique pour cette session
+      const sessionId = Date.now();
+      const lastSessionId = sessionStorage.getItem('miniapp_session_id');
+      
+      // Si c'est une nouvelle session ou un retour après fermeture
+      if (!lastSessionId || (sessionId - parseInt(lastSessionId)) > 5000) {
+        console.log('🔄 Nouvelle session Mini App détectée - force refresh...');
+        sessionStorage.setItem('miniapp_session_id', sessionId.toString());
+        
+        // Effacer tous les caches potentiels
+        sessionStorage.removeItem('config_cache');
+        sessionStorage.removeItem('plugs_cache');
+        
+        // Forcer le rechargement
         setTimeout(() => {
           window.location.reload();
-        }, 800);
+        }, 500);
       }
+      
+      // LISTENER pour détection de retour d'arrière-plan
+      const handleVisibilityChange = () => {
+        if (!document.hidden) {
+          console.log('📱 Mini App revenue au premier plan - refresh données...');
+          fetchPlugs();
+          fetchConfig();
+        }
+      };
+      
+      // LISTENER pour événements Telegram
+      const handleWebAppEvent = (event) => {
+        console.log('📱 Événement Telegram détecté:', event);
+        if (event.type === 'web_app_expand' || event.type === 'viewport_changed') {
+          setTimeout(() => {
+            fetchPlugs();
+            fetchConfig();
+          }, 300);
+        }
+      };
+      
+      document.addEventListener('visibilitychange', handleVisibilityChange);
+      window.addEventListener('focus', handleVisibilityChange);
+      tg.onEvent && tg.onEvent('web_app_expand', handleWebAppEvent);
+      tg.onEvent && tg.onEvent('viewport_changed', handleWebAppEvent);
+      
+      // Cleanup
+      return () => {
+        document.removeEventListener('visibilitychange', handleVisibilityChange);
+        window.removeEventListener('focus', handleVisibilityChange);
+      };
     }
     
       // Configuration initiale
@@ -181,15 +223,30 @@ useEffect(() => {
 
   // AUTO-REFRESH pour mise à jour instantanée des boutiques
   useEffect(() => {
-    // Rafraîchir les boutiques toutes les 30 secondes
+    // Rafraîchir les boutiques toutes les 15 secondes (plus fréquent)
     const refreshInterval = setInterval(() => {
       console.log('🔄 Auto-refresh boutiques...');
       fetchPlugs();
-    }, 30000); // 30 secondes
+    }, 15000); // 15 secondes pour réactivité
 
-    // Nettoyer l'interval au démontage
+    // REFRESH INTENSIF pendant les 2 premières minutes (pour retours fréquents)
+    const intensiveRefreshInterval = setInterval(() => {
+      console.log('⚡ Refresh intensif (nouveau chargement)...');
+      fetchPlugs();
+      fetchConfig();
+    }, 5000); // 5 secondes
+    
+    // Arrêter le refresh intensif après 2 minutes
+    const intensiveTimeout = setTimeout(() => {
+      clearInterval(intensiveRefreshInterval);
+      console.log('⏱️ Refresh intensif terminé, passage en mode normal');
+    }, 120000); // 2 minutes
+
+    // Nettoyer tous les intervals au démontage
     return () => {
       clearInterval(refreshInterval);
+      clearInterval(intensiveRefreshInterval);
+      clearTimeout(intensiveTimeout);
       console.log('🧹 Auto-refresh nettoyé');
     };
   }, [])

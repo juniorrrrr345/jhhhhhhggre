@@ -119,10 +119,16 @@ const createMainKeyboard = (config) => {
     }
   }
   
-  // Première ligne : MiniApp FindYourPlugs - URL avec cache busting RENFORCÉ pour forcer refresh
+  // Première ligne : MiniApp FindYourPlugs - URL avec cache busting ULTRA-AGRESSIF
   const cacheTime = Date.now();
   const randomId = Math.random().toString(36).substring(2, 15);
-  buttons.push([Markup.button.webApp('MINI-APP 🔌', `https://sfeplugslink.vercel.app/shop?v=${cacheTime}&r=${randomId}&f=${Math.floor(Date.now()/5000)}&nocache=1`)]);
+  const sessionId = Math.random().toString(36).substring(2, 10);
+  const microTime = Math.floor(Date.now() / 1000); // Change chaque seconde
+  
+  // URL avec MULTIPLE paramètres anti-cache pour forcer refresh Telegram
+  const miniAppUrl = `https://sfeplugslink.vercel.app/shop?v=${cacheTime}&r=${randomId}&s=${sessionId}&t=${microTime}&nocache=1&refresh=${Date.now()}&bust=${Math.random()}`;
+  
+  buttons.push([Markup.button.webApp('MINI-APP 🔌', miniAppUrl)]);
   
   // Deuxième ligne : Bouton Voter - TRADUIT avec emoji 🗳️ dans toutes les langues
   const topPlugsText = getTranslation('menu_topPlugs', currentLang, customTranslations);
