@@ -4288,6 +4288,82 @@ bot.action(/^return_country_(.+)$/, (ctx) => {
   return handleCountryFilter(ctx, country, 0);
 });
 
+// Endpoint pour forcer la mise à jour du texte du bouton principal
+app.post('/api/force-update-button-text', async (req, res) => {
+  try {
+    console.log('🔧 Forçage mise à jour texte bouton principal vers VOTER POUR VOTRE PLUG 🗳️');
+    
+    const config = await Config.findById('main');
+    if (!config) {
+      return res.status(404).json({ error: 'Configuration non trouvée' });
+    }
+    
+    // Initialiser les langues si nécessaire
+    if (!config.languages) {
+      config.languages = {
+        enabled: true,
+        currentLanguage: 'fr',
+        availableLanguages: [
+          { code: 'fr', name: 'Français', flag: '🇫🇷', enabled: true },
+          { code: 'en', name: 'English', flag: '🇬🇧', enabled: true },
+          { code: 'it', name: 'Italiano', flag: '🇮🇹', enabled: true },
+          { code: 'es', name: 'Español', flag: '🇪🇸', enabled: true },
+          { code: 'de', name: 'Deutsch', flag: '🇩🇪', enabled: true }
+        ],
+        translations: new Map()
+      };
+    }
+    
+    // Forcer les traductions du bouton dans TOUTES les langues
+    if (!config.languages.translations) {
+      config.languages.translations = new Map();
+    }
+    
+    const topPlugsTranslations = new Map();
+    topPlugsTranslations.set('fr', 'VOTER POUR VOTRE PLUG 🗳️');
+    topPlugsTranslations.set('en', 'VOTE FOR YOUR PLUG 🗳️');
+    topPlugsTranslations.set('it', 'VOTA PER IL TUO PLUG 🗳️');
+    topPlugsTranslations.set('es', 'VOTA POR TU PLUG 🗳️');
+    topPlugsTranslations.set('de', 'STIMME FÜR DEINEN PLUG 🗳️');
+    
+    config.languages.translations.set('menu_topPlugs', topPlugsTranslations);
+    
+    // Mettre à jour aussi le texte par défaut
+    if (!config.buttons) config.buttons = {};
+    if (!config.buttons.topPlugs) config.buttons.topPlugs = {};
+    config.buttons.topPlugs.text = 'VOTER POUR VOTRE PLUG 🗳️';
+    config.buttons.topPlugs.enabled = true;
+    
+    if (!config.botTexts) config.botTexts = {};
+    config.botTexts.topPlugsTitle = 'VOTER POUR VOTRE PLUG 🗳️';
+    
+    await config.save();
+    
+    // Invalider les caches
+    configCache = null;
+    plugsCache = null;
+    clearAllCaches();
+    
+    console.log('🚀 Texte du bouton mis à jour dans toutes les langues');
+    
+    res.json({ 
+      success: true, 
+      message: 'Texte du bouton mis à jour dans toutes les langues',
+      translations: {
+        fr: 'VOTER POUR VOTRE PLUG 🗳️',
+        en: 'VOTE FOR YOUR PLUG 🗳️',
+        it: 'VOTA PER IL TUO PLUG 🗳️',
+        es: 'VOTA POR TU PLUG 🗳️',
+        de: 'STIMME FÜR DEINEN PLUG 🗳️'
+      }
+    });
+    
+  } catch (error) {
+    console.error('❌ Erreur mise à jour texte bouton:', error);
+    res.status(500).json({ error: 'Erreur serveur' });
+  }
+});
+
 // Endpoint pour forcer la mise à jour de l'emoji Potato
 app.post('/api/force-update-potato-emoji', async (req, res) => {
   try {
