@@ -48,7 +48,7 @@ export default function UserAnalytics() {
         setTimeout(() => reject(new Error('Timeout: Le bot met trop de temps à répondre')), 45000)
       )
       
-      const apiPromise = api.get(`admin/user-analytics?timeRange=${timeRange}`, adminToken)
+      const apiPromise = api.get(`/api/admin/user-analytics?timeRange=${timeRange}`, adminToken)
       
       const apiResponse = await Promise.race([apiPromise, timeoutPromise])
       console.log('📊 Response API user-analytics:', apiResponse)
