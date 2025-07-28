@@ -49,24 +49,41 @@ export default function SocialMediaManager() {
       // Vérifier si on est côté client
       if (typeof window === 'undefined') return
       
-      // Essayer d'abord le serveur
-      const token = localStorage.getItem('adminToken') || 'JuniorAdmon123'
-      const config = await simpleApi.getConfig(token)
-      
-      if (config && config.socialMediaList) {
-                     // S'assurer que tous les réseaux sociaux ont un ID unique
-             const socialMediasWithIds = config.socialMediaList.map((item, index) => {
-               if (!item.id) {
-                 // Générer un ID basé sur le nom ou l'index
-                 const baseId = item.name ? item.name.toLowerCase().replace(/[^a-z0-9]/g, '_') : `social_${index}`
-                 item.id = baseId
-               }
-               return item
-             })
+      // Charger d'abord depuis localStorage (plus fiable)
+      let socialMediasFromLocal = []
+      try {
+        const saved = localStorage.getItem('botSocialMediaList')
+        if (saved) {
+          socialMediasFromLocal = JSON.parse(saved)
+          console.log('📱 Réseaux bot depuis localStorage:', socialMediasFromLocal)
+        }
+      } catch (e) {
+        console.log('❌ Erreur lecture localStorage bot:', e)
+      }
+
+      if (socialMediasFromLocal && socialMediasFromLocal.length > 0) {
+        // Utiliser les données localStorage en priorité
+        const socialMediasWithIds = socialMediasFromLocal.map((item, index) => {
+          if (!item.id) {
+            const baseId = item.name ? item.name.toLowerCase().replace(/[^a-z0-9]/g, '_') : `social_${index}`
+            item.id = baseId
+          }
+          return item
+        })
         setSocialMedias(socialMediasWithIds)
-        console.log('✅ Réseaux sociaux chargés depuis le serveur avec IDs:', socialMediasWithIds.map(s => ({ id: s.id, name: s.name })))
+        console.log('✅ Réseaux sociaux bot chargés depuis localStorage:', socialMediasWithIds.map(s => ({ id: s.id, name: s.name })))
       } else {
-        throw new Error('Configuration serveur vide')
+        // Fallback : réseaux par défaut si rien en local
+        const defaultSocialMedias = [
+          { id: 'telegram', name: 'Telegram', emoji: '📱', url: 'https://t.me/+zcP68c4M_3NlM2Y0', enabled: true },
+          { id: 'find_your_plug', name: 'Find Your Plug', emoji: '🌐', url: 'https://dym168.org/findyourplug', enabled: true },
+          { id: 'instagram', name: 'Instagram', emoji: '📸', url: 'https://www.instagram.com/find.yourplug', enabled: true },
+          { id: 'luffa', name: 'Luffa', emoji: '🧽', url: 'https://callup.luffa.im/c/EnvtiTHkbvP', enabled: true },
+          { id: 'discord', name: 'Discord', emoji: '🎮', url: 'https://discord.gg/g2dACUC3', enabled: true },
+          { id: 'contact', name: 'Contact', emoji: '📞', url: 'https://t.me/contact', enabled: true }
+        ]
+        setSocialMedias(defaultSocialMedias)
+        console.log('🔧 Réseaux sociaux bot initialisés avec valeurs par défaut')
       }
       
     } catch (error) {
@@ -129,58 +146,11 @@ export default function SocialMediaManager() {
     try {
       setSaving(true)
       
-      if (isLocalMode) {
-        // Mode local : sauvegarde directe
-        const localApi = getLocalApi()
-        if (localApi) {
-          await localApi.updateSocialMedia(socialMedias)
-          console.log('💾 Réseaux sociaux sauvegardés localement')
-        }
-      } else {
-        // Mode serveur : essayer de sauvegarder sur le serveur
-        try {
-          const token = localStorage.getItem('adminToken') || 'JuniorAdmon123'
-          
-          const configData = {
-            socialMediaList: socialMedias,
-            // Maintenir compatibilité avec l'ancien format pour le bot Telegram
-            socialMedia: {
-              telegram: socialMedias.find(s => s.id === 'telegram')?.url || '',
-              whatsapp: socialMedias.find(s => s.id === 'whatsapp')?.url || ''
-            }
-          }
-          
-          console.log('💾 Sauvegarde manuelle des réseaux sociaux:', configData)
-          await simpleApi.updateConfig(token, configData)
-          
-          // Synchroniser avec le bot
-          const robustSync = getRobustSync()
-          if (robustSync) {
-            robustSync.syncConfigUpdate(configData)
-          }
-          
-          console.log('✅ Réseaux sociaux sauvegardés et synchronisés')
-        } catch (serverError) {
-            console.log('Erreur sauvegarde serveur:', serverError.message)
-            
-            // Ne basculer en mode local que pour des erreurs critiques de réseau
-            if (serverError.message.includes('Failed to fetch') || 
-                serverError.message.includes('NetworkError') || 
-                serverError.message.includes('offline') ||
-                serverError.message.includes('502') ||
-                serverError.message.includes('503') ||
-                serverError.message.includes('504')) {
-              console.log('Basculement en mode local à cause de:', serverError.message)
-              setIsLocalMode(true)
-            } else {
-              console.log('Erreur sauvegarde non critique, pas de mode local:', serverError.message)
-            }
-            const localApi = getLocalApi()
-            if (localApi) {
-              await localApi.updateSocialMedia(socialMedias)
-            }
-          }
-      }
+      // Sauvegarde LOCALE pour éviter les erreurs 429 (même système que réseaux shop)
+      localStorage.setItem('botSocialMediaList', JSON.stringify(socialMedias))
+      console.log('💾 Sauvegarde locale réseaux bot réussie:', socialMedias)
+      
+      toast.success('✅ Réseaux sociaux bot sauvegardés localement !')
       
     } catch (error) {
       console.error('Erreur sauvegarde:', error)
