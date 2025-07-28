@@ -1590,10 +1590,8 @@ const askServices = async (ctx) => {
   
   const keyboard = Markup.inlineKeyboard(availableButtons);
   
-  await safeEditMessage(ctx, message, {
-    reply_markup: keyboard.reply_markup,
-    parse_mode: 'Markdown'
-  });
+  // Utiliser editLastFormMessage pour garantir l'édition du message existant
+  await editLastFormMessage(ctx, userId, message, keyboard);
 };
 
 // Demander les départements pour la livraison (Étape 1: saisie départements)
