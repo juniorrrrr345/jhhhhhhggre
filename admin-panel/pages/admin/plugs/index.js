@@ -26,6 +26,7 @@ export default function AccueilAdmin() {
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
   const [filter, setFilter] = useState('all')
+  const [syncing, setSyncing] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
   const router = useRouter()
@@ -161,6 +162,45 @@ export default function AccueilAdmin() {
     }
   }
 
+  const syncWithMainServer = async () => {
+    if (syncing) return;
+    
+    setSyncing(true);
+    
+    try {
+      toast.info('🔄 Synchronisation en cours...');
+      
+      const response = await fetch('/api/sync-local', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      });
+      
+      if (response.ok) {
+        const result = await response.json();
+        toast.success(`✅ ${result.message}`);
+        
+        // Recharger les données après synchronisation
+        await fetchPlugs();
+        
+        // Forcer la synchronisation de la mini-app
+        await simpleApi.syncImmediateMiniApp('data_synced');
+        
+      } else {
+        const error = await response.json();
+        if (response.status === 503) {
+          toast.error('⚠️ Serveur principal indisponible');
+        } else {
+          toast.error(`❌ Erreur: ${error.message}`);
+        }
+      }
+    } catch (error) {
+      console.error('Erreur synchronisation:', error);
+      toast.error('❌ Erreur de synchronisation');
+    } finally {
+      setSyncing(false);
+    }
+  }
+
   const StatusBadge = ({ isActive, isVip }) => {
     if (isVip) {
       return (
@@ -204,10 +244,26 @@ export default function AccueilAdmin() {
               Vue d'ensemble de votre plateforme
             </p>
           </div>
-          <div className="mt-4 flex md:mt-0 md:ml-4">
+          <div className="mt-4 flex space-x-3 md:mt-0 md:ml-4">
+            <button
+              onClick={syncWithMainServer}
+              disabled={syncing}
+              className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
+            >
+              {syncing ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-600 mr-2"></div>
+                  Synchronisation...
+                </>
+              ) : (
+                <>
+                  🔄 Synchroniser
+                </>
+              )}
+            </button>
             <button
               onClick={() => router.push('/admin/plugs/new')}
-              className="ml-3 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
+              className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
             >
               <PlusIcon className="-ml-1 mr-2 h-5 w-5" />
               Nouvelle boutique

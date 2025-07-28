@@ -289,44 +289,51 @@ useEffect(() => {
       
       let data = null
       
-      // STRATÉGIE: Serveur principal -> API locale fallback
+      // STRATÉGIE: API LOCALE EN PRIORITÉ ABSOLUE
       try {
-        console.log('🔄 Tentative serveur principal...')
-        const response = await Promise.race([
-          fetch('https://jhhhhhhggre.onrender.com/api/public/plugs?limit=50', {
-            method: 'GET',
-            headers: { 'Content-Type': 'application/json' }
-          }),
-          new Promise((_, reject) => 
-            setTimeout(() => reject(new Error('Timeout 5s')), 5000)
-          )
-        ])
+        console.log('🔄 Chargement depuis API locale (priorité absolue)...')
+        const localResponse = await fetch('/api/local-plugs', {
+          method: 'GET',
+          headers: { 'Content-Type': 'application/json' },
+          cache: 'no-cache'
+        })
         
-        if (response.ok) {
-          data = await response.json()
-          console.log('✅ Données du serveur principal récupérées')
-        } else {
-          throw new Error(`Serveur principal: ${response.status}`)
-        }
-      } catch (mainError) {
-        console.log('❌ Serveur principal échoué:', mainError.message)
-        
-        // Fallback vers API locale
-        try {
-          console.log('🔄 Fallback vers API locale...')
-          const localResponse = await fetch('/api/local-plugs', {
-            method: 'GET',
-            headers: { 'Content-Type': 'application/json' }
-          })
+        if (localResponse.ok) {
+          data = await localResponse.json()
+          console.log('✅ Données API locale récupérées:', data.count, 'boutiques')
           
-          if (localResponse.ok) {
-            data = await localResponse.json()
-            console.log('✅ Données locales récupérées')
-          } else {
-            throw new Error('API locale indisponible')
+          // Si l'API locale est vide ou a seulement des données de test, essayer le serveur principal
+          if (!data.plugs || data.plugs.length === 0 || (data.plugs.length === 1 && data.plugs[0]._id === 'local_1')) {
+            console.log('⚠️ API locale vide, tentative serveur principal...')
+            throw new Error('API locale vide')
           }
-        } catch (localError) {
-          console.error('❌ API locale échouée:', localError.message)
+        } else {
+          throw new Error('API locale indisponible')
+        }
+      } catch (localError) {
+        console.log('❌ API locale échouée:', localError.message)
+        
+        // Fallback vers serveur principal seulement si API locale échoue
+        try {
+          console.log('🔄 Fallback vers serveur principal...')
+          const response = await Promise.race([
+            fetch('https://jhhhhhhggre.onrender.com/api/public/plugs?limit=50', {
+              method: 'GET',
+              headers: { 'Content-Type': 'application/json' }
+            }),
+            new Promise((_, reject) => 
+              setTimeout(() => reject(new Error('Timeout 5s')), 5000)
+            )
+          ])
+          
+          if (response.ok) {
+            data = await response.json()
+            console.log('✅ Données du serveur principal récupérées')
+          } else {
+            throw new Error(`Serveur principal: ${response.status}`)
+          }
+        } catch (mainError) {
+          console.error('❌ Serveur principal échoué:', mainError.message)
           throw new Error('Toutes les APIs sont indisponibles')
         }
       }
