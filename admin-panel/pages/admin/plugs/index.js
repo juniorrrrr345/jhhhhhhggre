@@ -155,7 +155,7 @@ export default function AccueilAdmin() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          endpoint: `plugs/${id}`,
+                      endpoint: `/api/plugs/${id}`,
           method: 'DELETE',
           token: localStorage.getItem('adminToken')
         })
