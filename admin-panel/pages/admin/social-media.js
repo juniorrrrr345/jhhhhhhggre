@@ -436,7 +436,13 @@ export default function SocialMediaManager() {
                 
                 <div className="space-y-4">
                   {socialMedias.map((social, index) => (
-                    <div key={social.id} className={`border rounded-lg p-4 ${social.enabled ? 'border-green-200 bg-green-50' : 'border-gray-200 bg-gray-50'}`}>
+                    <div key={social.id} className={`border rounded-lg p-4 transition-all duration-200 ${
+                      editingId === social.id 
+                        ? 'border-blue-300 bg-blue-50 shadow-md' 
+                        : social.enabled 
+                          ? 'border-green-200 bg-green-50' 
+                          : 'border-gray-200 bg-gray-50'
+                    }`}>
                       <div className="flex items-center justify-between mb-3">
                         <div className="flex items-center space-x-3">
                           <span className="text-2xl">{social.emoji || '🔗'}</span>
@@ -468,9 +474,10 @@ export default function SocialMediaManager() {
                           
                           <button
                             onClick={() => setEditingId(editingId === social.id ? null : social.id)}
-                            className="text-blue-600 hover:text-blue-800 text-sm"
+                            className="text-blue-600 hover:text-blue-800 text-sm font-medium px-2 py-1 rounded border border-blue-200 hover:bg-blue-100 transition-colors"
+                            title={editingId === social.id ? "Valider les modifications" : "Modifier ce réseau"}
                           >
-                            {editingId === social.id ? '✅' : '✏️'}
+                            {editingId === social.id ? '✅ Valider' : '✏️ Modifier'}
                           </button>
                           
                           <button
