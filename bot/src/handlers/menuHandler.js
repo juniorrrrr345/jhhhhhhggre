@@ -129,14 +129,15 @@ const handleInfo = async (ctx) => {
     const currentLang = config?.languages?.currentLanguage || 'fr';
     const customTranslations = config?.languages?.translations;
     
-    // Affichage info classique avec traductions - TEXTE SEULEMENT
+    // Affichage info avec texte configurable depuis l'admin
     const infoTitle = getTranslation('menu_info', currentLang, customTranslations);
     const defaultInfoText = getTranslation('info_default_text', currentLang, customTranslations) || 'Découvrez notre plateforme premium.';
     
-    // Utiliser SEULEMENT le texte de traduction (ignorer la config admin pour éviter les réseaux sociaux)
-    console.log('ℹ️ Info content utilisé (texte seul):', defaultInfoText);
+    // Utiliser le texte configuré dans l'admin en priorité, puis fallback sur traductions
+    const finalInfoText = config?.buttons?.info?.content || defaultInfoText;
+    console.log('ℹ️ Info content utilisé:', finalInfoText);
     
-    const message = `${infoTitle}\n\n${defaultInfoText}`;
+    const message = `${infoTitle}\n\n${finalInfoText}`;
 
     const keyboard = createMainKeyboard(config);
 
