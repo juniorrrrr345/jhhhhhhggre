@@ -24,7 +24,7 @@ export default function ShopHome() {
     const lowercaseName = name.toLowerCase()
     if (lowercaseName.includes('telegram')) return 'https://i.imgur.com/PP2GVMv.png'
     if (lowercaseName.includes('discord')) return 'https://i.imgur.com/JgmWPPZ.png'
-    if (lowercaseName.includes('instagram')) return 'https://i.imgur.com/YBE4cnb.jpeg'
+    if (lowercaseName.includes('instagram')) return 'https://i.imgur.com/O5TxmOS.jpeg'
     if (lowercaseName.includes('whatsapp')) return 'https://i.imgur.com/WhatsApp.png'
     if (lowercaseName.includes('twitter') || lowercaseName.includes('x')) return 'https://i.imgur.com/twitter.png'
     if (lowercaseName.includes('facebook')) return 'https://i.imgur.com/facebook.png'
@@ -556,7 +556,7 @@ export default function ShopHome() {
                 },
                 { 
                   name: 'Instagram', 
-                  logo: 'https://i.imgur.com/YBE4cnb.jpeg',
+                  logo: 'https://i.imgur.com/O5TxmOS.jpeg',
                   url: 'https://www.instagram.com/find.yourplug?igsh=ajRwcjE1eGhoaXMz&utm_source=qr'
                 },
                 { 
