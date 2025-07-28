@@ -4229,12 +4229,77 @@ const start = async () => {
       console.log('✅ Bot en mode polling (développement)');
     }
     
+    // Initialiser les traductions personnalisées au démarrage
+    async function initializeCustomTranslations() {
+      try {
+        const config = await Config.findById('main');
+        if (!config) return;
+        
+        // Vérifier si les traductions personnalisées existent déjà
+        const hasContactTranslations = config.buttons?.contact?.contentTranslations?.size > 0;
+        const hasInfoTranslations = config.buttons?.info?.contentTranslations?.size > 0;
+        
+        if (!hasContactTranslations || !hasInfoTranslations) {
+          console.log('🌐 Initialisation des traductions Contact/Info...');
+          
+          // Récupérer les messages actuels en français
+          const contactMessageFr = config.buttons?.contact?.content || "Contactez-nous pour plus d'informations.";
+          const infoMessageFr = config.buttons?.info?.content || "Informations sur notre plateforme.";
+          
+          // Définir les traductions par défaut basées sur les messages français
+          const defaultTranslations = {
+            contact: {
+              fr: contactMessageFr,
+              en: "Contact us for more information.",
+              it: "Contattaci per maggiori informazioni.",
+              es: "Contáctanos para más información.",
+              de: "Kontaktieren Sie uns für weitere Informationen."
+            },
+            info: {
+              fr: infoMessageFr,
+              en: "Information about our platform.",
+              it: "Informazioni sulla nostra piattaforma.",
+              es: "Información sobre nuestra plataforma.",
+              de: "Informationen über unsere Plattform."
+            }
+          };
+          
+          // Sauvegarder les traductions
+          if (!config.buttons) config.buttons = {};
+          if (!config.buttons.contact) config.buttons.contact = {};
+          if (!config.buttons.info) config.buttons.info = {};
+          
+          if (!hasContactTranslations) {
+            config.buttons.contact.contentTranslations = new Map();
+            Object.entries(defaultTranslations.contact).forEach(([lang, text]) => {
+              config.buttons.contact.contentTranslations.set(lang, text);
+            });
+          }
+          
+          if (!hasInfoTranslations) {
+            config.buttons.info.contentTranslations = new Map();
+            Object.entries(defaultTranslations.info).forEach(([lang, text]) => {
+              config.buttons.info.contentTranslations.set(lang, text);
+            });
+          }
+          
+          await config.save();
+          console.log('✅ Traductions Contact/Info initialisées');
+        }
+      } catch (error) {
+        console.error('⚠️ Erreur initialisation traductions:', error);
+      }
+    }
+
     // Démarrer le serveur Express
     app.listen(PORT, () => {
       console.log(`✅ Serveur démarré sur le port ${PORT}`);
       console.log(`📱 Bot Telegram connecté`);
       console.log(`🌐 API disponible sur http://localhost:${PORT}`);
       console.log(`📊 Cache: ${cache.plugs?.length || 0} plugs, config: ${cache.config ? 'OK' : 'KO'}`);
+      
+      // Initialiser les traductions après le démarrage
+      setTimeout(initializeCustomTranslations, 5000);
     });
     
   } catch (error) {
