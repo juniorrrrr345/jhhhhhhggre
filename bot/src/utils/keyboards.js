@@ -204,6 +204,10 @@ const createMainKeyboard = (config) => {
     });
   }
   
+  // Bouton "Actualiser" tout en bas du menu
+  const refreshText = getTranslation('menu_refresh', currentLang, customTranslations) || '🔄 Actualiser';
+  buttons.push([Markup.button.callback(refreshText, 'refresh_and_main')]);
+  
   return Markup.inlineKeyboard(buttons);
 };
 

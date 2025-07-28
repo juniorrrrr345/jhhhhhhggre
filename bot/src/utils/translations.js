@@ -46,6 +46,13 @@ const translations = {
       es: '🗣️ Cambiar idioma',
       de: '🗣️ Sprache ändern'
     },
+    'menu_refresh': {
+      fr: '🔄 Actualiser',
+      en: '🔄 Refresh',
+      it: '🔄 Aggiorna',
+      es: '🔄 Actualizar',
+      de: '🔄 Aktualisieren'
+    },
     'menu_selectLanguage': {
       fr: 'Sélectionnez votre langue préférée :',
       en: 'Select your preferred language:',

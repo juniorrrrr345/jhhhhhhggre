@@ -396,29 +396,13 @@ bot.action(/^lang_(.+)$/, async (ctx) => {
       }
     }
 
-    // Confirmation et afficher un message intermédiaire avec bouton actualiser
+    // Confirmation et aller directement au menu principal avec la nouvelle langue
     const translations = require('./src/utils/translations');
     const languageName = translations.translations.languages[newLanguage]?.name || newLanguage;
     await ctx.answerCbQuery(`✅ ${languageName} sélectionnée !`);
     
-    // Afficher message avec bouton actualiser
-    const refreshMessage = `✅ Langue sélectionnée : **${languageName}**\n\n🔄 Cliquez sur "Actualiser" pour voir les dernières mises à jour et accéder au menu principal.`;
-    
-    const refreshKeyboard = Markup.inlineKeyboard([
-      [Markup.button.callback('🔄 Actualiser', 'refresh_and_main')]
-    ]);
-    
-    try {
-      await ctx.editMessageText(refreshMessage, {
-        reply_markup: refreshKeyboard.reply_markup,
-        parse_mode: 'Markdown'
-      });
-    } catch (editError) {
-      await ctx.reply(refreshMessage, {
-        reply_markup: refreshKeyboard.reply_markup,
-        parse_mode: 'Markdown'
-      });
-    }
+    // Aller directement au menu principal dans la nouvelle langue
+    await showMainMenuInLanguage(ctx, config, newLanguage);
     
   } catch (error) {
     console.error('❌ Erreur changement langue:', error);
