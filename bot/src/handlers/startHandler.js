@@ -191,25 +191,43 @@ const handleBackMain = async (ctx) => {
     
     console.log(`🌍 Langue actuelle pour le retour: ${currentLang}`);
 
-    // Utiliser directement les traductions pour que le message change selon la langue
-    const welcomeMessage = getTranslation('messages_welcome', currentLang, customTranslations);
-    console.log('📝 Message d\'accueil (retour menu) utilisé:', welcomeMessage);
+    // Récupérer les statistiques (même logique que showMainMenuInLanguage)
+    let userCount = 0;
+    let shopCount = 0;
+    
+    try {
+      const User = require('../models/User');
+      const Plug = require('../models/Plug');
+      userCount = await User.countDocuments({ isActive: true });
+      shopCount = await Plug.countDocuments({ isActive: true });
+      console.log(`📊 Statistiques (retour menu): ${userCount} utilisateurs, ${shopCount} boutiques`);
+    } catch (statsError) {
+      console.log('⚠️ Erreur récupération statistiques (retour menu):', statsError.message);
+    }
+
+    // Construire le message complet avec statistiques traduites (même format que showMainMenuInLanguage)
+    const baseMessage = config?.welcome?.text || getTranslation('messages_welcome', currentLang, customTranslations);
+    const activeUsersText = getTranslation('messages_activeUsers', currentLang, customTranslations);
+    const availableShopsText = getTranslation('messages_availableShops', currentLang, customTranslations);
+    const welcomeMessage = `${baseMessage}\n\n📊 **${userCount}** ${activeUsersText}\n🏪 **${shopCount}** ${availableShopsText}`;
+    
+    console.log('📝 Message d\'accueil complet (retour menu) utilisé:', welcomeMessage);
     
     const keyboard = createMainKeyboard(config);
     
-    console.log('📝 Message d\'accueil préparé pour le retour avec traduction');
+    console.log('📝 Message d\'accueil préparé pour le retour avec traduction et statistiques');
     
     // Utiliser la fonction helper pour gérer l'image de façon cohérente
     await editMessageWithImage(ctx, welcomeMessage, keyboard, config, { parse_mode: 'Markdown' });
     
-    console.log('✅ Retour au menu principal terminé');
+    console.log('✅ Retour au menu principal terminé avec message cohérent');
   } catch (error) {
     console.error('❌ Erreur dans handleBackMain:', error);
     // Fallback : répondre avec le message de démarrage
     try {
       await ctx.answerCbQuery('❌ Erreur lors du retour au menu').catch(() => {});
-    } catch (cbError) {
-      console.error('❌ Erreur lors de answerCbQuery:', cbError);
+    } catch (fallbackError) {
+      console.error('❌ Erreur fallback handleBackMain:', fallbackError);
     }
   }
 };
