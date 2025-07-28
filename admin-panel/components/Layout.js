@@ -9,8 +9,7 @@ import {
   ChartBarIcon,
   ArrowRightOnRectangleIcon,
   Bars3Icon,
-  XMarkIcon,
-  BellIcon
+  XMarkIcon
 } from '@heroicons/react/24/outline'
 
 const navigation = [
@@ -19,7 +18,6 @@ const navigation = [
   { name: 'Analytics Géo', href: '/admin/user-analytics', icon: ChartBarIcon },
   { name: 'Messages', href: '/admin/messages', icon: ChartBarIcon },
   { name: 'Demandes', href: '/admin/applications', icon: ChartBarIcon },
-  { name: 'Notifications', href: '/admin/notifications', icon: BellIcon },
   { name: 'Réseaux Sociaux', href: '/admin/social-media', icon: UserGroupIcon },
   { name: 'Réseaux Shop', href: '/admin/shop-social', icon: UserGroupIcon },
   { name: 'Liens Telegram', href: '/admin/telegram-links', icon: UserGroupIcon },
