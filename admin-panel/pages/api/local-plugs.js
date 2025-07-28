@@ -1,43 +1,52 @@
 // API locale de fallback pour les boutiques quand le serveur principal est down
-import { readFileSync, writeFileSync, existsSync } from 'fs';
-import { join } from 'path';
+// Version adaptée pour Vercel (serverless) - stockage en mémoire
 
-const LOCAL_DATA_FILE = join(process.cwd(), 'data', 'local-plugs.json');
-
-// Créer le dossier data s'il n'existe pas
-const dataDir = join(process.cwd(), 'data');
-if (!existsSync(dataDir)) {
-  require('fs').mkdirSync(dataDir, { recursive: true });
-}
-
-// Données par défaut
-const DEFAULT_DATA = {
+// Stockage en mémoire (temporaire par session)
+let memoryData = {
   plugs: [],
   lastUpdate: new Date().toISOString()
 };
 
-// Lire les données locales
-function readLocalData() {
-  try {
-    if (existsSync(LOCAL_DATA_FILE)) {
-      const data = readFileSync(LOCAL_DATA_FILE, 'utf8');
-      return JSON.parse(data);
-    }
-  } catch (error) {
-    console.error('Erreur lecture données locales:', error);
+// Données par défaut simulées pour les tests
+const DEFAULT_PLUGS = [
+  {
+    _id: 'local_1',
+    name: 'Boutique Test Local',
+    description: 'Boutique de test pour mode local',
+    image: '',
+    telegramLink: '',
+    countries: ['France'],
+    isActive: true,
+    isVip: false,
+    vipOrder: 1,
+    services: {
+      delivery: {
+        enabled: true,
+        description: 'Livraison Paris',
+        departments: ['75']
+      },
+      postal: {
+        enabled: true,
+        description: 'Expédition France',
+        countries: ['France']
+      },
+      meetup: {
+        enabled: false,
+        description: '',
+        departments: []
+      }
+    },
+    socialMedia: [],
+    likes: 0,
+    likedBy: [],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
   }
-  return DEFAULT_DATA;
-}
+];
 
-// Sauvegarder les données locales
-function saveLocalData(data) {
-  try {
-    writeFileSync(LOCAL_DATA_FILE, JSON.stringify(data, null, 2));
-    return true;
-  } catch (error) {
-    console.error('Erreur sauvegarde données locales:', error);
-    return false;
-  }
+// Initialiser avec des données par défaut si vide
+if (memoryData.plugs.length === 0) {
+  memoryData.plugs = [...DEFAULT_PLUGS];
 }
 
 export default async function handler(req, res) {
@@ -55,24 +64,27 @@ export default async function handler(req, res) {
   const { id } = query;
 
   try {
-    const localData = readLocalData();
+    console.log(`🔧 API locale: ${method} ${id ? `- ID: ${id}` : ''}`);
 
     switch (method) {
       case 'GET':
         if (id) {
           // Récupérer une boutique spécifique
-          const plug = localData.plugs.find(p => p._id === id || p.id === id);
+          const plug = memoryData.plugs.find(p => p._id === id || p.id === id);
           if (!plug) {
+            console.log(`❌ Boutique ${id} non trouvée`);
             return res.status(404).json({ error: 'Boutique non trouvée' });
           }
+          console.log(`✅ Boutique ${id} trouvée localement`);
           res.status(200).json(plug);
         } else {
           // Récupérer toutes les boutiques
+          console.log(`📦 Retour de ${memoryData.plugs.length} boutiques locales`);
           res.status(200).json({
             success: true,
-            plugs: localData.plugs,
-            count: localData.plugs.length,
-            source: 'local'
+            plugs: memoryData.plugs,
+            count: memoryData.plugs.length,
+            source: 'local-memory'
           });
         }
         break;
@@ -80,27 +92,24 @@ export default async function handler(req, res) {
       case 'POST':
         // Créer une nouvelle boutique
         const newPlug = {
-          _id: Date.now().toString(),
+          _id: `local_${Date.now()}`,
           ...body,
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
-          likes: 0,
-          likedBy: [],
+          likes: body.likes || 0,
+          likedBy: body.likedBy || [],
           isActive: body.isActive !== undefined ? body.isActive : true
         };
         
-        localData.plugs.push(newPlug);
-        localData.lastUpdate = new Date().toISOString();
+        memoryData.plugs.push(newPlug);
+        memoryData.lastUpdate = new Date().toISOString();
         
-        if (saveLocalData(localData)) {
-          res.status(201).json({
-            success: true,
-            plug: newPlug,
-            message: 'Boutique créée localement'
-          });
-        } else {
-          res.status(500).json({ error: 'Erreur sauvegarde locale' });
-        }
+        console.log(`✅ Nouvelle boutique créée localement: ${newPlug.name}`);
+        res.status(201).json({
+          success: true,
+          plug: newPlug,
+          message: 'Boutique créée localement (mémoire)'
+        });
         break;
 
       case 'PUT':
@@ -109,28 +118,26 @@ export default async function handler(req, res) {
           return res.status(400).json({ error: 'ID requis pour la modification' });
         }
         
-        const plugIndex = localData.plugs.findIndex(p => p._id === id || p.id === id);
+        const plugIndex = memoryData.plugs.findIndex(p => p._id === id || p.id === id);
         if (plugIndex === -1) {
+          console.log(`❌ Boutique ${id} non trouvée pour modification`);
           return res.status(404).json({ error: 'Boutique non trouvée' });
         }
         
-        localData.plugs[plugIndex] = {
-          ...localData.plugs[plugIndex],
+        memoryData.plugs[plugIndex] = {
+          ...memoryData.plugs[plugIndex],
           ...body,
           _id: id,
           updatedAt: new Date().toISOString()
         };
-        localData.lastUpdate = new Date().toISOString();
+        memoryData.lastUpdate = new Date().toISOString();
         
-        if (saveLocalData(localData)) {
-          res.status(200).json({
-            success: true,
-            plug: localData.plugs[plugIndex],
-            message: 'Boutique modifiée localement'
-          });
-        } else {
-          res.status(500).json({ error: 'Erreur sauvegarde locale' });
-        }
+        console.log(`✅ Boutique ${id} modifiée localement`);
+        res.status(200).json({
+          success: true,
+          plug: memoryData.plugs[plugIndex],
+          message: 'Boutique modifiée localement (mémoire)'
+        });
         break;
 
       case 'DELETE':
@@ -139,23 +146,21 @@ export default async function handler(req, res) {
           return res.status(400).json({ error: 'ID requis pour la suppression' });
         }
         
-        const deleteIndex = localData.plugs.findIndex(p => p._id === id || p.id === id);
+        const deleteIndex = memoryData.plugs.findIndex(p => p._id === id || p.id === id);
         if (deleteIndex === -1) {
+          console.log(`❌ Boutique ${id} non trouvée pour suppression`);
           return res.status(404).json({ error: 'Boutique non trouvée' });
         }
         
-        const deletedPlug = localData.plugs.splice(deleteIndex, 1)[0];
-        localData.lastUpdate = new Date().toISOString();
+        const deletedPlug = memoryData.plugs.splice(deleteIndex, 1)[0];
+        memoryData.lastUpdate = new Date().toISOString();
         
-        if (saveLocalData(localData)) {
-          res.status(200).json({
-            success: true,
-            plug: deletedPlug,
-            message: 'Boutique supprimée localement'
-          });
-        } else {
-          res.status(500).json({ error: 'Erreur sauvegarde locale' });
-        }
+        console.log(`✅ Boutique ${id} supprimée localement`);
+        res.status(200).json({
+          success: true,
+          plug: deletedPlug,
+          message: 'Boutique supprimée localement (mémoire)'
+        });
         break;
 
       default:
@@ -164,7 +169,7 @@ export default async function handler(req, res) {
         break;
     }
   } catch (error) {
-    console.error('Erreur API locale:', error);
+    console.error('❌ Erreur API locale:', error);
     res.status(500).json({ 
       error: 'Erreur interne du serveur local',
       details: error.message 
