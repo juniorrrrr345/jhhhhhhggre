@@ -128,8 +128,6 @@ const redirectToShopDetails = async (ctx, boutique) => {
     const customTranslations = config?.languages?.translations;
 
     let message = `${boutique.isVip ? '⭐ ' : ''}**${boutique.name}**\n\n`;
-    const translatedDescription = translateDescription(boutique.description, currentLang);
-    message += `${getTranslation('shop_description_label', currentLang, customTranslations)} ${translatedDescription}\n\n`;
 
     // Services disponibles avec formatage amélioré et traductions
     const services = [];

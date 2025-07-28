@@ -3159,9 +3159,9 @@ app.put('/api/plugs/:id', authenticateAdmin, async (req, res) => {
     }
     
     // Validation des champs requis
-    if (!updateData.name || !updateData.description) {
+    if (!updateData.name) {
       return res.status(400).json({ 
-        error: 'Le nom et la description sont requis' 
+        error: 'Le nom de la boutique est requis' 
       });
     }
     

@@ -1498,8 +1498,6 @@ const handlePlugDetails = async (ctx, plugId, returnContext = 'top_plugs') => {
     const countryFlag = plug.countries && plug.countries.length > 0 ? getCountryFlag(plug.countries[0]) : '';
     const translatedName = translateShopName(plug.name, currentLang, plug.translations);
     let message = `${countryFlag} ${plug.isVip ? '⭐ ' : ''}**${translatedName}**\n\n`;
-    const translatedDescription = translateDescription(plug.description, currentLang, plug.translations);
-    message += `${getTranslation('shop_description_label', currentLang, customTranslations)} ${translatedDescription}\n\n`;
 
     // Services disponibles avec départements pour livraison/meetup et descriptions pour postal
     const services = [];

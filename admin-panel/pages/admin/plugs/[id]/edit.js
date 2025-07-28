@@ -277,14 +277,49 @@ export default function EditPlug() {
     try {
       safeToast.info('Sauvegarde en cours...')
 
-      // Nettoyer les données
+      // Nettoyer et valider les données
       const cleanData = JSON.parse(JSON.stringify(formData))
       delete cleanData._id
       delete cleanData.__v
       delete cleanData.updatedAt
       delete cleanData.createdAt
       
+      // Debug détaillé des champs critiques
       console.log('📦 Données à sauvegarder:', cleanData)
+      console.log('🌍 Pays sélectionnés:', cleanData.countries)
+      console.log('📦 Service livraison:', cleanData.services?.delivery)
+      console.log('📮 Service postal:', cleanData.services?.postal)
+      console.log('🤝 Service meetup:', cleanData.services?.meetup)
+      console.log('📱 Réseaux sociaux:', cleanData.socialMedia)
+      
+      // Valider que les données essentielles sont présentes
+      if (!cleanData.name || cleanData.name.trim() === '') {
+        throw new Error('Le nom de la boutique est requis')
+      }
+      
+      // S'assurer que les arrays ne sont pas undefined
+      cleanData.countries = cleanData.countries || []
+      cleanData.socialMedia = cleanData.socialMedia || []
+      
+      // Valider la structure des services
+      if (!cleanData.services) {
+        cleanData.services = {
+          delivery: { enabled: false, description: '', departments: [] },
+          postal: { enabled: false, description: '', countries: [] },
+          meetup: { enabled: false, description: '', departments: [] }
+        }
+      }
+      
+      // S'assurer que les departments/countries des services sont des arrays
+      if (cleanData.services.delivery) {
+        cleanData.services.delivery.departments = cleanData.services.delivery.departments || []
+      }
+      if (cleanData.services.postal) {
+        cleanData.services.postal.countries = cleanData.services.postal.countries || []
+      }
+      if (cleanData.services.meetup) {
+        cleanData.services.meetup.departments = cleanData.services.meetup.departments || []
+      }
 
       // Tentative 1: cors-proxy
       let response

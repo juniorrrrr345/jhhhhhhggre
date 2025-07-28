@@ -352,9 +352,7 @@ export default function AccueilAdmin() {
                         {plug.isVip && <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full">👑 VIP</span>}
                       </div>
                       
-                      <p className="text-xs text-gray-500 mb-2 truncate">
-                        {plug.description}
-                      </p>
+
                       
                       {/* Pays desservis */}
                       {plug.countries && plug.countries.length > 0 && (
