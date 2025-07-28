@@ -1845,14 +1845,19 @@ const initializeDefaultTranslations = async (Config) => {
   }
 };
 
-// Fonction pour traduire automatiquement les descriptions
-const translateDescription = (description, language = 'fr') => {
+// Fonction pour traduire automatiquement les descriptions en utilisant les traductions de la DB
+const translateDescription = (description, language = 'fr', translations = null) => {
   if (!description || language === 'fr') {
     return description; // Retourner tel quel si français ou vide
   }
 
-  // Dictionnaire de traductions pour mots/phrases communes
-  const translations = {
+  // Si des traductions automatiques sont disponibles, les utiliser
+  if (translations && translations.description && translations.description[language]) {
+    return translations.description[language];
+  }
+
+  // Fallback : dictionnaire de traductions pour mots/phrases communes
+  const fallbackTranslations = {
     en: {
       'livraison': 'delivery',
       'meetup': 'meetup', 
@@ -1943,12 +1948,12 @@ const translateDescription = (description, language = 'fr') => {
     }
   };
 
-  if (!translations[language]) {
+  if (!fallbackTranslations[language]) {
     return description; // Langue non supportée
   }
 
   let translatedText = description.toLowerCase();
-  const langDict = translations[language];
+  const langDict = fallbackTranslations[language];
 
   // Remplacer chaque mot/phrase
   Object.entries(langDict).forEach(([french, translated]) => {
@@ -1960,11 +1965,44 @@ const translateDescription = (description, language = 'fr') => {
   return translatedText.charAt(0).toUpperCase() + translatedText.slice(1);
 };
 
+// Fonction pour traduire les noms de boutiques
+const translateShopName = (name, language = 'fr', translations = null) => {
+  if (!name || language === 'fr') {
+    return name;
+  }
+
+  // Si des traductions automatiques sont disponibles, les utiliser
+  if (translations && translations.name && translations.name[language]) {
+    return translations.name[language];
+  }
+
+  // Fallback sur le nom original
+  return name;
+};
+
+// Fonction pour traduire les descriptions de services
+const translateServiceDescription = (description, language = 'fr', translations = null, serviceType = 'delivery') => {
+  if (!description || language === 'fr') {
+    return description;
+  }
+
+  // Si des traductions automatiques sont disponibles, les utiliser
+  if (translations && translations.services && translations.services[serviceType] && 
+      translations.services[serviceType].description && translations.services[serviceType].description[language]) {
+    return translations.services[serviceType].description[language];
+  }
+
+  // Fallback sur translateDescription
+  return translateDescription(description, language);
+};
+
 // Export
 module.exports = {
   translations,
   getTranslation,
   createLanguageKeyboard,
   initializeDefaultTranslations,
-  translateDescription
+  translateDescription,
+  translateShopName,
+  translateServiceDescription
 };

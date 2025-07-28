@@ -160,6 +160,52 @@ const plugSchema = new mongoose.Schema({
     type: Number,
     default: 0
   },
+  // Traductions automatiques
+  translations: {
+    name: {
+      fr: { type: String, default: '' },
+      en: { type: String, default: '' },
+      it: { type: String, default: '' },
+      es: { type: String, default: '' },
+      de: { type: String, default: '' }
+    },
+    description: {
+      fr: { type: String, default: '' },
+      en: { type: String, default: '' },
+      it: { type: String, default: '' },
+      es: { type: String, default: '' },
+      de: { type: String, default: '' }
+    },
+    services: {
+      delivery: {
+        description: {
+          fr: { type: String, default: '' },
+          en: { type: String, default: '' },
+          it: { type: String, default: '' },
+          es: { type: String, default: '' },
+          de: { type: String, default: '' }
+        }
+      },
+      postal: {
+        description: {
+          fr: { type: String, default: '' },
+          en: { type: String, default: '' },
+          it: { type: String, default: '' },
+          es: { type: String, default: '' },
+          de: { type: String, default: '' }
+        }
+      },
+      meetup: {
+        description: {
+          fr: { type: String, default: '' },
+          en: { type: String, default: '' },
+          it: { type: String, default: '' },
+          es: { type: String, default: '' },
+          de: { type: String, default: '' }
+        }
+      }
+    }
+  },
   createdAt: {
     type: Date,
     default: Date.now

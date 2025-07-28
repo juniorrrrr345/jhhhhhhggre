@@ -9,7 +9,7 @@ const {
   createPlugKeyboard
 } = require('../utils/keyboards');
 const { sendMessageWithImage, editMessageWithImage, sendPlugWithImage, safeEditMessage } = require('../utils/messageHelper');
-const { getTranslation, translateDescription } = require('../utils/translations');
+const { getTranslation, translateDescription, translateShopName, translateServiceDescription } = require('../utils/translations');
 // Service postal supprimé pour Telegram
 
 // SYSTÈME DE PRÉVENTION DE SPAM SUPPRIMÉ
@@ -1484,8 +1484,9 @@ const handlePlugDetails = async (ctx, plugId, returnContext = 'top_plugs') => {
 
     // Afficher le nom avec le drapeau du premier pays desservi
     const countryFlag = plug.countries && plug.countries.length > 0 ? getCountryFlag(plug.countries[0]) : '';
-    let message = `${countryFlag} ${plug.isVip ? '⭐ ' : ''}**${plug.name}**\n\n`;
-    const translatedDescription = translateDescription(plug.description, currentLang);
+    const translatedName = translateShopName(plug.name, currentLang, plug.translations);
+    let message = `${countryFlag} ${plug.isVip ? '⭐ ' : ''}**${translatedName}**\n\n`;
+    const translatedDescription = translateDescription(plug.description, currentLang, plug.translations);
     message += `${getTranslation('shop_description_label', currentLang, customTranslations)} ${translatedDescription}\n\n`;
 
     // Services disponibles avec départements pour livraison/meetup et descriptions pour postal
@@ -1513,7 +1514,7 @@ const handlePlugDetails = async (ctx, plugId, returnContext = 'top_plugs') => {
     if (plug.services?.postal?.enabled) {
       const serviceName = getTranslation('service_postal', currentLang, customTranslations);
       const serviceDesc = plug.services.postal.description ? 
-        `: ${translateDescription(plug.services.postal.description, currentLang)}` : '';
+        `: ${translateServiceDescription(plug.services.postal.description, currentLang, plug.translations, 'postal')}` : '';
       services.push(`📬 **${serviceName}**${serviceDesc}`);
     }
 

@@ -23,6 +23,7 @@ const { connectDB } = require('./src/utils/database');
 // Gestionnaires
 const { handleStart, handleBackMain } = require('./src/handlers/startHandler');
 const { getTranslation, createLanguageKeyboard, initializeDefaultTranslations } = require('./src/utils/translations');
+const translationService = require('./src/services/translationService');
 
 // Import de la liste des pays pour l'inscription
 const { COUNTRIES } = require('./src/handlers/applicationHandler');
@@ -2596,6 +2597,21 @@ app.post('/api/plugs', limits.admin, authenticateAdmin, async (req, res) => {
     
     const savedPlug = await newPlug.save();
     
+    // TRADUCTION AUTOMATIQUE de la boutique
+    try {
+      console.log('🌍 Démarrage traduction automatique...');
+      const translatedShop = await translationService.translateShop(savedPlug.toObject());
+      
+      // Sauvegarder les traductions dans la base de données
+      savedPlug.translations = translatedShop.translations;
+      await savedPlug.save();
+      
+      console.log('✅ Traduction automatique terminée pour:', savedPlug.name);
+    } catch (translationError) {
+      console.error('⚠️ Erreur traduction automatique:', translationError);
+      // Continuer même si la traduction échoue
+    }
+    
     // Générer automatiquement le lien de parrainage
     try {
       const botInfo = await bot.telegram.getMe();
@@ -2817,6 +2833,22 @@ app.put('/api/plugs/:id', authenticateAdmin, async (req, res) => {
     
     // Sauvegarder
     const updatedPlug = await plug.save();
+    
+    // TRADUCTION AUTOMATIQUE de la boutique mise à jour
+    try {
+      console.log('🌍 Démarrage re-traduction automatique...');
+      const translatedShop = await translationService.translateShop(updatedPlug.toObject());
+      
+      // Sauvegarder les nouvelles traductions
+      updatedPlug.translations = translatedShop.translations;
+      await updatedPlug.save();
+      
+      console.log('✅ Re-traduction automatique terminée pour:', updatedPlug.name);
+    } catch (translationError) {
+      console.error('⚠️ Erreur re-traduction automatique:', translationError);
+      // Continuer même si la traduction échoue
+    }
+    
     console.log('✅ Plug modifié:', updatedPlug.name);
     
     // Invalider le cache
@@ -4493,6 +4525,70 @@ app.post('/api/force-update-contact-info-translations', async (req, res) => {
     
   } catch (error) {
     console.error('❌ Erreur mise à jour traductions Contact/Info:', error);
+    res.status(500).json({ error: 'Erreur serveur' });
+  }
+});
+
+// API pour traduire automatiquement toutes les boutiques existantes
+app.post('/api/translate-all-shops', async (req, res) => {
+  try {
+    console.log('🌍 TRADUCTION DE TOUTES LES BOUTIQUES EXISTANTES');
+    
+    // Récupérer toutes les boutiques actives
+    const shops = await Plug.find({ isActive: true });
+    console.log(`📊 ${shops.length} boutiques à traduire`);
+    
+    let translated = 0;
+    let errors = 0;
+    
+    for (let i = 0; i < shops.length; i++) {
+      const shop = shops[i];
+      
+      try {
+        console.log(`🔄 Traduction ${i + 1}/${shops.length}: ${shop.name}`);
+        
+        // Traduire la boutique
+        const translatedShop = await translationService.translateShop(shop.toObject());
+        
+        // Sauvegarder les traductions
+        shop.translations = translatedShop.translations;
+        await shop.save();
+        
+        translated++;
+        console.log(`✅ ${shop.name} traduit avec succès`);
+        
+        // Pause entre les boutiques pour éviter le rate limiting
+        if (i < shops.length - 1) {
+          await new Promise(resolve => setTimeout(resolve, 1000));
+        }
+        
+      } catch (error) {
+        console.error(`❌ Erreur traduction ${shop.name}:`, error.message);
+        errors++;
+      }
+    }
+    
+    // Invalider les caches
+    configCache = null;
+    plugsCache = null;
+    if (typeof clearAllCaches === 'function') {
+      clearAllCaches();
+    }
+    
+    console.log(`🎉 Traduction terminée: ${translated} réussies, ${errors} erreurs`);
+    
+    res.json({ 
+      success: true, 
+      message: 'Traduction automatique de toutes les boutiques terminée',
+      stats: {
+        total: shops.length,
+        translated,
+        errors
+      }
+    });
+    
+  } catch (error) {
+    console.error('❌ Erreur traduction massive:', error);
     res.status(500).json({ error: 'Erreur serveur' });
   }
 });
