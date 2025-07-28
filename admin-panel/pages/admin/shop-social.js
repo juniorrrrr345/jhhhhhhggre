@@ -12,7 +12,7 @@ export default function ShopSocialMediaManager() {
       name: 'Telegram',
       emoji: '📱',
       url: 'https://t.me/+zcP68c4M_3NlM2Y0',
-      logo: 'https://i.imgur.com/PP2GVMv.png'
+      logo: 'https://i.imgur.com/54wA9SM.png'
     },
     {
       id: 'instagram',

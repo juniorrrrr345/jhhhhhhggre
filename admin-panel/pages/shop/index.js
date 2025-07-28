@@ -22,7 +22,7 @@ export default function ShopHome() {
   // Fonction pour assigner automatiquement un logo selon le nom (identique à l'admin)
   const getLogoByName = (name) => {
     const lowercaseName = name.toLowerCase()
-    if (lowercaseName.includes('telegram')) return 'https://i.imgur.com/PP2GVMv.png'
+    if (lowercaseName.includes('telegram')) return 'https://i.imgur.com/54wA9SM.png'
     if (lowercaseName.includes('discord')) return 'https://i.imgur.com/oXPAefr.png'
     if (lowercaseName.includes('instagram')) return 'https://i.imgur.com/O5TxmOS.jpeg'
     if (lowercaseName.includes('whatsapp')) return 'https://i.imgur.com/WhatsApp.png'
@@ -35,7 +35,7 @@ export default function ShopHome() {
     if (lowercaseName.includes('potato')) return 'https://i.imgur.com/nLVf0Hk.jpeg'
     if (lowercaseName.includes('luffa')) return 'https://i.imgur.com/PtqXOhb.png'
     if (lowercaseName.includes('find your plug') || lowercaseName.includes('findyourplug')) return 'https://i.imgur.com/VwBPgtw.jpeg'
-    return 'https://i.imgur.com/PP2GVMv.png' // Fallback vers Telegram
+          return 'https://i.imgur.com/54wA9SM.png' // Fallback vers Telegram
   }
 
   // Fonction pour calculer les styles de thème
@@ -611,7 +611,7 @@ useEffect(() => {
                 { 
                   id: 'telegram',
                   name: localSocialMedia?.find(s => s.id === 'telegram')?.name || 'Telegram',
-                  logo: 'https://i.imgur.com/PP2GVMv.png',
+                  logo: 'https://i.imgur.com/54wA9SM.png',
                   url: localSocialMedia?.find(s => s.id === 'telegram')?.url || 'https://t.me/+zcP68c4M_3NlM2Y0'
                 },
                 { 
@@ -684,7 +684,7 @@ useEffect(() => {
                   }}
                   onError={(e) => {
                     // Fallback vers un logo par défaut si l'image ne charge pas
-                    e.target.src = getLogoByName(social.name) || 'https://i.imgur.com/PP2GVMv.png';
+                    e.target.src = getLogoByName(social.name) || 'https://i.imgur.com/54wA9SM.png';
                   }}
                 />
               </a>
