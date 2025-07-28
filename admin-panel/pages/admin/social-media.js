@@ -143,8 +143,6 @@ export default function SocialMediaManager() {
           
           const configData = {
             socialMediaList: socialMedias,
-            // Synchroniser avec shopSocialMediaList pour la boutique
-            shopSocialMediaList: socialMedias,
             // Maintenir compatibilité avec l'ancien format pour le bot Telegram
             socialMedia: {
               telegram: socialMedias.find(s => s.id === 'telegram')?.url || '',
@@ -310,9 +308,7 @@ export default function SocialMediaManager() {
             const token = localStorage.getItem('adminToken') || 'JuniorAdmon123'
             
                          const configData = {
-               socialMediaList: updatedSocialMedias,
-               // Synchroniser avec shopSocialMediaList pour la boutique
-               shopSocialMediaList: updatedSocialMedias
+               socialMediaList: updatedSocialMedias
              }
              
              console.log('📤 Envoi au serveur - configData:', configData)
@@ -370,7 +366,6 @@ export default function SocialMediaManager() {
       
       const configData = {
         socialMediaList: socialMediasToSync,
-        shopSocialMediaList: socialMediasToSync,
         socialMedia: {
           telegram: socialMediasToSync.find(s => s.id === 'telegram')?.url || '',
           whatsapp: socialMediasToSync.find(s => s.id === 'whatsapp')?.url || ''
