@@ -239,6 +239,9 @@ export default function SocialMediaManager() {
       )
       console.log('📝 Réseaux sociaux après mise à jour:', updated.map(s => ({ id: s.id, name: s.name, [field]: s[field] })))
       
+      // Feedback visuel de la modification
+      toast.success(`${field} modifié (cliquez "Sauvegarder" pour synchroniser)`, { duration: 2000 })
+      
       return updated
     })
   }

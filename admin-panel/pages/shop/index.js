@@ -558,33 +558,51 @@ export default function ShopHome() {
             flexWrap: 'wrap'
           }}>
             {/* Réseaux sociaux fixes pour la boutique */}
-            {[
-              { 
-                name: 'Telegram', 
-                logo: 'https://i.imgur.com/PP2GVMv.png',
-                url: 'https://t.me/+zcP68c4M_3NlM2Y0'
-              },
-              { 
-                name: 'Instagram', 
-                logo: 'https://i.imgur.com/YBE4cnb.jpeg',
-                url: 'https://www.instagram.com/find.yourplug?igsh=ajRwcjE1eGhoaXMz&utm_source=qr'
-              },
-              { 
-                name: 'Luffa', 
-                logo: 'https://i.imgur.com/zkZtY0m.png',
-                url: 'https://callup.luffa.im/c/EnvtiTHkbvP'
-              },
-              { 
-                name: 'Discord', 
-                logo: 'https://i.imgur.com/JgmWPPZ.png',
-                url: 'https://discord.gg/g2dACUC3'
-              },
-              { 
-                name: 'Potato', 
-                logo: 'https://i.imgur.com/1iCRHRB.jpeg',
-                url: 'https://potato.com'
+            {(() => {
+              // Réseaux par défaut
+              const defaultNetworks = [
+                { 
+                  name: 'Telegram', 
+                  logo: 'https://i.imgur.com/PP2GVMv.png',
+                  url: 'https://t.me/+zcP68c4M_3NlM2Y0'
+                },
+                { 
+                  name: 'Instagram', 
+                  logo: 'https://i.imgur.com/YBE4cnb.jpeg',
+                  url: 'https://www.instagram.com/find.yourplug?igsh=ajRwcjE1eGhoaXMz&utm_source=qr'
+                },
+                { 
+                  name: 'Luffa', 
+                  logo: 'https://i.imgur.com/zkZtY0m.png',
+                  url: 'https://callup.luffa.im/c/EnvtiTHkbvP'
+                },
+                { 
+                  name: 'Discord', 
+                  logo: 'https://i.imgur.com/JgmWPPZ.png',
+                  url: 'https://discord.gg/g2dACUC3'
+                },
+                { 
+                  name: 'Potato', 
+                  logo: 'https://i.imgur.com/1iCRHRB.jpeg',
+                  url: 'https://potato.com'
+                }
+              ];
+
+              // Si on a une config avec des réseaux shop, on met à jour les URLs
+              if (config?.shopSocialMediaList && Array.isArray(config.shopSocialMediaList)) {
+                return defaultNetworks.map(defaultNetwork => {
+                  const configNetwork = config.shopSocialMediaList.find(
+                    s => s.name && s.name.toLowerCase() === defaultNetwork.name.toLowerCase()
+                  );
+                  return {
+                    ...defaultNetwork,
+                    url: configNetwork?.url || defaultNetwork.url
+                  };
+                });
               }
-            ].map((social, index) => (
+
+              return defaultNetworks;
+            })().map((social, index) => (
               <a
                 key={index}
                 href={social.url}
