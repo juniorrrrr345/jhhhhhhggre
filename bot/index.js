@@ -98,7 +98,7 @@ const PORT = process.env.PORT || 3000;
 app.use(cors({
   origin: [
     'http://localhost:3000',
-    'https://safeplugslink.vercel.app',
+    'https://ledoc69.vercel.app',
     /\.vercel\.app$/,
     /\.onrender\.com$/
   ],
