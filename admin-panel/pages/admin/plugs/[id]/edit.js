@@ -281,11 +281,11 @@ export default function EditPlug() {
       delete cleanData.createdAt
       
       // Debug détaillé des champs critiques
-      console.log('📦 Données à sauvegarder:', cleanData)
+      console.log('📦 Données à sauvegarder:', JSON.stringify(cleanData, null, 2))
       console.log('🌍 Pays sélectionnés:', cleanData.countries)
-      console.log('📦 Service livraison:', cleanData.services?.delivery)
-      console.log('📮 Service postal:', cleanData.services?.postal)
-      console.log('🤝 Service meetup:', cleanData.services?.meetup)
+      console.log('📦 Service livraison départements:', cleanData.services?.delivery?.departments)
+      console.log('📮 Service postal pays:', cleanData.services?.postal?.countries)
+      console.log('🤝 Service meetup départements:', cleanData.services?.meetup?.departments)
       console.log('📱 Réseaux sociaux:', cleanData.socialMedia)
       
       // Valider que les données essentielles sont présentes
@@ -359,8 +359,8 @@ export default function EditPlug() {
           
           // Redirection après succès avec force refresh
           setTimeout(() => {
-            // Ajouter un paramètre pour forcer le refresh
-            router.push('/admin/plugs?refresh=' + Date.now())
+            // Forcer un rechargement complet de la page
+            window.location.href = '/admin/plugs?refresh=' + Date.now()
           }, 1500)
           
         

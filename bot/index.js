@@ -3150,7 +3150,7 @@ app.put('/api/plugs/:id', authenticateAdmin, async (req, res) => {
     const updateData = req.body;
     
     console.log(`📝 Modification du plug ${id}`);
-    console.log('📝 Données de mise à jour:', updateData);
+    console.log('📝 Données de mise à jour complètes:', JSON.stringify(updateData, null, 2));
     
     // Validation de l'ID
     if (!id || id === 'undefined' || id === 'null') {
