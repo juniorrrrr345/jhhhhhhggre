@@ -690,6 +690,41 @@ const translations = {
       es: '👆 Seleccione sus países de trabajo:',
       de: '👆 Wählen Sie Ihre Arbeitsländer:'
     },
+    'registration.meetupPostalTitle': {
+      fr: '🤝 Service "Meet Up" - Codes postaux',
+      en: '🤝 "Meet Up" Service - Postal codes',
+      it: '🤝 Servizio "Meet Up" - Codici postali',
+      es: '🤝 Servicio "Meet Up" - Códigos postales',
+      de: '🤝 "Meet Up" Service - Postleitzahlen'
+    },
+    'registration.currentCountry': {
+      fr: '📍 Pays actuel',
+      en: '📍 Current country',
+      it: '📍 Paese attuale',
+      es: '📍 País actual',
+      de: '📍 Aktuelles Land'
+    },
+    'registration.progression': {
+      fr: '📊 Progression',
+      en: '📊 Progress',
+      it: '📊 Progresso',
+      es: '📊 Progreso',
+      de: '📊 Fortschritt'
+    },
+    'registration.enterPostalCode': {
+      fr: 'Entrez le code postal pour',
+      en: 'Enter the postal code for',
+      it: 'Inserisci il codice postale per',
+      es: 'Ingrese el código postal para',
+      de: 'Geben Sie die Postleitzahl für ein'
+    },
+    'registration.postalCodeExample': {
+      fr: '💡 Vous pouvez entrer plusieurs codes postaux',
+      en: '💡 You can enter multiple postal codes',
+      it: '💡 Puoi inserire più codici postali',
+      es: '💡 Puede ingresar varios códigos postales',
+      de: '💡 Sie können mehrere Postleitzahlen eingeben'
+    },
     'registration.step13': {
       fr: '🟦 Étape 13 : Ville',
       en: '🟦 Step 13: City',
