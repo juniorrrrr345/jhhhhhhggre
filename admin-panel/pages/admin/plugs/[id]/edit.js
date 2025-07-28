@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/router'
 import Head from 'next/head'
 import toast, { Toaster } from 'react-hot-toast'
@@ -25,7 +25,7 @@ const safeToast = {
   },
   info: (message, options = {}) => {
     try {
-      return toast(message, { icon: '💾', ...options })
+      return toast(message, { icon: '🔄', ...options })
     } catch (e) {
       console.log('Toast info:', message)
     }
@@ -41,7 +41,6 @@ const countries = [
 export default function EditPlug() {
   const [formData, setFormData] = useState({
     name: '',
-    description: '',
     image: '',
     telegramLink: '',
     isVip: false,
@@ -68,10 +67,15 @@ export default function EditPlug() {
   })
   
   const [loading, setLoading] = useState(true)
-  const [saving, setSaving] = useState(false)
+  const [autoSaving, setAutoSaving] = useState(false)
+  const [lastSaved, setLastSaved] = useState(null)
   const [originalData, setOriginalData] = useState({})
   const [selectedCountries, setSelectedCountries] = useState([])
-  const [syncing, setSyncing] = useState(false)
+  
+  // Auto-save refs
+  const autoSaveTimeout = useRef(null)
+  const lastSaveData = useRef(null)
+  
   const router = useRouter()
   const { id } = router.query
 
