@@ -2,12 +2,14 @@ import '../styles/globals.css'
 import { Toaster } from 'react-hot-toast'
 import ErrorBoundary from '../components/ErrorBoundary'
 import SyncStatus from '../components/SyncStatus'
+import LanguageSync from '../components/LanguageSync'
 
 export default function App({ Component, pageProps }) {
   return (
     <ErrorBoundary>
       <Component {...pageProps} />
       <SyncStatus />
+      <LanguageSync />
       <Toaster 
         position="top-right"
         toastOptions={{

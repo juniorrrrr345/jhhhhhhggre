@@ -684,6 +684,19 @@ bot.action(/^lang_(.+)$/, async (ctx) => {
       if (typeof clearAllCaches === 'function') {
         clearAllCaches();
       }
+      
+      // SYNCHRONISER avec la mini-app
+      try {
+        const axios = require('axios');
+        await axios.post('https://sfeplugslink.vercel.app/api/sync-language', {
+          language: newLanguage,
+          userId: ctx.from.id
+        });
+        console.log(`🌐 Langue synchronisée avec la mini-app: ${newLanguage}`);
+      } catch (syncError) {
+        console.error('⚠️ Erreur sync mini-app:', syncError.message);
+        // Ne pas bloquer si la sync échoue
+      }
     }
 
     // Confirmation et aller directement au menu principal avec la nouvelle langue

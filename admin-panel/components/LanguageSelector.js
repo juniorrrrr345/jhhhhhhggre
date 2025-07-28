@@ -895,3 +895,12 @@ export function getCurrentLanguage() {
   }
   return 'fr'
 }
+
+// Fonction pour définir la langue actuelle
+export function setCurrentLanguage(language) {
+  if (typeof window !== 'undefined') {
+    localStorage.setItem('shop_language', language)
+    // Déclencher un événement pour notifier les autres composants
+    window.dispatchEvent(new CustomEvent('languageChanged', { detail: { language } }))
+  }
+}
