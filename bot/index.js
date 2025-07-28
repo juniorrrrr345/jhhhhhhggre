@@ -4787,7 +4787,7 @@ app.get('/api/admin/user-analytics', async (req, res) => {
 // API pour mettre à jour l'emoji Potato en base de données
 app.post('/api/force-update-potato-emoji', async (req, res) => {
   try {
-    console.log('🥔 Mise à jour emoji Potato : 🏴‍☠️ → 🥔');
+    console.log('🥔 Correction emoji Potato : 🏴‍☠️ → 🥔');
     
     const config = await Config.findById('main');
     if (!config) {
