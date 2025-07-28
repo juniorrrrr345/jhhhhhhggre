@@ -107,8 +107,31 @@ const showLanguageSelection = async (ctx, config) => {
     // Créer le clavier de sélection de langue
     const languageKeyboard = createLanguageKeyboard('fr', null); // Pas de langue sélectionnée au départ
     
-    // Envoyer avec l'image d'accueil
+    // Supprimer l'ancien menu s'il existe et envoyer un nouveau message
     try {
+      // Si c'est une commande /start (pas un callback), supprimer les anciens menus
+      if (!ctx.callbackQuery && ctx.message) {
+        console.log('🗑️ Suppression des anciens menus pour /start');
+        
+        // Essayer de supprimer les derniers messages du bot dans le chat
+        try {
+          // On essaie de supprimer les 3 derniers messages potentiels du bot
+          const chatId = ctx.chat.id;
+          const currentMessageId = ctx.message.message_id;
+          
+          for (let i = 1; i <= 5; i++) {
+            try {
+              await ctx.telegram.deleteMessage(chatId, currentMessageId - i);
+              console.log(`🗑️ Message ${currentMessageId - i} supprimé`);
+            } catch (deleteError) {
+              // Ignorer les erreurs de suppression (message déjà supprimé, trop ancien, etc.)
+            }
+          }
+        } catch (cleanupError) {
+          console.log('⚠️ Erreur lors du nettoyage:', cleanupError.message);
+        }
+      }
+      
       if (ctx.callbackQuery) {
         await editMessageWithImage(ctx, welcomeText, languageKeyboard, config, { 
           parse_mode: 'Markdown' 
