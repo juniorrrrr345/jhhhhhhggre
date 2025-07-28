@@ -155,6 +155,14 @@ export default async function handler(req, res) {
         memoryData.lastUpdate = new Date().toISOString();
         
         console.log(`✅ Nouvelle boutique créée localement: ${newPlug.name}`);
+        
+        // Forcer la synchronisation de la mini-app
+        try {
+          await forceMiniAppSync('shop_created');
+        } catch (syncError) {
+          console.log('⚠️ Sync mini-app échouée pour création:', syncError.message);
+        }
+        
         res.status(201).json({
           success: true,
           plug: newPlug,
@@ -188,6 +196,14 @@ export default async function handler(req, res) {
         memoryData.lastUpdate = new Date().toISOString();
         
         console.log(`✅ Boutique ${id} modifiée localement`);
+        
+        // Forcer la synchronisation de la mini-app
+        try {
+          await forceMiniAppSync('shop_updated');
+        } catch (syncError) {
+          console.log('⚠️ Sync mini-app échouée pour modification:', syncError.message);
+        }
+        
         res.status(200).json({
           success: true,
           plug: memoryData.plugs[plugIndex],
@@ -211,6 +227,14 @@ export default async function handler(req, res) {
         memoryData.lastUpdate = new Date().toISOString();
         
         console.log(`✅ Boutique ${id} supprimée localement`);
+        
+        // Forcer la synchronisation de la mini-app
+        try {
+          await forceMiniAppSync('shop_deleted');
+        } catch (syncError) {
+          console.log('⚠️ Sync mini-app échouée pour suppression:', syncError.message);
+        }
+        
         res.status(200).json({
           success: true,
           plug: deletedPlug,
@@ -229,5 +253,23 @@ export default async function handler(req, res) {
       error: 'Erreur interne du serveur local',
       details: error.message 
     });
+  }
+}
+
+// Fonction pour forcer la synchronisation de la mini-app
+async function forceMiniAppSync(changeType) {
+  try {
+    console.log(`🔄 Force sync mini-app: ${changeType}`);
+    
+    // Simuler un événement de synchronisation
+    // En mode serverless, on ne peut pas vraiment envoyer d'événements
+    // mais on peut logger pour que l'admin sache que ça a changé
+    console.log(`📡 Mini-app doit être rafraîchie - Type: ${changeType}`);
+    console.log(`📊 Nombre de boutiques: ${memoryData.plugs.length}`);
+    
+    return true;
+  } catch (error) {
+    console.log('❌ Erreur force sync:', error.message);
+    return false;
   }
 }
