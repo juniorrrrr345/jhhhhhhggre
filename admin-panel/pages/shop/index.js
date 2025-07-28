@@ -290,66 +290,24 @@ useEffect(() => {
 
   const fetchPlugs = async () => {
     try {
-      console.log('🔍 Chargement boutiques mini app...')
+      console.log('🔍 SIMPLE - Chargement direct API locale...')
       setLoading(true)
       
-      let data = null
+      // STRATÉGIE SIMPLE : API LOCALE EN PREMIER
+      const response = await fetch('/api/local-plugs', {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' }
+      })
       
-      // ÉTAPE 1: Essayer le serveur principal
-      try {
-        console.log('📡 Tentative serveur principal...')
-        const controller = new AbortController()
-        const timeoutId = setTimeout(() => controller.abort(), 8000)
-        
-        const response = await fetch('https://jhhhhhhggre.onrender.com/api/public/plugs?limit=50', {
-          method: 'GET',
-          headers: { 
-            'Content-Type': 'application/json',
-            'Cache-Control': 'no-cache'
-          },
-          signal: controller.signal
-        })
-        
-        clearTimeout(timeoutId)
-        
-        if (response.ok) {
-          data = await response.json()
-          console.log('✅ Serveur principal OK:', data?.plugs?.length || 0, 'boutiques')
-        } else {
-          throw new Error(`Serveur principal: ${response.status}`)
-        }
-      } catch (primaryError) {
-        console.warn('⚠️ Serveur principal indisponible:', primaryError.message)
-        
-        // ÉTAPE 2: Fallback vers API locale
-        try {
-          console.log('🔄 Fallback vers API locale...')
-          const localResponse = await fetch('/api/local-plugs', {
-            method: 'GET',
-            headers: { 'Content-Type': 'application/json' }
-          })
-          
-          if (localResponse.ok) {
-            const localData = await localResponse.json()
-            console.log('✅ API locale OK:', localData?.plugs?.length || 0, 'boutiques')
-            
-            // Adapter le format de l'API locale au format attendu
-            data = {
-              plugs: localData.plugs || [],
-              pagination: { page: 1, pages: 1, total: localData.plugs?.length || 0 }
-            }
-          } else {
-            throw new Error(`API locale: ${localResponse.status}`)
-          }
-        } catch (localError) {
-          console.error('❌ API locale aussi indisponible:', localError.message)
-          data = { plugs: [] }
-        }
+      if (!response.ok) {
+        throw new Error(`API locale failed: ${response.status}`)
       }
       
-      // TRAITEMENT DES DONNÉES
+      const data = await response.json()
+      console.log('✅ SIMPLE - Données API locale reçues:', data)
+      
       if (data && data.plugs && Array.isArray(data.plugs)) {
-        console.log('🎯 Boutiques mini app récupérées:', data.plugs.length)
+        console.log('🎯 SIMPLE - Boutiques récupérées:', data.plugs.length)
         
         // Tri intelligent: VIP en premier, puis par likes, puis par récence
         const sortedPlugs = data.plugs.sort((a, b) => {
@@ -379,25 +337,27 @@ useEffect(() => {
         })
         setLikesSync(likesData)
         
+        console.log('✅ SIMPLE - Boutiques affichées:', sortedPlugs.length)
+        
         // Afficher le TOP 5 du classement pour debug
         if (sortedPlugs.length > 0) {
-          console.log('🏆 TOP 5 ACCUEIL CLASSEMENT:')
+          console.log('🏆 SIMPLE - TOP 5 ACCUEIL:')
           sortedPlugs.slice(0, 5).forEach((plug, index) => {
             const badge = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `${index + 1}°`
             console.log(`${badge} ${plug.name}: ${plug.likes || 0} likes ${plug.isVip ? '👑VIP' : ''}`)
           })
         }
       } else {
-        console.log('⚠️ Aucune boutique trouvée')
+        console.log('⚠️ SIMPLE - Aucune boutique trouvée')
         setPlugs([])
       }
       
     } catch (error) {
-      console.error('❌ Erreur fatale chargement boutiques:', error.message)
+      console.error('❌ SIMPLE - Erreur:', error.message)
       setPlugs([])
     } finally {
       setLoading(false)
-      console.log('✅ Loading mini app terminé')
+      console.log('✅ SIMPLE - Loading terminé')
     }
   }
 
