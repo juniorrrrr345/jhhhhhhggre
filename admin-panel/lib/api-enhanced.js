@@ -140,8 +140,17 @@ class EnhancedAPI {
       data
     });
     
-    // Vider le cache des plugs et forcer le refresh
-    cache.clearByType(CACHE_TYPES.PLUGS);
+    // Vider TOUS les caches pour garantir la fraîcheur des données
+    cache.clear();
+    
+    // Vider aussi le localStorage et sessionStorage
+    if (typeof window !== 'undefined') {
+      const keysToRemove = ['plugsCache', 'apiCache', 'configCache', 'miniapp_last_fetch'];
+      keysToRemove.forEach(key => {
+        localStorage.removeItem(key);
+        sessionStorage.removeItem(key);
+      });
+    }
     
     // Forcer le refresh du bot
     this.refreshBot().catch(console.error);

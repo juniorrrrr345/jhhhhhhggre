@@ -3,6 +3,7 @@ import { useRouter } from 'next/router'
 import Layout from '../../../components/Layout'
 import toast from 'react-hot-toast'
 import { simpleApi } from '../../../lib/api-simple'
+import api from '../../../lib/api-enhanced'
 import { getRobustSync } from '../../../lib/robust-sync'
 import {
   PlusIcon,
@@ -240,7 +241,14 @@ export default function AccueilAdmin() {
     setSyncing(true);
     
     try {
-      toast.info('🔄 Synchronisation en cours...');
+      toast.info('🔄 Synchronisation et rafraîchissement complet...');
+      
+      // Vider tous les caches avant la synchronisation
+      api.clearCache();
+      simpleApi.clearCache && simpleApi.clearCache();
+      localStorage.removeItem('plugsCache');
+      localStorage.removeItem('apiCache');
+      sessionStorage.clear();
       
       const response = await fetch('/api/sync-local', {
         method: 'POST',
@@ -317,6 +325,19 @@ export default function AccueilAdmin() {
             </p>
           </div>
           <div className="mt-4 flex space-x-3 md:mt-0 md:ml-4">
+            <button
+              onClick={async () => {
+                // Rafraîchissement rapide
+                api.clearCache();
+                simpleApi.clearCache && simpleApi.clearCache();
+                await fetchData(localStorage.getItem('adminToken'));
+                toast.success('✅ Données rafraîchies');
+              }}
+              className="inline-flex items-center px-4 py-2 border border-blue-300 rounded-md shadow-sm text-sm font-medium text-blue-700 bg-white hover:bg-blue-50"
+              title="Rafraîchir les données"
+            >
+              🔃 Rafraîchir
+            </button>
             <button
               onClick={syncWithMainServer}
               disabled={syncing}
