@@ -34,7 +34,18 @@ const buildWelcomeMessage = async (config, currentLang = 'fr', customTranslation
     // Ajouter l'horodatage si demandé (pour refresh)
     if (includeTimestamp) {
       const refreshedAtText = getTranslation('messages_refreshedAt', currentLang, customTranslations);
-      const timestamp = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+      
+      // Formatter l'heure selon la langue choisie
+      const localeMap = {
+        'fr': 'fr-FR',
+        'en': 'en-US', 
+        'it': 'it-IT',
+        'es': 'es-ES',
+        'de': 'de-DE'
+      };
+      
+      const locale = localeMap[currentLang] || 'fr-FR';
+      const timestamp = new Date().toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' });
       welcomeMessage += `\n\n🔄 *${refreshedAtText} ${timestamp}*`;
     }
     
