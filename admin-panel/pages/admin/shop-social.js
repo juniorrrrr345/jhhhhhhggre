@@ -38,7 +38,7 @@ export default function ShopSocialMediaManager() {
     {
       id: 'potato',
       name: 'Potato',
-      emoji: '🥔',
+      emoji: '🏴‍☠️',
       url: 'https://potato.com',
       logo: 'https://i.imgur.com/nLVf0Hk.jpeg'
     }

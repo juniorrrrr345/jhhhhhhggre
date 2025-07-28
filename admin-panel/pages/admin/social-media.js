@@ -84,7 +84,7 @@ export default function SocialMediaManager() {
         )
         
         if (!hasPotatoInList) {
-          console.log('🥔 Potato manquant, ajout automatique avec emoji 🏴‍☠️')
+          console.log('🏴‍☠️ Potato manquant, ajout automatique avec emoji 🏴‍☠️')
           socialMediasWithIds.push({
             id: 'potato',
             name: 'Potato',

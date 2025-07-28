@@ -3,7 +3,9 @@ const mongoose = require('mongoose');
 // Connexion MongoDB
 const connectDB = async () => {
   try {
-    await mongoose.connect('mongodb+srv://admin:lCGYmBzwZwkpTgvT@tesye.qazpla.mongodb.net/testdatabase?retryWrites=true&w=majority');
+    // Utiliser la variable d'environnement MONGODB_URI si disponible
+    const mongoUri = process.env.MONGODB_URI || 'mongodb+srv://admin:lCGYmBzwZwkpTgvT@tesye.qazpla.mongodb.net/testdatabase?retryWrites=true&w=majority';
+    await mongoose.connect(mongoUri);
     console.log('✅ MongoDB connecté');
   } catch (error) {
     console.error('❌ Erreur MongoDB:', error);

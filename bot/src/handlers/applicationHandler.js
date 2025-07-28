@@ -3228,7 +3228,7 @@ const showFinalConfirmation = async (ctx) => {
   let allDetails = `📝 **Nom du plugin :** ${userForm.data.name || 'Non renseigné'}\n` +
     `📱 **Telegram :** ${userForm.data.telegram || 'Non renseigné'}\n` +
     `👻 **Snapchat :** ${userForm.data.snapchat || 'Passé'}\n` +
-    `🥔 **Potato :** ${userForm.data.potato || 'Passé'}\n` +
+            `🏴‍☠️ **Potato :** ${userForm.data.potato || 'Passé'}\n` +
     `📶 **Signal :** ${userForm.data.signal || 'Passé'}\n` +
     `💬 **WhatsApp :** ${userForm.data.whatsapp || 'Passé'}\n` +
     `🔒 **Threema :** ${userForm.data.threema || 'Passé'}\n` +

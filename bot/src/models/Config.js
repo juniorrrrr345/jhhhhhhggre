@@ -42,7 +42,7 @@ const configSchema = new mongoose.Schema({
     topPlugs: {
       text: {
         type: String,
-        default: '🔌 Top Des Plugs'
+        default: 'VOTER POUR VOTRE PLUG 🗳️'
       },
       enabled: {
         type: Boolean,

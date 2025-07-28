@@ -71,7 +71,7 @@ const connectDB = async (retryAttempt = 0) => {
             errorOccurred: 'Une erreur est survenue, veuillez réessayer.'
           },
           buttons: {
-            topPlugs: { text: '🔌 Top Des Plugs', enabled: true },
+            topPlugs: { text: 'VOTER POUR VOTRE PLUG 🗳️', enabled: true },
             contact: { text: '📞 Contact', content: 'Contactez-nous pour plus d\'informations.', enabled: true },
             info: { text: 'ℹ️ Info', content: 'Informations sur notre plateforme.', enabled: true }
           },

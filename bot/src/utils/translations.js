@@ -426,11 +426,11 @@ const translations = {
       de: '🟦 Schritt 3: Snapchat'
     },
     'registration.step4': {
-      fr: '🟦 Étape 4 : Potato Chat',
-      en: '🟦 Step 4: Potato Chat',
-      it: '🟦 Fase 4: Potato Chat',
-      es: '🟦 Paso 4: Potato Chat',
-      de: '🟦 Schritt 4: Potato Chat'
+      fr: '🟦 Étape 4 : Potato Chat 🏴‍☠️',
+      en: '🟦 Step 4: Potato Chat 🏴‍☠️',
+      it: '🟦 Fase 4: Potato Chat 🏴‍☠️',
+      es: '🟦 Paso 4: Potato Chat 🏴‍☠️',
+      de: '🟦 Schritt 4: Potato Chat 🏴‍☠️'
     },
     'registration.telegramQuestion': {
       fr: '🔗 Entrez votre lien Telegram (format : @username)',
@@ -693,11 +693,11 @@ const translations = {
 
     // === QUESTIONS DÉTAILLÉES ===
     'registration.potatoQuestion': {
-      fr: '🥔 Entrez votre lien Potato Chat',
-      en: '🥔 Enter your Potato Chat link',
-      it: '🥔 Inserisci il tuo link Potato Chat',
-      es: '🥔 Introduce tu enlace de Potato Chat',
-      de: '🥔 Geben Sie Ihren Potato Chat-Link ein'
+      fr: '🏴‍☠️ Entrez votre lien Potato Chat',
+      en: '🏴‍☠️ Enter your Potato Chat link',
+      it: '🏴‍☠️ Inserisci il tuo link Potato Chat',
+      es: '🏴‍☠️ Introduce tu enlace de Potato Chat',
+      de: '🏴‍☠️ Geben Sie Ihren Potato Chat-Link ein'
     },
     'registration.snapchatQuestion': {
       fr: '👻 Entrez votre lien Snapchat',
@@ -891,11 +891,11 @@ const translations = {
 
     // === ERREURS SPÉCIFIQUES RÉSEAUX ===
     'registration.error.potatoFormat': {
-      fr: '❌ Merci de fournir un lien Potato Chat valide (ex: https://potato.chat/username). Réessaie :',
-      en: '❌ Please provide a valid Potato Chat link (ex: https://potato.chat/username). Try again:',
-      it: '❌ Fornisci un link Potato Chat valido (es: https://potato.chat/username). Riprova:',
-      es: '❌ Proporciona un enlace de Potato Chat válido (ej: https://potato.chat/username). Inténtalo de nuevo:',
-      de: '❌ Bitte geben Sie einen gültigen Potato Chat-Link an (z.B.: https://potato.chat/username). Versuchen Sie es erneut:'
+      fr: '❌ Merci de fournir un lien Potato Chat 🏴‍☠️ valide (ex: https://potato.chat/username). Réessaie :',
+      en: '❌ Please provide a valid Potato Chat 🏴‍☠️ link (ex: https://potato.chat/username). Try again:',
+      it: '❌ Fornisci un link Potato Chat 🏴‍☠️ valido (es: https://potato.chat/username). Riprova:',
+      es: '❌ Proporciona un enlace de Potato Chat 🏴‍☠️ válido (ej: https://potato.chat/username). Inténtalo de nuevo:',
+      de: '❌ Bitte geben Sie einen gültigen Potato Chat 🏴‍☠️-Link an (z.B.: https://potato.chat/username). Versuchen Sie es erneut:'
     },
     'registration.error.snapchatFormat': {
       fr: '❌ Merci de fournir un lien Snapchat valide (ex: https://www.snapchat.com/add/username). Réessaie :',
