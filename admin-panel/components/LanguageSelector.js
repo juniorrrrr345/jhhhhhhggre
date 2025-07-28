@@ -99,6 +99,9 @@ const translations = {
     shop_welcome_search: '🔍 Utilisez la barre de recherche pour trouver un plug près de chez vous ou en envoi postal',
     shop_welcome_vote: '⭐ N\'hésitez pas à voter pour votre Plug préféré',
     shop_social_title: 'Rejoins nous sur tous nos réseaux 🔒🛜',
+    // Traductions pour les pages VIP et autres
+    no_vip_shops: 'Aucune boutique VIP',
+    no_vip_shops_desc: 'Aucune boutique VIP n\'est disponible pour le moment.',
     inscription_how_title: 'Comment ça marche ?',
     inscription_how_step1: 'Cliquez sur "S\'inscrire maintenant"',
     inscription_how_step2: 'Vous serez redirigé vers Telegram',
@@ -246,6 +249,9 @@ const translations = {
     shop_welcome_search: '🔍 Use the search bar to find a plug near you or for postal delivery',
     shop_welcome_vote: '⭐ Don\'t hesitate to vote for your favorite Plug',
     shop_social_title: 'Join us on all our networks 🔒🛜',
+    // Traductions pour les pages VIP et autres
+    no_vip_shops: 'No VIP shops',
+    no_vip_shops_desc: 'No VIP shops are available at the moment.',
     inscription_how_title: 'How does it work?',
     inscription_how_step1: 'Click on "Register now"',
     inscription_how_step2: 'You will be redirected to Telegram',
@@ -397,6 +403,9 @@ const translations = {
     shop_welcome_search: '🔍 Usa la barra de búsqueda para encontrar un plug cerca de ti o para envío postal',
     shop_welcome_vote: '⭐ No dudes en votar por tu Plug favorito',
     shop_social_title: 'Únete a todas nuestras redes 🔒🛜',
+    // Traductions pour les pages VIP et autres
+    no_vip_shops: 'Sin tiendas VIP',
+    no_vip_shops_desc: 'No hay tiendas VIP disponibles en este momento.',
     inscription_how_title: '¿Cómo funciona?',
     inscription_how_step1: 'Haz clic en "Registrarse ahora"',
     inscription_how_step2: 'Serás redirigido a Telegram',
@@ -548,6 +557,9 @@ const translations = {
     shop_welcome_search: '🔍 Usa la barra di ricerca per trovare un plug vicino a te o per spedizione postale',
     shop_welcome_vote: '⭐ Non esitare a votare per il tuo Plug preferito',
     shop_social_title: 'Unisciti a tutti i nostri network 🔒🛜',
+    // Traductions pour les pages VIP et autres
+    no_vip_shops: 'Nessun negozio VIP',
+    no_vip_shops_desc: 'Nessun negozio VIP è disponibile al momento.',
     inscription_how_title: 'Come funziona?',
     inscription_how_step1: 'Clicca su "Registrati ora"',
     inscription_how_step2: 'Sarai reindirizzato a Telegram',
@@ -699,6 +711,9 @@ const translations = {
     shop_welcome_search: '🔍 Verwende die Suchleiste, um einen Plug in deiner Nähe oder für Postversand zu finden',
     shop_welcome_vote: '⭐ Zögere nicht, für deinen Lieblings-Plug zu stimmen',
     shop_social_title: 'Tritt allen unseren Netzwerken bei 🔒🛜',
+    // Traductions pour les pages VIP et autres
+    no_vip_shops: 'Keine VIP-Shops',
+    no_vip_shops_desc: 'Derzeit sind keine VIP-Shops verfügbar.',
     inscription_how_title: 'Wie funktioniert es?',
     inscription_how_step1: 'Klicke auf "Jetzt registrieren"',
     inscription_how_step2: 'Du wirst zu Telegram weitergeleitet',
