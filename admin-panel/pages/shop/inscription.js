@@ -8,7 +8,7 @@ import telegramLinksSync from '../../lib/telegram-links-sync'
 export default function ShopInscription() {
   const [currentLanguage, setCurrentLanguage] = useState('fr')
   const [config, setConfig] = useState({
-    inscriptionTelegramLink: 'https://t.me/findyourplugbot_bot'
+    inscriptionTelegramLink: 'https://t.me/findyourplugsav'
   })
 
   const { t } = useTranslation(currentLanguage)
@@ -24,7 +24,7 @@ export default function ShopInscription() {
     // Écouter les mises à jour des liens
     telegramLinksSync.onLinksUpdate((links) => {
       setConfig({
-        inscriptionTelegramLink: links.inscriptionTelegramLink || 'https://t.me/FindYourPlugBot'
+        inscriptionTelegramLink: links.inscriptionTelegramLink || 'https://t.me/findyourplugsav'
       })
     })
   }, [])
