@@ -5156,6 +5156,111 @@ app.post('/api/clear-all-caches', async (req, res) => {
   }
 });
 
+// API pour forcer l'utilisation des traductions par défaut pour Contact et Info
+app.post('/api/reset-contact-info-to-defaults', async (req, res) => {
+  try {
+    console.log('🔄 RESET des textes Contact et Info vers les traductions par défaut...');
+    
+    const config = await Config.findById('main');
+    if (!config) {
+      return res.status(404).json({ error: 'Configuration non trouvée' });
+    }
+    
+    // Vider les textes du panel admin pour forcer l'utilisation des traductions
+    if (!config.buttons) config.buttons = {};
+    if (!config.buttons.contact) config.buttons.contact = {};
+    if (!config.buttons.info) config.buttons.info = {};
+    
+    // Réinitialiser à vide pour utiliser les traductions par défaut
+    config.buttons.contact.content = '';
+    config.buttons.info.content = '';
+    
+    await config.save();
+    
+    // Vider tous les caches
+    configCache = null;
+    plugsCache = null;
+    if (typeof clearAllCaches === 'function') {
+      clearAllCaches();
+    }
+    
+    console.log('✅ Textes Contact/Info réinitialisés vers traductions par défaut');
+    
+    res.json({ 
+      success: true, 
+      message: 'Textes Contact et Info réinitialisés vers les traductions par défaut',
+      result: 'Le bot utilisera maintenant les traductions automatiques en français, anglais, italien, espagnol et allemand'
+    });
+    
+  } catch (error) {
+    console.error('❌ Erreur reset Contact/Info:', error);
+    res.status(500).json({ error: 'Erreur serveur' });
+  }
+});
+
+// API pour synchroniser les textes Contact et Info du panel admin avec le bot
+app.post('/api/sync-contact-info-texts', async (req, res) => {
+  try {
+    console.log('📝 SYNCHRONISATION des textes Contact et Info...');
+    
+    const { contactText, infoText } = req.body;
+    
+    if (!contactText && !infoText) {
+      return res.status(400).json({ error: 'Aucun texte fourni' });
+    }
+    
+    const config = await Config.findById('main');
+    if (!config) {
+      return res.status(404).json({ error: 'Configuration non trouvée' });
+    }
+    
+    let updated = false;
+    
+    // Synchroniser le texte Contact
+    if (contactText) {
+      if (!config.buttons) config.buttons = {};
+      if (!config.buttons.contact) config.buttons.contact = {};
+      
+      config.buttons.contact.content = contactText;
+      console.log('📞 Texte Contact synchronisé:', contactText);
+      updated = true;
+    }
+    
+    // Synchroniser le texte Info  
+    if (infoText) {
+      if (!config.buttons) config.buttons = {};
+      if (!config.buttons.info) config.buttons.info = {};
+      
+      config.buttons.info.content = infoText;
+      console.log('ℹ️ Texte Info synchronisé:', infoText);
+      updated = true;
+    }
+    
+    if (updated) {
+      await config.save();
+      
+      // Vider tous les caches
+      configCache = null;
+      plugsCache = null;
+      if (typeof clearAllCaches === 'function') {
+        clearAllCaches();
+      }
+      
+      console.log('✅ Textes Contact/Info synchronisés avec succès');
+    }
+    
+    res.json({ 
+      success: true, 
+      message: 'Textes Contact et Info synchronisés',
+      updated: { contactText: !!contactText, infoText: !!infoText }
+    });
+    
+  } catch (error) {
+    console.error('❌ Erreur synchronisation Contact/Info:', error);
+    res.status(500).json({ error: 'Erreur serveur' });
+  }
+});
+
 // SYSTÈME DE VIDAGE AUTOMATIQUE DES CACHES
 setInterval(() => {
   console.log('🔄 Vidage automatique des caches...');
