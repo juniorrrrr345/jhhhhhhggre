@@ -80,7 +80,8 @@ export default function SocialMediaManager() {
           { id: 'instagram', name: 'Instagram', emoji: '📸', url: 'https://www.instagram.com/find.yourplug', enabled: true },
           { id: 'luffa', name: 'Luffa', emoji: '🧽', url: 'https://callup.luffa.im/c/EnvtiTHkbvP', enabled: true },
           { id: 'discord', name: 'Discord', emoji: '🎮', url: 'https://discord.gg/g2dACUC3', enabled: true },
-          { id: 'contact', name: 'Contact', emoji: '📞', url: 'https://t.me/contact', enabled: true }
+          { id: 'contact', name: 'Contact', emoji: '📞', url: 'https://t.me/contact', enabled: true },
+          { id: 'potato', name: 'Potato', emoji: '🫙', url: 'https://dym168.org/findyourplug', enabled: true }
         ]
         setSocialMedias(defaultSocialMedias)
         console.log('🔧 Réseaux sociaux bot initialisés avec valeurs par défaut')
@@ -150,7 +151,31 @@ export default function SocialMediaManager() {
       localStorage.setItem('botSocialMediaList', JSON.stringify(socialMedias))
       console.log('💾 Sauvegarde locale réseaux bot réussie:', socialMedias)
       
-      toast.success('✅ Réseaux sociaux bot sauvegardés localement !')
+      // Essayer aussi de synchroniser avec le bot (sans bloquer si ça échoue)
+      try {
+        console.log('🤖 Tentative de synchronisation avec le bot...')
+        const response = await fetch('/api/cors-proxy', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            endpoint: 'updateConfig',
+            data: { 
+              configId: 'main',
+              socialMediaList: socialMedias.filter(s => s.enabled !== false)
+            }
+          })
+        })
+        
+        if (response.ok) {
+          console.log('✅ Synchronisation bot réussie')
+          toast.success('✅ Réseaux sociaux sauvegardés et synchronisés avec le bot !')
+        } else {
+          throw new Error('Erreur API')
+        }
+      } catch (syncError) {
+        console.log('⚠️ Synchronisation bot échoué:', syncError.message)
+        toast.success('✅ Réseaux sociaux sauvegardés localement ! (Sync bot: en attente)')
+      }
       
     } catch (error) {
       console.error('Erreur sauvegarde:', error)
