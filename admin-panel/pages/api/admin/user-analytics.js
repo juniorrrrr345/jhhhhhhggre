@@ -42,13 +42,20 @@ export default async function handler(req, res) {
       console.log(`⚠️ Erreur réveil bot (non critique):`, wakeError.message)
     }
     
+    // Timeout de 60 secondes pour laisser le temps au bot
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 60000)
+    
     const botResponse = await fetch(botUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ timeRange, dateFilter })
+      body: JSON.stringify({ timeRange, dateFilter }),
+      signal: controller.signal
     })
+    
+    clearTimeout(timeoutId)
 
     console.log(`📡 Statut réponse bot: ${botResponse.status}`)
     console.log(`📡 Headers réponse:`, Object.fromEntries(botResponse.headers.entries()))
@@ -66,9 +73,20 @@ export default async function handler(req, res) {
     
   } catch (error) {
     console.error('❌ Erreur API user-analytics:', error)
+    
+    let errorMessage = 'Erreur lors de la récupération des statistiques'
+    if (error.name === 'AbortError') {
+      errorMessage = 'Timeout: Le bot met trop de temps à répondre (60s)'
+    } else if (error.message.includes('ECONNREFUSED')) {
+      errorMessage = 'Impossible de se connecter au bot'
+    } else if (error.message.includes('fetch')) {
+      errorMessage = 'Erreur de connexion réseau'
+    }
+    
     res.status(500).json({ 
-      error: 'Erreur lors de la récupération des statistiques',
-      details: error.message 
+      error: `Erreur proxy: ${errorMessage}`,
+      details: error.message,
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
     })
   }
 }
