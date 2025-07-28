@@ -197,22 +197,11 @@ export default function ShopSearch() {
       setLoading(true)
       console.log('🔍 Chargement boutiques recherche mini app...')
       
-      // TIMEOUT DE SÉCURITÉ : Forcer loading=false après 8 secondes
-      const safetyTimeout = setTimeout(() => {
-        console.log('⏰ TIMEOUT SÉCURITÉ RECHERCHE: Force loading=false après 8s');
-        setLoading(false);
-      }, 8000);
-      
-      // PAS DE CACHE RECHERCHE - Toujours charger pour éviter problème d'affichage
-      const now = Date.now();
-      console.log('🔍 Fetch recherche forcé pour garantir affichage boutiques');
-      
-      // APPEL DIRECT OPTIMISÉ RECHERCHE MINI APP
-      const response = await fetch('https://jhhhhhhggre.onrender.com/api/public/plugs?limit=100&t=' + now, {
+      // APPEL DIRECT SIMPLIFIÉ
+      const response = await fetch('https://jhhhhhhggre.onrender.com/api/public/plugs?limit=100', {
         method: 'GET',
         headers: {
-          'Content-Type': 'application/json',
-          'Cache-Control': 'no-cache'
+          'Content-Type': 'application/json'
         }
       })
       
@@ -221,24 +210,19 @@ export default function ShopSearch() {
       }
       
       const data = await response.json()
+      console.log('📊 Données recherche reçues:', data);
 
-      // Clear le timeout car tout va bien
-      clearTimeout(safetyTimeout);
-
-      if (data && data.plugs) {
+      if (data && data.plugs && Array.isArray(data.plugs)) {
         console.log('🔍 Plugs recherche mini app chargés:', data.plugs.length, 'boutiques')
         setAllPlugs(data.plugs)
       } else {
-        console.log('⚠️ Aucune boutique recherche mini app trouvée')
+        console.log('⚠️ Structure données recherche invalide:', data)
         setAllPlugs([])
       }
       
     } catch (error) {
       console.error('Erreur chargement plugs recherche mini app:', error)
-      // En cas d'erreur, garder les boutiques existantes si on en a
-      if (allPlugs.length === 0) {
-        setAllPlugs([])
-      }
+      setAllPlugs([])
     } finally {
       setLoading(false)
     }

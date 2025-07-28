@@ -287,22 +287,11 @@ useEffect(() => {
       console.log('🔍 Chargement boutiques mini app...')
       setLoading(true)
       
-      // TIMEOUT DE SÉCURITÉ : Forcer loading=false après 8 secondes
-      const safetyTimeout = setTimeout(() => {
-        console.log('⏰ TIMEOUT SÉCURITÉ: Force loading=false après 8s');
-        setLoading(false);
-      }, 8000);
-      
-      // PAS DE CACHE - Toujours charger pour éviter problème d'affichage
-      const now = Date.now();
-      console.log('📱 Fetch forcé pour garantir affichage boutiques');
-      
-      // APPEL DIRECT OPTIMISÉ MINI APP
-      const response = await fetch('https://jhhhhhhggre.onrender.com/api/public/plugs?limit=50&t=' + now, {
+      // APPEL DIRECT SIMPLIFIÉ
+      const response = await fetch('https://jhhhhhhggre.onrender.com/api/public/plugs?limit=50', {
         method: 'GET',
         headers: {
-          'Content-Type': 'application/json',
-          'Cache-Control': 'no-cache'
+          'Content-Type': 'application/json'
         }
       })
       
@@ -311,11 +300,9 @@ useEffect(() => {
       }
       
       const data = await response.json()
+      console.log('📊 Données reçues:', data);
       
-      // Clear le timeout car tout va bien
-      clearTimeout(safetyTimeout);
-      
-      if (data && data.plugs) {
+      if (data && data.plugs && Array.isArray(data.plugs)) {
         console.log('🎯 Boutiques mini app récupérées:', data.plugs.length)
         setPlugs(data.plugs)
         
@@ -328,16 +315,13 @@ useEffect(() => {
         })
         setLikesSync(likesData)
       } else {
-        console.log('⚠️ Aucune boutique trouvée dans mini app')
+        console.log('⚠️ Structure de données invalide:', data)
         setPlugs([])
       }
       
     } catch (error) {
       console.error('❌ Erreur chargement boutiques mini app:', error.message)
-      // En cas d'erreur, garder les boutiques existantes si on en a
-      if (plugs.length === 0) {
-        setPlugs([])
-      }
+      setPlugs([])
     } finally {
       setLoading(false)
       console.log('✅ Loading mini app terminé')
