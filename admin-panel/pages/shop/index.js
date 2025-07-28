@@ -135,34 +135,43 @@ export default function ShopHome() {
         }, 200);
       };
       
-      // LISTENER pour rechargement BRUTAL
-      const handleBrutalRefresh = (event) => {
-        console.log('💥 RECHARGEMENT BRUTAL reçu:', event.detail);
+      // LISTENER pour rechargement INTELLIGENT
+      const handleSmartRefresh = (event) => {
+        console.log('🔄 RECHARGEMENT INTELLIGENT reçu:', event.detail);
         
-        // Vider tout
+        // Vider seulement les caches de données (pas les tokens)
         try {
-          localStorage.clear();
-          sessionStorage.clear();
-          console.log('🗑️ Storage vidé avant rechargement');
+          const itemsToRemove = [
+            'apiCache', 'configCache', 'plugsCache', 
+            'miniapp_last_fetch', 'search_miniapp_last_fetch',
+            'shopSocialMediaBackup'
+          ];
+          
+          itemsToRemove.forEach(key => {
+            localStorage.removeItem(key);
+            sessionStorage.removeItem(key);
+          });
+          
+          console.log('🗑️ Caches de données vidés (tokens préservés)');
         } catch (e) {
-          console.log('⚠️ Erreur nettoyage storage');
+          console.log('⚠️ Erreur nettoyage cache');
         }
         
-        // Rechargement immédiat et brutal de la page
+        // Forcer un nouveau fetch SANS recharger la page
         setTimeout(() => {
-          console.log('🔄 RECHARGEMENT COMPLET de la mini-app');
-          window.location.reload(true);
-        }, 500);
+          console.log('⚡ FETCH FORCÉ des nouvelles données');
+          fetchPlugs();
+        }, 200);
       };
       
       window.addEventListener('forceRefreshMiniApp', handleForceRefresh);
-      window.addEventListener('FORCE_BRUTAL_REFRESH', handleBrutalRefresh);
+      window.addEventListener('FORCE_SMART_REFRESH', handleSmartRefresh);
       
       // Cleanup
       return () => {
         document.removeEventListener('visibilitychange', handleVisibilityChange);
         window.removeEventListener('forceRefreshMiniApp', handleForceRefresh);
-        window.removeEventListener('FORCE_BRUTAL_REFRESH', handleBrutalRefresh);
+        window.removeEventListener('FORCE_SMART_REFRESH', handleSmartRefresh);
       };
     }
     

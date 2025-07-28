@@ -415,60 +415,69 @@ export const simpleApi = {
   // Fonction principale pour forcer sync immédiate mini-app
   syncImmediateMiniApp: async (changeType) => {
     try {
-      console.log(`🔄 SYNC IMMEDIATE RADICALE: ${changeType}`)
+      console.log(`🔄 SYNC IMMEDIATE CORRIGÉE: ${changeType}`)
       
-      // 1. Forcer un rechargement BRUTAL de toute la mini-app
+      // 1. Préserver le token d'authentification AVANT tout
+      let adminToken = null;
       if (typeof window !== 'undefined') {
-        console.log('💥 RECHARGEMENT BRUTAL de la mini-app...')
-        
-        // Méthode 1: Réinitialiser complètement le localStorage/sessionStorage
         try {
-          localStorage.clear()
-          sessionStorage.clear()
-          console.log('🗑️ Storage complètement vidé')
+          adminToken = localStorage.getItem('adminToken');
+          console.log('🔑 Token admin préservé');
         } catch (e) {
-          console.log('⚠️ Erreur nettoyage storage:', e.message)
+          console.log('⚠️ Impossible de récupérer le token');
         }
-        
-        // Méthode 2: Recharger la page entière après un délai
-        setTimeout(() => {
-          try {
-            if (window.location.href.includes('/shop')) {
-              console.log('🔄 RECHARGEMENT FORCÉ de la page mini-app')
-              window.location.reload(true) // Force reload depuis le serveur
-            }
-          } catch (e) {
-            console.log('⚠️ Erreur rechargement:', e.message)
-          }
-        }, 1000)
-        
-        // Méthode 3: Event custom pour forcer refresh immédiat
-        const event = new CustomEvent('FORCE_BRUTAL_REFRESH', {
+      }
+      
+      // 2. Vider seulement les caches de données (PAS le token)
+      if (typeof window !== 'undefined') {
+        try {
+          // Vider seulement les caches spécifiques aux données
+          const itemsToRemove = [
+            'apiCache', 'configCache', 'plugsCache', 
+            'miniapp_last_fetch', 'search_miniapp_last_fetch',
+            'shopSocialMediaBackup'
+          ];
+          
+          itemsToRemove.forEach(key => {
+            localStorage.removeItem(key);
+            sessionStorage.removeItem(key);
+          });
+          
+          console.log('🗑️ Caches de données vidés (token préservé)');
+        } catch (e) {
+          console.log('⚠️ Erreur nettoyage cache:', e.message);
+        }
+      }
+      
+      // 3. Restaurer le token immédiatement
+      if (typeof window !== 'undefined' && adminToken) {
+        try {
+          localStorage.setItem('adminToken', adminToken);
+          console.log('🔑 Token admin restauré');
+        } catch (e) {
+          console.log('⚠️ Erreur restauration token');
+        }
+      }
+      
+      // 4. Forcer la synchronisation de la mini-app SANS rechargement brutal
+      if (typeof window !== 'undefined') {
+        const event = new CustomEvent('FORCE_SMART_REFRESH', {
           detail: { 
             changeType, 
             timestamp: Date.now(),
-            action: 'FULL_RELOAD'
+            action: 'SMART_RELOAD'
           }
-        })
-        window.dispatchEvent(event)
-        console.log(`📡 Événement BRUTAL dispatché: ${changeType}`)
+        });
+        window.dispatchEvent(event);
+        console.log(`📡 Événement SMART dispatché: ${changeType}`);
       }
       
-      // 2. Notification brutale pour l'utilisateur
-      if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
-        try {
-          window.Telegram.WebApp.showAlert('✅ Modifications sauvegardées ! La mini-app va se recharger...')
-        } catch (e) {
-          console.log('⚠️ Alerte Telegram échouée')
-        }
-      }
-      
-      console.log(`🎯 SYNCHRONISATION BRUTALE ${changeType} TERMINÉE`)
-      return true
+      console.log(`🎯 SYNCHRONISATION INTELLIGENTE ${changeType} TERMINÉE`);
+      return true;
       
     } catch (error) {
-      console.error('💥 Erreur sync brutale:', error)
-      return false
+      console.error('💥 Erreur sync intelligente:', error);
+      return false;
     }
   }
 };
