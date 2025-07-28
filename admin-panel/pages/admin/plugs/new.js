@@ -184,6 +184,9 @@ export default function NewPlug() {
       
       const result = await simpleApi.createPlug(token, formData)
       
+      // Vider le cache du bot pour synchroniser la mini app IMMÉDIATEMENT
+      await simpleApi.clearBotCache()
+      
       // Synchroniser avec le bot
       const robustSync = getRobustSync()
       if (robustSync) {
@@ -191,7 +194,7 @@ export default function NewPlug() {
       }
       
       toast.success('Boutique créée avec succès !')
-      console.log('✅ Boutique créée et synchronisée')
+      console.log('✅ Boutique créée, cache vidé et synchronisée')
       router.push('/admin/plugs')
     } catch (error) {
       console.error('❌ Erreur création boutique:', error)

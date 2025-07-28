@@ -4849,3 +4849,60 @@ app.post('/api/force-update-potato-emoji', async (req, res) => {
     res.status(500).json({ error: 'Erreur serveur' });
   }
 });
+
+// API pour vider TOUS les caches - SOLUTION AU PROBLÈME MINI APP !
+app.post('/api/clear-all-caches', async (req, res) => {
+  try {
+    console.log('🧹 VIDAGE DE TOUS LES CACHES...');
+    
+    // Vider tous les caches possibles
+    configCache = null;
+    plugsCache = null;
+    
+    // Fonction pour vider tous les caches (si elle existe)
+    if (typeof clearAllCaches === 'function') {
+      clearAllCaches();
+    }
+    
+    console.log('✅ TOUS LES CACHES VIDÉS !');
+    
+    res.json({ 
+      success: true, 
+      message: 'Tous les caches ont été vidés avec succès',
+      timestamp: new Date().toISOString(),
+      clearedCaches: ['configCache', 'plugsCache']
+    });
+    
+  } catch (error) {
+    console.error('❌ Erreur vidage caches:', error);
+    res.status(500).json({ error: 'Erreur serveur' });
+  }
+});
+
+// SYSTÈME DE VIDAGE AUTOMATIQUE DES CACHES
+setInterval(() => {
+  console.log('🔄 Vidage automatique des caches...');
+  configCache = null;
+  plugsCache = null;
+  if (typeof clearAllCaches === 'function') {
+    clearAllCaches();
+  }
+}, 5 * 60 * 1000); // Toutes les 5 minutes
+
+// Hook pour vider le cache après chaque modification
+const originalSave = require('mongoose').Model.prototype.save;
+require('mongoose').Model.prototype.save = function(options, fn) {
+  const result = originalSave.call(this, options, fn);
+  
+  // Vider les caches après chaque sauvegarde
+  if (this.constructor.modelName === 'Config' || this.constructor.modelName === 'Plug') {
+    console.log('🧹 Cache vidé après modification de', this.constructor.modelName);
+    configCache = null;
+    plugsCache = null;
+    if (typeof clearAllCaches === 'function') {
+      clearAllCaches();
+    }
+  }
+  
+  return result;
+};

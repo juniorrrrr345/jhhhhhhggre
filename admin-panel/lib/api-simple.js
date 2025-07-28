@@ -388,6 +388,25 @@ export const simpleApi = {
     apiCache.clear();
     fallbackApi.clear();
     console.log('🧹 Cache API et fallback nettoyés');
+  },
+
+  // Fonction pour vider le cache du bot automatiquement
+  clearBotCache: async () => {
+    try {
+      const BOT_URL = process.env.NEXT_PUBLIC_BOT_URL || 'https://jhhhhhhggre.onrender.com';
+      const response = await fetch(`${BOT_URL}/api/clear-all-caches`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      const result = await response.json();
+      console.log('🧹 Cache bot vidé automatiquement:', result.message);
+      return result;
+    } catch (error) {
+      console.warn('⚠️ Impossible de vider le cache bot:', error.message);
+      return null;
+    }
   }
 };
 
