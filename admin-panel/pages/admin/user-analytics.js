@@ -38,11 +38,19 @@ export default function UserAnalytics() {
   const fetchUserStats = async () => {
     try {
       console.log(`🔄 Chargement stats utilisateurs pour période: ${timeRange}`)
-      setStats(prev => ({ ...prev, loading: true }))
+      setStats(prev => ({ ...prev, loading: true, error: null }))
       setNextUpdateIn(30) // Reset le compteur lors de l'actualisation manuelle
       
       const adminToken = localStorage.getItem('adminToken')
-      const apiResponse = await api.get(`admin/user-analytics?timeRange=${timeRange}`, adminToken)
+      
+      // Ajouter un timeout de 45 secondes pour l'appel API
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Timeout: Le bot met trop de temps à répondre')), 45000)
+      )
+      
+      const apiPromise = api.get(`admin/user-analytics?timeRange=${timeRange}`, adminToken)
+      
+      const apiResponse = await Promise.race([apiPromise, timeoutPromise])
       console.log('📊 Response API user-analytics:', apiResponse)
         
         if (apiResponse.ok && apiResponse.data) {
@@ -64,18 +72,23 @@ export default function UserAnalytics() {
           setStats(newStats)
         } else {
           console.error('❌ Erreur API response:', apiResponse)
+          const errorMsg = apiResponse?.error || 'Erreur de chargement des données'
           setStats(prev => ({ 
             ...prev, 
             loading: false,
-            error: 'Erreur de chargement'
+            error: errorMsg
           }))
         }
     } catch (error) {
       console.error('❌ Erreur stats utilisateurs:', error)
+      const errorMsg = error.message.includes('Timeout') 
+        ? 'Le bot met trop de temps à répondre. Il peut être en cours de réveil.'
+        : `Erreur de chargement: ${error.message}`
+      
       setStats(prev => ({ 
         ...prev, 
         loading: false,
-        error: `Erreur de chargement: ${error.message}`
+        error: errorMsg
       }))
     }
   }

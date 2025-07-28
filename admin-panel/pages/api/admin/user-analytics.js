@@ -32,6 +32,16 @@ export default async function handler(req, res) {
     const botUrl = `${process.env.NEXT_PUBLIC_BOT_API_URL || 'https://jhhhhhhggre.onrender.com'}/api/admin/user-analytics`
     console.log(`📡 Appel vers: ${botUrl}`)
     
+    // D'abord réveiller le bot avec un ping si nécessaire
+    try {
+      const wakeUpUrl = `${process.env.NEXT_PUBLIC_BOT_API_URL || 'https://jhhhhhhggre.onrender.com'}/`
+      console.log(`🔄 Réveil du bot via: ${wakeUpUrl}`)
+      await fetch(wakeUpUrl, { method: 'HEAD' })
+      console.log(`✅ Bot réveillé`)
+    } catch (wakeError) {
+      console.log(`⚠️ Erreur réveil bot (non critique):`, wakeError.message)
+    }
+    
     const botResponse = await fetch(botUrl, {
       method: 'POST',
       headers: {
