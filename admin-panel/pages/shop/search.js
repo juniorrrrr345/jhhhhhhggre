@@ -626,6 +626,8 @@ export default function ShopSearch() {
                     plug={plug} 
                     config={config}
                     currentLanguage={currentLanguage}
+                    showCountry={countryFilter ? true : false}
+                    filteredCountry={countryFilter}
                   />
                 ))}
               </div>

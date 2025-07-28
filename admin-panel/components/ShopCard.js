@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { useState } from 'react'
 import { getProxiedImageUrl } from '../lib/imageUtils'
 
-export default function ShopCard({ plug, index, layout = 'grid', currentLanguage = 'fr' }) {
+export default function ShopCard({ plug, index, layout = 'grid', currentLanguage = 'fr', showCountry = false, filteredCountry = '' }) {
   const [likes, setLikes] = useState(plug.likes || 0)
   const [isVoting, setIsVoting] = useState(false)
   
@@ -38,6 +38,35 @@ export default function ShopCard({ plug, index, layout = 'grid', currentLanguage
       }
     }
     return translations[service]?.[currentLanguage] || service
+  }
+
+  const getCountryFlagByName = (countryName) => {
+    const countryFlags = {
+      'france': '🇫🇷',
+      'belgique': '🇧🇪',
+      'belgium': '🇧🇪',
+      'suisse': '🇨🇭',
+      'switzerland': '🇨🇭',
+      'luxembourg': '🇱🇺',
+      'allemagne': '🇩🇪',
+      'germany': '🇩🇪',
+      'italie': '🇮🇹',
+      'italy': '🇮🇹',
+      'espagne': '🇪🇸',
+      'spain': '🇪🇸',
+      'pays-bas': '🇳🇱',
+      'netherlands': '🇳🇱',
+      'portugal': '🇵🇹',
+      'royaume-uni': '🇬🇧',
+      'uk': '🇬🇧',
+      'canada': '🇨🇦',
+      'maroc': '🇲🇦',
+      'morocco': '🇲🇦'
+    };
+    
+    if (!countryName) return '🌍';
+    const normalizedCountry = countryName.toLowerCase().trim();
+    return countryFlags[normalizedCountry] || '🌍';
   }
 
   const getVotesText = () => {
@@ -188,23 +217,40 @@ export default function ShopCard({ plug, index, layout = 'grid', currentLanguage
         }}>
           {/* Nom et drapeau */}
           <div style={{ 
-            display: 'flex', 
-            alignItems: 'center', 
-            gap: '8px',
             marginBottom: '6px'
           }}>
-            <span style={{ fontSize: '16px' }}>{getCountryFlag(plug.countries)}</span>
-            <h3 style={{ 
-              fontSize: '16px',
-              fontWeight: '600',
-              margin: '0',
-              color: plug.isVip ? '#FFD700' : '#ffffff',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              whiteSpace: 'nowrap'
+            <div style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: '8px',
+              flexWrap: 'wrap'
             }}>
-              {plug.name}
-            </h3>
+              <span style={{ fontSize: '16px' }}>{getCountryFlag(plug.countries)}</span>
+              <h3 style={{ 
+                fontSize: '16px',
+                fontWeight: '600',
+                margin: '0',
+                color: plug.isVip ? '#FFD700' : '#ffffff',
+                flex: '1',
+                minWidth: '0'
+              }}>
+                {plug.name}
+              </h3>
+              {showCountry && filteredCountry && (
+                <span style={{
+                  fontSize: '12px',
+                  fontWeight: '500',
+                  color: '#ffffff',
+                  backgroundColor: '#007AFF',
+                  padding: '3px 8px',
+                  borderRadius: '12px',
+                  display: 'inline-block',
+                  whiteSpace: 'nowrap'
+                }}>
+                  {getCountryFlagByName(filteredCountry)} {filteredCountry}
+                </span>
+              )}
+            </div>
           </div>
 
           {/* Services avec départements - Structure améliorée */}
