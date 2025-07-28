@@ -4783,3 +4783,69 @@ app.get('/api/admin/user-analytics', async (req, res) => {
     });
   }
 });
+
+// API pour mettre à jour l'emoji Potato en base de données
+app.post('/api/force-update-potato-emoji', async (req, res) => {
+  try {
+    console.log('🏴‍☠️ Mise à jour emoji Potato : 🥔 → 🏴‍☠️');
+    
+    const config = await Config.findById('main');
+    if (!config) {
+      return res.status(404).json({ error: 'Configuration non trouvée' });
+    }
+    
+    // Mettre à jour l'emoji Potato dans socialMediaList
+    if (config.socialMediaList && Array.isArray(config.socialMediaList)) {
+      const potatoIndex = config.socialMediaList.findIndex(sm => 
+        sm.name && sm.name.toLowerCase().includes('potato')
+      );
+      
+      if (potatoIndex !== -1) {
+        console.log('🔧 Potato trouvé dans socialMediaList, mise à jour...');
+        config.socialMediaList[potatoIndex].emoji = '🏴‍☠️';
+        console.log('✅ Emoji Potato mis à jour dans socialMediaList');
+      } else {
+        console.log('⚠️ Potato non trouvé dans socialMediaList, ajout...');
+        config.socialMediaList.push({
+          id: 'potato',
+          name: 'Potato',
+          emoji: '🏴‍☠️',
+          url: 'https://potato.com',
+          enabled: true
+        });
+        console.log('✅ Potato ajouté à socialMediaList avec 🏴‍☠️');
+      }
+    } else {
+      console.log('🔧 Initialisation socialMediaList avec Potato...');
+      config.socialMediaList = [{
+        id: 'potato',
+        name: 'Potato',
+        emoji: '🏴‍☠️',
+        url: 'https://potato.com',
+        enabled: true
+      }];
+    }
+    
+    // Sauvegarder
+    await config.save();
+    
+    // Invalider les caches
+    configCache = null;
+    plugsCache = null;
+    clearAllCaches();
+    
+    console.log('🚀 Emoji Potato mis à jour : 🥔 → 🏴‍☠️');
+    
+    res.json({ 
+      success: true, 
+      message: 'Emoji Potato mis à jour avec succès',
+      oldEmoji: '🥔',
+      newEmoji: '🏴‍☠️',
+      socialMediaUpdated: true
+    });
+    
+  } catch (error) {
+    console.error('❌ Erreur mise à jour emoji Potato:', error);
+    res.status(500).json({ error: 'Erreur serveur' });
+  }
+});
