@@ -156,21 +156,9 @@ export default function ShopHome() {
 
   const fetchConfig = async () => {
     try {
-      // Récupérer la config depuis l'API bot directement
-      const response = await fetch('https://jhhhhhhggre.onrender.com/api/public/config', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      })
-      
-      let data = null
-      if (response.ok) {
-        data = await response.json()
-      } else {
-        // Fallback vers l'API simple si l'API publique échoue
-        data = await api.getPublicConfig()
-      }
+      // Récupérer la config depuis l'API admin directement
+      const token = 'JuniorAdmon123' // Token par défaut pour lecture publique
+      const data = await api.getConfig(token)
       
       console.log('📱 Config récupérée pour accueil:', {
         boutique: data?.boutique?.name,
