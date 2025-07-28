@@ -3,20 +3,17 @@ const { createMainKeyboard } = require('../utils/keyboards');
 const { getTranslation } = require('../utils/translations');
 const { getFreshConfig } = require('../utils/configHelper');
 
-// Gestionnaire pour le bouton Contact - Redirection vers @findyourplugsav
+// Gestionnaire pour le bouton Contact - Affiche simplement @findyourplugsav
 const handleContact = async (ctx) => {
   try {
-    console.log('📞 Redirection vers @findyourplugsav');
+    console.log('📞 Contact : @findyourplugsav');
     
-    // Rediriger directement vers @findyourplugsav
-    await ctx.answerCbQuery('📞 Redirection vers le support...', { 
-      url: 'https://t.me/findyourplugsav'
-    });
+    // Afficher simplement le contact sans redirection
+    await ctx.answerCbQuery('📞 Contactez @findyourplugsav pour le support');
 
   } catch (error) {
     console.error('Erreur dans handleContact:', error);
-    // Fallback si la redirection échoue
-    await ctx.answerCbQuery('📞 Contactez @findyourplugsav').catch(() => {});
+    await ctx.answerCbQuery('📞 Support: @findyourplugsav').catch(() => {});
   }
 };
 
