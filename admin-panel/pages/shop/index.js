@@ -105,12 +105,23 @@ export default function ShopHome() {
       tg.enableClosingConfirmation();
       console.log('✅ Telegram Mini App initialisée');
       
-      // SYSTÈME SIMPLE - Pas de refresh automatique
-      // Juste marquer que la session est active
-      sessionStorage.setItem('miniapp_session_id', Date.now().toString());
+      // SYSTÈME SIMPLE : Refresh seulement au retour après absence
+      const handleVisibilityChange = () => {
+        if (!document.hidden) {
+          // Quand on revient dans la mini app, charger les nouvelles boutiques
+          console.log('📱 Retour dans Mini App - Refresh boutiques...');
+          setTimeout(() => {
+            fetchPlugs();
+          }, 500);
+        }
+      };
       
-      // PAS DE LISTENERS AUTO-REFRESH - Trop de rechargements
-      // Listeners supprimés pour éviter les refreshes constants
+      document.addEventListener('visibilitychange', handleVisibilityChange);
+      
+      // Cleanup
+      return () => {
+        document.removeEventListener('visibilitychange', handleVisibilityChange);
+      };
     }
     
       // Configuration initiale
@@ -256,7 +267,17 @@ useEffect(() => {
       console.log('🔍 Chargement boutiques (simple)...')
       setLoading(true)
       
-      // APPEL DIRECT SIMPLE comme dans search
+      // Cache simple : Pas de refetch si données récentes (moins de 2 minutes)
+      const lastFetch = sessionStorage.getItem('shops_last_fetch');
+      const now = Date.now();
+      
+      if (lastFetch && (now - parseInt(lastFetch)) < 120000 && plugs.length > 0) {
+        console.log('⚡ Boutiques en cache (moins de 2min) - Skip fetch');
+        setLoading(false);
+        return;
+      }
+      
+      // APPEL DIRECT SIMPLE
       const response = await fetch('https://jhhhhhhggre.onrender.com/api/public/plugs?limit=50', {
         method: 'GET',
         headers: {
@@ -269,6 +290,9 @@ useEffect(() => {
       if (data && data.plugs) {
         console.log('🎯 Boutiques récupérées (simple):', data.plugs.length)
         setPlugs(data.plugs)
+        
+        // Marquer la dernière récupération
+        sessionStorage.setItem('shops_last_fetch', now.toString());
         
         // Synchroniser les likes en temps réel
         const likesData = {}

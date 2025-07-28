@@ -37,6 +37,23 @@ export default function ShopSearch() {
     
     // Marquer les boutiques comme chargées
     setTimeout(() => setInitialLoading(false), 1000)
+    
+    // SYSTÈME SIMPLE : Refresh seulement au retour dans la page
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        console.log('📱 Retour page recherche - Refresh boutiques...');
+        setTimeout(() => {
+          fetchPlugs();
+        }, 500);
+      }
+    };
+    
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    
+    // Cleanup
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
   }, [])
 
   const handleLanguageChange = (newLanguage) => {
@@ -160,6 +177,16 @@ export default function ShopSearch() {
       setLoading(true)
       console.log('🔍 Chargement boutiques recherche (simple)...')
       
+      // Cache simple : Pas de refetch si données récentes (moins de 2 minutes)
+      const lastFetch = sessionStorage.getItem('search_last_fetch');
+      const now = Date.now();
+      
+      if (lastFetch && (now - parseInt(lastFetch)) < 120000 && allPlugs.length > 0) {
+        console.log('⚡ Boutiques recherche en cache (moins de 2min) - Skip fetch');
+        setLoading(false);
+        return;
+      }
+      
       // APPEL DIRECT SIMPLE
       const response = await fetch('https://jhhhhhhggre.onrender.com/api/public/plugs?limit=100', {
         method: 'GET',
@@ -173,6 +200,9 @@ export default function ShopSearch() {
       if (data && data.plugs) {
         console.log('🔍 Plugs recherche chargés:', data.plugs.length, 'boutiques')
         setAllPlugs(data.plugs)
+        
+        // Marquer la dernière récupération
+        sessionStorage.setItem('search_last_fetch', now.toString());
       } else {
         console.log('⚠️ Aucune boutique recherche trouvée')
         setAllPlugs([])
