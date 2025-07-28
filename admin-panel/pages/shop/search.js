@@ -177,17 +177,13 @@ export default function ShopSearch() {
       setLoading(true)
       console.log('🔍 Chargement boutiques recherche (simple)...')
       
-      // Cache simple : Pas de refetch si données récentes (moins de 2 minutes)
-      const lastFetch = sessionStorage.getItem('search_last_fetch');
-      const now = Date.now();
-      
-      if (lastFetch && (now - parseInt(lastFetch)) < 120000 && allPlugs.length > 0) {
-        console.log('⚡ Boutiques recherche en cache (moins de 2min) - Skip fetch');
+      // TIMEOUT DE SÉCURITÉ : Forcer loading=false après 10 secondes
+      const safetyTimeout = setTimeout(() => {
+        console.log('⏰ TIMEOUT SÉCURITÉ RECHERCHE: Force loading=false après 10s');
         setLoading(false);
-        return;
-      }
+      }, 10000);
       
-      // APPEL DIRECT SIMPLE
+      // APPEL DIRECT SIMPLE (sans cache pour éviter problèmes)
       const response = await fetch('https://jhhhhhhggre.onrender.com/api/public/plugs?limit=100', {
         method: 'GET',
         headers: {
@@ -197,12 +193,12 @@ export default function ShopSearch() {
       
       const data = await response.json()
 
+      // Clear le timeout car tout va bien
+      clearTimeout(safetyTimeout);
+
       if (data && data.plugs) {
         console.log('🔍 Plugs recherche chargés:', data.plugs.length, 'boutiques')
         setAllPlugs(data.plugs)
-        
-        // Marquer la dernière récupération
-        sessionStorage.setItem('search_last_fetch', now.toString());
       } else {
         console.log('⚠️ Aucune boutique recherche trouvée')
         setAllPlugs([])

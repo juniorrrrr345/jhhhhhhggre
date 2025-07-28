@@ -267,17 +267,13 @@ useEffect(() => {
       console.log('🔍 Chargement boutiques (simple)...')
       setLoading(true)
       
-      // Cache simple : Pas de refetch si données récentes (moins de 2 minutes)
-      const lastFetch = sessionStorage.getItem('shops_last_fetch');
-      const now = Date.now();
-      
-      if (lastFetch && (now - parseInt(lastFetch)) < 120000 && plugs.length > 0) {
-        console.log('⚡ Boutiques en cache (moins de 2min) - Skip fetch');
+      // TIMEOUT DE SÉCURITÉ : Forcer loading=false après 10 secondes
+      const safetyTimeout = setTimeout(() => {
+        console.log('⏰ TIMEOUT SÉCURITÉ: Force loading=false après 10s');
         setLoading(false);
-        return;
-      }
+      }, 10000);
       
-      // APPEL DIRECT SIMPLE
+      // APPEL DIRECT SIMPLE (sans cache pour éviter problèmes)
       const response = await fetch('https://jhhhhhhggre.onrender.com/api/public/plugs?limit=50', {
         method: 'GET',
         headers: {
@@ -287,12 +283,12 @@ useEffect(() => {
       
       const data = await response.json()
       
+      // Clear le timeout car tout va bien
+      clearTimeout(safetyTimeout);
+      
       if (data && data.plugs) {
         console.log('🎯 Boutiques récupérées (simple):', data.plugs.length)
         setPlugs(data.plugs)
-        
-        // Marquer la dernière récupération
-        sessionStorage.setItem('shops_last_fetch', now.toString());
         
         // Synchroniser les likes en temps réel
         const likesData = {}
