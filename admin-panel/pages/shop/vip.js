@@ -29,7 +29,22 @@ export default function ShopVIP() {
     fetchConfig()
     fetchPlugs()
     
-    // Plus de refresh automatique - utiliser le bouton "Actualiser" si besoin
+    // SYNC TEMPS RÉEL avec panel admin
+    const handleForceRefresh = (event) => {
+      console.log('🚀 Signal panel admin reçu VIP - FORCE refresh boutiques...');
+      console.log('📊 Détails:', event.detail);
+      setTimeout(() => {
+        fetchPlugs();
+        fetchConfig();
+      }, 200);
+    };
+    
+    window.addEventListener('forceRefreshMiniApp', handleForceRefresh);
+    
+    // Cleanup
+    return () => {
+      window.removeEventListener('forceRefreshMiniApp', handleForceRefresh);
+    };
   }, [])
 
   const handleLanguageChange = (newLanguage) => {
