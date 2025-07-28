@@ -12,21 +12,7 @@ const { sendMessageWithImage, editMessageWithImage, sendPlugWithImage, safeEditM
 const { getTranslation, translateDescription } = require('../utils/translations');
 // Service postal supprimé pour Telegram
 
-// 🚫 PRÉVENTION SPAM - Stockage des derniers états
-const lastUserState = new Map();
-
-// Fonction pour vérifier si c'est un spam (même action répétée)
-const isSpamClick = (userId, action, params = '') => {
-  const currentState = `${action}:${params}`;
-  const lastState = lastUserState.get(userId);
-  
-  if (lastState === currentState) {
-    return true; // C'est un spam
-  }
-  
-  lastUserState.set(userId, currentState);
-  return false; // Pas un spam
-};
+// SYSTÈME DE PRÉVENTION DE SPAM SUPPRIMÉ
 
 // 🔘 SYSTÈME TOP PLUGS - Bouton principal avec pays, filtres et liste
 const handleTopPlugs = async (ctx) => {
@@ -34,12 +20,6 @@ const handleTopPlugs = async (ctx) => {
     const userId = ctx.from?.id;
     
     console.log('🔝 Début handleTopPlugs - VOTER POUR VOTRE PLUGS');
-    
-    // 🚫 Prévention spam - vérifier si c'est un clic répété
-    if (isSpamClick(userId, 'top_plugs')) {
-      console.log('🚫 Clic répété détecté, annulation');
-      return await ctx.answerCbQuery();
-    }
     
     await ctx.answerCbQuery('🔄 Chargement...');
     
