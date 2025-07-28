@@ -222,10 +222,7 @@ export default function SocialMediaManager() {
     setSocialMedias(updatedSocialMedias)
     setNewSocialMedia({ name: '', emoji: '', url: '', enabled: true })
     
-    // Synchronisation automatique après ajout
-    syncToBotAPI(updatedSocialMedias)
-    
-    toast.success(`Réseau social "${newItem.name}" ajouté et synchronisé`)
+    toast.success(`Réseau social "${newItem.name}" ajouté (cliquez "Sauvegarder" pour synchroniser)`)
   }
 
   const updateSocialMedia = (id, field, value) => {
@@ -241,12 +238,6 @@ export default function SocialMediaManager() {
         item.id === id ? { ...item, [field]: value } : item
       )
       console.log('📝 Réseaux sociaux après mise à jour:', updated.map(s => ({ id: s.id, name: s.name, [field]: s[field] })))
-      
-      // Synchronisation automatique après modification (avec debounce)
-      clearTimeout(updateTimeoutRef.current)
-      updateTimeoutRef.current = setTimeout(() => {
-        syncToBotAPI(updated)
-      }, 1500) // Attendre 1.5 seconde après la dernière modification
       
       return updated
     })
@@ -293,58 +284,7 @@ export default function SocialMediaManager() {
       // Mettre à jour l'état d'abord
       setSocialMedias(updatedSocialMedias)
       
-      // Sauvegarder automatiquement selon le mode
-      try {
-        setSaving(true)
-        
-                 if (isLocalMode) {
-           // Mode local : sauvegarde directe
-           const localApi = getLocalApi()
-           if (localApi) {
-             await localApi.updateSocialMedia(updatedSocialMedias)
-             console.log('💾 Réseau social supprimé et sauvegardé localement')
-           }
-        } else {
-          // Mode serveur : essayer de sauvegarder sur le serveur
-          try {
-            const token = localStorage.getItem('adminToken') || 'JuniorAdmon123'
-            
-                         const configData = {
-               socialMediaList: updatedSocialMedias
-             }
-             
-             console.log('📤 Envoi au serveur - configData:', configData)
-             await simpleApi.updateConfig(token, configData)
-            console.log('✅ Réseau social supprimé et sauvegardé sur le serveur')
-                       } catch (serverError) {
-               console.log('Erreur suppression serveur:', serverError.message)
-               
-               // Ne basculer en mode local que pour des erreurs critiques de réseau
-               if (serverError.message.includes('Failed to fetch') || 
-                   serverError.message.includes('NetworkError') || 
-                   serverError.message.includes('offline') ||
-                   serverError.message.includes('502') ||
-                   serverError.message.includes('503') ||
-                   serverError.message.includes('504')) {
-                 console.log('Basculement en mode local à cause de:', serverError.message)
-                 setIsLocalMode(true)
-               } else {
-                 console.log('Erreur suppression non critique, pas de mode local:', serverError.message)
-               }
-               const localApi = getLocalApi()
-               if (localApi) {
-                 await localApi.updateSocialMedia(updatedSocialMedias)
-               }
-             }
-        }
-      } catch (error) {
-        console.error('Erreur suppression:', error)
-        // Restaurer l'état en cas d'erreur
-        setSocialMedias(previousSocialMedias)
-        toast.error('Erreur lors de la suppression')
-      } finally {
-        setSaving(false)
-      }
+      toast.success(`Réseau social "${itemToDelete.name}" supprimé (cliquez "Sauvegarder" pour synchroniser)`)
     }
   }
 
@@ -356,8 +296,7 @@ export default function SocialMediaManager() {
     
     setSocialMedias(updatedSocialMedias)
     
-    // Synchronisation automatique avec la boutique
-    await syncToBotAPI(updatedSocialMedias)
+    toast.success('Statut modifié (cliquez "Sauvegarder" pour synchroniser)')
   }
 
   // Fonction utilitaire pour synchroniser avec l'API du bot
