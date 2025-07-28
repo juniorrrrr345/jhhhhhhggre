@@ -234,6 +234,12 @@ export default function EditPlug() {
       ? currentDepartments.filter(d => d !== department)
       : [...currentDepartments, department]
     
+    console.log(`🏢 Toggle département ${department} pour ${service}:`, {
+      avant: currentDepartments,
+      après: newDepartments,
+      hasChanges: hasChanges()
+    })
+    
     updateFormData(`services.${service}.departments`, newDepartments)
   }
 
@@ -370,15 +376,53 @@ export default function EditPlug() {
         
         console.error('❌ Erreur sauvegarde:', error)
         
+        // Si le serveur principal est indisponible, essayer de sauvegarder en local
+        if (error.status === 500 || error.status === 502 || error.status === 503 || 
+            error.message.includes('indisponible') || error.message.includes('timeout')) {
+          
+          console.log('🔄 Tentative de sauvegarde locale...')
+          
+          try {
+            // Sauvegarder en local
+            const localResponse = await fetch(`/api/local-plugs?id=${id}`, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(cleanData)
+            })
+            
+            if (localResponse.ok) {
+              safeToast.success('✅ Modifications sauvegardées localement (serveur principal indisponible)', {
+                duration: 4000,
+                style: {
+                  background: '#F59E0B',
+                  color: 'white',
+                }
+              })
+              
+              // Mettre à jour les données originales
+              setOriginalData(formData)
+              
+              // Redirection après succès
+              setTimeout(() => {
+                window.location.href = '/admin/plugs?refresh=' + Date.now()
+              }, 2000)
+              
+              return // Sortir de la fonction
+            }
+          } catch (localError) {
+            console.error('❌ Erreur sauvegarde locale:', localError)
+          }
+        }
+        
         // Message d'erreur plus précis selon le type
         let errorMessage = '❌ Erreur de sauvegarde.'
         
         if (error.message.includes('timeout')) {
-          errorMessage = '⏱️ La sauvegarde a pris trop de temps. Réessayez.'
+          errorMessage = '⏱️ La sauvegarde a pris trop de temps. Mode local activé, réessayez.'
         } else if (error.status === 401) {
           errorMessage = '🔐 Session expirée. Reconnectez-vous.'
-        } else if (error.status === 500 || error.status === 502) {
-          errorMessage = '🔧 Serveur temporairement indisponible. Réessayez dans quelques instants.'
+        } else if (error.status === 500 || error.status === 502 || error.status === 503) {
+          errorMessage = '🔧 Serveur principal indisponible. Sauvegarde locale activée.'
         } else if (error.message.includes('network')) {
           errorMessage = '📡 Problème de connexion. Vérifiez votre internet.'
         }
@@ -427,7 +471,51 @@ export default function EditPlug() {
 
 
   const hasChanges = () => {
-    return JSON.stringify(formData) !== JSON.stringify(originalData)
+    // Comparaison plus robuste pour détecter tous les changements
+    try {
+      // Vérifier si les données de base ont changé
+      if (formData.name !== originalData.name ||
+          formData.image !== originalData.image ||
+          formData.telegramLink !== originalData.telegramLink ||
+          formData.isVip !== originalData.isVip ||
+          formData.isActive !== originalData.isActive) {
+        return true;
+      }
+      
+      // Vérifier les pays
+      if (JSON.stringify(formData.countries?.sort()) !== JSON.stringify(originalData.countries?.sort())) {
+        return true;
+      }
+      
+      // Vérifier les services
+      if (formData.services?.delivery?.enabled !== originalData.services?.delivery?.enabled ||
+          formData.services?.delivery?.description !== originalData.services?.delivery?.description ||
+          JSON.stringify(formData.services?.delivery?.departments?.sort()) !== JSON.stringify(originalData.services?.delivery?.departments?.sort())) {
+        return true;
+      }
+      
+      if (formData.services?.postal?.enabled !== originalData.services?.postal?.enabled ||
+          formData.services?.postal?.description !== originalData.services?.postal?.description ||
+          JSON.stringify(formData.services?.postal?.countries?.sort()) !== JSON.stringify(originalData.services?.postal?.countries?.sort())) {
+        return true;
+      }
+      
+      if (formData.services?.meetup?.enabled !== originalData.services?.meetup?.enabled ||
+          formData.services?.meetup?.description !== originalData.services?.meetup?.description ||
+          JSON.stringify(formData.services?.meetup?.departments?.sort()) !== JSON.stringify(originalData.services?.meetup?.departments?.sort())) {
+        return true;
+      }
+      
+      // Vérifier les réseaux sociaux
+      if (JSON.stringify(formData.socialMedia) !== JSON.stringify(originalData.socialMedia)) {
+        return true;
+      }
+      
+      return false;
+    } catch (error) {
+      // En cas d'erreur, considérer qu'il y a des changements
+      return true;
+    }
   }
 
   if (loading) {
