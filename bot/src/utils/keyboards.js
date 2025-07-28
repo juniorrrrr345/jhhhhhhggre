@@ -120,7 +120,7 @@ const createMainKeyboard = (config) => {
   }
   
   // Première ligne : MiniApp FindYourPlugs
-  buttons.push([Markup.button.webApp('🔌 FINDYOURPLUGS PAR MINI-APP 🔌', 'https://sfeplugslink.vercel.app/shop')]);
+  buttons.push([Markup.button.webApp('MINI-APP 🔌', 'https://sfeplugslink.vercel.app/shop')]);
   
   // Deuxième ligne : Bouton Voter pour votre plug avec traduction
   const topPlugsText = config?.buttons?.topPlugs?.text || getTranslation('menu_topPlugs', currentLang, customTranslations);
