@@ -24,12 +24,14 @@ const buildWelcomeMessage = async (config, currentLang = 'fr', customTranslation
       console.log('⚠️ Erreur récupération statistiques:', statsError.message);
     }
 
-    // Construire le message avec traductions
-    const baseMessage = config?.welcome?.text || getTranslation('messages_welcome', currentLang, customTranslations);
+    // TOUJOURS utiliser les traductions selon la langue choisie
+    const baseMessage = getTranslation('messages_welcome', currentLang, customTranslations);
     const activeUsersText = getTranslation('messages_activeUsers', currentLang, customTranslations);
     const availableShopsText = getTranslation('messages_availableShops', currentLang, customTranslations);
     
     let welcomeMessage = `${baseMessage}\n\n📊 **${userCount}** ${activeUsersText}\n🏪 **${shopCount}** ${availableShopsText}`;
+    
+    console.log(`📝 Message d'accueil ACTUEL construit en ${currentLang}:`, welcomeMessage.substring(0, 100) + '...');
     
     // Ajouter l'horodatage si demandé (pour refresh)
     if (includeTimestamp) {
