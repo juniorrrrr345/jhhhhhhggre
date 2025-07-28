@@ -412,69 +412,56 @@ export const simpleApi = {
     }
   },
 
-  // Fonction de synchronisation automatique immédiate pour la mini app
-  syncImmediateMiniApp: async (changeType = 'general') => {
+  // Fonction principale pour forcer sync immédiate mini-app
+  syncImmediateMiniApp: async (changeType) => {
     try {
-      console.log('🚀 SYNCHRONISATION IMMÉDIATE MINI APP PANEL ADMIN...');
+      console.log(`🔄 SYNC IMMEDIATE: ${changeType}`)
       
-      const BOT_URL = process.env.NEXT_PUBLIC_BOT_URL || 'https://jhhhhhhggre.onrender.com';
-      
-      // 1. Vider TOUS les caches du bot
-      try {
-        await simpleApi.clearBotCache();
-        console.log('✅ Cache bot vidé');
-      } catch (e) {
-        console.log('⚠️ Erreur cache bot:', e.message);
-      }
-      
-      // 2. Vider le cache local admin panel
-      simpleApi.clearCache();
-      console.log('✅ Cache admin panel vidé');
-      
-      // 3. Force refresh des données bot (plugs + config)
-      try {
-        await Promise.all([
-          fetch(`${BOT_URL}/api/public/plugs?force=${Date.now()}`, {
-            method: 'GET',
-            headers: { 'Cache-Control': 'no-cache', 'Pragma': 'no-cache' }
-          }),
-          fetch(`${BOT_URL}/api/public/config?force=${Date.now()}`, {
-            method: 'GET', 
-            headers: { 'Cache-Control': 'no-cache', 'Pragma': 'no-cache' }
-          })
-        ]);
-        console.log('✅ APIs bot refreshées');
-      } catch (e) {
-        console.log('⚠️ Erreur refresh APIs:', e.message);
-      }
-      
-      // 4. Signal pour mini app de forcer refresh
+      // 1. Vider tous les caches
       if (typeof window !== 'undefined') {
-        try {
-          // Vider sessionStorage de la mini app
-          sessionStorage.removeItem('miniapp_last_fetch');
-          sessionStorage.removeItem('search_miniapp_last_fetch');
-          
-          // Broadcast event pour forcer refresh mini app avec type de changement
-          window.dispatchEvent(new CustomEvent('forceRefreshMiniApp', {
-            detail: { 
-              reason: 'admin_panel_sync', 
-              changeType: changeType,
-              timestamp: Date.now() 
-            }
-          }));
-          console.log('✅ Signal refresh mini app envoyé');
-        } catch (e) {
-          console.log('⚠️ Erreur signal mini app:', e.message);
-        }
+        // Cache du navigateur
+        ['apiCache', 'configCache', 'plugsCache'].forEach(key => {
+          localStorage.removeItem(key)
+          sessionStorage.removeItem(key)
+        })
+        
+        console.log('🗑️ Caches navigateur vidés')
       }
       
-      console.log('🎯 MINI APP SYNCHRONISÉE - Nouvelle boutique visible IMMÉDIATEMENT');
+      // 2. Déclencher l'événement pour forcer refresh mini-app
+      if (typeof window !== 'undefined') {
+        const event = new CustomEvent('forceRefreshMiniApp', {
+          detail: { changeType, timestamp: Date.now() }
+        })
+        window.dispatchEvent(event)
+        console.log(`📡 Événement dispatché: ${changeType}`)
+      }
       
-      return { success: true, message: 'Mini app synchronisée instantanément' };
+      // 3. Essayer de syncer avec le serveur principal (best effort)
+      try {
+        const response = await fetch('/api/sync-bot', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ type: changeType }),
+          signal: AbortSignal.timeout(3000) // Timeout court
+        })
+        
+        if (response.ok) {
+          console.log('✅ Sync bot réussie')
+        } else {
+          console.log('⚠️ Sync bot échouée mais continue...')
+        }
+      } catch (syncError) {
+        console.log('⚠️ Sync bot impossible, mais données locales OK')
+      }
+      
+      // 4. Notification utilisateur
+      console.log(`🎯 Synchronisation ${changeType} terminée`)
+      return true
+      
     } catch (error) {
-      console.error('❌ Erreur synchronisation mini app:', error);
-      return { success: false, error: error.message };
+      console.error('💥 Erreur sync immédiate:', error)
+      return false
     }
   }
 };

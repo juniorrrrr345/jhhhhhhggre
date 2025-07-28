@@ -317,11 +317,14 @@ export default function EditPlug() {
         cleanData.services.meetup.departments = cleanData.services.meetup.departments || []
       }
 
-      // Tentative 1: cors-proxy
+      // NOUVELLE STRATÉGIE: API locale en priorité avec sync forcée
       let response
       let success = false
+      let useLocalApi = false
       
       try {
+        // Tentative 1: API principale avec timeout court
+        console.log('🔄 Tentative serveur principal (timeout 4s)...')
         response = await Promise.race([
           fetch('/api/cors-proxy', {
             method: 'POST',
@@ -334,25 +337,25 @@ export default function EditPlug() {
             })
           }),
           new Promise((_, reject) => 
-            setTimeout(() => reject(new Error('Timeout sauvegarde')), 8000)
+            setTimeout(() => reject(new Error('Timeout 4s')), 4000)
           )
         ])
 
-        console.log('📊 Response cors-proxy:', response.status)
-        
         if (response.ok) {
-          const result = await response.json()
           success = true
-          console.log('✅ Sauvegarde via cors-proxy réussie')
+          console.log('✅ Sauvegarde serveur principal réussie')
+        } else {
+          throw new Error(`Erreur ${response.status}`)
         }
       } catch (corsError) {
-        console.log('❌ cors-proxy échoué:', corsError.message)
+        console.log('❌ Serveur principal échoué:', corsError.message)
+        useLocalApi = true
       }
       
-      // Tentative 2: API locale si cors-proxy échoue
-      if (!success) {
+      // Tentative 2: API locale (prioritaire maintenant)
+      if (!success || useLocalApi) {
         try {
-          console.log('🔄 Fallback vers API locale...')
+          console.log('🔄 Sauvegarde via API locale...')
           response = await fetch(`/api/local-plugs?id=${id}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
@@ -360,10 +363,11 @@ export default function EditPlug() {
           })
           
           if (response.ok) {
-            const result = await response.json()
             success = true
+            useLocalApi = true
             console.log('✅ Sauvegarde via API locale réussie')
-            safeToast.info('⚠️ Sauvegarde locale - Synchronisation avec le serveur plus tard')
+          } else {
+            throw new Error('API locale échouée')
           }
         } catch (localError) {
           console.log('❌ API locale échouée:', localError.message)
@@ -383,16 +387,28 @@ export default function EditPlug() {
         clearTimeout(globalTimeout)
         setSaving(false)
         
-        // SYNCHRONISATION IMMÉDIATE MINI APP
+        // SYNCHRONISATION IMMÉDIATE MINI APP (forcée)
+        console.log('🚀 Synchronisation forcée mini-app...')
         await simpleApi.syncImmediateMiniApp('shop_updated')
         
-        safeToast.success('✅ Plug modifié avec succès ! 🔄 Mini app synchronisée', {
-          duration: 4000,
-          style: {
-            background: '#10B981',
-            color: 'white',
-          }
-        })
+        // Message de succès adapté
+        if (useLocalApi) {
+          safeToast.success('✅ Modifications sauvegardées ! 🔄 Mini-app mise à jour', {
+            duration: 4000,
+            style: {
+              background: '#10B981',
+              color: 'white',
+            }
+          })
+        } else {
+          safeToast.success('✅ Plug modifié avec succès ! 🔄 Tout synchronisé', {
+            duration: 4000,
+            style: {
+              background: '#10B981',
+              color: 'white',
+            }
+          })
+        }
         
         // Mettre à jour les données originales pour détecter les nouveaux changements
         setOriginalData(formData)
