@@ -8,6 +8,7 @@ import toast from 'react-hot-toast'
 import LanguageSelector, { useTranslation, getCurrentLanguage } from '../../components/LanguageSelector'
 import ShopNavigation from '../../components/ShopNavigation'
 import { useLanguage } from '../../hooks/useLanguage'
+import { translateCountry, getCountryFlag } from '../../lib/country-translations'
 
 export default function ShopPlugDetail() {
   const router = useRouter()
@@ -22,6 +23,18 @@ export default function ShopPlugDetail() {
   const currentLanguage = useLanguage()
   const [, setCurrentLanguage] = useState('fr') // Gardé pour la compatibilité
   const { t } = useTranslation(currentLanguage)
+
+  // Fonction pour obtenir le texte des votes traduit
+  const getVotesText = () => {
+    const translations = {
+      fr: likes === 1 ? 'vote' : 'votes',
+      en: likes === 1 ? 'vote' : 'votes',
+      it: likes === 1 ? 'voto' : 'voti',
+      es: likes === 1 ? 'voto' : 'votos',
+      de: likes === 1 ? 'Stimme' : 'Stimmen'
+    }
+    return translations[currentLanguage] || translations.fr
+  }
 
   useEffect(() => {
     // Initialiser la langue depuis localStorage
