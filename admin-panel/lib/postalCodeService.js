@@ -2,22 +2,132 @@
 class PostalCodeService {
   constructor() {
     this.lastReload = new Date();
-    // Base de données des codes postaux par pays - SEULEMENT LES PAYS DES BOUTIQUES RÉELLES
+    // Base de données des codes postaux par pays - TOUS LES PAYS D'EUROPE + PAYS SUPPLÉMENTAIRES
     this.postalCodes = {
       // 🇫🇷 FRANCE (01-99 départements + DOM-TOM)
-      France: this.generateFrenchPostalCodes(),
+      'France 🇫🇷': this.generateFrenchPostalCodes(),
       
       // 🇧🇪 BELGIQUE (1000-9999)
-      Belgique: this.generateBelgianPostalCodes(),
+      'Belgique 🇧🇪': this.generateBelgianPostalCodes(),
       
       // 🇨🇭 SUISSE (1000-9999)
-      Suisse: this.generateSwissPostalCodes(),
+      'Suisse 🇨🇭': this.generateSwissPostalCodes(),
       
       // 🇳🇱 PAYS-BAS (1000-9999)
-      'Pays-Bas': this.generateDutchPostalCodes(),
+      'Pays-Bas 🇳🇱': this.generateDutchPostalCodes(),
+      
+      // 🇩🇪 ALLEMAGNE
+      'Allemagne 🇩🇪': this.generateGermanPostalCodes(),
+      
+      // 🇮🇹 ITALIE
+      'Italie 🇮🇹': this.generateItalianPostalCodes(),
+      
+      // 🇪🇸 ESPAGNE
+      'Espagne 🇪🇸': this.generateSpanishPostalCodes(),
+      
+      // 🇵🇹 PORTUGAL
+      'Portugal 🇵🇹': this.generatePortuguesePostalCodes(),
+      
+      // 🇬🇧 ROYAUME-UNI
+      'Royaume-Uni 🇬🇧': this.generateUKPostalCodes(),
+      
+      // 🇦🇹 AUTRICHE
+      'Autriche 🇦🇹': this.generateAustrianPostalCodes(),
+      
+      // 🇸🇪 SUÈDE
+      'Suède 🇸🇪': this.generateSwedishPostalCodes(),
+      
+      // 🇳🇴 NORVÈGE
+      'Norvège 🇳🇴': this.generateNorwegianPostalCodes(),
+      
+      // 🇩🇰 DANEMARK
+      'Danemark 🇩🇰': this.generateDanishPostalCodes(),
+      
+      // 🇫🇮 FINLANDE
+      'Finlande 🇫🇮': this.generateFinnishPostalCodes(),
+      
+      // 🇵🇱 POLOGNE
+      'Pologne 🇵🇱': this.generatePolishPostalCodes(),
+      
+      // 🇨🇿 RÉPUBLIQUE TCHÈQUE
+      'République Tchèque 🇨🇿': this.generateCzechPostalCodes(),
+      
+      // 🇸🇰 SLOVAQUIE
+      'Slovaquie 🇸🇰': this.generateSlovakPostalCodes(),
+      
+      // 🇭🇺 HONGRIE
+      'Hongrie 🇭🇺': this.generateHungarianPostalCodes(),
+      
+      // 🇷🇴 ROUMANIE
+      'Roumanie 🇷🇴': this.generateRomanianPostalCodes(),
+      
+      // 🇧🇬 BULGARIE
+      'Bulgarie 🇧🇬': this.generateBulgarianPostalCodes(),
+      
+      // 🇬🇷 GRÈCE
+      'Grèce 🇬🇷': this.generateGreekPostalCodes(),
+      
+      // 🇭🇷 CROATIE
+      'Croatie 🇭🇷': this.generateCroatianPostalCodes(),
+      
+      // 🇸🇮 SLOVÉNIE
+      'Slovénie 🇸🇮': this.generateSlovenianPostalCodes(),
+      
+      // 🇪🇪 ESTONIE
+      'Estonie 🇪🇪': this.generateEstonianPostalCodes(),
+      
+      // 🇱🇻 LETTONIE
+      'Lettonie 🇱🇻': this.generateLatvianPostalCodes(),
+      
+      // 🇱🇹 LITUANIE
+      'Lituanie 🇱🇹': this.generateLithuanianPostalCodes(),
+      
+      // 🇮🇪 IRLANDE
+      'Irlande 🇮🇪': this.generateIrishPostalCodes(),
+      
+      // 🇮🇸 ISLANDE
+      'Islande 🇮🇸': this.generateIcelandicPostalCodes(),
+      
+      // 🇱🇺 LUXEMBOURG
+      'Luxembourg 🇱🇺': this.generateLuxembourgPostalCodes(),
+      
+      // 🇲🇹 MALTE
+      'Malte 🇲🇹': this.generateMaltesePostalCodes(),
+      
+      // 🇨🇾 CHYPRE
+      'Chypre 🇨🇾': this.generateCypriotPostalCodes(),
+      
+      // 🇲🇨 MONACO
+      'Monaco 🇲🇨': this.generateMonacoPostalCodes(),
+      
+      // 🇸🇲 SAINT-MARIN
+      'Saint-Marin 🇸🇲': this.generateSanMarinoPostalCodes(),
+      
+      // 🇻🇦 VATICAN
+      'Vatican 🇻🇦': this.generateVaticanPostalCodes(),
+      
+      // 🇦🇩 ANDORRE
+      'Andorre 🇦🇩': this.generateAndorranPostalCodes(),
+      
+      // 🇱🇮 LIECHTENSTEIN
+      'Liechtenstein 🇱🇮': this.generateLiechtensteinPostalCodes(),
+      
+      // PAYS SUPPLÉMENTAIRES DEMANDÉS
+      
+      // 🇲🇦 MAROC
+      'Maroc 🇲🇦': this.generateMoroccanPostalCodes(),
+      
+      // 🇨🇦 CANADA
+      'Canada 🇨🇦': this.generateCanadianPostalCodes(),
+      
+      // 🇺🇸 USA
+      'USA 🇺🇸': this.generateUSPostalCodes(),
+      
+      // 🇹🇭 THAÏLANDE
+      'Thaïlande 🇹🇭': this.generateThaiPostalCodes(),
       
       // 🏴 AUTRE (codes génériques)
-      'Autre': this.generateGenericPostalCodes()
+      'Autre 🌍': this.generateGenericPostalCodes()
     };
   }
 
