@@ -12,9 +12,10 @@ class TelegramLinksSync {
       clearInterval(this.syncInterval)
     }
 
-    this.syncInterval = setInterval(() => {
-      this.syncLinks()
-    }, this.syncIntervalMs)
+    // TEMPORAIREMENT DÉSACTIVÉ pour éviter les erreurs 429
+    // this.syncInterval = setInterval(() => {
+    //   this.syncLinks()
+    // }, this.syncIntervalMs)
 
     console.log('🔄 Synchronisation automatique des liens Telegram démarrée')
   }

@@ -18,8 +18,8 @@ class RobustSync {
 
   init() {
     console.log('🔄 RobustSync initialisé avec délais optimisés')
-    // Traiter la queue toutes les 20 secondes (moins agressif)
-    setInterval(() => this.processQueue(), 20000)
+    // TEMPORAIREMENT DÉSACTIVÉ pour éviter les erreurs 429
+    // setInterval(() => this.processQueue(), 20000)
   }
 
   // Ajouter une opération à synchroniser

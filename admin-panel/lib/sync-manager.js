@@ -28,9 +28,10 @@ class SyncManager {
       clearInterval(this.syncInterval)
     }
     
-    this.syncInterval = setInterval(async () => {
-      await this.syncIfNeeded()
-    }, 30000) // 30 secondes
+    // TEMPORAIREMENT DÉSACTIVÉ pour éviter les erreurs 429
+    // this.syncInterval = setInterval(async () => {
+    //   await this.syncIfNeeded()
+    // }, 30000) // 30 secondes
   }
 
   stopPeriodicSync() {
