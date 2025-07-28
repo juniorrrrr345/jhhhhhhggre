@@ -7,7 +7,7 @@ import telegramLinksSync from '../../lib/telegram-links-sync'
 export default function ShopServices() {
   const [currentLanguage, setCurrentLanguage] = useState('fr')
   const [config, setConfig] = useState({
-    servicesTelegramLink: 'https://t.me/FindYourPlugBot'
+    servicesTelegramLink: 'https://t.me/findyourplugsav'
   })
   const [shopSocialMedias, setShopSocialMedias] = useState([])
   const { t } = useTranslation(currentLanguage)
@@ -23,7 +23,7 @@ export default function ShopServices() {
     // Écouter les mises à jour des liens
     telegramLinksSync.onLinksUpdate((links) => {
       setConfig({
-        servicesTelegramLink: links.servicesTelegramLink || 'https://t.me/FindYourPlugBot'
+        servicesTelegramLink: links.servicesTelegramLink || 'https://t.me/findyourplugsav'
       })
     })
   }, [])
@@ -58,7 +58,7 @@ export default function ShopServices() {
       if (savedLinks) {
         const links = JSON.parse(savedLinks)
         setConfig({
-          servicesTelegramLink: links.servicesTelegramLink || 'https://t.me/FindYourPlugBot'
+          servicesTelegramLink: links.servicesTelegramLink || 'https://t.me/findyourplugsav'
         })
         return
       }
