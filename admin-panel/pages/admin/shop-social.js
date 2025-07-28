@@ -40,7 +40,7 @@ export default function ShopSocialMediaManager() {
       name: 'Potato',
       emoji: '🥔',
       url: 'https://potato.com',
-      logo: 'https://i.imgur.com/44ScFxY.jpeg'
+      logo: 'https://i.imgur.com/nLVf0Hk.jpeg'
     }
   ])
   const [loading, setLoading] = useState(true)
