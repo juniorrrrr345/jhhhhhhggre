@@ -297,21 +297,20 @@ export default function EditPlug() {
       
       console.log('📦 Données à sauvegarder:', cleanData)
 
-      // Sauvegarde via proxy avec timeout
+      // Sauvegarde via cors-proxy avec timeout
       const response = await Promise.race([
-        fetch(`/api/proxy?endpoint=/api/plugs/${id}`, {
+        fetch('/api/cors-proxy', {
           method: 'POST',
-          headers: {
-            'Authorization': token,
-            'Content-Type': 'application/json'
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            _method: 'PUT',
-            ...cleanData
+            endpoint: `plugs/${id}`,
+            method: 'PUT',
+            token: token,
+            data: cleanData
           })
         }),
         new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('Timeout sauvegarde')), 15000)
+          setTimeout(() => reject(new Error('Timeout sauvegarde')), 10000)
         )
       ])
 
