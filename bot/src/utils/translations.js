@@ -649,11 +649,46 @@ const translations = {
       de: '🟦 Schritt 16: Bestätigung'
     },
     'registration.step12': {
-      fr: '🟦 Étape 12 : Pays de service',
-      en: '🟦 Step 12: Service country',
-      it: '🟦 Fase 12: Paese di servizio',
-      es: '🟦 Paso 12: País de servicio',
-      de: '🟦 Schritt 12: Service-Land'
+      fr: '🟦 Étape 12 : Pays de travail',
+      en: '🟦 Step 12: Working countries',
+      it: '🟦 Fase 12: Paesi di lavoro',
+      es: '🟦 Paso 12: Países de trabajo',
+      de: '🟦 Schritt 12: Arbeitsländer'
+    },
+    'registration.countryQuestion': {
+      fr: 'Choisissez un ou plusieurs pays depuis lesquels vous travaillez ou où le service est disponible.',
+      en: 'Choose one or more countries from which you work or where the service is available.',
+      it: 'Scegli uno o più paesi da cui lavori o dove il servizio è disponibile.',
+      es: 'Elija uno o más países desde los cuales trabaja o donde el servicio está disponible.',
+      de: 'Wählen Sie ein oder mehrere Länder aus, von denen aus Sie arbeiten oder wo der Service verfügbar ist.'
+    },
+    'registration.countryExamples': {
+      fr: '💡 Exemples :\n• Si vous êtes en France → Choisissez France\n• Si vous êtes en France et en Espagne → Choisissez France & Espagne',
+      en: '💡 Examples:\n• If you are in France → Choose France\n• If you are in France and Spain → Choose France & Spain',
+      it: '💡 Esempi:\n• Se sei in Francia → Scegli Francia\n• Se sei in Francia e Spagna → Scegli Francia & Spagna',
+      es: '💡 Ejemplos:\n• Si estás en Francia → Elige Francia\n• Si estás en Francia y España → Elige Francia & España',
+      de: '💡 Beispiele:\n• Wenn Sie in Frankreich sind → Wählen Sie Frankreich\n• Wenn Sie in Frankreich und Spanien sind → Wählen Sie Frankreich & Spanien'
+    },
+    'registration.noCountrySelected': {
+      fr: '⚪ Aucun pays sélectionné',
+      en: '⚪ No country selected',
+      it: '⚪ Nessun paese selezionato',
+      es: '⚪ Ningún país seleccionado',
+      de: '⚪ Kein Land ausgewählt'
+    },
+    'registration.selectedCountries': {
+      fr: '✅ Pays sélectionnés',
+      en: '✅ Selected countries',
+      it: '✅ Paesi selezionati',
+      es: '✅ Países seleccionados',
+      de: '✅ Ausgewählte Länder'
+    },
+    'registration.selectWorkingCountries': {
+      fr: '👆 Sélectionnez vos pays de travail :',
+      en: '👆 Select your working countries:',
+      it: '👆 Seleziona i tuoi paesi di lavoro:',
+      es: '👆 Seleccione sus países de trabajo:',
+      de: '👆 Wählen Sie Ihre Arbeitsländer:'
     },
     'registration.step13': {
       fr: '🟦 Étape 13 : Ville',

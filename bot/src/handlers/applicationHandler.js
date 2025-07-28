@@ -1467,18 +1467,15 @@ const askWorkingCountries = async (ctx) => {
   
   const selectedCountries = userForm.data.workingCountries;
 
-  const message = `🛠️ FORMULAIRE D'INSCRIPTION – FindYourPlug\n\n` +
+  const message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
     `⸻\n\n` +
-    `🌍 Étape 12 : Pays de travail\n\n` +
-    `Il choisit un ou plusieurs pays où vous travaillez ou où le service est disponible.\n\n` +
-    `💡 Exemples :\n` +
-    `• Si vous êtes en France → Choisissez France\n` +
-    `• Si vous êtes en France et en Espagne → Choisissez France & Espagne\n` +
-    `• Si vous livrez dans plusieurs pays → Sélectionnez tous les pays\n\n` +
+    `${getTranslation('registration.step12', currentLang, customTranslations)}\n\n` +
+    `${getTranslation('registration.countryQuestion', currentLang, customTranslations)}\n\n` +
+    `${getTranslation('registration.countryExamples', currentLang, customTranslations)}\n\n` +
     (selectedCountries.length > 0 ? 
-      `✅ Pays sélectionnés : ${selectedCountries.join(', ')}\n\n` : 
-      `⚪ Aucun pays sélectionné\n\n`) +
-    `👆 Sélectionnez vos pays de travail :`;
+      `${getTranslation('registration.selectedCountries', currentLang, customTranslations)} : ${selectedCountries.join(', ')}\n\n` : 
+      `${getTranslation('registration.noCountrySelected', currentLang, customTranslations)}\n\n`) +
+    `${getTranslation('registration.selectWorkingCountries', currentLang, customTranslations)}`;
 
   // Créer les boutons de pays (2 par ligne)
   const countryButtons = [];
