@@ -4690,3 +4690,96 @@ app.post('/api/force-update-all-translations', async (req, res) => {
     res.status(500).json({ error: 'Erreur serveur' });
   }
 });
+
+// API pour l'analyse géographique des utilisateurs
+app.get('/api/admin/user-analytics', async (req, res) => {
+  try {
+    console.log('📊 Récupération analytics utilisateurs...');
+    
+    const { timeRange } = req.query;
+    
+    // Construire le filtre de date selon la période
+    let dateFilter = {};
+    const now = new Date();
+    
+    switch (timeRange) {
+      case '1d':
+        dateFilter = { createdAt: { $gte: new Date(now - 24 * 60 * 60 * 1000) } };
+        break;
+      case '7d':
+        dateFilter = { createdAt: { $gte: new Date(now - 7 * 24 * 60 * 60 * 1000) } };
+        break;
+      case '30d':
+        dateFilter = { createdAt: { $gte: new Date(now - 30 * 24 * 60 * 60 * 1000) } };
+        break;
+      default:
+        dateFilter = {}; // Tous les utilisateurs
+    }
+    
+    // Récupérer tous les utilisateurs avec filtre temporel
+    const User = require('./src/models/User');
+    const users = await User.find(dateFilter);
+    
+    console.log(`📊 ${users.length} utilisateurs trouvés pour période ${timeRange}`);
+    
+    // Analyser les données géographiques
+    const countryStats = {};
+    let usersWithLocation = 0;
+    
+    users.forEach(user => {
+      if (user.location && user.location.country) {
+        usersWithLocation++;
+        const country = user.location.country;
+        
+        if (!countryStats[country]) {
+          countryStats[country] = {
+            count: 0,
+            users: [],
+            cities: new Set()
+          };
+        }
+        
+        countryStats[country].count++;
+        countryStats[country].users.push({
+          userId: user.userId,
+          username: user.username,
+          city: user.location.city || 'Ville inconnue',
+          joinDate: user.createdAt
+        });
+        
+        if (user.location.city) {
+          countryStats[country].cities.add(user.location.city);
+        }
+      }
+    });
+    
+    // Convertir en tableau et trier par nombre d'utilisateurs
+    const countryStatsArray = Object.entries(countryStats).map(([country, data]) => ({
+      country,
+      count: data.count,
+      percentage: Math.round((data.count / usersWithLocation) * 100),
+      cities: Array.from(data.cities),
+      cityCount: data.cities.size,
+      users: data.users.sort((a, b) => new Date(b.joinDate) - new Date(a.joinDate))
+    })).sort((a, b) => b.count - a.count);
+    
+    console.log('🌍 Stats pays générées:', countryStatsArray.length, 'pays');
+    
+    res.json({
+      success: true,
+      totalUsers: users.length,
+      usersWithLocation,
+      locationCoverage: users.length > 0 ? Math.round((usersWithLocation / users.length) * 100) : 0,
+      countryStats: countryStatsArray,
+      timeRange,
+      lastUpdate: new Date().toISOString()
+    });
+    
+  } catch (error) {
+    console.error('❌ Erreur analytics utilisateurs:', error);
+    res.status(500).json({ 
+      error: 'Erreur lors de la récupération des analytics',
+      details: error.message 
+    });
+  }
+});
