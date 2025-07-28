@@ -61,11 +61,11 @@ const translations = {
       de: '🔙 Zurück zu den Geschäften'
     },
     'back_to_filters': {
-      fr: '🔙 Retour aux boutiques disponibles',
-      en: '🔙 Back to available shops',
-      it: '🔙 Torna ai negozi disponibili',
-      es: '🔙 Volver a las tiendas disponibles',
-      de: '🔙 Zurück zu verfügbaren Geschäften'
+      fr: '🔙 Retour aux boutiques',
+      en: '🔙 Back to shops',
+      it: '🔙 Torna ai negozi',
+      es: '🔙 Volver a las tiendas',
+      de: '🔙 Zurück zu den Geschäften'
     },
     'menu_selectLanguage': {
       fr: 'Sélectionnez votre langue préférée :',
