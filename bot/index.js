@@ -336,9 +336,13 @@ const showMainMenuInLanguage = async (ctx, config, language) => {
       console.log('⚠️ Erreur récupération statistiques:', statsError.message);
     }
     
-    // Message de base avec statistiques
+    // Message de base avec statistiques traduites + horodatage pour forcer la mise à jour
     const baseMessage = freshConfig?.welcome?.text || getTranslation('messages_welcome', currentLang, customTranslations);
-    const welcomeMessage = `${baseMessage}\n\n📊 **${userCount}** utilisateurs actifs\n🏪 **${shopCount}** boutiques disponibles`;
+    const activeUsersText = getTranslation('messages_activeUsers', currentLang, customTranslations);
+    const availableShopsText = getTranslation('messages_availableShops', currentLang, customTranslations);
+    const refreshedAtText = getTranslation('messages_refreshedAt', currentLang, customTranslations);
+    const timestamp = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+    const welcomeMessage = `${baseMessage}\n\n📊 **${userCount}** ${activeUsersText}\n🏪 **${shopCount}** ${availableShopsText}\n\n🔄 *${refreshedAtText} ${timestamp}*`;
     
     // Créer le clavier principal avec traductions (AVEC le bouton langue)
     const { createMainKeyboard } = require('./src/utils/keyboards');
@@ -448,10 +452,13 @@ bot.action('refresh_and_main', async (ctx) => {
       console.log('⚠️ Erreur récupération statistiques:', statsError.message);
     }
     
-    // Message de base avec statistiques + horodatage pour forcer la mise à jour
+    // Message de base avec statistiques traduites + horodatage pour forcer la mise à jour
     const baseMessage = freshConfig?.welcome?.text || getTranslation('messages_welcome', currentLang, customTranslations);
+    const activeUsersText = getTranslation('messages_activeUsers', currentLang, customTranslations);
+    const availableShopsText = getTranslation('messages_availableShops', currentLang, customTranslations);
+    const refreshedAtText = getTranslation('messages_refreshedAt', currentLang, customTranslations);
     const timestamp = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
-    const welcomeMessage = `${baseMessage}\n\n📊 **${userCount}** utilisateurs actifs\n🏪 **${shopCount}** boutiques disponibles\n\n🔄 *Actualisé à ${timestamp}*`;
+    const welcomeMessage = `${baseMessage}\n\n📊 **${userCount}** ${activeUsersText}\n🏪 **${shopCount}** ${availableShopsText}\n\n🔄 *${refreshedAtText} ${timestamp}*`;
     
     // Créer le clavier principal avec traductions (AVEC le bouton actualiser)
     const { createMainKeyboard } = require('./src/utils/keyboards');

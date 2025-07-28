@@ -253,6 +253,27 @@ const translations = {
       es: 'tiendas disponibles',
       de: 'Shops verfügbar'
     },
+    'messages_activeUsers': {
+      fr: 'utilisateurs actifs',
+      en: 'active users',
+      it: 'utenti attivi',
+      es: 'usuarios activos',
+      de: 'aktive Benutzer'
+    },
+    'messages_availableShops': {
+      fr: 'boutiques disponibles',
+      en: 'available shops',
+      it: 'negozi disponibili',
+      es: 'tiendas disponibles',
+      de: 'verfügbare Shops'
+    },
+    'messages_refreshedAt': {
+      fr: 'Actualisé à',
+      en: 'Updated at',
+      it: 'Aggiornato alle',
+      es: 'Actualizado a las',
+      de: 'Aktualisiert um'
+    },
     'messages_sortedByVotes': {
       fr: 'Triés par nombre de votes',
       en: 'Sorted by number of votes',
@@ -1325,35 +1346,33 @@ const translations = {
       es: 'tiendas disponibles',
       de: 'Shops verfügbar'
     },
-    'total_shops': {
-      fr: 'Total',
-      en: 'Total',
-      it: 'Totale',
-      es: 'Total',
-      de: 'Gesamt'
+    'messages_activeUsers': {
+      fr: 'utilisateurs actifs',
+      en: 'active users',
+      it: 'utenti attivi',
+      es: 'usuarios activos',
+      de: 'aktive Benutzer'
     },
-    'shops_word': {
-      fr: 'boutiques',
-      en: 'shops',
-      it: 'negozi',
-      es: 'tiendas',
-      de: 'Shops'
+    'messages_availableShops': {
+      fr: 'boutiques disponibles',
+      en: 'available shops',
+      it: 'negozi disponibili',
+      es: 'tiendas disponibles',
+      de: 'verfügbare Shops'
     },
-
-    // === MESSAGES TOP PLUGS ===
+    'messages_refreshedAt': {
+      fr: 'Actualisé à',
+      en: 'Updated at',
+      it: 'Aggiornato alle',
+      es: 'Actualizado a las',
+      de: 'Aktualisiert um'
+    },
     'messages_sortedByVotes': {
       fr: 'Triés par nombre de votes',
       en: 'Sorted by number of votes',
       it: 'Ordinati per numero di voti',
       es: 'Ordenados por número de votos',
       de: 'Sortiert nach Anzahl der Stimmen'
-    },
-    'messages_welcome': {
-      fr: '👋 Bienvenue sur FindYourPlug !',
-      en: '👋 Welcome to FindYourPlug!',
-      it: '👋 Benvenuto su FindYourPlug!',
-      es: '👋 ¡Bienvenido a FindYourPlug!',
-      de: '👋 Willkommen bei FindYourPlug!'
     },
     'messages_noShops': {
       fr: '❌ Aucune boutique disponible pour le moment.',

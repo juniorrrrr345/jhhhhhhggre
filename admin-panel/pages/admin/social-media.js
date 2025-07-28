@@ -38,6 +38,14 @@ export default function SocialMediaManager() {
     }, 100)
   }, [])
 
+  // Sauvegarder automatiquement les modifications dans localStorage
+  useEffect(() => {
+    if (socialMedias.length > 0) {
+      console.log('💾 Sauvegarde automatique des réseaux sociaux bot:', socialMedias.map(s => ({ id: s.id, name: s.name })))
+      localStorage.setItem('botSocialMediaList', JSON.stringify(socialMedias))
+    }
+  }, [socialMedias])
+
   const loadInitialData = () => {
     if (typeof window === 'undefined') {
       setLoading(false)
