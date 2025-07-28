@@ -236,23 +236,20 @@ useEffect(() => {
     }
   }, [currentLanguage])
 
-  // AUTO-REFRESH STABLE pour boutiques
+  // AUTO-REFRESH STABLE pour boutiques  
   useEffect(() => {
-    // Refresh modéré toutes les 30 secondes (plus stable)
+    // Refresh modéré toutes les 45 secondes (très stable)
     const refreshInterval = setInterval(() => {
-      // Seulement si pas de loading en cours pour éviter les conflits
-      if (!loading) {
-        console.log('🔄 Auto-refresh boutiques (stable)...');
-        fetchPlugs();
-      }
-    }, 30000); // 30 secondes - stable
+      console.log('🔄 Auto-refresh boutiques (stable)...');
+      fetchPlugs();
+    }, 45000); // 45 secondes - très stable
 
     // Nettoyer l'interval au démontage
     return () => {
       clearInterval(refreshInterval);
       console.log('🧹 Auto-refresh nettoyé');
     };
-  }, [loading]) // Dépendre de loading pour éviter conflits
+  }, []) // Plus de dépendance loading
 
   const handleLanguageChange = (newLanguage) => {
     setCurrentLanguage(newLanguage)
@@ -326,15 +323,17 @@ useEffect(() => {
   }
 
   const fetchPlugs = async () => {
-    // Protection contre les appels multiples simultanés
-    if (loading) {
-      console.log('⏳ Fetch déjà en cours, skip...');
-      return;
-    }
+    let safetyTimeout = null;
     
     try {
       console.log('🔍 Chargement boutiques depuis le bot...')
       setLoading(true)
+      
+      // TIMEOUT DE SÉCURITÉ : Forcer loading=false après 15 secondes max
+      safetyTimeout = setTimeout(() => {
+        console.log('⏰ TIMEOUT SÉCURITÉ: Forcer fin loading après 15s');
+        setLoading(false);
+      }, 15000);
       
       let data = null
       
@@ -346,7 +345,7 @@ useEffect(() => {
           headers: {
             'Content-Type': 'application/json'
           },
-          signal: AbortSignal.timeout(8000) // 8 secondes
+          signal: AbortSignal.timeout(5000) // 5 secondes max
         })
         
         if (directResponse.ok) {
@@ -366,7 +365,7 @@ useEffect(() => {
             headers: {
               'Content-Type': 'application/json'
             },
-            signal: AbortSignal.timeout(8000)
+            signal: AbortSignal.timeout(5000) // 5 secondes max
           })
           
           if (proxyResponse.ok) {
@@ -401,10 +400,40 @@ useEffect(() => {
       
     } catch (error) {
       console.error('❌ Erreur chargement boutiques:', error.message)
-      setPlugs([])
-      console.log('📱 Erreur API: Aucune boutique affichée')
+      
+      // FALLBACK: Utiliser des boutiques de demo si tout échoue
+      console.log('🔄 Tentative fallback boutiques demo...')
+      setPlugs([
+        {
+          _id: 'demo1',
+          name: 'Boutique Demo 1',
+          description: 'Boutique de démonstration en attendant la connexion API',
+          country: 'France',
+          likes: 0,
+          isActive: true,
+          categories: ['delivery'],
+          createdAt: new Date().toISOString()
+        },
+        {
+          _id: 'demo2', 
+          name: 'Boutique Demo 2',
+          description: 'Boutique de démonstration en attendant la connexion API',
+          country: 'Belgique',
+          likes: 0,
+          isActive: true,
+          categories: ['meetup'],
+          createdAt: new Date().toISOString()
+        }
+      ])
+      
+      console.log('📱 Erreur API: Boutiques demo affichées en fallback')
     } finally {
+      // Clear le timeout de sécurité
+      if (safetyTimeout) {
+        clearTimeout(safetyTimeout);
+      }
       setLoading(false)
+      console.log('✅ Loading terminé (fetchPlugs)')
     }
   }
 
