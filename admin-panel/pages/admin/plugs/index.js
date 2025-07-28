@@ -342,16 +342,69 @@ export default function AccueilAdmin() {
             {/* Liste des boutiques */}
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {plugs.map((plug) => (
-                <div key={plug._id} className="bg-gray-50 rounded-lg p-4">
+                <div key={plug._id} className="bg-gray-50 rounded-lg p-4 border-l-4 border-blue-500">
                   <div className="flex items-start justify-between">
                     <div className="flex-1 min-w-0">
-                      <h4 className="text-sm font-medium text-gray-900 truncate">
-                        {plug.name}
-                      </h4>
-                      <p className="text-xs text-gray-500 mt-1 truncate">
+                      <div className="flex items-center gap-2 mb-2">
+                        <h4 className="text-sm font-medium text-gray-900 truncate">
+                          {plug.name}
+                        </h4>
+                        {plug.isVip && <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full">👑 VIP</span>}
+                      </div>
+                      
+                      <p className="text-xs text-gray-500 mb-2 truncate">
                         {plug.description}
                       </p>
-                      <div className="mt-2">
+                      
+                      {/* Pays desservis */}
+                      {plug.countries && plug.countries.length > 0 && (
+                        <div className="mb-2">
+                          <span className="text-xs font-medium text-gray-700">🌍 Pays:</span>
+                          <div className="flex flex-wrap gap-1 mt-1">
+                            {plug.countries.slice(0, 3).map((country, index) => (
+                              <span key={index} className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
+                                {country}
+                              </span>
+                            ))}
+                            {plug.countries.length > 3 && (
+                              <span className="text-xs text-gray-500">+{plug.countries.length - 3}</span>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                      
+                      {/* Services */}
+                      <div className="mb-3">
+                        <span className="text-xs font-medium text-gray-700">🚚 Services:</span>
+                        <div className="flex flex-wrap gap-1 mt-1">
+                          {plug.services?.delivery?.enabled && (
+                            <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">
+                              📦 Livraison
+                              {plug.services.delivery.departments && plug.services.delivery.departments.length > 0 && 
+                                ` (${plug.services.delivery.departments.slice(0, 3).join(', ')}${plug.services.delivery.departments.length > 3 ? '...' : ''})`
+                              }
+                            </span>
+                          )}
+                          {plug.services?.postal?.enabled && (
+                            <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
+                              📮 Postal
+                              {plug.services.postal.countries && plug.services.postal.countries.length > 0 && 
+                                ` (${plug.services.postal.countries.slice(0, 2).join(', ')}${plug.services.postal.countries.length > 2 ? '...' : ''})`
+                              }
+                            </span>
+                          )}
+                          {plug.services?.meetup?.enabled && (
+                            <span className="text-xs bg-purple-100 text-purple-800 px-2 py-1 rounded-full">
+                              🤝 Meetup
+                              {plug.services.meetup.departments && plug.services.meetup.departments.length > 0 && 
+                                ` (${plug.services.meetup.departments.slice(0, 3).join(', ')}${plug.services.meetup.departments.length > 3 ? '...' : ''})`
+                              }
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      
+                      <div>
                         <StatusBadge isActive={plug.isActive} isVip={plug.isVip} />
                       </div>
                     </div>
