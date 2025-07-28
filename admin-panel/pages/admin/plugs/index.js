@@ -106,16 +106,27 @@ export default function AccueilAdmin() {
       
       await simpleApi.deletePlug(token, id)
       
-      // FORCER RAFRAÎCHISSEMENT MINI-APP
+      // FORCER RAFRAÎCHISSEMENT MINI-APP ET BOT APRÈS SUPPRESSION
       try {
-        // Vider le cache du bot pour forcer refresh
+        console.log('🗑️ Rafraîchissement après suppression...')
+        
+        // 1. Vider le cache du bot pour forcer refresh
         await fetch('https://jhhhhhhggre.onrender.com/api/cache/refresh', {
           method: 'POST'
         }).catch(() => console.log('Cache bot non vidé'))
         
-        console.log('🔄 Cache bot vidé après suppression - mini-app va se rafraîchir')
+        // 2. Attendre que le cache soit vidé
+        await new Promise(resolve => setTimeout(resolve, 1500))
+        
+        // 3. Forcer refresh des données publiques
+        await fetch('https://jhhhhhhggre.onrender.com/api/public/plugs?force=' + Date.now(), {
+          method: 'GET',
+          headers: { 'Cache-Control': 'no-cache' }
+        }).catch(() => console.log('Refresh public échoué'))
+        
+        console.log('✅ Suppression propagée - mini-app va se rafraîchir')
       } catch (e) {
-        console.log('⚠️ Impossible de vider cache bot')
+        console.log('⚠️ Erreur rafraîchissement suppression:', e.message)
       }
       
       // Synchroniser avec le bot

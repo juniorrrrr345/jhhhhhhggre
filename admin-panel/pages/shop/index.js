@@ -105,21 +105,21 @@ export default function ShopHome() {
       tg.enableClosingConfirmation();
       console.log('✅ Telegram Mini App initialisée');
       
-      // SYSTÈME SIMPLE : Toujours refresh au retour
+      // SYSTÈME SIMPLE : Toujours refresh au retour (plus agressif)
       let lastVisibilityRefresh = 0;
       const handleVisibilityChange = () => {
         if (!document.hidden) {
           const now = Date.now();
-          // Throttling: minimum 10 secondes entre chaque refresh
-          if (now - lastVisibilityRefresh > 10000) {
-            console.log('📱 Retour Mini App - FORCE refresh boutiques...');
+          // Throttling réduit: minimum 5 secondes entre chaque refresh
+          if (now - lastVisibilityRefresh > 5000) {
+            console.log('📱 Retour ACCUEIL - FORCE refresh boutiques...');
             lastVisibilityRefresh = now;
             
             // TOUJOURS forcer un nouveau fetch au retour
             setTimeout(() => {
-              console.log('🔄 FORCE fetch boutiques après retour');
+              console.log('🔄 FORCE fetch boutiques après retour ACCUEIL');
               fetchPlugs();
-            }, 500);
+            }, 200);
           }
         }
       };
@@ -134,12 +134,19 @@ export default function ShopHome() {
         }, 500);
       };
       
+      // Refresh automatique toutes les 30 secondes sur la page accueil
+      const autoRefreshInterval = setInterval(() => {
+        console.log('🔄 Auto-refresh page accueil (30s)');
+        fetchPlugs();
+      }, 30000);
+      
       window.addEventListener('focus', handleSimpleRefresh);
       
       // Cleanup
       return () => {
         document.removeEventListener('visibilitychange', handleVisibilityChange);
         window.removeEventListener('focus', handleSimpleRefresh);
+        clearInterval(autoRefreshInterval);
       };
     }
     

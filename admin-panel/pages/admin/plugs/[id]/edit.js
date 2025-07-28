@@ -347,16 +347,27 @@ export default function EditPlug() {
             }
           })
           
-          // FORCER RAFRAÎCHISSEMENT MINI-APP
+          // FORCER RAFRAÎCHISSEMENT MINI-APP ET BOT
           try {
-            // Vider le cache du bot pour forcer refresh
+            console.log('🔄 Rafraîchissement mini-app et bot...')
+            
+            // 1. Vider le cache du bot pour forcer refresh
             await fetch('https://jhhhhhhggre.onrender.com/api/cache/refresh', {
               method: 'POST'
             }).catch(() => console.log('Cache bot non vidé'))
             
-            console.log('🔄 Cache bot vidé - mini-app va se rafraîchir')
+            // 2. Attendre un peu que le cache soit vidé
+            await new Promise(resolve => setTimeout(resolve, 1000))
+            
+            // 3. Forcer refresh des données publiques du bot
+            await fetch('https://jhhhhhhggre.onrender.com/api/public/plugs?force=' + Date.now(), {
+              method: 'GET',
+              headers: { 'Cache-Control': 'no-cache' }
+            }).catch(() => console.log('Refresh public échoué'))
+            
+            console.log('✅ Mini-app et bot vont se rafraîchir')
           } catch (e) {
-            console.log('⚠️ Impossible de vider cache bot')
+            console.log('⚠️ Erreur rafraîchissement:', e.message)
           }
           
           // Mettre à jour les données originales
