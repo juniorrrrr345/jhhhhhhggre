@@ -158,6 +158,9 @@ export default function ReferralsPage() {
         console.log('🔄 Génération du lien de parrainage pour:', plug.name)
         try {
           const token = localStorage.getItem('adminToken')
+          api.setToken(token)
+          
+          // Utiliser l'API améliorée avec retry automatique
           const response = await fetch('/api/cors-proxy', {
             method: 'POST',
             headers: {
@@ -166,7 +169,8 @@ export default function ReferralsPage() {
             },
             body: JSON.stringify({
               endpoint: `/api/plugs/${plug._id}/referral`,
-              method: 'GET'
+              method: 'GET',
+              token: token
             })
           })
 

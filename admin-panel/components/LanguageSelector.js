@@ -63,7 +63,7 @@ const translations = {
     // Nouvelles traductions pour les pages inscription et services
     inscription_title: 'INSCRIPTION',
     inscription_join_title: 'Rejoignez FindYourPlug',
-    inscription_description: '🚀 REJOIGNEZ LA COMMUNAUTÉ FINDYOURPLUG ! 🔌\n\nInscrivez-vous directement via notre bot Telegram pour accéder à toutes nos boutiques exclusives. Livraison dans le monde entier ! 🌍',
+    inscription_description: '🚀 REJOIGNEZ LA COMMUNAUTÉ FINDYOURPLUG ! 🔌\n\nInscrivez-vous directement via notre bot Telegram pour accéder à toutes nos boutiques exclusives ! 🌍',
     inscription_button: 'S\'inscrire maintenant',
     services_title: 'SERVICES',
     services_frustrated_title: 'T\'en as marre que ton canal saute ?',
@@ -213,7 +213,7 @@ const translations = {
     // Nouvelles traductions pour les pages inscription et services
     inscription_title: 'REGISTRATION',
     inscription_join_title: 'Join FindYourPlug',
-    inscription_description: '🚀 JOIN THE FINDYOURPLUG COMMUNITY! 🔌\n\nRegister directly via our Telegram bot to access all our exclusive boutiques. Worldwide delivery! 🌍',
+    inscription_description: '🚀 JOIN THE FINDYOURPLUG COMMUNITY! 🔌\n\nRegister directly via our Telegram bot to access all our exclusive boutiques! 🌍',
     inscription_button: 'Register now',
     services_title: 'SERVICES',
     services_frustrated_title: 'Tired of your channel getting banned?',
