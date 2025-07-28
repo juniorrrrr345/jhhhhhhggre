@@ -529,7 +529,7 @@ useEffect(() => {
             lineHeight: '1.2',
             textShadow: '0 2px 4px rgba(0,0,0,0.8)'
           }}>
-            👋 Bienvenue sur FindYourPlug
+            {t('shop_welcome_title')}
           </h1>
           
           <div style={{ 
@@ -548,7 +548,7 @@ useEffect(() => {
               borderRadius: '8px',
               border: '1px solid rgba(255,255,255,0.2)'
             }}>
-              🔍 Utilisez la barre de recherche pour trouver un plug près de chez vous ou en envoi postal
+              {t('shop_welcome_search')}
             </p>
             <p style={{ 
               margin: '0 0 12px 0',
@@ -557,7 +557,7 @@ useEffect(() => {
               borderRadius: '8px',
               border: '1px solid rgba(255,255,255,0.2)'
             }}>
-              ⭐ N'hésitez pas à voter pour votre Plug préféré
+              {t('shop_welcome_vote')}
             </p>
 
           </div>
@@ -580,11 +580,7 @@ useEffect(() => {
             fontWeight: '500',
             textShadow: '0 1px 3px rgba(0,0,0,0.7)'
           }}>
-            {currentLanguage === 'fr' && 'Rejoins nous sur tous nos réseaux 🔒🛜'}
-            {currentLanguage === 'en' && 'Join us on all our networks 🔒🛜'}
-            {currentLanguage === 'it' && 'Unisciti a tutti i nostri network 🔒🛜'}
-            {currentLanguage === 'es' && 'Únete a todas nuestras redes 🔒🛜'}
-            {currentLanguage === 'de' && 'Tritt allen unseren Netzwerken bei 🔒🛜'}
+            {t('shop_social_title')}
           </p>
           
           <div style={{
