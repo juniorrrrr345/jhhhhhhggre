@@ -4,7 +4,8 @@
 // Stockage en mémoire (temporaire par session)
 let memoryData = {
   plugs: [],
-  lastUpdate: new Date().toISOString()
+  lastUpdate: new Date().toISOString(),
+  synced: false
 };
 
 // Données par défaut simulées pour les tests
@@ -44,9 +45,42 @@ const DEFAULT_PLUGS = [
   }
 ];
 
-// Initialiser avec des données par défaut si vide
-if (memoryData.plugs.length === 0) {
-  memoryData.plugs = [...DEFAULT_PLUGS];
+// Fonction pour synchroniser avec le serveur principal
+async function syncWithMainServer() {
+  if (memoryData.synced) return; // Déjà synchronisé
+  
+  try {
+    console.log('🔄 Tentative de synchronisation avec le serveur principal...');
+    const apiUrl = process.env.BOT_API_URL || 'https://jhhhhhhggre.onrender.com';
+    
+    const response = await fetch(`${apiUrl}/api/public/plugs`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'User-Agent': 'Local-API-Sync/1.0'
+      },
+      timeout: 5000
+    });
+    
+    if (response.ok) {
+      const data = await response.json();
+      if (data.plugs && Array.isArray(data.plugs)) {
+        memoryData.plugs = [...data.plugs];
+        memoryData.synced = true;
+        memoryData.lastUpdate = new Date().toISOString();
+        console.log(`✅ Synchronisation réussie: ${data.plugs.length} boutiques récupérées`);
+        return;
+      }
+    }
+  } catch (error) {
+    console.log('⚠️ Sync échouée, utilisation des données par défaut:', error.message);
+  }
+  
+  // Fallback: utiliser les données par défaut
+  if (memoryData.plugs.length === 0) {
+    memoryData.plugs = [...DEFAULT_PLUGS];
+    console.log('📦 Utilisation des données par défaut');
+  }
 }
 
 export default async function handler(req, res) {
@@ -59,6 +93,9 @@ export default async function handler(req, res) {
     res.status(200).end();
     return;
   }
+
+  // Synchroniser au premier appel
+  await syncWithMainServer();
 
   const { method, query, body } = req;
   const { id } = query;
@@ -84,7 +121,8 @@ export default async function handler(req, res) {
             success: true,
             plugs: memoryData.plugs,
             count: memoryData.plugs.length,
-            source: 'local-memory'
+            source: 'local-memory',
+            synced: memoryData.synced
           });
         }
         break;
@@ -121,7 +159,12 @@ export default async function handler(req, res) {
         const plugIndex = memoryData.plugs.findIndex(p => p._id === id || p.id === id);
         if (plugIndex === -1) {
           console.log(`❌ Boutique ${id} non trouvée pour modification`);
-          return res.status(404).json({ error: 'Boutique non trouvée' });
+          console.log(`📋 Boutiques disponibles: ${memoryData.plugs.map(p => p._id).join(', ')}`);
+          return res.status(404).json({ 
+            error: 'Boutique non trouvée',
+            availableIds: memoryData.plugs.map(p => p._id),
+            requestedId: id
+          });
         }
         
         memoryData.plugs[plugIndex] = {
