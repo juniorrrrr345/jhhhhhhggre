@@ -241,10 +241,18 @@ export default function ShopVIP() {
             👑 {t('vip')}
           </h1>
           <p style={{ 
-            color: '#8e8e93', 
+            margin: '16px auto 0',
+            padding: '12px 16px',
+            backgroundColor: 'rgba(0,0,0,0.3)',
+            borderRadius: '8px',
+            border: '1px solid rgba(255,255,255,0.2)',
+            color: '#ffffff',
             fontSize: '16px',
-            margin: '0',
-            fontWeight: '400'
+            fontWeight: '500',
+            textShadow: '0 1px 3px rgba(0,0,0,0.7)',
+            lineHeight: '1.5',
+            maxWidth: '450px',
+            whiteSpace: 'pre-line'
           }}>
             {t('vip_desc') || 'Boutiques VIP exclusives'}
           </p>

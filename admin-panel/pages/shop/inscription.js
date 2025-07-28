@@ -175,11 +175,18 @@ export default function ShopInscription() {
               {t('inscription_join_title')} 🚀
             </h2>
             <p style={{
+              margin: '16px auto 0',
+              padding: '12px 16px',
+              backgroundColor: 'rgba(0,0,0,0.3)',
+              borderRadius: '8px',
+              border: '1px solid rgba(255,255,255,0.2)',
+              color: '#ffffff',
               fontSize: '16px',
-              color: '#8e8e93',
-              maxWidth: '400px',
-              margin: '0 auto',
-              lineHeight: '1.5'
+              fontWeight: '500',
+              textShadow: '0 1px 3px rgba(0,0,0,0.7)',
+              lineHeight: '1.5',
+              maxWidth: '450px',
+              whiteSpace: 'pre-line'
             }}>
               {t('inscription_description')}
             </p>
