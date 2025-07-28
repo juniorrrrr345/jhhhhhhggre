@@ -24,7 +24,6 @@ const COUNTRIES = [
 export default function NewPlug() {
   const [formData, setFormData] = useState({
     name: '',
-    description: '',
     image: '',
     telegramLink: '', // Lien Telegram optionnel
     countries: [],

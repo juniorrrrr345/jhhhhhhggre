@@ -162,7 +162,6 @@ export default function EditPlug() {
       // Peupler les données du formulaire
       const plugData = {
         name: data.name || '',
-        description: data.description || '',
         image: data.image || '',
         telegramLink: data.telegramLink || '',
           isVip: data.isVip || false,
@@ -537,19 +536,7 @@ export default function EditPlug() {
                     placeholder="@votre_boutique ou https://t.me/votre_boutique"
                   />
                 </div>
-                <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Description *
-                  </label>
-                  <textarea
-                    value={formData.description}
-                    onChange={(e) => updateFormData('description', e.target.value)}
-                    rows={3}
-                    className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="Description de votre boutique"
-                    required
-                  />
-                </div>
+
                 <div className="md:col-span-2">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     URL de l'image
