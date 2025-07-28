@@ -48,9 +48,12 @@ export default function ShopSocialMediaManager() {
       const token = localStorage.getItem('adminToken') || 'JuniorAdmon123'
       const config = await simpleApi.getConfig(token)
       
-      if (config && config.shopSocialMediaList) {
+      console.log('🔍 Config reçue:', config)
+      console.log('🔍 shopSocialMediaList:', config?.shopSocialMediaList)
+      
+      if (config && config.shopSocialMediaList && config.shopSocialMediaList.length > 0) {
         setSocialMedias(config.shopSocialMediaList)
-        console.log('✅ Réseaux sociaux shop chargés depuis le serveur')
+        console.log('✅ Réseaux sociaux shop chargés depuis le serveur:', config.shopSocialMediaList)
       } else {
         // Initialiser avec VOS réseaux de boutique avec logos
         const defaultShopSocialMedias = [
@@ -213,7 +216,7 @@ export default function ShopSocialMediaManager() {
         }
       }
       
-      toast.success('Réseaux sociaux shop sauvegardés !')
+      toast.success('🏪 Réseaux sociaux shop sauvegardés et synchronisés !')
       
     } catch (error) {
       console.error('Erreur sauvegarde:', error)
@@ -292,17 +295,24 @@ export default function ShopSocialMediaManager() {
   }
 
   const deleteSocialMedia = async (id) => {
+    console.log('🗑️ Tentative de suppression:', id)
+    console.log('📝 socialMedias actuels:', socialMedias)
+    
     const itemToDelete = socialMedias.find(item => item.id === id)
     if (!itemToDelete) {
+      console.log('❌ Élément non trouvé pour ID:', id)
       toast.error('Réseau social non trouvé')
       return
     }
 
+    console.log('📋 Élément à supprimer:', itemToDelete)
     if (confirm(`Êtes-vous sûr de vouloir supprimer "${itemToDelete.name}" ?`)) {
       const updatedSocialMedias = socialMedias.filter(item => item.id !== id)
+      console.log('📝 Nouveaux socialMedias après suppression:', updatedSocialMedias)
       setSocialMedias(updatedSocialMedias)
       
       // Synchroniser automatiquement après suppression
+      console.log('🔄 Début synchronisation suppression, isLocalMode:', isLocalMode)
       if (isLocalMode) {
         // Mode local : sauvegarde directe
         const localApi = getLocalApi()
