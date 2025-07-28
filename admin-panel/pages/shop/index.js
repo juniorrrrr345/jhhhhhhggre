@@ -177,46 +177,59 @@ useEffect(() => {
 
   const fetchConfig = async () => {
     try {
-      // Récupérer la config depuis l'API admin directement (SANS CACHE)
-      const token = 'JuniorAdmon123' // Token par défaut pour lecture publique
-      let data = null
+      // TOUJOURS utiliser l'API publique avec cache-busting forcé
+      const timestamp = Date.now()
+      console.log('🔄 Récupération config ACTUELLE pour mini-app...')
       
-      // Essayer d'abord l'API simple avec cache-busting
-      try {
-        const timestamp = Date.now()
-        data = await api.getConfig(token)
-        console.log('📦 Data provided:', data ? 'Yes' : 'No')
-        console.log('📊 shopSocialMediaList length:', data?.shopSocialMediaList?.length || 0)
-        
-        if (!data) {
-          console.log('⚠️ Pas de données, utilisation fallback')
-          // Fallback direct sans cache
-          const directResponse = await fetch(`https://jhhhhhhggre.onrender.com/api/config?t=${timestamp}`, {
-            headers: {
-              'Authorization': `Bearer ${token}`,
-              'Cache-Control': 'no-cache'
-            }
-          })
-          if (directResponse.ok) {
-            data = await directResponse.json()
-            console.log('📦 Fallback data:', data ? 'Yes' : 'No')
-          }
+      // Utiliser l'API publique avec cache-busting agressif
+      const response = await fetch(`https://jhhhhhhggre.onrender.com/api/public/config?t=${timestamp}&cb=${Math.random()}`, {
+        method: 'GET',
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0'
         }
-        
-              } catch (error) {
-        console.log('❌ Erreur récupération config:', error)
-        data = null
-      }
-        
-      console.log('📱 Config récupérée pour accueil:', {
-        boutique: data?.boutique?.name,
-        shopSocialMediaList: data?.shopSocialMediaList?.length || 0,
-        socialMediaList: data?.socialMediaList?.length || 0,
-        socialMedia: data?.socialMedia
       })
       
-      // Si shopSocialMediaList est vide, essayer de récupérer depuis localStorage
-      if (!data?.shopSocialMediaList || data.shopSocialMediaList.length === 0) {
+      if (response.ok) {
+        const data = await response.json()
+        console.log('✅ Config ACTUELLE récupérée pour mini-app')
+        console.log('📊 shopSocialMediaList length:', data?.shopSocialMediaList?.length || 0)
+        setConfig(data)
+        return
+      }
+      
+      // Fallback vers l'API avec token si nécessaire
+      console.log('⚠️ Fallback vers API avec token...')
+      const token = 'JuniorAdmon123'
+      const directResponse = await fetch(`https://jhhhhhhggre.onrender.com/api/config?t=${timestamp}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Cache-Control': 'no-cache'
+        }
+      })
+      if (directResponse.ok) {
+        const data = await directResponse.json()
+        console.log('✅ Config fallback récupérée')
+        setConfig(data)
+        return
+      }
+      
+      console.log('❌ Impossible de récupérer la config')
+        
+    } catch (error) {
+      console.error('❌ Erreur récupération config:', error)
+      // Utiliser config par défaut si tout échoue
+      setConfig({
+        boutique: {},
+        shopSocialMediaList: [],
+        socialMedia: {},
+        welcome: {},
+        interface: {},
+        messages: {},
+        buttons: {}
+      })
+    }
         try {
           const shopSocialBackup = localStorage.getItem('shopSocialMediaBackup')
           if (shopSocialBackup) {
