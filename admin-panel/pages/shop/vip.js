@@ -17,6 +17,7 @@ export default function ShopVIP() {
   const [currentPage, setCurrentPage] = useState(1)
   const [currentLanguage, setCurrentLanguage] = useState('fr')
   const [shopSocialMedias, setShopSocialMedias] = useState([])
+  const [likesSync, setLikesSync] = useState({}) // Pour synchroniser les likes en temps réel
   const { t } = useTranslation(currentLanguage)
   const itemsPerPage = 20
 
@@ -90,35 +91,69 @@ export default function ShopVIP() {
   const fetchPlugs = async () => {
     try {
       setLoading(true)
+      console.log('👑 Chargement boutiques VIP...')
       
-      // APPEL DIRECT au bot pour récupérer les VRAIES boutiques VIP
-      const response = await fetch('https://jhhhhhhggre.onrender.com/api/public/plugs?filter=vip&limit=100', {
+      // APPEL DIRECT au bot pour récupérer TOUTES les boutiques puis filtrer
+      const response = await fetch('https://jhhhhhhggre.onrender.com/api/public/plugs?limit=100', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json'
         }
       })
       
-      const data = await response.json()
-
-      let plugsArray = []
-      if (data && Array.isArray(data.plugs)) {
-        plugsArray = data.plugs
-      } else if (Array.isArray(data)) {
-        plugsArray = data
-      } else {
-        console.error('❌ Structure de données VIP inattendue:', data)
-        plugsArray = []
+      if (!response.ok) {
+        throw new Error(`VIP API failed: ${response.status}`);
       }
+      
+      const data = await response.json()
+      console.log('📊 Données VIP reçues:', data);
 
-      const sortedPlugs = plugsArray.sort((a, b) => (b.likes || 0) - (a.likes || 0))
-      console.log('👑 Plugs VIP chargés:', sortedPlugs.length, 'boutiques VIP')
-      setVipPlugs(sortedPlugs)
+      if (data && data.plugs && Array.isArray(data.plugs)) {
+        // Filtrer SEULEMENT les boutiques VIP
+        const vipOnly = data.plugs.filter(plug => plug.isVip === true)
+        
+        // Tri intelligent: par nombre de likes puis par récence
+        const sortedVipPlugs = vipOnly.sort((a, b) => {
+          // 1. Par likes (du plus haut au plus bas)
+          if ((b.likes || 0) !== (a.likes || 0)) {
+            return (b.likes || 0) - (a.likes || 0)
+          }
+          
+          // 2. En cas d'égalité, par date de création (plus récent en premier)
+          const aDate = new Date(a.createdAt || 0)
+          const bDate = new Date(b.createdAt || 0)
+          return bDate - aDate
+        })
+        
+        console.log('👑 Boutiques VIP filtrées et triées:', sortedVipPlugs.length, 'boutiques VIP')
+        setVipPlugs(sortedVipPlugs)
+        
+        // Synchroniser les likes en temps réel
+        const likesData = {}
+        sortedVipPlugs.forEach(plug => {
+          if (plug._id && plug.likes !== undefined) {
+            likesData[plug._id] = plug.likes
+          }
+        })
+        setLikesSync(likesData)
+        console.log('❤️ Likes VIP synchronisés:', Object.keys(likesData).length, 'boutiques')
+        
+        // Afficher le TOP 3 VIP pour debug
+        if (sortedVipPlugs.length > 0) {
+          console.log('👑 TOP 3 VIP CLASSEMENT:')
+          sortedVipPlugs.slice(0, 3).forEach((plug, index) => {
+            const badge = index === 0 ? '🥇' : index === 1 ? '🥈' : '🥉'
+            console.log(`${badge} ${plug.name}: ${plug.likes || 0} likes 👑VIP`)
+          })
+        }
+      } else {
+        console.log('⚠️ Structure données VIP invalide:', data)
+        setVipPlugs([])
+      }
+      
     } catch (error) {
       console.error('Erreur chargement VIP:', error)
-      // Ne pas afficher les données de fallback, juste un tableau vide
       setVipPlugs([])
-      console.log('📱 Erreur API VIP: Aucune boutique VIP affichée')
     } finally {
       setLoading(false)
     }
@@ -129,14 +164,16 @@ export default function ShopVIP() {
     currentPage * itemsPerPage
   )
 
-  const totalPages = Math.ceil(vipPlugs.length / itemsPerPage)
-
   const getPositionBadge = (index) => {
-    if (index === 0) return '🥇'
-    if (index === 1) return '🥈'
-    if (index === 2) return '🥉'
-    return null
+    const globalIndex = (currentPage - 1) * itemsPerPage + index
+    if (globalIndex === 0) return '🥇'
+    if (globalIndex === 1) return '🥈'
+    if (globalIndex === 2) return '🥉'
+    if (globalIndex < 10) return `${globalIndex + 1}⭐`
+    return `${globalIndex + 1}°`
   }
+
+  const totalPages = Math.ceil(vipPlugs.length / itemsPerPage)
 
   const getCountryFlag = (countries) => {
     if (!countries || countries.length === 0) return '🌍'
@@ -366,14 +403,17 @@ export default function ShopVIP() {
                     gap: '16px',
                     marginBottom: '20px'
                   }}>
-                    {currentPagePlugs.map((plug) => (
-                      <ShopCard 
-                        key={plug._id} 
-                        plug={plug} 
-                        config={config}
-                        currentLanguage={currentLanguage}
-                      />
-                    ))}
+                                      {currentPagePlugs.map((plug, index) => (
+                    <ShopCard 
+                      key={plug._id} 
+                      plug={plug} 
+                      config={config}
+                      currentLanguage={currentLanguage}
+                      index={(currentPage - 1) * itemsPerPage + index}
+                      likes={likesSync[plug._id] !== undefined ? likesSync[plug._id] : (plug.likes || 0)}
+                      getPositionBadge={getPositionBadge}
+                    />
+                  ))}
                   </div>
 
                   {/* Pagination */}

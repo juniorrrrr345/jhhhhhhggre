@@ -304,16 +304,43 @@ useEffect(() => {
       
       if (data && data.plugs && Array.isArray(data.plugs)) {
         console.log('🎯 Boutiques mini app récupérées:', data.plugs.length)
-        setPlugs(data.plugs)
+        
+        // Tri intelligent: VIP en premier, puis par likes, puis par récence
+        const sortedPlugs = data.plugs.sort((a, b) => {
+          // 1. VIP en priorité absolue
+          if (a.isVip && !b.isVip) return -1
+          if (!a.isVip && b.isVip) return 1
+          
+          // 2. Par likes (du plus haut au plus bas)
+          if ((b.likes || 0) !== (a.likes || 0)) {
+            return (b.likes || 0) - (a.likes || 0)
+          }
+          
+          // 3. En cas d'égalité, par date de création (plus récent en premier)
+          const aDate = new Date(a.createdAt || 0)
+          const bDate = new Date(b.createdAt || 0)
+          return bDate - aDate
+        })
+        
+        setPlugs(sortedPlugs)
         
         // Synchroniser les likes en temps réel
         const likesData = {}
-        data.plugs.forEach(plug => {
+        sortedPlugs.forEach(plug => {
           if (plug._id && plug.likes !== undefined) {
             likesData[plug._id] = plug.likes
           }
         })
         setLikesSync(likesData)
+        
+        // Afficher le TOP 5 du classement pour debug
+        if (sortedPlugs.length > 0) {
+          console.log('🏆 TOP 5 ACCUEIL CLASSEMENT:')
+          sortedPlugs.slice(0, 5).forEach((plug, index) => {
+            const badge = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `${index + 1}°`
+            console.log(`${badge} ${plug.name}: ${plug.likes || 0} likes ${plug.isVip ? '👑VIP' : ''}`)
+          })
+        }
       } else {
         console.log('⚠️ Structure de données invalide:', data)
         setPlugs([])
@@ -710,7 +737,21 @@ useEffect(() => {
                 marginBottom: '20px'
               }}>
                 {currentPlugs.map((plug, index) => (
-                  <ShopCard key={plug._id} plug={plug} index={index} currentLanguage={currentLanguage} />
+                  <ShopCard 
+                    key={plug._id} 
+                    plug={plug} 
+                    index={(currentPage - 1) * itemsPerPage + index}
+                    currentLanguage={currentLanguage}
+                    likes={likesSync[plug._id] !== undefined ? likesSync[plug._id] : (plug.likes || 0)}
+                    getPositionBadge={(idx) => {
+                      const globalIndex = (currentPage - 1) * itemsPerPage + idx
+                      if (globalIndex === 0) return '🥇'
+                      if (globalIndex === 1) return '🥈' 
+                      if (globalIndex === 2) return '🥉'
+                      if (globalIndex < 10) return `${globalIndex + 1}⭐`
+                      return `${globalIndex + 1}°`
+                    }}
+                  />
                 ))}
               </div>
 
