@@ -295,8 +295,6 @@ export default function SocialMediaManager() {
     )
     
     setSocialMedias(updatedSocialMedias)
-    
-    toast.success('Statut modifié (cliquez "Sauvegarder" pour synchroniser)')
   }
 
   // Fonction utilitaire pour synchroniser avec l'API du bot
