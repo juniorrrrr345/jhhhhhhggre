@@ -329,7 +329,7 @@ export default function EditPlug() {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            endpoint: `plugs/${id}`,
+            endpoint: `/api/plugs/${id}`,
             method: 'PUT',
             token: token,
             data: cleanData
@@ -515,7 +515,7 @@ export default function EditPlug() {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            endpoint: `plugs/${id}`,
+            endpoint: `/api/plugs/${id}`,
             method: 'PUT',
             token: localStorage.getItem('adminToken'),
             data: cleanData
