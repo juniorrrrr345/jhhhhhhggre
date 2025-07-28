@@ -8,7 +8,7 @@ import telegramLinksSync from '../../lib/telegram-links-sync'
 export default function ShopInscription() {
   const [currentLanguage, setCurrentLanguage] = useState('fr')
   const [config, setConfig] = useState({
-    inscriptionTelegramLink: 'https://t.me/FindYourPlugBot'
+    inscriptionTelegramLink: 'https://t.me/findyourplugbot_bot'
   })
 
   const { t } = useTranslation(currentLanguage)
