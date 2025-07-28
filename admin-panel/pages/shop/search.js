@@ -76,7 +76,7 @@ export default function ShopSearch() {
       
       setTimeout(() => {
         fetchPlugs();
-        console.log('🔄 RECHERCHE: Données mises à jour, filtres et départements recalculés automatiquement');
+        console.log('🔄 RECHERCHE: Données mises à jour, classement par likes recalculé automatiquement');
       }, 200);
     };
     
@@ -181,7 +181,7 @@ export default function ShopSearch() {
 
   useEffect(() => {
     filterPlugs()
-  }, [search, countryFilter, serviceFilter, departmentFilter, vipFilter, allPlugs])
+  }, [search, countryFilter, serviceFilter, departmentFilter, vipFilter, allPlugs, likesSync])
 
   // Réinitialiser le filtre département si le pays change et que le département n'est plus disponible
   useEffect(() => {
@@ -319,6 +319,17 @@ export default function ShopSearch() {
     })
 
     console.log(`🎯 Résultats filtrés: ${filtered.length}/${allPlugs.length} boutiques`)
+    
+    // Afficher le TOP 5 du classement pour debug
+    if (filtered.length > 0) {
+      console.log('🏆 TOP 5 CLASSEMENT:')
+      filtered.slice(0, 5).forEach((plug, index) => {
+        const likes = likesSync[plug._id] !== undefined ? likesSync[plug._id] : (plug.likes || 0)
+        const badge = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `${index + 1}°`
+        console.log(`${badge} ${plug.name}: ${likes} likes ${plug.isVip ? '👑VIP' : ''}`)
+      })
+    }
+    
     setPlugs(filtered)
     setCurrentPage(1)
   }
@@ -622,7 +633,7 @@ export default function ShopSearch() {
 
         {/* Résultats */}
         <main style={{ padding: '0 20px 90px', maxWidth: '1200px', margin: '0 auto' }}>
-          {/* Compteur de résultats avec classement */}
+          {/* Compteur de résultats */}
           <div style={{ 
             textAlign: 'center', 
             marginBottom: '20px',
@@ -631,16 +642,7 @@ export default function ShopSearch() {
           }}>
             {loading ? 
               `${t('search_loading_results')}` : 
-              <>
-                <div style={{ marginBottom: '8px', color: '#ffffff', fontWeight: '600' }}>
-                  🏆 {plugs.length} {t('search_results_count')} - Classement par likes
-                </div>
-                {plugs.length > 0 && (
-                  <div style={{ fontSize: '12px', opacity: 0.8 }}>
-                    🥇 VIP en premier • 👍 Puis par nombre de likes • 📅 Puis par récence
-                  </div>
-                )}
-              </>
+              `${plugs.length} ${t('search_results_count')}`
             }
           </div>
 
