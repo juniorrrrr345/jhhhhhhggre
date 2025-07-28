@@ -179,6 +179,21 @@ useEffect(() => {
     }
   }, [currentLanguage])
 
+  // AUTO-REFRESH pour mise à jour instantanée des boutiques
+  useEffect(() => {
+    // Rafraîchir les boutiques toutes les 30 secondes
+    const refreshInterval = setInterval(() => {
+      console.log('🔄 Auto-refresh boutiques...');
+      fetchPlugs();
+    }, 30000); // 30 secondes
+
+    // Nettoyer l'interval au démontage
+    return () => {
+      clearInterval(refreshInterval);
+      console.log('🧹 Auto-refresh nettoyé');
+    };
+  }, [])
+
   const handleLanguageChange = (newLanguage) => {
     setCurrentLanguage(newLanguage)
   }

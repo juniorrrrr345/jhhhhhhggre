@@ -2625,8 +2625,17 @@ app.post('/api/plugs', limits.admin, authenticateAdmin, async (req, res) => {
     
     console.log('✅ Plug créé:', savedPlug.name);
     
-    // Invalider le cache
+    // INVALIDATION CACHE AGRESSIVE pour mise à jour instantanée mini app
     invalidateCache();
+    configCache = null;
+    plugsCache = null;
+    
+    // Forcer le vidage de TOUS les caches
+    if (typeof clearAllCaches === 'function') {
+      clearAllCaches();
+    }
+    
+    console.log('🔄 CACHE TOTALEMENT VIDÉ pour affichage instantané mini app');
     
     res.status(201).json(savedPlug);
   } catch (error) {
@@ -2851,8 +2860,17 @@ app.put('/api/plugs/:id', authenticateAdmin, async (req, res) => {
     
     console.log('✅ Plug modifié:', updatedPlug.name);
     
-    // Invalider le cache
+    // INVALIDATION CACHE AGRESSIVE pour mise à jour instantanée mini app
     invalidateCache();
+    configCache = null;
+    plugsCache = null;
+    
+    // Forcer le vidage de TOUS les caches
+    if (typeof clearAllCaches === 'function') {
+      clearAllCaches();
+    }
+    
+    console.log('🔄 CACHE TOTALEMENT VIDÉ pour mise à jour instantanée mini app');
     
     res.json(updatedPlug);
   } catch (error) {
@@ -2876,8 +2894,17 @@ app.delete('/api/plugs/:id', authenticateAdmin, async (req, res) => {
     await Plug.findByIdAndDelete(id);
     console.log('✅ Plug supprimé:', plug.name);
     
-    // Invalider le cache
+    // INVALIDATION CACHE AGRESSIVE pour mise à jour instantanée mini app
     invalidateCache();
+    configCache = null;
+    plugsCache = null;
+    
+    // Forcer le vidage de TOUS les caches
+    if (typeof clearAllCaches === 'function') {
+      clearAllCaches();
+    }
+    
+    console.log('🔄 CACHE TOTALEMENT VIDÉ pour suppression instantanée mini app');
     
     res.json({ message: 'Plug supprimé avec succès' });
   } catch (error) {
