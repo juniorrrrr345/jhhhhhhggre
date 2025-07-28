@@ -219,6 +219,177 @@ const displayNewShopOnBot = async (savedPlug) => {
   }
 };
 
+// FONCTION POUR AFFICHER UNE BOUTIQUE MODIFIÉE SUR LE BOT
+const displayUpdatedShopOnBot = async (updatedPlug) => {
+  try {
+    console.log('🤖 Début affichage boutique modifiée:', updatedPlug.name);
+    
+    // Récupérer la config pour les traductions
+    const config = await Config.findById('main');
+    const currentLang = config?.languages?.currentLanguage || 'fr';
+    const customTranslations = config?.languages?.translations;
+    
+    // Importer les utilitaires nécessaires
+    const { getCountryFlag } = require('./src/utils/helpers');
+    const { translateShopName, translateDescription, translateServiceDescription } = require('./src/utils/translations');
+    
+    // Construire le message traduit de la boutique modifiée
+    const countryFlag = updatedPlug.countries && updatedPlug.countries.length > 0 ? getCountryFlag(updatedPlug.countries[0]) : '';
+    const translatedName = translateShopName(updatedPlug.name, currentLang, updatedPlug.translations);
+    
+    let message = `✏️ **BOUTIQUE MODIFIÉE !**\n\n`;
+    message += `${countryFlag} ${updatedPlug.isVip ? '⭐ ' : ''}**${translatedName}**\n\n`;
+    
+    const translatedDescription = translateDescription(updatedPlug.description, currentLang, updatedPlug.translations);
+    message += `${getTranslation('shop_description_label', currentLang, customTranslations)} ${translatedDescription}\n\n`;
+
+    // Services disponibles avec départements et descriptions traduites
+    const services = [];
+    if (updatedPlug.services?.delivery?.enabled) {
+      const serviceName = getTranslation('service_delivery', currentLang, customTranslations);
+      const departments = updatedPlug.services.delivery.departments || [];
+      if (departments.length > 0) {
+        const departmentsText = departments.sort((a, b) => parseInt(a) - parseInt(b)).join(', ');
+        services.push(`📦 **${serviceName}** : ${departmentsText}`);
+      } else {
+        services.push(`📦 **${serviceName}** : Tous départements`);
+      }
+      
+      if (updatedPlug.services.delivery.description) {
+        const translatedDesc = translateServiceDescription(updatedPlug.services.delivery.description, currentLang, updatedPlug.translations, 'delivery');
+        services.push(`   📝 ${translatedDesc}`);
+      }
+    }
+    
+    if (updatedPlug.services?.meetup?.enabled) {
+      const serviceName = getTranslation('service_meetup', currentLang, customTranslations);
+      const departments = updatedPlug.services.meetup.departments || [];
+      if (departments.length > 0) {
+        const departmentsText = departments.sort((a, b) => parseInt(a) - parseInt(b)).join(', ');
+        services.push(`🤝 **${serviceName}** : ${departmentsText}`);
+      } else {
+        services.push(`🤝 **${serviceName}** : Tous départements`);
+      }
+      
+      if (updatedPlug.services.meetup.description) {
+        const translatedDesc = translateServiceDescription(updatedPlug.services.meetup.description, currentLang, updatedPlug.translations, 'meetup');
+        services.push(`   📝 ${translatedDesc}`);
+      }
+    }
+    
+    if (updatedPlug.services?.postal?.enabled) {
+      const serviceName = getTranslation('service_postal', currentLang, customTranslations);
+      services.push(`📬 **${serviceName}**`);
+      
+      if (updatedPlug.services.postal.description) {
+        const translatedDesc = translateServiceDescription(updatedPlug.services.postal.description, currentLang, updatedPlug.translations, 'postal');
+        services.push(`   📝 ${translatedDesc}`);
+      }
+      
+      if (updatedPlug.services.postal.countries && updatedPlug.services.postal.countries.length > 0) {
+        services.push(`   🌍 Pays: ${updatedPlug.services.postal.countries.join(', ')}`);
+      }
+    }
+
+    if (services.length > 0) {
+      const servicesTitle = getTranslation('services_available', currentLang, customTranslations);
+      message += `**🔧 ${servicesTitle} :**\n${services.join('\n')}\n\n`;
+    }
+
+    // Pays desservis
+    if (updatedPlug.countries && updatedPlug.countries.length > 0) {
+      const countriesTitle = getTranslation('countries_served', currentLang, customTranslations);
+      message += `🌍 **${countriesTitle} :** ${updatedPlug.countries.join(', ')}\n\n`;
+    }
+    
+    message += `🆔 **ID:** ${updatedPlug._id}\n`;
+    message += `📊 **Statut:** ${updatedPlug.isVip ? '👑 VIP' : '✅ Standard'}\n`;
+    message += `❤️ **Likes:** ${updatedPlug.likes}\n\n`;
+    message += `✨ *Boutique mise à jour avec traductions automatiques en ${currentLang}*`;
+    
+    // Créer un clavier pour voir les détails complets
+    const keyboard = Markup.inlineKeyboard([
+      [Markup.button.callback('👀 Voir détails complets', `plug_${updatedPlug._id}_from_updated`)]
+    ]);
+    
+    // Récupérer l'ID du chat de notification depuis la config
+    const notificationChatId = config?.notifications?.newShopChatId;
+    const notificationsEnabled = config?.notifications?.enabled !== false;
+    
+    if (notificationChatId && notificationsEnabled) {
+      try {
+        await bot.telegram.sendMessage(notificationChatId, message, {
+          parse_mode: 'Markdown',
+          reply_markup: keyboard.reply_markup
+        });
+        console.log('✅ Notification boutique modifiée envoyée au chat:', notificationChatId);
+      } catch (sendError) {
+        console.error('❌ Erreur envoi notification modification:', sendError);
+      }
+    } else {
+      console.log('ℹ️ Pas de chat ID configuré pour les notifications de boutiques modifiées');
+    }
+    
+    return { success: true, message: 'Boutique modifiée affichée sur le bot' };
+    
+  } catch (error) {
+    console.error('❌ Erreur affichage boutique modifiée sur bot:', error);
+    throw error;
+  }
+};
+
+// FONCTION POUR NOTIFIER UNE SUPPRESSION DE BOUTIQUE SUR LE BOT
+const displayDeletedShopOnBot = async (deletedPlug) => {
+  try {
+    console.log('🤖 Début notification suppression boutique:', deletedPlug.name);
+    
+    // Récupérer la config pour les traductions
+    const config = await Config.findById('main');
+    const currentLang = config?.languages?.currentLanguage || 'fr';
+    const customTranslations = config?.languages?.translations;
+    
+    // Importer les utilitaires nécessaires
+    const { getCountryFlag } = require('./src/utils/helpers');
+    const { translateShopName } = require('./src/utils/translations');
+    
+    // Construire le message de suppression
+    const countryFlag = deletedPlug.countries && deletedPlug.countries.length > 0 ? getCountryFlag(deletedPlug.countries[0]) : '';
+    const translatedName = translateShopName(deletedPlug.name, currentLang, deletedPlug.translations);
+    
+    let message = `🗑️ **BOUTIQUE SUPPRIMÉE !**\n\n`;
+    message += `${countryFlag} ${deletedPlug.isVip ? '⭐ ' : ''}~~**${translatedName}**~~\n\n`;
+    message += `🆔 **ID supprimé:** ${deletedPlug._id}\n`;
+    message += `📊 **Était:** ${deletedPlug.isVip ? '👑 VIP' : '✅ Standard'}\n`;
+    message += `❤️ **Avait:** ${deletedPlug.likes} likes\n\n`;
+    message += `❌ *Boutique supprimée définitivement du système*`;
+    
+    // Pas de clavier pour les suppressions
+    
+    // Récupérer l'ID du chat de notification depuis la config
+    const notificationChatId = config?.notifications?.newShopChatId;
+    const notificationsEnabled = config?.notifications?.enabled !== false;
+    
+    if (notificationChatId && notificationsEnabled) {
+      try {
+        await bot.telegram.sendMessage(notificationChatId, message, {
+          parse_mode: 'Markdown'
+        });
+        console.log('✅ Notification suppression boutique envoyée au chat:', notificationChatId);
+      } catch (sendError) {
+        console.error('❌ Erreur envoi notification suppression:', sendError);
+      }
+    } else {
+      console.log('ℹ️ Pas de chat ID configuré pour les notifications de suppressions');
+    }
+    
+    return { success: true, message: 'Suppression boutique notifiée sur le bot' };
+    
+  } catch (error) {
+    console.error('❌ Erreur notification suppression sur bot:', error);
+    throw error;
+  }
+};
+
 // Initialisation
 const app = express();
 const bot = new Telegraf(process.env.TELEGRAM_BOT_TOKEN);
@@ -778,6 +949,13 @@ bot.action(/^plug_(.+)_from_postal$/, (ctx) => {
 bot.action(/^plug_(.+)_from_new$/, (ctx) => {
   const plugId = ctx.match[1];
   console.log('🆕 Affichage détails nouvelle boutique:', plugId);
+  return handlePlugDetails(ctx, plugId, 'top_plugs');
+});
+
+// Gestionnaire pour les boutiques modifiées
+bot.action(/^plug_(.+)_from_updated$/, (ctx) => {
+  const plugId = ctx.match[1];
+  console.log('✏️ Affichage détails boutique modifiée:', plugId);
   return handlePlugDetails(ctx, plugId, 'top_plugs');
 });
 bot.action('skip_telegram', (ctx) => handleSkipStep(ctx, 'telegram'));
@@ -2975,15 +3153,18 @@ app.put('/api/plugs/:id', authenticateAdmin, async (req, res) => {
       plug.services = {
         delivery: {
           enabled: updateData.services.delivery?.enabled || false,
-          description: updateData.services.delivery?.description || ''
+          description: updateData.services.delivery?.description || '',
+          departments: updateData.services.delivery?.departments || []
         },
         postal: {
           enabled: updateData.services.postal?.enabled || false,
-          description: updateData.services.postal?.description || ''
+          description: updateData.services.postal?.description || '',
+          countries: updateData.services.postal?.countries || []
         },
         meetup: {
           enabled: updateData.services.meetup?.enabled || false,
-          description: updateData.services.meetup?.description || ''
+          description: updateData.services.meetup?.description || '',
+          departments: updateData.services.meetup?.departments || []
         }
       };
     }
