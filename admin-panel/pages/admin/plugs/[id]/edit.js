@@ -347,6 +347,18 @@ export default function EditPlug() {
             }
           })
           
+          // FORCER RAFRAÎCHISSEMENT MINI-APP
+          try {
+            // Vider le cache du bot pour forcer refresh
+            await fetch('https://jhhhhhhggre.onrender.com/api/cache/refresh', {
+              method: 'POST'
+            }).catch(() => console.log('Cache bot non vidé'))
+            
+            console.log('🔄 Cache bot vidé - mini-app va se rafraîchir')
+          } catch (e) {
+            console.log('⚠️ Impossible de vider cache bot')
+          }
+          
           // Mettre à jour les données originales
           setOriginalData(formData)
           
