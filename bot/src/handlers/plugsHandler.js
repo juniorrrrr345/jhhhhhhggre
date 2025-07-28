@@ -33,30 +33,40 @@ const handleTopPlugs = async (ctx) => {
   try {
     const userId = ctx.from?.id;
     
+    console.log('🔝 Début handleTopPlugs - VOTER POUR VOTRE PLUGS');
+    
     // 🚫 Prévention spam - vérifier si c'est un clic répété
     if (isSpamClick(userId, 'top_plugs')) {
+      console.log('🚫 Clic répété détecté, annulation');
       return await ctx.answerCbQuery();
     }
     
     await ctx.answerCbQuery('🔄 Chargement...');
     
-    // Récupérer la config pour les traductions
-    const config = await Config.findById('main');
+    // TOUJOURS récupérer la config ACTUELLE
+    const { getFreshConfig } = require('../utils/configHelper');
+    const config = await getFreshConfig(true);
     const currentLang = config?.languages?.currentLanguage || 'fr';
     const customTranslations = config?.languages?.translations;
     
-    console.log(`🔝 Top Plugs affiché en langue: ${currentLang}`);
+    console.log(`🔝 Top Plugs affiché en langue ACTUELLE: ${currentLang}`);
     
     // Récupérer les boutiques selon la langue actuelle
+    console.log('📦 Récupération des boutiques...');
     const allPlugs = await getPlugsByLanguage({}, currentLang);
+    console.log(`📦 ${allPlugs ? allPlugs.length : 0} boutiques récupérées`);
 
     // Récupérer les pays disponibles traduits selon la langue
+    console.log('🌍 Récupération des pays...');
     const availableCountries = await getAvailableCountries(currentLang);
+    console.log(`🌍 ${availableCountries ? availableCountries.length : 0} pays récupérés`);
     
     // Message d'affichage initial avec traduction
     const topPlugsTitle = getTranslation('menu_topPlugs', currentLang, customTranslations);
     let message = `${topPlugsTitle}\n`;
     message += `*(${getTranslation('messages_sortedByVotes', currentLang, customTranslations)})*\n\n`;
+    
+    console.log('📝 Message initial construit:', message.substring(0, 100));
     
     // Message explicatif pour les utilisateurs
     const helpMessage = getTranslation('messages_topPlugsHelp', currentLang, customTranslations);
@@ -68,9 +78,13 @@ const handleTopPlugs = async (ctx) => {
     const topPlugs = allPlugs.slice(0, 10);
     let keyboard;
     
+    console.log(`📋 Traitement de ${topPlugs.length} boutiques pour affichage`);
+    
     if (topPlugs.length > 0) {
       const shopsAvailableText = getTranslation('messages_shopsAvailable', currentLang, customTranslations);
       message += `**${topPlugs.length} ${shopsAvailableText} :**\n\n`;
+      
+      console.log('✅ Boutiques trouvées, création du clavier...');
       
       // Ajouter les boutiques au clavier
       const plugButtons = [];
@@ -80,17 +94,23 @@ const handleTopPlugs = async (ctx) => {
         const vipIcon = plug.isVip ? '⭐️ ' : '';
         const buttonText = `${country}${location} ${vipIcon}${plug.name} 👍 ${plug.likes}`;
         plugButtons.push([Markup.button.callback(buttonText, `plug_${plug._id}_from_top_plugs`)]);
+        console.log(`📋 Boutique ${index + 1}: ${plug.name} (${plug.likes} likes)`);
       });
       
       keyboard = createTopPlugsKeyboard(config, availableCountries, [], null, plugButtons);
+      console.log('⌨️ Clavier créé avec boutiques');
       // Les filtres sont maintenant en haut, les boutiques en bas via la fonction createTopPlugsKeyboard
     } else {
+      console.log('❌ Aucune boutique trouvée');
       const noShopsText = getTranslation('messages_noShops', currentLang, customTranslations);
       message += noShopsText;
       keyboard = createTopPlugsKeyboard(config, availableCountries, [], null, null);
+      console.log('⌨️ Clavier créé sans boutiques');
     }
     
+    console.log('📤 Envoi du message final...');
     await editMessageWithImage(ctx, message, keyboard, config, { parse_mode: 'Markdown' });
+    console.log('✅ handleTopPlugs terminé avec succès');
     
   } catch (error) {
     console.error('Erreur dans handleTopPlugs:', error);
@@ -825,9 +845,13 @@ const handleResetFilters = async (ctx) => {
     const topPlugs = allPlugs.slice(0, 10);
     let keyboard;
     
+    console.log(`📋 Traitement de ${topPlugs.length} boutiques pour affichage`);
+    
     if (topPlugs.length > 0) {
       const shopsAvailableText = getTranslation('messages_shopsAvailable', currentLang, customTranslations);
       message += `**${topPlugs.length} ${shopsAvailableText} :**\n\n`;
+      
+      console.log('✅ Boutiques trouvées, création du clavier...');
       
       // Ajouter les boutiques au clavier
       const plugButtons = [];
@@ -837,51 +861,23 @@ const handleResetFilters = async (ctx) => {
         const vipIcon = plug.isVip ? '⭐️ ' : '';
         const buttonText = `${country}${location} ${vipIcon}${plug.name} 👍 ${plug.likes}`;
         plugButtons.push([Markup.button.callback(buttonText, `plug_${plug._id}_from_top_plugs`)]);
+        console.log(`📋 Boutique ${index + 1}: ${plug.name} (${plug.likes} likes)`);
       });
       
       keyboard = createTopPlugsKeyboard(config, availableCountries, [], null, plugButtons);
+      console.log('⌨️ Clavier créé avec boutiques');
+      // Les filtres sont maintenant en haut, les boutiques en bas via la fonction createTopPlugsKeyboard
     } else {
+      console.log('❌ Aucune boutique trouvée');
       const noShopsText = getTranslation('messages_noShops', currentLang, customTranslations);
       message += noShopsText;
       keyboard = createTopPlugsKeyboard(config, availableCountries, [], null, null);
+      console.log('⌨️ Clavier créé sans boutiques');
     }
     
-    // ÉDITER le message existant au lieu d'en créer un nouveau - FORCER l'édition
-    try {
-      // Essayer d'abord d'éditer avec image
-      if (config?.welcome?.image) {
-        await ctx.editMessageMedia({
-          type: 'photo',
-          media: config.welcome.image || 'https://i.imgur.com/DD5OU6o.jpeg',
-          caption: message,
-          parse_mode: 'Markdown'
-        }, {
-          reply_markup: keyboard.reply_markup
-        });
-      } else {
-        // Éditer seulement le texte si pas d'image
-        await ctx.editMessageText(message, {
-          reply_markup: keyboard.reply_markup,
-          parse_mode: 'Markdown'
-        });
-      }
-    } catch (editError) {
-      console.log('⚠️ Erreur édition directe, tentative édition caption:', editError.message);
-      try {
-        // Fallback : éditer seulement le caption
-        await ctx.editMessageCaption(message, {
-          reply_markup: keyboard.reply_markup,
-          parse_mode: 'Markdown'
-        });
-      } catch (captionError) {
-        console.log('⚠️ Erreur édition caption, tentative édition texte:', captionError.message);
-        // Dernier fallback : éditer seulement le texte
-        await ctx.editMessageText(message, {
-          reply_markup: keyboard.reply_markup,
-          parse_mode: 'Markdown'
-        });
-      }
-    }
+    console.log('📤 Envoi du message final...');
+    await editMessageWithImage(ctx, message, keyboard, config, { parse_mode: 'Markdown' });
+    console.log('✅ handleTopPlugs terminé avec succès');
     
   } catch (error) {
     console.error('Erreur dans handleResetFilters:', error);
