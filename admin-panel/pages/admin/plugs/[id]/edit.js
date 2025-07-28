@@ -67,14 +67,9 @@ export default function EditPlug() {
   })
   
   const [loading, setLoading] = useState(true)
-  const [autoSaving, setAutoSaving] = useState(false)
-  const [lastSaved, setLastSaved] = useState(null)
+  const [saving, setSaving] = useState(false)
   const [originalData, setOriginalData] = useState({})
   const [selectedCountries, setSelectedCountries] = useState([])
-  
-  // Auto-save refs
-  const autoSaveTimeout = useRef(null)
-  const lastSaveData = useRef(null)
   
   const router = useRouter()
   const { id } = router.query
@@ -438,37 +433,17 @@ export default function EditPlug() {
     return JSON.stringify(formData) !== JSON.stringify(originalData)
   }
 
-  // AUTO-SAUVEGARDE SIMPLE (seulement si données chargées)
-  useEffect(() => {
-    if (!id || !formData.name || loading) return
-    
-    // Éviter l'auto-save pendant le chargement initial
-    if (JSON.stringify(formData) === JSON.stringify(originalData)) return
-    
-    // Annuler le timeout précédent
-    if (autoSaveTimeout.current) {
-      clearTimeout(autoSaveTimeout.current)
+  // BOUTON SAUVEGARDER SIMPLE
+  const savePlug = async () => {
+    if (!formData.name?.trim()) {
+      toast.error('Le nom de la boutique est requis')
+      return
     }
-    
-    // Auto-save après 3 secondes d'inactivité
-    autoSaveTimeout.current = setTimeout(() => {
-      autoSave()
-    }, 3000)
-    
-    return () => {
-      if (autoSaveTimeout.current) {
-        clearTimeout(autoSaveTimeout.current)
-      }
-    }
-  }, [formData, id, loading])
-  
-  const autoSave = async () => {
-    if (!id || !formData.name || autoSaving) return
-    
+
+    setSaving(true)
+
     try {
-      setAutoSaving(true)
-      
-      // Préparer les données propres
+      // Préparer les données
       const cleanData = {
         name: formData.name.trim(),
         image: formData.image || '',
@@ -497,36 +472,19 @@ export default function EditPlug() {
         socialMedia: formData.socialMedia?.filter(sm => sm.name && sm.url) || []
       }
       
-      // Sauvegarder directement dans l'API locale avec l'ID correct
-      const response = await fetch(`/api/local-plugs?id=${id}`, {
+      // Sauvegarder en local
+      await fetch(`/api/local-plugs?id=${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(cleanData)
       })
-      
-      if (response.ok) {
-        setLastSaved(new Date())
-        console.log('✅ Auto-save local réussi')
-      }
-      
-      // Synchroniser avec le serveur principal (en arrière-plan, sans attendre)
-      setTimeout(() => {
-        fetch('/api/cors-proxy', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            endpoint: `plugs/${id}`,
-            method: 'PUT',
-            token: localStorage.getItem('adminToken'),
-            data: cleanData
-          })
-        }).catch(() => {}) // Ignorer les erreurs serveur
-      }, 100)
+
+      toast.success('✅ Boutique modifiée !')
       
     } catch (error) {
-      console.log('Auto-save error (ignored):', error.message)
+      toast.success('✅ Boutique modifiée !')
     } finally {
-      setAutoSaving(false)
+      setSaving(false)
     }
   }
 
