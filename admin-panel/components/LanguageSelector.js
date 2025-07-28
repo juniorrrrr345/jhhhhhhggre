@@ -56,6 +56,10 @@ const translations = {
     reset: 'Réinitialiser',
     searching: 'Recherche en cours',
     try_different_criteria: 'Essayez de modifier vos critères de recherche',
+    // Traductions manquantes importantes
+    noShops: 'Aucune boutique trouvée',
+    refreshing: 'Actualisation des données...',
+    updated_at: 'Actualisé à',
     // Nouvelles traductions pour les pages inscription et services
     inscription_title: 'INSCRIPTION',
     inscription_join_title: 'Rejoignez FindYourPlug',
@@ -291,7 +295,11 @@ const translations = {
     // Traductions pour la page détail boutique
     detail_available_services: 'Available services',
     detail_available: 'Available',
-    detail_not_available: 'Not available'
+    detail_not_available: 'Not available',
+    // Traductions manquantes importantes
+    noShops: 'No shops found',
+    refreshing: 'Refreshing data...',
+    updated_at: 'Updated at'
   },
   es: {
     title: 'Idioma',
@@ -433,7 +441,11 @@ const translations = {
     // Traductions pour la page détail boutique
     detail_available_services: 'Servicios disponibles',
     detail_available: 'Disponible',
-    detail_not_available: 'No disponible'
+    detail_not_available: 'No disponible',
+    // Traductions manquantes importantes
+    noShops: 'No se encontraron tiendas',
+    refreshing: 'Actualizando datos...',
+    updated_at: 'Actualizado a las'
   },
   it: {
     title: 'Lingua',
@@ -575,7 +587,11 @@ const translations = {
     // Traductions pour la page détail boutique
     detail_available_services: 'Servizi disponibili',
     detail_available: 'Disponibile',
-    detail_not_available: 'Non disponibile'
+    detail_not_available: 'Non disponibile',
+    // Traductions manquantes importantes
+    noShops: 'Nessun negozio trovato',
+    refreshing: 'Aggiornamento dati...',
+    updated_at: 'Aggiornato alle'
   },
   de: {
     title: 'Sprache',
@@ -717,7 +733,11 @@ const translations = {
     // Traductions pour la page détail boutique
     detail_available_services: 'Verfügbare Services',
     detail_available: 'Verfügbar',
-    detail_not_available: 'Nicht verfügbar'
+    detail_not_available: 'Nicht verfügbar',
+    // Traductions manquantes importantes
+    noShops: 'Keine Geschäfte gefunden',
+    refreshing: 'Daten werden aktualisiert...',
+    updated_at: 'Aktualisiert um'
   }
 }
 
