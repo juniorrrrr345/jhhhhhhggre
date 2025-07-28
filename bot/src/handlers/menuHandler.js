@@ -27,13 +27,12 @@ const handleContact = async (ctx) => {
     // Affichage contact avec texte configurable (comme Info)
     const contactTitle = getTranslation('menu_contact', currentLang, customTranslations);
     
-    // PRIORITÉ : Texte du panel admin SEULEMENT en français, sinon traductions par défaut
+    // PRIORITÉ : Texte du panel admin, sinon traductions par défaut
     const panelContactText = config?.buttons?.contact?.content;
     const defaultContactText = getTranslation('contact_default_text', currentLang, customTranslations) || 'Contactez-nous pour plus d\'informations !';
     
-    // Utiliser le texte du panel admin SEULEMENT si on est en français ET qu'il existe
-    // Pour les autres langues, toujours utiliser les traductions
-    const finalContactText = (currentLang === 'fr' && panelContactText) ? panelContactText : defaultContactText;
+    // Utiliser le texte du panel admin si disponible, sinon les traductions
+    const finalContactText = panelContactText || defaultContactText;
     console.log('📞 Contact content ACTUEL utilisé:', finalContactText);
     
     const message = `${contactTitle}\n\n${finalContactText}`;
