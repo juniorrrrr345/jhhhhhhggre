@@ -6,10 +6,6 @@ const plugSchema = new mongoose.Schema({
     required: true,
     trim: true
   },
-  description: {
-    type: String,
-    required: true
-  },
   image: {
     type: String, // URL de l'image
     default: ''
