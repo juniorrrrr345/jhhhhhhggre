@@ -97,11 +97,17 @@ export default function ShopHome() {
   useEffect(() => {
     if (typeof window === 'undefined') return
     
-    // Configuration initiale
-    initializeData()
-    
-    // Boutique initialisée
-  }, [])
+      // Configuration initiale
+  initializeData()
+  
+  // Boutique initialisée
+}, [])
+
+// Fonction pour forcer le rafraîchissement (pour debug)
+const forceRefresh = () => {
+  console.log('🔄 Rafraîchissement forcé...')
+  fetchConfig()
+}
 
   // Listener pour les changements de localStorage (synchronisation temps réel)
   useEffect(() => {
@@ -156,10 +162,36 @@ export default function ShopHome() {
 
   const fetchConfig = async () => {
     try {
-      // Récupérer la config depuis l'API admin directement (avec cache-busting)
+      // Récupérer la config depuis l'API admin directement (SANS CACHE)
       const token = 'JuniorAdmon123' // Token par défaut pour lecture publique
-      const timestamp = Date.now() // Pour éviter le cache
-      let data = await api.getConfig(token + '?t=' + timestamp)
+      
+      // Forcer le rafraîchissement en ajoutant un timestamp aléatoire
+      const cacheBreaker = Date.now() + Math.random()
+      const response = await fetch('/api/cors-proxy', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0'
+        },
+        body: JSON.stringify({
+          url: 'https://jhhhhhhggre.onrender.com/api/config',
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'x-cache-bust': cacheBreaker
+          }
+        })
+      })
+      
+      let data = null
+      if (response.ok) {
+        data = await response.json()
+      } else {
+        // Fallback vers l'API simple si le proxy échoue
+        data = await api.getConfig(token)
+      }
       
       console.log('📱 Config récupérée pour accueil:', {
         boutique: data?.boutique?.name,
