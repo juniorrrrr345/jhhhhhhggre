@@ -252,29 +252,55 @@ useEffect(() => {
 
   const fetchPlugs = async () => {
     try {
-      console.log('🔍 Chargement boutiques DIRECTEMENT depuis le bot...')
+      console.log('🔍 Chargement boutiques depuis le bot...')
       setLoading(true)
       
-      // APPEL DIRECT au bot pour récupérer les VRAIES boutiques
-      console.log('📡 Tentative de connexion à l\'API...')
-      const response = await fetch('https://jhhhhhhggre.onrender.com/api/public/plugs?limit=50', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        // Ajouter un timeout
-        signal: AbortSignal.timeout(10000) // 10 secondes
-      })
+      let data = null
       
-      console.log('📡 Réponse reçue:', response.status, response.statusText)
-      
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`)
+      // APPEL DIRECT au bot d'abord
+      try {
+        console.log('📡 Tentative connexion DIRECTE à l\'API bot...')
+        const directResponse = await fetch('https://jhhhhhhggre.onrender.com/api/public/plugs?limit=50', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          signal: AbortSignal.timeout(8000) // 8 secondes
+        })
+        
+        if (directResponse.ok) {
+          data = await directResponse.json()
+          console.log('✅ Connexion DIRECTE réussie:', data.plugs?.length || 0, 'boutiques')
+        } else {
+          throw new Error(`Direct API failed: ${directResponse.status}`)
+        }
+      } catch (directError) {
+        console.log('⚠️ Connexion directe échouée:', directError.message)
+        
+        // FALLBACK: Utiliser le proxy Vercel
+        try {
+          console.log('🔄 Tentative via PROXY Vercel...')
+          const proxyResponse = await fetch('/api/cors-proxy?endpoint=/api/public/plugs&limit=50', {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            signal: AbortSignal.timeout(8000)
+          })
+          
+          if (proxyResponse.ok) {
+            data = await proxyResponse.json()
+            console.log('✅ Connexion PROXY réussie:', data.plugs?.length || 0, 'boutiques')
+          } else {
+            throw new Error(`Proxy failed: ${proxyResponse.status}`)
+          }
+        } catch (proxyError) {
+          console.error('❌ Proxy aussi échoué:', proxyError.message)
+          throw new Error('Toutes les connexions ont échoué')
+        }
       }
       
-      const data = await response.json()
-      console.log('📡 Données reçues:', data)
-      
+      // Traiter les données récupérées
       if (data && data.plugs) {
         console.log('🎯 Boutiques récupérées:', data.plugs.length)
         setPlugs(data.plugs)
@@ -294,8 +320,6 @@ useEffect(() => {
       
     } catch (error) {
       console.error('❌ Erreur chargement boutiques:', error.message)
-      
-      // Ne pas afficher les données de fallback, juste un tableau vide
       setPlugs([])
       console.log('📱 Erreur API: Aucune boutique affichée')
     } finally {
