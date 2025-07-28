@@ -342,12 +342,25 @@ export default function EditPlug() {
           // Le rafraîchissement est maintenant géré automatiquement par api.updatePlug()
           console.log('✅ Cache et bot rafraîchis automatiquement')
           
+          // Vider le cache local pour forcer le rechargement
+          if (typeof window !== 'undefined') {
+            // Vider le localStorage
+            localStorage.removeItem('plugsCache')
+            localStorage.removeItem('apiCache')
+            sessionStorage.clear()
+            
+            // Vider le cache de l'API
+            api.clearCache()
+            simpleApi.clearCache && simpleApi.clearCache()
+          }
+          
           // Mettre à jour les données originales
           setOriginalData(formData)
           
-          // Redirection après succès
+          // Redirection après succès avec force refresh
           setTimeout(() => {
-            router.push('/admin/plugs')
+            // Ajouter un paramètre pour forcer le refresh
+            router.push('/admin/plugs?refresh=' + Date.now())
           }, 1500)
           
         

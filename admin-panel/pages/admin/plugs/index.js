@@ -38,6 +38,23 @@ export default function AccueilAdmin() {
       router.push('/')
       return
     }
+    
+    // Vérifier si on vient d'une édition (paramètre refresh)
+    if (router.query.refresh) {
+      console.log('🔄 Refresh forcé détecté, vidage du cache...')
+      // Vider tous les caches
+      localStorage.removeItem('plugsCache')
+      localStorage.removeItem('apiCache')
+      sessionStorage.clear()
+      
+      // Supprimer le paramètre refresh de l'URL
+      const { refresh, ...otherQuery } = router.query
+      router.replace({
+        pathname: router.pathname,
+        query: otherQuery
+      }, undefined, { shallow: true })
+    }
+    
     fetchData(token)
   }, [search, filter, currentPage, router])
 
@@ -60,15 +77,22 @@ export default function AccueilAdmin() {
     try {
       console.log('🔄 Admin: Chargement TOUTES les boutiques (serveur + local)...')
       
+      // Forcer le vidage du cache si on vient d'une édition
+      if (router.query.refresh) {
+        console.log('🧹 Vidage forcé du cache API')
+        simpleApi.clearCache && simpleApi.clearCache()
+      }
+      
       let allPlugs = []
       
-      // 1. Récupérer boutiques du serveur principal
+      // 1. Récupérer boutiques du serveur principal avec timestamp pour éviter le cache
       try {
         const serverData = await simpleApi.getPlugs(token, {
           page: currentPage,
           limit: 100,
           search,
-          filter
+          filter,
+          t: Date.now() // Forcer le bypass du cache
         })
         allPlugs = [...(serverData.plugs || [])]
         console.log('✅ Serveur principal:', allPlugs.length, 'boutiques')
