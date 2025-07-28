@@ -164,35 +164,35 @@ const forceRefresh = () => {
     try {
       // Récupérer la config depuis l'API admin directement (SANS CACHE)
       const token = 'JuniorAdmon123' // Token par défaut pour lecture publique
-      
-      // Forcer le rafraîchissement en ajoutant un timestamp aléatoire
-      const cacheBreaker = Date.now() + Math.random()
-      const response = await fetch('/api/cors-proxy', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Cache-Control': 'no-cache, no-store, must-revalidate',
-          'Pragma': 'no-cache',
-          'Expires': '0'
-        },
-        body: JSON.stringify({
-          url: 'https://jhhhhhhggre.onrender.com/api/config',
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'x-cache-bust': cacheBreaker
-          }
-        })
-      })
-      
       let data = null
-      if (response.ok) {
-        data = await response.json()
-      } else {
-        // Fallback vers l'API simple si le proxy échoue
-        data = await api.getConfig(token)
-      }
       
+      // Essayer d'abord l'API simple avec cache-busting
+      try {
+        const timestamp = Date.now()
+        data = await api.getConfig(token)
+        console.log('📦 Data provided:', data ? 'Yes' : 'No')
+        console.log('📊 shopSocialMediaList length:', data?.shopSocialMediaList?.length || 0)
+        
+        if (!data) {
+          console.log('⚠️ Pas de données, utilisation fallback')
+          // Fallback direct sans cache
+          const directResponse = await fetch(`https://jhhhhhhggre.onrender.com/api/config?t=${timestamp}`, {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Cache-Control': 'no-cache'
+            }
+          })
+          if (directResponse.ok) {
+            data = await directResponse.json()
+            console.log('📦 Fallback data:', data ? 'Yes' : 'No')
+          }
+        }
+        
+              } catch (error) {
+        console.log('❌ Erreur récupération config:', error)
+        data = null
+      }
+        
       console.log('📱 Config récupérée pour accueil:', {
         boutique: data?.boutique?.name,
         shopSocialMediaList: data?.shopSocialMediaList?.length || 0,
