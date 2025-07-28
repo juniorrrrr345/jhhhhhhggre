@@ -116,8 +116,11 @@ export default function ShopSocialMediaManager() {
       window.dispatchEvent(new CustomEvent('shopSocialMediaUpdated', { 
         detail: socialMedias 
       }))
+
+      // Synchronisation temps réel avec la mini app
+      await simpleApi.syncImmediateMiniApp('shop_social_updated')
       
-      toast.success('✅ Réseaux sociaux sauvegardés localement !')
+      toast.success('✅ Réseaux sociaux sauvegardés et synchronisés !')
       
     } catch (error) {
       console.error('Erreur sauvegarde:', error)

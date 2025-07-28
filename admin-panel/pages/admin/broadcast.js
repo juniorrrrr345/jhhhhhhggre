@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/router'
 import Head from 'next/head'
 import toast, { Toaster } from 'react-hot-toast'
+import { simpleApi } from '../../lib/api-simple'
 
 export default function BroadcastMessages() {
   const [message, setMessage] = useState('')
@@ -51,6 +52,10 @@ export default function BroadcastMessages() {
           total: data.total || 0
         })
         toast.success(`Message envoyé à ${data.sent} utilisateurs`)
+        
+        // Synchronisation temps réel avec la mini app
+        await simpleApi.syncImmediateMiniApp('broadcast_sent')
+        
         setMessage('')
         setImage('')
       } else {

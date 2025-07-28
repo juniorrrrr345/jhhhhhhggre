@@ -113,6 +113,9 @@ export default function Applications() {
       } else {
         toast.success('Demande refusée');
       }
+
+      // Synchronisation temps réel avec la mini app et le bot
+      await simpleApi.syncImmediateMiniApp('applications_updated')
       
       setError('');
     } catch (error) {

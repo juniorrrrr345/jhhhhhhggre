@@ -161,6 +161,9 @@ export default function SocialMediaManager() {
         console.log('⚠️ Synchronisation bot échoué:', syncError.message)
         toast.success('✅ Réseaux sociaux sauvegardés localement ! (Sync bot: en attente)')
       }
+
+      // Synchronisation temps réel avec la mini app
+      await simpleApi.syncImmediateMiniApp('social_media_updated')
       
     } catch (error) {
       console.error('Erreur sauvegarde:', error)
@@ -264,7 +267,10 @@ export default function SocialMediaManager() {
       // Mettre à jour l'état d'abord
       setSocialMedias(updatedSocialMedias)
       
-      toast.success(`Réseau social "${itemToDelete.name}" supprimé (cliquez "Sauvegarder" pour synchroniser)`)
+      // Synchronisation temps réel avec la mini app
+      await simpleApi.syncImmediateMiniApp('social_media_updated')
+      
+      toast.success(`Réseau social "${itemToDelete.name}" supprimé et synchronisé !`)
     }
   }
 
@@ -275,6 +281,9 @@ export default function SocialMediaManager() {
     )
     
     setSocialMedias(updatedSocialMedias)
+    
+    // Synchronisation temps réel avec la mini app
+    await simpleApi.syncImmediateMiniApp('social_media_updated')
   }
 
   // Fonction utilitaire pour synchroniser avec l'API du bot

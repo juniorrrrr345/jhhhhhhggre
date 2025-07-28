@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import toast from 'react-hot-toast'
+import { simpleApi } from '../../lib/api-simple'
 
 const languages = {
   fr: { name: 'Français', flag: '🇫🇷' },
@@ -73,6 +74,10 @@ export default function LanguagesAdmin() {
 
       if (!response.ok) {
         toast.error('Erreur lors de la sauvegarde')
+      } else {
+        // Synchronisation temps réel avec la mini app et le bot
+        await simpleApi.syncImmediateMiniApp('languages_updated')
+        toast.success('✅ Configuration des langues sauvegardée et synchronisée !')
       }
     } catch (error) {
       toast.error('❌ Erreur de connexion')
