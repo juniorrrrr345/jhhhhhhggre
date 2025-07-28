@@ -5669,6 +5669,82 @@ app.post('/api/sync-contact-info-texts', async (req, res) => {
   }
 });
 
+// API pour définir les traductions personnalisées des textes Contact et Info
+app.post('/api/set-contact-info-translations', async (req, res) => {
+  try {
+    console.log('🌐 DÉFINITION des traductions Contact et Info...');
+    
+    const { contactTranslations, infoTranslations } = req.body;
+    
+    const config = await Config.findById('main');
+    if (!config) {
+      return res.status(404).json({ error: 'Configuration non trouvée' });
+    }
+    
+    let updated = false;
+    
+    // Définir les traductions Contact
+    if (contactTranslations && typeof contactTranslations === 'object') {
+      if (!config.buttons) config.buttons = {};
+      if (!config.buttons.contact) config.buttons.contact = {};
+      if (!config.buttons.contact.contentTranslations) {
+        config.buttons.contact.contentTranslations = new Map();
+      }
+      
+      // Ajouter chaque traduction
+      Object.entries(contactTranslations).forEach(([lang, text]) => {
+        if (text && ['fr', 'en', 'it', 'es', 'de'].includes(lang)) {
+          config.buttons.contact.contentTranslations.set(lang, text);
+          console.log(`📞 Traduction Contact ${lang}: ${text.substring(0, 50)}...`);
+        }
+      });
+      updated = true;
+    }
+    
+    // Définir les traductions Info
+    if (infoTranslations && typeof infoTranslations === 'object') {
+      if (!config.buttons) config.buttons = {};
+      if (!config.buttons.info) config.buttons.info = {};
+      if (!config.buttons.info.contentTranslations) {
+        config.buttons.info.contentTranslations = new Map();
+      }
+      
+      // Ajouter chaque traduction
+      Object.entries(infoTranslations).forEach(([lang, text]) => {
+        if (text && ['fr', 'en', 'it', 'es', 'de'].includes(lang)) {
+          config.buttons.info.contentTranslations.set(lang, text);
+          console.log(`ℹ️ Traduction Info ${lang}: ${text.substring(0, 50)}...`);
+        }
+      });
+      updated = true;
+    }
+    
+    if (updated) {
+      await config.save();
+      
+      // Vider tous les caches
+      configCache = null;
+      plugsCache = null;
+      if (typeof clearAllCaches === 'function') {
+        clearAllCaches();
+      }
+      
+      console.log('✅ Traductions Contact/Info définies avec succès');
+    }
+    
+    res.json({ 
+      success: true, 
+      message: 'Traductions Contact et Info définies',
+      contactLanguages: contactTranslations ? Object.keys(contactTranslations) : [],
+      infoLanguages: infoTranslations ? Object.keys(infoTranslations) : []
+    });
+    
+  } catch (error) {
+    console.error('❌ Erreur définition traductions Contact/Info:', error);
+    res.status(500).json({ error: 'Erreur serveur' });
+  }
+});
+
 // Endpoint pour configurer le chat ID des notifications de nouvelles boutiques
 app.post('/api/admin/notifications/chat-id', authenticateAdmin, async (req, res) => {
   try {

@@ -58,6 +58,11 @@ const configSchema = new mongoose.Schema({
         type: String,
         default: 'Contactez-nous pour plus d\'informations.'
       },
+      contentTranslations: {
+        type: Map,
+        of: String,
+        default: new Map()
+      },
       enabled: {
         type: Boolean,
         default: true
@@ -71,6 +76,11 @@ const configSchema = new mongoose.Schema({
       content: {
         type: String,
         default: 'Informations sur notre plateforme.'
+      },
+      contentTranslations: {
+        type: Map,
+        of: String,
+        default: new Map()
       },
       enabled: {
         type: Boolean,

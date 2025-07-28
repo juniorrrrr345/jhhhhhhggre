@@ -27,12 +27,24 @@ const handleContact = async (ctx) => {
     // Affichage contact avec texte configurable (comme Info)
     const contactTitle = getTranslation('menu_contact', currentLang, customTranslations);
     
-    // PRIORITÉ : Texte du panel admin, sinon traductions par défaut
+    // Récupérer le texte traduit ou le texte par défaut
     const panelContactText = config?.buttons?.contact?.content;
-    const defaultContactText = getTranslation('contact_default_text', currentLang, customTranslations) || 'Contactez-nous pour plus d\'informations !';
+    const contactTranslations = config?.buttons?.contact?.contentTranslations;
     
-    // Utiliser le texte du panel admin si disponible, sinon les traductions
-    const finalContactText = panelContactText || defaultContactText;
+    let finalContactText;
+    
+    // Si on a des traductions personnalisées pour cette langue
+    if (contactTranslations && contactTranslations.get(currentLang)) {
+      finalContactText = contactTranslations.get(currentLang);
+    }
+    // Sinon, si on est en français, utiliser le texte du panel
+    else if (currentLang === 'fr' && panelContactText) {
+      finalContactText = panelContactText;
+    }
+    // Sinon utiliser les traductions par défaut
+    else {
+      finalContactText = getTranslation('contact_default_text', currentLang, customTranslations) || panelContactText || 'Contactez-nous pour plus d\'informations !';
+    }
     console.log('📞 Contact content ACTUEL utilisé:', finalContactText);
     
     const message = `${contactTitle}\n\n${finalContactText}`;
@@ -127,13 +139,24 @@ const handleInfo = async (ctx) => {
     // Affichage info avec texte configurable depuis l'admin ACTUEL
     const infoTitle = getTranslation('menu_info', currentLang, customTranslations);
     
-    // PRIORITÉ : Texte du panel admin SEULEMENT en français, sinon traductions par défaut
+    // Récupérer le texte traduit ou le texte par défaut
     const panelInfoText = config?.buttons?.info?.content;
-    const defaultInfoText = getTranslation('info_default_text', currentLang, customTranslations) || 'Découvrez notre plateforme premium.';
+    const infoTranslations = config?.buttons?.info?.contentTranslations;
     
-    // Utiliser le texte du panel admin SEULEMENT si on est en français ET qu'il existe
-    // Pour les autres langues, toujours utiliser les traductions
-    const finalInfoText = (currentLang === 'fr' && panelInfoText) ? panelInfoText : defaultInfoText;
+    let finalInfoText;
+    
+    // Si on a des traductions personnalisées pour cette langue
+    if (infoTranslations && infoTranslations.get(currentLang)) {
+      finalInfoText = infoTranslations.get(currentLang);
+    }
+    // Sinon, si on est en français, utiliser le texte du panel
+    else if (currentLang === 'fr' && panelInfoText) {
+      finalInfoText = panelInfoText;
+    }
+    // Sinon utiliser les traductions par défaut
+    else {
+      finalInfoText = getTranslation('info_default_text', currentLang, customTranslations) || panelInfoText || 'Découvrez notre plateforme premium.';
+    }
     console.log('ℹ️ Info content ACTUEL utilisé:', finalInfoText);
     
     const message = `${infoTitle}\n\n${finalInfoText}`;
