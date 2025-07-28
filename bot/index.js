@@ -4287,3 +4287,80 @@ bot.action(/^return_country_(.+)$/, (ctx) => {
   console.log(`🔄 Retour vers pays: ${country}`);
   return handleCountryFilter(ctx, country, 0);
 });
+
+// Endpoint pour forcer la mise à jour de l'emoji Potato
+app.post('/api/force-update-potato-emoji', async (req, res) => {
+  try {
+    console.log('🔧 Forçage mise à jour emoji Potato vers 🏴‍☠️');
+    
+    const config = await Config.findById('main');
+    if (!config) {
+      return res.status(404).json({ error: 'Configuration non trouvée' });
+    }
+    
+    // Mettre à jour l'emoji Potato dans socialMedia si il existe
+    if (config.socialMedia && Array.isArray(config.socialMedia)) {
+      const potatoIndex = config.socialMedia.findIndex(item => 
+        item.name && item.name.toLowerCase().includes('potato')
+      );
+      
+      if (potatoIndex !== -1) {
+        config.socialMedia[potatoIndex].emoji = '🏴‍☠️';
+        console.log('✅ Emoji Potato mis à jour dans socialMedia');
+      }
+    }
+    
+    // Mettre à jour dans socialMediaList si il existe
+    if (config.socialMediaList && Array.isArray(config.socialMediaList)) {
+      const potatoIndex = config.socialMediaList.findIndex(item => 
+        item.name && item.name.toLowerCase().includes('potato')
+      );
+      
+      if (potatoIndex !== -1) {
+        config.socialMediaList[potatoIndex].emoji = '🏴‍☠️';
+        console.log('✅ Emoji Potato mis à jour dans socialMediaList');
+      }
+    }
+    
+    // Ajouter Potato avec emoji 🏴‍☠️ si il n'existe pas
+    if (!config.socialMediaList) {
+      config.socialMediaList = [];
+    }
+    
+    const hasPotatoInList = config.socialMediaList.some(item => 
+      item.name && item.name.toLowerCase().includes('potato')
+    );
+    
+    if (!hasPotatoInList) {
+      config.socialMediaList.push({
+        id: 'potato',
+        name: 'Potato',
+        emoji: '🏴‍☠️',
+        url: 'https://dym168.org/findyourplug',
+        enabled: true
+      });
+      console.log('✅ Potato ajouté avec emoji 🏴‍☠️');
+    }
+    
+    await config.save();
+    
+    // Invalider les caches
+    configCache = null;
+    plugsCache = null;
+    clearAllCaches();
+    
+    console.log('🚀 Configuration mise à jour et caches invalidés');
+    
+    res.json({ 
+      success: true, 
+      message: 'Emoji Potato mis à jour vers 🏴‍☠️',
+      socialMediaList: config.socialMediaList?.filter(item => 
+        item.name && item.name.toLowerCase().includes('potato')
+      )
+    });
+    
+  } catch (error) {
+    console.error('❌ Erreur mise à jour emoji Potato:', error);
+    res.status(500).json({ error: 'Erreur serveur' });
+  }
+});
