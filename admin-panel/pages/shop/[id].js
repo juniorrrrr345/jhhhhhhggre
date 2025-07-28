@@ -315,10 +315,6 @@ export default function ShopPlugDetail() {
     return serviceMap[serviceKey] || serviceKey
   }
 
-  const getVotesText = () => {
-    return t('votes') || 'Votes'
-  }
-
   if (initialLoading) {
     return (
       <>
