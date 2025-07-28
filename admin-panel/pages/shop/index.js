@@ -546,51 +546,38 @@ export default function ShopHome() {
             flexWrap: 'wrap'
           }}>
             {/* Réseaux sociaux fixes pour la boutique */}
-            {(() => {
-              // Réseaux par défaut
-              const defaultNetworks = [
-                { 
-                  name: 'Telegram', 
-                  logo: 'https://i.imgur.com/PP2GVMv.png',
-                  url: 'https://t.me/+zcP68c4M_3NlM2Y0'
-                },
-                { 
-                  name: 'Instagram', 
-                  logo: 'https://i.imgur.com/O5TxmOS.jpeg',
-                  url: 'https://www.instagram.com/find.yourplug?igsh=ajRwcjE1eGhoaXMz&utm_source=qr'
-                },
-                { 
-                  name: 'Luffa', 
-                  logo: 'https://i.imgur.com/zkZtY0m.png',
-                  url: 'https://callup.luffa.im/c/EnvtiTHkbvP'
-                },
-                { 
-                  name: 'Discord', 
-                  logo: 'https://i.imgur.com/oXPAefr.png',
-                  url: 'https://discord.gg/g2dACUC3'
-                },
-                { 
-                  name: 'Potato', 
-                  logo: 'https://i.imgur.com/44ScFxY.jpeg',
-                  url: 'https://potato.com'
-                }
-              ];
-
-              // Si on a une config avec des réseaux shop, on met à jour les URLs
-              if (config?.shopSocialMediaList && Array.isArray(config.shopSocialMediaList)) {
-                return defaultNetworks.map(defaultNetwork => {
-                  const configNetwork = config.shopSocialMediaList.find(
-                    s => s.name && s.name.toLowerCase() === defaultNetwork.name.toLowerCase()
-                  );
-                  return {
-                    ...defaultNetwork,
-                    url: configNetwork?.url || defaultNetwork.url
-                  };
-                });
+            {[
+              { 
+                id: 'telegram',
+                name: config?.shopSocialMediaList?.find(s => s.id === 'telegram')?.name || 'Telegram',
+                logo: 'https://i.imgur.com/PP2GVMv.png',
+                url: config?.shopSocialMediaList?.find(s => s.id === 'telegram')?.url || 'https://t.me/+zcP68c4M_3NlM2Y0'
+              },
+              { 
+                id: 'instagram',
+                name: config?.shopSocialMediaList?.find(s => s.id === 'instagram')?.name || 'Instagram',
+                logo: 'https://i.imgur.com/O5TxmOS.jpeg',
+                url: config?.shopSocialMediaList?.find(s => s.id === 'instagram')?.url || 'https://www.instagram.com/find.yourplug?igsh=ajRwcjE1eGhoaXMz&utm_source=qr'
+              },
+              { 
+                id: 'luffa',
+                name: config?.shopSocialMediaList?.find(s => s.id === 'luffa')?.name || 'Luffa',
+                logo: 'https://i.imgur.com/PtqXOhb.png',
+                url: config?.shopSocialMediaList?.find(s => s.id === 'luffa')?.url || 'https://callup.luffa.im/c/EnvtiTHkbvP'
+              },
+              { 
+                id: 'discord',
+                name: config?.shopSocialMediaList?.find(s => s.id === 'discord')?.name || 'Discord',
+                logo: 'https://i.imgur.com/oXPAefr.png',
+                url: config?.shopSocialMediaList?.find(s => s.id === 'discord')?.url || 'https://discord.gg/g2dACUC3'
+              },
+              { 
+                id: 'potato',
+                name: config?.shopSocialMediaList?.find(s => s.id === 'potato')?.name || 'Potato',
+                logo: 'https://i.imgur.com/44ScFxY.jpeg',
+                url: config?.shopSocialMediaList?.find(s => s.id === 'potato')?.url || 'https://potato.com'
               }
-
-              return defaultNetworks;
-            })().map((social, index) => (
+            ].map((social, index) => (
               <a
                 key={index}
                 href={social.url}
