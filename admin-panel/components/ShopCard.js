@@ -143,58 +143,8 @@ export default function ShopCard({ plug, index, layout = 'grid', currentLanguage
     return translations[currentLanguage] || 'votes'
   }
 
-  const getCountryFlag = (countries) => {
-    if (!countries || countries.length === 0) return '🌍'
-    const countryFlagMap = {
-      // Pays européens
-      'France': '🇫🇷',
-      'Allemagne': '🇩🇪',
-      'Italie': '🇮🇹',
-      'Espagne': '🇪🇸',
-      'Portugal': '🇵🇹',
-      'Royaume-Uni': '🇬🇧',
-      'Belgique': '🇧🇪',
-      'Pays-Bas': '🇳🇱',
-      'Suisse': '🇨🇭',
-      'Autriche': '🇦🇹',
-      'Luxembourg': '🇱🇺',
-      'Irlande': '🇮🇪',
-      'Danemark': '🇩🇰',
-      'Suède': '🇸🇪',
-      'Norvège': '🇳🇴',
-      'Finlande': '🇫🇮',
-      'Islande': '🇮🇸',
-      'Pologne': '🇵🇱',
-      'République Tchèque': '🇨🇿',
-      'Slovaquie': '🇸🇰',
-      'Hongrie': '🇭🇺',
-      'Slovénie': '🇸🇮',
-      'Croatie': '🇭🇷',
-      'Roumanie': '🇷🇴',
-      'Bulgarie': '🇧🇬',
-      'Grèce': '🇬🇷',
-      'Chypre': '🇨🇾',
-      'Malte': '🇲🇹',
-      'Estonie': '🇪🇪',
-      'Lettonie': '🇱🇻',
-      'Lituanie': '🇱🇹',
-      'Monaco': '🇲🇨',
-      'Andorre': '🇦🇩',
-      'Saint-Marin': '🇸🇲',
-      'Vatican': '🇻🇦',
-      'Liechtenstein': '🇱🇮',
-      // Pays supplémentaires
-      'Maroc': '🇲🇦',
-      'Canada': '🇨🇦',
-      'USA': '🇺🇸',
-      'Thaïlande': '🇹🇭',
-      // Pays existants
-      'Tunisie': '🇹🇳',
-      'Algérie': '🇩🇿',
-      'Autre': '🌍'
-    }
-    return countryFlagMap[countries[0]] || '🌍'
-  }
+
+
 
   const handleVote = async (e) => {
     e.preventDefault()
@@ -323,8 +273,8 @@ export default function ShopCard({ plug, index, layout = 'grid', currentLanguage
           }}>
             <span style={{ fontSize: '16px' }}>
               {showCountry && filteredCountry 
-                ? getCountryFlagByName(filteredCountry) 
-                : getCountryFlag(plug.countries)
+                ? getCountryFlag(filteredCountry) 
+                : (plug.countries && plug.countries.length > 0 ? getCountryFlag(plug.countries[0]) : '🌍')
               }
             </span>
             <h3 style={{ 

@@ -1,4 +1,5 @@
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline'
+import { useTranslation, getCurrentLanguage } from './LanguageSelector'
 
 export default function Pagination({ 
   currentPage, 
@@ -8,6 +9,8 @@ export default function Pagination({
   onPageChange, 
   className = "" 
 }) {
+  const currentLanguage = getCurrentLanguage()
+  const { t } = useTranslation(currentLanguage)
   // Calculer totalPages à partir de totalItems et itemsPerPage si non fourni
   const calculatedTotalPages = totalPages || Math.ceil(totalItems / itemsPerPage)
   
@@ -220,7 +223,7 @@ export default function Pagination({
         color: '#8e8e93',
         fontWeight: '500'
       }}>
-        Page {currentPage} sur {calculatedTotalPages}
+        {t('page')} {currentPage} {t('of')} {calculatedTotalPages}
       </div>
     </div>
   )

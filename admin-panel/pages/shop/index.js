@@ -405,7 +405,7 @@ useEffect(() => {
                 }}
               />
             </div>
-            <p>Chargement...</p>
+            <p>{t('loading')}...</p>
           </div>
         </div>
       </>
