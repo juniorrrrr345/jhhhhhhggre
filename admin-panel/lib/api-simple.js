@@ -36,9 +36,9 @@ const makeProxyCall = async (endpoint, method = 'GET', token = null, data = null
     // Marquer l'appel pour l'anti-spam
     apiCache.markCall(cacheKey);
     
-    // Timeout réduit à 6 secondes pour éviter les erreurs 502
+    // Timeout ultra-réduit à 5 secondes pour éviter rate limiting
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 6000);
+    const timeoutId = setTimeout(() => controller.abort(), 5000);
     
     const response = await fetch('/api/cors-proxy', {
       method: 'POST',
