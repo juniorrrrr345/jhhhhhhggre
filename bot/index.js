@@ -2605,15 +2605,16 @@ app.post('/api/plugs', limits.admin, authenticateAdmin, async (req, res) => {
     const savedPlug = await newPlug.save();
     console.log('✅ Plug sauvegardé avec succès:', savedPlug._id);
     
-    // TRADUCTION AUTOMATIQUE de la boutique (DÉSACTIVÉE temporairement pour debug)
+    // TRADUCTION AUTOMATIQUE de la boutique (RÉACTIVÉE)
     try {
-      console.log('🌍 Traduction automatique temporairement désactivée pour éviter erreur 500');
-      // const translatedShop = await translationService.translateShop(savedPlug.toObject());
-      // savedPlug.translations = translatedShop.translations;
-      // await savedPlug.save();
-      console.log('⏭️ Traduction automatique skippée pour:', savedPlug.name);
+      console.log('🌍 Démarrage traduction automatique...');
+      const translatedShop = await translationService.translateShop(savedPlug.toObject());
+      savedPlug.translations = translatedShop.translations;
+      await savedPlug.save();
+      console.log('✅ Traduction automatique terminée pour:', savedPlug.name);
     } catch (translationError) {
       console.error('⚠️ Erreur traduction automatique:', translationError);
+      // Continuer même si la traduction échoue
     }
     
     // Générer automatiquement le lien de parrainage (DÉSACTIVÉ temporairement pour debug)
