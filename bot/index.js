@@ -330,7 +330,8 @@ const showMainMenuInLanguage = async (ctx, config, language) => {
       const User = require('./src/models/User');
       const Plug = require('./src/models/Plug');
       userCount = await User.countDocuments({ isActive: true });
-      shopCount = await Plug.countDocuments({ status: 'approved' });
+      shopCount = await Plug.countDocuments({ isActive: true });
+      console.log(`📊 Statistiques: ${userCount} utilisateurs, ${shopCount} boutiques`);
     } catch (statsError) {
       console.log('⚠️ Erreur récupération statistiques:', statsError.message);
     }
