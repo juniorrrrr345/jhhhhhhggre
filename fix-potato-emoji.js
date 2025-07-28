@@ -25,7 +25,7 @@ const Config = mongoose.model('Config', configSchema);
 // Fonction pour ajouter/corriger Potato avec emoji pot
 const fixPotatoEmoji = async () => {
   try {
-    console.log('🔧 Correction emoji Potato vers 🫙...');
+    console.log('🔧 Correction emoji Potato vers 🏴‍☠️...');
     
     const config = await Config.findById('main');
     if (!config) {
@@ -45,18 +45,18 @@ const fixPotatoEmoji = async () => {
     
     if (potatoIndex !== -1) {
       // Mettre à jour l'emoji existant
-      config.socialMediaList[potatoIndex].emoji = '🫙';
-      console.log('✅ Emoji Potato mis à jour vers 🫙');
+      config.socialMediaList[potatoIndex].emoji = '🏴‍☠️';
+      console.log('✅ Emoji Potato mis à jour vers 🏴‍☠️');
     } else {
-      // Ajouter Potato avec emoji pot
+      // Ajouter Potato avec emoji drapeau pirate
       config.socialMediaList.push({
         id: 'potato',
         name: 'Potato',
-        emoji: '🫙',
+        emoji: '🏴‍☠️',
         url: 'https://dym168.org/findyourplug',
         enabled: true
       });
-      console.log('✅ Potato ajouté avec emoji 🫙');
+      console.log('✅ Potato ajouté avec emoji 🏴‍☠️');
     }
     
     // Sauvegarder
