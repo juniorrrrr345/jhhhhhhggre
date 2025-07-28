@@ -119,8 +119,9 @@ const createMainKeyboard = (config) => {
     }
   }
   
-  // Première ligne : MiniApp FindYourPlugs - URL correcte avec toutes nos modifications
-  buttons.push([Markup.button.webApp('MINI-APP 🔌', 'https://sfeplugslink.vercel.app/shop')]);
+  // Première ligne : MiniApp FindYourPlugs - URL avec cache busting pour forcer refresh
+  const cacheTime = Date.now();
+  buttons.push([Markup.button.webApp('MINI-APP 🔌', `https://sfeplugslink.vercel.app/shop?t=${cacheTime}`)]);
   
   // Deuxième ligne : Bouton Voter - TRADUIT avec emoji 🗳️ dans toutes les langues
   const topPlugsText = getTranslation('menu_topPlugs', currentLang, customTranslations);

@@ -97,6 +97,15 @@ export default function ShopHome() {
   useEffect(() => {
     if (typeof window === 'undefined') return
     
+    // Intégration Telegram Web App pour Mini App
+    if (window.Telegram && window.Telegram.WebApp) {
+      const tg = window.Telegram.WebApp;
+      tg.ready();
+      tg.expand();
+      tg.enableClosingConfirmation();
+      console.log('✅ Telegram Mini App initialisée');
+    }
+    
       // Configuration initiale
   initializeData()
   
@@ -302,6 +311,7 @@ useEffect(() => {
       <>
         <Head>
           <title>FindYourPlug</title>
+          <script src="https://telegram.org/js/telegram-web-app.js"></script>
         </Head>
         <div style={{ 
           backgroundColor: '#000000', 
@@ -341,6 +351,7 @@ useEffect(() => {
           <title>FindYourPlug</title>
           <meta name="description" content="Découvrez notre sélection de boutiques premium avec livraison et services disponibles." />
           <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+          <script src="https://telegram.org/js/telegram-web-app.js"></script>
         </Head>
 
       <div style={{ 
