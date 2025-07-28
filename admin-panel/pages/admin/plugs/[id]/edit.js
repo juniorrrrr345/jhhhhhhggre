@@ -69,8 +69,9 @@ export default function EditPlug() {
   
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
-  const [originalData, setOriginalData] = useState(null)
+  const [originalData, setOriginalData] = useState({})
   const [selectedCountries, setSelectedCountries] = useState([])
+  const [syncing, setSyncing] = useState(false)
   const router = useRouter()
   const { id } = router.query
 
