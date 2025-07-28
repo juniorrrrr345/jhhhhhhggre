@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/router'
 import Head from 'next/head'
 import Layout from '../../components/Layout'
@@ -20,6 +20,7 @@ export default function ShopSocialMediaManager() {
   })
   const [isLocalMode, setIsLocalMode] = useState(false)
   const router = useRouter()
+  const updateTimeoutRef = useRef(null)
 
   useEffect(() => {
     const token = localStorage.getItem('adminToken')
@@ -28,6 +29,13 @@ export default function ShopSocialMediaManager() {
       return
     }
     fetchSocialMedias()
+    
+    // Cleanup du timeout au démontage
+    return () => {
+      if (updateTimeoutRef.current) {
+        clearTimeout(updateTimeoutRef.current)
+      }
+    }
   }, [])
 
   const fetchSocialMedias = async () => {
@@ -246,12 +254,26 @@ export default function ShopSocialMediaManager() {
     toast.success(`Réseau social shop "${newItem.name}" ajouté`)
   }
 
-  const updateSocialMedia = (id, field, value) => {
-    setSocialMedias(prevSocialMedias => {
-      return prevSocialMedias.map(item => 
-        item.id === id ? { ...item, [field]: value } : item
-      )
-    })
+  const updateSocialMedia = async (id, field, value) => {
+    const updatedSocialMedias = socialMedias.map(item => 
+      item.id === id ? { ...item, [field]: value } : item
+    )
+    setSocialMedias(updatedSocialMedias)
+    
+    // Synchroniser automatiquement après modification (avec debounce)
+    if (updateTimeoutRef.current) {
+      clearTimeout(updateTimeoutRef.current)
+    }
+    updateTimeoutRef.current = setTimeout(async () => {
+      try {
+        const token = localStorage.getItem('adminToken') || 'JuniorAdmon123'
+        const configData = { shopSocialMediaList: updatedSocialMedias }
+        await simpleApi.updateConfig(token, configData)
+        console.log('✅ Modification synchronisée avec l\'accueil boutique')
+      } catch (error) {
+        console.log('⚠️ Erreur synchronisation modification:', error.message)
+      }
+    }, 1500) // Attendre 1.5 seconde après la dernière modification
   }
 
   const deleteSocialMedia = async (id) => {
@@ -264,15 +286,36 @@ export default function ShopSocialMediaManager() {
     if (confirm(`Êtes-vous sûr de vouloir supprimer "${itemToDelete.name}" ?`)) {
       const updatedSocialMedias = socialMedias.filter(item => item.id !== id)
       setSocialMedias(updatedSocialMedias)
-      toast.success(`Réseau social "${itemToDelete.name}" supprimé`)
+      
+      // Synchroniser automatiquement après suppression
+      try {
+        const token = localStorage.getItem('adminToken') || 'JuniorAdmon123'
+        const configData = { shopSocialMediaList: updatedSocialMedias }
+        await simpleApi.updateConfig(token, configData)
+        console.log('✅ Suppression synchronisée avec l\'accueil boutique')
+      } catch (error) {
+        console.log('⚠️ Erreur synchronisation suppression:', error.message)
+      }
+      
+      toast.success(`Réseau social "${itemToDelete.name}" supprimé et synchronisé`)
     }
   }
 
-  const toggleEnabled = (id) => {
+  const toggleEnabled = async (id) => {
     const updatedSocialMedias = socialMedias.map(item => 
       item.id === id ? { ...item, enabled: !item.enabled } : item
     )
     setSocialMedias(updatedSocialMedias)
+    
+    // Synchroniser automatiquement après toggle
+    try {
+      const token = localStorage.getItem('adminToken') || 'JuniorAdmon123'
+      const configData = { shopSocialMediaList: updatedSocialMedias }
+      await simpleApi.updateConfig(token, configData)
+      console.log('✅ Toggle synchronisé avec l\'accueil boutique')
+    } catch (error) {
+      console.log('⚠️ Erreur synchronisation toggle:', error.message)
+    }
   }
 
   if (loading) {
