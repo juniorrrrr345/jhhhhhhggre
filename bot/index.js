@@ -395,17 +395,59 @@ bot.action(/^lang_(.+)$/, async (ctx) => {
       }
     }
 
-    // Confirmation et aller directement au menu principal avec la nouvelle langue
+    // Confirmation et afficher un message intermédiaire avec bouton actualiser
     const translations = require('./src/utils/translations');
     const languageName = translations.translations.languages[newLanguage]?.name || newLanguage;
     await ctx.answerCbQuery(`✅ ${languageName} sélectionnée !`);
     
-    // Aller directement au menu principal dans la nouvelle langue
-    await showMainMenuInLanguage(ctx, config, newLanguage);
+    // Afficher message avec bouton actualiser
+    const refreshMessage = `✅ Langue sélectionnée : **${languageName}**\n\n🔄 Cliquez sur "Actualiser" pour voir les dernières mises à jour et accéder au menu principal.`;
+    
+    const refreshKeyboard = Markup.inlineKeyboard([
+      [Markup.button.callback('🔄 Actualiser', 'refresh_and_main')]
+    ]);
+    
+    try {
+      await ctx.editMessageText(refreshMessage, {
+        reply_markup: refreshKeyboard.reply_markup,
+        parse_mode: 'Markdown'
+      });
+    } catch (editError) {
+      await ctx.reply(refreshMessage, {
+        reply_markup: refreshKeyboard.reply_markup,
+        parse_mode: 'Markdown'
+      });
+    }
     
   } catch (error) {
     console.error('❌ Erreur changement langue:', error);
     await ctx.answerCbQuery('❌ Erreur lors du changement de langue').catch(() => {});
+  }
+});
+
+// Gestionnaire pour le bouton "Actualiser" après sélection de langue
+bot.action('refresh_and_main', async (ctx) => {
+  try {
+    await ctx.answerCbQuery('🔄 Actualisation en cours...');
+    
+    // Récupérer la config fraîche pour les dernières mises à jour
+    const config = await Config.findById('main');
+    
+    // Invalider les caches pour forcer le rechargement
+    configCache = null;
+    plugsCache = null;
+    if (typeof clearAllCaches === 'function') {
+      clearAllCaches();
+    }
+    
+    console.log('🔄 Actualisation effectuée, affichage du menu principal');
+    
+    // Afficher le menu principal avec les dernières données
+    await showMainMenuInLanguage(ctx, config, config?.languages?.currentLanguage || 'fr');
+    
+  } catch (error) {
+    console.error('❌ Erreur lors de l\'actualisation:', error);
+    await ctx.answerCbQuery('❌ Erreur lors de l\'actualisation').catch(() => {});
   }
 });
 
