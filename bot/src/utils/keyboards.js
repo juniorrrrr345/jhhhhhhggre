@@ -303,31 +303,14 @@ const createPlugKeyboard = (plug, returnContext = 'top_plugs', userId = null, cu
   let backButtonText;
   let backAction;
   
-  if (returnContext === 'top_plugs') {
-    backButtonText = getTranslation('back_to_filters', currentLang, customTranslations);
-    backAction = 'top_plugs'; // Retour vers la liste des boutiques
-  } else if (returnContext === 'referral') {
+  // Pour tous les contextes de boutiques, retourner vers la liste des boutiques disponibles
+  if (returnContext === 'referral') {
     backButtonText = getTranslation('back_to_menu', currentLang, customTranslations);
     backAction = 'back_main';
-  } else if (returnContext === 'plugs_vip') {
-    backButtonText = getTranslation('back_to_filters', currentLang, customTranslations);
-    backAction = 'plugs_vip'; // Retour vers les boutiques VIP
-  } else if (returnContext === 'plugs_all') {
-    backButtonText = getTranslation('back_to_filters', currentLang, customTranslations);
-    backAction = 'plugs_all'; // Retour vers toutes les boutiques
-  } else if (returnContext.startsWith('service_')) {
-    backButtonText = getTranslation('back_to_filters', currentLang, customTranslations);
-    backAction = `return_${returnContext}`; // return_service_delivery, etc.
-  } else if (returnContext.startsWith('country_')) {
-    backButtonText = getTranslation('back_to_filters', currentLang, customTranslations);
-    backAction = `return_${returnContext}`; // return_country_france, etc.
-  } else if (returnContext.startsWith('postal_')) {
-    backButtonText = getTranslation('back_to_filters', currentLang, customTranslations);
-    backAction = returnContext; // Retour vers les codes postaux
   } else {
-    // Par défaut, retourner vers la liste principale des boutiques
+    // Dans tous les autres cas, retourner vers les boutiques disponibles
     backButtonText = getTranslation('back_to_filters', currentLang, customTranslations);
-    backAction = 'top_plugs';
+    backAction = 'top_plugs'; // Toujours retourner vers les boutiques disponibles
   }
   
   buttons.push([Markup.button.callback(`🔙 ${backButtonText}`, backAction)]);
