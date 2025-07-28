@@ -2576,23 +2576,27 @@ app.post('/api/plugs', limits.admin, authenticateAdmin, async (req, res) => {
       image: plugData.image || '',
       telegramLink: plugData.telegramLink || '',
       isVip: plugData.isVip || false,
+      vipOrder: plugData.vipOrder || 0,
       isActive: plugData.isActive !== undefined ? plugData.isActive : true,
       countries: plugData.countries || [],
       services: {
         delivery: {
           enabled: plugData.services?.delivery?.enabled || false,
-          description: plugData.services?.delivery?.description || ''
+          description: plugData.services?.delivery?.description || '',
+          departments: plugData.services?.delivery?.departments || []
         },
         postal: {
           enabled: plugData.services?.postal?.enabled || false,
-          description: plugData.services?.postal?.description || ''
+          description: plugData.services?.postal?.description || '',
+          countries: plugData.services?.postal?.countries || []
         },
         meetup: {
           enabled: plugData.services?.meetup?.enabled || false,
-          description: plugData.services?.meetup?.description || ''
+          description: plugData.services?.meetup?.description || '',
+          departments: plugData.services?.meetup?.departments || []
         }
       },
-      socialMedia: plugData.socialMedia || [],
+      socialMedia: (plugData.socialMedia || []).filter(sm => sm.name && sm.emoji && sm.url),
       likes: 0,
       likedBy: []
     });

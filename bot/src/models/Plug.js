@@ -55,7 +55,11 @@ const plugSchema = new mongoose.Schema({
       description: {
         type: String,
         default: ''
-      }
+      },
+      countries: [{
+        type: String,
+        trim: true
+      }]
     },
     meetup: {
       enabled: {
