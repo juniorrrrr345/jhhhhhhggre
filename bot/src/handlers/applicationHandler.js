@@ -9,6 +9,43 @@ const userForms = new Map();
 // Stockage des derniers messages du bot (pour les supprimer avant nouvelle question)
 const lastBotMessages = new Map();
 
+// Fonction pour obtenir un exemple de code postal selon le pays
+function getPostalCodeExample(countryName) {
+  const examples = {
+    'France': '75001, 69002, 13001',
+    'Belgique': '1000, 2000, 3000',
+    'Suisse': '1200, 8000, 3000',
+    'Luxembourg': '1234, 2345, 3456',
+    'Espagne': '28001, 08001, 41001',
+    'Italie': '00100, 20100, 80100',
+    'Allemagne': '10115, 80331, 20095',
+    'Pays-Bas': '1011, 3011, 5611',
+    'Portugal': '1000-001, 4000-001',
+    'Royaume-Uni': 'SW1A 1AA, E1 6AN',
+    'Irlande': 'D01, D02, T12',
+    'Autriche': '1010, 5020, 6020',
+    'Pologne': '00-001, 30-001, 50-001',
+    'République tchèque': '110 00, 602 00',
+    'Hongrie': '1011, 2011, 3011',
+    'Roumanie': '010011, 300011',
+    'Bulgarie': '1000, 4000, 9000',
+    'Grèce': '104 31, 546 21',
+    'Croatie': '10000, 21000, 51000',
+    'Slovénie': '1000, 2000, 3000',
+    'Slovaquie': '811 01, 040 01',
+    'Danemark': '1050, 8000, 9000',
+    'Suède': '111 21, 411 01',
+    'Norvège': '0150, 5003, 7011',
+    'Finlande': '00100, 33100, 90100',
+    'Estonie': '10111, 50090, 80011',
+    'Lettonie': 'LV-1001, LV-3001',
+    'Lituanie': 'LT-01001, LT-44001'
+  };
+  
+  // Retourner l'exemple du pays ou un exemple générique
+  return examples[countryName] || '10001, 20001, 30001';
+}
+
 // Liste des pays disponibles avec emojis - TOUS LES PAYS D'EUROPE + PAYS SPÉCIAUX
 const COUNTRIES = [
   // PAYS D'EUROPE (ordre alphabétique)
@@ -3045,16 +3082,15 @@ const askMeetupPostalForCountry = async (ctx, countryIndex) => {
   const currentLang = config?.languages?.currentLanguage || 'fr';
   const customTranslations = config?.languages?.translations;
   
-  const message = `🛠️ FORMULAIRE D'INSCRIPTION – FindYourPlug\n\n` +
+  const postalExample = getPostalCodeExample(currentCountry);
+  
+  const message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
     `⸻\n\n` +
-    `🤝 Service "Meet Up" - Codes postaux\n\n` +
-    `📍 Pays actuel : ${currentCountry}\n` +
-    `📊 Progression : ${countryIndex + 1}/${countries.length}\n\n` +
-    `Entrez le code postal pour ${currentCountry} :\n\n` +
-    `💡 Vous pouvez entrer plusieurs codes postaux :\n` +
-    `• Un seul : 75001\n` +
-    `• Plusieurs : 75001, 75002, 75003\n` +
-    `• Départements : 75, 69, 13`;
+    `${getTranslation('registration.meetupPostalTitle', currentLang, customTranslations)}\n\n` +
+    `${getTranslation('registration.currentCountry', currentLang, customTranslations)} : ${currentCountry}\n` +
+    `${getTranslation('registration.progression', currentLang, customTranslations)} : ${countryIndex + 1}/${countries.length}\n\n` +
+    `${getTranslation('registration.enterPostalCode', currentLang, customTranslations)} ${currentCountry} :\n\n` +
+    `${getTranslation('registration.postalCodeExample', currentLang, customTranslations)} : ${postalExample}`;
   
   userForm.step = 'waiting_meetup_postal';
   userForm.data.currentCountryIndex = countryIndex;
@@ -3063,8 +3099,8 @@ const askMeetupPostalForCountry = async (ctx, countryIndex) => {
   const keyboard = Markup.inlineKeyboard([
     // Si c'est le premier pays, retour aux services, sinon retour au pays précédent
     countryIndex === 0 ? 
-      [Markup.button.callback('🔙 Retour aux services', 'go_back_service_selection')] :
-      [Markup.button.callback('🔙 Pays précédent', `go_back_meetup_postal_${countryIndex - 1}`)],
+      [Markup.button.callback(getTranslation('registration.backToServices', currentLang, customTranslations), 'go_back_service_selection')] :
+      [Markup.button.callback(getTranslation('registration.backToPreviousCountry', currentLang, customTranslations), `go_back_meetup_postal_${countryIndex - 1}`)],
     [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
   ]);
   
@@ -3098,16 +3134,15 @@ const askDeliveryPostalForCountry = async (ctx, countryIndex) => {
   const currentLang = config?.languages?.currentLanguage || 'fr';
   const customTranslations = config?.languages?.translations;
   
-  const message = `🛠️ FORMULAIRE D'INSCRIPTION – FindYourPlug\n\n` +
+  const postalExample = getPostalCodeExample(currentCountry);
+  
+  const message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
     `⸻\n\n` +
-    `🚚 Service "Livraison" - Codes postaux\n\n` +
-    `📍 Pays actuel : ${currentCountry}\n` +
-    `📊 Progression : ${countryIndex + 1}/${countries.length}\n\n` +
-    `Entrez le code postal pour ${currentCountry} :\n\n` +
-    `💡 Vous pouvez entrer plusieurs codes postaux :\n` +
-    `• Un seul : 75001\n` +
-    `• Plusieurs : 75001, 75002, 75003\n` +
-    `• Départements : 75, 69, 13`;
+    `${getTranslation('registration.deliveryPostalTitle', currentLang, customTranslations)}\n\n` +
+    `${getTranslation('registration.currentCountry', currentLang, customTranslations)} : ${currentCountry}\n` +
+    `${getTranslation('registration.progression', currentLang, customTranslations)} : ${countryIndex + 1}/${countries.length}\n\n` +
+    `${getTranslation('registration.enterPostalCode', currentLang, customTranslations)} ${currentCountry} :\n\n` +
+    `${getTranslation('registration.postalCodeExample', currentLang, customTranslations)} : ${postalExample}`;
   
   userForm.step = 'waiting_delivery_postal';
   userForm.data.currentCountryIndex = countryIndex;
@@ -3116,8 +3151,8 @@ const askDeliveryPostalForCountry = async (ctx, countryIndex) => {
   const keyboard = Markup.inlineKeyboard([
     // Si c'est le premier pays, retour aux services, sinon retour au pays précédent
     countryIndex === 0 ? 
-      [Markup.button.callback('🔙 Retour aux services', 'go_back_service_selection')] :
-      [Markup.button.callback('🔙 Pays précédent', `go_back_delivery_postal_${countryIndex - 1}`)],
+      [Markup.button.callback(getTranslation('registration.backToServices', currentLang, customTranslations), 'go_back_service_selection')] :
+      [Markup.button.callback(getTranslation('registration.backToPreviousCountry', currentLang, customTranslations), `go_back_delivery_postal_${countryIndex - 1}`)],
     [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
   ]);
   

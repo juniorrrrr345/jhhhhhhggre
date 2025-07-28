@@ -725,6 +725,27 @@ const translations = {
       es: '💡 Puede ingresar varios códigos postales',
       de: '💡 Sie können mehrere Postleitzahlen eingeben'
     },
+    'registration.deliveryPostalTitle': {
+      fr: '🚚 Service "Livraison" - Codes postaux',
+      en: '🚚 "Delivery" Service - Postal codes',
+      it: '🚚 Servizio "Consegna" - Codici postali',
+      es: '🚚 Servicio "Entrega" - Códigos postales',
+      de: '🚚 "Lieferung" Service - Postleitzahlen'
+    },
+    'registration.backToServices': {
+      fr: '🔙 Retour aux services',
+      en: '🔙 Back to services',
+      it: '🔙 Torna ai servizi',
+      es: '🔙 Volver a los servicios',
+      de: '🔙 Zurück zu den Diensten'
+    },
+    'registration.backToPreviousCountry': {
+      fr: '🔙 Retour au pays précédent',
+      en: '🔙 Back to previous country',
+      it: '🔙 Torna al paese precedente',
+      es: '🔙 Volver al país anterior',
+      de: '🔙 Zurück zum vorherigen Land'
+    },
     'registration.step13': {
       fr: '🟦 Étape 13 : Ville',
       en: '🟦 Step 13: City',
