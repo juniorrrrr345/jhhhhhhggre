@@ -192,7 +192,7 @@ const defaultConfig = {
   },
   buttons: {
     topPlugs: {
-      text: "🔌 Top Des Plugs",
+              text: "VOTER POUR VOTRE PLUG 🗳️",
       enabled: true
     },
     contact: {
@@ -230,8 +230,8 @@ const defaultConfig = {
   botTexts: {
     vipTitle: "👑 Boutiques VIP Premium",
     vipDescription: "✨ Découvrez nos boutiques sélectionnées",
-    topPlugsTitle: "🔌 Top Des Plugs", 
-    topPlugsDescription: "Choisissez une option pour découvrir nos plugs :",
+          topPlugsTitle: "VOTER POUR VOTRE PLUG 🗳️",
+      topPlugsDescription: "Choisissez une option pour découvrir nos plugs :",
     allPlugsTitle: "Tous Nos Plugs Certifié 🔌",
           totalCountFormat: "( Tous nos plugs certifiés )",
     paginationFormat: "",

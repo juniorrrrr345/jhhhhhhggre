@@ -32,7 +32,7 @@ async function fixDatabase() {
         },
         buttons: {
           topPlugs: {
-            text: '🔌 Top Des Plugs',
+            text: 'VOTER POUR VOTRE PLUG 🗳️',
             enabled: true
           },
           contact: {

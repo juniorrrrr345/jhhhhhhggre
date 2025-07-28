@@ -13,10 +13,10 @@ const translations = {
     // === MENU PRINCIPAL ===
     'menu_topPlugs': {
       fr: 'VOTER POUR VOTRE PLUG 🗳️',
-      en: 'VOTE FOR YOUR PLUG 🗳️',
-      it: 'VOTA PER IL TUO PLUG 🗳️',
-      es: 'VOTA POR TU PLUG 🗳️',
-      de: 'STIMME FÜR DEINEN PLUG 🗳️'
+      en: 'VOTER POUR VOTRE PLUG 🗳️',
+      it: 'VOTER POUR VOTRE PLUG 🗳️',
+      es: 'VOTER POUR VOTRE PLUG 🗳️',
+      de: 'VOTER POUR VOTRE PLUG 🗳️'
     },
     'menu_contact': {
       fr: '📞 Contact',
