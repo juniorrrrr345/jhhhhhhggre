@@ -32,7 +32,7 @@ export default function ShopHome() {
     if (lowercaseName.includes('youtube')) return 'https://i.imgur.com/youtube.png'
     if (lowercaseName.includes('snapchat')) return 'https://i.imgur.com/snapchat.png'
     if (lowercaseName.includes('linkedin')) return 'https://i.imgur.com/linkedin.png'
-    if (lowercaseName.includes('potato')) return 'https://i.imgur.com/nLVf0Hk.jpeg'
+    if (lowercaseName.includes('potato')) return 'https://i.imgur.com/1iCRHRB.jpeg'
     if (lowercaseName.includes('luffa')) return 'https://i.imgur.com/PtqXOhb.png'
     if (lowercaseName.includes('find your plug') || lowercaseName.includes('findyourplug')) return 'https://i.imgur.com/VwBPgtw.jpeg'
           return 'https://i.imgur.com/54wA9SM.png' // Fallback vers Telegram
