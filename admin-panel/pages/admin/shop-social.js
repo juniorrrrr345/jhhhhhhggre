@@ -48,12 +48,9 @@ export default function ShopSocialMediaManager() {
       const token = localStorage.getItem('adminToken') || 'JuniorAdmon123'
       const config = await simpleApi.getConfig(token)
       
-      console.log('🔍 Config reçue:', config)
-      console.log('🔍 shopSocialMediaList:', config?.shopSocialMediaList)
-      
       if (config && config.shopSocialMediaList && config.shopSocialMediaList.length > 0) {
         setSocialMedias(config.shopSocialMediaList)
-        console.log('✅ Réseaux sociaux shop chargés depuis le serveur:', config.shopSocialMediaList)
+        console.log('✅ Réseaux sociaux shop chargés depuis le serveur')
       } else {
         // Initialiser avec VOS réseaux de boutique avec logos
         const defaultShopSocialMedias = [
@@ -257,123 +254,32 @@ export default function ShopSocialMediaManager() {
     toast.success(`Réseau social shop "${newItem.name}" ajouté`)
   }
 
-  const updateSocialMedia = async (id, field, value) => {
+  const updateSocialMedia = (id, field, value) => {
     const updatedSocialMedias = socialMedias.map(item => 
       item.id === id ? { ...item, [field]: value } : item
     )
     setSocialMedias(updatedSocialMedias)
-    
-    // Synchroniser automatiquement après modification (avec debounce)
-    if (updateTimeoutRef.current) {
-      clearTimeout(updateTimeoutRef.current)
-    }
-    updateTimeoutRef.current = setTimeout(async () => {
-      if (isLocalMode) {
-        const localApi = getLocalApi()
-        if (localApi) {
-          await localApi.updateShopSocialMedia(updatedSocialMedias)
-          console.log('💾 Modification sauvegardée localement')
-        }
-      } else {
-        try {
-          const token = localStorage.getItem('adminToken') || 'JuniorAdmon123'
-          const configData = { shopSocialMediaList: updatedSocialMedias }
-          await simpleApi.updateConfig(token, configData)
-          console.log('✅ Modification synchronisée avec l\'accueil boutique')
-        } catch (error) {
-          console.log('⚠️ Erreur synchronisation modification:', error.message)
-          // Fallback en mode local
-          setIsLocalMode(true)
-          const localApi = getLocalApi()
-          if (localApi) {
-            await localApi.updateShopSocialMedia(updatedSocialMedias)
-            console.log('💾 Modification sauvegardée en mode local (fallback)')
-          }
-        }
-      }
-    }, 1500) // Attendre 1.5 seconde après la dernière modification
   }
 
-  const deleteSocialMedia = async (id) => {
-    alert(`Test suppression: ${id}`) // TEST TEMPORAIRE
-    console.log('🗑️ Tentative de suppression:', id)
-    console.log('📝 socialMedias actuels:', socialMedias)
-    
+  const deleteSocialMedia = (id) => {
     const itemToDelete = socialMedias.find(item => item.id === id)
     if (!itemToDelete) {
-      console.log('❌ Élément non trouvé pour ID:', id)
       toast.error('Réseau social non trouvé')
       return
     }
 
-    console.log('📋 Élément à supprimer:', itemToDelete)
     if (confirm(`Êtes-vous sûr de vouloir supprimer "${itemToDelete.name}" ?`)) {
       const updatedSocialMedias = socialMedias.filter(item => item.id !== id)
-      console.log('📝 Nouveaux socialMedias après suppression:', updatedSocialMedias)
       setSocialMedias(updatedSocialMedias)
-      
-      // Synchroniser automatiquement après suppression
-      console.log('🔄 Début synchronisation suppression, isLocalMode:', isLocalMode)
-      if (isLocalMode) {
-        // Mode local : sauvegarde directe
-        const localApi = getLocalApi()
-        if (localApi) {
-          await localApi.updateShopSocialMedia(updatedSocialMedias)
-          console.log('💾 Suppression sauvegardée localement')
-        }
-      } else {
-        // Mode serveur : essayer de sauvegarder sur le serveur
-        try {
-          const token = localStorage.getItem('adminToken') || 'JuniorAdmon123'
-          const configData = { shopSocialMediaList: updatedSocialMedias }
-          await simpleApi.updateConfig(token, configData)
-          console.log('✅ Suppression synchronisée avec l\'accueil boutique')
-        } catch (serverError) {
-          console.log('Erreur suppression serveur:', serverError.message)
-          // Fallback en mode local si erreur serveur
-          setIsLocalMode(true)
-          const localApi = getLocalApi()
-          if (localApi) {
-            await localApi.updateShopSocialMedia(updatedSocialMedias)
-            console.log('💾 Suppression sauvegardée en mode local (fallback)')
-          }
-        }
-      }
-      
-      toast.success(`Réseau social "${itemToDelete.name}" supprimé et synchronisé`)
+      toast.success(`Réseau social "${itemToDelete.name}" supprimé`)
     }
   }
 
-  const toggleEnabled = async (id) => {
+  const toggleEnabled = (id) => {
     const updatedSocialMedias = socialMedias.map(item => 
       item.id === id ? { ...item, enabled: !item.enabled } : item
     )
     setSocialMedias(updatedSocialMedias)
-    
-    // Synchroniser automatiquement après toggle
-    if (isLocalMode) {
-      const localApi = getLocalApi()
-      if (localApi) {
-        await localApi.updateShopSocialMedia(updatedSocialMedias)
-        console.log('💾 Toggle sauvegardé localement')
-      }
-    } else {
-      try {
-        const token = localStorage.getItem('adminToken') || 'JuniorAdmon123'
-        const configData = { shopSocialMediaList: updatedSocialMedias }
-        await simpleApi.updateConfig(token, configData)
-        console.log('✅ Toggle synchronisé avec l\'accueil boutique')
-      } catch (error) {
-        console.log('⚠️ Erreur synchronisation toggle:', error.message)
-        // Fallback en mode local
-        setIsLocalMode(true)
-        const localApi = getLocalApi()
-        if (localApi) {
-          await localApi.updateShopSocialMedia(updatedSocialMedias)
-          console.log('💾 Toggle sauvegardé en mode local (fallback)')
-        }
-      }
-    }
   }
 
   if (loading) {

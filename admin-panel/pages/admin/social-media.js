@@ -227,7 +227,6 @@ export default function SocialMediaManager() {
   }
 
   const updateSocialMedia = (id, field, value) => {
-    alert(`Test modif: ${field} = ${value}`) // TEST TEMPORAIRE
     console.log('🔄 Mise à jour réseau social:', { id, field, value })
     if (!id) {
       console.error('❌ ID manquant pour la mise à jour')
