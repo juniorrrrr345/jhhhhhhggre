@@ -124,7 +124,7 @@ const createMainKeyboard = (config) => {
   
   // Deuxième ligne : Bouton Voter pour votre plug avec traduction
   const topPlugsText = config?.buttons?.topPlugs?.text || getTranslation('menu_topPlugs', currentLang, customTranslations);
-  buttons.push([Markup.button.callback('VOTER POUR VOTRE PLUG 🔌', 'top_plugs')]);
+  buttons.push([Markup.button.callback('VOTER POUR VOTRE PLUG 🗳️', 'top_plugs')]);
   
   // Troisième ligne : Boutons Contact et Info sur la même ligne avec traductions
   const secondRow = [];
