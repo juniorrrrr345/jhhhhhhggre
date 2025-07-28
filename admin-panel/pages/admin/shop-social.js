@@ -10,7 +10,7 @@ export default function ShopSocialMediaManager() {
   const [socialMedias, setSocialMedias] = useState([])
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
-  const [editingId, setEditingId] = useState(null)
+
   const [newSocialMedia, setNewSocialMedia] = useState({
     name: '',
     emoji: '',
@@ -359,16 +359,13 @@ export default function ShopSocialMediaManager() {
                             }}
                           />
                           <div className="flex-1">
-                            {editingId === social.id ? (
-                              <input
-                                type="text"
-                                value={social.name}
-                                onChange={(e) => updateSocialMedia(social.id, 'name', e.target.value)}
-                                className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                              />
-                            ) : (
-                              <h4 className="font-medium text-gray-900">{social.name}</h4>
-                            )}
+                            <input
+                              type="text"
+                              value={social.name}
+                              onChange={(e) => updateSocialMedia(social.id, 'name', e.target.value)}
+                              className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm font-medium"
+                              placeholder="Nom du réseau"
+                            />
                           </div>
                         </div>
                         
@@ -384,12 +381,7 @@ export default function ShopSocialMediaManager() {
                             {social.enabled ? 'Activé' : 'Désactivé'}
                           </button>
                           
-                          <button
-                            onClick={() => setEditingId(editingId === social.id ? null : social.id)}
-                            className="text-blue-600 hover:text-blue-800 text-sm"
-                          >
-                            {editingId === social.id ? '✅' : '✏️'}
-                          </button>
+
                           
                           <button
                             onClick={(e) => {
@@ -407,47 +399,36 @@ export default function ShopSocialMediaManager() {
                       <div className="space-y-2">
                         <div>
                           <label className="block text-xs font-medium text-gray-700">Emoji</label>
-                          {editingId === social.id ? (
-                            <input
-                              type="text"
-                              value={social.emoji}
-                              onChange={(e) => updateSocialMedia(social.id, 'emoji', e.target.value)}
-                              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                              placeholder="🔗"
-                            />
-                          ) : (
-                            <p className="text-sm text-gray-600">{social.emoji}</p>
-                          )}
+                          <input
+                            type="text"
+                            value={social.emoji}
+                            onChange={(e) => updateSocialMedia(social.id, 'emoji', e.target.value)}
+                            className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                            placeholder="🔗"
+                            maxLength="4"
+                          />
                         </div>
 
                         <div>
                           <label className="block text-xs font-medium text-gray-700">Logo (URL)</label>
-                          {editingId === social.id ? (
-                            <input
-                              type="url"
-                              value={social.logo || ''}
-                              onChange={(e) => updateSocialMedia(social.id, 'logo', e.target.value)}
-                              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                              placeholder="https://i.imgur.com/example.png"
-                            />
-                          ) : (
-                            <p className="text-sm text-gray-600 truncate">{social.logo || 'Aucun logo'}</p>
-                          )}
+                          <input
+                            type="url"
+                            value={social.logo || ''}
+                            onChange={(e) => updateSocialMedia(social.id, 'logo', e.target.value)}
+                            className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                            placeholder="https://i.imgur.com/example.png"
+                          />
                         </div>
                         
                         <div>
                           <label className="block text-xs font-medium text-gray-700">URL/Lien</label>
-                          {editingId === social.id ? (
-                            <input
-                              type="url"
-                              value={social.url}
-                              onChange={(e) => updateSocialMedia(social.id, 'url', e.target.value)}
-                              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                              placeholder="https://exemple.com"
-                            />
-                          ) : (
-                            <p className="text-sm text-gray-600 truncate">{social.url || 'Aucun lien'}</p>
-                          )}
+                          <input
+                            type="url"
+                            value={social.url}
+                            onChange={(e) => updateSocialMedia(social.id, 'url', e.target.value)}
+                            className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                            placeholder="https://exemple.com"
+                          />
                         </div>
                       </div>
                     </div>
