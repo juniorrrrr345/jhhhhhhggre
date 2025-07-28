@@ -74,7 +74,40 @@ const editMessageWithImage = async (ctx, message, keyboard, config, options = {}
   } catch (error) {
     console.error('❌ Erreur modification message avec image:', error);
     
-    // Fallback : essayer d'éditer le texte seulement (sans créer nouveau message)
+    // Si c'est pour les détails d'un plug (isPlugDetails), envoyer un nouveau message
+    if (options.isPlugDetails) {
+      try {
+        console.log('🔄 Fallback pour détails plug: envoi nouveau message');
+        
+        // Supprimer l'ancien message si possible
+        try {
+          await ctx.deleteMessage();
+        } catch (deleteError) {
+          console.log('⚠️ Impossible de supprimer l\'ancien message');
+        }
+        
+        // Envoyer un nouveau message avec l'image du plug si disponible
+        if (options.plugImage) {
+          await ctx.replyWithPhoto(options.plugImage, {
+            caption: message,
+            reply_markup: keyboard.reply_markup,
+            parse_mode: options.parse_mode || 'Markdown'
+          });
+        } else {
+          await ctx.reply(message, {
+            reply_markup: keyboard.reply_markup,
+            parse_mode: options.parse_mode || 'Markdown',
+            disable_web_page_preview: true
+          });
+        }
+        console.log('✅ Nouveau message détails plug envoyé');
+        return;
+      } catch (newMessageError) {
+        console.error('❌ Erreur envoi nouveau message détails:', newMessageError);
+      }
+    }
+    
+    // Fallback standard : essayer d'éditer le texte seulement
     try {
       console.log('🔄 Fallback: tentative édition texte seulement');
       await ctx.editMessageText(message, {
@@ -84,7 +117,6 @@ const editMessageWithImage = async (ctx, message, keyboard, config, options = {}
       });
     } catch (fallbackError) {
       console.error('❌ Fallback échoué aussi:', fallbackError.message);
-      // Ne pas créer de nouveau message, juste logger l'erreur
       console.log('⚠️ Impossible de modifier le message, aucune action prise pour éviter le spam');
     }
   }
