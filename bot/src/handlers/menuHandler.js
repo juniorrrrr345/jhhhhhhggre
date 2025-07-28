@@ -27,12 +27,13 @@ const handleContact = async (ctx) => {
     // Affichage contact avec texte configurable (comme Info)
     const contactTitle = getTranslation('menu_contact', currentLang, customTranslations);
     
-    // PRIORITÉ : Texte du panel admin, sinon traductions par défaut
+    // PRIORITÉ : Texte du panel admin SEULEMENT en français, sinon traductions par défaut
     const panelContactText = config?.buttons?.contact?.content;
     const defaultContactText = getTranslation('contact_default_text', currentLang, customTranslations) || 'Contactez-nous pour plus d\'informations !';
     
-    // Utiliser le texte du panel admin si disponible, sinon les traductions
-    const finalContactText = panelContactText || defaultContactText;
+    // Utiliser le texte du panel admin SEULEMENT si on est en français ET qu'il existe
+    // Pour les autres langues, toujours utiliser les traductions
+    const finalContactText = (currentLang === 'fr' && panelContactText) ? panelContactText : defaultContactText;
     console.log('📞 Contact content ACTUEL utilisé:', finalContactText);
     
     const message = `${contactTitle}\n\n${finalContactText}`;
@@ -127,12 +128,13 @@ const handleInfo = async (ctx) => {
     // Affichage info avec texte configurable depuis l'admin ACTUEL
     const infoTitle = getTranslation('menu_info', currentLang, customTranslations);
     
-    // PRIORITÉ : Texte du panel admin, sinon traductions par défaut
+    // PRIORITÉ : Texte du panel admin SEULEMENT en français, sinon traductions par défaut
     const panelInfoText = config?.buttons?.info?.content;
     const defaultInfoText = getTranslation('info_default_text', currentLang, customTranslations) || 'Découvrez notre plateforme premium.';
     
-    // Utiliser le texte du panel admin si disponible, sinon les traductions
-    const finalInfoText = panelInfoText || defaultInfoText;
+    // Utiliser le texte du panel admin SEULEMENT si on est en français ET qu'il existe
+    // Pour les autres langues, toujours utiliser les traductions
+    const finalInfoText = (currentLang === 'fr' && panelInfoText) ? panelInfoText : defaultInfoText;
     console.log('ℹ️ Info content ACTUEL utilisé:', finalInfoText);
     
     const message = `${infoTitle}\n\n${finalInfoText}`;
