@@ -158,10 +158,11 @@ export const syncManager = new SyncManager()
 if (typeof window !== 'undefined') {
   syncManager.startListening()
   
+  // TEMPORAIREMENT DÉSACTIVÉ pour éviter les erreurs 429
   // Nettoyage automatique toutes les 5 minutes
-  setInterval(() => {
-    syncManager.cleanup()
-  }, 5 * 60 * 1000)
+  // setInterval(() => {
+  //   syncManager.cleanup()
+  // }, 5 * 60 * 1000)
 }
 
 // Hook React pour faciliter l'utilisation
