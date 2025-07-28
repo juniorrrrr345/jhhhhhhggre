@@ -93,7 +93,7 @@ const translations = {
     inscription_why_delivery: 'Services de livraison',
     inscription_why_interface: 'Interface simple et rapide',
     inscription_why_notifications: 'Notifications en temps réel',
-    inscription_why_visibility: 'Ça offre + de visibilité',
+    inscription_why_visibility: 'Ça offre + de visibilité à votre boutique',
     // Traductions pour la page shop - textes de bienvenue
     shop_welcome_title: '👋 Bienvenue sur FindYourPlug',
     shop_welcome_search: '🔍 Utilisez la barre de recherche pour trouver un plug près de chez vous ou en envoi postal',
