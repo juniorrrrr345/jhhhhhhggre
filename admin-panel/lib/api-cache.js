@@ -69,9 +69,10 @@ class ApiCache {
 // Instance globale
 const apiCache = new ApiCache();
 
+// TEMPORAIREMENT DÉSACTIVÉ pour éviter les erreurs 429
 // Nettoyer automatiquement toutes les 5 minutes
-setInterval(() => {
-  apiCache.cleanup();
-}, 300000);
+// setInterval(() => {
+//   apiCache.cleanup();
+// }, 300000);
 
 export default apiCache;

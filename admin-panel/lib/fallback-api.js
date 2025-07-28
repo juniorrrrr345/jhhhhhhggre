@@ -94,7 +94,8 @@ export class FallbackApi {
 // Instance globale
 export const fallbackApi = new FallbackApi();
 
+// TEMPORAIREMENT DÉSACTIVÉ pour éviter les erreurs 429
 // Nettoyer automatiquement toutes les 5 minutes
-setInterval(() => {
-  fallbackApi.cleanup();
-}, 300000);
+// setInterval(() => {
+//   fallbackApi.cleanup();
+// }, 300000);
