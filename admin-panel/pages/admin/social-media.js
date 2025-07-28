@@ -150,7 +150,8 @@ export default function SocialMediaManager() {
             }
           }
           
-                    await simpleApi.updateConfig(token, configData)
+          console.log('💾 Sauvegarde manuelle des réseaux sociaux:', configData)
+          await simpleApi.updateConfig(token, configData)
           
           // Synchroniser avec le bot
           const robustSync = getRobustSync()
@@ -217,6 +218,7 @@ export default function SocialMediaManager() {
     }
     
     const updatedSocialMedias = [...socialMedias, newItem]
+    console.log('📋 Liste complète après ajout:', updatedSocialMedias)
     setSocialMedias(updatedSocialMedias)
     setNewSocialMedia({ name: '', emoji: '', url: '', enabled: true })
     
