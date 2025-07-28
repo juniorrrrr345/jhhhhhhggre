@@ -9,6 +9,7 @@ import ShopCard from '../../components/ShopCard'
 import LanguageSelector, { useTranslation, getCurrentLanguage } from '../../components/LanguageSelector'
 import ShopNavigation from '../../components/ShopNavigation'
 import postalCodeService from '../../lib/postalCodeService'
+import { translateCountry, translateCountries, getCountryFlag } from '../../lib/country-translations'
 
 export default function ShopSearch() {
   const [plugs, setPlugs] = useState([])
