@@ -111,37 +111,52 @@ export default function ShopHome() {
       const lastSessionId = sessionStorage.getItem('miniapp_session_id');
       
       // Si c'est une nouvelle session ou un retour après fermeture
-      if (!lastSessionId || (sessionId - parseInt(lastSessionId)) > 5000) {
-        console.log('🔄 Nouvelle session Mini App détectée - force refresh...');
+      if (!lastSessionId || (sessionId - parseInt(lastSessionId)) > 10000) {
+        console.log('🔄 Nouvelle session Mini App détectée - refresh données...');
         sessionStorage.setItem('miniapp_session_id', sessionId.toString());
         
         // Effacer tous les caches potentiels
         sessionStorage.removeItem('config_cache');
         sessionStorage.removeItem('plugs_cache');
         
-        // Forcer le rechargement
+        // Au lieu d'un reload complet, juste rafraîchir les données
         setTimeout(() => {
-          window.location.reload();
-        }, 500);
-      }
-      
-      // LISTENER pour détection de retour d'arrière-plan
-      const handleVisibilityChange = () => {
-        if (!document.hidden) {
-          console.log('📱 Mini App revenue au premier plan - refresh données...');
           fetchPlugs();
           fetchConfig();
+        }, 1000);
+      }
+      
+      // LISTENER pour détection de retour d'arrière-plan (avec throttling)
+      let lastVisibilityRefresh = 0;
+      const handleVisibilityChange = () => {
+        if (!document.hidden) {
+          const now = Date.now();
+          // Throttling: minimum 10 secondes entre chaque refresh de visibilité
+          if (now - lastVisibilityRefresh > 10000) {
+            console.log('📱 Mini App revenue au premier plan - refresh données...');
+            lastVisibilityRefresh = now;
+            setTimeout(() => {
+              fetchPlugs();
+              fetchConfig();
+            }, 500); // Petit délai pour stabilité
+          }
         }
       };
       
-      // LISTENER pour événements Telegram
+      // LISTENER pour événements Telegram (avec throttling)
+      let lastTelegramRefresh = 0;
       const handleWebAppEvent = (event) => {
-        console.log('📱 Événement Telegram détecté:', event);
-        if (event.type === 'web_app_expand' || event.type === 'viewport_changed') {
-          setTimeout(() => {
-            fetchPlugs();
-            fetchConfig();
-          }, 300);
+        const now = Date.now();
+        // Throttling: minimum 5 secondes entre chaque refresh Telegram
+        if (now - lastTelegramRefresh > 5000) {
+          console.log('📱 Événement Telegram détecté (throttled):', event);
+          lastTelegramRefresh = now;
+          if (event.type === 'web_app_expand' || event.type === 'viewport_changed') {
+            setTimeout(() => {
+              fetchPlugs();
+              fetchConfig();
+            }, 1000); // Délai plus long pour stabilité
+          }
         }
       };
       
@@ -221,35 +236,23 @@ useEffect(() => {
     }
   }, [currentLanguage])
 
-  // AUTO-REFRESH pour mise à jour instantanée des boutiques
+  // AUTO-REFRESH STABLE pour boutiques
   useEffect(() => {
-    // Rafraîchir les boutiques toutes les 15 secondes (plus fréquent)
+    // Refresh modéré toutes les 30 secondes (plus stable)
     const refreshInterval = setInterval(() => {
-      console.log('🔄 Auto-refresh boutiques...');
-      fetchPlugs();
-    }, 15000); // 15 secondes pour réactivité
+      // Seulement si pas de loading en cours pour éviter les conflits
+      if (!loading) {
+        console.log('🔄 Auto-refresh boutiques (stable)...');
+        fetchPlugs();
+      }
+    }, 30000); // 30 secondes - stable
 
-    // REFRESH INTENSIF pendant les 2 premières minutes (pour retours fréquents)
-    const intensiveRefreshInterval = setInterval(() => {
-      console.log('⚡ Refresh intensif (nouveau chargement)...');
-      fetchPlugs();
-      fetchConfig();
-    }, 5000); // 5 secondes
-    
-    // Arrêter le refresh intensif après 2 minutes
-    const intensiveTimeout = setTimeout(() => {
-      clearInterval(intensiveRefreshInterval);
-      console.log('⏱️ Refresh intensif terminé, passage en mode normal');
-    }, 120000); // 2 minutes
-
-    // Nettoyer tous les intervals au démontage
+    // Nettoyer l'interval au démontage
     return () => {
       clearInterval(refreshInterval);
-      clearInterval(intensiveRefreshInterval);
-      clearTimeout(intensiveTimeout);
       console.log('🧹 Auto-refresh nettoyé');
     };
-  }, [])
+  }, [loading]) // Dépendre de loading pour éviter conflits
 
   const handleLanguageChange = (newLanguage) => {
     setCurrentLanguage(newLanguage)
@@ -323,6 +326,12 @@ useEffect(() => {
   }
 
   const fetchPlugs = async () => {
+    // Protection contre les appels multiples simultanés
+    if (loading) {
+      console.log('⏳ Fetch déjà en cours, skip...');
+      return;
+    }
+    
     try {
       console.log('🔍 Chargement boutiques depuis le bot...')
       setLoading(true)
