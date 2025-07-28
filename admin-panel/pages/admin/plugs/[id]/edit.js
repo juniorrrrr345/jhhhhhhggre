@@ -317,125 +317,56 @@ export default function EditPlug() {
         cleanData.services.meetup.departments = cleanData.services.meetup.departments || []
       }
 
-      // NOUVELLE STRATÉGIE: API locale en priorité avec sync forcée
-      let response
-      let success = false
-      let useLocalApi = false
+      // SAUVEGARDE SIMPLE ET DIRECTE
+      console.log('💾 Sauvegarde simple...')
       
       try {
-        // Tentative 1: API principale avec timeout court
-        console.log('🔄 Tentative serveur principal (timeout 4s)...')
-        response = await Promise.race([
-          fetch('/api/cors-proxy', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              endpoint: `plugs/${id}`,
-              method: 'PUT',
-              token: token,
-              data: cleanData
-            })
-          }),
-          new Promise((_, reject) => 
-            setTimeout(() => reject(new Error('Timeout 4s')), 4000)
-          )
-        ])
+        const response = await fetch('/api/cors-proxy', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            endpoint: `plugs/${id}`,
+            method: 'PUT',
+            token: token,
+            data: cleanData
+          })
+        })
 
         if (response.ok) {
-          success = true
-          console.log('✅ Sauvegarde serveur principal réussie')
+          const result = await response.json()
+          console.log('✅ Sauvegarde réussie')
+          
+          clearTimeout(globalTimeout)
+          setSaving(false)
+          
+          safeToast.success('✅ Modifications sauvegardées avec succès !', {
+            duration: 3000,
+            style: {
+              background: '#10B981',
+              color: 'white',
+            }
+          })
+          
+          // Mettre à jour les données originales
+          setOriginalData(formData)
+          
+          // Redirection après succès
+          setTimeout(() => {
+            router.push('/admin/plugs')
+          }, 1500)
+          
         } else {
           throw new Error(`Erreur ${response.status}`)
         }
-      } catch (corsError) {
-        console.log('❌ Serveur principal échoué:', corsError.message)
-        useLocalApi = true
-      }
-      
-      // Tentative 2: API locale (prioritaire maintenant)
-      if (!success || useLocalApi) {
-        try {
-          console.log('🔄 Sauvegarde via API locale...')
-          response = await fetch(`/api/local-plugs?id=${id}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(cleanData)
-          })
-          
-          if (response.ok) {
-            success = true
-            useLocalApi = true
-            console.log('✅ Sauvegarde via API locale réussie')
-          } else {
-            throw new Error('API locale échouée')
-          }
-        } catch (localError) {
-          console.log('❌ API locale échouée:', localError.message)
-        }
-      }
-      
-      if (success) {
-        let result;
-        try {
-          result = await response.json()
-          console.log('✅ Sauvegarde réussie:', result)
-        } catch (jsonError) {
-          console.log('⚠️ Impossible de parser JSON, mais sauvegarde réussie')
-          result = { success: true }
-        }
         
+      } catch (error) {
         clearTimeout(globalTimeout)
         setSaving(false)
         
-        // SYNCHRONISATION IMMÉDIATE MINI APP (forcée)
-        console.log('🚀 Synchronisation forcée mini-app...')
-        await simpleApi.syncImmediateMiniApp('shop_updated')
-        
-        // Message de succès adapté
-        if (useLocalApi) {
-          safeToast.success('✅ Modifications sauvegardées ! 🔄 Mini-app mise à jour', {
-            duration: 4000,
-            style: {
-              background: '#10B981',
-              color: 'white',
-            }
-          })
-        } else {
-          safeToast.success('✅ Plug modifié avec succès ! 🔄 Tout synchronisé', {
-            duration: 4000,
-            style: {
-              background: '#10B981',
-              color: 'white',
-            }
-          })
-        }
-        
-        // Mettre à jour les données originales pour détecter les nouveaux changements
-        setOriginalData(formData)
-        
-        // Redirection après succès
-        setTimeout(() => {
-          router.push('/admin/plugs')
-        }, 2000)
-        
-      } else {
-        let errorText = 'Erreur inconnue';
-        try {
-          errorText = await response.text()
-        } catch (textError) {
-          console.log('⚠️ Impossible de lire le texte d\'erreur')
-        }
-        
-        console.error('❌ Erreur sauvegarde:', response.status, errorText)
-        
-        clearTimeout(globalTimeout)
-        setSaving(false)
-        
-        if (response.status === 404) {
-          safeToast.error('❌ Endpoint non trouvé. Le serveur bot doit être redéployé avec les nouveaux endpoints.')
-        } else {
-          safeToast.error(`❌ Erreur ${response.status}: ${response.statusText || errorText}`)
-        }
+        console.error('❌ Erreur sauvegarde:', error)
+        safeToast.error('❌ Erreur de sauvegarde. Vérifiez votre connexion et réessayez.', {
+          duration: 5000
+        })
       }
       
     } catch (error) {

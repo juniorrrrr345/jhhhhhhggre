@@ -126,52 +126,20 @@ export default function ShopHome() {
       
       document.addEventListener('visibilitychange', handleVisibilityChange);
       
-      // LISTENER pour signaux du panel admin
-      const handleForceRefresh = (event) => {
-        console.log('🚀 Signal panel admin reçu - FORCE refresh boutiques...');
-        console.log('📊 Détails:', event.detail);
+      // SIMPLE : Recharger quand on revient sur la mini-app
+      const handleSimpleRefresh = () => {
+        console.log('🔄 Rechargement simple des boutiques');
         setTimeout(() => {
           fetchPlugs();
-        }, 200);
+        }, 500);
       };
       
-      // LISTENER pour rechargement INTELLIGENT
-      const handleSmartRefresh = (event) => {
-        console.log('🔄 RECHARGEMENT INTELLIGENT reçu:', event.detail);
-        
-        // Vider seulement les caches de données (pas les tokens)
-        try {
-          const itemsToRemove = [
-            'apiCache', 'configCache', 'plugsCache', 
-            'miniapp_last_fetch', 'search_miniapp_last_fetch',
-            'shopSocialMediaBackup'
-          ];
-          
-          itemsToRemove.forEach(key => {
-            localStorage.removeItem(key);
-            sessionStorage.removeItem(key);
-          });
-          
-          console.log('🗑️ Caches de données vidés (tokens préservés)');
-        } catch (e) {
-          console.log('⚠️ Erreur nettoyage cache');
-        }
-        
-        // Forcer un nouveau fetch SANS recharger la page
-        setTimeout(() => {
-          console.log('⚡ FETCH FORCÉ des nouvelles données');
-          fetchPlugs();
-        }, 200);
-      };
-      
-      window.addEventListener('forceRefreshMiniApp', handleForceRefresh);
-      window.addEventListener('FORCE_SMART_REFRESH', handleSmartRefresh);
+      window.addEventListener('focus', handleSimpleRefresh);
       
       // Cleanup
       return () => {
         document.removeEventListener('visibilitychange', handleVisibilityChange);
-        window.removeEventListener('forceRefreshMiniApp', handleForceRefresh);
-        window.removeEventListener('FORCE_SMART_REFRESH', handleSmartRefresh);
+        window.removeEventListener('focus', handleSimpleRefresh);
       };
     }
     
@@ -318,57 +286,21 @@ useEffect(() => {
       console.log('🔍 Chargement boutiques mini app...')
       setLoading(true)
       
-      let data = null
+      // SIMPLE : Directement le serveur principal
+      const response = await fetch('https://jhhhhhhggre.onrender.com/api/public/plugs?limit=50', {
+        method: 'GET',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Cache-Control': 'no-cache'
+        }
+      })
       
-      // STRATÉGIE: API LOCALE EN PRIORITÉ ABSOLUE
-      try {
-        console.log('🔄 Chargement depuis API locale (priorité absolue)...')
-        const localResponse = await fetch('/api/local-plugs', {
-          method: 'GET',
-          headers: { 'Content-Type': 'application/json' },
-          cache: 'no-cache'
-        })
-        
-        if (localResponse.ok) {
-          data = await localResponse.json()
-          console.log('✅ Données API locale récupérées:', data.count, 'boutiques')
-          
-          // Si l'API locale est vide ou a seulement des données de test, essayer le serveur principal
-          if (!data.plugs || data.plugs.length === 0 || (data.plugs.length === 1 && data.plugs[0]._id === 'local_1')) {
-            console.log('⚠️ API locale vide, tentative serveur principal...')
-            throw new Error('API locale vide')
-          }
-        } else {
-          throw new Error('API locale indisponible')
-        }
-      } catch (localError) {
-        console.log('❌ API locale échouée:', localError.message)
-        
-        // Fallback vers serveur principal seulement si API locale échoue
-        try {
-          console.log('🔄 Fallback vers serveur principal...')
-          const response = await Promise.race([
-            fetch('https://jhhhhhhggre.onrender.com/api/public/plugs?limit=50', {
-              method: 'GET',
-              headers: { 'Content-Type': 'application/json' }
-            }),
-            new Promise((_, reject) => 
-              setTimeout(() => reject(new Error('Timeout 5s')), 5000)
-            )
-          ])
-          
-          if (response.ok) {
-            data = await response.json()
-            console.log('✅ Données du serveur principal récupérées')
-          } else {
-            throw new Error(`Serveur principal: ${response.status}`)
-          }
-        } catch (mainError) {
-          console.error('❌ Serveur principal échoué:', mainError.message)
-          throw new Error('Toutes les APIs sont indisponibles')
-        }
+      if (!response.ok) {
+        throw new Error(`Erreur serveur: ${response.status}`)
       }
-      console.log('📊 Données reçues:', data);
+      
+      const data = await response.json()
+      console.log('📊 Données reçues:', data)
       
       if (data && data.plugs && Array.isArray(data.plugs)) {
         console.log('🎯 Boutiques mini app récupérées:', data.plugs.length)
