@@ -4436,6 +4436,67 @@ app.post('/api/force-update-potato-emoji', async (req, res) => {
   }
 });
 
+// API pour forcer la mise à jour des traductions Contact et Info
+app.post('/api/force-update-contact-info-translations', async (req, res) => {
+  try {
+    console.log('📝 MISE À JOUR FORCÉE des traductions Contact et Info');
+    
+    const config = await Config.findById('main');
+    if (!config) {
+      return res.status(404).json({ error: 'Configuration non trouvée' });
+    }
+    
+    // Mettre à jour les textes Contact et Info avec les traductions
+    if (!config.buttons) {
+      config.buttons = {};
+    }
+    
+    // Contact - Texte français mis à jour
+    if (!config.buttons.contact) {
+      config.buttons.contact = {};
+    }
+    config.buttons.contact.text = '📞 Contact';
+    config.buttons.contact.content = 'Contactez-nous pour plus d\'informations.\n\n@findyourplugsav';
+    config.buttons.contact.enabled = true;
+    
+    // Info - Texte français mis à jour  
+    if (!config.buttons.info) {
+      config.buttons.info = {};
+    }
+    config.buttons.info.text = 'ℹ️ Info';
+    config.buttons.info.content = 'Nous listons les plugs du monde entier par Pays / Ville découvrez notre mini-app 🌍🔌\n\nPour toute demande spécifique contacter nous @findyourplugsav 📲';
+    config.buttons.info.enabled = true;
+    
+    await config.save();
+    
+    // Invalider tous les caches
+    configCache = null;
+    plugsCache = null;
+    if (typeof clearAllCaches === 'function') {
+      clearAllCaches();
+    }
+    
+    console.log('✅ Traductions Contact et Info mises à jour');
+    
+    res.json({ 
+      success: true, 
+      message: 'Traductions Contact et Info mises à jour avec succès',
+      contact: {
+        text: config.buttons.contact.text,
+        content: config.buttons.contact.content
+      },
+      info: {
+        text: config.buttons.info.text,
+        content: config.buttons.info.content
+      }
+    });
+    
+  } catch (error) {
+    console.error('❌ Erreur mise à jour traductions Contact/Info:', error);
+    res.status(500).json({ error: 'Erreur serveur' });
+  }
+});
+
 // API pour mettre à jour les liens Telegram depuis le panel admin
 app.post('/api/update-telegram-links', authenticateAdmin, async (req, res) => {
   try {

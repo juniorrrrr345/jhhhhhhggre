@@ -28,8 +28,8 @@ const handleContact = async (ctx) => {
     const contactTitle = getTranslation('menu_contact', currentLang, customTranslations);
     const defaultContactText = getTranslation('contact_default_text', currentLang, customTranslations) || 'Contactez-nous pour plus d\'informations !';
     
-    // Utiliser le texte configuré dans l'admin ACTUEL en priorité, puis fallback sur traductions
-    const finalContactText = config?.buttons?.contact?.content || defaultContactText;
+    // TOUJOURS utiliser les traductions pour supporter toutes les langues
+    const finalContactText = defaultContactText;
     console.log('📞 Contact content ACTUEL utilisé:', finalContactText);
     
     const message = `${contactTitle}\n\n${finalContactText}`;
@@ -125,8 +125,8 @@ const handleInfo = async (ctx) => {
     const infoTitle = getTranslation('menu_info', currentLang, customTranslations);
     const defaultInfoText = getTranslation('info_default_text', currentLang, customTranslations) || 'Découvrez notre plateforme premium.';
     
-    // Utiliser le texte configuré dans l'admin ACTUEL en priorité, puis fallback sur traductions
-    const finalInfoText = config?.buttons?.info?.content || defaultInfoText;
+    // TOUJOURS utiliser les traductions pour supporter toutes les langues
+    const finalInfoText = defaultInfoText;
     console.log('ℹ️ Info content ACTUEL utilisé:', finalInfoText);
     
     const message = `${infoTitle}\n\n${finalInfoText}`;
