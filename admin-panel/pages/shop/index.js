@@ -572,8 +572,8 @@ useEffect(() => {
                 { 
                   id: 'potato',
                   name: localSocialMedia?.find(s => s.id === 'potato')?.name || 'Potato',
-                  logo: 'https://i.imgur.com/nLVf0Hk.jpeg',
-                  url: localSocialMedia?.find(s => s.id === 'potato')?.url || 'https://potato.com'
+                  logo: 'https://i.imgur.com/1iCRHRB.jpeg',
+                  url: localSocialMedia?.find(s => s.id === 'potato')?.url || 'https://dym168.org/findyourplug'
                 }
               ]
             })().map((social, index) => (
