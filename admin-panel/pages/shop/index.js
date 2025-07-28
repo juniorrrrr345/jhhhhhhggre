@@ -557,54 +557,34 @@ export default function ShopHome() {
             gap: '12px',
             flexWrap: 'wrap'
           }}>
-            {/* Réseaux sociaux depuis la configuration shop */}
-            {(config?.shopSocialMediaList?.length > 0 
-              ? config.shopSocialMediaList 
-              : [
-                  { 
-                    name: 'Telegram', 
-                    logo: 'https://i.imgur.com/PP2GVMv.png',
-                    emoji: '📱',
-                    url: 'https://t.me/+zcP68c4M_3NlM2Y0',
-                    enabled: true
-                  },
-                  { 
-                    name: 'Find Your Plug', 
-                    logo: 'https://i.imgur.com/VwBPgtw.jpeg',
-                    emoji: '🌐',
-                    url: 'https://dym168.org/findyourplug',
-                    enabled: true
-                  },
-                  { 
-                    name: 'Instagram', 
-                    logo: 'https://i.imgur.com/YBE4cnb.jpeg',
-                    emoji: '📸',
-                    url: 'https://www.instagram.com/find.yourplug?igsh=ajRwcjE1eGhoaXMz&utm_source=qr',
-                    enabled: true
-                  },
-                  { 
-                    name: 'Luffa', 
-                    logo: 'https://i.imgur.com/zkZtY0m.png',
-                    emoji: '🧽',
-                    url: 'https://callup.luffa.im/c/EnvtiTHkbvP',
-                    enabled: true
-                  },
-                  { 
-                    name: 'Discord', 
-                    logo: 'https://i.imgur.com/JgmWPPZ.png',
-                    emoji: '🎮',
-                    url: 'https://discord.gg/g2dACUC3',
-                    enabled: true
-                  },
-                  { 
-                    name: 'Potato', 
-                    logo: 'https://i.imgur.com/1iCRHRB.jpeg',
-                    emoji: '🥔',
-                    url: 'https://potato.com',
-                    enabled: true
-                  }
-                ]
-            ).filter(social => social && social.enabled !== false).map((social, index) => (
+            {/* Réseaux sociaux fixes pour la boutique */}
+            {[
+              { 
+                name: 'Telegram', 
+                logo: 'https://i.imgur.com/PP2GVMv.png',
+                url: 'https://t.me/+zcP68c4M_3NlM2Y0'
+              },
+              { 
+                name: 'Instagram', 
+                logo: 'https://i.imgur.com/YBE4cnb.jpeg',
+                url: 'https://www.instagram.com/find.yourplug?igsh=ajRwcjE1eGhoaXMz&utm_source=qr'
+              },
+              { 
+                name: 'Luffa', 
+                logo: 'https://i.imgur.com/zkZtY0m.png',
+                url: 'https://callup.luffa.im/c/EnvtiTHkbvP'
+              },
+              { 
+                name: 'Discord', 
+                logo: 'https://i.imgur.com/JgmWPPZ.png',
+                url: 'https://discord.gg/g2dACUC3'
+              },
+              { 
+                name: 'Potato', 
+                logo: 'https://i.imgur.com/1iCRHRB.jpeg',
+                url: 'https://potato.com'
+              }
+            ].map((social, index) => (
               <a
                 key={index}
                 href={social.url}
