@@ -27,6 +27,22 @@ export default function ShopInscription() {
         inscriptionTelegramLink: links.inscriptionTelegramLink || 'https://t.me/findyourplugsav'
       })
     })
+
+    // SYNC TEMPS RÉEL avec panel admin
+    const handleForceRefresh = (event) => {
+      console.log('🚀 Signal panel admin reçu INSCRIPTION - FORCE refresh config...');
+      console.log('📊 Détails:', event.detail);
+      setTimeout(() => {
+        fetchConfig();
+      }, 200);
+    };
+    
+    window.addEventListener('forceRefreshMiniApp', handleForceRefresh);
+    
+    // Cleanup
+    return () => {
+      window.removeEventListener('forceRefreshMiniApp', handleForceRefresh);
+    };
   }, [])
 
   const fetchConfig = async () => {

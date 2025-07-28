@@ -45,6 +45,23 @@ export default function ShopPlugDetail() {
         }
       }
       loadData()
+
+      // SYNC TEMPS RÉEL avec panel admin
+      const handleForceRefresh = (event) => {
+        console.log('🚀 Signal panel admin reçu DÉTAILS BOUTIQUE - FORCE refresh...');
+        console.log('📊 Détails:', event.detail);
+        setTimeout(() => {
+          fetchPlug(id);
+          fetchConfig();
+        }, 200);
+      };
+      
+      window.addEventListener('forceRefreshMiniApp', handleForceRefresh);
+      
+      // Cleanup
+      return () => {
+        window.removeEventListener('forceRefreshMiniApp', handleForceRefresh);
+      };
     }
   }, [router.isReady, id])
 
