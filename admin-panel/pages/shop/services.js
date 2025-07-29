@@ -312,7 +312,7 @@ export default function ShopServices() {
             {/* Bouton de contact */}
             <div style={{ textAlign: 'center' }}>
               <a
-                href={config.servicesTelegramLink}
+                href="https://t.me/findyourplugsav"
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{
@@ -424,7 +424,7 @@ export default function ShopServices() {
             {/* Bouton de contact Site Web */}
             <div style={{ textAlign: 'center' }}>
               <a
-                href={config.servicesTelegramLink}
+                href="https://t.me/findyourplugsav"
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{
