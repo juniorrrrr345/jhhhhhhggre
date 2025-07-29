@@ -72,8 +72,16 @@ const connectDB = async (retryAttempt = 0) => {
           },
           buttons: {
             topPlugs: { text: 'VOTER POUR VOTRE PLUG 🗳️', enabled: true },
-            contact: { text: '📞 Contact', content: 'Contactez-nous pour plus d\'informations.', enabled: true },
-            info: { text: 'ℹ️ Info', content: 'Informations sur notre plateforme.', enabled: true }
+                  contact: { 
+        text: '📞 Contact', 
+        content: 'Contactez-nous pour plus d\'informations.\n@findyourplugsav', 
+        enabled: true 
+      },
+      info: { 
+        text: 'ℹ️ Info', 
+        content: 'Nous listons les plugs du monde entier par Pays / Ville découvrez notre mini-app 🌍🔌\n\nPour toute demande spécifique contacter nous @findyourplugsav 📲', 
+        enabled: true 
+      }
           },
           vip: {
             enabled: true,
