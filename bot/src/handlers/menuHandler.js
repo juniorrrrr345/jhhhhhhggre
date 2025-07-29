@@ -34,8 +34,8 @@ const handleContact = async (ctx) => {
     const finalContactText = getTranslation('contact_default_text', currentLang, customTranslations) || panelContactText || 'Contactez-nous pour plus d\'informations !';
     console.log('📞 Contact content ACTUEL utilisé:', finalContactText);
     
-    // Le message est déjà formaté avec le titre dans la traduction
-    const message = finalContactText;
+    // Ajouter le titre avant le message
+    const message = `${contactTitle}\n\n${finalContactText}`;
 
     // Créer le clavier avec la config ACTUELLE
     const keyboard = await createMainKeyboard(config);
@@ -134,8 +134,8 @@ const handleInfo = async (ctx) => {
     const finalInfoText = getTranslation('info_default_text', currentLang, customTranslations) || panelInfoText || 'Découvrez notre plateforme premium.';
     console.log('ℹ️ Info content ACTUEL utilisé:', finalInfoText);
     
-    // Le message est déjà formaté avec le titre dans la traduction
-    const message = finalInfoText;
+    // Ajouter le titre avant le message
+    const message = `${infoTitle}\n\n${finalInfoText}`;
 
     // Créer le clavier avec la config ACTUELLE
     const keyboard = await createMainKeyboard(config);
