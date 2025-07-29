@@ -4308,6 +4308,22 @@ const start = async () => {
       
       // Initialiser les traductions après le démarrage
       setTimeout(initializeCustomTranslations, 5000);
+      
+      // Forcer la mise à jour des messages Contact/Info après 10 secondes
+      setTimeout(async () => {
+        try {
+          console.log('🔧 Force update automatique des messages Contact/Info...');
+          const response = await fetch(`http://localhost:${PORT}/api/force-contact-info-update`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+          });
+          if (response.ok) {
+            console.log('✅ Messages Contact/Info forcés au démarrage');
+          }
+        } catch (error) {
+          console.log('⚠️ Erreur force update au démarrage:', error.message);
+        }
+      }, 10000);
     });
     
   } catch (error) {
@@ -5814,6 +5830,62 @@ app.post('/api/set-contact-info-translations', async (req, res) => {
     
   } catch (error) {
     console.error('❌ Erreur définition traductions Contact/Info:', error);
+    res.status(500).json({ error: 'Erreur serveur' });
+  }
+});
+
+// API pour forcer la mise à jour des messages Contact et Info
+app.post('/api/force-contact-info-update', async (req, res) => {
+  try {
+    console.log('🔧 FORCE UPDATE des messages Contact et Info...');
+    
+    const config = await Config.findById('main');
+    if (!config) {
+      return res.status(404).json({ error: 'Configuration non trouvée' });
+    }
+    
+    // Messages à forcer
+    const MESSAGES = {
+      contact: 'Contactez-nous pour plus d\'informations.\n@findyourplugsav',
+      info: 'Nous listons les plugs du monde entier par Pays / Ville découvrez notre mini-app 🌍🔌\n\nPour toute demande spécifique contacter nous @findyourplugsav 📲'
+    };
+    
+    // Forcer la mise à jour
+    if (!config.buttons) config.buttons = {};
+    if (!config.buttons.contact) config.buttons.contact = {};
+    if (!config.buttons.info) config.buttons.info = {};
+    
+    config.buttons.contact.content = MESSAGES.contact;
+    config.buttons.info.content = MESSAGES.info;
+    
+    // Supprimer les traductions personnalisées
+    if (config.buttons.contact.contentTranslations) {
+      config.buttons.contact.contentTranslations = new Map();
+    }
+    if (config.buttons.info.contentTranslations) {
+      config.buttons.info.contentTranslations = new Map();
+    }
+    
+    await config.save();
+    
+    // Vider les caches
+    configCache = null;
+    plugsCache = null;
+    if (typeof clearAllCaches === 'function') {
+      clearAllCaches();
+    }
+    
+    console.log('✅ Messages Contact/Info forcés avec succès');
+    
+    res.json({ 
+      success: true, 
+      message: 'Messages Contact et Info mis à jour',
+      contact: MESSAGES.contact,
+      info: MESSAGES.info
+    });
+    
+  } catch (error) {
+    console.error('❌ Erreur force update Contact/Info:', error);
     res.status(500).json({ error: 'Erreur serveur' });
   }
 });
