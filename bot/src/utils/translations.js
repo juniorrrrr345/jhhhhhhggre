@@ -412,11 +412,11 @@ const translations = {
 
     // === FORMULAIRE ÉTAPES DÉTAILLÉES ===
     'registration.step2': {
-      fr: '🟦 Étape 2 : Lien Telegram',
-      en: '🟦 Step 2: Telegram Link',
-      it: '🟦 Fase 2: Link Telegram',
-      es: '🟦 Paso 2: Enlace de Telegram',
-      de: '🟦 Schritt 2: Telegram-Link'
+      fr: '🟦 Étape 2 : CONTACT TELEGRAM',
+      en: '🟦 Step 2: TELEGRAM CONTACT',
+      it: '🟦 Fase 2: CONTATTO TELEGRAM',
+      es: '🟦 Paso 2: CONTACTO TELEGRAM',
+      de: '🟦 Schritt 2: TELEGRAM KONTAKT'
     },
     'registration.step3': {
       fr: '🟦 Étape 3 : Snapchat',
@@ -445,6 +445,13 @@ const translations = {
       it: '🔗 Inserisci il link del tuo canale Telegram (formato: @channel o https://t.me/channel)',
       es: '🔗 Introduce el enlace de tu canal de Telegram (formato: @channel o https://t.me/channel)',
       de: '🔗 Geben Sie den Link zu Ihrem Telegram-Kanal ein (Format: @channel oder https://t.me/channel)'
+    },
+    'channel': {
+      fr: 'Canal',
+      en: 'Channel',
+      it: 'Canale',
+      es: 'Canal',
+      de: 'Kanal'
     },
     'registration.instagramQuestion': {
       fr: '📸 Entrez votre lien Instagram',

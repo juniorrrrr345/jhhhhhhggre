@@ -408,6 +408,31 @@ const handleFormMessage = async (ctx) => {
           }
 
           userForm.data.telegram = text;
+          userForm.step = 'telegram_channel';
+          userForms.set(userId, userForm);
+          
+          // Demander le canal Telegram
+          const channelMessage = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
+            `⸻\n\n` +
+            `🟦 ${getTranslation('registration.step2', currentLang, customTranslations)} - ${getTranslation('channel', currentLang, customTranslations) || 'Canal'}\n\n` +
+            `${getTranslation('registration.telegramChannelQuestion', currentLang, customTranslations)}\n\n` +
+            `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
+          
+          const channelKeyboard = Markup.inlineKeyboard([
+            [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_telegram_channel')],
+            [Markup.button.callback(getTranslation('registration.goBack', currentLang, customTranslations), 'go_back_telegram')],
+            [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
+          ]);
+          
+          await editLastFormMessage(ctx, userId, channelMessage, channelKeyboard);
+          break;
+          
+        case 'telegram_channel':
+          if (text && !text.startsWith('@') && !text.includes('t.me/')) {
+            return await ctx.reply(getTranslation('registration.error.telegramFormat', currentLang, customTranslations));
+          }
+
+          userForm.data.telegramChannel = text;
           userForm.step = 'snapchat';
           userForms.set(userId, userForm);
           
@@ -420,7 +445,7 @@ const handleFormMessage = async (ctx) => {
           
           const snapchatKeyboard = Markup.inlineKeyboard([
             [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_snapchat')],
-            [Markup.button.callback(getTranslation('registration.goBack', currentLang, customTranslations), 'go_back_telegram')],
+            [Markup.button.callback(getTranslation('registration.goBack', currentLang, customTranslations), 'go_back_telegram_channel')],
             [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
           ]);
           
@@ -1175,14 +1200,20 @@ const askTelegramReply = async (ctx) => {
 
 // Demander Canal Telegram
 const askTelegramChannel = async (ctx) => {
-  const message = `🛠️ **FORMULAIRE D'INSCRIPTION – FindYourPlug**\n\n` +
+  const Config = require('../models/Config');
+  const config = await Config.findById('main');
+  const currentLang = config?.languages?.currentLanguage || 'fr';
+  const customTranslations = config?.languages?.translations;
+
+  const message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
     `⸻\n\n` +
-    `🟦 **Étape 3 : Lien Canal Telegram**\n\n` +
-    `🔗 Entrez le lien de votre **canal Telegram** (format : https://t.me/username)\n\n` +
-    `⚠️ Tu peux aussi passer cette étape.`;
+    `🟦 ${getTranslation('registration.step2', currentLang, customTranslations)} - ${getTranslation('channel', currentLang, customTranslations) || 'Canal'}\n\n` +
+    `${getTranslation('registration.telegramChannelQuestion', currentLang, customTranslations)}\n\n` +
+    `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
   
   const keyboard = Markup.inlineKeyboard([
-            [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_telegram_channel')],
+    [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_telegram_channel')],
+    [Markup.button.callback(getTranslation('registration.goBack', currentLang, customTranslations), 'go_back_telegram')],
     [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
   ]);
   
@@ -2107,9 +2138,31 @@ const handleSkipStep = async (ctx, step) => {
     // NOUVEL ORDRE : Nom → Telegram → Snapchat → Potato → Signal → WhatsApp → Threema → Session → Bot Telegram → Photo → Confirmation
     switch (step) {
       case 'telegram':
+        userForm.step = 'telegram_channel';
+        userForms.set(userId, userForm);
+        console.log('➡️ Skip telegram → telegram_channel');
+        
+        const channelMessage = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
+          `⸻\n\n` +
+          `🟦 ${getTranslation('registration.step2', currentLang, customTranslations)} - ${getTranslation('channel', currentLang, customTranslations) || 'Canal'}\n\n` +
+          `${getTranslation('registration.telegramChannelQuestion', currentLang, customTranslations)}\n\n` +
+          `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
+        
+        const channelKeyboard = Markup.inlineKeyboard([
+          [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_telegram_channel')],
+          [Markup.button.callback(getTranslation('registration.goBack', currentLang, customTranslations), 'go_back_telegram')],
+          [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
+        ]);
+        
+        await safeEditMessage(ctx, channelMessage, {
+          reply_markup: channelKeyboard.reply_markup
+        });
+        break;
+        
+      case 'telegram_channel':
         userForm.step = 'snapchat';
         userForms.set(userId, userForm);
-        console.log('➡️ Skip telegram → snapchat');
+        console.log('➡️ Skip telegram_channel → snapchat');
         
         const snapchatMessage = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
           `⸻\n\n` +
@@ -2119,7 +2172,7 @@ const handleSkipStep = async (ctx, step) => {
         
         const snapchatKeyboard = Markup.inlineKeyboard([
           [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_snapchat')],
-          [Markup.button.callback(getTranslation('registration.goBack', currentLang, customTranslations), 'go_back_telegram')],
+          [Markup.button.callback(getTranslation('registration.goBack', currentLang, customTranslations), 'go_back_telegram_channel')],
           [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
         ]);
         
@@ -2579,7 +2632,8 @@ const handleGoBack = async (ctx) => {
   
   switch (userForm.step) {
     case 'telegram': previousStep = 'name'; break;
-    case 'snapchat': previousStep = 'telegram'; break;
+    case 'telegram_channel': previousStep = 'telegram'; break;
+    case 'snapchat': previousStep = 'telegram_channel'; break;
     case 'potato': previousStep = 'snapchat'; break;
     case 'signal': previousStep = 'potato'; break;
     case 'whatsapp': previousStep = 'signal'; break;
@@ -2667,6 +2721,25 @@ const handleGoBack = async (ctx) => {
       });
       break;
 
+    case 'telegram_channel':
+      const channelMessage = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
+        `⸻\n\n` +
+        `🟦 ${getTranslation('registration.step2', currentLang, customTranslations)} - ${getTranslation('channel', currentLang, customTranslations) || 'Canal'}\n\n` +
+        `${getTranslation('registration.telegramChannelQuestion', currentLang, customTranslations)}\n\n` +
+        `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
+      
+      const channelKeyboard = Markup.inlineKeyboard([
+        [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_telegram_channel')],
+        [Markup.button.callback(getTranslation('registration.goBack', currentLang, customTranslations), 'go_back_telegram')],
+        [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
+      ]);
+
+      await safeEditMessage(ctx, channelMessage, {
+        reply_markup: channelKeyboard.reply_markup,
+        parse_mode: 'Markdown'
+      });
+      break;
+
     case 'snapchat':
       const snapchatBackMessage = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
         `⸻\n\n` +
@@ -2676,7 +2749,7 @@ const handleGoBack = async (ctx) => {
       
       const snapchatBackKeyboard = Markup.inlineKeyboard([
         [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_snapchat')],
-        [Markup.button.callback(getTranslation('registration.goBack', currentLang, customTranslations), 'go_back_telegram')],
+        [Markup.button.callback(getTranslation('registration.goBack', currentLang, customTranslations), 'go_back_telegram_channel')],
         [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
       ]);
 
