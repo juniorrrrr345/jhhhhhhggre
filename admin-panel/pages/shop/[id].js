@@ -774,7 +774,7 @@ export default function ShopPlugDetail() {
                       lineHeight: '1.4',
                       wordBreak: 'break-word'
                     }}>
-                      {plug.countries.join(', ')}
+                      {plug.countries.map(country => translateCountry(country, currentLanguage)).join(', ')}
                     </p>
                   </div>
                 )}

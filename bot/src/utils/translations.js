@@ -28,9 +28,9 @@ const translations = {
     'menu_info': {
       fr: 'ℹ️ Info',
       en: 'ℹ️ Info',
-      it: 'ℹ️ Informazioni',
-      es: 'ℹ️ Información',
-      de: 'ℹ️ Informationen'
+      it: 'ℹ️ Info',
+      es: 'ℹ️ Info',
+      de: 'ℹ️ Info'
     },
     'menu_inscription': {
       fr: '📋 Inscription',
