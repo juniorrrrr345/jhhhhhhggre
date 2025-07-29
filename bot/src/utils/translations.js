@@ -726,11 +726,11 @@ const translations = {
       de: 'Geben Sie die Postleitzahl für ein'
     },
     'registration.postalCodeExample': {
-      fr: '💡 Vous pouvez entrer plusieurs codes postaux',
-      en: '💡 You can enter multiple postal codes',
-      it: '💡 Puoi inserire più codici postali',
-      es: '💡 Puede ingresar varios códigos postales',
-      de: '💡 Sie können mehrere Postleitzahlen eingeben'
+      fr: '💡 Exemple',
+      en: '💡 Example',
+      it: '💡 Esempio',
+      es: '💡 Ejemplo',
+      de: '💡 Beispiel'
     },
     'registration.deliveryPostalTitle': {
       fr: '🚚 Service "Livraison" - Codes postaux',

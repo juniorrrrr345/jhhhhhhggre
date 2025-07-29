@@ -12,38 +12,38 @@ const lastBotMessages = new Map();
 // Fonction pour obtenir un exemple de code postal selon le pays
 function getPostalCodeExample(countryName) {
   const examples = {
-    'France': '75001, 69002, 13001',
-    'Belgique': '1000, 2000, 3000',
-    'Suisse': '1200, 8000, 3000',
-    'Luxembourg': '1234, 2345, 3456',
-    'Espagne': '28001, 08001, 41001',
-    'Italie': '00100, 20100, 80100',
-    'Allemagne': '10115, 80331, 20095',
-    'Pays-Bas': '1011, 3011, 5611',
-    'Portugal': '1000-001, 4000-001',
-    'Royaume-Uni': 'SW1A 1AA, E1 6AN',
-    'Irlande': 'D01, D02, T12',
-    'Autriche': '1010, 5020, 6020',
-    'Pologne': '00-001, 30-001, 50-001',
-    'République tchèque': '110 00, 602 00',
-    'Hongrie': '1011, 2011, 3011',
-    'Roumanie': '010011, 300011',
-    'Bulgarie': '1000, 4000, 9000',
-    'Grèce': '104 31, 546 21',
-    'Croatie': '10000, 21000, 51000',
-    'Slovénie': '1000, 2000, 3000',
-    'Slovaquie': '811 01, 040 01',
-    'Danemark': '1050, 8000, 9000',
-    'Suède': '111 21, 411 01',
-    'Norvège': '0150, 5003, 7011',
-    'Finlande': '00100, 33100, 90100',
-    'Estonie': '10111, 50090, 80011',
-    'Lettonie': 'LV-1001, LV-3001',
-    'Lituanie': 'LT-01001, LT-44001'
+    'France': '75001',
+    'Belgique': '1000',
+    'Suisse': '1200',
+    'Luxembourg': '1234',
+    'Espagne': '28001',
+    'Italie': '00100',
+    'Allemagne': '10115',
+    'Pays-Bas': '1011',
+    'Portugal': '1000-001',
+    'Royaume-Uni': 'SW1A 1AA',
+    'Irlande': 'D01',
+    'Autriche': '1010',
+    'Pologne': '00-001',
+    'République tchèque': '110 00',
+    'Hongrie': '1011',
+    'Roumanie': '010011',
+    'Bulgarie': '1000',
+    'Grèce': '104 31',
+    'Croatie': '10000',
+    'Slovénie': '1000',
+    'Slovaquie': '811 01',
+    'Danemark': '1050',
+    'Suède': '111 21',
+    'Norvège': '0150',
+    'Finlande': '00100',
+    'Estonie': '10111',
+    'Lettonie': 'LV-1001',
+    'Lituanie': 'LT-01001'
   };
   
   // Retourner l'exemple du pays ou un exemple générique
-  return examples[countryName] || '10001, 20001, 30001';
+  return examples[countryName] || '10001';
 }
 
 // Liste des pays disponibles avec emojis - TOUS LES PAYS D'EUROPE + PAYS SPÉCIAUX
