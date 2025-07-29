@@ -30,11 +30,12 @@ const handleContact = async (ctx) => {
     // TOUJOURS utiliser le texte du panel admin s'il existe
     const panelContactText = config?.buttons?.contact?.content;
     
-    // Utiliser le texte du panel admin pour TOUTES les langues
-    const finalContactText = panelContactText || getTranslation('contact_default_text', currentLang, customTranslations) || 'Contactez-nous pour plus d\'informations !';
+    // Utiliser les traductions appropriées
+    const finalContactText = getTranslation('contact_default_text', currentLang, customTranslations) || panelContactText || 'Contactez-nous pour plus d\'informations !';
     console.log('📞 Contact content ACTUEL utilisé:', finalContactText);
     
-    const message = `${contactTitle}\n\n${finalContactText}`;
+    // Le message est déjà formaté avec le titre dans la traduction
+    const message = finalContactText;
 
     // Créer le clavier avec la config ACTUELLE
     const keyboard = await createMainKeyboard(config);
@@ -129,11 +130,12 @@ const handleInfo = async (ctx) => {
     // TOUJOURS utiliser le texte du panel admin s'il existe
     const panelInfoText = config?.buttons?.info?.content;
     
-    // Utiliser le texte du panel admin pour TOUTES les langues
-    const finalInfoText = panelInfoText || getTranslation('info_default_text', currentLang, customTranslations) || 'Découvrez notre plateforme premium.';
+    // Utiliser les traductions appropriées
+    const finalInfoText = getTranslation('info_default_text', currentLang, customTranslations) || panelInfoText || 'Découvrez notre plateforme premium.';
     console.log('ℹ️ Info content ACTUEL utilisé:', finalInfoText);
     
-    const message = `${infoTitle}\n\n${finalInfoText}`;
+    // Le message est déjà formaté avec le titre dans la traduction
+    const message = finalInfoText;
 
     // Créer le clavier avec la config ACTUELLE
     const keyboard = await createMainKeyboard(config);

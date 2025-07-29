@@ -28,9 +28,9 @@ const translations = {
     'menu_info': {
       fr: 'ℹ️ Info',
       en: 'ℹ️ Info',
-      it: 'ℹ️ Info',
-      es: 'ℹ️ Info',
-      de: 'ℹ️ Info'
+      it: 'ℹ️ Informazioni',
+      es: 'ℹ️ Información',
+      de: 'ℹ️ Information'
     },
     'menu_inscription': {
       fr: '📋 Inscription',
@@ -124,11 +124,11 @@ const translations = {
       de: 'Entschuldigung Keine Shops 😕'
     },
     'contact_default_text': {
-      fr: 'Contactez-nous pour plus d\'informations.\n@findyourplugsav',
-      en: 'Contact us for more information.\n@findyourplugsav',
-      it: 'Contattaci per maggiori informazioni.\n@findyourplugsav',
-      es: 'Contáctanos para más información.\n@findyourplugsav',
-      de: 'Kontaktieren Sie uns für weitere Informationen.\n@findyourplugsav'
+      fr: '📞 Contact\n\nContactez-nous pour plus d\'informations.\n@findyourplugsav',
+      en: '📞 Contact\n\nContact us for more information.\n@findyourplugsav',
+      it: '📞 Contatto\n\nContattaci per maggiori informazioni.\n@findyourplugsav',
+      es: '📞 Contacto\n\nContáctanos para más información.\n@findyourplugsav',
+      de: '📞 Kontakt\n\nKontaktieren Sie uns für weitere Informationen.\n@findyourplugsav'
     },
     'contact_us_text': {
       fr: 'Nous contacter',
@@ -138,11 +138,11 @@ const translations = {
       de: 'Kontakt'
     },
     'info_default_text': {
-      fr: 'Nous listons les plugs du monde entier par Pays / Ville découvrez notre mini-app 🌍🔌\n\nPour toute demande spécifique contacter nous @findyourplugsav 📲',
-      en: 'We list plugs worldwide by Country / City discover our mini-app 🌍🔌\n\nFor any specific request contact us @findyourplugsav 📲',
-      it: 'Elenchiamo plug in tutto il mondo per Paese / Città scopri la nostra mini-app 🌍🔌\n\nPer qualsiasi richiesta specifica contattaci @findyourplugsav 📲',
-      es: 'Listamos plugs en todo el mundo por País / Ciudad descubre nuestra mini-app 🌍🔌\n\nPara cualquier solicitud específica contáctanos @findyourplugsav 📲',
-      de: 'Wir listen Plugs weltweit nach Land / Stadt auf, entdecken Sie unsere Mini-App 🌍🔌\n\nFür spezielle Anfragen kontaktieren Sie uns @findyourplugsav 📲'
+      fr: 'ℹ️ Informations\n\nNous listons les plugs du monde entier par Pays / Ville découvrez notre mini-app 🌍🔌\n\nPour toute demande spécifique contacter nous @findyourplugsav 📲',
+      en: 'ℹ️ Information\n\nWe list plugs worldwide by Country / City discover our mini-app 🌍🔌\n\nFor any specific request contact us @findyourplugsav 📲',
+      it: 'ℹ️ Informazioni\n\nElenchiamo plug in tutto il mondo per Paese / Città scopri la nostra mini-app 🌍🔌\n\nPer qualsiasi richiesta specifica contattaci @findyourplugsav 📲',
+      es: 'ℹ️ Información\n\nListamos plugs en todo el mundo por País / Ciudad descubre nuestra mini-app 🌍🔌\n\nPara cualquier solicitud específica contáctanos @findyourplugsav 📲',
+      de: 'ℹ️ Information\n\nWir listen Plugs weltweit nach Land / Stadt auf, entdecken Sie unsere Mini-App 🌍🔌\n\nFür spezielle Anfragen kontaktieren Sie uns @findyourplugsav 📲'
     },
     'menu_becomeDealer': {
       fr: '📋 Inscription',
