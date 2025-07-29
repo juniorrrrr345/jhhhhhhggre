@@ -5,6 +5,7 @@ import toast, { Toaster } from 'react-hot-toast'
 import { TrashIcon, PlusIcon, ArrowLeftIcon } from '@heroicons/react/24/outline'
 import { getRobustSync } from '../../../../lib/robust-sync'
 import postalCodeService from '../../../../lib/postalCodeService'
+import { getPostalCodesForCountries } from '../../../../lib/major-cities-postal-codes'
 import { simpleApi } from '../../../../lib/api-simple'
 import api from '../../../../lib/api-enhanced'
 
@@ -77,12 +78,24 @@ export default function EditPlug() {
 
   // Obtenir les départements disponibles pour les pays sélectionnés
   const getAvailableDepartments = () => {
-    const allDepartments = new Set()
+    if (selectedCountries.length === 0) return []
+    
+    // Utiliser le nouveau service pour obtenir les codes postaux par pays
+    const postalCodesByCountry = getPostalCodesForCountries(selectedCountries)
+    const departmentsByCountry = []
+    
+    // Créer une structure pour afficher les codes par pays
     selectedCountries.forEach(country => {
-      const departments = postalCodeService.getPostalCodes(country)
-      departments.forEach(dept => allDepartments.add(dept))
+      const codes = postalCodesByCountry[country] || []
+      if (codes.length > 0) {
+        departmentsByCountry.push({
+          country,
+          codes: codes.slice(0, 20) // Limiter à 20 codes par pays
+        })
+      }
     })
-    return Array.from(allDepartments).sort()
+    
+    return departmentsByCountry
   }
 
   useEffect(() => {
@@ -704,23 +717,30 @@ export default function EditPlug() {
                           <label className="block text-sm font-medium text-gray-700 mb-2">
                             📍 Départements de livraison disponibles :
                           </label>
-                          <div className="max-h-40 overflow-y-auto border border-gray-200 rounded-md p-3 bg-gray-50">
-                            <div className="grid grid-cols-4 gap-2">
-                              {getAvailableDepartments().map(department => (
-                                <button
-                                  key={department}
-                                  type="button"
-                                  onClick={() => toggleDepartment('delivery', department)}
-                                  className={`px-2 py-1 rounded text-xs font-medium border transition-colors ${
-                                    (formData.services.delivery.departments || []).includes(department)
-                                      ? 'bg-green-500 border-green-500 text-white'
-                                      : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'
-                                  }`}
-                                >
-                                  {department}
-                                </button>
-                              ))}
-                            </div>
+                          <div className="max-h-60 overflow-y-auto border border-gray-200 rounded-md p-3 bg-gray-50">
+                            {getAvailableDepartments().map(({ country, codes }) => (
+                              <div key={country} className="mb-4">
+                                <h4 className="text-sm font-semibold text-gray-700 mb-2">
+                                  🌍 {country}
+                                </h4>
+                                <div className="grid grid-cols-4 gap-2">
+                                  {codes.map(code => (
+                                    <button
+                                      key={`${country}-${code}`}
+                                      type="button"
+                                      onClick={() => toggleDepartment('delivery', code)}
+                                      className={`px-2 py-1 rounded text-xs font-medium border transition-colors ${
+                                        (formData.services.delivery.departments || []).includes(code)
+                                          ? 'bg-green-500 border-green-500 text-white'
+                                          : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'
+                                      }`}
+                                    >
+                                      {code}
+                                    </button>
+                                  ))}
+                                </div>
+                              </div>
+                            ))}
                           </div>
                           <p className="text-xs text-gray-500 mt-1">
                             Sélectionnés: {(formData.services.delivery.departments || []).length} départements
@@ -828,23 +848,30 @@ export default function EditPlug() {
                           <label className="block text-sm font-medium text-gray-700 mb-2">
                             📍 Départements de meetup disponibles :
                           </label>
-                          <div className="max-h-40 overflow-y-auto border border-gray-200 rounded-md p-3 bg-gray-50">
-                            <div className="grid grid-cols-4 gap-2">
-                              {getAvailableDepartments().map(department => (
-                                <button
-                                  key={department}
-                                  type="button"
-                                  onClick={() => toggleDepartment('meetup', department)}
-                                  className={`px-2 py-1 rounded text-xs font-medium border transition-colors ${
-                                    (formData.services.meetup.departments || []).includes(department)
-                                      ? 'bg-purple-500 border-purple-500 text-white'
-                                      : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'
-                                  }`}
-                                >
-                                  {department}
-                                </button>
-                              ))}
-                            </div>
+                          <div className="max-h-60 overflow-y-auto border border-gray-200 rounded-md p-3 bg-gray-50">
+                            {getAvailableDepartments().map(({ country, codes }) => (
+                              <div key={country} className="mb-4">
+                                <h4 className="text-sm font-semibold text-gray-700 mb-2">
+                                  🌍 {country}
+                                </h4>
+                                <div className="grid grid-cols-4 gap-2">
+                                  {codes.map(code => (
+                                    <button
+                                      key={`${country}-${code}`}
+                                      type="button"
+                                      onClick={() => toggleDepartment('meetup', code)}
+                                      className={`px-2 py-1 rounded text-xs font-medium border transition-colors ${
+                                        (formData.services.meetup.departments || []).includes(code)
+                                          ? 'bg-purple-500 border-purple-500 text-white'
+                                          : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'
+                                      }`}
+                                    >
+                                      {code}
+                                    </button>
+                                  ))}
+                                </div>
+                              </div>
+                            ))}
                           </div>
                           <p className="text-xs text-gray-500 mt-1">
                             Sélectionnés: {(formData.services.meetup.departments || []).length} départements
