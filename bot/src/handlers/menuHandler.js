@@ -27,11 +27,11 @@ const handleContact = async (ctx) => {
     // Affichage contact avec texte configurable (comme Info)
     const contactTitle = getTranslation('menu_contact', currentLang, customTranslations);
     
-    // TOUJOURS utiliser le texte du panel admin s'il existe
+    // Toujours privilégier les traductions du fichier
     const panelContactText = config?.buttons?.contact?.content;
     
-    // Utiliser les traductions appropriées
-    const finalContactText = getTranslation('contact_default_text', currentLang, customTranslations) || panelContactText || 'Contactez-nous pour plus d\'informations !';
+    // Utiliser les traductions du fichier en priorité
+    const finalContactText = getTranslation('contact_default_text', currentLang) || panelContactText || 'Contactez-nous pour plus d\'informations !';
     console.log('📞 Contact content ACTUEL utilisé:', finalContactText);
     
     // Ajouter le titre avant le message
@@ -127,11 +127,11 @@ const handleInfo = async (ctx) => {
     // Affichage info avec texte configurable depuis l'admin ACTUEL
     const infoTitle = getTranslation('menu_info', currentLang, customTranslations);
     
-    // TOUJOURS utiliser le texte du panel admin s'il existe
+    // Toujours privilégier les traductions du fichier
     const panelInfoText = config?.buttons?.info?.content;
     
-    // Utiliser les traductions appropriées
-    const finalInfoText = getTranslation('info_default_text', currentLang, customTranslations) || panelInfoText || 'Découvrez notre plateforme premium.';
+    // Utiliser les traductions du fichier en priorité
+    const finalInfoText = getTranslation('info_default_text', currentLang) || panelInfoText || 'Découvrez notre plateforme premium.';
     console.log('ℹ️ Info content ACTUEL utilisé:', finalInfoText);
     
     // Ajouter le titre avant le message
