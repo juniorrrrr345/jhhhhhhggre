@@ -4249,18 +4249,18 @@ const start = async () => {
           // Définir les traductions par défaut basées sur les messages français
           const defaultTranslations = {
             contact: {
-              fr: contactMessageFr,
-              en: "Contact us for more information.",
-              it: "Contattaci per maggiori informazioni.",
-              es: "Contáctanos para más información.",
-              de: "Kontaktieren Sie uns für weitere Informationen."
+              fr: "Contactez-nous pour plus d'informations.\n@findyourplugsav",
+              en: "Contact us for more information.\n@findyourplugsav",
+              it: "Contattaci per maggiori informazioni.\n@findyourplugsav",
+              es: "Contáctanos para más información.\n@findyourplugsav",
+              de: "Kontaktieren Sie uns für weitere Informationen.\n@findyourplugsav"
             },
             info: {
-              fr: infoMessageFr,
-              en: "Information about our platform.",
-              it: "Informazioni sulla nostra piattaforma.",
-              es: "Información sobre nuestra plataforma.",
-              de: "Informationen über unsere Plattform."
+              fr: "Nous listons les plugs du monde entier par Pays / Ville découvrez notre mini-app 🌍🔌\n\nPour toute demande spécifique contacter nous @findyourplugsav 📲",
+              en: "We list plugs worldwide by Country / City discover our mini-app 🌍🔌\n\nFor any specific request contact us @findyourplugsav 📲",
+              it: "Elenchiamo plug in tutto il mondo per Paese / Città scopri la nostra mini-app 🌍🔌\n\nPer qualsiasi richiesta specifica contattaci @findyourplugsav 📲",
+              es: "Listamos plugs en todo el mundo por País / Ciudad descubre nuestra mini-app 🌍🔌\n\nPara cualquier solicitud específica contáctanos @findyourplugsav 📲",
+              de: "Wir listen Plugs weltweit nach Land / Stadt auf, entdecken Sie unsere Mini-App 🌍🔌\n\nFür spezielle Anfragen kontaktieren Sie uns @findyourplugsav 📲"
             }
           };
           

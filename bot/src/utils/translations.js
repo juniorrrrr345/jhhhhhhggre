@@ -124,11 +124,11 @@ const translations = {
       de: 'Entschuldigung Keine Shops 😕'
     },
     'contact_default_text': {
-      fr: 'Contactez-nous pour plus d\'informations.\n\n@findyourplugsav',
-      en: 'Contact us for more information.\n\n@findyourplugsav',
-      it: 'Contattaci per maggiori informazioni.\n\n@findyourplugsav',
-      es: 'Contáctanos para más información.\n\n@findyourplugsav',
-      de: 'Kontaktieren Sie uns für weitere Informationen.\n\n@findyourplugsav'
+      fr: 'Contactez-nous pour plus d\'informations.\n@findyourplugsav',
+      en: 'Contact us for more information.\n@findyourplugsav',
+      it: 'Contattaci per maggiori informazioni.\n@findyourplugsav',
+      es: 'Contáctanos para más información.\n@findyourplugsav',
+      de: 'Kontaktieren Sie uns für weitere Informationen.\n@findyourplugsav'
     },
     'contact_us_text': {
       fr: 'Nous contacter',
