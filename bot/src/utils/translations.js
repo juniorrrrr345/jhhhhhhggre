@@ -140,8 +140,8 @@ const translations = {
     'info_default_text': {
       fr: 'ℹ️ Informations\n\nNous listons les plugs du monde entier par Pays / Ville découvrez notre mini-app 🌍🔌\n\nPour toute demande spécifique contacter nous @findyourplugsav 📲',
       en: 'ℹ️ Information\n\nWe list plugs worldwide by Country / City discover our mini-app 🌍🔌\n\nFor any specific request contact us @findyourplugsav 📲',
-      it: 'ℹ️ Informazioni\n\nElenchiamo plug in tutto il mondo per Paese / Città scopri la nostra mini-app 🌍🔌\n\nPer qualsiasi richiesta specifica contattaci @findyourplugsav 📲',
-      es: 'ℹ️ Información\n\nListamos plugs en todo el mundo por País / Ciudad descubre nuestra mini-app 🌍🔌\n\nPara cualquier solicitud específica contáctanos @findyourplugsav 📲',
+      it: 'ℹ️ Informazioni\n\nElenchiamo i plug di tutto il mondo per Paese / Città scopri la nostra mini-app 🌍🔌\n\nPer qualsiasi richiesta specifica contattaci @findyourplugsav 📲',
+      es: 'ℹ️ Información\n\nListamos plugs de todo el mundo por País / Ciudad descubre nuestra mini-app 🌍🔌\n\nPara cualquier solicitud específica contáctanos @findyourplugsav 📲',
       de: 'ℹ️ Information\n\nWir listen Plugs weltweit nach Land / Stadt auf, entdecken Sie unsere Mini-App 🌍🔌\n\nFür spezielle Anfragen kontaktieren Sie uns @findyourplugsav 📲'
     },
     'menu_becomeDealer': {
