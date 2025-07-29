@@ -140,8 +140,8 @@ function getPostalCodesForCountry(country) {
     allPostalCodes.push(...cityPostalCodes);
   });
   
-  // Limiter à 50 codes postaux maximum par pays
-  return allPostalCodes.slice(0, 50);
+  // Retourner tous les codes postaux sans limite
+  return allPostalCodes;
 }
 
 // Fonction pour obtenir les codes postaux pour plusieurs pays

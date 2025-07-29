@@ -70,7 +70,7 @@ export default function NewPlug() {
       if (codes.length > 0) {
         departmentsByCountry.push({
           country,
-          codes: codes.slice(0, 20) // Limiter à 20 codes par pays
+          codes: codes // Afficher tous les codes disponibles
         })
       }
     })
