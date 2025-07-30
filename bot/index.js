@@ -135,18 +135,18 @@ const displayNewShopOnBot = async (savedPlug) => {
     
     if (savedPlug.services?.meetup?.enabled) {
       const serviceName = getTranslation('service_meetup', currentLang, customTranslations);
-      const departments = savedPlug.services.meetup.departments || [];
-      if (departments.length > 0) {
-        const departmentsText = departments.sort((a, b) => parseInt(a) - parseInt(b)).join(', ');
-        services.push(`🤝 **${serviceName}** : ${departmentsText}`);
+      const description = savedPlug.services.meetup.description;
+      if (description && description.trim() !== '') {
+        const translatedDesc = translateServiceDescription(description, currentLang, savedPlug.translations, 'meetup');
+        services.push(`🤝 **${serviceName}** : ${translatedDesc}`);
       } else {
-        services.push(`🤝 **${serviceName}** : Tous départements`);
-      }
-      
-      // Ajouter la description si disponible
-      if (savedPlug.services.meetup.description) {
-        const translatedDesc = translateServiceDescription(savedPlug.services.meetup.description, currentLang, savedPlug.translations, 'meetup');
-        services.push(`   📝 ${translatedDesc}`);
+        const departments = savedPlug.services.meetup.departments || [];
+        if (departments.length > 0) {
+          const departmentsText = departments.sort((a, b) => parseInt(a) - parseInt(b)).join(', ');
+          services.push(`🤝 **${serviceName}** : ${departmentsText}`);
+        } else {
+          services.push(`🤝 **${serviceName}** : Tous départements`);
+        }
       }
     }
     
@@ -247,33 +247,35 @@ const displayUpdatedShopOnBot = async (updatedPlug) => {
     const services = [];
     if (updatedPlug.services?.delivery?.enabled) {
       const serviceName = getTranslation('service_delivery', currentLang, customTranslations);
-      const departments = updatedPlug.services.delivery.departments || [];
-      if (departments.length > 0) {
-        const departmentsText = departments.sort((a, b) => parseInt(a) - parseInt(b)).join(', ');
-        services.push(`📦 **${serviceName}** : ${departmentsText}`);
+      const description = updatedPlug.services.delivery.description;
+      if (description && description.trim() !== '') {
+        const translatedDesc = translateServiceDescription(description, currentLang, updatedPlug.translations, 'delivery');
+        services.push(`📦 **${serviceName}** : ${translatedDesc}`);
       } else {
-        services.push(`📦 **${serviceName}** : Tous départements`);
-      }
-      
-      if (updatedPlug.services.delivery.description) {
-        const translatedDesc = translateServiceDescription(updatedPlug.services.delivery.description, currentLang, updatedPlug.translations, 'delivery');
-        services.push(`   📝 ${translatedDesc}`);
+        const departments = updatedPlug.services.delivery.departments || [];
+        if (departments.length > 0) {
+          const departmentsText = departments.sort((a, b) => parseInt(a) - parseInt(b)).join(', ');
+          services.push(`📦 **${serviceName}** : ${departmentsText}`);
+        } else {
+          services.push(`📦 **${serviceName}** : Tous départements`);
+        }
       }
     }
     
     if (updatedPlug.services?.meetup?.enabled) {
       const serviceName = getTranslation('service_meetup', currentLang, customTranslations);
-      const departments = updatedPlug.services.meetup.departments || [];
-      if (departments.length > 0) {
-        const departmentsText = departments.sort((a, b) => parseInt(a) - parseInt(b)).join(', ');
-        services.push(`🤝 **${serviceName}** : ${departmentsText}`);
+      const description = updatedPlug.services.meetup.description;
+      if (description && description.trim() !== '') {
+        const translatedDesc = translateServiceDescription(description, currentLang, updatedPlug.translations, 'meetup');
+        services.push(`🤝 **${serviceName}** : ${translatedDesc}`);
       } else {
-        services.push(`🤝 **${serviceName}** : Tous départements`);
-      }
-      
-      if (updatedPlug.services.meetup.description) {
-        const translatedDesc = translateServiceDescription(updatedPlug.services.meetup.description, currentLang, updatedPlug.translations, 'meetup');
-        services.push(`   📝 ${translatedDesc}`);
+        const departments = updatedPlug.services.meetup.departments || [];
+        if (departments.length > 0) {
+          const departmentsText = departments.sort((a, b) => parseInt(a) - parseInt(b)).join(', ');
+          services.push(`🤝 **${serviceName}** : ${departmentsText}`);
+        } else {
+          services.push(`🤝 **${serviceName}** : Tous départements`);
+        }
       }
     }
     
