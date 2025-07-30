@@ -134,6 +134,30 @@ export default function ShopSearch() {
 
   // Récupérer les départements disponibles selon le pays sélectionné
   const getAvailableDepartments = () => {
+    // Fonction pour déterminer le pays d'un code postal
+    const getCountryFromPostalCode = (code) => {
+      const cleaned = code.trim().toUpperCase()
+      
+      // Patterns par pays
+      if (/^[A-Z]{1,2}\d{1,2}[A-Z]?$/.test(cleaned)) return 'Royaume-Uni' // UK: SW1
+      if (/^[A-Z]\d[A-Z]?$/.test(cleaned)) return 'Canada' // Canada: H2
+      if (/^\d{3}$/.test(cleaned)) {
+        const num = parseInt(cleaned)
+        if (num >= 100 && num <= 199) return 'Japon'
+        if (num >= 1 && num <= 99) return 'France' // Départements français
+        return null
+      }
+      if (/^\d{2}$/.test(cleaned)) {
+        const num = parseInt(cleaned)
+        if (num >= 1 && num <= 95) return 'France' // Départements français
+        if (num >= 97 && num <= 98) return 'France' // DOM-TOM
+        return null
+      }
+      
+      // Pour les codes simplifiés, on ne peut pas déterminer le pays avec certitude
+      return null
+    }
+    
     // Fonction pour extraire les codes postaux d'une description
     const extractPostalCodes = (description) => {
       if (!description) return []
@@ -273,8 +297,11 @@ export default function ShopSearch() {
 
     // Si un pays est sélectionné, extraire les codes postaux des boutiques de ce pays
     const countryDepartments = new Set()
+    console.log(`🌍 Filtrage départements pour pays: ${countryFilter}`)
+    
     allPlugs.forEach(plug => {
       if (plug.countries && plug.countries.includes(countryFilter)) {
+        console.log(`  📍 Boutique "${plug.name}" dans ${countryFilter}:`)
         // Extraire des descriptions
         if (plug.services?.delivery?.description) {
           extractPostalCodes(plug.services.delivery.description).forEach(code => countryDepartments.add(code))
@@ -316,7 +343,7 @@ export default function ShopSearch() {
     
     // Retourner les départements trouvés, triés
     const deptArray = Array.from(countryDepartments).sort((a, b) => a.localeCompare(b, undefined, { numeric: true }))
-    console.log(`🏢 Départements pour ${countryFilter}:`, deptArray.length, 'codes trouvés')
+    console.log(`🏢 Départements pour ${countryFilter}:`, deptArray.length, 'codes trouvés:', deptArray)
     return deptArray
   }
 
