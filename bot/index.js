@@ -3462,6 +3462,31 @@ app.get('/api/plugs', authenticateAdmin, async (req, res) => {
   }
 });
 
+// Récupérer tous les plugs actifs (PUBLIC - pour mini-app)
+app.get('/api/plugs/public', async (req, res) => {
+  try {
+    // Récupérer uniquement les plugs actifs
+    const plugs = await Plug.find({ isActive: true })
+      .sort({ isVip: -1, vipOrder: 1, likes: -1, createdAt: -1 });
+    
+    // Headers pour éviter le cache
+    res.set({
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      'Pragma': 'no-cache',
+      'Expires': '0'
+    });
+    
+    res.json({
+      plugs,
+      success: true,
+      total: plugs.length
+    });
+  } catch (error) {
+    console.error('Erreur récupération plugs publics:', error);
+    res.status(500).json({ error: 'Erreur serveur', plugs: [] });
+  }
+});
+
 // ============================================
 // SYSTÈME DE CACHE ET SYNCHRONISATION
 // ============================================
