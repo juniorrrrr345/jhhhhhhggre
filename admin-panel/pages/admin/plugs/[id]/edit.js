@@ -169,6 +169,7 @@ export default function EditPlugV2() {
         image: plug.image || '',
         telegramLink: plug.telegramLink || '',
         isVip: plug.isVip || false,
+        vipOrder: plug.vipOrder || 1,
         isActive: plug.isActive !== undefined ? plug.isActive : true,
         countries: plug.countries || [],
         services: {
@@ -235,7 +236,11 @@ export default function EditPlugV2() {
   }
 
   const handleServiceChange = (service, field, value) => {
+    console.log('handleServiceChange appelé:', { service, field, value })
+    
     setFormData(prev => {
+      console.log('État actuel des services:', prev.services)
+      
       // Protection contre les services non définis
       if (!prev.services[service]) {
         console.error(`Service ${service} non défini dans formData`)
@@ -518,8 +523,14 @@ export default function EditPlugV2() {
                   <div className="flex items-center mb-3">
                     <input
                       type="checkbox"
-                      checked={formData.services.delivery.enabled}
-                      onChange={(e) => handleServiceChange('delivery', 'enabled', e.target.checked)}
+                      checked={formData.services?.delivery?.enabled || false}
+                      onChange={(e) => {
+                        try {
+                          handleServiceChange('delivery', 'enabled', e.target.checked)
+                        } catch (error) {
+                          console.error('Erreur checkbox delivery:', error)
+                        }
+                      }}
                       className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                     />
                     <label className="ml-3 text-sm font-medium text-gray-700">
@@ -657,8 +668,14 @@ export default function EditPlugV2() {
                   <div className="flex items-center mb-3">
                     <input
                       type="checkbox"
-                      checked={formData.services.meetup.enabled}
-                      onChange={(e) => handleServiceChange('meetup', 'enabled', e.target.checked)}
+                      checked={formData.services?.meetup?.enabled || false}
+                      onChange={(e) => {
+                        try {
+                          handleServiceChange('meetup', 'enabled', e.target.checked)
+                        } catch (error) {
+                          console.error('Erreur checkbox meetup:', error)
+                        }
+                      }}
                       className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                     />
                     <label className="ml-3 text-sm font-medium text-gray-700">
