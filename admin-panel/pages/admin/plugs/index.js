@@ -30,6 +30,7 @@ export default function AccueilAdmin() {
   const [syncing, setSyncing] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
+  const [allPlugsData, setAllPlugsData] = useState([]) // Stocker toutes les boutiques
   const router = useRouter()
 
   useEffect(() => {
@@ -57,7 +58,63 @@ export default function AccueilAdmin() {
     }
     
     fetchData(token)
-  }, [search, filter, currentPage, router])
+  }, []) // Ne charger qu'une seule fois au montage
+
+  // Recharger les données quand search ou filter change
+  useEffect(() => {
+    const token = localStorage.getItem('adminToken')
+    if (token && (search !== undefined || filter !== undefined)) {
+      setCurrentPage(1) // Réinitialiser à la page 1 quand on filtre
+      fetchData(token)
+    }
+  }, [search, filter])
+
+  // Réappliquer les filtres quand la page change
+  useEffect(() => {
+    if (allPlugsData.length > 0) {
+      applyFiltersAndPagination(allPlugsData)
+    }
+  }, [currentPage, allPlugsData])
+
+  // Fonction pour appliquer les filtres et la pagination
+  const applyFiltersAndPagination = (data) => {
+    let filteredData = [...data]
+    
+    // Filtrage par recherche
+    if (search) {
+      filteredData = filteredData.filter(plug => 
+        plug.name.toLowerCase().includes(search.toLowerCase()) ||
+        (plug.description && plug.description.toLowerCase().includes(search.toLowerCase()))
+      )
+    }
+    
+    // Filtrage par type
+    if (filter && filter !== 'all') {
+      if (filter === 'vip') {
+        filteredData = filteredData.filter(plug => plug.isVip)
+      } else if (filter === 'active') {
+        filteredData = filteredData.filter(plug => plug.isActive)
+      } else if (filter === 'inactive') {
+        filteredData = filteredData.filter(plug => !plug.isActive)
+      }
+    }
+    
+    // Pagination
+    const start = (currentPage - 1) * 6
+    const paginatedPlugs = filteredData.slice(start, start + 6)
+    const totalPages = Math.ceil(filteredData.length / 6)
+    
+    console.log('📄 Pagination:', {
+      currentPage,
+      start,
+      totalPlugs: filteredData.length,
+      paginatedCount: paginatedPlugs.length,
+      totalPages
+    })
+    
+    setPlugs(paginatedPlugs)
+    setTotalPages(totalPages)
+  }
 
   const fetchData = async (token) => {
     try {
@@ -89,10 +146,10 @@ export default function AccueilAdmin() {
       // 1. Récupérer boutiques du serveur principal avec timestamp pour éviter le cache
       try {
         const serverData = await simpleApi.getPlugs(token, {
-          page: currentPage,
-          limit: 100,
-          search,
-          filter,
+          page: 1,
+          limit: 1000, // Récupérer toutes les boutiques
+          search: '', // Pas de filtre côté serveur
+          filter: 'all', // Toutes les boutiques
           t: Date.now() // Forcer le bypass du cache
         })
         allPlugs = [...(serverData.plugs || [])]
@@ -128,20 +185,11 @@ export default function AccueilAdmin() {
       
       console.log('📦 TOTAL boutiques admin:', allPlugs.length)
       
-      // Filtrage par search si nécessaire
-      if (search) {
-        allPlugs = allPlugs.filter(plug => 
-          plug.name.toLowerCase().includes(search.toLowerCase())
-        )
-      }
+      // Stocker toutes les données
+      setAllPlugsData(allPlugs)
       
-      // Pagination
-      const start = (currentPage - 1) * 6
-      const paginatedPlugs = allPlugs.slice(start, start + 6)
-      const totalPages = Math.ceil(allPlugs.length / 6)
-      
-      setPlugs(paginatedPlugs)
-      setTotalPages(totalPages)
+      // Appliquer les filtres et la pagination
+      applyFiltersAndPagination(allPlugs)
       
       // Calculer les stats
       const activePlugs = allPlugs.filter(p => p.isActive).length
