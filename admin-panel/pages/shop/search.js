@@ -275,7 +275,8 @@ export default function ShopSearch() {
       serviceFilter, 
       departmentFilter, 
       vipFilter, 
-      totalPlugs: allPlugs.length 
+      totalPlugs: allPlugs.length,
+      currentPage 
     })
     
     let filtered = allPlugs.filter(plug => {
@@ -347,7 +348,11 @@ export default function ShopSearch() {
     }
     
     setPlugs(filtered)
-    setCurrentPage(1)
+    // Ne réinitialiser la page que si on est au-delà du nombre de pages disponibles
+    const newTotalPages = Math.ceil(filtered.length / itemsPerPage)
+    if (currentPage > newTotalPages) {
+      setCurrentPage(1)
+    }
   }
 
   const resetFilters = () => {
@@ -356,6 +361,7 @@ export default function ShopSearch() {
     setServiceFilter('')
     setDepartmentFilter('')
     setVipFilter('')
+    setCurrentPage(1)
   }
 
   const uniqueCountries = [...new Set(allPlugs.flatMap(plug => plug.countries || []))].sort()
