@@ -213,24 +213,22 @@ export default function AccueilAdmin() {
     }
 
     try {
-      // 1. Supprimer en local DIRECTEMENT
-      await fetch(`/api/local-plugs?id=${id}`, {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' }
-      })
-
-      // 2. Supprimer du serveur principal en arrière-plan
-      fetch('/api/cors-proxy', {
+      // Supprimer du serveur principal
+      const response = await fetch('/api/cors-proxy', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          endpoint: `plugs/${id}`,
+          endpoint: `/api/plugs/${id}`,
           method: 'DELETE',
           token: localStorage.getItem('adminToken')
         })
-      }).catch(() => {}) // Ignorer les erreurs
+      })
 
-      // 3. Toujours afficher succès et recharger
+      if (!response.ok) {
+        throw new Error('Erreur lors de la suppression')
+      }
+
+      // Afficher succès et recharger
       toast.success('✅ Boutique supprimée !')
       
       // Forcer le rechargement complet des données
