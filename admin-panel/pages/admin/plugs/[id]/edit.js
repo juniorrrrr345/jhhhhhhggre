@@ -52,7 +52,8 @@ export default function EditPlug() {
       delivery: {
         enabled: false,
         description: '',
-        departments: []
+        departments: [],
+        cities: []
       },
       postal: {
         enabled: false,
@@ -62,7 +63,8 @@ export default function EditPlug() {
       meetup: {
         enabled: false,
         description: '',
-        departments: []
+        departments: [],
+        cities: []
       }
     },
     socialMedia: []
@@ -142,6 +144,57 @@ export default function EditPlug() {
     }
   }, [selectedCountries.join(',')]) // Utiliser join pour éviter les re-renders infinis
 
+  const handleServiceChange = (service, field, value) => {
+    setFormData(prev => ({
+      ...prev,
+      services: {
+        ...prev.services,
+        [service]: {
+          ...prev.services[service],
+          [field]: value
+        }
+      }
+    }))
+  }
+
+  const toggleCity = (service, city) => {
+    const currentCities = formData.services[service].cities || []
+    const newCities = currentCities.includes(city)
+      ? currentCities.filter(c => c !== city)
+      : [...currentCities, city]
+    
+    handleServiceChange(service, 'cities', newCities)
+  }
+
+  const togglePostalCountry = (country) => {
+    const currentCountries = formData.services.postal.countries || []
+    const newCountries = currentCountries.includes(country)
+      ? currentCountries.filter(c => c !== country)
+      : [...currentCountries, country]
+    
+    handleServiceChange('postal', 'countries', newCountries)
+  }
+
+  const addSocialMedia = () => {
+    setFormData(prev => ({
+      ...prev,
+      socialMedia: [...prev.socialMedia, { name: '', emoji: '', url: '' }]
+    }))
+  }
+
+  const updateSocialMedia = (index, field, value) => {
+    const newSocialMedia = [...formData.socialMedia]
+    newSocialMedia[index][field] = value
+    setFormData(prev => ({ ...prev, socialMedia: newSocialMedia }))
+  }
+
+  const removeSocialMedia = (index) => {
+    setFormData(prev => ({
+      ...prev,
+      socialMedia: prev.socialMedia.filter((_, i) => i !== index)
+    }))
+  }
+
   const fetchPlug = async (token) => {
     try {
       setLoading(true)
@@ -216,7 +269,8 @@ export default function EditPlug() {
             delivery: {
               enabled: data.services?.delivery?.enabled || false,
               description: data.services?.delivery?.description || '',
-              departments: data.services?.delivery?.departments || []
+              departments: data.services?.delivery?.departments || [],
+              cities: data.services?.delivery?.cities || []
             },
             postal: {
               enabled: data.services?.postal?.enabled || false,
@@ -226,7 +280,8 @@ export default function EditPlug() {
             meetup: {
               enabled: data.services?.meetup?.enabled || false,
               description: data.services?.meetup?.description || '',
-              departments: data.services?.meetup?.departments || []
+              departments: data.services?.meetup?.departments || [],
+              cities: data.services?.meetup?.cities || []
             }
           },
           socialMedia: Array.isArray(data.socialMedia) ? data.socialMedia : []
