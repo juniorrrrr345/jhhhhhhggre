@@ -194,20 +194,6 @@ export default function Dashboard() {
       href: '/admin/plugs'
     },
     {
-      name: 'Boutiques Actives',
-      value: stats.activePlugs,
-      emoji: '✅',
-      color: 'bg-green-500',
-      href: '/admin/plugs?filter=active'
-    },
-    {
-      name: 'Boutiques VIP',
-      value: stats.vipPlugs,
-      emoji: '⭐',
-      color: 'bg-purple-500',
-      href: '/admin/plugs?filter=vip'
-    },
-    {
       name: 'Utilisateurs Bot',
       value: stats.totalUsers,
       emoji: '👥',
@@ -281,7 +267,7 @@ export default function Dashboard() {
               </button>
             </div>
           </div>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             {statsCards.map((card) => (
               <div
                 key={card.name}
