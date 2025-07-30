@@ -270,7 +270,7 @@ export default function NewPlug() {
       if (response.ok && result._id) {
         toast.success('✅ Boutique créée avec succès !')
         setTimeout(() => {
-          router.push('/admin/plugs')
+          router.push('/admin/plugs?refresh=true')
         }, 1000)
       } else {
         throw new Error(result.error || 'Erreur lors de la création')
@@ -295,7 +295,7 @@ export default function NewPlug() {
             </div>
             <button
               type="button"
-              onClick={() => router.push('/admin/plugs')}
+              onClick={() => router.push('/admin/plugs?refresh=true')}
               className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
             >
               <XMarkIcon className="w-4 h-4 mr-2" />
