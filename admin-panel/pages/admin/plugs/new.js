@@ -746,7 +746,8 @@ export default function NewPlug() {
             </div>
           </div>
         </div>
-      </form>
-    </Layout>
+      </div>
+    </form>
+  </Layout>
   )
 }
