@@ -5,7 +5,6 @@ import toast, { Toaster } from 'react-hot-toast'
 import { TrashIcon, PlusIcon, ArrowLeftIcon } from '@heroicons/react/24/outline'
 import { getRobustSync } from '../../../../lib/robust-sync'
 import postalCodeService from '../../../../lib/postalCodeService'
-import { getPostalCodesForCountry, getPostalCodesByDepartment } from '../../../../lib/postal-codes-complete'
 import { simpleApi } from '../../../../lib/api-simple'
 import api from '../../../../lib/api-enhanced'
 
@@ -74,9 +73,41 @@ export default function EditPlug() {
   const [selectedCountries, setSelectedCountries] = useState([])
   const [postalCodeSearch, setPostalCodeSearch] = useState('')
   const [meetupPostalCodeSearch, setMeetupPostalCodeSearch] = useState('')
+  const [postalCodesByCountry, setPostalCodesByCountry] = useState({})
   
   const router = useRouter()
   const { id } = router.query
+
+  // Fonction pour récupérer les codes postaux depuis l'API
+  const fetchPostalCodes = async (country) => {
+    if (postalCodesByCountry[country]) return postalCodesByCountry[country]
+    
+    try {
+      const response = await fetch('/api/cors-proxy', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          endpoint: `/api/postal-codes/${country}`,
+          method: 'GET',
+          token: localStorage.getItem('adminToken')
+        })
+      })
+      
+      if (response.ok) {
+        const data = await response.json()
+        setPostalCodesByCountry(prev => ({
+          ...prev,
+          [country]: data.codes || []
+        }))
+        return data.codes || []
+      }
+    } catch (error) {
+      console.error('Erreur lors de la récupération des codes postaux:', error)
+    }
+    return []
+  }
 
   // Obtenir les départements disponibles pour les pays sélectionnés
   const getAvailableDepartments = () => {
@@ -86,7 +117,7 @@ export default function EditPlug() {
     
     // Créer une structure pour afficher les codes par pays
     selectedCountries.forEach(country => {
-      const codes = getPostalCodesForCountry(country) || []
+      const codes = postalCodesByCountry[country] || []
       if (codes.length > 0) {
         departmentsByCountry.push({
           country,
@@ -110,6 +141,15 @@ export default function EditPlug() {
       fetchPlug(token)
     }
   }, [id])
+
+  // Charger les codes postaux quand les pays sont sélectionnés
+  useEffect(() => {
+    selectedCountries.forEach(country => {
+      if (!postalCodesByCountry[country]) {
+        fetchPostalCodes(country)
+      }
+    })
+  }, [selectedCountries])
 
   const fetchPlug = async (token) => {
     try {
