@@ -436,8 +436,11 @@ export default function NewPlug() {
                         value={formData.services.delivery.description}
                         onChange={(e) => handleServiceChange('delivery', 'description', e.target.value)}
                         className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                        placeholder="Ex: Livraison rapide en moins de 2h"
+                        placeholder="Ex: Livraison disponible sur 75001, 75002, 75003, 92100, 93100"
                       />
+                      <p className="text-xs text-gray-500 mt-1">
+                        💡 Entrez les codes postaux dans la description pour la recherche dans la mini-app
+                      </p>
                       
                       {/* Départements pour la livraison */}
                       {selectedCountries.length > 0 && (
@@ -581,8 +584,11 @@ export default function NewPlug() {
                         value={formData.services.meetup.description}
                         onChange={(e) => handleServiceChange('meetup', 'description', e.target.value)}
                         className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                        placeholder="Ex: Rencontre en lieu sûr"
+                        placeholder="Ex: Meetup disponible sur 75001, 75002, 92100, 93100"
                       />
+                      <p className="text-xs text-gray-500 mt-1">
+                        💡 Entrez les codes postaux dans la description pour la recherche dans la mini-app
+                      </p>
                       
                       {/* Départements pour les meetups */}
                       {selectedCountries.length > 0 && (
