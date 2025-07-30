@@ -137,55 +137,49 @@ export default function ShopSearch() {
     // Fonction pour extraire les codes postaux d'une description
     const extractPostalCodes = (description) => {
       if (!description) return []
-      const codes = new Set()
+      const departments = new Set()
       
       // Patterns pour différents formats de codes postaux par pays
       const patterns = [
         // France: 5 chiffres (75000, 13001, etc.)
         /\b\d{5}\b/g,
+        // Codes génériques 2-3 chiffres pour départements
+        /\b\d{2,3}\b/g,
         // Suisse: 4 chiffres (1000, 8001, etc.)
         /\b\d{4}\b/g,
-        // Belgique: 4 chiffres (1000, 2000, etc.)
-        /\b\d{4}\b/g,
-        // Espagne: 5 chiffres (28001, 08001, etc.)
-        /\b\d{5}\b/g,
-        // Portugal: 4 chiffres + 3 chiffres optionnels (1000, 4000-123)
+        // Autres patterns pour les codes internationaux
         /\b\d{4}(?:-\d{3})?\b/g,
-        // Italie: 5 chiffres (00100, 20121, etc.)
-        /\b\d{5}\b/g,
-        // Allemagne: 5 chiffres (10115, 80331, etc.)
-        /\b\d{5}\b/g,
-        // Pays-Bas: 4 chiffres + 2 lettres optionnelles (1011, 1011AB)
         /\b\d{4}(?:\s?[A-Z]{2})?\b/g,
-        // Royaume-Uni: formats variés (SW1A, EC1A 1BB, etc.)
         /\b[A-Z]{1,2}\d{1,2}[A-Z]?\s?\d?[A-Z]{0,2}\b/g,
-        // Canada: format A1A 1A1
         /\b[A-Z]\d[A-Z]\s?\d[A-Z]\d\b/g,
-        // USA: 5 chiffres ou 5+4 (12345, 12345-6789)
         /\b\d{5}(?:-\d{4})?\b/g,
-        // Australie: 4 chiffres (2000, 3000, etc.)
-        /\b\d{4}\b/g,
-        // Japon: 3 chiffres + 4 chiffres (100-0001)
         /\b\d{3}-\d{4}\b/g,
-        // Brésil: 5 chiffres + 3 chiffres (12345-678)
-        /\b\d{5}-\d{3}\b/g,
-        // Codes génériques 2-3 chiffres pour départements
-        /\b\d{2,3}\b/g
+        /\b\d{5}-\d{3}\b/g
       ]
       
       // Appliquer tous les patterns
       patterns.forEach(pattern => {
         const matches = description.match(pattern) || []
         matches.forEach(code => {
-          // Nettoyer et normaliser le code
           const cleaned = code.trim()
-          if (cleaned.length >= 2) {
-            codes.add(cleaned)
+          
+          // Pour les codes français à 5 chiffres, extraire seulement le département (2 premiers chiffres)
+          if (/^\d{5}$/.test(cleaned)) {
+            const dept = cleaned.substring(0, 2)
+            departments.add(dept)
+          }
+          // Pour les codes à 2-3 chiffres, les garder tels quels
+          else if (/^\d{2,3}$/.test(cleaned)) {
+            departments.add(cleaned)
+          }
+          // Pour les autres formats (internationaux), les garder tels quels
+          else if (cleaned.length >= 2) {
+            departments.add(cleaned)
           }
         })
       })
       
-      return Array.from(codes)
+      return Array.from(departments)
     }
 
     if (!countryFilter) {
@@ -368,21 +362,25 @@ export default function ShopSearch() {
         (serviceFilter === 'postal' && plug.services?.postal?.enabled) ||
         (serviceFilter === 'meetup' && plug.services?.meetup?.enabled)
       
-      const matchesDepartment = departmentFilter === '' || 
-        // Chercher dans les descriptions des services (insensible à la casse pour les codes avec lettres)
-        (plug.services?.delivery?.description && 
-          (plug.services.delivery.description.includes(departmentFilter) || 
-           plug.services.delivery.description.toLowerCase().includes(departmentFilter.toLowerCase()))) ||
-        (plug.services?.meetup?.description && 
-          (plug.services.meetup.description.includes(departmentFilter) ||
-           plug.services.meetup.description.toLowerCase().includes(departmentFilter.toLowerCase()))) ||
-        // Chercher aussi dans postalCodes et departments pour compatibilité
-        (plug.services?.delivery?.postalCodes && plug.services.delivery.postalCodes.some(code => 
-          code === departmentFilter || code.toLowerCase() === departmentFilter.toLowerCase())) ||
-        (plug.services?.meetup?.postalCodes && plug.services.meetup.postalCodes.some(code => 
-          code === departmentFilter || code.toLowerCase() === departmentFilter.toLowerCase())) ||
-        (plug.services?.delivery?.departments && plug.services.delivery.departments.includes(departmentFilter)) ||
-        (plug.services?.meetup?.departments && plug.services.meetup.departments.includes(departmentFilter))
+      const matchesDepartment = departmentFilter === '' || (() => {
+        // Pour un filtre de département (ex: "75"), chercher tous les codes qui commencent par ce département
+        const deptRegex = new RegExp(`\\b${departmentFilter}\\d*\\b`, 'i')
+        
+        return (
+          // Chercher dans les descriptions des services
+          (plug.services?.delivery?.description && deptRegex.test(plug.services.delivery.description)) ||
+          (plug.services?.meetup?.description && deptRegex.test(plug.services.meetup.description)) ||
+          // Chercher aussi dans postalCodes et departments pour compatibilité
+          (plug.services?.delivery?.postalCodes && plug.services.delivery.postalCodes.some(code => 
+            code.startsWith(departmentFilter) || code === departmentFilter)) ||
+          (plug.services?.meetup?.postalCodes && plug.services.meetup.postalCodes.some(code => 
+            code.startsWith(departmentFilter) || code === departmentFilter)) ||
+          (plug.services?.delivery?.departments && plug.services.delivery.departments.some(dept =>
+            dept.startsWith(departmentFilter) || dept === departmentFilter)) ||
+          (plug.services?.meetup?.departments && plug.services.meetup.departments.some(dept =>
+            dept.startsWith(departmentFilter) || dept === departmentFilter))
+        )
+      })()
       
       const matchesVip = vipFilter === '' || 
         (vipFilter === 'vip' && plug.isVip) ||
