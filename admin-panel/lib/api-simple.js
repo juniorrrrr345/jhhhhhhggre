@@ -11,7 +11,7 @@ const makeProxyCall = async (endpoint, method = 'GET', token = null, data = null
   
   // Vérifier le cache d'abord (sauf pour les mutations)
   if (method === 'GET') {
-    const cached = apiCache.get(cacheKey, 120000); // Cache très long : 2 minutes
+    const cached = apiCache.get(cacheKey, 300000); // Cache très long : 5 minutes
     if (cached) {
       console.log(`💾 Cache hit pour: ${endpoint}`);
       // Sauvegarder en fallback aussi
@@ -23,7 +23,7 @@ const makeProxyCall = async (endpoint, method = 'GET', token = null, data = null
   // Anti-spam TRÈS strict pour éviter le rate limiting
   if (retryCount === 0 && !apiCache.canMakeCall(cacheKey)) {
     console.log(`⏳ Rate limit local - attente pour: ${endpoint}`);
-    await sleep(8000); // Augmenté à 8 secondes pour espacer davantage
+    await sleep(15000); // Augmenté à 15 secondes pour éviter complètement le 429
   }
   
   console.log(`🔄 Simple Proxy Call (tentative ${retryCount + 1}): ${method} ${endpoint}`);
