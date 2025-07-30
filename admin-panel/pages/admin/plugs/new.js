@@ -245,23 +245,25 @@ export default function NewPlug() {
 
   return (
     <Layout title="Nouvelle Boutique">
-      <div className="space-y-8">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">Nouvelle Boutique</h1>
-            <p className="text-gray-600">Ajoutez une nouvelle boutique à votre catalogue</p>
+      <form onSubmit={handleSubmit}>
+        <div className="space-y-8">
+          {/* Header */}
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">Nouvelle Boutique</h1>
+              <p className="text-gray-600">Ajoutez une nouvelle boutique à votre catalogue</p>
+            </div>
+            <button
+              type="button"
+              onClick={() => router.push('/admin/plugs')}
+              className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+            >
+              <XMarkIcon className="w-4 h-4 mr-2" />
+              Annuler
+            </button>
           </div>
-          <button
-            onClick={() => router.push('/admin/plugs')}
-            className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
-          >
-            <XMarkIcon className="w-4 h-4 mr-2" />
-            Annuler
-          </button>
-        </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Formulaire principal */}
           <div className="lg:col-span-2 space-y-6">
             {/* Informations de base */}
@@ -723,30 +725,28 @@ export default function NewPlug() {
             {/* Actions */}
             <div className="bg-white shadow rounded-lg">
               <div className="p-6">
-                <form onSubmit={handleSubmit}>
-                  <button
-                    type="submit"
-                    disabled={loading}
-                    className="w-full inline-flex justify-center items-center px-4 py-3 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
-                  >
-                    {loading ? (
-                      <>
-                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                        Création...
-                      </>
-                    ) : (
-                      <>
-                        <PlusIcon className="w-5 h-5 mr-2" />
-                        Créer la boutique
-                      </>
-                    )}
-                  </button>
-                </form>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full inline-flex justify-center items-center px-4 py-3 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+                >
+                  {loading ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                      Création...
+                    </>
+                  ) : (
+                    <>
+                      <PlusIcon className="w-5 h-5 mr-2" />
+                      Créer la boutique
+                    </>
+                  )}
+                </button>
               </div>
             </div>
           </div>
         </div>
-      </div>
+      </form>
     </Layout>
   )
 }
