@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
-import Layout from '../../../components/Layout'
+import Layout from '../../../../components/Layout'
 import toast from 'react-hot-toast'
-import { simpleApi } from '../../../lib/api-simple'
-import { getRobustSync } from '../../../lib/robust-sync'
-import postalCodeService from '../../../lib/postalCodeService'
-import cityService from '../../../lib/cityService'
+import { simpleApi } from '../../../../lib/api-simple'
+import { getRobustSync } from '../../../../lib/robust-sync'
+import postalCodeService from '../../../../lib/postalCodeService'
+import cityService from '../../../../lib/cityService'
 import {
   PlusIcon,
   PhotoIcon,
