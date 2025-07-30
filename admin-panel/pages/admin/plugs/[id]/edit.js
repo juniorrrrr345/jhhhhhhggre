@@ -13,7 +13,8 @@ import {
   GlobeAltIcon,
   DevicePhoneMobileIcon,
   CheckIcon,
-  XMarkIcon
+  XMarkIcon,
+  MagnifyingGlassIcon
 } from '@heroicons/react/24/outline'
 
 // Utiliser les pays du service postal + quelques autres
@@ -180,6 +181,15 @@ export default function EditPlugV2() {
 
       // Mettre à jour les pays sélectionnés
       setSelectedCountries(plug.countries || [])
+      
+      // Debug : afficher les données chargées
+      console.log('Données chargées:', {
+        countries: plug.countries,
+        deliveryEnabled: plug.services?.delivery?.enabled,
+        deliveryCities: plug.services?.delivery?.cities,
+        meetupEnabled: plug.services?.meetup?.enabled,
+        meetupCities: plug.services?.meetup?.cities
+      })
       
     } catch (error) {
       console.error('Erreur lors du chargement:', error)
