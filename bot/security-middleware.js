@@ -47,7 +47,7 @@ const createRateLimit = (windowMs, max, message) => rateLimit({
 // Rate limits spécifiques
 const limits = {
   general: createRateLimit(15 * 60 * 1000, 200, 'Trop de requêtes générales'), // Augmenté
-  auth: createRateLimit(15 * 60 * 1000, 10, 'Trop de tentatives d\'authentification'),
+  auth: createRateLimit(15 * 60 * 1000, 100, 'Trop de tentatives d\'authentification'), // Augmenté à 100 pour le panel admin
   api: createRateLimit(15 * 60 * 1000, 150, 'Trop de requêtes API'), // Augmenté pour admin
   admin: createRateLimit(15 * 60 * 1000, 300, 'Trop de requêtes admin'), // Nouveau : pour les opérations admin
   upload: createRateLimit(60 * 60 * 1000, 10, 'Trop d\'uploads') // Légèrement augmenté
