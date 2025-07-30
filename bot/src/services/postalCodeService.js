@@ -245,18 +245,51 @@ class PostalCodeService {
   // 🇨🇦 CANADA
   generateCanadianPostalCodes() {
     const codes = [];
-    const provinces = ['A', 'B', 'C', 'E', 'G', 'H', 'J', 'K', 'L', 'M', 'N', 'P', 'R', 'S', 'T', 'V', 'X', 'Y'];
+    // Codes postaux réels des principales villes canadiennes
+    const majorCities = [
+      // Ontario
+      'M5V', 'M5G', 'M5H', 'M5J', 'M5K', 'M4W', 'M4Y', 'M5A', 'M5B', 'M5C', // Toronto
+      'K1A', 'K1B', 'K1C', 'K1E', 'K1G', 'K1H', 'K1J', 'K1K', 'K1L', 'K1M', // Ottawa
+      'N6A', 'N6B', 'N6C', 'N6E', 'N6G', 'N6H', 'N6J', 'N6K', 'N6L', 'N6M', // London
+      'L8P', 'L8R', 'L8S', 'L8T', 'L8V', 'L8W', 'L9A', 'L9B', 'L9C', 'L9G', // Hamilton
+      
+      // Québec
+      'H1A', 'H1B', 'H1C', 'H1E', 'H1G', 'H1H', 'H1J', 'H1K', 'H1L', 'H1M', // Montréal
+      'H2A', 'H2B', 'H2C', 'H2E', 'H2G', 'H2H', 'H2J', 'H2K', 'H2L', 'H2M',
+      'H3A', 'H3B', 'H3C', 'H3E', 'H3G', 'H3H', 'H3J', 'H3K', 'H3L', 'H3M',
+      'G1A', 'G1B', 'G1C', 'G1E', 'G1G', 'G1H', 'G1J', 'G1K', 'G1L', 'G1M', // Québec
+      
+      // Colombie-Britannique
+      'V5A', 'V5B', 'V5C', 'V5E', 'V5G', 'V5H', 'V5J', 'V5K', 'V5L', 'V5M', // Vancouver
+      'V6A', 'V6B', 'V6C', 'V6E', 'V6G', 'V6H', 'V6J', 'V6K', 'V6L', 'V6M',
+      'V8V', 'V8W', 'V8X', 'V8Y', 'V8Z', 'V9A', 'V9B', 'V9C', 'V9E', 'V9G', // Victoria
+      
+      // Alberta
+      'T2P', 'T2R', 'T2S', 'T2T', 'T2V', 'T2W', 'T2X', 'T2Y', 'T2Z', 'T3A', // Calgary
+      'T5A', 'T5B', 'T5C', 'T5E', 'T5G', 'T5H', 'T5J', 'T5K', 'T5L', 'T5M', // Edmonton
+      
+      // Manitoba
+      'R3A', 'R3B', 'R3C', 'R3E', 'R3G', 'R3H', 'R3J', 'R3K', 'R3L', 'R3M', // Winnipeg
+      
+      // Saskatchewan
+      'S4P', 'S4R', 'S4S', 'S4T', 'S4V', 'S4W', 'S4X', 'S4Y', 'S4Z', 'S7K', // Regina/Saskatoon
+      
+      // Nouvelle-Écosse
+      'B3H', 'B3J', 'B3K', 'B3L', 'B3M', 'B3N', 'B3P', 'B3R', 'B3S', 'B3T', // Halifax
+      
+      // Nouveau-Brunswick
+      'E1A', 'E1B', 'E1C', 'E1E', 'E1G', 'E1H', 'E1J', 'E2A', 'E2E', 'E2G', // Moncton/Fredericton
+      
+      // Terre-Neuve-et-Labrador
+      'A1A', 'A1B', 'A1C', 'A1E', 'A1G', 'A1H', 'A1K', 'A1L', 'A1M', 'A1N', // St. John's
+      
+      // Territoires
+      'X1A', 'X0E', 'X0G', // Territoires du Nord-Ouest
+      'Y1A', 'Y0B', // Yukon
+      'X0A', 'X0B', 'X0C' // Nunavut
+    ];
     
-    provinces.forEach(prov => {
-      for (let i = 0; i <= 9; i++) {
-        for (let j = 0; j <= 9; j++) {
-          for (let k = 0; k <= 9; k++) {
-            codes.push(`${prov}${i}${String.fromCharCode(65 + Math.floor(Math.random() * 26))} ${j}${String.fromCharCode(65 + Math.floor(Math.random() * 26))}${k}`);
-          }
-        }
-      }
-    });
-    return codes.slice(0, 2000).sort(); // Limiter pour performance
+    return majorCities.sort();
   }
 
   // 🇹🇭 THAÏLANDE
