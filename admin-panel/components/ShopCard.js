@@ -14,6 +14,95 @@ export default function ShopCard({ plug, index, layout = 'grid', currentLanguage
     return null
   }
 
+  // Fonction pour extraire les codes postaux d'une description
+  const extractPostalCodes = (description) => {
+    if (!description) return []
+    const departments = new Set()
+    
+    // D'abord extraire les codes complexes pour éviter les doublons
+    const complexPatterns = [
+      { pattern: /\b\d{5}-\d{4}\b/g, type: 'usa-long' }, // USA: 12345-6789
+      { pattern: /\b\d{5}-\d{3}\b/g, type: 'brazil' }, // Brésil: 01310-100
+      { pattern: /\b\d{4}-\d{3}\b/g, type: 'portugal' }, // Portugal: 4000-123
+      { pattern: /\b\d{3}-\d{4}\b/g, type: 'japan' }, // Japon: 100-0001
+      { pattern: /\b[A-Z]{1,2}\d{1,2}[A-Z]?\s?\d?[A-Z]{0,2}\b/gi, type: 'uk' }, // UK: SW1A 1AA
+      { pattern: /\b[A-Z]\d[A-Z]\s?\d[A-Z]\d\b/gi, type: 'canada' }, // Canada: H2X 1Y7
+      { pattern: /\b\d{4}\s?[A-Z]{2}\b/gi, type: 'netherlands' }, // Pays-Bas: 1011 AB
+      { pattern: /\b\d{5}\b/g, type: 'five-digits' }, // 5 chiffres
+      { pattern: /\b\d{4}\b/g, type: 'four-digits' }, // 4 chiffres
+      { pattern: /\b\d{3}\b/g, type: 'three-digits' }, // 3 chiffres
+      { pattern: /\b\d{2}\b/g, type: 'two-digits' } // 2 chiffres
+    ]
+    
+    // Marquer les positions déjà utilisées pour éviter les doublons
+    const usedPositions = new Set()
+    
+    complexPatterns.forEach(({ pattern, type }) => {
+      let match
+      while ((match = pattern.exec(description)) !== null) {
+        const startPos = match.index
+        const endPos = match.index + match[0].length
+        
+        // Vérifier si cette position n'est pas déjà utilisée
+        let overlap = false
+        for (let i = startPos; i < endPos; i++) {
+          if (usedPositions.has(i)) {
+            overlap = true
+            break
+          }
+        }
+        
+        if (!overlap) {
+          // Marquer les positions comme utilisées
+          for (let i = startPos; i < endPos; i++) {
+            usedPositions.add(i)
+          }
+          
+          const cleaned = match[0].trim().toUpperCase()
+          
+          switch (type) {
+            case 'usa-long': // 12345-6789 → 123
+              departments.add(cleaned.substring(0, 3))
+              break
+            case 'brazil': // 01310-100 → 013
+              departments.add(cleaned.substring(0, 3))
+              break
+            case 'portugal': // 4000-123 → 40
+              departments.add(cleaned.substring(0, 2))
+              break
+            case 'japan': // 100-0001 → 100
+              departments.add(cleaned.substring(0, 3))
+              break
+            case 'uk': // SW1A 1AA → SW1
+              const ukMatch = cleaned.match(/^([A-Z]{1,2}\d{1,2})[A-Z]?/)
+              if (ukMatch) departments.add(ukMatch[1])
+              break
+            case 'canada': // H2X 1Y7 → H2
+              departments.add(cleaned.substring(0, 2))
+              break
+            case 'netherlands': // 1011 AB → 10
+              departments.add(cleaned.substring(0, 2))
+              break
+            case 'five-digits': // 75001 → 75
+              departments.add(cleaned.substring(0, 2))
+              break
+            case 'four-digits': // 1000 → 10
+              departments.add(cleaned.substring(0, 2))
+              break
+            case 'three-digits': // 100 → 100
+              departments.add(cleaned)
+              break
+            case 'two-digits': // 75 → 75
+              departments.add(cleaned)
+              break
+          }
+        }
+      }
+    })
+    
+    return Array.from(departments).sort((a, b) => a.localeCompare(b, undefined, { numeric: true }))
+  }
+
   const translateService = (service) => {
     const translations = {
       'delivery': {
@@ -315,9 +404,15 @@ export default function ShopCard({ plug, index, layout = 'grid', currentLanguage
               }}>
                 <span>🛵</span>
                 <span>{translateService('delivery')}</span>
-                {plug.services?.delivery?.departments && plug.services.delivery.departments.length > 0 && (
+                {plug.services?.delivery?.description && (
                   <span style={{ opacity: 0.8, marginLeft: '2px' }}>
-                    ({plug.services.delivery.departments.sort((a, b) => a.localeCompare(b, undefined, { numeric: true })).slice(0, 3).join(', ')}{plug.services.delivery.departments.length > 3 ? '...' : ''})
+                    {(() => {
+                      const codes = extractPostalCodes(plug.services.delivery.description)
+                      if (codes.length > 0) {
+                        return `(${codes.slice(0, 3).join(', ')}${codes.length > 3 ? '...' : ''})`
+                      }
+                      return ''
+                    })()}
                   </span>
                 )}
               </div>
@@ -354,9 +449,15 @@ export default function ShopCard({ plug, index, layout = 'grid', currentLanguage
               }}>
                 <span>🤝</span>
                 <span>{translateService('meetup')}</span>
-                {plug.services?.meetup?.departments && plug.services.meetup.departments.length > 0 && (
+                {plug.services?.meetup?.description && (
                   <span style={{ opacity: 0.8, marginLeft: '2px' }}>
-                    ({plug.services.meetup.departments.sort((a, b) => a.localeCompare(b, undefined, { numeric: true })).slice(0, 3).join(', ')}{plug.services.meetup.departments.length > 3 ? '...' : ''})
+                    {(() => {
+                      const codes = extractPostalCodes(plug.services.meetup.description)
+                      if (codes.length > 0) {
+                        return `(${codes.slice(0, 3).join(', ')}${codes.length > 3 ? '...' : ''})`
+                      }
+                      return ''
+                    })()}
                   </span>
                 )}
               </div>

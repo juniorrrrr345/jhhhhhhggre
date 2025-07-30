@@ -33,6 +33,91 @@ export default function AccueilAdmin() {
   const [allPlugsData, setAllPlugsData] = useState([]) // Stocker toutes les boutiques
   const router = useRouter()
 
+  // Fonction pour extraire les codes postaux d'une description
+  const extractPostalCodes = (description) => {
+    if (!description) return []
+    const departments = new Set()
+    
+    const complexPatterns = [
+      { pattern: /\b\d{5}-\d{4}\b/g, type: 'usa-long' },
+      { pattern: /\b\d{5}-\d{3}\b/g, type: 'brazil' },
+      { pattern: /\b\d{4}-\d{3}\b/g, type: 'portugal' },
+      { pattern: /\b\d{3}-\d{4}\b/g, type: 'japan' },
+      { pattern: /\b[A-Z]{1,2}\d{1,2}[A-Z]?\s?\d?[A-Z]{0,2}\b/gi, type: 'uk' },
+      { pattern: /\b[A-Z]\d[A-Z]\s?\d[A-Z]\d\b/gi, type: 'canada' },
+      { pattern: /\b\d{4}\s?[A-Z]{2}\b/gi, type: 'netherlands' },
+      { pattern: /\b\d{5}\b/g, type: 'five-digits' },
+      { pattern: /\b\d{4}\b/g, type: 'four-digits' },
+      { pattern: /\b\d{3}\b/g, type: 'three-digits' },
+      { pattern: /\b\d{2}\b/g, type: 'two-digits' }
+    ]
+    
+    const usedPositions = new Set()
+    
+    complexPatterns.forEach(({ pattern, type }) => {
+      let match
+      while ((match = pattern.exec(description)) !== null) {
+        const startPos = match.index
+        const endPos = match.index + match[0].length
+        
+        let overlap = false
+        for (let i = startPos; i < endPos; i++) {
+          if (usedPositions.has(i)) {
+            overlap = true
+            break
+          }
+        }
+        
+        if (!overlap) {
+          for (let i = startPos; i < endPos; i++) {
+            usedPositions.add(i)
+          }
+          
+          const cleaned = match[0].trim().toUpperCase()
+          
+          switch (type) {
+            case 'usa-long':
+              departments.add(cleaned.substring(0, 3))
+              break
+            case 'brazil':
+              departments.add(cleaned.substring(0, 3))
+              break
+            case 'portugal':
+              departments.add(cleaned.substring(0, 2))
+              break
+            case 'japan':
+              departments.add(cleaned.substring(0, 3))
+              break
+            case 'uk':
+              const ukMatch = cleaned.match(/^([A-Z]{1,2}\d{1,2})[A-Z]?/)
+              if (ukMatch) departments.add(ukMatch[1])
+              break
+            case 'canada':
+              departments.add(cleaned.substring(0, 2))
+              break
+            case 'netherlands':
+              departments.add(cleaned.substring(0, 2))
+              break
+            case 'five-digits':
+              departments.add(cleaned.substring(0, 2))
+              break
+            case 'four-digits':
+              departments.add(cleaned.substring(0, 2))
+              break
+            case 'three-digits':
+              departments.add(cleaned)
+              break
+            case 'two-digits':
+              departments.add(cleaned)
+              break
+          }
+        }
+      }
+    })
+    
+    return Array.from(departments).sort((a, b) => a.localeCompare(b, undefined, { numeric: true }))
+  }
+
   useEffect(() => {
     const token = localStorage.getItem('adminToken')
     if (!token) {
@@ -526,8 +611,15 @@ export default function AccueilAdmin() {
                           {plug.services?.delivery?.enabled && (
                             <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">
                               📦 Livraison
-                              {plug.services.delivery.departments && plug.services.delivery.departments.length > 0 && 
-                                ` (${plug.services.delivery.departments.slice(0, 3).join(', ')}${plug.services.delivery.departments.length > 3 ? '...' : ''})`
+                              {plug.services?.delivery?.description && (() => {
+                                const matches = plug.services.delivery.description.match(/\b\d{2,5}\b/g) || []
+                                const codes = [...new Set(matches.map(m => {
+                                  if (m.length === 5) return m.substring(0, 2)
+                                  if (m.length === 4) return m.substring(0, 2)
+                                  return m
+                                }))].sort((a, b) => a.localeCompare(b, undefined, { numeric: true }))
+                                return codes.length > 0 ? ` (${codes.slice(0, 3).join(', ')}${codes.length > 3 ? '...' : ''})` : ''
+                              })()
                               }
                             </span>
                           )}
