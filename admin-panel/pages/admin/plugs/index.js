@@ -236,7 +236,15 @@ export default function AccueilAdmin() {
 
       // 3. Toujours afficher succès et recharger
       toast.success('✅ Boutique supprimée !')
-      fetchPlugs(localStorage.getItem('adminToken'))
+      
+      // Forcer le rechargement complet des données
+      setTimeout(() => {
+        // Vider le cache et recharger
+        simpleApi.clearCache && simpleApi.clearCache()
+        setAllPlugsData([]) // Réinitialiser les données en mémoire
+        setCurrentPage(1) // Retourner à la page 1
+        fetchData(localStorage.getItem('adminToken'))
+      }, 500)
 
     } catch (error) {
       // Même en cas d'erreur, considérer comme succès
