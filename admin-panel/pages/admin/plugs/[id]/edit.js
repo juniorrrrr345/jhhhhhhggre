@@ -135,7 +135,8 @@ export default function EditPlugV2() {
         }
       }
       
-      console.log('Villes chargées:', citiesByCountry)
+      // Log désactivé temporairement pour éviter l'erreur
+      // console.log('Villes chargées:', citiesByCountry)
     }
     
     if (selectedCountries.length > 0) {
@@ -243,7 +244,8 @@ export default function EditPlugV2() {
       
       // Si on active un service et qu'on n'a pas encore chargé les villes, les charger
       if (field === 'enabled' && value === true && selectedCountries.length > 0) {
-        console.log(`Service ${service} activé, villes disponibles:`, citiesByCountry)
+        // Log désactivé temporairement
+        // console.log(`Service ${service} activé, villes disponibles:`, citiesByCountry)
       }
       
       return {
@@ -557,7 +559,7 @@ export default function EditPlugV2() {
                             {getAvailableCities().map(({ country, cities }) => {
                               // Filtrer les villes selon la recherche
                               const filteredCities = citySearch 
-                                ? cityService.searchCities(cities, citySearch)
+                                ? cities.filter(city => city.toLowerCase().includes(citySearch.toLowerCase()))
                                 : cities;
                               
                               if (filteredCities.length === 0) return null;
@@ -696,7 +698,7 @@ export default function EditPlugV2() {
                             {getAvailableCities().map(({ country, cities }) => {
                               // Filtrer les villes selon la recherche
                               const filteredCities = meetupCitySearch 
-                                ? cityService.searchCities(cities, meetupCitySearch)
+                                ? cities.filter(city => city.toLowerCase().includes(meetupCitySearch.toLowerCase()))
                                 : cities;
                               
                               if (filteredCities.length === 0) return null;
