@@ -60,9 +60,21 @@ export default function ReferralsPage() {
       }
       console.log('📊 Réponse API plugs:', plugsResponse)
       
-      // L'API renvoie {plugs: [...]}
-      const plugsData = plugsResponse?.plugs || plugsResponse || []
-      console.log('📊 Boutiques chargées:', plugsData?.length || 0)
+      // Gestion flexible de la réponse API
+      let plugsData = []
+      if (plugsResponse) {
+        if (Array.isArray(plugsResponse)) {
+          plugsData = plugsResponse
+        } else if (plugsResponse.plugs && Array.isArray(plugsResponse.plugs)) {
+          plugsData = plugsResponse.plugs
+        } else if (plugsResponse.data && Array.isArray(plugsResponse.data)) {
+          plugsData = plugsResponse.data
+        } else if (plugsResponse.data && plugsResponse.data.plugs && Array.isArray(plugsResponse.data.plugs)) {
+          plugsData = plugsResponse.data.plugs
+        }
+      }
+      
+      console.log('📊 Boutiques extraites:', plugsData?.length || 0)
       
       if (plugsData && Array.isArray(plugsData)) {
         const plugsWithReferrals = []
@@ -70,20 +82,23 @@ export default function ReferralsPage() {
 
         // Les boutiques ont déjà les données de parrainage dans l'API
         for (const plug of plugsData) {
-          // Les données sont déjà présentes dans l'objet plug
-          plugsWithReferrals.push({
-            ...plug,
-            totalReferred: plug.totalReferred || 0,
-            referredUsers: plug.referredUsers || [],
-            referralLink: plug.referralLink || null,
-            referralCode: plug.referralCode || null
-          })
-          totalReferred += plug.totalReferred || 0
+          if (plug && typeof plug === 'object') {
+            // Les données sont déjà présentes dans l'objet plug
+            plugsWithReferrals.push({
+              ...plug,
+              totalReferred: plug.totalReferred || 0,
+              referredUsers: Array.isArray(plug.referredUsers) ? plug.referredUsers : [],
+              referralLink: plug.referralLink || null,
+              referralCode: plug.referralCode || null,
+              directLink: plug.directLink || null
+            })
+            totalReferred += plug.totalReferred || 0
+          }
         }
 
         setPlugs(plugsWithReferrals)
         setTotalStats({
-          totalPlugs: plugsData.length,
+          totalPlugs: plugsWithReferrals.length,
           totalReferred: totalReferred,
           totalUsers: 0 // À implémenter si nécessaire
         })
@@ -117,9 +132,10 @@ export default function ReferralsPage() {
             const plugsWithReferrals = plugsData.map(plug => ({
               ...plug,
               totalReferred: plug.totalReferred || 0,
-              referredUsers: plug.referredUsers || [],
+              referredUsers: Array.isArray(plug.referredUsers) ? plug.referredUsers : [],
               referralLink: plug.referralLink || null,
-              referralCode: plug.referralCode || null
+              referralCode: plug.referralCode || null,
+              directLink: plug.directLink || null
             }))
             
             setPlugs(plugsWithReferrals)
@@ -174,28 +190,28 @@ export default function ReferralsPage() {
             })
           })
 
-                     if (response.ok) {
-             const referralData = await response.json()
-             referralLink = referralData.referralLink
-             
-             // Mettre à jour la boutique dans l'état local
-             setPlugs(prevPlugs => 
-               prevPlugs.map(p => 
-                 p._id === plug._id 
-                   ? { ...p, ...referralData }
-                   : p
-               )
-             )
-             console.log('✅ Lien généré:', referralLink)
-           } else {
-             const errorData = await response.json()
-             console.error('❌ Erreur API génération lien:', errorData)
-             toast.error(`Erreur API: ${errorData.error || 'Erreur inconnue'}`)
-           }
-         } catch (linkError) {
-           console.error('❌ Erreur génération lien:', linkError)
-           toast.error(`Erreur: ${linkError.message}`)
-         }
+          if (response.ok) {
+            const referralData = await response.json()
+            referralLink = referralData.referralLink
+            
+            // Mettre à jour la boutique dans l'état local
+            setPlugs(prevPlugs => 
+              prevPlugs.map(p => 
+                p._id === plug._id 
+                  ? { ...p, ...referralData }
+                  : p
+              )
+            )
+            console.log('✅ Lien généré:', referralLink)
+          } else {
+            const errorData = await response.json()
+            console.error('❌ Erreur API génération lien:', errorData)
+            toast.error(`Erreur API: ${errorData.error || 'Erreur inconnue'}`)
+          }
+        } catch (linkError) {
+          console.error('❌ Erreur génération lien:', linkError)
+          toast.error(`Erreur: ${linkError.message}`)
+        }
       }
 
       if (referralLink) {
@@ -273,7 +289,8 @@ export default function ReferralsPage() {
           },
           body: JSON.stringify({
             endpoint: '/api/plugs/generate-all-referrals',
-            method: 'POST'
+            method: 'POST',
+            token: token
           })
         }).then(async (response) => {
           if (response.ok) {
@@ -420,13 +437,15 @@ export default function ReferralsPage() {
             </div>
 
             <div className="space-y-4">
-              {plugs.map((plug) => (
+              {plugs.map((plug) => {
+                if (!plug || !plug._id) return null
+                return (
                 <div key={plug._id} className="border border-gray-200 rounded-lg p-4">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <div className="flex items-center space-x-3 mb-2">
                         <h4 className="text-lg font-medium text-gray-900">
-                          {plug.name}
+                          {plug.name || 'Sans nom'}
                         </h4>
                         {plug.isVip && (
                           <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
@@ -436,7 +455,7 @@ export default function ReferralsPage() {
                       </div>
                       
                       <p className="text-sm text-gray-600 mb-3">
-                        {plug.description}
+                        {plug.description || 'Aucune description'}
                       </p>
 
                       {/* Liens de parrainage et direct */}
@@ -548,7 +567,7 @@ export default function ReferralsPage() {
 
                     <div className="ml-4 flex flex-col space-y-2">
                       <button
-                        onClick={() => router.push(`/admin/plugs/${plug._id}`)}
+                        onClick={() => router.push(`/admin/plugs/${plug._id}/edit`)}
                         className="p-2 text-gray-400 hover:text-gray-600"
                         title="Voir détails"
                       >
@@ -558,22 +577,24 @@ export default function ReferralsPage() {
                   </div>
 
                   {/* Liste des utilisateurs parrainés (si disponible) */}
-                  {plug.referredUsers && plug.referredUsers.length > 0 && (
+                  {plug.referredUsers && Array.isArray(plug.referredUsers) && plug.referredUsers.length > 0 && (
                     <div className="mt-4 pt-4 border-t border-gray-200">
                       <h5 className="text-sm font-medium text-gray-900 mb-2">
                         👥 Derniers utilisateurs invités ({plug.referredUsers.length})
                       </h5>
                       <div className="space-y-1">
-                        {plug.referredUsers.slice(0, 3).map((user, index) => (
+                        {plug.referredUsers.slice(0, 3).map((user, index) => {
+                          if (!user) return null
+                          return (
                           <div key={index} className="flex items-center justify-between text-xs text-gray-600">
                             <span>
-                              {user.username ? `@${user.username}` : `Utilisateur ${user.telegramId}`}
+                              {user.username ? `@${user.username}` : `Utilisateur ${user.telegramId || 'inconnu'}`}
                             </span>
                             <span>
-                              {new Date(user.invitedAt).toLocaleDateString('fr-FR')}
+                              {user.invitedAt ? new Date(user.invitedAt).toLocaleDateString('fr-FR') : 'Date inconnue'}
                             </span>
                           </div>
-                        ))}
+                        )})}
                         {plug.referredUsers.length > 3 && (
                           <div className="text-xs text-gray-500">
                             ... et {plug.referredUsers.length - 3} autres
@@ -583,7 +604,7 @@ export default function ReferralsPage() {
                     </div>
                   )}
                 </div>
-              ))}
+              )})}
             </div>
 
             {plugs.length === 0 && (
