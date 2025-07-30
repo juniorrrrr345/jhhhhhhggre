@@ -119,12 +119,20 @@ export default function NewPlug() {
 
   // Charger les codes postaux quand les pays sont sélectionnés
   useEffect(() => {
-    selectedCountries.forEach(country => {
-      if (!postalCodesByCountry[country]) {
-        fetchPostalCodes(country)
+    const loadPostalCodes = async () => {
+      for (const country of selectedCountries) {
+        if (!postalCodesByCountry[country]) {
+          await fetchPostalCodes(country)
+          // Pause entre les requêtes pour éviter le rate limiting
+          await new Promise(resolve => setTimeout(resolve, 1000))
+        }
       }
-    })
-  }, [selectedCountries])
+    }
+    
+    if (selectedCountries.length > 0) {
+      loadPostalCodes()
+    }
+  }, [selectedCountries.join(',')]) // Utiliser join pour éviter les re-renders infinis
 
   const handleInputChange = (field, value) => {
     setFormData(prev => ({
