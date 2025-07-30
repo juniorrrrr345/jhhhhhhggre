@@ -839,8 +839,8 @@ export default function ShopPlugDetail() {
                       }}>
                         {translateService('delivery') || 'Livraison'}
                       </div>
-                      {/* Départements livraison */}
-                      {plug?.services?.delivery?.enabled && plug?.services?.delivery?.departments && plug.services.delivery.departments.length > 0 && (
+                      {/* Description ou départements livraison */}
+                      {plug?.services?.delivery?.enabled && plug?.services?.delivery?.description && (
                         <div style={{ 
                           fontSize: '11px', 
                           color: '#22c55e',
@@ -848,7 +848,7 @@ export default function ShopPlugDetail() {
                           marginBottom: '2px',
                           fontWeight: '500'
                         }}>
-                          📍 {plug.services.delivery.departments.sort((a, b) => parseInt(a) - parseInt(b)).join(', ')}
+                          📍 {plug.services.delivery.description}
                         </div>
                       )}
                       {plug?.services?.delivery?.price && (
@@ -983,8 +983,8 @@ export default function ShopPlugDetail() {
                       }}>
                         {translateService('meetup') || 'Meetup'}
                       </div>
-                      {/* Départements meetup */}
-                      {plug?.services?.meetup?.enabled && plug?.services?.meetup?.departments && plug.services.meetup.departments.length > 0 && (
+                      {/* Description ou départements meetup */}
+                      {plug?.services?.meetup?.enabled && plug?.services?.meetup?.description && (
                         <div style={{ 
                           fontSize: '11px', 
                           color: '#f59e0b',
@@ -992,7 +992,7 @@ export default function ShopPlugDetail() {
                           marginBottom: '2px',
                           fontWeight: '500'
                         }}>
-                          📍 {plug.services.meetup.departments.sort((a, b) => parseInt(a) - parseInt(b)).join(', ')}
+                          📍 {plug.services.meetup.description}
                         </div>
                       )}
                       {plug?.services?.meetup?.price && (

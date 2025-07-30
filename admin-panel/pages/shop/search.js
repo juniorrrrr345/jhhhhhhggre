@@ -134,10 +134,30 @@ export default function ShopSearch() {
 
   // Récupérer les départements disponibles selon le pays sélectionné
   const getAvailableDepartments = () => {
+    // Fonction pour extraire les codes postaux d'une description
+    const extractPostalCodes = (description) => {
+      if (!description) return []
+      // Regex pour trouver les codes postaux (2 à 5 chiffres)
+      const regex = /\b\d{2,5}\b/g
+      const matches = description.match(regex) || []
+      return matches.filter(code => {
+        // Filtrer pour garder seulement les codes qui ressemblent à des codes postaux
+        const num = parseInt(code)
+        return code.length >= 2 && code.length <= 5 && num >= 1 && num <= 99999
+      })
+    }
+
     if (!countryFilter) {
       // Si aucun pays sélectionné, montrer les codes postaux trouvés dans les boutiques
       const departments = new Set()
       allPlugs.forEach(plug => {
+        // Extraire les codes postaux des descriptions
+        if (plug.services?.delivery?.description) {
+          extractPostalCodes(plug.services.delivery.description).forEach(code => departments.add(code))
+        }
+        if (plug.services?.meetup?.description) {
+          extractPostalCodes(plug.services.meetup.description).forEach(code => departments.add(code))
+        }
         // Priorité aux codes postaux générés
         if (plug.services?.delivery?.postalCodes && Array.isArray(plug.services.delivery.postalCodes)) {
           plug.services.delivery.postalCodes.forEach(code => {
@@ -295,9 +315,12 @@ export default function ShopSearch() {
         (serviceFilter === 'meetup' && plug.services?.meetup?.enabled)
       
       const matchesDepartment = departmentFilter === '' || 
+        // Chercher dans les descriptions des services
+        (plug.services?.delivery?.description && plug.services.delivery.description.includes(departmentFilter)) ||
+        (plug.services?.meetup?.description && plug.services.meetup.description.includes(departmentFilter)) ||
+        // Chercher aussi dans postalCodes et departments pour compatibilité
         (plug.services?.delivery?.postalCodes && plug.services.delivery.postalCodes.includes(departmentFilter)) ||
         (plug.services?.meetup?.postalCodes && plug.services.meetup.postalCodes.includes(departmentFilter)) ||
-        // Fallback sur departments pour compatibilité
         (plug.services?.delivery?.departments && plug.services.delivery.departments.includes(departmentFilter)) ||
         (plug.services?.meetup?.departments && plug.services.meetup.departments.includes(departmentFilter))
       
