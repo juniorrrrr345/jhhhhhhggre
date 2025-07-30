@@ -457,7 +457,7 @@ export default function NewPlug() {
                             })}
                           </div>
                           <p className="text-xs text-gray-500 mt-1">
-                            Sélectionnés: {(formData.services.delivery.departments || []).length} départements
+                            Sélectionnés: {(formData.services.delivery.cities || []).length} villes
                           </p>
                         </div>
                       )}
@@ -596,7 +596,7 @@ export default function NewPlug() {
                             })}
                           </div>
                           <p className="text-xs text-gray-500 mt-1">
-                            Sélectionnés: {(formData.services.meetup.departments || []).length} départements
+                            Sélectionnés: {(formData.services.meetup.cities || []).length} villes
                           </p>
                         </div>
                       )}
