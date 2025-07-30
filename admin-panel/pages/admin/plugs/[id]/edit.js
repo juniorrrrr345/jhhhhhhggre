@@ -104,6 +104,9 @@ export default function EditPlugV2() {
 
   // Charger les villes quand les pays sont sélectionnés
   useEffect(() => {
+    // Ne pas charger les villes tant que les données du plug ne sont pas chargées
+    if (loading) return
+    
     const loadCities = async () => {
       for (const country of selectedCountries) {
         if (!citiesByCountry[country]) {
@@ -126,7 +129,7 @@ export default function EditPlugV2() {
     if (selectedCountries.length > 0) {
       loadCities()
     }
-  }, [selectedCountries.join(',')]) // Utiliser join pour éviter les re-renders infinis
+  }, [selectedCountries.join(','), loading]) // Utiliser join pour éviter les re-renders infinis
 
   // Charger les données du plug
   const fetchPlug = async () => {
@@ -210,19 +213,33 @@ export default function EditPlugV2() {
   }
 
   const handleServiceChange = (service, field, value) => {
-    setFormData(prev => ({
-      ...prev,
-      services: {
-        ...prev.services,
-        [service]: {
-          ...prev.services[service],
-          [field]: value
+    setFormData(prev => {
+      // Protection contre les services non définis
+      if (!prev.services[service]) {
+        console.error(`Service ${service} non défini dans formData`)
+        return prev
+      }
+      
+      return {
+        ...prev,
+        services: {
+          ...prev.services,
+          [service]: {
+            ...prev.services[service],
+            [field]: value
+          }
         }
       }
-    }))
+    })
   }
 
   const toggleCity = (service, city) => {
+    // Protection contre les services non définis
+    if (!formData.services[service]) {
+      console.error(`Service ${service} non défini`)
+      return
+    }
+    
     const currentCities = formData.services[service].cities || []
     const newCities = currentCities.includes(city)
       ? currentCities.filter(c => c !== city)
@@ -345,7 +362,7 @@ export default function EditPlugV2() {
     } catch (error) {
       console.error('Erreur:', error)
       toast.error(error.message || 'Erreur lors de la création de la boutique')
-      setLoading(false)
+      setSaving(false)
     }
   }
 
