@@ -29,13 +29,18 @@ class CityService {
         const data = await response.json();
         this.citiesCache[country] = data.cities || [];
         return data.cities || [];
+      } else if (response.status === 404) {
+        // Pays non trouvé, c'est normal
+        console.log(`Pas de villes disponibles pour ${country}`);
+        this.citiesCache[country] = [];
+        return [];
+      } else {
+        throw new Error(`Erreur API: ${response.status}`);
       }
     } catch (error) {
       console.error('Erreur lors de la récupération des villes:', error);
+      throw error;
     }
-    
-    // Fallback : retourner une liste vide
-    return [];
   }
 
   // Rechercher des villes

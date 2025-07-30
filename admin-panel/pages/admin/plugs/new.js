@@ -105,9 +105,18 @@ export default function NewPlug() {
     const loadCities = async () => {
       for (const country of selectedCountries) {
         if (!citiesByCountry[country]) {
-          await fetchCities(country)
-          // Pause entre les requêtes pour éviter le rate limiting
-          await new Promise(resolve => setTimeout(resolve, 1000))
+          try {
+            await fetchCities(country)
+            // Pause entre les requêtes pour éviter le rate limiting
+            await new Promise(resolve => setTimeout(resolve, 1000))
+          } catch (error) {
+            console.log(`Pas de villes disponibles pour ${country}`)
+            // Marquer le pays comme traité même s'il n'y a pas de villes
+            setCitiesByCountry(prev => ({
+              ...prev,
+              [country]: []
+            }))
+          }
         }
       }
     }
