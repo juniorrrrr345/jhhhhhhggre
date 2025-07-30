@@ -125,7 +125,11 @@ export default function AccueilAdmin() {
       
     } catch (error) {
       console.error('❌ Erreur chargement données:', error)
-      toast.error('Erreur de chargement')
+      console.error('Détails:', error.message, error.stack)
+      // Ne pas afficher l'erreur si les données sont quand même chargées
+      if (plugs.length === 0) {
+        toast.error('Erreur de chargement')
+      }
     } finally {
       setLoading(false)
     }
@@ -198,8 +202,8 @@ export default function AccueilAdmin() {
         vipPlugs
       }))
       
-      console.log('✅ Admin: Boutiques affichées:', paginatedPlugs.length)
-      return { plugs: paginatedPlugs, total: allPlugs.length, totalPages }
+      console.log('✅ Admin: Total boutiques:', allPlugs.length)
+      return { plugs: allPlugs, total: allPlugs.length }
       
     } catch (error) {
       console.error('❌ Erreur chargement admin plugs:', error)
