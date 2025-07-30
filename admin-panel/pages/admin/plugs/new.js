@@ -172,9 +172,7 @@ export default function NewPlug() {
   }
 
   const handleSubmit = async (e) => {
-    if (e && e.preventDefault) {
-      e.preventDefault()
-    }
+    e.preventDefault()
     
     if (!formData.name.trim()) {
       toast.error('Le nom de la boutique est requis')
@@ -184,96 +182,63 @@ export default function NewPlug() {
     setLoading(true)
 
     try {
-      // Préparer les données
+      // Préparer les données exactement comme l'API les attend
       const plugData = {
         name: formData.name.trim(),
         image: formData.image || '',
-        telegramLink: formData.telegramLink || '',
         countries: formData.countries,
-        isActive: formData.isActive,
         isVip: formData.isVip,
-        vipOrder: formData.vipOrder,
         services: {
           delivery: {
             enabled: formData.services.delivery.enabled,
-            description: formData.services.delivery.description.trim(),
-            departments: formData.services.delivery.departments
+            description: formData.services.delivery.description || '',
+            departments: formData.services.delivery.departments || []
           },
           postal: {
             enabled: formData.services.postal.enabled,
-            description: formData.services.postal.description.trim(),
-            countries: formData.services.postal.countries
+            description: formData.services.postal.description || '',
+            countries: formData.services.postal.countries || []
           },
           meetup: {
             enabled: formData.services.meetup.enabled,
-            description: formData.services.meetup.description.trim(),
-            departments: formData.services.meetup.departments
+            description: formData.services.meetup.description || '',
+            departments: formData.services.meetup.departments || []
           }
+        },
+        contact: {
+          telegram: formData.telegramLink || '@defaultcontact'
         },
         socialMedia: formData.socialMedia.filter(sm => sm.name && sm.url)
       }
 
-      console.log('📝 Envoi des données:', plugData)
+      // Appel simple et direct à l'API
+      const response = await fetch('/api/cors-proxy', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          endpoint: '/api/plugs',
+          method: 'POST',
+          token: localStorage.getItem('adminToken'),
+          data: plugData
+        })
+      })
 
-      // Utiliser l'API simple avec gestion d'erreur améliorée
-      const token = localStorage.getItem('adminToken')
-      if (!token) {
-        toast.error('Session expirée, veuillez vous reconnecter')
-        router.push('/')
-        return
-      }
-
-      // Essayer de créer via l'API
-      try {
-        const result = await simpleApi.createPlug(token, plugData)
-        
-        if (result && result._id) {
-          toast.success('✅ Boutique créée avec succès !')
-          
-          // Attendre un peu avant la redirection pour que l'utilisateur voie le message
-          setTimeout(() => {
-            router.push('/admin/plugs')
-          }, 1500)
-        } else {
-          throw new Error('Réponse invalide du serveur')
-        }
-      } catch (apiError) {
-        console.error('Erreur API:', apiError)
-        
-        // Si l'API est down, sauvegarder localement
-        if (apiError.message && (apiError.message.includes('fetch') || apiError.message.includes('network'))) {
-          // Créer en local avec stockage temporaire
-          const localId = 'local_' + Date.now()
-          const localPlug = { _id: localId, ...plugData, createdAt: new Date().toISOString() }
-          
-          // Sauvegarder dans localStorage
-          const existingPlugs = JSON.parse(localStorage.getItem('localPlugs') || '[]')
-          existingPlugs.push(localPlug)
-          localStorage.setItem('localPlugs', JSON.stringify(existingPlugs))
-          
-          toast.success('✅ Boutique créée localement (sera synchronisée plus tard)')
-          
-          setTimeout(() => {
-            router.push('/admin/plugs')
-          }, 1500)
-        } else {
-          // Erreur de validation ou autre
-          throw apiError
-        }
+      const result = await response.json()
+      
+      if (response.ok && result._id) {
+        toast.success('✅ Boutique créée avec succès !')
+        setTimeout(() => {
+          router.push('/admin/plugs')
+        }, 1000)
+      } else {
+        throw new Error(result.error || 'Erreur lors de la création')
       }
 
     } catch (error) {
-      console.error('❌ Erreur création:', error)
-      
-      // Message d'erreur plus spécifique
-      if (error.response && error.response.data && error.response.data.error) {
-        toast.error(error.response.data.error)
-      } else if (error.message) {
-        toast.error(error.message)
-      } else {
-        toast.error('Erreur lors de la création de la boutique')
-      }
-    } finally {
+      console.error('Erreur:', error)
+      toast.error(error.message || 'Erreur lors de la création de la boutique')
       setLoading(false)
     }
   }
