@@ -139,44 +139,85 @@ export default function ShopSearch() {
       if (!description) return []
       const departments = new Set()
       
-      // Patterns pour différents formats de codes postaux par pays
-      const patterns = [
-        // France: 5 chiffres (75000, 13001, etc.)
-        /\b\d{5}\b/g,
-        // Codes génériques 2-3 chiffres pour départements
-        /\b\d{2,3}\b/g,
-        // Suisse: 4 chiffres (1000, 8001, etc.)
-        /\b\d{4}\b/g,
-        // Autres patterns pour les codes internationaux
-        /\b\d{4}(?:-\d{3})?\b/g,
-        /\b\d{4}(?:\s?[A-Z]{2})?\b/g,
-        /\b[A-Z]{1,2}\d{1,2}[A-Z]?\s?\d?[A-Z]{0,2}\b/g,
-        /\b[A-Z]\d[A-Z]\s?\d[A-Z]\d\b/g,
-        /\b\d{5}(?:-\d{4})?\b/g,
-        /\b\d{3}-\d{4}\b/g,
-        /\b\d{5}-\d{3}\b/g
+      // D'abord extraire les codes complexes pour éviter les doublons
+      const complexPatterns = [
+        { pattern: /\b\d{5}-\d{4}\b/g, type: 'usa-long' }, // USA: 12345-6789
+        { pattern: /\b\d{5}-\d{3}\b/g, type: 'brazil' }, // Brésil: 01310-100
+        { pattern: /\b\d{4}-\d{3}\b/g, type: 'portugal' }, // Portugal: 4000-123
+        { pattern: /\b\d{3}-\d{4}\b/g, type: 'japan' }, // Japon: 100-0001
+        { pattern: /\b[A-Z]{1,2}\d{1,2}[A-Z]?\s?\d?[A-Z]{0,2}\b/gi, type: 'uk' }, // UK: SW1A 1AA
+        { pattern: /\b[A-Z]\d[A-Z]\s?\d[A-Z]\d\b/gi, type: 'canada' }, // Canada: H2X 1Y7
+        { pattern: /\b\d{4}\s?[A-Z]{2}\b/gi, type: 'netherlands' }, // Pays-Bas: 1011 AB
+        { pattern: /\b\d{5}\b/g, type: 'five-digits' }, // 5 chiffres
+        { pattern: /\b\d{4}\b/g, type: 'four-digits' }, // 4 chiffres
+        { pattern: /\b\d{3}\b/g, type: 'three-digits' }, // 3 chiffres
+        { pattern: /\b\d{2}\b/g, type: 'two-digits' } // 2 chiffres
       ]
       
-      // Appliquer tous les patterns
-      patterns.forEach(pattern => {
-        const matches = description.match(pattern) || []
-        matches.forEach(code => {
-          const cleaned = code.trim()
+      // Marquer les positions déjà utilisées pour éviter les doublons
+      const usedPositions = new Set()
+      
+      complexPatterns.forEach(({ pattern, type }) => {
+        let match
+        while ((match = pattern.exec(description)) !== null) {
+          const startPos = match.index
+          const endPos = match.index + match[0].length
           
-          // Pour les codes français à 5 chiffres, extraire seulement le département (2 premiers chiffres)
-          if (/^\d{5}$/.test(cleaned)) {
-            const dept = cleaned.substring(0, 2)
-            departments.add(dept)
+          // Vérifier si cette position n'est pas déjà utilisée
+          let overlap = false
+          for (let i = startPos; i < endPos; i++) {
+            if (usedPositions.has(i)) {
+              overlap = true
+              break
+            }
           }
-          // Pour les codes à 2-3 chiffres, les garder tels quels
-          else if (/^\d{2,3}$/.test(cleaned)) {
-            departments.add(cleaned)
+          
+          if (!overlap) {
+            // Marquer les positions comme utilisées
+            for (let i = startPos; i < endPos; i++) {
+              usedPositions.add(i)
+            }
+            
+            const cleaned = match[0].trim().toUpperCase()
+            
+            switch (type) {
+              case 'usa-long': // 12345-6789 → 123
+                departments.add(cleaned.substring(0, 3))
+                break
+              case 'brazil': // 01310-100 → 013
+                departments.add(cleaned.substring(0, 3))
+                break
+              case 'portugal': // 4000-123 → 40
+                departments.add(cleaned.substring(0, 2))
+                break
+              case 'japan': // 100-0001 → 100
+                departments.add(cleaned.substring(0, 3))
+                break
+              case 'uk': // SW1A 1AA → SW1
+                const ukMatch = cleaned.match(/^([A-Z]{1,2}\d{1,2})[A-Z]?/)
+                if (ukMatch) departments.add(ukMatch[1])
+                break
+              case 'canada': // H2X 1Y7 → H2
+                departments.add(cleaned.substring(0, 2))
+                break
+              case 'netherlands': // 1011 AB → 10
+                departments.add(cleaned.substring(0, 2))
+                break
+              case 'five-digits': // 75001 → 75
+                departments.add(cleaned.substring(0, 2))
+                break
+              case 'four-digits': // 1000 → 10
+                departments.add(cleaned.substring(0, 2))
+                break
+              case 'three-digits': // 100 → 100
+                departments.add(cleaned)
+                break
+              case 'two-digits': // 75 → 75
+                departments.add(cleaned)
+                break
+            }
           }
-          // Pour les autres formats (internationaux), les garder tels quels
-          else if (cleaned.length >= 2) {
-            departments.add(cleaned)
-          }
-        })
+        }
       })
       
       return Array.from(departments)
@@ -193,26 +234,35 @@ export default function ShopSearch() {
         if (plug.services?.meetup?.description) {
           extractPostalCodes(plug.services.meetup.description).forEach(code => departments.add(code))
         }
-        // Priorité aux codes postaux générés
+        // Simplifier aussi les codes postaux stockés
         if (plug.services?.delivery?.postalCodes && Array.isArray(plug.services.delivery.postalCodes)) {
           plug.services.delivery.postalCodes.forEach(code => {
-            if (code && code.trim() !== '') departments.add(code)
+            if (code && code.trim() !== '') {
+              // Utiliser extractPostalCodes pour simplifier
+              extractPostalCodes(code).forEach(simplified => departments.add(simplified))
+            }
           })
         }
         if (plug.services?.meetup?.postalCodes && Array.isArray(plug.services.meetup.postalCodes)) {
           plug.services.meetup.postalCodes.forEach(code => {
-            if (code && code.trim() !== '') departments.add(code)
+            if (code && code.trim() !== '') {
+              extractPostalCodes(code).forEach(simplified => departments.add(simplified))
+            }
           })
         }
         // Fallback sur departments pour compatibilité
         if (plug.services?.delivery?.departments && Array.isArray(plug.services.delivery.departments)) {
           plug.services.delivery.departments.forEach(dept => {
-            if (dept && dept.trim() !== '') departments.add(dept)
+            if (dept && dept.trim() !== '') {
+              extractPostalCodes(dept).forEach(simplified => departments.add(simplified))
+            }
           })
         }
         if (plug.services?.meetup?.departments && Array.isArray(plug.services.meetup.departments)) {
           plug.services.meetup.departments.forEach(dept => {
-            if (dept && dept.trim() !== '') departments.add(dept)
+            if (dept && dept.trim() !== '') {
+              extractPostalCodes(dept).forEach(simplified => departments.add(simplified))
+            }
           })
         }
       })
@@ -232,25 +282,33 @@ export default function ShopSearch() {
         if (plug.services?.meetup?.description) {
           extractPostalCodes(plug.services.meetup.description).forEach(code => countryDepartments.add(code))
         }
-        // Aussi depuis postalCodes et departments
+        // Simplifier aussi les codes postaux stockés
         if (plug.services?.delivery?.postalCodes && Array.isArray(plug.services.delivery.postalCodes)) {
           plug.services.delivery.postalCodes.forEach(code => {
-            if (code && code.trim() !== '') countryDepartments.add(code)
+            if (code && code.trim() !== '') {
+              extractPostalCodes(code).forEach(simplified => countryDepartments.add(simplified))
+            }
           })
         }
         if (plug.services?.meetup?.postalCodes && Array.isArray(plug.services.meetup.postalCodes)) {
           plug.services.meetup.postalCodes.forEach(code => {
-            if (code && code.trim() !== '') countryDepartments.add(code)
+            if (code && code.trim() !== '') {
+              extractPostalCodes(code).forEach(simplified => countryDepartments.add(simplified))
+            }
           })
         }
         if (plug.services?.delivery?.departments && Array.isArray(plug.services.delivery.departments)) {
           plug.services.delivery.departments.forEach(dept => {
-            if (dept && dept.trim() !== '') countryDepartments.add(dept)
+            if (dept && dept.trim() !== '') {
+              extractPostalCodes(dept).forEach(simplified => countryDepartments.add(simplified))
+            }
           })
         }
         if (plug.services?.meetup?.departments && Array.isArray(plug.services.meetup.departments)) {
           plug.services.meetup.departments.forEach(dept => {
-            if (dept && dept.trim() !== '') countryDepartments.add(dept)
+            if (dept && dept.trim() !== '') {
+              extractPostalCodes(dept).forEach(simplified => countryDepartments.add(simplified))
+            }
           })
         }
       }
