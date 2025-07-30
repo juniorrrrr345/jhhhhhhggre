@@ -1503,22 +1503,32 @@ const handlePlugDetails = async (ctx, plugId, returnContext = 'top_plugs') => {
     const services = [];
     if (plug.services?.delivery?.enabled) {
       const serviceName = getTranslation('service_delivery', currentLang, customTranslations);
-      const departments = plug.services.delivery.departments || [];
-      if (departments.length > 0) {
-        const departmentsText = departments.sort((a, b) => parseInt(a) - parseInt(b)).join(', ');
-        services.push(`📦 **${serviceName}** : ${departmentsText}`);
+      const description = plug.services.delivery.description;
+      if (description && description.trim() !== '') {
+        services.push(`📦 **${serviceName}** : ${description}`);
       } else {
-        services.push(`📦 **${serviceName}** : Tous départements`);
+        const departments = plug.services.delivery.departments || [];
+        if (departments.length > 0) {
+          const departmentsText = departments.sort((a, b) => parseInt(a) - parseInt(b)).join(', ');
+          services.push(`📦 **${serviceName}** : ${departmentsText}`);
+        } else {
+          services.push(`📦 **${serviceName}** : Tous départements`);
+        }
       }
     }
     if (plug.services?.meetup?.enabled) {
       const serviceName = getTranslation('service_meetup', currentLang, customTranslations);
-      const departments = plug.services.meetup.departments || [];
-      if (departments.length > 0) {
-        const departmentsText = departments.sort((a, b) => parseInt(a) - parseInt(b)).join(', ');
-        services.push(`🤝 **${serviceName}** : ${departmentsText}`);
+      const description = plug.services.meetup.description;
+      if (description && description.trim() !== '') {
+        services.push(`🤝 **${serviceName}** : ${description}`);
       } else {
-        services.push(`🤝 **${serviceName}** : Tous départements`);
+        const departments = plug.services.meetup.departments || [];
+        if (departments.length > 0) {
+          const departmentsText = departments.sort((a, b) => parseInt(a) - parseInt(b)).join(', ');
+          services.push(`🤝 **${serviceName}** : ${departmentsText}`);
+        } else {
+          services.push(`🤝 **${serviceName}** : Tous départements`);
+        }
       }
     }
     if (plug.services?.postal?.enabled) {
