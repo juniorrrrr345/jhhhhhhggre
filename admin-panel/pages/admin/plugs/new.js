@@ -135,19 +135,33 @@ export default function NewPlug() {
   }
 
   const handleServiceChange = (service, field, value) => {
-    setFormData(prev => ({
-      ...prev,
-      services: {
-        ...prev.services,
-        [service]: {
-          ...prev.services[service],
-          [field]: value
+    setFormData(prev => {
+      // Protection contre les services non définis
+      if (!prev.services[service]) {
+        console.error(`Service ${service} non défini dans formData`)
+        return prev
+      }
+      
+      return {
+        ...prev,
+        services: {
+          ...prev.services,
+          [service]: {
+            ...prev.services[service],
+            [field]: value
+          }
         }
       }
-    }))
+    })
   }
 
   const toggleCity = (service, city) => {
+    // Protection contre les services non définis
+    if (!formData.services[service]) {
+      console.error(`Service ${service} non défini`)
+      return
+    }
+    
     const currentCities = formData.services[service].cities || []
     const newCities = currentCities.includes(city)
       ? currentCities.filter(c => c !== city)
@@ -543,7 +557,7 @@ export default function NewPlug() {
                       />
                       
                       {/* Départements pour les meetups */}
-                                              {selectedCountries.length > 0 && (
+                      {selectedCountries.length > 0 && (
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-2">
                             📍 Villes de meetup disponibles :
