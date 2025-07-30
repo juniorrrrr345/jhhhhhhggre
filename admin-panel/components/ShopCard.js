@@ -274,7 +274,9 @@ export default function ShopCard({ plug, index, layout = 'grid', currentLanguage
             <span style={{ fontSize: '16px' }}>
               {showCountry && filteredCountry 
                 ? getCountryFlag(filteredCountry) 
-                : (plug.countries && plug.countries.length > 0 ? getCountryFlag(plug.countries[0]) : '🌍')
+                : (plug.countries && plug.countries.length > 0 
+                  ? plug.countries.map(country => getCountryFlag(country)).join(' ')
+                  : '🌍')
               }
             </span>
             <h3 style={{ 

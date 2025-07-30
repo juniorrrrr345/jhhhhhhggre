@@ -253,7 +253,7 @@ export default function ShopPlugDetail() {
     ))
   }
 
-  const getCountryFlag = (countries) => {
+  const getCountryFlags = (countries) => {
     if (!countries || countries.length === 0) return '🌍'
     const countryFlagMap = {
       'France': '🇫🇷',
@@ -265,9 +265,50 @@ export default function ShopPlugDetail() {
       'Italie': '🇮🇹',
       'Portugal': '🇵🇹',
       'Royaume-Uni': '🇬🇧',
-      'Pays-Bas': '🇳🇱'
+      'Pays-Bas': '🇳🇱',
+      'Luxembourg': '🇱🇺',
+      'Autriche': '🇦🇹',
+      'Irlande': '🇮🇪',
+      'Danemark': '🇩🇰',
+      'Suède': '🇸🇪',
+      'Norvège': '🇳🇴',
+      'Finlande': '🇫🇮',
+      'Islande': '🇮🇸',
+      'Pologne': '🇵🇱',
+      'République Tchèque': '🇨🇿',
+      'Slovaquie': '🇸🇰',
+      'Hongrie': '🇭🇺',
+      'Slovénie': '🇸🇮',
+      'Croatie': '🇭🇷',
+      'Roumanie': '🇷🇴',
+      'Bulgarie': '🇧🇬',
+      'Grèce': '🇬🇷',
+      'Chypre': '🇨🇾',
+      'Malte': '🇲🇹',
+      'Estonie': '🇪🇪',
+      'Lettonie': '🇱🇻',
+      'Lituanie': '🇱🇹',
+      'Monaco': '🇲🇨',
+      'Andorre': '🇦🇩',
+      'Saint-Marin': '🇸🇲',
+      'Liechtenstein': '🇱🇮',
+      'États-Unis': '🇺🇸',
+      'USA': '🇺🇸',
+      'Brésil': '🇧🇷',
+      'Japon': '🇯🇵',
+      'Australie': '🇦🇺',
+      'Thaïlande': '🇹🇭',
+      'Maroc': '🇲🇦',
+      'Tunisie': '🇹🇳',
+      'Sénégal': '🇸🇳',
+      'Algérie': '🇩🇿',
+      'Madagascar': '🇲🇬',
+      'Cameroun': '🇨🇲',
+      'Autre': '🌍'
     }
-    return countryFlagMap[countries[0]] || '🌍'
+    
+    // Retourner tous les drapeaux
+    return countries.map(country => countryFlagMap[country] || '🌍').join(' ')
   }
 
   const handleVote = async () => {
