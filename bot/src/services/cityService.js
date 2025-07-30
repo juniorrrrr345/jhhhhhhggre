@@ -340,8 +340,7 @@ class CityService {
         'Guidiguis', 'Bogo', 'Batibo', 'Yabassi', 'Figuil', 'Makénéné', 'Gazawa', 'Tcholliré'
       ].sort(),
       
-      // Ajout de "Autre" pour les villes non listées
-      Autre: ['Autre ville / Other city'].sort()
+
     };
   }
 

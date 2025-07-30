@@ -45,6 +45,10 @@ const plugSchema = new mongoose.Schema({
       cities: [{
         type: String,
         trim: true
+      }],
+      postalCodes: [{
+        type: String,
+        trim: true
       }]
     },
     postal: {
@@ -75,6 +79,10 @@ const plugSchema = new mongoose.Schema({
         trim: true
       }],
       cities: [{
+        type: String,
+        trim: true
+      }],
+      postalCodes: [{
         type: String,
         trim: true
       }]

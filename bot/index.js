@@ -2948,6 +2948,15 @@ app.post('/api/plugs', limits.admin, authenticateAdmin, async (req, res) => {
     // Créer le nouveau plug avec logging détaillé
     console.log('🔨 Création objet Plug...');
     
+    // Convertir les villes en codes postaux
+    const cityToPostalService = require('./src/services/cityToPostalService');
+    
+    const deliveryCities = plugData.services?.delivery?.cities || [];
+    const deliveryPostalCodes = cityToPostalService.getPostalCodesForCities(deliveryCities);
+    
+    const meetupCities = plugData.services?.meetup?.cities || [];
+    const meetupPostalCodes = cityToPostalService.getPostalCodesForCities(meetupCities);
+    
     const newPlug = new Plug({
       name: plugData.name,
       image: plugData.image || '',
@@ -2960,7 +2969,9 @@ app.post('/api/plugs', limits.admin, authenticateAdmin, async (req, res) => {
         delivery: {
           enabled: plugData.services?.delivery?.enabled || false,
           description: plugData.services?.delivery?.description || '',
-          departments: plugData.services?.delivery?.departments || []
+          departments: plugData.services?.delivery?.departments || [],
+          cities: deliveryCities,
+          postalCodes: deliveryPostalCodes
         },
         postal: {
           enabled: plugData.services?.postal?.enabled || false,
@@ -2970,7 +2981,9 @@ app.post('/api/plugs', limits.admin, authenticateAdmin, async (req, res) => {
         meetup: {
           enabled: plugData.services?.meetup?.enabled || false,
           description: plugData.services?.meetup?.description || '',
-          departments: plugData.services?.meetup?.departments || []
+          departments: plugData.services?.meetup?.departments || [],
+          cities: meetupCities,
+          postalCodes: meetupPostalCodes
         }
       },
       socialMedia: (plugData.socialMedia || []).filter(sm => sm.name && sm.emoji && sm.url),
@@ -3212,11 +3225,22 @@ app.put('/api/plugs/:id', authenticateAdmin, async (req, res) => {
     
     // Mettre à jour les services
     if (updateData.services) {
+      // Convertir les villes en codes postaux
+      const cityToPostalService = require('./src/services/cityToPostalService');
+      
+      const deliveryCities = updateData.services.delivery?.cities || [];
+      const deliveryPostalCodes = cityToPostalService.getPostalCodesForCities(deliveryCities);
+      
+      const meetupCities = updateData.services.meetup?.cities || [];
+      const meetupPostalCodes = cityToPostalService.getPostalCodesForCities(meetupCities);
+      
       plug.services = {
         delivery: {
           enabled: updateData.services.delivery?.enabled || false,
           description: updateData.services.delivery?.description || '',
-          departments: updateData.services.delivery?.departments || []
+          departments: updateData.services.delivery?.departments || [],
+          cities: deliveryCities,
+          postalCodes: deliveryPostalCodes
         },
         postal: {
           enabled: updateData.services.postal?.enabled || false,
@@ -3226,7 +3250,9 @@ app.put('/api/plugs/:id', authenticateAdmin, async (req, res) => {
         meetup: {
           enabled: updateData.services.meetup?.enabled || false,
           description: updateData.services.meetup?.description || '',
-          departments: updateData.services.meetup?.departments || []
+          departments: updateData.services.meetup?.departments || [],
+          cities: meetupCities,
+          postalCodes: meetupPostalCodes
         }
       };
     }
@@ -3347,6 +3373,29 @@ app.get('/api/cities/:country', authenticateAdmin, (req, res) => {
     country,
     cities,
     count: cities.length
+  });
+});
+
+// Route pour convertir des villes en codes postaux
+app.post('/api/cities-to-postal', authenticateAdmin, (req, res) => {
+  const { cities } = req.body;
+  const cityToPostalService = require('./src/services/cityToPostalService');
+  
+  if (!cities || !Array.isArray(cities)) {
+    return res.status(400).json({ 
+      error: 'Paramètre invalide',
+      message: 'Veuillez fournir un tableau de villes'
+    });
+  }
+  
+  const postalCodes = cityToPostalService.getPostalCodesForCities(cities);
+  const description = cityToPostalService.generatePostalDescription(cities);
+  
+  res.json({ 
+    cities,
+    postalCodes,
+    description,
+    count: postalCodes.length
   });
 });
 

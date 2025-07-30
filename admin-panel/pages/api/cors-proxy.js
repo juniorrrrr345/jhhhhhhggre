@@ -37,9 +37,33 @@ export default async function handler(req, res) {
     }
     
     const response = await fetch(`${apiUrl}${endpoint}`, fetchOptions);
-    const responseData = await response.json();
     
     console.log(`📡 Proxy response: ${response.status}`);
+    
+    // Gérer les erreurs 429 spécifiquement
+    if (response.status === 429) {
+      res.status(429).json({ 
+        error: 'Trop de requêtes',
+        message: 'Veuillez patienter avant de réessayer'
+      });
+      return;
+    }
+    
+    // Essayer de parser le JSON, sinon retourner le texte
+    let responseData;
+    const contentType = response.headers.get('content-type');
+    if (contentType && contentType.includes('application/json')) {
+      responseData = await response.json();
+    } else {
+      // Si ce n'est pas du JSON, retourner une erreur
+      const text = await response.text();
+      console.error('❌ Non-JSON response:', text.substring(0, 100));
+      res.status(response.status).json({ 
+        error: 'Réponse invalide du serveur',
+        status: response.status
+      });
+      return;
+    }
     
     // Retourner la réponse
     res.status(response.status).json(responseData);
