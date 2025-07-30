@@ -135,9 +135,21 @@ export default function ShopSearch() {
   // Récupérer les départements disponibles selon le pays sélectionné
   const getAvailableDepartments = () => {
     if (!countryFilter) {
-      // Si aucun pays sélectionné, montrer les départements trouvés dans les boutiques
+      // Si aucun pays sélectionné, montrer les codes postaux trouvés dans les boutiques
       const departments = new Set()
       allPlugs.forEach(plug => {
+        // Priorité aux codes postaux générés
+        if (plug.services?.delivery?.postalCodes && Array.isArray(plug.services.delivery.postalCodes)) {
+          plug.services.delivery.postalCodes.forEach(code => {
+            if (code && code.trim() !== '') departments.add(code)
+          })
+        }
+        if (plug.services?.meetup?.postalCodes && Array.isArray(plug.services.meetup.postalCodes)) {
+          plug.services.meetup.postalCodes.forEach(code => {
+            if (code && code.trim() !== '') departments.add(code)
+          })
+        }
+        // Fallback sur departments pour compatibilité
         if (plug.services?.delivery?.departments && Array.isArray(plug.services.delivery.departments)) {
           plug.services.delivery.departments.forEach(dept => {
             if (dept && dept.trim() !== '') departments.add(dept)

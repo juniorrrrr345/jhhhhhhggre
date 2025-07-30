@@ -2957,6 +2957,10 @@ app.post('/api/plugs', limits.admin, authenticateAdmin, async (req, res) => {
     const meetupCities = plugData.services?.meetup?.cities || [];
     const meetupPostalCodes = cityToPostalService.getPostalCodesForCities(meetupCities);
     
+    // Pour compatibilité, garder les departments s'ils existent
+    const deliveryDepartments = plugData.services?.delivery?.departments || deliveryPostalCodes;
+    const meetupDepartments = plugData.services?.meetup?.departments || meetupPostalCodes;
+    
     const newPlug = new Plug({
       name: plugData.name,
       image: plugData.image || '',
@@ -2969,7 +2973,7 @@ app.post('/api/plugs', limits.admin, authenticateAdmin, async (req, res) => {
         delivery: {
           enabled: plugData.services?.delivery?.enabled || false,
           description: plugData.services?.delivery?.description || '',
-          departments: plugData.services?.delivery?.departments || [],
+          departments: deliveryDepartments,
           cities: deliveryCities,
           postalCodes: deliveryPostalCodes
         },
@@ -2981,7 +2985,7 @@ app.post('/api/plugs', limits.admin, authenticateAdmin, async (req, res) => {
         meetup: {
           enabled: plugData.services?.meetup?.enabled || false,
           description: plugData.services?.meetup?.description || '',
-          departments: plugData.services?.meetup?.departments || [],
+          departments: meetupDepartments,
           cities: meetupCities,
           postalCodes: meetupPostalCodes
         }
@@ -3234,11 +3238,15 @@ app.put('/api/plugs/:id', authenticateAdmin, async (req, res) => {
       const meetupCities = updateData.services.meetup?.cities || [];
       const meetupPostalCodes = cityToPostalService.getPostalCodesForCities(meetupCities);
       
+      // Pour compatibilité, garder les departments s'ils existent
+      const deliveryDepartments = updateData.services.delivery?.departments || deliveryPostalCodes;
+      const meetupDepartments = updateData.services.meetup?.departments || meetupPostalCodes;
+      
       plug.services = {
         delivery: {
           enabled: updateData.services.delivery?.enabled || false,
           description: updateData.services.delivery?.description || '',
-          departments: updateData.services.delivery?.departments || [],
+          departments: deliveryDepartments,
           cities: deliveryCities,
           postalCodes: deliveryPostalCodes
         },
@@ -3250,7 +3258,7 @@ app.put('/api/plugs/:id', authenticateAdmin, async (req, res) => {
         meetup: {
           enabled: updateData.services.meetup?.enabled || false,
           description: updateData.services.meetup?.description || '',
-          departments: updateData.services.meetup?.departments || [],
+          departments: meetupDepartments,
           cities: meetupCities,
           postalCodes: meetupPostalCodes
         }
