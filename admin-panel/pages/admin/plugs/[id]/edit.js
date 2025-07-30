@@ -544,11 +544,11 @@ export default function EditPlugV2() {
                       🚚 Service de livraison
                     </label>
                   </div>
-                  {formData.services.delivery.enabled && (
+                  {formData.services?.delivery?.enabled && (
                     <div className="space-y-3">
                       <input
                         type="text"
-                        value={formData.services.delivery.description}
+                        value={formData.services?.delivery?.description || ''}
                         onChange={(e) => handleServiceChange('delivery', 'description', e.target.value)}
                         className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                         placeholder="Ex: Livraison disponible sur 75001, 75002, 75003, 92100, 93100"
@@ -611,7 +611,7 @@ export default function EditPlugV2() {
                             })}
                           </div>
                           <p className="text-xs text-gray-500 mt-1">
-                            Sélectionnés: {(formData.services.delivery.cities || []).length} villes
+                            Sélectionnés: {(formData.services?.delivery?.cities || []).length} villes
                           </p>
                         </div>
                       )}
@@ -624,19 +624,25 @@ export default function EditPlugV2() {
                   <div className="flex items-center mb-3">
                     <input
                       type="checkbox"
-                      checked={formData.services.postal.enabled}
-                      onChange={(e) => handleServiceChange('postal', 'enabled', e.target.checked)}
+                      checked={formData.services?.postal?.enabled || false}
+                      onChange={(e) => {
+                        try {
+                          handleServiceChange('postal', 'enabled', e.target.checked)
+                        } catch (error) {
+                          console.error('Erreur checkbox postal:', error)
+                        }
+                      }}
                       className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                     />
                     <label className="ml-3 text-sm font-medium text-gray-700">
                       ✈️ Envoi postal
                     </label>
                   </div>
-                  {formData.services.postal.enabled && (
+                  {formData.services?.postal?.enabled && (
                     <div className="space-y-3">
                       <input
                         type="text"
-                        value={formData.services.postal.description}
+                        value={formData.services?.postal?.description || ''}
                         onChange={(e) => handleServiceChange('postal', 'description', e.target.value)}
                         className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                         placeholder="Ex: Envoi postal sécurisé dans toute la France"
@@ -692,11 +698,11 @@ export default function EditPlugV2() {
                       🏠 Service meetup
                     </label>
                   </div>
-                  {formData.services.meetup.enabled && (
+                  {formData.services?.meetup?.enabled && (
                     <div className="space-y-3">
                       <input
                         type="text"
-                        value={formData.services.meetup.description}
+                        value={formData.services?.meetup?.description || ''}
                         onChange={(e) => handleServiceChange('meetup', 'description', e.target.value)}
                         className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                         placeholder="Ex: Meetup disponible sur 75001, 75002, 92100, 93100"
@@ -759,7 +765,7 @@ export default function EditPlugV2() {
                             })}
                           </div>
                           <p className="text-xs text-gray-500 mt-1">
-                            Sélectionnés: {(formData.services.meetup.cities || []).length} villes
+                            Sélectionnés: {(formData.services?.meetup?.cities || []).length} villes
                           </p>
                         </div>
                       )}
