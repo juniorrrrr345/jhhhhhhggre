@@ -5,6 +5,7 @@ import toast, { Toaster } from 'react-hot-toast'
 import { TrashIcon, PlusIcon, ArrowLeftIcon } from '@heroicons/react/24/outline'
 import { getRobustSync } from '../../../../lib/robust-sync'
 import postalCodeService from '../../../../lib/postalCodeService'
+import cityService from '../../../../lib/cityService'
 import { simpleApi } from '../../../../lib/api-simple'
 import api from '../../../../lib/api-enhanced'
 
@@ -71,62 +72,44 @@ export default function EditPlug() {
   const [saving, setSaving] = useState(false)
   const [originalData, setOriginalData] = useState({})
   const [selectedCountries, setSelectedCountries] = useState([])
-  const [postalCodeSearch, setPostalCodeSearch] = useState('')
-  const [meetupPostalCodeSearch, setMeetupPostalCodeSearch] = useState('')
-  const [postalCodesByCountry, setPostalCodesByCountry] = useState({})
+  const [citySearch, setCitySearch] = useState('')
+  const [meetupCitySearch, setMeetupCitySearch] = useState('')
+  const [citiesByCountry, setCitiesByCountry] = useState({})
   
   const router = useRouter()
   const { id } = router.query
 
-  // Fonction pour récupérer les codes postaux depuis l'API
-  const fetchPostalCodes = async (country) => {
-    if (postalCodesByCountry[country]) return postalCodesByCountry[country]
+  // Fonction pour récupérer les villes depuis l'API
+  const fetchCities = async (country) => {
+    const token = localStorage.getItem('adminToken')
+    const cities = await cityService.fetchCities(country, token)
     
-    try {
-      const response = await fetch('/api/cors-proxy', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          endpoint: `/api/postal-codes/${country}`,
-          method: 'GET',
-          token: localStorage.getItem('adminToken')
-        })
-      })
-      
-      if (response.ok) {
-        const data = await response.json()
-        setPostalCodesByCountry(prev => ({
-          ...prev,
-          [country]: data.codes || []
-        }))
-        return data.codes || []
-      }
-    } catch (error) {
-      console.error('Erreur lors de la récupération des codes postaux:', error)
-    }
-    return []
+    setCitiesByCountry(prev => ({
+      ...prev,
+      [country]: cities
+    }))
+    
+    return cities
   }
 
-  // Obtenir les départements disponibles pour les pays sélectionnés
-  const getAvailableDepartments = () => {
+  // Obtenir les villes disponibles pour les pays sélectionnés
+  const getAvailableCities = () => {
     if (selectedCountries.length === 0) return []
     
-    const departmentsByCountry = []
+    const citiesByCountryArray = []
     
-    // Créer une structure pour afficher les codes par pays
+    // Créer une structure pour afficher les villes par pays
     selectedCountries.forEach(country => {
-      const codes = postalCodesByCountry[country] || []
-      if (codes.length > 0) {
-        departmentsByCountry.push({
+      const cities = citiesByCountry[country] || []
+      if (cities.length > 0) {
+        citiesByCountryArray.push({
           country,
-          codes: codes // Afficher TOUS les codes disponibles
+          cities: cities
         })
       }
     })
     
-    return departmentsByCountry
+    return citiesByCountryArray
   }
 
   useEffect(() => {
@@ -142,12 +125,12 @@ export default function EditPlug() {
     }
   }, [id])
 
-  // Charger les codes postaux quand les pays sont sélectionnés
+  // Charger les villes quand les pays sont sélectionnés
   useEffect(() => {
-    const loadPostalCodes = async () => {
+    const loadCities = async () => {
       for (const country of selectedCountries) {
-        if (!postalCodesByCountry[country]) {
-          await fetchPostalCodes(country)
+        if (!citiesByCountry[country]) {
+          await fetchCities(country)
           // Pause entre les requêtes pour éviter le rate limiting
           await new Promise(resolve => setTimeout(resolve, 1000))
         }
@@ -155,7 +138,7 @@ export default function EditPlug() {
     }
     
     if (selectedCountries.length > 0) {
-      loadPostalCodes()
+      loadCities()
     }
   }, [selectedCountries.join(',')]) // Utiliser join pour éviter les re-renders infinis
 

@@ -41,6 +41,10 @@ const plugSchema = new mongoose.Schema({
       departments: [{
         type: String,
         trim: true
+      }],
+      cities: [{
+        type: String,
+        trim: true
       }]
     },
     postal: {
@@ -67,6 +71,10 @@ const plugSchema = new mongoose.Schema({
         default: ''
       },
       departments: [{
+        type: String,
+        trim: true
+      }],
+      cities: [{
         type: String,
         trim: true
       }]

@@ -3329,6 +3329,27 @@ app.delete('/api/plugs/:id', authenticateAdmin, async (req, res) => {
   }
 });
 
+// Route pour récupérer les villes d'un pays
+app.get('/api/cities/:country', authenticateAdmin, (req, res) => {
+  const { country } = req.params;
+  const cityService = require('./src/services/cityService');
+  
+  const cities = cityService.getCities(country);
+  
+  if (cities.length === 0) {
+    return res.status(404).json({ 
+      error: 'Pays non trouvé',
+      message: `Aucune ville disponible pour ${country}`
+    });
+  }
+  
+  res.json({ 
+    country,
+    cities,
+    count: cities.length
+  });
+});
+
 // Récupérer tous les plugs (Admin seulement)
 app.get('/api/plugs', authenticateAdmin, async (req, res) => {
   try {

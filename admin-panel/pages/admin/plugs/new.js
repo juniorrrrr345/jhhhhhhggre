@@ -5,6 +5,7 @@ import toast from 'react-hot-toast'
 import { simpleApi } from '../../../lib/api-simple'
 import { getRobustSync } from '../../../lib/robust-sync'
 import postalCodeService from '../../../lib/postalCodeService'
+import cityService from '../../../lib/cityService'
 import {
   PlusIcon,
   PhotoIcon,
@@ -34,7 +35,7 @@ export default function NewPlug() {
       delivery: {
         enabled: false,
         description: '',
-        departments: []
+        cities: []
       },
       postal: {
         enabled: false,
@@ -44,7 +45,7 @@ export default function NewPlug() {
       meetup: {
         enabled: false,
         description: '',
-        departments: []
+        cities: []
       }
     },
     socialMedia: [
@@ -53,60 +54,42 @@ export default function NewPlug() {
   })
   const [loading, setLoading] = useState(false)
   const [selectedCountries, setSelectedCountries] = useState([])
-  const [postalCodeSearch, setPostalCodeSearch] = useState('')
-  const [meetupPostalCodeSearch, setMeetupPostalCodeSearch] = useState('')
-  const [postalCodesByCountry, setPostalCodesByCountry] = useState({})
+  const [citySearch, setCitySearch] = useState('')
+  const [meetupCitySearch, setMeetupCitySearch] = useState('')
+  const [citiesByCountry, setCitiesByCountry] = useState({})
   const router = useRouter()
 
-  // Fonction pour récupérer les codes postaux depuis l'API
-  const fetchPostalCodes = async (country) => {
-    if (postalCodesByCountry[country]) return postalCodesByCountry[country]
+  // Fonction pour récupérer les villes depuis l'API
+  const fetchCities = async (country) => {
+    const token = localStorage.getItem('adminToken')
+    const cities = await cityService.fetchCities(country, token)
     
-    try {
-      const response = await fetch('/api/cors-proxy', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          endpoint: `/api/postal-codes/${country}`,
-          method: 'GET',
-          token: localStorage.getItem('adminToken')
-        })
-      })
-      
-      if (response.ok) {
-        const data = await response.json()
-        setPostalCodesByCountry(prev => ({
-          ...prev,
-          [country]: data.codes || []
-        }))
-        return data.codes || []
-      }
-    } catch (error) {
-      console.error('Erreur lors de la récupération des codes postaux:', error)
-    }
-    return []
+    setCitiesByCountry(prev => ({
+      ...prev,
+      [country]: cities
+    }))
+    
+    return cities
   }
 
-  // Obtenir les départements disponibles pour les pays sélectionnés
-  const getAvailableDepartments = () => {
+  // Obtenir les villes disponibles pour les pays sélectionnés
+  const getAvailableCities = () => {
     if (selectedCountries.length === 0) return []
     
-    const departmentsByCountry = []
+    const citiesByCountryArray = []
     
-    // Créer une structure pour afficher les codes par pays
+    // Créer une structure pour afficher les villes par pays
     selectedCountries.forEach(country => {
-      const codes = postalCodesByCountry[country] || []
-      if (codes.length > 0) {
-        departmentsByCountry.push({
+      const cities = citiesByCountry[country] || []
+      if (cities.length > 0) {
+        citiesByCountryArray.push({
           country,
-          codes: codes // Afficher TOUS les codes disponibles
+          cities: cities
         })
       }
     })
     
-    return departmentsByCountry
+    return citiesByCountryArray
   }
 
   useEffect(() => {
@@ -117,12 +100,12 @@ export default function NewPlug() {
     }
   }, [])
 
-  // Charger les codes postaux quand les pays sont sélectionnés
+  // Charger les villes quand les pays sont sélectionnés
   useEffect(() => {
-    const loadPostalCodes = async () => {
+    const loadCities = async () => {
       for (const country of selectedCountries) {
-        if (!postalCodesByCountry[country]) {
-          await fetchPostalCodes(country)
+        if (!citiesByCountry[country]) {
+          await fetchCities(country)
           // Pause entre les requêtes pour éviter le rate limiting
           await new Promise(resolve => setTimeout(resolve, 1000))
         }
@@ -130,7 +113,7 @@ export default function NewPlug() {
     }
     
     if (selectedCountries.length > 0) {
-      loadPostalCodes()
+      loadCities()
     }
   }, [selectedCountries.join(',')]) // Utiliser join pour éviter les re-renders infinis
 
@@ -164,13 +147,13 @@ export default function NewPlug() {
     }))
   }
 
-  const toggleDepartment = (service, department) => {
-    const currentDepartments = formData.services[service].departments || []
-    const newDepartments = currentDepartments.includes(department)
-      ? currentDepartments.filter(d => d !== department)
-      : [...currentDepartments, department]
+  const toggleCity = (service, city) => {
+    const currentCities = formData.services[service].cities || []
+    const newCities = currentCities.includes(city)
+      ? currentCities.filter(c => c !== city)
+      : [...currentCities, city]
     
-    handleServiceChange(service, 'departments', newDepartments)
+    handleServiceChange(service, 'cities', newCities)
   }
 
   const togglePostalCountry = (country) => {
@@ -424,54 +407,50 @@ export default function NewPlug() {
                       {selectedCountries.length > 0 && (
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-2">
-                            📍 Départements de livraison disponibles :
+                            📍 Villes de livraison disponibles :
                           </label>
                           
-                          {/* Champ de recherche pour les codes postaux */}
-                          <div className="mb-3">
+                          {/* Champ de recherche pour les villes */}
+                          <div className="mb-3 relative">
+                            <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
                             <input
                               type="text"
-                              placeholder="Rechercher un code postal..."
-                              value={postalCodeSearch}
-                              onChange={(e) => setPostalCodeSearch(e.target.value)}
-                              className="w-full border border-gray-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                              placeholder="Rechercher une ville..."
+                              value={citySearch}
+                              onChange={(e) => setCitySearch(e.target.value)}
+                              className="w-full pl-10 border border-gray-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                             />
                           </div>
                           
                           <div className="max-h-60 overflow-y-auto border border-gray-200 rounded-md p-3">
-                            {getAvailableDepartments().map(({ country, codes }) => {
-                              // Filtrer les codes selon la recherche
-                              const filteredCodes = postalCodeSearch 
-                                ? codes.filter(code => code.includes(postalCodeSearch))
-                                : codes;
+                            {getAvailableCities().map(({ country, cities }) => {
+                              // Filtrer les villes selon la recherche
+                              const filteredCities = citySearch 
+                                ? cityService.searchCities(cities, citySearch)
+                                : cities;
                               
-                              if (filteredCodes.length === 0) return null;
+                              if (filteredCities.length === 0) return null;
                               
                               return (
                                 <div key={country} className="mb-4">
                                   <h4 className="text-sm font-semibold text-gray-700 mb-2">
-                                    🌍 {country} ({filteredCodes.length} codes)
+                                    🌍 {country} ({filteredCities.length} villes)
                                   </h4>
-                                  <div className="grid grid-cols-6 gap-1">
-                                    {filteredCodes.slice(0, 500).map(code => (
+                                  <div className="grid grid-cols-3 gap-2">
+                                    {filteredCities.map(city => (
                                       <button
-                                        key={`${country}-${code}`}
+                                        key={`${country}-${city}`}
                                         type="button"
-                                        onClick={() => toggleDepartment('delivery', code)}
-                                        className={`px-1 py-1 rounded text-xs font-medium border transition-colors ${
-                                          (formData.services.delivery.departments || []).includes(code)
+                                        onClick={() => toggleCity('delivery', city)}
+                                        className={`px-3 py-2 rounded text-sm font-medium border transition-colors ${
+                                          (formData.services.delivery.cities || []).includes(city)
                                             ? 'bg-blue-500 border-blue-500 text-white'
                                             : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'
                                         }`}
                                       >
-                                        {code}
+                                        {city}
                                       </button>
                                     ))}
-                                    {filteredCodes.length > 500 && (
-                                      <div className="col-span-6 text-xs text-gray-500 text-center mt-2">
-                                        ... et {filteredCodes.length - 500} autres codes. Utilisez la recherche pour filtrer.
-                                      </div>
-                                    )}
                                   </div>
                                 </div>
                               );
@@ -564,57 +543,53 @@ export default function NewPlug() {
                       />
                       
                       {/* Départements pour les meetups */}
-                      {selectedCountries.length > 0 && (
+                                              {selectedCountries.length > 0 && (
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-2">
-                            📍 Départements de meetup disponibles :
+                            📍 Villes de meetup disponibles :
                           </label>
                           
-                          {/* Champ de recherche pour les codes postaux */}
-                          <div className="mb-3">
+                          {/* Champ de recherche pour les villes */}
+                          <div className="mb-3 relative">
+                            <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
                             <input
                               type="text"
-                              placeholder="Rechercher un code postal..."
-                              value={meetupPostalCodeSearch}
-                              onChange={(e) => setMeetupPostalCodeSearch(e.target.value)}
-                              className="w-full border border-gray-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                              placeholder="Rechercher une ville..."
+                              value={meetupCitySearch}
+                              onChange={(e) => setMeetupCitySearch(e.target.value)}
+                              className="w-full pl-10 border border-gray-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                             />
                           </div>
                           
                           <div className="max-h-60 overflow-y-auto border border-gray-200 rounded-md p-3">
-                            {getAvailableDepartments().map(({ country, codes }) => {
-                              // Filtrer les codes selon la recherche
-                              const filteredCodes = meetupPostalCodeSearch 
-                                ? codes.filter(code => code.includes(meetupPostalCodeSearch))
-                                : codes;
+                            {getAvailableCities().map(({ country, cities }) => {
+                              // Filtrer les villes selon la recherche
+                              const filteredCities = meetupCitySearch 
+                                ? cityService.searchCities(cities, meetupCitySearch)
+                                : cities;
                               
-                              if (filteredCodes.length === 0) return null;
+                              if (filteredCities.length === 0) return null;
                               
                               return (
                                 <div key={country} className="mb-4">
                                   <h4 className="text-sm font-semibold text-gray-700 mb-2">
-                                    🌍 {country} ({filteredCodes.length} codes)
+                                    🌍 {country} ({filteredCities.length} villes)
                                   </h4>
-                                  <div className="grid grid-cols-6 gap-1">
-                                    {filteredCodes.slice(0, 500).map(code => (
+                                  <div className="grid grid-cols-3 gap-2">
+                                    {filteredCities.map(city => (
                                       <button
-                                        key={`${country}-${code}`}
+                                        key={`${country}-${city}`}
                                         type="button"
-                                        onClick={() => toggleDepartment('meetup', code)}
-                                        className={`px-1 py-1 rounded text-xs font-medium border transition-colors ${
-                                          (formData.services.meetup.departments || []).includes(code)
+                                        onClick={() => toggleCity('meetup', city)}
+                                        className={`px-3 py-2 rounded text-sm font-medium border transition-colors ${
+                                          (formData.services.meetup.cities || []).includes(city)
                                             ? 'bg-purple-500 border-purple-500 text-white'
                                             : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'
                                         }`}
                                       >
-                                        {code}
+                                        {city}
                                       </button>
                                     ))}
-                                    {filteredCodes.length > 500 && (
-                                      <div className="col-span-6 text-xs text-gray-500 text-center mt-2">
-                                        ... et {filteredCodes.length - 500} autres codes. Utilisez la recherche pour filtrer.
-                                      </div>
-                                    )}
                                   </div>
                                 </div>
                               );
