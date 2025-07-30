@@ -5,7 +5,7 @@ import toast from 'react-hot-toast'
 import { simpleApi } from '../../../lib/api-simple'
 import { getRobustSync } from '../../../lib/robust-sync'
 import postalCodeService from '../../../lib/postalCodeService'
-import { getPostalCodesForCountries } from '../../../lib/major-cities-postal-codes'
+import { getPostalCodesForCountry, getPostalCodesByDepartment } from '../../../lib/postal-codes-complete'
 import {
   PlusIcon,
   PhotoIcon,
@@ -54,23 +54,23 @@ export default function NewPlug() {
   })
   const [loading, setLoading] = useState(false)
   const [selectedCountries, setSelectedCountries] = useState([])
+  const [postalCodeSearch, setPostalCodeSearch] = useState('')
+  const [meetupPostalCodeSearch, setMeetupPostalCodeSearch] = useState('')
   const router = useRouter()
 
   // Obtenir les départements disponibles pour les pays sélectionnés
   const getAvailableDepartments = () => {
     if (selectedCountries.length === 0) return []
     
-    // Utiliser le nouveau service pour obtenir les codes postaux par pays
-    const postalCodesByCountry = getPostalCodesForCountries(selectedCountries)
     const departmentsByCountry = []
     
     // Créer une structure pour afficher les codes par pays
     selectedCountries.forEach(country => {
-      const codes = postalCodesByCountry[country] || []
+      const codes = getPostalCodesForCountry(country) || []
       if (codes.length > 0) {
         departmentsByCountry.push({
           country,
-          codes: codes // Afficher tous les codes disponibles
+          codes: codes // Afficher TOUS les codes disponibles
         })
       }
     })
@@ -375,30 +375,56 @@ export default function NewPlug() {
                           <label className="block text-sm font-medium text-gray-700 mb-2">
                             📍 Départements de livraison disponibles :
                           </label>
+                          
+                          {/* Champ de recherche pour les codes postaux */}
+                          <div className="mb-3">
+                            <input
+                              type="text"
+                              placeholder="Rechercher un code postal..."
+                              value={postalCodeSearch}
+                              onChange={(e) => setPostalCodeSearch(e.target.value)}
+                              className="w-full border border-gray-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            />
+                          </div>
+                          
                           <div className="max-h-60 overflow-y-auto border border-gray-200 rounded-md p-3">
-                            {getAvailableDepartments().map(({ country, codes }) => (
-                              <div key={country} className="mb-4">
-                                <h4 className="text-sm font-semibold text-gray-700 mb-2">
-                                  🌍 {country}
-                                </h4>
-                                <div className="grid grid-cols-4 gap-2">
-                                  {codes.map(code => (
-                                    <button
-                                      key={`${country}-${code}`}
-                                      type="button"
-                                      onClick={() => toggleDepartment('delivery', code)}
-                                      className={`px-2 py-1 rounded text-xs font-medium border transition-colors ${
-                                        (formData.services.delivery.departments || []).includes(code)
-                                          ? 'bg-blue-500 border-blue-500 text-white'
-                                          : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'
-                                      }`}
-                                    >
-                                      {code}
-                                    </button>
-                                  ))}
+                            {getAvailableDepartments().map(({ country, codes }) => {
+                              // Filtrer les codes selon la recherche
+                              const filteredCodes = postalCodeSearch 
+                                ? codes.filter(code => code.includes(postalCodeSearch))
+                                : codes;
+                              
+                              if (filteredCodes.length === 0) return null;
+                              
+                              return (
+                                <div key={country} className="mb-4">
+                                  <h4 className="text-sm font-semibold text-gray-700 mb-2">
+                                    🌍 {country} ({filteredCodes.length} codes)
+                                  </h4>
+                                  <div className="grid grid-cols-6 gap-1">
+                                    {filteredCodes.slice(0, 500).map(code => (
+                                      <button
+                                        key={`${country}-${code}`}
+                                        type="button"
+                                        onClick={() => toggleDepartment('delivery', code)}
+                                        className={`px-1 py-1 rounded text-xs font-medium border transition-colors ${
+                                          (formData.services.delivery.departments || []).includes(code)
+                                            ? 'bg-blue-500 border-blue-500 text-white'
+                                            : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'
+                                        }`}
+                                      >
+                                        {code}
+                                      </button>
+                                    ))}
+                                    {filteredCodes.length > 500 && (
+                                      <div className="col-span-6 text-xs text-gray-500 text-center mt-2">
+                                        ... et {filteredCodes.length - 500} autres codes. Utilisez la recherche pour filtrer.
+                                      </div>
+                                    )}
+                                  </div>
                                 </div>
-                              </div>
-                            ))}
+                              );
+                            })}
                           </div>
                           <p className="text-xs text-gray-500 mt-1">
                             Sélectionnés: {(formData.services.delivery.departments || []).length} départements
@@ -492,30 +518,56 @@ export default function NewPlug() {
                           <label className="block text-sm font-medium text-gray-700 mb-2">
                             📍 Départements de meetup disponibles :
                           </label>
+                          
+                          {/* Champ de recherche pour les codes postaux */}
+                          <div className="mb-3">
+                            <input
+                              type="text"
+                              placeholder="Rechercher un code postal..."
+                              value={meetupPostalCodeSearch}
+                              onChange={(e) => setMeetupPostalCodeSearch(e.target.value)}
+                              className="w-full border border-gray-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            />
+                          </div>
+                          
                           <div className="max-h-60 overflow-y-auto border border-gray-200 rounded-md p-3">
-                            {getAvailableDepartments().map(({ country, codes }) => (
-                              <div key={country} className="mb-4">
-                                <h4 className="text-sm font-semibold text-gray-700 mb-2">
-                                  🌍 {country}
-                                </h4>
-                                <div className="grid grid-cols-4 gap-2">
-                                  {codes.map(code => (
-                                    <button
-                                      key={`${country}-${code}`}
-                                      type="button"
-                                      onClick={() => toggleDepartment('meetup', code)}
-                                      className={`px-2 py-1 rounded text-xs font-medium border transition-colors ${
-                                        (formData.services.meetup.departments || []).includes(code)
-                                          ? 'bg-blue-500 border-blue-500 text-white'
-                                          : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'
-                                      }`}
-                                    >
-                                      {code}
-                                    </button>
-                                  ))}
+                            {getAvailableDepartments().map(({ country, codes }) => {
+                              // Filtrer les codes selon la recherche
+                              const filteredCodes = meetupPostalCodeSearch 
+                                ? codes.filter(code => code.includes(meetupPostalCodeSearch))
+                                : codes;
+                              
+                              if (filteredCodes.length === 0) return null;
+                              
+                              return (
+                                <div key={country} className="mb-4">
+                                  <h4 className="text-sm font-semibold text-gray-700 mb-2">
+                                    🌍 {country} ({filteredCodes.length} codes)
+                                  </h4>
+                                  <div className="grid grid-cols-6 gap-1">
+                                    {filteredCodes.slice(0, 500).map(code => (
+                                      <button
+                                        key={`${country}-${code}`}
+                                        type="button"
+                                        onClick={() => toggleDepartment('meetup', code)}
+                                        className={`px-1 py-1 rounded text-xs font-medium border transition-colors ${
+                                          (formData.services.meetup.departments || []).includes(code)
+                                            ? 'bg-purple-500 border-purple-500 text-white'
+                                            : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'
+                                        }`}
+                                      >
+                                        {code}
+                                      </button>
+                                    ))}
+                                    {filteredCodes.length > 500 && (
+                                      <div className="col-span-6 text-xs text-gray-500 text-center mt-2">
+                                        ... et {filteredCodes.length - 500} autres codes. Utilisez la recherche pour filtrer.
+                                      </div>
+                                    )}
+                                  </div>
                                 </div>
-                              </div>
-                            ))}
+                              );
+                            })}
                           </div>
                           <p className="text-xs text-gray-500 mt-1">
                             Sélectionnés: {(formData.services.meetup.departments || []).length} départements
