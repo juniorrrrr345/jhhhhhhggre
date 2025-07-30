@@ -3,14 +3,16 @@ export default async function handler(req, res) {
   try {
     // Utiliser l'URL du bot depuis les variables d'environnement
     const botUrl = process.env.NEXT_PUBLIC_BOT_URL || 'https://jhhhhhhggre.onrender.com'
+    const adminToken = 'JuniorAdmon123'
     
     console.log('🔄 Proxy vers le bot:', botUrl)
     
-    // Faire la requête au bot
-    const response = await fetch(`${botUrl}/api/plugs/public`, {
+    // Faire la requête au bot avec authentification
+    const response = await fetch(`${botUrl}/api/plugs?limit=100`, {
       method: 'GET',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${adminToken}`
       }
     })
     
@@ -20,9 +22,12 @@ export default async function handler(req, res) {
     
     const data = await response.json()
     
+    // Filtrer uniquement les boutiques actives pour la mini-app
+    const activePlugs = (data.plugs || []).filter(plug => plug.isActive)
+    
     // Retourner les données du bot
     res.status(200).json({
-      plugs: data.plugs || [],
+      plugs: activePlugs,
       success: true,
       source: 'bot-api',
       timestamp: new Date().toISOString()
