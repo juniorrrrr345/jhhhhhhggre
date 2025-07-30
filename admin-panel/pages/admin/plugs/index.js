@@ -146,10 +146,6 @@ export default function AccueilAdmin() {
       // 1. Récupérer boutiques du serveur principal avec timestamp pour éviter le cache
       try {
         const serverData = await simpleApi.getPlugs(token, {
-          page: 1,
-          limit: 1000, // Récupérer toutes les boutiques
-          search: '', // Pas de filtre côté serveur
-          filter: 'all', // Toutes les boutiques
           t: Date.now() // Forcer le bypass du cache
         })
         allPlugs = [...(serverData.plugs || [])]

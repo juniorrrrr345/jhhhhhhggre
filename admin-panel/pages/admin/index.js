@@ -39,7 +39,7 @@ export default function Dashboard() {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 10000);
         
-        const response = await fetch(`${botApiUrl}/api/plugs?page=1&limit=1000`, {
+        const response = await fetch(`${botApiUrl}/api/plugs`, {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token || 'ADMIN_TOKEN_F3F3FC574B8A95875449DBD68128C434CE3D7FB3F054567B0D3EAD3D9F1B01B1'}`,

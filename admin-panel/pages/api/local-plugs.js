@@ -8,7 +8,7 @@ export default async function handler(req, res) {
     console.log('🔄 Proxy vers le bot:', botUrl)
     
     // Faire la requête au bot avec authentification
-    const response = await fetch(`${botUrl}/api/plugs?limit=1000`, {
+    const response = await fetch(`${botUrl}/api/plugs`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
