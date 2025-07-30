@@ -118,18 +118,18 @@ const displayNewShopOnBot = async (savedPlug) => {
     const services = [];
     if (savedPlug.services?.delivery?.enabled) {
       const serviceName = getTranslation('service_delivery', currentLang, customTranslations);
-      const departments = savedPlug.services.delivery.departments || [];
-      if (departments.length > 0) {
-        const departmentsText = departments.sort((a, b) => parseInt(a) - parseInt(b)).join(', ');
-        services.push(`📦 **${serviceName}** : ${departmentsText}`);
+      const description = savedPlug.services.delivery.description;
+      if (description && description.trim() !== '') {
+        const translatedDesc = translateServiceDescription(description, currentLang, savedPlug.translations, 'delivery');
+        services.push(`📦 **${serviceName}** : ${translatedDesc}`);
       } else {
-        services.push(`📦 **${serviceName}** : Tous départements`);
-      }
-      
-      // Ajouter la description si disponible
-      if (savedPlug.services.delivery.description) {
-        const translatedDesc = translateServiceDescription(savedPlug.services.delivery.description, currentLang, savedPlug.translations, 'delivery');
-        services.push(`   📝 ${translatedDesc}`);
+        const departments = savedPlug.services.delivery.departments || [];
+        if (departments.length > 0) {
+          const departmentsText = departments.sort((a, b) => parseInt(a) - parseInt(b)).join(', ');
+          services.push(`📦 **${serviceName}** : ${departmentsText}`);
+        } else {
+          services.push(`📦 **${serviceName}** : Tous départements`);
+        }
       }
     }
     
