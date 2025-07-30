@@ -172,7 +172,9 @@ export default function NewPlug() {
   }
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
+    if (e && e.preventDefault) {
+      e.preventDefault()
+    }
     
     if (!formData.name.trim()) {
       toast.error('Le nom de la boutique est requis')
@@ -188,7 +190,7 @@ export default function NewPlug() {
         image: formData.image || '',
         telegramLink: formData.telegramLink || '',
         countries: formData.countries,
-        isActive: true,
+        isActive: formData.isActive,
         isVip: formData.isVip,
         vipOrder: formData.vipOrder,
         services: {
@@ -211,32 +213,66 @@ export default function NewPlug() {
         socialMedia: formData.socialMedia.filter(sm => sm.name && sm.url)
       }
 
-      // 1. Créer en local DIRECTEMENT
-      const localId = 'local_' + Date.now()
-      await fetch('/api/local-plugs', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ _id: localId, ...plugData })
-      })
+      console.log('📝 Envoi des données:', plugData)
 
-      // 2. Essayer serveur principal en arrière-plan
-      fetch('/api/plugs', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('adminToken')}`
-        },
-        body: JSON.stringify(plugData)
-      }).catch(() => {}) // Ignorer les erreurs
+      // Utiliser l'API simple avec gestion d'erreur améliorée
+      const token = localStorage.getItem('adminToken')
+      if (!token) {
+        toast.error('Session expirée, veuillez vous reconnecter')
+        router.push('/')
+        return
+      }
 
-      // 3. Toujours afficher succès
-      toast.success('✅ Boutique créée !')
-      router.push('/admin/plugs')
+      // Essayer de créer via l'API
+      try {
+        const result = await simpleApi.createPlug(token, plugData)
+        
+        if (result && result._id) {
+          toast.success('✅ Boutique créée avec succès !')
+          
+          // Attendre un peu avant la redirection pour que l'utilisateur voie le message
+          setTimeout(() => {
+            router.push('/admin/plugs')
+          }, 1500)
+        } else {
+          throw new Error('Réponse invalide du serveur')
+        }
+      } catch (apiError) {
+        console.error('Erreur API:', apiError)
+        
+        // Si l'API est down, sauvegarder localement
+        if (apiError.message && (apiError.message.includes('fetch') || apiError.message.includes('network'))) {
+          // Créer en local avec stockage temporaire
+          const localId = 'local_' + Date.now()
+          const localPlug = { _id: localId, ...plugData, createdAt: new Date().toISOString() }
+          
+          // Sauvegarder dans localStorage
+          const existingPlugs = JSON.parse(localStorage.getItem('localPlugs') || '[]')
+          existingPlugs.push(localPlug)
+          localStorage.setItem('localPlugs', JSON.stringify(existingPlugs))
+          
+          toast.success('✅ Boutique créée localement (sera synchronisée plus tard)')
+          
+          setTimeout(() => {
+            router.push('/admin/plugs')
+          }, 1500)
+        } else {
+          // Erreur de validation ou autre
+          throw apiError
+        }
+      }
 
     } catch (error) {
-      // Même en cas d'erreur, considérer comme succès
-      toast.success('✅ Boutique créée !')
-      router.push('/admin/plugs')
+      console.error('❌ Erreur création:', error)
+      
+      // Message d'erreur plus spécifique
+      if (error.response && error.response.data && error.response.data.error) {
+        toast.error(error.response.data.error)
+      } else if (error.message) {
+        toast.error(error.message)
+      } else {
+        toast.error('Erreur lors de la création de la boutique')
+      }
     } finally {
       setLoading(false)
     }
