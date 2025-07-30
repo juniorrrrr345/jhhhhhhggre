@@ -8,7 +8,7 @@ export default async function handler(req, res) {
     console.log('🔄 Proxy vers le bot:', botUrl)
     
     // Faire la requête au bot avec authentification
-    const response = await fetch(`${botUrl}/api/plugs?limit=100`, {
+    const response = await fetch(`${botUrl}/api/plugs?limit=1000`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -22,15 +22,15 @@ export default async function handler(req, res) {
     
     const data = await response.json()
     
-    // Filtrer uniquement les boutiques actives pour la mini-app
-    const activePlugs = (data.plugs || []).filter(plug => plug.isActive)
+    console.log(`📦 Récupéré ${data.plugs?.length || 0} boutiques depuis le bot`)
     
-    // Retourner les données du bot
+    // Retourner TOUTES les boutiques (actives et inactives)
     res.status(200).json({
-      plugs: activePlugs,
+      plugs: data.plugs || [],
       success: true,
       source: 'bot-api',
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      total: data.plugs?.length || 0
     })
     
   } catch (error) {
