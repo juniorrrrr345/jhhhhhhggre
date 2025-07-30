@@ -18,9 +18,11 @@ import {
 
 // Utiliser les pays du service postal + quelques autres
 const COUNTRIES = [
-  ...postalCodeService.getAvailableCountries(),
-  'Tunisie', 'Algérie', 'Autre'
-]
+  ...new Set([
+    ...postalCodeService.getAvailableCountries(),
+    'Tunisie', 'Algérie'
+  ])
+].sort()
 
 export default function NewPlug() {
   const [formData, setFormData] = useState({
