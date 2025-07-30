@@ -173,7 +173,7 @@ export default function EditPlugV2() {
       console.error('Erreur lors du chargement:', error)
       toast.error('Erreur lors du chargement de la boutique')
     } finally {
-      setSaving(false)
+      setLoading(false)
     }
   }
 
