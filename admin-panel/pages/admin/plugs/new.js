@@ -13,7 +13,8 @@ import {
   GlobeAltIcon,
   DevicePhoneMobileIcon,
   CheckIcon,
-  XMarkIcon
+  XMarkIcon,
+  MagnifyingGlassIcon
 } from '@heroicons/react/24/outline'
 
 // Utiliser les pays du service postal + quelques autres
@@ -252,7 +253,7 @@ export default function NewPlug() {
           delivery: {
             enabled: formData.services.delivery.enabled,
             description: formData.services.delivery.description || '',
-                          cities: formData.services.delivery.cities || []
+                          cities: formData.services?.delivery?.cities || []
           },
           postal: {
             enabled: formData.services.postal.enabled,
@@ -262,7 +263,7 @@ export default function NewPlug() {
           meetup: {
             enabled: formData.services.meetup.enabled,
             description: formData.services.meetup.description || '',
-                          cities: formData.services.meetup.cities || []
+                          cities: formData.services?.meetup?.cities || []
           }
         },
         contact: {
@@ -461,7 +462,7 @@ export default function NewPlug() {
                             {getAvailableCities().map(({ country, cities }) => {
                               // Filtrer les villes selon la recherche
                               const filteredCities = citySearch 
-                                ? cityService.searchCities(cities, citySearch)
+                                ? cities.filter(city => city.toLowerCase().includes(citySearch.toLowerCase()))
                                 : cities;
                               
                               if (filteredCities.length === 0) return null;
@@ -478,7 +479,7 @@ export default function NewPlug() {
                                         type="button"
                                         onClick={() => toggleCity('delivery', city)}
                                         className={`px-3 py-2 rounded text-sm font-medium border transition-colors ${
-                                          (formData.services.delivery.cities || []).includes(city)
+                                          (formData.services?.delivery?.cities || []).includes(city)
                                             ? 'bg-blue-500 border-blue-500 text-white'
                                             : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'
                                         }`}
@@ -492,7 +493,7 @@ export default function NewPlug() {
                             })}
                           </div>
                           <p className="text-xs text-gray-500 mt-1">
-                            Sélectionnés: {(formData.services.delivery.cities || []).length} villes
+                            Sélectionnés: {(formData.services?.delivery?.cities || []).length} villes
                           </p>
                         </div>
                       )}
@@ -606,7 +607,7 @@ export default function NewPlug() {
                             {getAvailableCities().map(({ country, cities }) => {
                               // Filtrer les villes selon la recherche
                               const filteredCities = meetupCitySearch 
-                                ? cityService.searchCities(cities, meetupCitySearch)
+                                ? cities.filter(city => city.toLowerCase().includes(meetupCitySearch.toLowerCase()))
                                 : cities;
                               
                               if (filteredCities.length === 0) return null;
@@ -623,7 +624,7 @@ export default function NewPlug() {
                                         type="button"
                                         onClick={() => toggleCity('meetup', city)}
                                         className={`px-3 py-2 rounded text-sm font-medium border transition-colors ${
-                                          (formData.services.meetup.cities || []).includes(city)
+                                          (formData.services?.meetup?.cities || []).includes(city)
                                             ? 'bg-purple-500 border-purple-500 text-white'
                                             : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'
                                         }`}
@@ -637,7 +638,7 @@ export default function NewPlug() {
                             })}
                           </div>
                           <p className="text-xs text-gray-500 mt-1">
-                            Sélectionnés: {(formData.services.meetup.cities || []).length} villes
+                            Sélectionnés: {(formData.services?.meetup?.cities || []).length} villes
                           </p>
                         </div>
                       )}
