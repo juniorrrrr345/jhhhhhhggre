@@ -119,13 +119,16 @@ export default function EditPlugV2() {
     const loadCities = async () => {
       console.log('Chargement des villes pour:', selectedCountries)
       
-      for (const country of selectedCountries) {
+      // Limiter à 5 pays maximum pour éviter trop de requêtes
+      const countriesToLoad = selectedCountries.slice(0, 5)
+      
+      for (const country of countriesToLoad) {
         if (!citiesByCountry[country]) {
           try {
             console.log(`Chargement des villes pour ${country}...`)
             await fetchCities(country)
-            // Pause entre les requêtes pour éviter le rate limiting
-            await new Promise(resolve => setTimeout(resolve, 1000))
+            // Augmenter la pause à 2 secondes entre les requêtes
+            await new Promise(resolve => setTimeout(resolve, 2000))
           } catch (error) {
             console.log(`Pas de villes disponibles pour ${country}`)
             // Marquer le pays comme traité même s'il n'y a pas de villes
@@ -137,8 +140,10 @@ export default function EditPlugV2() {
         }
       }
       
-      // Log désactivé temporairement pour éviter l'erreur
-      // console.log('Villes chargées:', citiesByCountry)
+      // Si plus de 5 pays, afficher un message
+      if (selectedCountries.length > 5) {
+        console.log(`Chargement limité aux 5 premiers pays pour éviter les erreurs`)
+      }
     }
     
     if (selectedCountries.length > 0) {

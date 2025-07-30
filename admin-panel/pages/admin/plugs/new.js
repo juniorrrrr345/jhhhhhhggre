@@ -106,12 +106,15 @@ export default function NewPlug() {
   // Charger les villes quand les pays sont sélectionnés
   useEffect(() => {
     const loadCities = async () => {
-      for (const country of selectedCountries) {
+      // Limiter à 5 pays maximum pour éviter trop de requêtes
+      const countriesToLoad = selectedCountries.slice(0, 5)
+      
+      for (const country of countriesToLoad) {
         if (!citiesByCountry[country]) {
           try {
             await fetchCities(country)
-            // Pause entre les requêtes pour éviter le rate limiting
-            await new Promise(resolve => setTimeout(resolve, 1000))
+            // Augmenter la pause à 2 secondes entre les requêtes
+            await new Promise(resolve => setTimeout(resolve, 2000))
           } catch (error) {
             console.log(`Pas de villes disponibles pour ${country}`)
             // Marquer le pays comme traité même s'il n'y a pas de villes
@@ -121,6 +124,11 @@ export default function NewPlug() {
             }))
           }
         }
+      }
+      
+      // Si plus de 5 pays, afficher un message
+      if (selectedCountries.length > 5) {
+        console.log(`Chargement limité aux 5 premiers pays pour éviter les erreurs`)
       }
     }
     
@@ -299,7 +307,13 @@ export default function NewPlug() {
 
     } catch (error) {
       console.error('Erreur:', error)
-      toast.error(error.message || 'Erreur lors de la création de la boutique')
+      if (error.message && error.message.includes('429')) {
+        toast.error('⏳ Trop de requêtes. Veuillez patienter 30 secondes et réessayer.')
+      } else if (error.message && error.message.includes('Trop de requêtes')) {
+        toast.error('⏳ Trop de requêtes. Veuillez patienter 30 secondes et réessayer.')
+      } else {
+        toast.error(error.message || 'Erreur lors de la création de la boutique')
+      }
       setLoading(false)
     }
   }
