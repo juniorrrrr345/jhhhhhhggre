@@ -634,8 +634,15 @@ export default function AccueilAdmin() {
                           {plug.services?.meetup?.enabled && (
                             <span className="text-xs bg-purple-100 text-purple-800 px-2 py-1 rounded-full">
                               🤝 Meetup
-                              {plug.services.meetup.departments && plug.services.meetup.departments.length > 0 && 
-                                ` (${plug.services.meetup.departments.slice(0, 3).join(', ')}${plug.services.meetup.departments.length > 3 ? '...' : ''})`
+                              {plug.services?.meetup?.description && (() => {
+                                const matches = plug.services.meetup.description.match(/\b\d{2,5}\b/g) || []
+                                const codes = [...new Set(matches.map(m => {
+                                  if (m.length === 5) return m.substring(0, 2)
+                                  if (m.length === 4) return m.substring(0, 2)
+                                  return m
+                                }))].sort((a, b) => a.localeCompare(b, undefined, { numeric: true }))
+                                return codes.length > 0 ? ` (${codes.slice(0, 3).join(', ')}${codes.length > 3 ? '...' : ''})` : ''
+                              })()
                               }
                             </span>
                           )}
