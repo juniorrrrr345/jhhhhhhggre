@@ -223,7 +223,7 @@ export default function NewPlug() {
           delivery: {
             enabled: formData.services.delivery.enabled,
             description: formData.services.delivery.description || '',
-            departments: formData.services.delivery.departments || []
+                          cities: formData.services.delivery.cities || []
           },
           postal: {
             enabled: formData.services.postal.enabled,
@@ -233,7 +233,7 @@ export default function NewPlug() {
           meetup: {
             enabled: formData.services.meetup.enabled,
             description: formData.services.meetup.description || '',
-            departments: formData.services.meetup.departments || []
+                          cities: formData.services.meetup.cities || []
           }
         },
         contact: {
