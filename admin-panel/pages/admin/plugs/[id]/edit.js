@@ -92,6 +92,12 @@ export default function EditPlugV2() {
       }
     })
     
+    console.log('getAvailableCities appelé:', {
+      selectedCountries,
+      citiesByCountry,
+      result: citiesByCountryArray
+    })
+    
     return citiesByCountryArray
   }
 
@@ -109,9 +115,12 @@ export default function EditPlugV2() {
     if (loading) return
     
     const loadCities = async () => {
+      console.log('Chargement des villes pour:', selectedCountries)
+      
       for (const country of selectedCountries) {
         if (!citiesByCountry[country]) {
           try {
+            console.log(`Chargement des villes pour ${country}...`)
             await fetchCities(country)
             // Pause entre les requêtes pour éviter le rate limiting
             await new Promise(resolve => setTimeout(resolve, 1000))
@@ -125,6 +134,8 @@ export default function EditPlugV2() {
           }
         }
       }
+      
+      console.log('Villes chargées:', citiesByCountry)
     }
     
     if (selectedCountries.length > 0) {
@@ -228,6 +239,11 @@ export default function EditPlugV2() {
       if (!prev.services[service]) {
         console.error(`Service ${service} non défini dans formData`)
         return prev
+      }
+      
+      // Si on active un service et qu'on n'a pas encore chargé les villes, les charger
+      if (field === 'enabled' && value === true && selectedCountries.length > 0) {
+        console.log(`Service ${service} activé, villes disponibles:`, citiesByCountry)
       }
       
       return {
