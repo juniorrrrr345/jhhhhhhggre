@@ -282,6 +282,9 @@ export default function ShopSearch() {
         (serviceFilter === 'meetup' && plug.services?.meetup?.enabled)
       
       const matchesDepartment = departmentFilter === '' || 
+        (plug.services?.delivery?.postalCodes && plug.services.delivery.postalCodes.includes(departmentFilter)) ||
+        (plug.services?.meetup?.postalCodes && plug.services.meetup.postalCodes.includes(departmentFilter)) ||
+        // Fallback sur departments pour compatibilité
         (plug.services?.delivery?.departments && plug.services.delivery.departments.includes(departmentFilter)) ||
         (plug.services?.meetup?.departments && plug.services.meetup.departments.includes(departmentFilter))
       
