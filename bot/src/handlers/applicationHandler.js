@@ -2,7 +2,6 @@ const PlugApplication = require('../models/PlugApplication');
 const { Markup } = require('telegraf');
 const { sendAdminNotification } = require('./notificationHandler');
 const { getTranslation } = require('../utils/translations');
-const { getStepLabel, stepTracker } = require('../utils/stepManager');
 
 // Stockage temporaire des données du formulaire par utilisateur
 const userForms = new Map();
@@ -2145,7 +2144,7 @@ const handleSkipStep = async (ctx, step) => {
         
         const channelMessage = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
           `⸻\n\n` +
-          `${getTranslation('registration.step2', currentLang, customTranslations)} - ${getTranslation('channel', currentLang, customTranslations) || 'Canal'}\n\n` +
+          `${getTranslation('registration.step3', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.telegramChannelQuestion', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
         
@@ -2167,7 +2166,7 @@ const handleSkipStep = async (ctx, step) => {
         
         const snapchatMessage = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
           `⸻\n\n` +
-          `${getTranslation('registration.step3', currentLang, customTranslations)}\n\n` +
+          `${getTranslation('registration.step4', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.snapchatQuestion', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
         
@@ -2212,7 +2211,7 @@ const handleSkipStep = async (ctx, step) => {
         
         const signalFromPotatoMessage = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
           `⸻\n\n` +
-          `${getTranslation('registration.step5', currentLang, customTranslations)}\n\n` +
+          `${getTranslation('registration.step6', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.signalQuestion', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
         
@@ -2234,7 +2233,7 @@ const handleSkipStep = async (ctx, step) => {
         
         const whatsappFromSignalMessage = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
           `⸻\n\n` +
-          `${getTranslation('registration.step6', currentLang, customTranslations)}\n\n` +
+          `${getTranslation('registration.step7', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.whatsappQuestion', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
         
@@ -2256,7 +2255,7 @@ const handleSkipStep = async (ctx, step) => {
         
         const threemaFromWhatsappMessage = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
           `⸻\n\n` +
-          `${getTranslation('registration.step7', currentLang, customTranslations)}\n\n` +
+          `${getTranslation('registration.step8', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.threemaQuestion', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
         
@@ -2278,7 +2277,7 @@ const handleSkipStep = async (ctx, step) => {
         
         const sessionFromThreemaMessage = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
           `⸻\n\n` +
-          `${getTranslation('registration.step8', currentLang, customTranslations)}\n\n` +
+          `${getTranslation('registration.step9', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.sessionQuestion', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
         
