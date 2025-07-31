@@ -234,10 +234,6 @@ export default function ShopSearch() {
       return a.localeCompare(b, undefined, { numeric: true })
     })
   }
-      
-      // Fonction pour vérifier si un code correspond au format d'un pays
-      const isValidCodeForCountry = (code, targetCountry) => {
-        const cleanCode = code.trim().toUpperCase()
         
         switch(targetCountry) {
           case 'France':
