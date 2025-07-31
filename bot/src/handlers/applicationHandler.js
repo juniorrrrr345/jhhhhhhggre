@@ -2299,7 +2299,7 @@ const handleSkipStep = async (ctx, step) => {
         
         const instagramMessage = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
           `⸻\n\n` +
-          `${getTranslation('registration.step9', currentLang, customTranslations)}\n\n` +
+          `${getTranslation('registration.step10', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.instagramQuestion', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
         
