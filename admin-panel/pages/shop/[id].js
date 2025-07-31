@@ -87,6 +87,114 @@ export default function ShopPlugDetail() {
     }
   }, [router.isReady, id])
 
+  // Fonction pour extraire les codes postaux d'une description
+  const extractPostalCodes = (description) => {
+    if (!description) return []
+    const departments = new Set()
+    
+    const complexPatterns = [
+      { pattern: /\b\d{5}-\d{4}\b/g, type: 'usa-long' },
+      { pattern: /\b\d{5}-\d{3}\b/g, type: 'brazil' },
+      { pattern: /\b\d{4}-\d{3}\b/g, type: 'portugal' },
+      { pattern: /\b\d{3}-\d{4}\b/g, type: 'japan' },
+      { pattern: /\b[A-Z]{1,2}\d{1,2}[A-Z]?\s?\d?[A-Z]{0,2}\b/gi, type: 'uk' },
+      { pattern: /\b[A-Z]\d[A-Z]\s?\d[A-Z]\d\b/gi, type: 'canada' },
+      { pattern: /\b\d{4}\s?[A-Z]{2}\b/gi, type: 'netherlands' },
+      { pattern: /\b\d{5}\b/g, type: 'five-digits' },
+      { pattern: /\b\d{4}\b/g, type: 'four-digits' },
+      { pattern: /\b\d{3}\b/g, type: 'three-digits' },
+      { pattern: /\b\d{2}\b/g, type: 'two-digits' }
+    ]
+    
+    const usedPositions = new Set()
+    
+    complexPatterns.forEach(({ pattern, type }) => {
+      let match
+      while ((match = pattern.exec(description)) !== null) {
+        const startPos = match.index
+        const endPos = match.index + match[0].length
+        
+        let overlap = false
+        for (let i = startPos; i < endPos; i++) {
+          if (usedPositions.has(i)) {
+            overlap = true
+            break
+          }
+        }
+        
+        if (!overlap) {
+          for (let i = startPos; i < endPos; i++) {
+            usedPositions.add(i)
+          }
+          
+          const cleaned = match[0].trim().toUpperCase()
+          
+          switch (type) {
+            case 'usa-long':
+              departments.add(cleaned.substring(0, 3))
+              break
+            case 'brazil':
+              departments.add(cleaned.substring(0, 3))
+              break
+            case 'portugal':
+              departments.add(cleaned.substring(0, 2))
+              break
+            case 'japan':
+              departments.add(cleaned.substring(0, 3))
+              break
+            case 'uk':
+              const ukMatch = cleaned.match(/^([A-Z]{1,2}\d{1,2})[A-Z]?/)
+              if (ukMatch) departments.add(ukMatch[1])
+              break
+            case 'canada':
+              departments.add(cleaned.substring(0, 2))
+              break
+            case 'netherlands':
+              departments.add(cleaned.substring(0, 2))
+              break
+            case 'five-digits':
+              departments.add(cleaned.substring(0, 2))
+              break
+            case 'four-digits':
+              departments.add(cleaned.substring(0, 2))
+              break
+            case 'three-digits':
+              departments.add(cleaned)
+              break
+            case 'two-digits':
+              departments.add(cleaned)
+              break
+          }
+        }
+      }
+    })
+    
+    return Array.from(departments).sort((a, b) => a.localeCompare(b, undefined, { numeric: true }))
+  }
+
+  // Fonction pour extraire et organiser les codes postaux par pays
+  const extractPostalCodesByCountry = (description, countries) => {
+    if (!description || !countries || countries.length === 0) return {}
+    
+    const codesByCountry = {}
+    
+    // Initialiser tous les pays
+    countries.forEach(country => {
+      codesByCountry[country] = []
+    })
+    
+    // Extraire tous les codes
+    const allCodes = extractPostalCodes(description)
+    
+    // Pour l'instant, assigner tous les codes à chaque pays
+    // (l'utilisateur peut préciser dans la description si nécessaire)
+    countries.forEach(country => {
+      codesByCountry[country] = [...allCodes]
+    })
+    
+    return codesByCountry
+  }
+
   const fetchConfig = async () => {
     try {
       const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://jhhhhhhggre.onrender.com'
