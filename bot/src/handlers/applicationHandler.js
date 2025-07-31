@@ -591,7 +591,7 @@ const handleFormMessage = async (ctx) => {
         userForm.step = 'instagram';
         userForms.set(userId, userForm);
         
-        // Éditer le message existant pour montrer l'étape suivante (ÉTAPE 9 = INSTAGRAM)
+        // Éditer le message existant pour montrer l'étape suivante (ÉTAPE 10 = INSTAGRAM)
         const instagramFromSessionMessage = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
           `⸻\n\n` +
           `${getTranslation('registration.step9', currentLang, customTranslations)}\n\n` +
@@ -616,7 +616,7 @@ const handleFormMessage = async (ctx) => {
         userForm.step = 'telegram_bot';
         userForms.set(userId, userForm);
         
-        // Éditer le message existant pour montrer l'étape suivante (ÉTAPE 10 = BOT TELEGRAM)
+        // Éditer le message existant pour montrer l'étape suivante (ÉTAPE 11 = BOT TELEGRAM)
         const telegramBotFromInstagramMessage = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
           `⸻\n\n` +
           `${getTranslation('registration.step10', currentLang, customTranslations)}\n\n` +
@@ -800,7 +800,7 @@ const handleFormMessage = async (ctx) => {
 
           let message = `🛠️ FORMULAIRE D'INSCRIPTION – FindYourPlug\n\n` +
             `⸻\n\n` +
-            `🛠️ Étape 4 : Choix des services\n\n`;
+            `${getTranslation('registration.step14', currentLang, customTranslations)}\n\n`;
             
           if (hasServices) {
             message += `✅ Services déjà sélectionnés :\n`;
@@ -883,7 +883,7 @@ const handleFormMessage = async (ctx) => {
 
           let message = `🛠️ FORMULAIRE D'INSCRIPTION – FindYourPlug\n\n` +
             `⸻\n\n` +
-            `🛠️ Étape 4 : Choix des services\n\n`;
+            `${getTranslation('registration.step14', currentLang, customTranslations)}\n\n`;
             
           if (hasServices) {
             message += `✅ Services déjà sélectionnés :\n`;
@@ -1135,7 +1135,7 @@ const replyWithStep = async (ctx, step) => {
       message = `🛠️ **FORMULAIRE D'INSCRIPTION – FindYourPlug**\n\n` +
         `${summary}` +
         `⸻\n\n` +
-        `🟦 **Étape 13 : Départements pour Meetup**\n\n` +
+                    `${getTranslation('registration.step17', currentLang, customTranslations)}\n\n` +
         `📍 Indique les départements pour le **Meetup** (ex: 75, 92, 93) :`;
       keyboard = Markup.inlineKeyboard([
         [Markup.button.callback('❌ Annuler', 'cancel_application')]
@@ -1146,7 +1146,7 @@ const replyWithStep = async (ctx, step) => {
       message = `🛠️ **FORMULAIRE D'INSCRIPTION – FindYourPlug**\n\n` +
         `${summary}` +
         `⸻\n\n` +
-        `🟦 **Étape 14 : Départements pour Livraison**\n\n` +
+                    `${getTranslation('registration.step15', currentLang, customTranslations)}\n\n` +
         `🚚 Indique les départements pour la **Livraison** (ex: 75, 94...) :`;
       keyboard = Markup.inlineKeyboard([
         [Markup.button.callback('❌ Annuler', 'cancel_application')]
@@ -1517,7 +1517,7 @@ const handleCountrySelection = async (ctx) => {
   }
 };
 
-// Demander les pays de travail (Étape 3)
+// Demander les pays de travail (Étape 13)
 const askWorkingCountries = async (ctx) => {
   const userId = ctx.from.id;
   const userForm = userForms.get(userId);
@@ -1537,7 +1537,7 @@ const askWorkingCountries = async (ctx) => {
 
   const message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
     `⸻\n\n` +
-    `${getTranslation('registration.step12', currentLang, customTranslations)}\n\n` +
+    `${getTranslation('registration.step13', currentLang, customTranslations)}\n\n` +
     `${getTranslation('registration.countryQuestion', currentLang, customTranslations)}\n\n` +
     `${getTranslation('registration.countryExamples', currentLang, customTranslations)}\n\n` +
     (selectedCountries.length > 0 ? 
@@ -1600,9 +1600,9 @@ const askServices = async (ctx) => {
   const selectedServices = userForm.data.selectedServices;
   const hasServices = selectedServices.length > 0;
 
-  let message = `🛠️ FORMULAIRE D'INSCRIPTION – FindYourPlug\n\n` +
+  let message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
     `⸻\n\n` +
-    `🛠️ Étape 13 : Choix des services\n\n`;
+    `${getTranslation('registration.step14', currentLang, customTranslations)}\n\n`;
     
   if (hasServices) {
     message += `✅ Services déjà sélectionnés :\n`;
@@ -1698,7 +1698,7 @@ const askCountriesDelivery = async (ctx, departments) => {
 
   const message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
     `⸻\n\n` +
-    `🚚 Étape 13b : Pays de Livraison\n\n` +
+              `${getTranslation('registration.step16', currentLang, customTranslations)}\n\n` +
     `📦 Départements saisis : ${departments.join(', ')}\n\n` +
     `🌍 Sélectionnez les PAYS où vous livrez :\n\n` +
     (selectedCountries.length > 0 ? 
@@ -1781,7 +1781,7 @@ const askCountriesMeetup = async (ctx, departments) => {
 
   const message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
     `⸻\n\n` +
-    `🤝 Étape 14b : Pays de Meetup\n\n` +
+              `${getTranslation('registration.step18', currentLang, customTranslations)}\n\n` +
     `📦 Départements saisis : ${departments.join(', ')}\n\n` +
     `🌍 Sélectionnez les PAYS où vous faites du meetup :\n\n` +
     (selectedCountries.length > 0 ? 
@@ -1834,7 +1834,7 @@ const askShippingService = async (ctx) => {
 
   const message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
     `⸻\n\n` +
-    `📮 Étape 15 : Service Envoi Postal\n\n` +
+              `${getTranslation('registration.step19', currentLang, customTranslations)}\n\n` +
     `📦 Fais-tu de l'ENVOI POSTAL ?\n\n` +
     `💡 L'envoi postal permet d'expédier tes produits par la poste vers tes clients.`;
 
@@ -2144,7 +2144,7 @@ const handleSkipStep = async (ctx, step) => {
         
         const channelMessage = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
           `⸻\n\n` +
-          `${getTranslation('registration.step2', currentLang, customTranslations)} - ${getTranslation('channel', currentLang, customTranslations) || 'Canal'}\n\n` +
+          `${getTranslation('registration.step3', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.telegramChannelQuestion', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
         
@@ -2166,7 +2166,7 @@ const handleSkipStep = async (ctx, step) => {
         
         const snapchatMessage = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
           `⸻\n\n` +
-          `${getTranslation('registration.step3', currentLang, customTranslations)}\n\n` +
+          `${getTranslation('registration.step4', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.snapchatQuestion', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
         
@@ -2211,7 +2211,7 @@ const handleSkipStep = async (ctx, step) => {
         
         const signalFromPotatoMessage = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
           `⸻\n\n` +
-          `${getTranslation('registration.step5', currentLang, customTranslations)}\n\n` +
+          `${getTranslation('registration.step6', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.signalQuestion', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
         
@@ -2233,7 +2233,7 @@ const handleSkipStep = async (ctx, step) => {
         
         const whatsappFromSignalMessage = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
           `⸻\n\n` +
-          `${getTranslation('registration.step6', currentLang, customTranslations)}\n\n` +
+          `${getTranslation('registration.step7', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.whatsappQuestion', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
         
@@ -2255,7 +2255,7 @@ const handleSkipStep = async (ctx, step) => {
         
         const threemaFromWhatsappMessage = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
           `⸻\n\n` +
-          `${getTranslation('registration.step7', currentLang, customTranslations)}\n\n` +
+          `${getTranslation('registration.step8', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.threemaQuestion', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
         
@@ -2277,7 +2277,7 @@ const handleSkipStep = async (ctx, step) => {
         
         const sessionFromThreemaMessage = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
           `⸻\n\n` +
-          `${getTranslation('registration.step8', currentLang, customTranslations)}\n\n` +
+          `${getTranslation('registration.step9', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.sessionQuestion', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
         
@@ -2299,7 +2299,7 @@ const handleSkipStep = async (ctx, step) => {
         
         const instagramMessage = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
           `⸻\n\n` +
-          `${getTranslation('registration.step9', currentLang, customTranslations)}\n\n` +
+          `${getTranslation('registration.step10', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.instagramQuestion', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
         

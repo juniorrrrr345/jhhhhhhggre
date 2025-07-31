@@ -419,18 +419,25 @@ const translations = {
       de: '🟦 Schritt 2: TELEGRAM KONTAKT'
     },
     'registration.step3': {
-      fr: '🟦 Étape 3 : Snapchat',
-      en: '🟦 Step 3: Snapchat',
-      it: '🟦 Fase 3: Snapchat',
-      es: '🟦 Paso 3: Snapchat',
-      de: '🟦 Schritt 3: Snapchat'
+      fr: '🟦 Étape 3 : CONTACT TELEGRAM - Canal',
+      en: '🟦 Step 3: TELEGRAM CONTACT - Channel',
+      it: '🟦 Fase 3: CONTATTO TELEGRAM - Canale',
+      es: '🟦 Paso 3: CONTACTO TELEGRAM - Canal',
+      de: '🟦 Schritt 3: TELEGRAM KONTAKT - Kanal'
     },
     'registration.step4': {
-      fr: '🟦 Étape 4 : Potato Chat 🏴‍☠️',
-      en: '🟦 Step 4: Potato Chat 🏴‍☠️',
-      it: '🟦 Fase 4: Potato Chat 🏴‍☠️',
-      es: '🟦 Paso 4: Potato Chat 🏴‍☠️',
-      de: '🟦 Schritt 4: Potato Chat 🏴‍☠️'
+      fr: '🟦 Étape 4 : Snapchat',
+      en: '🟦 Step 4: Snapchat',
+      it: '🟦 Fase 4: Snapchat',
+      es: '🟦 Paso 4: Snapchat',
+      de: '🟦 Schritt 4: Snapchat'
+    },
+    'registration.step5': {
+      fr: '🟦 Étape 5 : Potato Chat 🏴‍☠️',
+      en: '🟦 Step 5: Potato Chat 🏴‍☠️',
+      it: '🟦 Fase 5: Potato Chat 🏴‍☠️',
+      es: '🟦 Paso 5: Potato Chat 🏴‍☠️',
+      de: '🟦 Schritt 5: Potato Chat 🏴‍☠️'
     },
     'registration.telegramQuestion': {
       fr: '🔗 Entrez votre lien Telegram (format : @username ou https://t.me/username)',
@@ -571,89 +578,117 @@ const translations = {
     },
 
     // === ÉTAPES RÉSEAUX SOCIAUX COMPLETS ===
-    'registration.step5': {
-      fr: '🟦 Étape 5 : Signal',
-      en: '🟦 Step 5: Signal',
-      it: '🟦 Fase 5: Signal',
-      es: '🟦 Paso 5: Signal',
-      de: '🟦 Schritt 5: Signal'
-    },
     'registration.step6': {
-      fr: '🟦 Étape 6 : WhatsApp',
-      en: '🟦 Step 6: WhatsApp',
-      it: '🟦 Fase 6: WhatsApp',
-      es: '🟦 Paso 6: WhatsApp',
-      de: '🟦 Schritt 6: WhatsApp'
+      fr: '🟦 Étape 6 : Signal',
+      en: '🟦 Step 6: Signal',
+      it: '🟦 Fase 6: Signal',
+      es: '🟦 Paso 6: Signal',
+      de: '🟦 Schritt 6: Signal'
     },
     'registration.step7': {
-      fr: '🟦 Étape 7 : Threema',
-      en: '🟦 Step 7: Threema',
-      it: '🟦 Fase 7: Threema',
-      es: '🟦 Paso 7: Threema',
-      de: '🟦 Schritt 7: Threema'
+      fr: '🟦 Étape 7 : WhatsApp',
+      en: '🟦 Step 7: WhatsApp',
+      it: '🟦 Fase 7: WhatsApp',
+      es: '🟦 Paso 7: WhatsApp',
+      de: '🟦 Schritt 7: WhatsApp'
     },
     'registration.step8': {
-      fr: '🟦 Étape 8 : Session',
-      en: '🟦 Step 8: Session',
-      it: '🟦 Fase 8: Session',
-      es: '🟦 Paso 8: Session',
-      de: '🟦 Schritt 8: Session'
+      fr: '🟦 Étape 8 : Threema',
+      en: '🟦 Step 8: Threema',
+      it: '🟦 Fase 8: Threema',
+      es: '🟦 Paso 8: Threema',
+      de: '🟦 Schritt 8: Threema'
     },
     'registration.step9': {
-      fr: '🟦 Étape 9 : Instagram',
-      en: '🟦 Step 9: Instagram',
-      it: '🟦 Fase 9: Instagram',
-      es: '🟦 Paso 9: Instagram',
-      de: '🟦 Schritt 9: Instagram'
+      fr: '🟦 Étape 9 : Session',
+      en: '🟦 Step 9: Session',
+      it: '🟦 Fase 9: Session',
+      es: '🟦 Paso 9: Session',
+      de: '🟦 Schritt 9: Session'
     },
     'registration.step10': {
-      fr: '🟦 Étape 10 : Bot Telegram',
-      en: '🟦 Step 10: Telegram Bot',
-      it: '🟦 Fase 10: Bot Telegram',
-      es: '🟦 Paso 10: Bot Telegram',
-      de: '🟦 Schritt 10: Telegram Bot'
+      fr: '🟦 Étape 10 : Instagram',
+      en: '🟦 Step 10: Instagram',
+      it: '🟦 Fase 10: Instagram',
+      es: '🟦 Paso 10: Instagram',
+      de: '🟦 Schritt 10: Instagram'
     },
     'registration.step11': {
-      fr: '🟦 Étape 11 : Logo de boutique',
-      en: '🟦 Step 11: Shop logo',
-      it: '🟦 Fase 11: Logo del negozio',
-      es: '🟦 Paso 11: Logo de la tienda',
-      de: '🟦 Schritt 11: Shop-Logo'
+      fr: '🟦 Étape 11 : Bot Telegram',
+      en: '🟦 Step 11: Telegram Bot',
+      it: '🟦 Fase 11: Bot Telegram',
+      es: '🟦 Paso 11: Bot Telegram',
+      de: '🟦 Schritt 11: Telegram Bot'
     },
     'registration.step12': {
-      fr: '🟦 Étape 12 : Services',
-      en: '🟦 Step 12: Services',
-      it: '🟦 Fase 12: Servizi',
-      es: '🟦 Paso 12: Servicios',
-      de: '🟦 Schritt 12: Services'
+      fr: '🟦 Étape 12 : Logo de boutique',
+      en: '🟦 Step 12: Shop logo',
+      it: '🟦 Fase 12: Logo del negozio',
+      es: '🟦 Paso 12: Logo de la tienda',
+      de: '🟦 Schritt 12: Shop-Logo'
     },
     'registration.step13': {
-      fr: '🟦 Étape 13 : Départements Livraison',
-      en: '🟦 Step 13: Delivery Departments',
-      it: '🟦 Fase 13: Dipartimenti Consegna',
-      es: '🟦 Paso 13: Departamentos Entrega',
-      de: '🟦 Schritt 13: Lieferung Departements'
+      fr: '🟦 Étape 13 : Pays de travail',
+      en: '🟦 Step 13: Working countries',
+      it: '🟦 Fase 13: Paesi di lavoro',
+      es: '🟦 Paso 13: Países de trabajo',
+      de: '🟦 Schritt 13: Arbeitsländer'
     },
-    'registration.step14Meetup': {
-      fr: '🟦 Étape 14 : Départements Meetup',
-      en: '🟦 Step 14: Meetup Departments',
-      it: '🟦 Fase 14: Dipartimenti Meetup',
-      es: '🟦 Paso 14: Departamentos Meetup',
-      de: '🟦 Schritt 14: Meetup Departements'
+    'registration.step14': {
+      fr: '🟦 Étape 14 : Services',
+      en: '🟦 Step 14: Services',
+      it: '🟦 Fase 14: Servizi',
+      es: '🟦 Paso 14: Servicios',
+      de: '🟦 Schritt 14: Services'
     },
-    'registration.step15Shipping': {
-      fr: '🟦 Étape 15 : Départements Envoi',
-      en: '🟦 Step 15: Shipping Departments',
-      it: '🟦 Fase 15: Dipartimenti Spedizione',
-      es: '🟦 Paso 15: Departamentos Envío',
-      de: '🟦 Schritt 15: Versand Departements'
+    'registration.step15': {
+      fr: '🟦 Étape 15 : Départements Livraison',
+      en: '🟦 Step 15: Delivery Departments',
+      it: '🟦 Fase 15: Dipartimenti Consegna',
+      es: '🟦 Paso 15: Departamentos Entrega',
+      de: '🟦 Schritt 15: Lieferung Departements'
     },
-    'registration.step16Confirmation': {
-      fr: '🟦 Étape 16 : Confirmation',
-      en: '🟦 Step 16: Confirmation',
-      it: '🟦 Fase 16: Conferma',
-      es: '🟦 Paso 16: Confirmación',
-      de: '🟦 Schritt 16: Bestätigung'
+    'registration.step16': {
+      fr: '🟦 Étape 16 : Pays de Livraison',
+      en: '🟦 Step 16: Delivery Countries',
+      it: '🟦 Fase 16: Paesi di Consegna',
+      es: '🟦 Paso 16: Países de Entrega',
+      de: '🟦 Schritt 16: Lieferländer'
+    },
+    'registration.step17': {
+      fr: '🟦 Étape 17 : Départements Meetup',
+      en: '🟦 Step 17: Meetup Departments',
+      it: '🟦 Fase 17: Dipartimenti Meetup',
+      es: '🟦 Paso 17: Departamentos Meetup',
+      de: '🟦 Schritt 17: Meetup Departements'
+    },
+    'registration.step18': {
+      fr: '🟦 Étape 18 : Pays de Meetup',
+      en: '🟦 Step 18: Meetup Countries',
+      it: '🟦 Fase 18: Paesi di Meetup',
+      es: '🟦 Paso 18: Países de Meetup',
+      de: '🟦 Schritt 18: Meetup-Länder'
+    },
+    'registration.step19': {
+      fr: '🟦 Étape 19 : Service Envoi Postal',
+      en: '🟦 Step 19: Postal Shipping Service',
+      it: '🟦 Fase 19: Servizio Spedizione Postale',
+      es: '🟦 Paso 19: Servicio Envío Postal',
+      de: '🟦 Schritt 19: Postversand-Service'
+    },
+    'registration.step20': {
+      fr: '🟦 Étape 20 : Départements Envoi',
+      en: '🟦 Step 20: Shipping Departments',
+      it: '🟦 Fase 20: Dipartimenti Spedizione',
+      es: '🟦 Paso 20: Departamentos Envío',
+      de: '🟦 Schritt 20: Versand Departements'
+    },
+    'registration.step21': {
+      fr: '🟦 Étape 21 : Confirmation',
+      en: '🟦 Step 21: Confirmation',
+      it: '🟦 Fase 21: Conferma',
+      es: '🟦 Paso 21: Confirmación',
+      de: '🟦 Schritt 21: Bestätigung'
     },
 
     'registration.countryQuestion': {
@@ -862,11 +897,11 @@ const translations = {
       de: '📸 Senden Sie Ihr Shop-Logo'
     },
     'registration.shopPhotoInstruction': {
-      fr: '(Photo de présentation de tes produits ou de ton espace de vente)',
-      en: '(Presentation photo of your products or sales space)',
-      it: '(Foto di presentazione dei tuoi prodotti o spazio vendita)',
-      es: '(Foto de presentación de tus productos o espacio de venta)',
-      de: '(Präsentationsfoto Ihrer Produkte oder Verkaufsraum)'
+      fr: '',
+      en: '',
+      it: '',
+      es: '',
+      de: ''
     },
     'registration.countryQuestion': {
       fr: '🌍 Dans quel pays exerces-tu principalement ?',

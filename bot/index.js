@@ -2001,7 +2001,7 @@ bot.action('go_back_photo', async (ctx) => {
     // Utiliser les traductions pour le message
     const photoMessage = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
       `⸻\n\n` +
-      `${getTranslation('registration.step11Photo', currentLang, customTranslations)}\n\n` +
+      `${getTranslation('registration.step12', currentLang, customTranslations)}\n\n` +
       `${getTranslation('registration.shopPhotoQuestion', currentLang, customTranslations)}\n\n` +
       `${getTranslation('registration.shopPhotoInstruction', currentLang, customTranslations)}`;
     
