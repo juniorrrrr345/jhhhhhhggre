@@ -782,41 +782,6 @@ const translations = {
       es: '🔙 Volver al país anterior',
       de: '🔙 Zurück zum vorherigen Land'
     },
-    'registration.step13': {
-      fr: '🟦 Étape 13 : Ville',
-      en: '🟦 Step 13: City',
-      it: '🟦 Fase 13: Città',
-      es: '🟦 Paso 13: Ciudad',
-      de: '🟦 Schritt 13: Stadt'
-    },
-    'registration.step14': {
-      fr: '🟦 Étape 14 : Services',
-      en: '🟦 Step 14: Services',
-      it: '🟦 Fase 14: Servizi',
-      es: '🟦 Paso 14: Servicios',
-      de: '🟦 Schritt 14: Dienstleistungen'
-    },
-    'registration.step15': {
-      fr: '🟦 Étape 15 : Logo de boutique',
-      en: '🟦 Step 15: Shop logo',
-      it: '🟦 Fase 15: Logo del negozio',
-      es: '🟦 Paso 15: Logo de la tienda',
-      de: '🟦 Schritt 15: Shop-Logo'
-    },
-    'registration.step16': {
-      fr: '🟦 Étape 16 : Photo de boutique',
-      en: '🟦 Step 16: Shop photo',
-      it: '🟦 Fase 16: Foto del negozio',
-      es: '🟦 Paso 16: Foto de la tienda',
-      de: '🟦 Schritt 16: Shop-Foto'
-    },
-    'registration.step17': {
-      fr: '🟦 Étape 17 : Confirmation',
-      en: '🟦 Step 17: Confirmation',
-      it: '🟦 Fase 17: Conferma',
-      es: '🟦 Paso 17: Confirmación',
-      de: '🟦 Schritt 17: Bestätigung'
-    },
 
     // === QUESTIONS DÉTAILLÉES ===
       'registration.potatoQuestion': {
