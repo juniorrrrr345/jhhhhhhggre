@@ -227,8 +227,8 @@ export default function ShopSearch() {
             return /^\d{5}-\d{3}$/.test(cleanCode)
           
           default:
-            // Pour les autres pays, accepter les codes numériques simples
-            return /^\d{2,5}$/.test(cleanCode)
+            // Pour les autres pays, accepter uniquement les codes à 2 chiffres (départements génériques)
+            return /^\d{2}$/.test(cleanCode)
         }
       }
       
@@ -292,24 +292,16 @@ export default function ShopSearch() {
             return cleanCode.split('-')[0]
           
           default:
-            // Si pas de pays spécifié, essayer de deviner
-            if (/^\d{2}$/.test(cleanCode)) {
-              return cleanCode // Départements français
+            // Si pas de pays spécifié, ne retourner que les départements français (2 chiffres)
+            if (/^(0[1-9]|[1-8][0-9]|9[0-5])$/.test(cleanCode)) {
+              return cleanCode // Départements français uniquement
             }
-            if (/^\d{3}$/.test(cleanCode)) {
-              return cleanCode
+            if (/^(0[1-9]|[1-8][0-9]|9[0-5])\d{3}$/.test(cleanCode)) {
+              // Code postal français complet -> extraire le département
+              return cleanCode.substring(0, 2)
             }
-            if (/^\d{4}$/.test(cleanCode)) {
-              return cleanCode
-            }
-            if (/^\d{5}$/.test(cleanCode)) {
-              // Si ressemble à un code français
-              if (/^(0[1-9]|[1-8][0-9]|9[0-5])\d{3}$/.test(cleanCode)) {
-                return cleanCode.substring(0, 2)
-              }
-              return cleanCode
-            }
-            return cleanCode
+            // Ne pas retourner les codes qui ne correspondent pas à des départements français
+            return null
         }
       }
       
@@ -362,6 +354,11 @@ export default function ShopSearch() {
             usedPositions.add(i)
           }
           
+          // Si un pays est spécifié, vérifier que le code est valide pour ce pays
+          if (country && !isValidCodeForCountry(match.value, country)) {
+            return // Ignorer ce code s'il n'est pas valide pour le pays
+          }
+          
           const simplified = simplifyCodeByCountry(match.value, country)
           if (simplified) {
             departments.add(simplified)
@@ -398,15 +395,17 @@ export default function ShopSearch() {
         if (plug.services?.delivery?.postalCodes && Array.isArray(plug.services.delivery.postalCodes)) {
           plug.services.delivery.postalCodes.forEach(code => {
             if (code && code.trim() !== '') {
-              // Utiliser extractPostalCodes pour simplifier
-              extractPostalCodes(code).forEach(simplified => departments.add(simplified))
+              // Passer le pays pour validation
+              const country = plug.countries && plug.countries.length > 0 ? plug.countries[0] : null
+              extractPostalCodes(code, country).forEach(simplified => departments.add(simplified))
             }
           })
         }
         if (plug.services?.meetup?.postalCodes && Array.isArray(plug.services.meetup.postalCodes)) {
           plug.services.meetup.postalCodes.forEach(code => {
             if (code && code.trim() !== '') {
-              extractPostalCodes(code).forEach(simplified => departments.add(simplified))
+              const country = plug.countries && plug.countries.length > 0 ? plug.countries[0] : null
+              extractPostalCodes(code, country).forEach(simplified => departments.add(simplified))
             }
           })
         }
@@ -414,14 +413,16 @@ export default function ShopSearch() {
         if (plug.services?.delivery?.departments && Array.isArray(plug.services.delivery.departments)) {
           plug.services.delivery.departments.forEach(dept => {
             if (dept && dept.trim() !== '') {
-              extractPostalCodes(dept).forEach(simplified => departments.add(simplified))
+              const country = plug.countries && plug.countries.length > 0 ? plug.countries[0] : null
+              extractPostalCodes(dept, country).forEach(simplified => departments.add(simplified))
             }
           })
         }
         if (plug.services?.meetup?.departments && Array.isArray(plug.services.meetup.departments)) {
           plug.services.meetup.departments.forEach(dept => {
             if (dept && dept.trim() !== '') {
-              extractPostalCodes(dept).forEach(simplified => departments.add(simplified))
+              const country = plug.countries && plug.countries.length > 0 ? plug.countries[0] : null
+              extractPostalCodes(dept, country).forEach(simplified => departments.add(simplified))
             }
           })
         }
@@ -449,28 +450,28 @@ export default function ShopSearch() {
         if (plug.services?.delivery?.postalCodes && Array.isArray(plug.services.delivery.postalCodes)) {
           plug.services.delivery.postalCodes.forEach(code => {
             if (code && code.trim() !== '') {
-              extractPostalCodes(code).forEach(simplified => countryDepartments.add(simplified))
+              extractPostalCodes(code, countryFilter).forEach(simplified => countryDepartments.add(simplified))
             }
           })
         }
         if (plug.services?.meetup?.postalCodes && Array.isArray(plug.services.meetup.postalCodes)) {
           plug.services.meetup.postalCodes.forEach(code => {
             if (code && code.trim() !== '') {
-              extractPostalCodes(code).forEach(simplified => countryDepartments.add(simplified))
+              extractPostalCodes(code, countryFilter).forEach(simplified => countryDepartments.add(simplified))
             }
           })
         }
         if (plug.services?.delivery?.departments && Array.isArray(plug.services.delivery.departments)) {
           plug.services.delivery.departments.forEach(dept => {
             if (dept && dept.trim() !== '') {
-              extractPostalCodes(dept).forEach(simplified => countryDepartments.add(simplified))
+              extractPostalCodes(dept, countryFilter).forEach(simplified => countryDepartments.add(simplified))
             }
           })
         }
         if (plug.services?.meetup?.departments && Array.isArray(plug.services.meetup.departments)) {
           plug.services.meetup.departments.forEach(dept => {
             if (dept && dept.trim() !== '') {
-              extractPostalCodes(dept).forEach(simplified => countryDepartments.add(simplified))
+              extractPostalCodes(dept, countryFilter).forEach(simplified => countryDepartments.add(simplified))
             }
           })
         }
