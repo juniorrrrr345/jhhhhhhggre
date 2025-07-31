@@ -489,7 +489,7 @@ const handleFormMessage = async (ctx) => {
         // Éditer le message existant pour montrer l'étape suivante
         const signalMessage = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
           `⸻\n\n` +
-          `${getTranslation('registration.step5', currentLang, customTranslations)}\n\n` +
+          `${getTranslation('registration.step6', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.signalQuestion', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
         
@@ -519,7 +519,7 @@ const handleFormMessage = async (ctx) => {
         // Éditer le message existant pour montrer l'étape suivante
         const whatsappMessage = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
           `⸻\n\n` +
-          `${getTranslation('registration.step6', currentLang, customTranslations)}\n\n` +
+          `${getTranslation('registration.step7', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.whatsappQuestion', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
         
