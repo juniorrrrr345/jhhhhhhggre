@@ -464,7 +464,7 @@ const handleFormMessage = async (ctx) => {
         // Éditer le message existant pour montrer l'étape suivante
         const potatoMessage = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
           `⸻\n\n` +
-          `${getTranslation('registration.step5', currentLang, customTranslations)}\n\n` +
+          `${getTranslation('registration.step4', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.potatoQuestion', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
         
@@ -489,7 +489,7 @@ const handleFormMessage = async (ctx) => {
         // Éditer le message existant pour montrer l'étape suivante
         const signalMessage = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
           `⸻\n\n` +
-          `${getTranslation('registration.step6', currentLang, customTranslations)}\n\n` +
+          `${getTranslation('registration.step5', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.signalQuestion', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
         
@@ -519,7 +519,7 @@ const handleFormMessage = async (ctx) => {
         // Éditer le message existant pour montrer l'étape suivante
         const whatsappMessage = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
           `⸻\n\n` +
-          `${getTranslation('registration.step7', currentLang, customTranslations)}\n\n` +
+          `${getTranslation('registration.step6', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.whatsappQuestion', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
         
@@ -544,7 +544,7 @@ const handleFormMessage = async (ctx) => {
         // Éditer le message existant pour montrer l'étape suivante
         const threemaMessage = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
           `⸻\n\n` +
-          `${getTranslation('registration.step8', currentLang, customTranslations)}\n\n` +
+          `${getTranslation('registration.step7', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.threemaQuestion', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
         
@@ -591,10 +591,10 @@ const handleFormMessage = async (ctx) => {
         userForm.step = 'instagram';
         userForms.set(userId, userForm);
         
-        // Éditer le message existant pour montrer l'étape suivante (ÉTAPE 10 = INSTAGRAM)
+        // Éditer le message existant pour montrer l'étape suivante (ÉTAPE 9 = INSTAGRAM)
         const instagramFromSessionMessage = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
           `⸻\n\n` +
-          `${getTranslation('registration.step10', currentLang, customTranslations)}\n\n` +
+          `${getTranslation('registration.step9', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.instagramQuestion', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
         
@@ -619,7 +619,7 @@ const handleFormMessage = async (ctx) => {
         // Éditer le message existant pour montrer l'étape suivante (ÉTAPE 10 = BOT TELEGRAM)
         const telegramBotFromInstagramMessage = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
           `⸻\n\n` +
-          `${getTranslation('registration.step11', currentLang, customTranslations)}\n\n` +
+          `${getTranslation('registration.step10', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.telegramBotQuestion', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.telegramBotExample', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
