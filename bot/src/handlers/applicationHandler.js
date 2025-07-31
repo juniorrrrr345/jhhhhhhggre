@@ -2,6 +2,7 @@ const PlugApplication = require('../models/PlugApplication');
 const { Markup } = require('telegraf');
 const { sendAdminNotification } = require('./notificationHandler');
 const { getTranslation } = require('../utils/translations');
+const { getStepLabel, stepTracker } = require('../utils/stepManager');
 
 // Stockage temporaire des données du formulaire par utilisateur
 const userForms = new Map();
