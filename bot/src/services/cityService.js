@@ -669,6 +669,56 @@ class CityService {
         'Guidiguis', 'Bogo', 'Batibo', 'Yabassi', 'Figuil', 'Makénéné', 'Gazawa', 'Tcholliré'
       ].sort(),
       
+      // 🇹🇳 TUNISIE
+      Tunisie: [
+        'Tunis', 'Sfax', 'Sousse', 'Kairouan', 'Bizerte', 'Gabès', 'Ariana', 'Gafsa',
+        'Monastir', 'Ben Arous', 'Kasserine', 'Médenine', 'Nabeul', 'Tataouine', 'Béja',
+        'Kef', 'Mahdia', 'Sidi Bouzid', 'Jendouba', 'Tozeur', 'Manouba', 'Siliana', 'Zaghouan',
+        'Kebili', 'La Marsa', 'Hammamet', 'Zarzis', 'Houmt Souk', 'Djerba', 'Rades', 'El Mourouj',
+        'Hammam Lif', 'La Goulette', 'Mégrine', 'Hammam Sousse', 'Mateur', 'Douz', 'Radès',
+        'Oued Ellil', 'Moknine', 'Kalâa Kebira', 'Sakiet Ezzit', 'Dar Chaâbane', 'La Soukra',
+        'Akouda', 'Kalâa Seghira', 'Hammam Chott', 'Boumerdès', 'Sidi Alouane', 'Agareb',
+        'Sidi Bennour', 'El Battan', 'Mornag', 'Korba', 'Menzel Temime', 'Menzel Bourguiba',
+        'Ksar Hellal', 'Ksibet el-Médiouni', 'Sahline', 'Téboulba', 'Ouerdanine', 'Mareth',
+        'Mnihla', 'Ghardimaou', 'Kerkennah', 'Chihia', 'Hajeb El Ayoun', 'Sidi Bou Ali'
+      ].sort(),
+      
+      // 🇩🇿 ALGÉRIE
+      Algérie: [
+        'Alger', 'Oran', 'Constantine', 'Batna', 'Djelfa', 'Sétif', 'Annaba', 'Sidi Bel Abbès',
+        'Biskra', 'Tébessa', 'El Oued', 'Skikda', 'Tiaret', 'Béjaïa', 'Tlemcen', 'Béchar',
+        'Mostaganem', 'El Eulma', 'Bordj Bou Arréridj', 'Souk Ahras', 'Chlef', 'Médéa',
+        'Tizi Ouzou', 'Laghouat', 'M\'Sila', 'Jijel', 'Relizane', 'Saïda', 'Guelma', 'Ghardaïa',
+        'Blida', 'Mascara', 'Boumerdès', 'El Khroub', 'Khenchela', 'Ouargla', 'Aïn Beïda',
+        'Oum El Bouaghi', 'Adrar', 'Tindouf', 'Aïn Témouchent', 'El Bayadh', 'Mila', 'Naâma',
+        'Tamanrasset', 'Tipaza', 'Illizi', 'Tissemsilt', 'El Tarf', 'Bouira', 'Aïn Defla',
+        'Khemis Miliana', 'Sour El Ghozlane', 'Aflou', 'Hadjout', 'Tolga', 'Sidi Aïch',
+        'Birine', 'Dar El Beïda', 'Réghaïa', 'Aïn Taya', 'Birtouta', 'Zeralda', 'Bir El Djir',
+        'Hassi Bahbah', 'Messaad', 'Collo', 'Sougueur', 'Ksar Chellala', 'Rechaïga', 'Aïn Oussara',
+        'Sidi Khaled', 'Aïn El Turk', 'El Meghaïer', 'Fouka', 'Koléa', 'Cherchell', 'Baraki'
+      ].sort(),
+      
+      // 🇲🇦 MAROC
+      Maroc: [
+        'Casablanca', 'Rabat', 'Fès', 'Marrakech', 'Agadir', 'Tanger', 'Meknès', 'Oujda',
+        'Kénitra', 'Tétouan', 'Salé', 'Nador', 'Khouribga', 'Béni Mellal', 'Safi', 'El Jadida',
+        'Taza', 'Mohammédia', 'Laâyoune', 'Settat', 'Larache', 'Khémisset', 'Guelmim', 'Berkane',
+        'Errachidia', 'Oued Zem', 'Al Hoceïma', 'Dakhla', 'Tifelt', 'Essaouira', 'Taroudant',
+        'Kelaat Sraghna', 'Oulad Teïma', 'Youssoufia', 'Sidi Kacem', 'Tan-Tan', 'Ouarzazate',
+        'Sidi Slimane', 'Ksar El Kébir', 'Tarfaya', 'Guercif', 'Dcheira El Jihadia', 'Fnideq',
+        'Ouazzane', 'Sidi Yahya El Gharb', 'Martil', 'Aïn Harrouda', 'Skhirat', 'Ouad Laou',
+        'Benslimane', 'Midelt', 'Azrou', 'Bouskoura', 'Fquih Ben Salah', 'Tiznit', 'Zagora',
+        'Aït Melloul', 'Sidi Bennour', 'Maknes', 'Sidi Ifni', 'Chefchaouen', 'Had Soualem',
+        'Kalaat M\'Gouna', 'Tinghir', 'Ifrane', 'Azemmour', 'Beni Ansar', 'Sidi Rahal',
+        'Oued Amlil', 'Tifnit', 'Moulay Bousselham', 'Sabaa Aiyoun', 'Zinat', 'Imzouren'
+      ].sort(),
+      
+      // 🌍 AUTRE (villes génériques)
+      Autre: [
+        'Capitale', 'Centre-ville', 'Banlieue', 'Zone industrielle', 'Zone commerciale',
+        'Quartier résidentiel', 'Centre historique', 'Port', 'Aéroport', 'Gare centrale',
+        'Université', 'Zone touristique', 'Périphérie', 'Nouveau quartier', 'Vieille ville'
+      ].sort()
 
     };
   }
