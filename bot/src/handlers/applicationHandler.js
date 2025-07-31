@@ -1600,9 +1600,9 @@ const askServices = async (ctx) => {
   const selectedServices = userForm.data.selectedServices;
   const hasServices = selectedServices.length > 0;
 
-  let message = `🛠️ FORMULAIRE D'INSCRIPTION – FindYourPlug\n\n` +
+  let message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
     `⸻\n\n` +
-    `🛠️ Étape 13 : Choix des services\n\n`;
+    `${getTranslation('registration.step14', currentLang, customTranslations)}\n\n`;
     
   if (hasServices) {
     message += `✅ Services déjà sélectionnés :\n`;
