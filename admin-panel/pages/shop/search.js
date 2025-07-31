@@ -159,92 +159,164 @@ export default function ShopSearch() {
     }
     
     // Fonction pour extraire les codes postaux d'une description
-    const extractPostalCodes = (description) => {
+    const extractPostalCodes = (description, country = null) => {
       if (!description) return []
       const departments = new Set()
       
-      // D'abord extraire les codes complexes pour éviter les doublons
-      const complexPatterns = [
-        { pattern: /\b\d{5}-\d{4}\b/g, type: 'usa-long' }, // USA: 12345-6789
-        { pattern: /\b\d{5}-\d{3}\b/g, type: 'brazil' }, // Brésil: 01310-100
-        { pattern: /\b\d{4}-\d{3}\b/g, type: 'portugal' }, // Portugal: 4000-123
-        { pattern: /\b\d{3}-\d{4}\b/g, type: 'japan' }, // Japon: 100-0001
-        { pattern: /\b[A-Z]{1,2}\d{1,2}[A-Z]?\s?\d?[A-Z]{0,2}\b/gi, type: 'uk' }, // UK: SW1A 1AA
-        { pattern: /\b[A-Z]\d[A-Z]\s?\d[A-Z]\d\b/gi, type: 'canada' }, // Canada: H2X 1Y7
-        { pattern: /\b\d{4}\s?[A-Z]{2}\b/gi, type: 'netherlands' }, // Pays-Bas: 1011 AB
-        { pattern: /\b\d{5}\b/g, type: 'five-digits' }, // 5 chiffres
-        { pattern: /\b\d{4}\b/g, type: 'four-digits' }, // 4 chiffres
-        { pattern: /\b\d{3}\b/g, type: 'three-digits' }, // 3 chiffres
-        { pattern: /\b\d{2}\b/g, type: 'two-digits' } // 2 chiffres
+      // Fonction pour déterminer comment simplifier selon le pays
+      const simplifyCodeByCountry = (code, detectedCountry) => {
+        const cleanCode = code.trim().toUpperCase()
+        
+        // France : 75001 → 75
+        if (detectedCountry === 'France' || /^(0[1-9]|[1-8][0-9]|9[0-5]|97[1-8]|98[4-9])\d{3}$/.test(cleanCode)) {
+          return cleanCode.substring(0, 2)
+        }
+        
+        // Suisse : 1000 → 1000 (garder complet)
+        if (detectedCountry === 'Suisse' || /^[1-9]\d{3}$/.test(cleanCode)) {
+          return cleanCode
+        }
+        
+        // Belgique : 1000 → 1000 (garder complet)
+        if (detectedCountry === 'Belgique' || /^[1-9]\d{3}$/.test(cleanCode)) {
+          return cleanCode
+        }
+        
+        // Allemagne : 10115 → 10115 (garder complet)
+        if (detectedCountry === 'Allemagne' || /^[0-9]{5}$/.test(cleanCode)) {
+          return cleanCode
+        }
+        
+        // Espagne : 28001 → 28001 (garder complet)
+        if (detectedCountry === 'Espagne' || /^[0-5][0-9]{4}$/.test(cleanCode)) {
+          return cleanCode
+        }
+        
+        // Italie : 00100 → 00100 (garder complet)
+        if (detectedCountry === 'Italie' || /^[0-9]{5}$/.test(cleanCode)) {
+          return cleanCode
+        }
+        
+        // Thaïlande : 10100 → 10100 (garder complet)
+        if (detectedCountry === 'Thaïlande' || /^[1-9][0-9]{4}$/.test(cleanCode)) {
+          return cleanCode
+        }
+        
+        // UK : SW1A 1AA → SW1
+        if (detectedCountry === 'Royaume-Uni' || /^[A-Z]{1,2}\d{1,2}[A-Z]?/.test(cleanCode)) {
+          const ukMatch = cleanCode.match(/^([A-Z]{1,2}\d{1,2})[A-Z]?/)
+          return ukMatch ? ukMatch[1] : cleanCode
+        }
+        
+        // Canada : H2X 1Y7 → H2X
+        if (detectedCountry === 'Canada' || /^[A-Z]\d[A-Z]/.test(cleanCode)) {
+          return cleanCode.substring(0, 3)
+        }
+        
+        // USA : 12345 → 12345 (garder complet)
+        if (detectedCountry === 'États-Unis' || detectedCountry === 'USA' || /^\d{5}(-\d{4})?$/.test(cleanCode)) {
+          return cleanCode.split('-')[0]
+        }
+        
+        // Portugal : 4000-123 → 4000
+        if (detectedCountry === 'Portugal' || /^\d{4}-\d{3}$/.test(cleanCode)) {
+          return cleanCode.split('-')[0]
+        }
+        
+        // Pays-Bas : 1011 AB → 1011
+        if (detectedCountry === 'Pays-Bas' || /^\d{4}\s?[A-Z]{2}$/.test(cleanCode)) {
+          return cleanCode.substring(0, 4)
+        }
+        
+        // Japon : 100-0001 → 100
+        if (detectedCountry === 'Japon' || /^\d{3}-\d{4}$/.test(cleanCode)) {
+          return cleanCode.substring(0, 3)
+        }
+        
+        // Brésil : 01310-100 → 01310
+        if (detectedCountry === 'Brésil' || /^\d{5}-\d{3}$/.test(cleanCode)) {
+          return cleanCode.split('-')[0]
+        }
+        
+        // Par défaut : codes à 2 chiffres (départements français)
+        if (/^\d{2}$/.test(cleanCode)) {
+          return cleanCode
+        }
+        
+        // Autres codes à 3 chiffres
+        if (/^\d{3}$/.test(cleanCode)) {
+          return cleanCode
+        }
+        
+        // Si pas de règle spécifique, retourner tel quel
+        return cleanCode
+      }
+      
+      // Patterns pour tous les formats de codes postaux
+      const patterns = [
+        /\b\d{5}-\d{4}\b/g,     // USA long
+        /\b\d{5}-\d{3}\b/g,     // Brésil
+        /\b\d{4}-\d{3}\b/g,     // Portugal
+        /\b\d{3}-\d{4}\b/g,     // Japon
+        /\b[A-Z]{1,2}\d{1,2}[A-Z]?\s?\d?[A-Z]{0,2}\b/gi, // UK
+        /\b[A-Z]\d[A-Z]\s?\d[A-Z]\d\b/gi, // Canada
+        /\b\d{4}\s?[A-Z]{2}\b/gi, // Pays-Bas
+        /\b\d{5}\b/g,           // 5 chiffres
+        /\b\d{4}\b/g,           // 4 chiffres
+        /\b\d{3}\b/g,           // 3 chiffres
+        /\b\d{2}\b/g            // 2 chiffres
       ]
       
-      // Marquer les positions déjà utilisées pour éviter les doublons
-      const usedPositions = new Set()
+      const allMatches = []
       
-      complexPatterns.forEach(({ pattern, type }) => {
-        let match
-        while ((match = pattern.exec(description)) !== null) {
-          const startPos = match.index
-          const endPos = match.index + match[0].length
-          
-          // Vérifier si cette position n'est pas déjà utilisée
-          let overlap = false
-          for (let i = startPos; i < endPos; i++) {
-            if (usedPositions.has(i)) {
-              overlap = true
-              break
-            }
+      patterns.forEach(pattern => {
+        const matches = description.match(pattern) || []
+        matches.forEach(match => {
+          allMatches.push({
+            value: match,
+            index: description.indexOf(match)
+          })
+        })
+      })
+      
+      // Trier par position pour éviter les doublons
+      allMatches.sort((a, b) => a.index - b.index)
+      
+      // Éliminer les doublons par position
+      const usedPositions = new Set()
+      allMatches.forEach(match => {
+        const start = match.index
+        const end = match.index + match.value.length
+        
+        let overlap = false
+        for (let i = start; i < end; i++) {
+          if (usedPositions.has(i)) {
+            overlap = true
+            break
+          }
+        }
+        
+        if (!overlap) {
+          for (let i = start; i < end; i++) {
+            usedPositions.add(i)
           }
           
-          if (!overlap) {
-            // Marquer les positions comme utilisées
-            for (let i = startPos; i < endPos; i++) {
-              usedPositions.add(i)
-            }
-            
-            const cleaned = match[0].trim().toUpperCase()
-            
-            switch (type) {
-              case 'usa-long': // 12345-6789 → 123
-                departments.add(cleaned.substring(0, 3))
-                break
-              case 'brazil': // 01310-100 → 013
-                departments.add(cleaned.substring(0, 3))
-                break
-              case 'portugal': // 4000-123 → 40
-                departments.add(cleaned.substring(0, 2))
-                break
-              case 'japan': // 100-0001 → 100
-                departments.add(cleaned.substring(0, 3))
-                break
-              case 'uk': // SW1A 1AA → SW1
-                const ukMatch = cleaned.match(/^([A-Z]{1,2}\d{1,2})[A-Z]?/)
-                if (ukMatch) departments.add(ukMatch[1])
-                break
-              case 'canada': // H2X 1Y7 → H2
-                departments.add(cleaned.substring(0, 2))
-                break
-              case 'netherlands': // 1011 AB → 10
-                departments.add(cleaned.substring(0, 2))
-                break
-              case 'five-digits': // 75001 → 75
-                departments.add(cleaned.substring(0, 2))
-                break
-              case 'four-digits': // 1000 → 10
-                departments.add(cleaned.substring(0, 2))
-                break
-              case 'three-digits': // 100 → 100
-                departments.add(cleaned)
-                break
-              case 'two-digits': // 75 → 75
-                departments.add(cleaned)
-                break
-            }
+          const simplified = simplifyCodeByCountry(match.value, country)
+          if (simplified) {
+            departments.add(simplified)
           }
         }
       })
       
-      return Array.from(departments)
+      return Array.from(departments).sort((a, b) => {
+        // Trier numériquement si possible
+        const aNum = parseInt(a)
+        const bNum = parseInt(b)
+        if (!isNaN(aNum) && !isNaN(bNum)) {
+          return aNum - bNum
+        }
+        return a.localeCompare(b, undefined, { numeric: true })
+      })
     }
 
     if (!countryFilter) {
