@@ -591,7 +591,7 @@ const handleFormMessage = async (ctx) => {
         userForm.step = 'instagram';
         userForms.set(userId, userForm);
         
-        // Éditer le message existant pour montrer l'étape suivante (ÉTAPE 9 = INSTAGRAM)
+        // Éditer le message existant pour montrer l'étape suivante (ÉTAPE 10 = INSTAGRAM)
         const instagramFromSessionMessage = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
           `⸻\n\n` +
           `${getTranslation('registration.step9', currentLang, customTranslations)}\n\n` +
@@ -616,7 +616,7 @@ const handleFormMessage = async (ctx) => {
         userForm.step = 'telegram_bot';
         userForms.set(userId, userForm);
         
-        // Éditer le message existant pour montrer l'étape suivante (ÉTAPE 10 = BOT TELEGRAM)
+        // Éditer le message existant pour montrer l'étape suivante (ÉTAPE 11 = BOT TELEGRAM)
         const telegramBotFromInstagramMessage = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
           `⸻\n\n` +
           `${getTranslation('registration.step10', currentLang, customTranslations)}\n\n` +
@@ -800,7 +800,7 @@ const handleFormMessage = async (ctx) => {
 
           let message = `🛠️ FORMULAIRE D'INSCRIPTION – FindYourPlug\n\n` +
             `⸻\n\n` +
-            `🛠️ Étape 4 : Choix des services\n\n`;
+            `${getTranslation('registration.step14', currentLang, customTranslations)}\n\n`;
             
           if (hasServices) {
             message += `✅ Services déjà sélectionnés :\n`;
@@ -883,7 +883,7 @@ const handleFormMessage = async (ctx) => {
 
           let message = `🛠️ FORMULAIRE D'INSCRIPTION – FindYourPlug\n\n` +
             `⸻\n\n` +
-            `🛠️ Étape 4 : Choix des services\n\n`;
+            `${getTranslation('registration.step14', currentLang, customTranslations)}\n\n`;
             
           if (hasServices) {
             message += `✅ Services déjà sélectionnés :\n`;
@@ -1135,7 +1135,7 @@ const replyWithStep = async (ctx, step) => {
       message = `🛠️ **FORMULAIRE D'INSCRIPTION – FindYourPlug**\n\n` +
         `${summary}` +
         `⸻\n\n` +
-        `🟦 **Étape 13 : Départements pour Meetup**\n\n` +
+                    `${getTranslation('registration.step17', currentLang, customTranslations)}\n\n` +
         `📍 Indique les départements pour le **Meetup** (ex: 75, 92, 93) :`;
       keyboard = Markup.inlineKeyboard([
         [Markup.button.callback('❌ Annuler', 'cancel_application')]
@@ -1146,7 +1146,7 @@ const replyWithStep = async (ctx, step) => {
       message = `🛠️ **FORMULAIRE D'INSCRIPTION – FindYourPlug**\n\n` +
         `${summary}` +
         `⸻\n\n` +
-        `🟦 **Étape 14 : Départements pour Livraison**\n\n` +
+                    `${getTranslation('registration.step15', currentLang, customTranslations)}\n\n` +
         `🚚 Indique les départements pour la **Livraison** (ex: 75, 94...) :`;
       keyboard = Markup.inlineKeyboard([
         [Markup.button.callback('❌ Annuler', 'cancel_application')]
@@ -1517,7 +1517,7 @@ const handleCountrySelection = async (ctx) => {
   }
 };
 
-// Demander les pays de travail (Étape 3)
+// Demander les pays de travail (Étape 13)
 const askWorkingCountries = async (ctx) => {
   const userId = ctx.from.id;
   const userForm = userForms.get(userId);
@@ -1698,7 +1698,7 @@ const askCountriesDelivery = async (ctx, departments) => {
 
   const message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
     `⸻\n\n` +
-    `🚚 Étape 13b : Pays de Livraison\n\n` +
+              `${getTranslation('registration.step16', currentLang, customTranslations)}\n\n` +
     `📦 Départements saisis : ${departments.join(', ')}\n\n` +
     `🌍 Sélectionnez les PAYS où vous livrez :\n\n` +
     (selectedCountries.length > 0 ? 
@@ -1781,7 +1781,7 @@ const askCountriesMeetup = async (ctx, departments) => {
 
   const message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
     `⸻\n\n` +
-    `🤝 Étape 14b : Pays de Meetup\n\n` +
+              `${getTranslation('registration.step18', currentLang, customTranslations)}\n\n` +
     `📦 Départements saisis : ${departments.join(', ')}\n\n` +
     `🌍 Sélectionnez les PAYS où vous faites du meetup :\n\n` +
     (selectedCountries.length > 0 ? 
@@ -1834,7 +1834,7 @@ const askShippingService = async (ctx) => {
 
   const message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
     `⸻\n\n` +
-    `📮 Étape 15 : Service Envoi Postal\n\n` +
+              `${getTranslation('registration.step19', currentLang, customTranslations)}\n\n` +
     `📦 Fais-tu de l'ENVOI POSTAL ?\n\n` +
     `💡 L'envoi postal permet d'expédier tes produits par la poste vers tes clients.`;
 
