@@ -1996,7 +1996,7 @@ const askPhoto = async (ctx) => {
 
   const message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
     `⸻\n\n` +
-    `${getTranslation('registration.step11Photo', currentLang, customTranslations)}\n\n` +
+    `${getTranslation('registration.step12', currentLang, customTranslations)}\n\n` +
     `${getTranslation('registration.shopPhotoQuestion', currentLang, customTranslations)}\n\n` +
     `${getTranslation('registration.shopPhotoInstruction', currentLang, customTranslations)}`;
   
@@ -2346,7 +2346,7 @@ const handleSkipStep = async (ctx, step) => {
         
         const photoMessage = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
           `⸻\n\n` +
-          `${getTranslation('registration.step11Photo', currentLang, customTranslations)}\n\n` +
+          `${getTranslation('registration.step12', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.shopPhotoQuestion', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.shopPhotoInstruction', currentLang, customTranslations)}`;
         
