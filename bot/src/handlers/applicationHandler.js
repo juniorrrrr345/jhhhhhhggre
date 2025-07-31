@@ -544,7 +544,7 @@ const handleFormMessage = async (ctx) => {
         // Éditer le message existant pour montrer l'étape suivante
         const threemaMessage = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
           `⸻\n\n` +
-          `${getTranslation('registration.step7', currentLang, customTranslations)}\n\n` +
+          `${getTranslation('registration.step8', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.threemaQuestion', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
         
@@ -619,7 +619,7 @@ const handleFormMessage = async (ctx) => {
         // Éditer le message existant pour montrer l'étape suivante (ÉTAPE 10 = BOT TELEGRAM)
         const telegramBotFromInstagramMessage = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
           `⸻\n\n` +
-          `${getTranslation('registration.step10Bot', currentLang, customTranslations)}\n\n` +
+          `${getTranslation('registration.step11', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.telegramBotQuestion', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.telegramBotExample', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;

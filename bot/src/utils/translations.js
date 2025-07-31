@@ -606,33 +606,33 @@ const translations = {
       es: '🟦 Paso 9: Session',
       de: '🟦 Schritt 9: Session'
     },
-    'registration.step10Bot': {
+    'registration.step10': {
       fr: '🟦 Étape 10 : Instagram',
       en: '🟦 Step 10: Instagram',
       it: '🟦 Fase 10: Instagram',
       es: '🟦 Paso 10: Instagram',
       de: '🟦 Schritt 10: Instagram'
     },
-    'registration.step11Photo': {
+    'registration.step11': {
       fr: '🟦 Étape 11 : Bot Telegram',
       en: '🟦 Step 11: Telegram Bot',
       it: '🟦 Fase 11: Bot Telegram',
       es: '🟦 Paso 11: Bot Telegram',
       de: '🟦 Schritt 11: Telegram Bot'
     },
-    'registration.step12Services': {
+    'registration.step12': {
       fr: '🟦 Étape 12 : Logo de boutique',
       en: '🟦 Step 12: Shop logo',
       it: '🟦 Fase 12: Logo del negozio',
       es: '🟦 Paso 12: Logo de la tienda',
       de: '🟦 Schritt 12: Shop-Logo'
     },
-    'registration.step13Delivery': {
-      fr: '🟦 Étape 13 : Départements Livraison',
-      en: '🟦 Step 13: Delivery Departments',
-      it: '🟦 Fase 13: Dipartimenti Consegna',
-      es: '🟦 Paso 13: Departamentos Entrega',
-      de: '🟦 Schritt 13: Lieferung Departements'
+    'registration.step13': {
+      fr: '🟦 Étape 13 : Services',
+      en: '🟦 Step 13: Services',
+      it: '🟦 Fase 13: Servizi',
+      es: '🟦 Paso 13: Servicios',
+      de: '🟦 Schritt 13: Services'
     },
     'registration.step14Meetup': {
       fr: '🟦 Étape 14 : Départements Meetup',
@@ -655,13 +655,7 @@ const translations = {
       es: '🟦 Paso 16: Confirmación',
       de: '🟦 Schritt 16: Bestätigung'
     },
-    'registration.step12': {
-      fr: '🟦 Étape 12 : Pays de travail',
-      en: '🟦 Step 12: Working countries',
-      it: '🟦 Fase 12: Paesi di lavoro',
-      es: '🟦 Paso 12: Países de trabajo',
-      de: '🟦 Schritt 12: Arbeitsländer'
-    },
+
     'registration.countryQuestion': {
       fr: 'Choisissez un ou plusieurs pays depuis lesquels vous travaillez ou où le service est disponible.',
       en: 'Choose one or more countries from which you work or where the service is available.',
