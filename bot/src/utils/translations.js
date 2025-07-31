@@ -419,18 +419,18 @@ const translations = {
       de: '🟦 Schritt 2: TELEGRAM KONTAKT'
     },
     'registration.step3': {
-      fr: '🟦 Étape 3 : Canal Telegram',
-      en: '🟦 Step 3: Telegram Channel',
-      it: '🟦 Fase 3: Canale Telegram',
-      es: '🟦 Paso 3: Canal Telegram',
-      de: '🟦 Schritt 3: Telegram Kanal'
+      fr: '🟦 Étape 3 : Snapchat',
+      en: '🟦 Step 3: Snapchat',
+      it: '🟦 Fase 3: Snapchat',
+      es: '🟦 Paso 3: Snapchat',
+      de: '🟦 Schritt 3: Snapchat'
     },
     'registration.step4': {
-      fr: '🟦 Étape 4 : Snapchat',
-      en: '🟦 Step 4: Snapchat',
-      it: '🟦 Fase 4: Snapchat',
-      es: '🟦 Paso 4: Snapchat',
-      de: '🟦 Schritt 4: Snapchat'
+      fr: '🟦 Étape 4 : Potato Chat 🏴‍☠️',
+      en: '🟦 Step 4: Potato Chat 🏴‍☠️',
+      it: '🟦 Fase 4: Potato Chat 🏴‍☠️',
+      es: '🟦 Paso 4: Potato Chat 🏴‍☠️',
+      de: '🟦 Schritt 4: Potato Chat 🏴‍☠️'
     },
     'registration.telegramQuestion': {
       fr: '🔗 Entrez votre lien Telegram (format : @username ou https://t.me/username)',
@@ -572,67 +572,67 @@ const translations = {
 
     // === ÉTAPES RÉSEAUX SOCIAUX COMPLETS ===
     'registration.step5': {
-      fr: '🟦 Étape 5 : Potato Chat 🏴‍☠️',
-      en: '🟦 Step 5: Potato Chat 🏴‍☠️',
-      it: '🟦 Fase 5: Potato Chat 🏴‍☠️',
-      es: '🟦 Paso 5: Potato Chat 🏴‍☠️',
-      de: '🟦 Schritt 5: Potato Chat 🏴‍☠️'
+      fr: '🟦 Étape 5 : Signal',
+      en: '🟦 Step 5: Signal',
+      it: '🟦 Fase 5: Signal',
+      es: '🟦 Paso 5: Signal',
+      de: '🟦 Schritt 5: Signal'
     },
     'registration.step6': {
-      fr: '🟦 Étape 6 : Signal',
-      en: '🟦 Step 6: Signal',
-      it: '🟦 Fase 6: Signal',
-      es: '🟦 Paso 6: Signal',
-      de: '🟦 Schritt 6: Signal'
+      fr: '🟦 Étape 6 : WhatsApp',
+      en: '🟦 Step 6: WhatsApp',
+      it: '🟦 Fase 6: WhatsApp',
+      es: '🟦 Paso 6: WhatsApp',
+      de: '🟦 Schritt 6: WhatsApp'
     },
     'registration.step7': {
-      fr: '🟦 Étape 7 : WhatsApp',
-      en: '🟦 Step 7: WhatsApp',
-      it: '🟦 Fase 7: WhatsApp',
-      es: '🟦 Paso 7: WhatsApp',
-      de: '🟦 Schritt 7: WhatsApp'
+      fr: '🟦 Étape 7 : Threema',
+      en: '🟦 Step 7: Threema',
+      it: '🟦 Fase 7: Threema',
+      es: '🟦 Paso 7: Threema',
+      de: '🟦 Schritt 7: Threema'
     },
     'registration.step8': {
-      fr: '🟦 Étape 8 : Threema',
-      en: '🟦 Step 8: Threema',
-      it: '🟦 Fase 8: Threema',
-      es: '🟦 Paso 8: Threema',
-      de: '🟦 Schritt 8: Threema'
+      fr: '🟦 Étape 8 : Session',
+      en: '🟦 Step 8: Session',
+      it: '🟦 Fase 8: Session',
+      es: '🟦 Paso 8: Session',
+      de: '🟦 Schritt 8: Session'
     },
     'registration.step9': {
-      fr: '🟦 Étape 9 : Session',
-      en: '🟦 Step 9: Session',
-      it: '🟦 Fase 9: Session',
-      es: '🟦 Paso 9: Session',
-      de: '🟦 Schritt 9: Session'
+      fr: '🟦 Étape 9 : Instagram',
+      en: '🟦 Step 9: Instagram',
+      it: '🟦 Fase 9: Instagram',
+      es: '🟦 Paso 9: Instagram',
+      de: '🟦 Schritt 9: Instagram'
     },
     'registration.step10': {
-      fr: '🟦 Étape 10 : Instagram',
-      en: '🟦 Step 10: Instagram',
-      it: '🟦 Fase 10: Instagram',
-      es: '🟦 Paso 10: Instagram',
-      de: '🟦 Schritt 10: Instagram'
+      fr: '🟦 Étape 10 : Bot Telegram',
+      en: '🟦 Step 10: Telegram Bot',
+      it: '🟦 Fase 10: Bot Telegram',
+      es: '🟦 Paso 10: Bot Telegram',
+      de: '🟦 Schritt 10: Telegram Bot'
     },
     'registration.step11': {
-      fr: '🟦 Étape 11 : Bot Telegram',
-      en: '🟦 Step 11: Telegram Bot',
-      it: '🟦 Fase 11: Bot Telegram',
-      es: '🟦 Paso 11: Bot Telegram',
-      de: '🟦 Schritt 11: Telegram Bot'
+      fr: '🟦 Étape 11 : Logo de boutique',
+      en: '🟦 Step 11: Shop logo',
+      it: '🟦 Fase 11: Logo del negozio',
+      es: '🟦 Paso 11: Logo de la tienda',
+      de: '🟦 Schritt 11: Shop-Logo'
     },
     'registration.step12': {
-      fr: '🟦 Étape 12 : Logo de boutique',
-      en: '🟦 Step 12: Shop logo',
-      it: '🟦 Fase 12: Logo del negozio',
-      es: '🟦 Paso 12: Logo de la tienda',
-      de: '🟦 Schritt 12: Shop-Logo'
+      fr: '🟦 Étape 12 : Services',
+      en: '🟦 Step 12: Services',
+      it: '🟦 Fase 12: Servizi',
+      es: '🟦 Paso 12: Servicios',
+      de: '🟦 Schritt 12: Services'
     },
     'registration.step13': {
-      fr: '🟦 Étape 13 : Services',
-      en: '🟦 Step 13: Services',
-      it: '🟦 Fase 13: Servizi',
-      es: '🟦 Paso 13: Servicios',
-      de: '🟦 Schritt 13: Services'
+      fr: '🟦 Étape 13 : Départements Livraison',
+      en: '🟦 Step 13: Delivery Departments',
+      it: '🟦 Fase 13: Dipartimenti Consegna',
+      es: '🟦 Paso 13: Departamentos Entrega',
+      de: '🟦 Schritt 13: Lieferung Departements'
     },
     'registration.step14Meetup': {
       fr: '🟦 Étape 14 : Départements Meetup',
