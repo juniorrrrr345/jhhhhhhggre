@@ -437,19 +437,19 @@ const handleFormMessage = async (ctx) => {
           userForms.set(userId, userForm);
           
           // Éditer le message existant pour montrer l'étape suivante
-          const potatoMessage = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
+          const snapchatMessage = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
             `⸻\n\n` +
-            `${getTranslation('registration.step5', currentLang, customTranslations)}\n\n` +
-            `${getTranslation('registration.potatoQuestion', currentLang, customTranslations)}\n\n` +
+            `${getTranslation('registration.step4', currentLang, customTranslations)}\n\n` +
+            `${getTranslation('registration.snapchatQuestion', currentLang, customTranslations)}\n\n` +
             `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
           
-          const potatoKeyboard = Markup.inlineKeyboard([
-            [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_potato')],
-            [Markup.button.callback(getTranslation('registration.goBack', currentLang, customTranslations), 'go_back_snapchat')],
+          const snapchatKeyboard = Markup.inlineKeyboard([
+            [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_snapchat')],
+            [Markup.button.callback(getTranslation('registration.goBack', currentLang, customTranslations), 'go_back_telegram_channel')],
             [Markup.button.callback(getTranslation('registration.cancel', currentLang, customTranslations), 'cancel_application')]
           ]);
           
-          await editLastFormMessage(ctx, userId, potatoMessage, potatoKeyboard);
+          await editLastFormMessage(ctx, userId, snapchatMessage, snapchatKeyboard);
           break;
         
       case 'snapchat':
