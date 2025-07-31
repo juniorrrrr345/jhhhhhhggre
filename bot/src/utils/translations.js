@@ -896,13 +896,6 @@ const translations = {
       es: '📸 Envía el logo de tu tienda',
       de: '📸 Senden Sie Ihr Shop-Logo'
     },
-    'registration.shopPhotoInstruction': {
-      fr: '',
-      en: '',
-      it: '',
-      es: '',
-      de: ''
-    },
     'registration.countryQuestion': {
       fr: '🌍 Dans quel pays exerces-tu principalement ?',
       en: '🌍 In which country do you mainly operate?',

@@ -646,8 +646,7 @@ const handleFormMessage = async (ctx) => {
         const photoFromTelegramBotMessage = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
           `⸻\n\n` +
           `${getTranslation('registration.step12', currentLang, customTranslations)}\n\n` +
-          `${getTranslation('registration.shopPhotoQuestion', currentLang, customTranslations)}\n\n` +
-          `${getTranslation('registration.shopPhotoInstruction', currentLang, customTranslations)}`;
+          `${getTranslation('registration.shopPhotoQuestion', currentLang, customTranslations)}`;
         
         const photoFromTelegramBotKeyboard = Markup.inlineKeyboard([
           [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_photo')],
@@ -2347,8 +2346,7 @@ const handleSkipStep = async (ctx, step) => {
         const photoMessage = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
           `⸻\n\n` +
           `${getTranslation('registration.step12', currentLang, customTranslations)}\n\n` +
-          `${getTranslation('registration.shopPhotoQuestion', currentLang, customTranslations)}\n\n` +
-          `${getTranslation('registration.shopPhotoInstruction', currentLang, customTranslations)}`;
+          `${getTranslation('registration.shopPhotoQuestion', currentLang, customTranslations)}`;
         
         const photoKeyboard = Markup.inlineKeyboard([
           [Markup.button.callback(getTranslation('registration.skipStep', currentLang, customTranslations), 'skip_photo')],
