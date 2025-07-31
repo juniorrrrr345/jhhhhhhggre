@@ -1537,7 +1537,7 @@ const askWorkingCountries = async (ctx) => {
 
   const message = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
     `⸻\n\n` +
-    `${getTranslation('registration.step12', currentLang, customTranslations)}\n\n` +
+    `${getTranslation('registration.step13', currentLang, customTranslations)}\n\n` +
     `${getTranslation('registration.countryQuestion', currentLang, customTranslations)}\n\n` +
     `${getTranslation('registration.countryExamples', currentLang, customTranslations)}\n\n` +
     (selectedCountries.length > 0 ? 
