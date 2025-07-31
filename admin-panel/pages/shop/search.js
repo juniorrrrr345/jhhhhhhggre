@@ -195,6 +195,69 @@ export default function ShopSearch() {
     return Array.from(codes)
   }
 
+  // Fonction simple pour extraire les codes postaux selon le pays
+  const extractCodesForCountry = (text, country) => {
+    if (!text) return []
+    const codes = new Set()
+    
+    switch(country) {
+      case 'France':
+        // Pour la France: chercher les départements (2 chiffres) ou codes postaux (5 chiffres)
+        const frenchCodes = text.match(/\b(0[1-9]|[1-8][0-9]|9[0-5])(\d{3})?\b/g) || []
+        frenchCodes.forEach(code => {
+          // Si c'est un code postal complet, extraire le département
+          if (code.length === 5) {
+            codes.add(code.substring(0, 2))
+          } else {
+            codes.add(code)
+          }
+        })
+        break
+        
+      case 'Belgique':
+      case 'Suisse':
+        // Pour Belgique/Suisse: codes à 4 chiffres
+        const fourDigitCodes = text.match(/\b[1-9]\d{3}\b/g) || []
+        fourDigitCodes.forEach(code => codes.add(code))
+        break
+        
+      case 'Allemagne':
+      case 'Espagne':
+      case 'Italie':
+      case 'Thaïlande':
+        // Codes à 5 chiffres
+        const fiveDigitCodes = text.match(/\b\d{5}\b/g) || []
+        fiveDigitCodes.forEach(code => codes.add(code))
+        break
+        
+      case 'Royaume-Uni':
+        // Format UK: lettres et chiffres
+        const ukCodes = text.match(/\b[A-Z]{1,2}\d{1,2}[A-Z]?\b/gi) || []
+        ukCodes.forEach(code => codes.add(code.toUpperCase()))
+        break
+        
+      case 'Canada':
+        // Format Canada: A1A
+        const canadaCodes = text.match(/\b[A-Z]\d[A-Z]\b/gi) || []
+        canadaCodes.forEach(code => codes.add(code.toUpperCase()))
+        break
+        
+      case 'États-Unis':
+      case 'USA':
+        // USA: 5 chiffres
+        const usaCodes = text.match(/\b\d{5}\b/g) || []
+        usaCodes.forEach(code => codes.add(code))
+        break
+        
+      default:
+        // Par défaut: chercher des nombres de 2 à 5 chiffres
+        const defaultCodes = text.match(/\b\d{2,5}\b/g) || []
+        defaultCodes.forEach(code => codes.add(code))
+    }
+    
+    return Array.from(codes)
+  }
+
   // Récupérer les départements disponibles selon le pays sélectionné
   const getAvailableDepartments = () => {
     const departments = new Set()
@@ -446,15 +509,8 @@ export default function ShopSearch() {
     }
 
     if (!countryFilter) {
-      // Si aucun pays sélectionné, montrer les codes postaux trouvés dans les boutiques
-      const departments = new Set()
-      allPlugs.forEach(plug => {
-        // Extraire les codes postaux des descriptions
-        if (plug.services?.delivery?.description) {
-          // Passer le premier pays de la boutique pour une extraction correcte
-          const country = plug.countries && plug.countries.length > 0 ? plug.countries[0] : null
-          extractPostalCodes(plug.services.delivery.description, country).forEach(code => departments.add(code))
-        }
+      // Si aucun pays sélectionné, ne rien afficher
+      return []
         if (plug.services?.meetup?.description) {
           const country = plug.countries && plug.countries.length > 0 ? plug.countries[0] : null
           extractPostalCodes(plug.services.meetup.description, country).forEach(code => departments.add(code))
