@@ -441,10 +441,16 @@ export default function ShopSearch() {
         console.log(`  📍 Boutique "${plug.name}" dans ${countryFilter}:`)
         // Extraire des descriptions
         if (plug.services?.delivery?.description) {
-          extractPostalCodes(plug.services.delivery.description, countryFilter).forEach(code => countryDepartments.add(code))
+          const codes = extractPostalCodes(plug.services.delivery.description, countryFilter)
+          if (codes && Array.isArray(codes)) {
+            codes.forEach(code => countryDepartments.add(code))
+          }
         }
         if (plug.services?.meetup?.description) {
-          extractPostalCodes(plug.services.meetup.description, countryFilter).forEach(code => countryDepartments.add(code))
+          const codes = extractPostalCodes(plug.services.meetup.description, countryFilter)
+          if (codes && Array.isArray(codes)) {
+            codes.forEach(code => countryDepartments.add(code))
+          }
         }
         // Simplifier aussi les codes postaux stockés
         if (plug.services?.delivery?.postalCodes && Array.isArray(plug.services.delivery.postalCodes)) {
