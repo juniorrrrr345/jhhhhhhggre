@@ -414,7 +414,7 @@ const handleFormMessage = async (ctx) => {
           // Demander le canal Telegram
           const channelMessage = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
             `⸻\n\n` +
-            `🟦 ${getTranslation('registration.step2', currentLang, customTranslations)} - ${getTranslation('channel', currentLang, customTranslations) || 'Canal'}\n\n` +
+            `🟦 ${getTranslation('registration.step3', currentLang, customTranslations)} - ${getTranslation('channel', currentLang, customTranslations) || 'Canal'}\n\n` +
             `${getTranslation('registration.telegramChannelQuestion', currentLang, customTranslations)}\n\n` +
             `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
           
