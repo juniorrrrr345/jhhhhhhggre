@@ -897,11 +897,11 @@ const translations = {
       de: '📸 Senden Sie Ihr Shop-Logo'
     },
     'registration.shopPhotoInstruction': {
-      fr: '(Photo de présentation de tes produits ou de ton espace de vente)',
-      en: '(Presentation photo of your products or sales space)',
-      it: '(Foto di presentazione dei tuoi prodotti o spazio vendita)',
-      es: '(Foto de presentación de tus productos o espacio de venta)',
-      de: '(Präsentationsfoto Ihrer Produkte oder Verkaufsraum)'
+      fr: '',
+      en: '',
+      it: '',
+      es: '',
+      de: ''
     },
     'registration.countryQuestion': {
       fr: '🌍 Dans quel pays exerces-tu principalement ?',
