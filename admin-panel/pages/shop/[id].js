@@ -949,9 +949,9 @@ export default function ShopPlugDetail() {
                   {/* Livraison */}
                   <div style={{ 
                     display: 'grid',
-                    gridTemplateColumns: '40px 1fr 140px',
+                    gridTemplateColumns: '40px 1fr 100px',
                     alignItems: 'center',
-                    gap: '16px',
+                    gap: '12px',
                     padding: '16px',
                     backgroundColor: plug?.services?.delivery?.enabled ? '#0a4a2a' : '#2a2a2a',
                     borderRadius: '8px',
@@ -1015,21 +1015,24 @@ export default function ShopPlugDetail() {
                     <div style={{ 
                       color: plug?.services?.delivery?.enabled ? '#22c55e' : '#ef4444',
                       fontWeight: '600',
-                      fontSize: '13px',
+                      fontSize: '12px',
                       textAlign: 'center',
                       lineHeight: '1.2',
-                      padding: '8px 4px'
+                      padding: '4px',
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis'
                     }}>
-                      {plug?.services?.delivery?.enabled ? `✓ ${t('detail_available')}` : `✗ ${t('detail_not_available')}`}
+                      {plug?.services?.delivery?.enabled ? `✓ ${t('detail_available') || 'Disponible'}` : `✗ ${t('detail_not_available') || 'Non disponible'}`}
                     </div>
                   </div>
 
                   {/* Postal */}
                   <div style={{ 
                     display: 'grid',
-                    gridTemplateColumns: '40px 1fr 140px',
+                    gridTemplateColumns: '40px 1fr 100px',
                     alignItems: 'center',
-                    gap: '16px',
+                    gap: '12px',
                     padding: '16px',
                     backgroundColor: plug?.services?.postal?.enabled ? '#1a3a4a' : '#2a2a2a',
                     borderRadius: '8px',
@@ -1081,21 +1084,24 @@ export default function ShopPlugDetail() {
                     <div style={{ 
                       color: plug?.services?.postal?.enabled ? '#3b82f6' : '#ef4444',
                       fontWeight: '600',
-                      fontSize: '13px',
+                      fontSize: '12px',
                       textAlign: 'center',
                       lineHeight: '1.2',
-                      padding: '8px 4px'
+                      padding: '4px',
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis'
                     }}>
-                      {plug?.services?.postal?.enabled ? `✓ ${t('detail_available')}` : `✗ ${t('detail_not_available')}`}
+                      {plug?.services?.postal?.enabled ? `✓ ${t('detail_available') || 'Disponible'}` : `✗ ${t('detail_not_available') || 'Non disponible'}`}
                     </div>
                   </div>
 
                   {/* Meetup */}
                   <div style={{ 
                     display: 'grid',
-                    gridTemplateColumns: '40px 1fr 140px',
+                    gridTemplateColumns: '40px 1fr 100px',
                     alignItems: 'center',
-                    gap: '16px',
+                    gap: '12px',
                     padding: '16px',
                     backgroundColor: plug?.services?.meetup?.enabled ? '#4a2a1a' : '#2a2a2a',
                     borderRadius: '8px',
@@ -1159,12 +1165,15 @@ export default function ShopPlugDetail() {
                     <div style={{ 
                       color: plug?.services?.meetup?.enabled ? '#f59e0b' : '#ef4444',
                       fontWeight: '600',
-                      fontSize: '13px',
+                      fontSize: '12px',
                       textAlign: 'center',
                       lineHeight: '1.2',
-                      padding: '8px 4px'
+                      padding: '4px',
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis'
                     }}>
-                      {plug?.services?.meetup?.enabled ? `✓ ${t('detail_available')}` : `✗ ${t('detail_not_available')}`}
+                      {plug?.services?.meetup?.enabled ? `✓ ${t('detail_available') || 'Disponible'}` : `✗ ${t('detail_not_available') || 'Non disponible'}`}
                     </div>
                   </div>
                 </div>
