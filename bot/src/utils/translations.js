@@ -418,6 +418,13 @@ const translations = {
       es: '🟦 Paso 2: CONTACTO TELEGRAM',
       de: '🟦 Schritt 2: TELEGRAM KONTAKT'
     },
+    'registration.step2Channel': {
+      fr: '🟦 Étape 2 : CONTACT TELEGRAM - Canal',
+      en: '🟦 Step 2: TELEGRAM CONTACT - Channel',
+      it: '🟦 Fase 2: CONTATTO TELEGRAM - Canale',
+      es: '🟦 Paso 2: CONTACTO TELEGRAM - Canal',
+      de: '🟦 Schritt 2: TELEGRAM KONTAKT - Kanal'
+    },
     'registration.step3': {
       fr: '🟦 Étape 3 : Snapchat',
       en: '🟦 Step 3: Snapchat',
