@@ -41,21 +41,11 @@ export default function BotConfiguration() {
     }
   })
 
-  // États pour la gestion multi-langue
-  const [selectedLanguage, setSelectedLanguage] = useState('fr')
+  // États
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState(null)
   const router = useRouter()
-  
-  // Langues supportées
-  const supportedLanguages = [
-    { code: 'fr', name: 'Français', flag: '🇫🇷' },
-    { code: 'en', name: 'English', flag: '🇬🇧' },
-    { code: 'it', name: 'Italiano', flag: '🇮🇹' },
-    { code: 'es', name: 'Español', flag: '🇪🇸' },
-    { code: 'de', name: 'Deutsch', flag: '🇩🇪' }
-  ]
 
   useEffect(() => {
     const token = localStorage.getItem('adminToken')
@@ -327,33 +317,7 @@ export default function BotConfiguration() {
             </div>
           </div>
 
-          {/* Sélecteur de langue */}
-          <div className="bg-white shadow rounded-lg mb-6">
-            <div className="px-4 py-5 sm:p-6">
-              <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">
-                🌍 Langue de Configuration
-              </h3>
-              <p className="text-sm text-gray-500 mb-4">
-                Choisissez la langue pour configurer les textes. Les modifications seront appliquées dans toutes les langues configurées.
-              </p>
-              
-              <div className="flex flex-wrap gap-2">
-                {supportedLanguages.map(lang => (
-                  <button
-                    key={lang.code}
-                    onClick={() => setSelectedLanguage(lang.code)}
-                    className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                      selectedLanguage === lang.code
-                        ? 'bg-blue-600 text-white'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                    }`}
-                  >
-                    {lang.flag} {lang.name}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
+
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Message d'accueil */}
