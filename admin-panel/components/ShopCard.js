@@ -15,92 +15,103 @@ export default function ShopCard({ plug, index, layout = 'grid', currentLanguage
   }
 
   // Fonction pour extraire les codes postaux d'une description
-  const extractPostalCodes = (description) => {
+  const extractPostalCodes = (description, countries) => {
     if (!description) return []
     const departments = new Set()
+    const country = countries && countries.length > 0 ? countries[0] : null
     
-    // D'abord extraire les codes complexes pour éviter les doublons
-    const complexPatterns = [
-      { pattern: /\b\d{5}-\d{4}\b/g, type: 'usa-long' }, // USA: 12345-6789
-      { pattern: /\b\d{5}-\d{3}\b/g, type: 'brazil' }, // Brésil: 01310-100
-      { pattern: /\b\d{4}-\d{3}\b/g, type: 'portugal' }, // Portugal: 4000-123
-      { pattern: /\b\d{3}-\d{4}\b/g, type: 'japan' }, // Japon: 100-0001
-      { pattern: /\b[A-Z]{1,2}\d{1,2}[A-Z]?\s?\d?[A-Z]{0,2}\b/gi, type: 'uk' }, // UK: SW1A 1AA
-      { pattern: /\b[A-Z]\d[A-Z]\s?\d[A-Z]\d\b/gi, type: 'canada' }, // Canada: H2X 1Y7
-      { pattern: /\b\d{4}\s?[A-Z]{2}\b/gi, type: 'netherlands' }, // Pays-Bas: 1011 AB
-      { pattern: /\b\d{5}\b/g, type: 'five-digits' }, // 5 chiffres
-      { pattern: /\b\d{4}\b/g, type: 'four-digits' }, // 4 chiffres
-      { pattern: /\b\d{3}\b/g, type: 'three-digits' }, // 3 chiffres
-      { pattern: /\b\d{2}\b/g, type: 'two-digits' } // 2 chiffres
+    // Fonction pour déterminer comment simplifier selon le pays
+    const simplifyCodeByCountry = (code, detectedCountry) => {
+      const cleanCode = code.trim().toUpperCase()
+      
+      // France : 75001 → 75
+      if (detectedCountry === 'France' || /^(0[1-9]|[1-8][0-9]|9[0-5]|97[1-8]|98[4-9])\d{3}$/.test(cleanCode)) {
+        return cleanCode.substring(0, 2)
+      }
+      
+      // Suisse : 1000 → 1000 (garder complet)
+      if (detectedCountry === 'Suisse' || (cleanCode.length === 4 && /^[1-9]\d{3}$/.test(cleanCode))) {
+        return cleanCode
+      }
+      
+      // Belgique : 1000 → 1000 (garder complet)
+      if (detectedCountry === 'Belgique' || (cleanCode.length === 4 && /^[1-9]\d{3}$/.test(cleanCode))) {
+        return cleanCode
+      }
+      
+      // Allemagne : 10115 → 10115 (garder complet)
+      if (detectedCountry === 'Allemagne' || (cleanCode.length === 5 && /^[0-9]{5}$/.test(cleanCode))) {
+        return cleanCode
+      }
+      
+      // Espagne : 28001 → 28001 (garder complet)
+      if (detectedCountry === 'Espagne' || (cleanCode.length === 5 && /^[0-5][0-9]{4}$/.test(cleanCode))) {
+        return cleanCode
+      }
+      
+      // Italie : 00100 → 00100 (garder complet)
+      if (detectedCountry === 'Italie' || (cleanCode.length === 5 && /^[0-9]{5}$/.test(cleanCode))) {
+        return cleanCode
+      }
+      
+      // Thaïlande : 10100 → 10100 (garder complet)
+      if (detectedCountry === 'Thaïlande' || (cleanCode.length === 5 && /^[1-9][0-9]{4}$/.test(cleanCode))) {
+        return cleanCode
+      }
+      
+      // Par défaut pour codes à 2 chiffres (France)
+      if (/^\d{2}$/.test(cleanCode)) {
+        return cleanCode
+      }
+      
+      // Par défaut pour codes à 3 chiffres
+      if (/^\d{3}$/.test(cleanCode)) {
+        return cleanCode
+      }
+      
+      // Par défaut pour codes à 4 chiffres (ne pas simplifier)
+      if (/^\d{4}$/.test(cleanCode)) {
+        return cleanCode
+      }
+      
+      // Par défaut pour codes à 5 chiffres (ne pas simplifier sauf France)
+      if (/^\d{5}$/.test(cleanCode)) {
+        // Si c'est un code français (75xxx, 92xxx, etc.)
+        if (/^(0[1-9]|[1-8][0-9]|9[0-5])\d{3}$/.test(cleanCode)) {
+          return cleanCode.substring(0, 2)
+        }
+        return cleanCode
+      }
+      
+      return cleanCode
+    }
+    
+    // Extraire tous les codes numériques
+    const patterns = [
+      /\b\d{5}\b/g,  // 5 chiffres
+      /\b\d{4}\b/g,  // 4 chiffres
+      /\b\d{3}\b/g,  // 3 chiffres
+      /\b\d{2}\b/g   // 2 chiffres
     ]
     
-    // Marquer les positions déjà utilisées pour éviter les doublons
-    const usedPositions = new Set()
-    
-    complexPatterns.forEach(({ pattern, type }) => {
-      let match
-      while ((match = pattern.exec(description)) !== null) {
-        const startPos = match.index
-        const endPos = match.index + match[0].length
-        
-        // Vérifier si cette position n'est pas déjà utilisée
-        let overlap = false
-        for (let i = startPos; i < endPos; i++) {
-          if (usedPositions.has(i)) {
-            overlap = true
-            break
-          }
+    patterns.forEach(pattern => {
+      const matches = description.match(pattern) || []
+      matches.forEach(match => {
+        const simplified = simplifyCodeByCountry(match, country)
+        if (simplified) {
+          departments.add(simplified)
         }
-        
-        if (!overlap) {
-          // Marquer les positions comme utilisées
-          for (let i = startPos; i < endPos; i++) {
-            usedPositions.add(i)
-          }
-          
-          const cleaned = match[0].trim().toUpperCase()
-          
-          switch (type) {
-            case 'usa-long': // 12345-6789 → 123
-              departments.add(cleaned.substring(0, 3))
-              break
-            case 'brazil': // 01310-100 → 013
-              departments.add(cleaned.substring(0, 3))
-              break
-            case 'portugal': // 4000-123 → 40
-              departments.add(cleaned.substring(0, 2))
-              break
-            case 'japan': // 100-0001 → 100
-              departments.add(cleaned.substring(0, 3))
-              break
-            case 'uk': // SW1A 1AA → SW1
-              const ukMatch = cleaned.match(/^([A-Z]{1,2}\d{1,2})[A-Z]?/)
-              if (ukMatch) departments.add(ukMatch[1])
-              break
-            case 'canada': // H2X 1Y7 → H2
-              departments.add(cleaned.substring(0, 2))
-              break
-            case 'netherlands': // 1011 AB → 10
-              departments.add(cleaned.substring(0, 2))
-              break
-            case 'five-digits': // 75001 → 75
-              departments.add(cleaned.substring(0, 2))
-              break
-            case 'four-digits': // 1000 → 10
-              departments.add(cleaned.substring(0, 2))
-              break
-            case 'three-digits': // 100 → 100
-              departments.add(cleaned)
-              break
-            case 'two-digits': // 75 → 75
-              departments.add(cleaned)
-              break
-          }
-        }
-      }
+      })
     })
     
-    return Array.from(departments).sort((a, b) => a.localeCompare(b, undefined, { numeric: true }))
+    return Array.from(departments).sort((a, b) => {
+      const aNum = parseInt(a)
+      const bNum = parseInt(b)
+      if (!isNaN(aNum) && !isNaN(bNum)) {
+        return aNum - bNum
+      }
+      return a.localeCompare(b, undefined, { numeric: true })
+    })
   }
 
   const translateService = (service) => {
@@ -407,7 +418,7 @@ export default function ShopCard({ plug, index, layout = 'grid', currentLanguage
                 {plug.services?.delivery?.description && (
                   <span style={{ opacity: 0.8, marginLeft: '2px' }}>
                     {(() => {
-                      const codes = extractPostalCodes(plug.services.delivery.description)
+                      const codes = extractPostalCodes(plug.services.delivery.description, plug.countries)
                       if (codes.length > 0) {
                         return `(${codes.slice(0, 3).join(', ')}${codes.length > 3 ? '...' : ''})`
                       }
@@ -452,7 +463,7 @@ export default function ShopCard({ plug, index, layout = 'grid', currentLanguage
                 {plug.services?.meetup?.description && (
                   <span style={{ opacity: 0.8, marginLeft: '2px' }}>
                     {(() => {
-                      const codes = extractPostalCodes(plug.services.meetup.description)
+                      const codes = extractPostalCodes(plug.services.meetup.description, plug.countries)
                       if (codes.length > 0) {
                         return `(${codes.slice(0, 3).join(', ')}${codes.length > 3 ? '...' : ''})`
                       }

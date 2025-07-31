@@ -325,10 +325,13 @@ export default function ShopSearch() {
       allPlugs.forEach(plug => {
         // Extraire les codes postaux des descriptions
         if (plug.services?.delivery?.description) {
-          extractPostalCodes(plug.services.delivery.description).forEach(code => departments.add(code))
+          // Passer le premier pays de la boutique pour une extraction correcte
+          const country = plug.countries && plug.countries.length > 0 ? plug.countries[0] : null
+          extractPostalCodes(plug.services.delivery.description, country).forEach(code => departments.add(code))
         }
         if (plug.services?.meetup?.description) {
-          extractPostalCodes(plug.services.meetup.description).forEach(code => departments.add(code))
+          const country = plug.countries && plug.countries.length > 0 ? plug.countries[0] : null
+          extractPostalCodes(plug.services.meetup.description, country).forEach(code => departments.add(code))
         }
         // Simplifier aussi les codes postaux stockés
         if (plug.services?.delivery?.postalCodes && Array.isArray(plug.services.delivery.postalCodes)) {
@@ -376,10 +379,10 @@ export default function ShopSearch() {
         console.log(`  📍 Boutique "${plug.name}" dans ${countryFilter}:`)
         // Extraire des descriptions
         if (plug.services?.delivery?.description) {
-          extractPostalCodes(plug.services.delivery.description).forEach(code => countryDepartments.add(code))
+          extractPostalCodes(plug.services.delivery.description, countryFilter).forEach(code => countryDepartments.add(code))
         }
         if (plug.services?.meetup?.description) {
-          extractPostalCodes(plug.services.meetup.description).forEach(code => countryDepartments.add(code))
+          extractPostalCodes(plug.services.meetup.description, countryFilter).forEach(code => countryDepartments.add(code))
         }
         // Simplifier aussi les codes postaux stockés
         if (plug.services?.delivery?.postalCodes && Array.isArray(plug.services.delivery.postalCodes)) {
