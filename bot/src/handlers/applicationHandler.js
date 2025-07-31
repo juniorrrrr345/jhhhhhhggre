@@ -591,10 +591,10 @@ const handleFormMessage = async (ctx) => {
         userForm.step = 'instagram';
         userForms.set(userId, userForm);
         
-        // Éditer le message existant pour montrer l'étape suivante (ÉTAPE 9 = INSTAGRAM)
+        // Éditer le message existant pour montrer l'étape suivante (ÉTAPE 10 = INSTAGRAM)
         const instagramFromSessionMessage = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
           `⸻\n\n` +
-          `${getTranslation('registration.step9', currentLang, customTranslations)}\n\n` +
+          `${getTranslation('registration.step10', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.instagramQuestion', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
         
