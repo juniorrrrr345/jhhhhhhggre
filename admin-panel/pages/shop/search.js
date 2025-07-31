@@ -297,9 +297,6 @@ export default function ShopSearch() {
       return a.localeCompare(b, undefined, { numeric: true })
     })
   }
-        
-        switch(targetCountry) {
-          case 'France':
             // France: départements 01-95 + DOM-TOM (971-978, 984-989)
             return /^(0[1-9]|[1-8][0-9]|9[0-5]|97[1-8]|98[4-9])$/.test(cleanCode) ||
                    /^(0[1-9]|[1-8][0-9]|9[0-5]|97[1-8]|98[4-9])\d{3}$/.test(cleanCode)
@@ -511,9 +508,7 @@ export default function ShopSearch() {
     if (!countryFilter) {
       // Si aucun pays sélectionné, ne rien afficher
       return []
-        if (plug.services?.meetup?.description) {
-          const country = plug.countries && plug.countries.length > 0 ? plug.countries[0] : null
-          extractPostalCodes(plug.services.meetup.description, country).forEach(code => departments.add(code))
+    }
         }
         // Simplifier aussi les codes postaux stockés
         if (plug.services?.delivery?.postalCodes && Array.isArray(plug.services.delivery.postalCodes)) {
