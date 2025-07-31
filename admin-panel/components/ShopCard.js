@@ -216,12 +216,26 @@ export default function ShopCard({ plug, index, layout = 'grid', currentLanguage
       'united states': '🇺🇸',
       'thaïlande': '🇹🇭',
       'thailand': '🇹🇭',
+      'japon': '🇯🇵',
+      'japan': '🇯🇵',
+      'brésil': '🇧🇷',
+      'brazil': '🇧🇷',
+      'cameroun': '🇨🇲',
+      'cameroon': '🇨🇲',
+      'sénégal': '🇸🇳',
+      'senegal': '🇸🇳',
+      'madagascar': '🇲🇬',
+      'australie': '🇦🇺',
+      'australia': '🇦🇺',
+      'côte d\'ivoire': '🇨🇮',
+      'ivory coast': '🇨🇮',
       // Pays existants
       'tunisie': '🇹🇳',
       'tunisia': '🇹🇳',
       'algérie': '🇩🇿',
       'algeria': '🇩🇿',
-      'autre': '🌍'
+      'autre': '🌍',
+      'other': '🌍'
     };
     
     if (!countryName) return '🌍';
