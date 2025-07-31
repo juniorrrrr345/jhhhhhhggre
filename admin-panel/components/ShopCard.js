@@ -20,70 +20,67 @@ export default function ShopCard({ plug, index, layout = 'grid', currentLanguage
     const departments = new Set()
     const country = countries && countries.length > 0 ? countries[0] : null
     
-    // Fonction pour déterminer comment simplifier selon le pays
+    // Fonction pour vérifier si un code correspond au format d'un pays
+    const isValidCodeForCountry = (code, targetCountry) => {
+      const cleanCode = code.trim().toUpperCase()
+      
+      switch(targetCountry) {
+        case 'France':
+          return /^(0[1-9]|[1-8][0-9]|9[0-5]|97[1-8]|98[4-9])$/.test(cleanCode) ||
+                 /^(0[1-9]|[1-8][0-9]|9[0-5]|97[1-8]|98[4-9])\d{3}$/.test(cleanCode)
+        case 'Suisse':
+          return /^[1-9]\d{3}$/.test(cleanCode)
+        case 'Belgique':
+          return /^[1-9]\d{3}$/.test(cleanCode)
+        case 'Allemagne':
+          return /^[0-9]{5}$/.test(cleanCode)
+        case 'Espagne':
+          return /^(0[1-9]|[1-4][0-9]|5[0-2])\d{3}$/.test(cleanCode)
+        case 'Italie':
+          return /^[0-9]{5}$/.test(cleanCode)
+        case 'Thaïlande':
+          return /^[1-9]\d{4}$/.test(cleanCode)
+        default:
+          return /^\d{2,5}$/.test(cleanCode)
+      }
+    }
+    
+    // Fonction pour simplifier selon le pays
     const simplifyCodeByCountry = (code, detectedCountry) => {
       const cleanCode = code.trim().toUpperCase()
       
-      // France : 75001 → 75
-      if (detectedCountry === 'France' || /^(0[1-9]|[1-8][0-9]|9[0-5]|97[1-8]|98[4-9])\d{3}$/.test(cleanCode)) {
-        return cleanCode.substring(0, 2)
+      // Ne traiter que si le code est valide pour ce pays
+      if (detectedCountry && !isValidCodeForCountry(cleanCode, detectedCountry)) {
+        return null
       }
       
-      // Suisse : 1000 → 1000 (garder complet)
-      if (detectedCountry === 'Suisse' || (cleanCode.length === 4 && /^[1-9]\d{3}$/.test(cleanCode))) {
-        return cleanCode
+      switch(detectedCountry) {
+        case 'France':
+          if (/^\d{5}$/.test(cleanCode)) {
+            return cleanCode.substring(0, 2)
+          }
+          return cleanCode
+        case 'Suisse':
+        case 'Belgique':
+          return cleanCode
+        case 'Allemagne':
+        case 'Espagne':
+        case 'Italie':
+        case 'Thaïlande':
+          return cleanCode
+        default:
+          if (/^\d{2}$/.test(cleanCode)) {
+            return cleanCode
+          }
+          if (/^\d{3,5}$/.test(cleanCode)) {
+            // Si ressemble à un code français
+            if (/^(0[1-9]|[1-8][0-9]|9[0-5])\d{3}$/.test(cleanCode)) {
+              return cleanCode.substring(0, 2)
+            }
+            return cleanCode
+          }
+          return cleanCode
       }
-      
-      // Belgique : 1000 → 1000 (garder complet)
-      if (detectedCountry === 'Belgique' || (cleanCode.length === 4 && /^[1-9]\d{3}$/.test(cleanCode))) {
-        return cleanCode
-      }
-      
-      // Allemagne : 10115 → 10115 (garder complet)
-      if (detectedCountry === 'Allemagne' || (cleanCode.length === 5 && /^[0-9]{5}$/.test(cleanCode))) {
-        return cleanCode
-      }
-      
-      // Espagne : 28001 → 28001 (garder complet)
-      if (detectedCountry === 'Espagne' || (cleanCode.length === 5 && /^[0-5][0-9]{4}$/.test(cleanCode))) {
-        return cleanCode
-      }
-      
-      // Italie : 00100 → 00100 (garder complet)
-      if (detectedCountry === 'Italie' || (cleanCode.length === 5 && /^[0-9]{5}$/.test(cleanCode))) {
-        return cleanCode
-      }
-      
-      // Thaïlande : 10100 → 10100 (garder complet)
-      if (detectedCountry === 'Thaïlande' || (cleanCode.length === 5 && /^[1-9][0-9]{4}$/.test(cleanCode))) {
-        return cleanCode
-      }
-      
-      // Par défaut pour codes à 2 chiffres (France)
-      if (/^\d{2}$/.test(cleanCode)) {
-        return cleanCode
-      }
-      
-      // Par défaut pour codes à 3 chiffres
-      if (/^\d{3}$/.test(cleanCode)) {
-        return cleanCode
-      }
-      
-      // Par défaut pour codes à 4 chiffres (ne pas simplifier)
-      if (/^\d{4}$/.test(cleanCode)) {
-        return cleanCode
-      }
-      
-      // Par défaut pour codes à 5 chiffres (ne pas simplifier sauf France)
-      if (/^\d{5}$/.test(cleanCode)) {
-        // Si c'est un code français (75xxx, 92xxx, etc.)
-        if (/^(0[1-9]|[1-8][0-9]|9[0-5])\d{3}$/.test(cleanCode)) {
-          return cleanCode.substring(0, 2)
-        }
-        return cleanCode
-      }
-      
-      return cleanCode
     }
     
     // Extraire tous les codes numériques
