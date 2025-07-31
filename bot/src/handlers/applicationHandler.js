@@ -645,7 +645,7 @@ const handleFormMessage = async (ctx) => {
         // Éditer le message existant pour montrer l'étape suivante
         const photoFromTelegramBotMessage = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
           `⸻\n\n` +
-          `${getTranslation('registration.step11Photo', currentLang, customTranslations)}\n\n` +
+          `${getTranslation('registration.step12', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.shopPhotoQuestion', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.shopPhotoInstruction', currentLang, customTranslations)}`;
         
@@ -2322,7 +2322,7 @@ const handleSkipStep = async (ctx, step) => {
         
         const telegramBotMessage = `${getTranslation('registration.title', currentLang, customTranslations)}\n\n` +
           `⸻\n\n` +
-          `${getTranslation('registration.step10Bot', currentLang, customTranslations)}\n\n` +
+          `${getTranslation('registration.step11', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.telegramBotQuestion', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.telegramBotExample', currentLang, customTranslations)}\n\n` +
           `${getTranslation('registration.canSkip', currentLang, customTranslations)}`;
