@@ -794,6 +794,8 @@ bot.action('refresh_and_main', async (ctx) => {
 });
 
 bot.action('top_plugs', handleTopPlugs);
+bot.action(/^top_plugs_page_(\d+)$/, handleTopPlugs);
+bot.action('noop', async (ctx) => { await ctx.answerCbQuery(); });
 bot.action('plugs_all', (ctx) => handleAllPlugs(ctx, 0));
 bot.action('plugs_vip', (ctx) => handleVipPlugs(ctx, 0)); // Réactivé car encore utilisé dans le code
 bot.action('filter_service', handleFilterService);
