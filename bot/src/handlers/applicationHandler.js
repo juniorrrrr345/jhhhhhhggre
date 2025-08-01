@@ -2498,6 +2498,7 @@ const submitApplication = async (ctx) => {
       process.env.ADMIN_TELEGRAM_ID || '7670522278', // Admin principal
       // Ajoutez d'autres IDs ici si besoin :
       // '1234567890', // Autre admin
+      // '9876543210', // Admin secondaire
     ];
     
     try {
