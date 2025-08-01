@@ -168,9 +168,16 @@ const sendAdminNotification = async (bot, application, adminId) => {
       });
     }
 
-    console.log(`✅ Notification admin détaillée envoyée pour demande ${application._id}`);
+    console.log(`✅ Notification admin détaillée envoyée pour demande ${application._id} à l'admin ${adminId}`);
   } catch (error) {
-    console.error('❌ Erreur notification admin:', error);
+    console.error(`❌ Erreur notification admin pour ${adminId}:`, error.message);
+    console.error('Détails de l\'erreur:', {
+      code: error.code,
+      description: error.description,
+      adminId: adminId,
+      applicationId: application._id
+    });
+    throw error; // Re-lancer l'erreur pour qu'elle soit capturée dans applicationHandler
   }
 };
 

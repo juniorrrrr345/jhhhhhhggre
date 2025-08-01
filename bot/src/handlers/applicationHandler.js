@@ -2504,14 +2504,20 @@ const submitApplication = async (ctx) => {
     try {
       // Récupérer l'instance du bot depuis le contexte global ou les paramètres
       const bot = ctx.telegram ? { telegram: ctx.telegram } : global.bot;
+      console.log('📧 Tentative d\'envoi de notification aux admins:', adminIds);
+      
       if (bot) {
         // Envoyer à tous les admins en privé
         for (const adminId of adminIds) {
+          console.log(`📤 Envoi notification à l'admin ID: ${adminId}`);
           await sendAdminNotification(bot, application, adminId);
         }
+      } else {
+        console.error('❌ Bot instance non trouvée pour l\'envoi de notification');
       }
     } catch (notificationError) {
       console.error('⚠️ Erreur notification admin:', notificationError.message);
+      console.error('Stack trace:', notificationError.stack);
       // Ne pas faire échouer la soumission pour une erreur de notification
     }
     
