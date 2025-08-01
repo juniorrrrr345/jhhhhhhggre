@@ -80,7 +80,8 @@ const sendAdminNotification = async (bot, application, adminId) => {
       `👤 **Utilisateur :** ${application.firstName} ${application.lastName}\n` +
       `📱 **Username :** @${application.username || 'Non spécifié'}\n` +
       `🏪 **Nom du plug :** ${application.name}\n` +
-      `📍 **Localisation :** ${application.location.city}, ${application.location.country}\n` +
+      `📍 **Ville :** ${application.location.city}\n` +
+      `🌍 **Pays de travail :** ${application.countries && application.countries.length > 0 ? application.countries.join(', ') : application.location.country}\n` +
       `🛠️ **Services :** ${getServicesText(application.services)}\n` +
       `📞 **Contact :** ${application.contact.telegram}\n\n` +
       `💡 Rendez-vous sur le panel admin pour traiter cette demande.`;

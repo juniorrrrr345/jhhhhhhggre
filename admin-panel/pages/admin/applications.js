@@ -423,14 +423,16 @@ export default function Applications() {
                   <div className="mb-3 space-y-1">
                     <div className="flex items-center text-sm text-gray-600">
                       <span>📍</span>
-                      <span className="ml-1">{app.location?.city || app.city}, {app.location?.country || app.country}</span>
+                      <span className="ml-1">{app.location?.city || app.city || 'Non spécifiée'}</span>
                     </div>
-                    {app.workingCountries && app.workingCountries.length > 0 && (
-                      <div className="flex items-center text-sm text-gray-600">
-                        <span>🌍</span>
-                        <span className="ml-1">Travaille en: {app.workingCountries.join(', ')}</span>
-                      </div>
-                    )}
+                    <div className="flex items-center text-sm text-gray-600">
+                      <span>🌍</span>
+                      <span className="ml-1">
+                        {app.countries && app.countries.length > 0 
+                          ? app.countries.join(', ') 
+                          : app.location?.country || 'Non spécifié'}
+                      </span>
+                    </div>
                   </div>
 
                   {/* Services */}
@@ -637,8 +639,12 @@ export default function Applications() {
 
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700">Pays</label>
-                      <p className="text-sm text-gray-900">{selectedApp.location?.country || selectedApp.country || 'Non spécifié'}</p>
+                      <label className="block text-sm font-medium text-gray-700">Pays de travail</label>
+                      <p className="text-sm text-gray-900">
+                        {selectedApp.countries && selectedApp.countries.length > 0 
+                          ? selectedApp.countries.join(', ') 
+                          : selectedApp.location?.country || 'Non spécifié'}
+                      </p>
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700">Ville</label>

@@ -2445,8 +2445,10 @@ const submitApplication = async (ctx) => {
       name: userForm.data.name,
       description: userForm.data.name + ' - Inscription FindYourPlug', // Description par défaut
       location: {
-        country: userForm.data.country || 'France', // Pays par défaut
-        city: userForm.data.city || 'Non spécifiée' // City par défaut
+        country: userForm.data.workingCountries && userForm.data.workingCountries.length > 0 
+          ? userForm.data.workingCountries.join(', ') 
+          : 'Non spécifié',
+        city: userForm.data.city || 'Non spécifiée'
       },
       countries: userForm.data.workingCountries || [], // Pays de travail
       services: servicesArray, // Format array au lieu d'object
