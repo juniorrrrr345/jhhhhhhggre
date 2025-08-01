@@ -14,6 +14,9 @@ const { getTranslation, translateDescription, translateShopName, translateServic
 
 // SYSTÈME DE PRÉVENTION DE SPAM SUPPRIMÉ
 
+// Map pour stocker l'état des utilisateurs
+const lastUserState = new Map();
+
 // 🔘 SYSTÈME TOP PLUGS - Bouton principal avec pays, filtres et liste
 const handleTopPlugs = async (ctx) => {
   try {
@@ -2243,7 +2246,7 @@ const handleTopPlugsCountry = async (ctx, country) => {
     const customTranslations = config?.languages?.translations;
     
     // Récupérer le nom traduit du pays
-    const countryName = getCountryName(country, currentLang);
+    const countryName = getCountryNameByLanguage(country, currentLang);
     const countryFlag = getCountryFlag(country);
     
     // Récupérer les boutiques du pays
