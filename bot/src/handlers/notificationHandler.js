@@ -76,22 +76,99 @@ const getServicesText = (services) => {
 // Envoyer notification à l'admin d'une nouvelle demande
 const sendAdminNotification = async (bot, application, adminId) => {
   try {
-    const message = `🔔 **Nouvelle demande d'inscription !**\n\n` +
-      `👤 **Utilisateur :** ${application.firstName} ${application.lastName}\n` +
-      `📱 **Username :** @${application.username || 'Non spécifié'}\n` +
-      `🏪 **Nom du plug :** ${application.name}\n` +
-      `📍 **Ville :** ${application.location.city}\n` +
-      `🌍 **Pays de travail :** ${application.countries && application.countries.length > 0 ? application.countries.join(', ') : application.location.country}\n` +
-      `🛠️ **Services :** ${getServicesText(application.services)}\n` +
-      `📞 **Contact :** ${application.contact.telegram}\n\n` +
-      `💡 Rendez-vous sur le panel admin pour traiter cette demande.`;
+    // Construction du message détaillé
+    let message = `🔔 **NOUVELLE DEMANDE D'INSCRIPTION**\n\n`;
+    message += `⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻\n\n`;
+    
+    // Informations utilisateur
+    message += `👤 **INFORMATIONS UTILISATEUR**\n`;
+    message += `├ Nom : ${application.firstName} ${application.lastName}\n`;
+    message += `├ Username : @${application.username || 'Non spécifié'}\n`;
+    message += `└ ID : ${application.userId}\n\n`;
+    
+    // Informations du plug
+    message += `🏪 **INFORMATIONS DU PLUG**\n`;
+    message += `├ Nom : ${application.name}\n`;
+    message += `├ Description : ${application.description}\n`;
+    message += `├ Ville : ${application.location.city}\n`;
+    message += `└ Pays : ${application.countries && application.countries.length > 0 ? application.countries.join(', ') : application.location.country}\n\n`;
+    
+    // Services proposés avec détails
+    message += `🛠️ **SERVICES PROPOSÉS**\n`;
+    const services = application.services || [];
+    
+    if (services.includes('meetup')) {
+      message += `\n🤝 **Meet Up :**\n`;
+      if (application.departments?.meetup) {
+        message += `${application.departments.meetup}\n`;
+      } else {
+        message += `Aucun département spécifié\n`;
+      }
+    }
+    
+    if (services.includes('shipping')) {
+      message += `\n📮 **Envoi postal :**\n`;
+      if (application.departments?.shipping) {
+        message += `${application.departments.shipping}\n`;
+      } else {
+        message += `✅ Validation automatique\n`;
+      }
+    }
+    
+    if (services.includes('delivery')) {
+      message += `\n🚚 **Livraison :**\n`;
+      if (application.departments?.delivery) {
+        message += `${application.departments.delivery}\n`;
+      } else {
+        message += `Aucun département spécifié\n`;
+      }
+    }
+    
+    // Contacts et réseaux sociaux
+    message += `\n📱 **CONTACTS ET RÉSEAUX SOCIAUX**\n`;
+    message += `├ Telegram : ${application.contact.telegram}\n`;
+    if (application.contact.telegramChannel) message += `├ Canal Telegram : ${application.contact.telegramChannel}\n`;
+    if (application.contact.telegramBot) message += `├ Bot Telegram : ${application.contact.telegramBot}\n`;
+    if (application.contact.instagram) message += `├ Instagram : ${application.contact.instagram}\n`;
+    if (application.contact.snapchat) message += `├ Snapchat : ${application.contact.snapchat}\n`;
+    if (application.contact.potato) message += `├ Potato : ${application.contact.potato}\n`;
+    if (application.contact.whatsapp) message += `├ WhatsApp : ${application.contact.whatsapp}\n`;
+    if (application.contact.signal) message += `├ Signal : ${application.contact.signal}\n`;
+    if (application.contact.session) message += `├ Session : ${application.contact.session}\n`;
+    if (application.contact.threema) message += `└ Threema : ${application.contact.threema}\n`;
+    
+    // Photo
+    message += `\n📸 **PHOTO DU PLUG**\n`;
+    message += application.photo ? `✅ Photo fournie (ID: ${application.photo})\n` : `❌ Aucune photo fournie\n`;
+    
+    // Date et statut
+    message += `\n📅 **INFORMATIONS SUPPLÉMENTAIRES**\n`;
+    message += `├ Date de soumission : ${new Date(application.submittedAt).toLocaleString('fr-FR')}\n`;
+    message += `└ Statut : ${application.status === 'pending' ? '⏳ En attente' : application.status}\n`;
+    
+    message += `\n⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻\n`;
+    message += `\n💡 **Rendez-vous sur le panel admin pour traiter cette demande.**`;
 
-    // Pas de bouton panel admin - juste le message texte
-    await bot.telegram.sendMessage(adminId, message, {
-      parse_mode: 'Markdown'
-    });
+    // Envoyer le message avec la photo si disponible
+    if (application.photo) {
+      try {
+        await bot.telegram.sendPhoto(adminId, application.photo, {
+          caption: message,
+          parse_mode: 'Markdown'
+        });
+      } catch (photoError) {
+        // Si l'envoi avec photo échoue, envoyer sans photo
+        await bot.telegram.sendMessage(adminId, message, {
+          parse_mode: 'Markdown'
+        });
+      }
+    } else {
+      await bot.telegram.sendMessage(adminId, message, {
+        parse_mode: 'Markdown'
+      });
+    }
 
-    console.log(`✅ Notification admin envoyée pour demande ${application._id}`);
+    console.log(`✅ Notification admin détaillée envoyée pour demande ${application._id}`);
   } catch (error) {
     console.error('❌ Erreur notification admin:', error);
   }
