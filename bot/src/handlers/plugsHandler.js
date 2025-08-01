@@ -28,9 +28,8 @@ const handleTopPlugs = async (ctx) => {
     
     await ctx.answerCbQuery('🔄 Chargement...');
     
-    // TOUJOURS récupérer la config ACTUELLE
-    const { getFreshConfig } = require('../utils/configHelper');
-    const config = await getFreshConfig(true);
+    // Récupérer la configuration
+    const config = await Config.findById('main');
     const currentLang = config?.languages?.currentLanguage || 'fr';
     const customTranslations = config?.languages?.translations;
     
