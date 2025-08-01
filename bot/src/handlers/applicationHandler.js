@@ -2519,23 +2519,34 @@ const submitApplication = async (ctx) => {
     userForms.delete(userId);
     lastBotMessages.delete(userId);
     
-    // Retourner directement au menu principal sans message de vérification
-    // Récupérer la configuration actuelle
+    // Afficher un message de confirmation
     const Config = require('../models/Config');
     const config = await Config.findById('main');
     const currentLang = config?.languages?.currentLanguage || 'fr';
-    const customTranslations = config?.languages?.translations;
     
-    // Utiliser la fonction centralisée pour construire le message
-    const { buildWelcomeMessage } = require('../utils/messageBuilder');
-    const welcomeMessage = await buildWelcomeMessage(config, currentLang, customTranslations, false);
+    // Message de confirmation
+    const confirmationMessage = `✅ **Candidature envoyée avec succès !**\n\n` +
+      `🎉 Félicitations ${userForm.data.name} !\n\n` +
+      `Votre demande d'inscription a été transmise à notre équipe.\n\n` +
+      `📋 **Récapitulatif :**\n` +
+      `• Nom du plug : ${userForm.data.name}\n` +
+      `• Services : ${servicesArray.map(s => s === 'delivery' ? 'Livraison' : s === 'meetup' ? 'Meet Up' : 'Envoi postal').join(', ')}\n` +
+      `• Pays : ${userForm.data.workingCountries.join(', ')}\n\n` +
+      `⏳ **Prochaines étapes :**\n` +
+      `1️⃣ Notre équipe va examiner votre demande\n` +
+      `2️⃣ Vous recevrez une notification de décision\n` +
+      `3️⃣ Si approuvé, votre boutique sera visible sur FindYourPlug\n\n` +
+      `💬 En attendant, n'hésitez pas à nous contacter si vous avez des questions.\n\n` +
+      `_Merci de votre confiance !_`;
     
-    // Créer le clavier principal
-    const { createMainKeyboard } = require('../utils/keyboards');
-    const keyboard = await createMainKeyboard(config);
+    // Bouton pour retourner au menu principal
+    const { Markup } = require('telegraf');
+    const keyboard = Markup.inlineKeyboard([
+      [Markup.button.callback('🏠 Retour au menu principal', 'back_main')]
+    ]);
     
-    // Envoyer le menu principal
-    await ctx.reply(welcomeMessage, {
+    // Envoyer le message de confirmation
+    await ctx.reply(confirmationMessage, {
       reply_markup: keyboard.reply_markup,
       parse_mode: 'Markdown'
     });
