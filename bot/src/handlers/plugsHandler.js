@@ -15,17 +15,22 @@ const { getTranslation, translateDescription, translateShopName, translateServic
 // SYSTÈME DE PRÉVENTION DE SPAM SUPPRIMÉ
 
 // 🔘 SYSTÈME TOP PLUGS - Bouton principal avec pays, filtres et liste
-const handleTopPlugs = async (ctx) => {
+const handleTopPlugs = async (ctx, selectedCountry = null, serviceType = null) => {
   try {
+    console.log('\n=== 🏪 DÉBUT handleTopPlugs ===');
+    console.log(`📍 Pays sélectionné: ${selectedCountry || 'Aucun'}`);
+    console.log(`🔧 Service sélectionné: ${serviceType || 'Aucun'}`);
+    
+    // Récupérer la page actuelle depuis le callback data
+    const callbackData = ctx.callbackQuery?.data || '';
+    const pageMatch = callbackData.match(/page_(\d+)/);
+    const currentPage = pageMatch ? parseInt(pageMatch[1]) : 1;
+    const itemsPerPage = 10; // Limite raisonnable pour Telegram
+    
+    console.log(`📄 Page actuelle: ${currentPage}`);
+    
     const userId = ctx.from?.id;
-    
-    console.log('🔝 Début handleTopPlugs - VOTER POUR VOTRE PLUGS');
-    
-    await ctx.answerCbQuery('🔄 Chargement...');
-    
-    // TOUJOURS récupérer la config ACTUELLE
-    const { getFreshConfig } = require('../utils/configHelper');
-    const config = await getFreshConfig(true);
+    const config = await Config.findById('main');
     const currentLang = config?.languages?.currentLanguage || 'fr';
     const customTranslations = config?.languages?.translations;
     
@@ -56,35 +61,69 @@ const handleTopPlugs = async (ctx) => {
     
     // Afficher tous les plugs sans limite
     const topPlugs = allPlugs;
+    
+    // Afficher tous les plugs avec pagination
+    const totalPlugs = allPlugs.length;
+    const totalPages = Math.ceil(totalPlugs / itemsPerPage);
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const topPlugs = allPlugs.slice(startIndex, endIndex);
+    
+    console.log(`📊 Total: ${totalPlugs} boutiques, Page ${currentPage}/${totalPages}`);
+    console.log(`📋 Affichage des boutiques ${startIndex + 1} à ${Math.min(endIndex, totalPlugs)}`);
+    
     let keyboard;
     
     console.log(`📋 Traitement de ${topPlugs.length} boutiques pour affichage`);
     
     if (topPlugs.length > 0) {
       const shopsAvailableText = getTranslation('messages_shopsAvailable', currentLang, customTranslations);
-      message += `**${topPlugs.length} ${shopsAvailableText} :**\n\n`;
+      message += `**${totalPlugs} ${shopsAvailableText} (Page ${currentPage}/${totalPages}):**\n\n`;
       
       console.log('✅ Boutiques trouvées, création du clavier...');
       
       // Ajouter les boutiques au clavier
       const plugButtons = [];
       topPlugs.forEach((plug, index) => {
+        const globalIndex = startIndex + index;
         const country = getCountryFlag(plug.countries[0]);
         const location = plug.location ? ` ${plug.location}` : '';
         const vipIcon = plug.isVip ? '⭐️ ' : '';
-        const buttonText = `${country}${location} ${vipIcon}${plug.name} 👍 ${plug.likes}`;
+        const position = globalIndex + 1;
+        const buttonText = `${position}. ${country}${location} ${vipIcon}${plug.name} 👍 ${plug.likes}`;
         plugButtons.push([Markup.button.callback(buttonText, `plug_${plug._id}_from_top_plugs`)]);
-        console.log(`📋 Boutique ${index + 1}: ${plug.name} (${plug.likes} likes)`);
+        console.log(`📋 Boutique ${position}: ${plug.name} (${plug.likes} likes)`);
       });
       
-      keyboard = createTopPlugsKeyboard(config, availableCountries, [], null, plugButtons);
+      // Ajouter les boutons de pagination si nécessaire
+      const paginationButtons = [];
+      if (totalPages > 1) {
+        const navButtons = [];
+        
+        // Bouton précédent
+        if (currentPage > 1) {
+          navButtons.push(Markup.button.callback('⬅️ Précédent', `top_plugs_page_${currentPage - 1}${selectedCountry ? `_country_${selectedCountry}` : ''}${serviceType ? `_service_${serviceType}` : ''}`));
+        }
+        
+        // Indicateur de page
+        navButtons.push(Markup.button.callback(`📄 ${currentPage}/${totalPages}`, 'page_info'));
+        
+        // Bouton suivant
+        if (currentPage < totalPages) {
+          navButtons.push(Markup.button.callback('Suivant ➡️', `top_plugs_page_${currentPage + 1}${selectedCountry ? `_country_${selectedCountry}` : ''}${serviceType ? `_service_${serviceType}` : ''}`));
+        }
+        
+        paginationButtons.push(navButtons);
+      }
+      
+      keyboard = createTopPlugsKeyboard(config, availableCountries, selectedCountry, serviceType, [...plugButtons, ...paginationButtons]);
       console.log('⌨️ Clavier créé avec boutiques');
       // Les filtres sont maintenant en haut, les boutiques en bas via la fonction createTopPlugsKeyboard
     } else {
       console.log('❌ Aucune boutique trouvée');
       const noShopsText = getTranslation('messages_noShops', currentLang, customTranslations);
       message += noShopsText;
-      keyboard = createTopPlugsKeyboard(config, availableCountries, [], null, null);
+      keyboard = createTopPlugsKeyboard(config, availableCountries, selectedCountry, serviceType, null);
       console.log('⌨️ Clavier créé sans boutiques');
     }
     
