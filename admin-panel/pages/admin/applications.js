@@ -638,11 +638,11 @@ export default function Applications() {
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700">Pays</label>
-                      <p className="text-sm text-gray-900">{selectedApp.country}</p>
+                      <p className="text-sm text-gray-900">{selectedApp.location?.country || selectedApp.country || 'Non spécifié'}</p>
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700">Ville</label>
-                      <p className="text-sm text-gray-900">{selectedApp.city}</p>
+                      <p className="text-sm text-gray-900">{selectedApp.location?.city || selectedApp.city || 'Non spécifiée'}</p>
                     </div>
                   </div>
 
@@ -658,6 +658,30 @@ export default function Applications() {
                       <div className="mt-3">
                         {getServicesDetails(selectedApp)}
                       </div>
+                      
+                      {/* Départements/Zones de service */}
+                      {selectedApp.departments && (
+                        <div className="mt-4 space-y-2">
+                          {selectedApp.departments.delivery && (
+                            <div className="bg-green-50 p-2 rounded">
+                              <span className="font-medium text-green-700">🚚 Livraison:</span>
+                              <span className="text-sm text-gray-700 ml-2">{selectedApp.departments.delivery}</span>
+                            </div>
+                          )}
+                          {selectedApp.departments.meetup && (
+                            <div className="bg-blue-50 p-2 rounded">
+                              <span className="font-medium text-blue-700">🤝 Meetup:</span>
+                              <span className="text-sm text-gray-700 ml-2">{selectedApp.departments.meetup}</span>
+                            </div>
+                          )}
+                          {selectedApp.departments.shipping && (
+                            <div className="bg-purple-50 p-2 rounded">
+                              <span className="font-medium text-purple-700">📦 Envoi:</span>
+                              <span className="text-sm text-gray-700 ml-2">{selectedApp.departments.shipping}</span>
+                            </div>
+                          )}
+                        </div>
+                      )}
                     </div>
                   </div>
 

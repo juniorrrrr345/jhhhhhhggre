@@ -108,6 +108,25 @@ const plugApplicationSchema = new mongoose.Schema({
     }
   },
   
+  // Départements/zones de service
+  departments: {
+    delivery: {
+      type: String,
+      default: '',
+      trim: true
+    },
+    meetup: {
+      type: String,
+      default: '',
+      trim: true
+    },
+    shipping: {
+      type: String,
+      default: '',
+      trim: true
+    }
+  },
+  
   // Photo optionnelle
   photo: {
     type: String,
