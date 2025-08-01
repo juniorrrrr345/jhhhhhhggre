@@ -3431,7 +3431,7 @@ app.post('/api/cities-to-postal', authenticateAdmin, (req, res) => {
 // Récupérer tous les plugs (Admin seulement)
 app.get('/api/plugs', authenticateAdmin, async (req, res) => {
   try {
-    const { page = 1, limit = 10, search = '', filter = 'all' } = req.query;
+    const { page = 1, limit = 1000, search = '', filter = 'all' } = req.query;
     const skip = (page - 1) * limit;
     
     let query = {};

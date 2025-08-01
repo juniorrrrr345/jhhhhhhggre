@@ -54,8 +54,8 @@ const handleTopPlugs = async (ctx) => {
     message += `• ${getTranslation('messages_selectCountry', currentLang, customTranslations)}\n`;
     message += `• ${getTranslation('messages_findShops', currentLang, customTranslations)}\n\n`;
     
-    // Afficher les premiers plugs (top 10 par défaut)
-    const topPlugs = allPlugs.slice(0, 10);
+    // Afficher tous les plugs sans limite
+    const topPlugs = allPlugs;
     let keyboard;
     
     console.log(`📋 Traitement de ${topPlugs.length} boutiques pour affichage`);
@@ -136,7 +136,7 @@ const handleTopCountryFilter = async (ctx, country) => {
       
       // Ajouter les boutiques au clavier
       const plugButtons = [];
-      countryPlugs.slice(0, 10).forEach((plug, index) => {
+      countryPlugs.forEach((plug, index) => {
         const countryFlag = getCountryFlag(plug.countries[0]);
         const location = plug.location ? ` ${plug.location}` : '';
         const vipIcon = plug.isVip ? '⭐️ ' : '';
@@ -218,7 +218,7 @@ const handleTopServiceFilter = async (ctx, serviceType, selectedCountry = null) 
         message += `**${postalPlugs.length} ${shopsFoundLabel} :**\n\n`;
         
         const plugButtons = [];
-        postalPlugs.slice(0, 10).forEach((plug) => {
+        postalPlugs.forEach((plug) => {
           const country = getCountryFlag(plug.countries[0]);
           const location = plug.location ? ` ${plug.location}` : '';
           const vipIcon = plug.isVip ? '⭐️ ' : '';
@@ -719,7 +719,7 @@ const handleSpecificDepartment = async (ctx, serviceType, department, selectedCo
       
       // Ajouter les boutiques au clavier
       const plugButtons = [];
-      deptPlugs.slice(0, 10).forEach((plug, index) => {
+      deptPlugs.forEach((plug, index) => {
         const country = getCountryFlag(plug.countries[0]);
         const location = plug.location ? ` ${plug.location}` : '';
         const vipIcon = plug.isVip ? '⭐️ ' : '';
@@ -799,8 +799,8 @@ const handleResetFilters = async (ctx) => {
     let message = `${topPlugsTitle}\n`;
     message += `*(${getTranslation('messages_sortedByVotes', currentLang, customTranslations)})*\n\n`;
     
-    // Afficher les premiers plugs (top 10 par défaut)
-    const topPlugs = allPlugs.slice(0, 10);
+    // Afficher tous les plugs sans limite
+    const topPlugs = allPlugs;
     let keyboard;
     
     console.log(`📋 Traitement de ${topPlugs.length} boutiques pour affichage`);
