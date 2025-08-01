@@ -49,6 +49,28 @@ const plugApplicationSchema = new mongoose.Schema({
     default: []
   },
   
+  // Pays de travail
+  countries: {
+    type: [String],
+    default: []
+  },
+  
+  // Départements/codes postaux par service
+  departments: {
+    delivery: {
+      type: String,
+      default: ''
+    },
+    meetup: {
+      type: String,
+      default: ''
+    },
+    shipping: {
+      type: String,
+      default: ''
+    }
+  },
+  
   // Contact et réseaux sociaux
   contact: {
     telegram: {

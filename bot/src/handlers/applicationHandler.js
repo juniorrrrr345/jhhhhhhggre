@@ -2448,6 +2448,7 @@ const submitApplication = async (ctx) => {
         country: userForm.data.country || 'France', // Pays par défaut
         city: userForm.data.city || 'Non spécifiée' // City par défaut
       },
+      countries: userForm.data.workingCountries || [], // Pays de travail
       services: servicesArray, // Format array au lieu d'object
       contact: {
         telegram: userForm.data.telegram,
@@ -2463,8 +2464,12 @@ const submitApplication = async (ctx) => {
         other: ''
       },
       departments: {
-        delivery: userForm.data.departmentsDelivery || '',
-        meetup: userForm.data.departmentsMeetup || '',
+        delivery: userForm.data.deliveryPostalCodes ? 
+          Object.entries(userForm.data.deliveryPostalCodes).map(([country, code]) => `${country}: ${code}`).join(', ') :
+          userForm.data.departmentsDelivery || '',
+        meetup: userForm.data.meetupPostalCodes ? 
+          Object.entries(userForm.data.meetupPostalCodes).map(([country, code]) => `${country}: ${code}`).join(', ') :
+          userForm.data.departmentsMeetup || '',
         shipping: userForm.data.shippingCountries || ''
       },
       photo: userForm.data.photo ? userForm.data.photo.fileId : null, // Juste le fileId
@@ -2512,8 +2517,25 @@ const submitApplication = async (ctx) => {
     lastBotMessages.delete(userId);
     
     // Retourner directement au menu principal sans message de vérification
-    const { showMainMenu } = require('./menuHandler');
-    await showMainMenu(ctx);
+    // Récupérer la configuration actuelle
+    const Config = require('../models/Config');
+    const config = await Config.findById('main');
+    const currentLang = config?.languages?.currentLanguage || 'fr';
+    const customTranslations = config?.languages?.translations;
+    
+    // Utiliser la fonction centralisée pour construire le message
+    const { buildWelcomeMessage } = require('../utils/messageBuilder');
+    const welcomeMessage = await buildWelcomeMessage(config, currentLang, customTranslations, false);
+    
+    // Créer le clavier principal
+    const { createMainKeyboard } = require('../utils/keyboards');
+    const keyboard = await createMainKeyboard(config);
+    
+    // Envoyer le menu principal
+    await ctx.reply(welcomeMessage, {
+      reply_markup: keyboard.reply_markup,
+      parse_mode: 'Markdown'
+    });
     
   } catch (error) {
     console.error('❌ SUBMIT ERROR: Detailed error in submitApplication:', {
