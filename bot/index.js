@@ -2922,6 +2922,7 @@ app.post('/api/plugs', limits.admin, authenticateAdmin, async (req, res) => {
     if (safeBody.password) safeBody.password = '***MASQUÉ***';
     if (safeBody.token) safeBody.token = '***MASQUÉ***';
     console.log('📝 Données reçues (sécurisé):', safeBody);
+    console.log('🖼️ Image reçue:', req.body.image ? `${req.body.image.substring(0, 50)}...` : 'Aucune image');
     
     const plugData = req.body;
     
@@ -3003,6 +3004,7 @@ app.post('/api/plugs', limits.admin, authenticateAdmin, async (req, res) => {
     console.log('💾 Sauvegarde en base de données...');
     const savedPlug = await newPlug.save();
     console.log('✅ Plug sauvegardé avec succès:', savedPlug._id);
+    console.log('🖼️ Image sauvegardée:', savedPlug.image ? `${savedPlug.image.substring(0, 50)}...` : 'Aucune image');
     
     // TRADUCTION AUTOMATIQUE de la boutique (RÉACTIVÉE)
     try {
@@ -3042,6 +3044,11 @@ app.post('/api/plugs', limits.admin, authenticateAdmin, async (req, res) => {
     }
     
     console.log('🔄 CACHE TOTALEMENT VIDÉ pour affichage instantané mini app');
+    
+    // Forcer le rafraîchissement immédiat du cache
+    console.log('🔄 Rafraîchissement forcé du cache après création...');
+    await refreshCache();
+    console.log('✅ Cache rafraîchi avec la nouvelle boutique');
     
     // AFFICHER LA NOUVELLE BOUTIQUE SUR LE BOT AVEC TRADUCTIONS
     try {
@@ -3606,6 +3613,12 @@ app.get('/api/public/plugs', async (req, res) => {
       'Last-Modified': new Date().toUTCString(),
       'X-Cache-Updated': cache.lastUpdate?.toISOString() || 'never'
     });
+    
+    // Vérifier que les images sont bien incluses
+    console.log(`📤 Envoi de ${paginatedPlugs.length} plugs à la mini-app`);
+    if (paginatedPlugs.length > 0) {
+      console.log('🖼️ Premier plug:', paginatedPlugs[0].name, '- Image:', paginatedPlugs[0].image ? 'Oui' : 'Non');
+    }
     
     res.json({
       plugs: paginatedPlugs,
