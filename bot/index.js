@@ -2991,7 +2991,11 @@ app.post('/api/plugs', limits.admin, authenticateAdmin, async (req, res) => {
           postalCodes: meetupPostalCodes
         }
       },
-      socialMedia: (plugData.socialMedia || []).filter(sm => sm.name && sm.emoji && sm.url),
+      socialMedia: (plugData.socialMedia || []).filter(sm => sm.name && sm.url).map(sm => ({
+        name: sm.name,
+        emoji: sm.emoji || '🔗',
+        url: sm.url
+      })),
       likes: 0,
       likedBy: []
     });
@@ -3268,7 +3272,11 @@ app.put('/api/plugs/:id', authenticateAdmin, async (req, res) => {
     
     // Mettre à jour les réseaux sociaux
     if (updateData.socialMedia) {
-      plug.socialMedia = updateData.socialMedia;
+      plug.socialMedia = updateData.socialMedia.filter(sm => sm.name && sm.url).map(sm => ({
+        name: sm.name,
+        emoji: sm.emoji || '🔗',
+        url: sm.url
+      }));
     }
     
     // Sauvegarder
@@ -3315,8 +3323,13 @@ app.put('/api/plugs/:id', authenticateAdmin, async (req, res) => {
     
     res.json(updatedPlug);
   } catch (error) {
-    console.error('Erreur modification plug:', error);
-    res.status(500).json({ error: 'Erreur lors de la modification du plug' });
+    console.error('❌ Erreur modification plug:', error);
+    console.error('Stack trace:', error.stack);
+    console.error('Message d\'erreur:', error.message);
+    res.status(500).json({ 
+      error: 'Erreur lors de la modification du plug',
+      details: error.message 
+    });
   }
 });
 

@@ -99,7 +99,7 @@ const plugSchema = new mongoose.Schema({
     },
     emoji: {
       type: String,
-      required: true
+      default: ''
     },
     url: {
       type: String,
