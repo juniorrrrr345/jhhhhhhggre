@@ -28,7 +28,7 @@ export default function ShopSearch() {
   const [, setCurrentLanguage] = useState('fr') // Gardé pour la compatibilité
   const [likesSync, setLikesSync] = useState({}) // Pour synchroniser les likes en temps réel
   const { t } = useTranslation(currentLanguage)
-  const itemsPerPage = 20
+  const itemsPerPage = 10000 // Afficher toutes les boutiques sans pagination
 
   useEffect(() => {
     // Initialiser la langue depuis localStorage

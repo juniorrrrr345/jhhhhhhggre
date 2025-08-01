@@ -93,30 +93,39 @@ const handleTopPlugs = async (ctx) => {
       if (totalPages > 1) {
         const navButtons = [];
         
-        // Première page
-        if (currentPage > 2) {
-          navButtons.push(Markup.button.callback('⏮️ Début', 'top_plugs_page_1'));
-        }
-        
         // Page précédente
         if (currentPage > 1) {
-          navButtons.push(Markup.button.callback('⬅️ Précédent', `top_plugs_page_${currentPage - 1}`));
+          navButtons.push(Markup.button.callback('⬅️', `top_plugs_page_${currentPage - 1}`));
         }
         
-        // Indicateur de page
-        navButtons.push(Markup.button.callback(`📄 ${currentPage}/${totalPages}`, 'noop'));
+        // Indicateur de page avec emojis
+        navButtons.push(Markup.button.callback(`📄 Page ${currentPage}/${totalPages}`, 'noop'));
         
         // Page suivante
         if (currentPage < totalPages) {
-          navButtons.push(Markup.button.callback('Suivant ➡️', `top_plugs_page_${currentPage + 1}`));
-        }
-        
-        // Dernière page
-        if (currentPage < totalPages - 1) {
-          navButtons.push(Markup.button.callback('Fin ⏭️', `top_plugs_page_${totalPages}`));
+          navButtons.push(Markup.button.callback('➡️', `top_plugs_page_${currentPage + 1}`));
         }
         
         paginationButtons.push(navButtons);
+        
+        // Boutons de navigation rapide sur une deuxième ligne si beaucoup de pages
+        if (totalPages > 5) {
+          const quickNavButtons = [];
+          
+          // Première page
+          if (currentPage > 3) {
+            quickNavButtons.push(Markup.button.callback('⏮️ Début', 'top_plugs_page_1'));
+          }
+          
+          // Dernière page
+          if (currentPage < totalPages - 2) {
+            quickNavButtons.push(Markup.button.callback('Fin ⏭️', `top_plugs_page_${totalPages}`));
+          }
+          
+          if (quickNavButtons.length > 0) {
+            paginationButtons.push(quickNavButtons);
+          }
+        }
       }
       
       // Créer le clavier avec les boutiques et la pagination
@@ -2216,6 +2225,121 @@ const handleCountryServiceShops = async (ctx, serviceType, country) => {
   }
 };
 
+// 🌍 FILTRAGE PAR PAYS - Affiche les plugs d'un pays spécifique
+const handleTopPlugsCountry = async (ctx, country) => {
+  try {
+    const userId = ctx.from?.id;
+    
+    // Extraire la page depuis le callback data
+    const callbackData = ctx.callbackQuery?.data || '';
+    const pageMatch = callbackData.match(/country_page_(\d+)/);
+    const currentPage = pageMatch ? parseInt(pageMatch[1]) : 1;
+    
+    console.log(`🌍 Affichage des plugs pour le pays: ${country}, Page: ${currentPage}`);
+    
+    await ctx.answerCbQuery('🔄 Chargement...');
+    
+    const config = await Config.findById('main');
+    const currentLang = config?.languages?.currentLanguage || 'fr';
+    const customTranslations = config?.languages?.translations;
+    
+    // Récupérer le nom traduit du pays
+    const countryName = getCountryName(country, currentLang);
+    const countryFlag = getCountryFlag(country);
+    
+    // Récupérer les boutiques du pays
+    const countryPlugs = await Plug.find({
+      isActive: true,
+      countries: country
+    }).sort({ likes: -1, createdAt: -1 });
+    
+    const availableCountries = await getAvailableCountries(currentLang);
+    
+    let message = `${countryFlag} **${countryName}**\n`;
+    message += `*(${getTranslation('messages_sortedByVotes', currentLang, customTranslations)})*\n\n`;
+    
+    // Pagination
+    const itemsPerPage = 8;
+    const totalPlugs = countryPlugs.length;
+    const totalPages = Math.ceil(totalPlugs / itemsPerPage);
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const pagePlugs = countryPlugs.slice(startIndex, endIndex);
+    
+    let keyboard;
+    
+    if (pagePlugs.length > 0) {
+      const shopsFoundLabel = getTranslation('shops_found_country', currentLang, customTranslations);
+      message += `**${totalPlugs} ${shopsFoundLabel}**\n`;
+      message += `📄 **Page ${currentPage} sur ${totalPages}**\n\n`;
+      
+      // Ajouter les boutiques au clavier
+      const plugButtons = [];
+      pagePlugs.forEach((plug, index) => {
+        const globalIndex = startIndex + index + 1;
+        const countryFlag = getCountryFlag(plug.countries[0]);
+        const location = plug.location ? ` ${plug.location}` : '';
+        const vipIcon = plug.isVip ? '⭐️ ' : '';
+        const buttonText = `${globalIndex}. ${countryFlag}${location} ${vipIcon}${plug.name} 👍 ${plug.likes}`;
+        plugButtons.push([Markup.button.callback(buttonText, `plug_${plug._id}_from_top_country`)]);
+      });
+      
+      // Ajouter les boutons de pagination
+      const paginationButtons = [];
+      if (totalPages > 1) {
+        const navButtons = [];
+        
+        // Page précédente
+        if (currentPage > 1) {
+          navButtons.push(Markup.button.callback('⬅️', `top_country_${country}_page_${currentPage - 1}`));
+        }
+        
+        // Indicateur de page
+        navButtons.push(Markup.button.callback(`📄 Page ${currentPage}/${totalPages}`, 'noop'));
+        
+        // Page suivante
+        if (currentPage < totalPages) {
+          navButtons.push(Markup.button.callback('➡️', `top_country_${country}_page_${currentPage + 1}`));
+        }
+        
+        paginationButtons.push(navButtons);
+        
+        // Boutons de navigation rapide si beaucoup de pages
+        if (totalPages > 5) {
+          const quickNavButtons = [];
+          
+          if (currentPage > 3) {
+            quickNavButtons.push(Markup.button.callback('⏮️ Début', `top_country_${country}_page_1`));
+          }
+          
+          if (currentPage < totalPages - 2) {
+            quickNavButtons.push(Markup.button.callback('Fin ⏭️', `top_country_${country}_page_${totalPages}`));
+          }
+          
+          if (quickNavButtons.length > 0) {
+            paginationButtons.push(quickNavButtons);
+          }
+        }
+      }
+      
+      keyboard = createTopPlugsKeyboard(config, availableCountries, country, null, [...plugButtons, ...paginationButtons]);
+    } else {
+      const noShopsText = getTranslation('messages_noShops', currentLang, customTranslations);
+      message += noShopsText;
+      keyboard = createTopPlugsKeyboard(config, availableCountries, country, null, null);
+    }
+    
+    await editMessageWithImage(ctx, message, keyboard, config, { parse_mode: 'Markdown' });
+    
+  } catch (error) {
+    console.error('Erreur dans handleTopPlugsCountry:', error);
+    const config = await Config.findById('main');
+    const currentLang = config?.languages?.currentLanguage || 'fr';
+    const customTranslations = config?.languages?.translations;
+    await ctx.answerCbQuery(getTranslation('error_loading', currentLang, customTranslations)).catch(() => {});
+  }
+};
+
 module.exports = {
   handleTopPlugs,
   handleVipPlugs,
@@ -2239,5 +2363,6 @@ module.exports = {
   getAvailableDepartments,
   getCountryFlag,
   getCountryNameByLanguage,
-  getPlugsByLanguage
+  getPlugsByLanguage,
+  handleTopPlugsCountry
 };

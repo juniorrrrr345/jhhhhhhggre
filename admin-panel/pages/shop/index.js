@@ -19,7 +19,7 @@ export default function ShopHome() {
   const currentLanguage = useLanguage()
   const [, setCurrentLanguage] = useState('fr') // Gardé pour la compatibilité
   const { t } = useTranslation(currentLanguage)
-  const itemsPerPage = 50
+  const itemsPerPage = 10000 // Afficher toutes les boutiques sans pagination
 
   // Fonction pour assigner automatiquement un logo selon le nom (identique à l'admin)
   const getLogoByName = (name) => {

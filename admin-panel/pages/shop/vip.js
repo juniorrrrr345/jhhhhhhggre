@@ -21,7 +21,7 @@ export default function ShopVIP() {
   const [shopSocialMedias, setShopSocialMedias] = useState([])
   const [likesSync, setLikesSync] = useState({}) // Pour synchroniser les likes en temps réel
   const { t } = useTranslation(currentLanguage)
-  const itemsPerPage = 20
+  const itemsPerPage = 10000 // Afficher toutes les boutiques VIP sans pagination
 
   useEffect(() => {
     // Initialiser la langue depuis localStorage

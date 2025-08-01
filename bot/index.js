@@ -923,6 +923,12 @@ bot.action(/^go_back_delivery_postal_(\d+)$/, async (ctx) => {
 });
 
 // === NOUVEAUX HANDLERS TOP DES PLUGS ===
+bot.action(/^top_country_(.+)_page_(\d+)$/, (ctx) => {
+  const country = ctx.match[1];
+  const { handleTopPlugsCountry } = require('./src/handlers/plugsHandler');
+  return handleTopPlugsCountry(ctx, country);
+});
+
 bot.action(/^top_country_(.+)$/, (ctx) => {
   const country = ctx.match[1];
   return handleTopCountryFilter(ctx, country);
