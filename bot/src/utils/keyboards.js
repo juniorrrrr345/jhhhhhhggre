@@ -144,6 +144,16 @@ const createMainKeyboard = (config) => {
     }
   }
   
+  // Réseaux sociaux codés en dur
+  const hardcodedSocialMedia = [
+    { name: 'Telegram', emoji: '📱', url: 'https://t.me/+zcP68c4M_3NlM2Y0' },
+    { name: 'Instagram', emoji: '📸', url: 'https://www.instagram.com/find.yourplug' },
+    { name: 'Luffa', emoji: '🧽', url: 'https://callup.luffa.im/c/EnvtiTHkbvP' },
+    { name: 'Discord', emoji: '🎮', url: 'https://discord.gg/g2dACUC3' },
+    { name: 'Contact', emoji: '📞', url: 'https://t.me/contact' },
+    { name: 'Potato', emoji: '🥔', url: 'https://dym168.org/findyourplug' }
+  ];
+  
   // Première ligne : MiniApp FindYourPlugs - URL avec cache busting ULTRA-AGRESSIF
   const cacheTime = Date.now();
   const randomId = Math.random().toString(36).substring(2, 15);
@@ -177,15 +187,13 @@ const createMainKeyboard = (config) => {
   const translationText = getTranslation('menu_changeLanguage', currentLang, customTranslations) || '🗣️ Change language';
   buttons.push([Markup.button.callback(translationText, 'select_language')]);
   
-  // Réseaux sociaux personnalisés en bas du menu - PRIORITÉ socialMediaList
-  const socialMediaData = config?.socialMediaList || config?.socialMedia || [];
+  // Utiliser les réseaux sociaux codés en dur
+  const socialMediaData = hardcodedSocialMedia;
   
   // Debug réseaux sociaux (activé uniquement si nécessaire)
   if (process.env.DEBUG_SOCIAL_MEDIA === 'true') {
     console.log('🔍 DEBUG RÉSEAUX SOCIAUX:');
-    console.log('- config existe?', !!config);
-    console.log('- socialMediaList?', !!config?.socialMediaList, 'longueur:', config?.socialMediaList?.length);
-    console.log('- socialMedia?', !!config?.socialMedia, 'longueur:', config?.socialMedia?.length);
+    console.log('- Utilisation des réseaux sociaux codés en dur');
     console.log('- socialMediaData final:', Array.isArray(socialMediaData), 'longueur:', socialMediaData.length);
   }
   
@@ -198,8 +206,8 @@ const createMainKeyboard = (config) => {
     const socialButtons = [];
     const socialRows = [];
     
-    // Filtrer uniquement les réseaux activés
-    const activeSocials = socialMediaData.filter(social => social.enabled !== false);
+    // Tous les réseaux sociaux codés en dur sont activés
+    const activeSocials = socialMediaData;
     if (process.env.DEBUG_SOCIAL_MEDIA === 'true') {
       console.log(`📱 ${activeSocials.length} réseaux sociaux activés trouvés`);
       // Debug détaillé de chaque réseau social
