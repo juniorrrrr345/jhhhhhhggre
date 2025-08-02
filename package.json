@@ -26,6 +26,7 @@
   "author": "Your Name",
   "license": "MIT",
   "dependencies": {
+    "mongodb": "^6.18.0",
     "node-fetch": "^3.3.2"
   }
 }
