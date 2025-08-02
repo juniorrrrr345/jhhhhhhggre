@@ -22,7 +22,7 @@ const socialMediaList = [
   { 
     id: 'luffa',
     name: 'Luffa', 
-    emoji: '🧽', 
+    emoji: '🛜', 
     url: 'https://callup.luffa.im/c/EnvtiTHkbvP',
     enabled: true
   },
@@ -31,13 +31,6 @@ const socialMediaList = [
     name: 'Discord', 
     emoji: '🎮', 
     url: 'https://discord.gg/g2dACUC3',
-    enabled: true
-  },
-  { 
-    id: 'contact',
-    name: 'Contact', 
-    emoji: '📞', 
-    url: 'https://t.me/contact',
     enabled: true
   },
   { 

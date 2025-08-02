@@ -104,9 +104,8 @@ export default function SocialMediaManager() {
           { id: 'telegram', name: 'Telegram', emoji: '📱', url: 'https://t.me/+zcP68c4M_3NlM2Y0', enabled: true },
           { id: 'find_your_plug', name: 'Find Your Plug', emoji: '🌐', url: 'https://dym168.org/findyourplug', enabled: true },
           { id: 'instagram', name: 'Instagram', emoji: '📸', url: 'https://www.instagram.com/find.yourplug', enabled: true },
-          { id: 'luffa', name: 'Luffa', emoji: '🧽', url: 'https://callup.luffa.im/c/EnvtiTHkbvP', enabled: true },
+          { id: 'luffa', name: 'Luffa', emoji: '🛜', url: 'https://callup.luffa.im/c/EnvtiTHkbvP', enabled: true },
           { id: 'discord', name: 'Discord', emoji: '🎮', url: 'https://discord.gg/g2dACUC3', enabled: true },
-          { id: 'contact', name: 'Contact', emoji: '📞', url: 'https://t.me/contact', enabled: true },
           { id: 'potato', name: 'Potato', emoji: '🥔', url: 'https://dym168.org/findyourplug', enabled: true }
         ]
         setSocialMedias(defaultSocialMedias)
