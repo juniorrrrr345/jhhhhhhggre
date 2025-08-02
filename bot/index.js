@@ -634,6 +634,11 @@ const showMainMenuInLanguage = async (ctx, config, language) => {
     
     // Modifier le message existant avec la nouvelle langue
     const { editMessageWithImage } = require('./src/utils/messageHelper');
+    
+    console.log('🔄 Tentative de modification du message...');
+    console.log('   - Message length:', welcomeMessage.length);
+    console.log('   - Keyboard buttons:', keyboard?.reply_markup?.inline_keyboard?.length || 0);
+    
     await editMessageWithImage(ctx, welcomeMessage, keyboard, freshConfig, { 
       parse_mode: 'Markdown' 
     });
@@ -641,11 +646,20 @@ const showMainMenuInLanguage = async (ctx, config, language) => {
     console.log('✅ Menu principal affiché dans la langue ACTUELLE avec configuration ACTUELLE');
   } catch (error) {
     console.error('❌ Erreur affichage menu principal dans langue:', error);
-    // Fallback simple
+    console.error('   Error type:', error.constructor.name);
+    console.error('   Error message:', error.message);
+    
+    // Fallback : essayer d'envoyer un nouveau message
     try {
+      console.log('🔄 Tentative fallback : envoi nouveau message...');
+      const { sendMessageWithImage } = require('./src/utils/messageHelper');
+      await sendMessageWithImage(ctx, welcomeMessage, keyboard, freshConfig, { 
+        parse_mode: 'Markdown' 
+      });
+      console.log('✅ Nouveau message envoyé avec succès');
+    } catch (fallbackError) {
+      console.error('❌ Erreur fallback aussi:', fallbackError.message);
       await ctx.answerCbQuery('❌ Erreur lors du changement de langue').catch(() => {});
-    } catch (cbError) {
-      console.error('❌ Erreur fallback showMainMenuInLanguage:', cbError);
     }
   }
 };
@@ -653,9 +667,12 @@ const showMainMenuInLanguage = async (ctx, config, language) => {
 // Changer de langue
 bot.action(/^lang_(.+)$/, async (ctx) => {
   try {
+    console.log('🔍 Action langue détectée:', ctx.match[0]);
     const newLanguage = ctx.match[1];
+    console.log('🔍 Langue extraite:', newLanguage);
     
-    if (!['fr', 'en', 'it', 'es', 'de'].includes(newLanguage)) {
+    if (!['fr', 'en', 'es', 'ar'].includes(newLanguage)) {
+      console.log('❌ Langue non supportée:', newLanguage);
       await ctx.answerCbQuery('❌ Langue non supportée');
       return;
     }
@@ -707,10 +724,13 @@ bot.action(/^lang_(.+)$/, async (ctx) => {
     await ctx.answerCbQuery(`✅ ${languageName} sélectionnée !`);
     
     // Aller directement au menu principal dans la nouvelle langue
+    console.log('📍 Appel de showMainMenuInLanguage...');
     await showMainMenuInLanguage(ctx, config, newLanguage);
+    console.log('✅ showMainMenuInLanguage terminé');
     
   } catch (error) {
     console.error('❌ Erreur changement langue:', error);
+    console.error('Stack trace:', error.stack);
     await ctx.answerCbQuery('❌ Erreur lors du changement de langue').catch(() => {});
   }
 });
