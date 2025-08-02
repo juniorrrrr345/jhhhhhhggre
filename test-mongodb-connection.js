@@ -2,7 +2,7 @@ const { MongoClient } = require('mongodb');
 
 // Test de connexion pour les deux URIs
 const testConnections = async () => {
-  // URI 1 - À tester
+  // URI 1 - Base actuelle
   const uri1 = 'mongodb+srv://teste:SfePlug@tesye.qazpla.mongodb.net/?retryWrites=true&w=majority&appName=Tesye';
   
   // URI 2 - Nouvelle base

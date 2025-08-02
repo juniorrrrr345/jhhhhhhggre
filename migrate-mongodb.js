@@ -1,12 +1,12 @@
 const { MongoClient } = require('mongodb');
 
 // URIs des bases de données
-const SOURCE_URI = 'mongodb+srv://admin:lCGYmBzwZwkpTgvT@tesye.qazpla.mongodb.net/testdatabase?retryWrites=true&w=majority';
+const SOURCE_URI = 'mongodb+srv://teste:SfePlug@tesye.qazpla.mongodb.net/?retryWrites=true&w=majority&appName=Tesye';
 const TARGET_URI = 'mongodb+srv://teste:SfePlug@junior.jiy8uam.mongodb.net/?retryWrites=true&w=majority&appName=Junior';
 
 // Nom de la base de données
-const DB_NAME = 'testdatabase'; // Base de données source
-const TARGET_DB_NAME = 'test'; // Base de données cible (ajustez si nécessaire)
+const DB_NAME = 'test'; // Base de données source (MongoDB utilise 'test' par défaut)
+const TARGET_DB_NAME = 'test'; // Base de données cible
 
 async function migrateData() {
   const sourceClient = new MongoClient(SOURCE_URI);
