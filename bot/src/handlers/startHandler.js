@@ -19,6 +19,39 @@ const handleStart = async (ctx) => {
     // Vérifier et s'assurer que MongoDB est connecté
     await ensureConnection();
 
+    // Récupérer la configuration pour vérifier le mode maintenance
+    const config = await Config.findById('main');
+    
+    // Vérifier si le mode maintenance est activé
+    if (config?.maintenanceMode) {
+      console.log('🔧 Mode maintenance actif');
+      
+      // Récupérer la langue de l'utilisateur
+      const user = await User.findOne({ telegramId: ctx.from.id });
+      const userLang = user?.language || 'fr';
+      
+      // Message de maintenance
+      const maintenanceMsg = config.maintenanceMessage?.[userLang] || 
+        config.maintenanceMessage?.fr || 
+        "🔧 Maintenance en cours...\n\nNous revenons très bientôt !";
+      
+      // Envoyer le message de maintenance avec une image si disponible
+      if (config.maintenanceImage) {
+        try {
+          await ctx.replyWithPhoto(config.maintenanceImage, {
+            caption: maintenanceMsg,
+            parse_mode: 'Markdown'
+          });
+        } catch (error) {
+          await ctx.reply(maintenanceMsg, { parse_mode: 'Markdown' });
+        }
+      } else {
+        await ctx.reply(maintenanceMsg, { parse_mode: 'Markdown' });
+      }
+      
+      return; // Arrêter ici si en maintenance
+    }
+
     // Vérifier s'il y a un code de parrainage ou redirection directe
     const startPayload = ctx.message.text.split(' ')[1];
     if (startPayload) {
