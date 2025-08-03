@@ -24,7 +24,7 @@ export default function ShopSocialMediaManager() {
     {
       id: 'luffa',
       name: 'Luffa',
-      emoji: '🧽',
+      emoji: '🛜',
       url: 'https://callup.luffa.im/c/EnvtiTHkbvP',
       logo: 'https://i.imgur.com/PtqXOhb.png'
     },

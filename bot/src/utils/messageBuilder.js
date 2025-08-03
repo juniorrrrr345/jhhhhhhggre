@@ -17,9 +17,10 @@ const buildWelcomeMessage = async (config, currentLang = 'fr', customTranslation
     try {
       const User = require('../models/User');
       const Plug = require('../models/Plug');
-      userCount = await User.countDocuments({ isActive: true });
+      // Compter TOUS les utilisateurs qui ont utilisé le bot (pas seulement les actifs)
+      userCount = await User.countDocuments({});
       shopCount = await Plug.countDocuments({ isActive: true });
-      console.log(`📊 Statistiques message d'accueil: ${userCount} utilisateurs, ${shopCount} boutiques`);
+      console.log(`📊 Statistiques message d'accueil: ${userCount} utilisateurs au total, ${shopCount} boutiques`);
     } catch (statsError) {
       console.log('⚠️ Erreur récupération statistiques:', statsError.message);
     }
@@ -55,8 +56,44 @@ const buildWelcomeMessage = async (config, currentLang = 'fr', customTranslation
         }
       }
     }
-    const activeUsersText = getTranslation('messages_activeUsers', currentLang, customTranslations);
-    const availableShopsText = getTranslation('messages_availableShops', currentLang, customTranslations);
+    
+    // Gérer le singulier/pluriel pour les utilisateurs
+    let activeUsersText = getTranslation('messages_activeUsers', currentLang, customTranslations);
+    if (userCount === 1) {
+      // Adapter au singulier selon la langue
+      const singularUsers = {
+        'fr': 'utilisateur',
+        'en': 'user',
+        'it': 'utente',
+        'es': 'usuario',
+        'de': 'Benutzer'
+      };
+      activeUsersText = singularUsers[currentLang] || activeUsersText;
+    } else {
+      // Pluriel sans le mot "actifs"
+      const pluralUsers = {
+        'fr': 'utilisateurs',
+        'en': 'users',
+        'it': 'utenti',
+        'es': 'usuarios',
+        'de': 'Benutzer'
+      };
+      activeUsersText = pluralUsers[currentLang] || activeUsersText;
+    }
+    
+    // Gérer le singulier/pluriel pour les boutiques
+    let availableShopsText = getTranslation('messages_availableShops', currentLang, customTranslations);
+    if (shopCount === 1) {
+      // Adapter au singulier selon la langue
+      const singularShops = {
+        'fr': 'boutique disponible',
+        'en': 'available shop',
+        'it': 'negozio disponibile',
+        'es': 'tienda disponible',
+        'de': 'Shop verfügbar'
+      };
+      availableShopsText = singularShops[currentLang] || availableShopsText;
+    }
     
     let welcomeMessage = `${baseMessage}\n\n📊 **${userCount}** ${activeUsersText}\n🏪 **${shopCount}** ${availableShopsText}`;
     

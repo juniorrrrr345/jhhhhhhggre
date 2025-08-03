@@ -101,7 +101,7 @@ async function initializeConfig() {
         {
           name: 'Luffa',
           url: 'https://callup.luffa.im/c/EnvtiTHkbvP',
-          emoji: '🧽',
+          emoji: '🛜',
           enabled: true
         },
         {
@@ -111,9 +111,41 @@ async function initializeConfig() {
           enabled: true
         },
         {
-          name: 'Contact',
-          url: 'https://t.me/contact',
-          emoji: '📞',
+          name: 'Potato',
+          url: 'https://dym168.org/findyourplug',
+          emoji: '🥔',
+          enabled: true
+        }
+      ],
+      botSocialMediaList: [
+        {
+          name: 'Telegram',
+          url: 'https://t.me/+zcP68c4M_3NlM2Y0',
+          emoji: '📱',
+          enabled: true
+        },
+        {
+          name: 'Find Your Plug',
+          url: 'https://dym168.org/findyourplug',
+          emoji: '🌐',
+          enabled: true
+        },
+        {
+          name: 'Instagram',
+          url: 'https://www.instagram.com/find.yourplug',
+          emoji: '📸',
+          enabled: true
+        },
+        {
+          name: 'Luffa',
+          url: 'https://callup.luffa.im/c/EnvtiTHkbvP',
+          emoji: '🛜',
+          enabled: true
+        },
+        {
+          name: 'Discord',
+          url: 'https://discord.gg/g2dACUC3',
+          emoji: '🎮',
           enabled: true
         },
         {
@@ -139,19 +171,13 @@ async function initializeConfig() {
         {
           name: 'Luffa',
           url: 'https://callup.luffa.im/c/EnvtiTHkbvP',
-          emoji: '🧽',
+          emoji: '🛜',
           enabled: true
         },
         {
           name: 'Discord',
           url: 'https://discord.gg/g2dACUC3',
           emoji: '🎮',
-          enabled: true
-        },
-        {
-          name: 'Contact',
-          url: 'https://t.me/contact',
-          emoji: '📞',
           enabled: true
         },
         {
