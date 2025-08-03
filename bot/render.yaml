@@ -12,7 +12,7 @@ services:
       - key: TELEGRAM_BOT_TOKEN
         sync: false
       - key: MONGODB_URI
-      value: mongodb+srv://teste:SfePlug@tesye.qazpla.mongodb.net/?retryWrites=true&w=majority&appName=Tesye
+        value: mongodb+srv://teste:Junior@junior.jiy8uam.mongodb.net/?retryWrites=true&w=majority&appName=Junior
         sync: false
       - key: ADMIN_PASSWORD
         sync: false
