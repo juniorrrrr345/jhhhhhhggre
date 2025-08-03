@@ -117,11 +117,11 @@ const handleStart = async (ctx) => {
       // Continuer même si l'enregistrement utilisateur échoue
     }
 
-    // Obtenir la config
-    const config = await getConfigHelper();
+    // Obtenir la config mise à jour
+    const updatedConfig = await getConfigHelper();
     
     // NOUVEAU : Proposer directement les langues au /start
-    await showLanguageSelection(ctx, config);
+    await showLanguageSelection(ctx, updatedConfig);
     
   } catch (error) {
     console.error('❌ Erreur dans handleStart:', error);
