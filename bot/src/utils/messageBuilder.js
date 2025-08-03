@@ -55,8 +55,34 @@ const buildWelcomeMessage = async (config, currentLang = 'fr', customTranslation
         }
       }
     }
-    const activeUsersText = getTranslation('messages_activeUsers', currentLang, customTranslations);
-    const availableShopsText = getTranslation('messages_availableShops', currentLang, customTranslations);
+    
+    // Gérer le singulier/pluriel pour les utilisateurs
+    let activeUsersText = getTranslation('messages_activeUsers', currentLang, customTranslations);
+    if (userCount === 1) {
+      // Adapter au singulier selon la langue
+      const singularUsers = {
+        'fr': 'utilisateur actif',
+        'en': 'active user',
+        'it': 'utente attivo',
+        'es': 'usuario activo',
+        'de': 'aktiver Benutzer'
+      };
+      activeUsersText = singularUsers[currentLang] || activeUsersText;
+    }
+    
+    // Gérer le singulier/pluriel pour les boutiques
+    let availableShopsText = getTranslation('messages_availableShops', currentLang, customTranslations);
+    if (shopCount === 1) {
+      // Adapter au singulier selon la langue
+      const singularShops = {
+        'fr': 'boutique disponible',
+        'en': 'available shop',
+        'it': 'negozio disponibile',
+        'es': 'tienda disponible',
+        'de': 'Shop verfügbar'
+      };
+      availableShopsText = singularShops[currentLang] || availableShopsText;
+    }
     
     let welcomeMessage = `${baseMessage}\n\n📊 **${userCount}** ${activeUsersText}\n🏪 **${shopCount}** ${availableShopsText}`;
     
