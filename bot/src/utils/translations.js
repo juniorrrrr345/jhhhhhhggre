@@ -261,11 +261,11 @@ const translations = {
       de: 'Shops verfügbar'
     },
     'messages_activeUsers': {
-      fr: 'utilisateurs actifs',
-      en: 'active users',
-      it: 'utenti attivi',
-      es: 'usuarios activos',
-      de: 'aktive Benutzer'
+      fr: 'utilisateurs',
+      en: 'users',
+      it: 'utenti',
+      es: 'usuarios',
+      de: 'Benutzer'
     },
     'messages_availableShops': {
       fr: 'boutiques disponibles',
@@ -1467,11 +1467,11 @@ const translations = {
       de: 'Shops verfügbar'
     },
     'messages_activeUsers': {
-      fr: 'utilisateurs actifs',
-      en: 'active users',
-      it: 'utenti attivi',
-      es: 'usuarios activos',
-      de: 'aktive Benutzer'
+      fr: 'utilisateurs',
+      en: 'users',
+      it: 'utenti',
+      es: 'usuarios',
+      de: 'Benutzer'
     },
     'messages_availableShops': {
       fr: 'boutiques disponibles',
