@@ -95,7 +95,7 @@ const buildWelcomeMessage = async (config, currentLang = 'fr', customTranslation
       availableShopsText = singularShops[currentLang] || availableShopsText;
     }
     
-    let welcomeMessage = `${baseMessage}\n\n📊 **${userCount}** ${activeUsersText}\n🏪 **${shopCount}** ${availableShopsText}`;
+    let welcomeMessage = `${baseMessage}\n\n📊 **${userCount}** ${activeUsersText}\n🏪 **${shopCount}** 🔌`;
     
     console.log(`📝 Message d'accueil ACTUEL construit:`, welcomeMessage.substring(0, 100) + '...');
     
