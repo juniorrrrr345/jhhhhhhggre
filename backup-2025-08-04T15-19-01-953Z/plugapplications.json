@@ -1,0 +1,97 @@
+[
+  {
+    "_id": "6890b2b189415ce1500c5bfa",
+    "userId": 6786455355,
+    "username": "MaxVerstappen001",
+    "firstName": "Max",
+    "lastName": "Verstappen",
+    "name": "🍩ᕼᗩSᕼᗪOᑎᙀT’ᘔ🍩",
+    "description": "🍩ᕼᗩSᕼᗪOᑎᙀT’ᘔ🍩 - Inscription FindYourPlug",
+    "location": {
+      "country": "France, Espagne",
+      "city": "Non spécifiée"
+    },
+    "services": [
+      "delivery",
+      "meetup",
+      "shipping"
+    ],
+    "countries": [
+      "France",
+      "Espagne"
+    ],
+    "departments": {
+      "delivery": "France: 66000 , 11000 , 34000, Espagne: 08000",
+      "meetup": "France: 66000, Espagne: 08000",
+      "shipping": ""
+    },
+    "contact": {
+      "telegram": "@MaxVerstappen001",
+      "telegramChannel": "https://t.me/+xcWFsTsZSgllOTg8",
+      "telegramBot": "",
+      "instagram": "https://www.instagram.com/hvshdonutz?igsh=c3V1b3NobG11NGJp&utm_source=qr",
+      "potato": "https://ymd168.org/joinchat/ZII8mcRMlBGfK46cSsp0jg",
+      "snapchat": "",
+      "whatsapp": "",
+      "signal": "",
+      "session": "",
+      "threema": "",
+      "other": ""
+    },
+    "photo": "AgACAgQAAxkBAAIGHGiQsgnLQ3WqfDsYs0lCR613Glz9AAL8yTEb47yAUOZ7H_qdSMQcAQADAgADeQADNgQ",
+    "photoUrl": "AgACAgQAAxkBAAIGHGiQsgnLQ3WqfDsYs0lCR613Glz9AAL8yTEb47yAUOZ7H_qdSMQcAQADAgADeQADNgQ",
+    "status": "pending",
+    "adminNotes": "",
+    "submittedAt": "2025-08-04T13:16:33.345Z",
+    "createdAt": "2025-08-04T13:16:33.346Z",
+    "updatedAt": "2025-08-04T13:16:33.346Z",
+    "__v": 0
+  },
+  {
+    "_id": "6890b78989415ce1500d1d1f",
+    "userId": 5373160071,
+    "username": "LezardOG",
+    "firstName": "Lezard OG® PSG🔵🔴",
+    "lastName": "",
+    "name": "Lezard OG® PSG🔵🔴",
+    "description": "Lezard OG® PSG🔵🔴 - Inscription FindYourPlug",
+    "location": {
+      "country": "France",
+      "city": "Non spécifiée"
+    },
+    "services": [
+      "delivery",
+      "meetup",
+      "shipping"
+    ],
+    "countries": [
+      "France"
+    ],
+    "departments": {
+      "delivery": "France: 28,75,77,78,91,92,93,94,95",
+      "meetup": "France: 78,92",
+      "shipping": ""
+    },
+    "contact": {
+      "telegram": "@LezardOG",
+      "telegramChannel": "https://t.me/+kFnu_K_M4MViNGQ0",
+      "telegramBot": "@lezardogappbot",
+      "instagram": "https://www.instagram.com/lezardog_psg?igsh=MWxuZzdlN2hrY2k2MQ==",
+      "potato": "https://dym168.org/lezardogpsg1",
+      "snapchat": "https://t.snapchat.com/G7ck149T",
+      "whatsapp": "",
+      "signal": "",
+      "session": "",
+      "threema": "",
+      "other": ""
+    },
+    "photo": "AgACAgQAAxkBAAIGRWiQtSHfyxjrYSEZMXqHPvjNvti-AAK8yjEb1zWJUHsdnxHCD5t1AQADAgADeAADNgQ",
+    "photoUrl": "AgACAgQAAxkBAAIGRWiQtSHfyxjrYSEZMXqHPvjNvti-AAK8yjEb1zWJUHsdnxHCD5t1AQADAgADeAADNgQ",
+    "status": "pending",
+    "adminNotes": "",
+    "submittedAt": "2025-08-04T13:37:13.682Z",
+    "createdAt": "2025-08-04T13:37:13.683Z",
+    "updatedAt": "2025-08-04T13:37:13.683Z",
+    "__v": 0
+  }
+]

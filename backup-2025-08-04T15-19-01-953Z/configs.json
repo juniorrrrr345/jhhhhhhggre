@@ -1,0 +1,1851 @@
+[
+  {
+    "_id": "main",
+    "welcomeMessage": {
+      "fr": "🎉 Bienvenue sur FINDYOURPLUG ! 🎉\n\n🌟 Votez pour vos plugs préférés et découvrez les meilleurs de votre région !\n\n💼 Vous êtes un professionnel ?\nInscrivez votre service gratuitement et gagnez en visibilité !\n\n🔥 C'est simple, rapide et efficace pour trouver ce dont vous avez besoin !",
+      "en": "🎉 Welcome to FINDYOURPLUG! 🎉\n\n🌟 Vote for your favorite plugs and discover the best in your area!\n\n💼 Are you a professional?\nRegister your service for free and gain visibility!\n\n🔥 It's simple, fast and effective to find what you need!",
+      "es": "🎉 ¡Bienvenido a FINDYOURPLUG! 🎉\n\n🌟 ¡Vota por tus plugs favoritos y descubre los mejores de tu zona!\n\n💼 ¿Eres profesional?\n¡Registra tu servicio gratis y gana visibilidad!\n\n🔥 ¡Es simple, rápido y efectivo para encontrar lo que necesitas!",
+      "ar": "🎉 مرحباً بك في FINDYOURPLUG! 🎉\n\n🌟 صوت لأفضل البائعين واكتشف الأفضل في منطقتك!\n\n💼 هل أنت محترف؟\nسجل خدمتك مجاناً واحصل على المزيد من الظهور!\n\n🔥 بسيط وسريع وفعال للعثور على ما تحتاجه!"
+    },
+    "languages": {
+      "enabled": true,
+      "currentLanguage": "fr",
+      "availableLanguages": [],
+      "translations": {
+        "menu_topPlugs": {
+          "fr": "VOTER POUR VOTRE PLUG 🗳️",
+          "en": "VOTE FOR YOUR PLUG 🗳️",
+          "it": "VOTA PER IL TUO PLUG 🗳️",
+          "es": "VOTA POR TU PLUG 🗳️",
+          "de": "STIMME FÜR DEINEN PLUG 🗳️"
+        },
+        "menu_contact": {
+          "fr": "📞 Contact",
+          "en": "📞 Contact",
+          "it": "📞 Contatto",
+          "es": "📞 Contacto",
+          "de": "📞 Kontakt"
+        },
+        "menu_info": {
+          "fr": "ℹ️ Info",
+          "en": "ℹ️ Info",
+          "it": "ℹ️ Informazioni",
+          "es": "ℹ️ Información",
+          "de": "ℹ️ Information"
+        },
+        "menu_inscription": {
+          "fr": "📋 Inscription",
+          "en": "📋 Registration",
+          "it": "📋 Registrazione",
+          "es": "📋 Inscripción",
+          "de": "📋 Anmeldung"
+        },
+        "menu_changeLanguage": {
+          "fr": "🗣️ Changer de langue",
+          "en": "🗣️ Change language",
+          "it": "🗣️ Cambia lingua",
+          "es": "🗣️ Cambiar idioma",
+          "de": "🗣️ Sprache ändern"
+        },
+        "menu_refresh": {
+          "fr": "🔄 Actualiser",
+          "en": "🔄 Refresh",
+          "it": "🔄 Aggiorna",
+          "es": "🔄 Actualizar",
+          "de": "🔄 Aktualisieren"
+        },
+        "back_to_shops": {
+          "fr": "Retour aux boutiques",
+          "en": "Back to shops",
+          "it": "Torna ai negozi",
+          "es": "Volver a las tiendas",
+          "de": "Zurück zu den Geschäften"
+        },
+        "back_to_filters": {
+          "fr": "Retour aux boutiques",
+          "en": "Back to shops",
+          "it": "Torna ai negozi",
+          "es": "Volver a las tiendas",
+          "de": "Zurück zu den Geschäften"
+        },
+        "menu_selectLanguage": {
+          "fr": "Sélectionnez votre langue préférée :",
+          "en": "Select your preferred language:",
+          "it": "Seleziona la tua lingua preferita:",
+          "es": "Selecciona tu idioma preferido:",
+          "de": "Wählen Sie Ihre bevorzugte Sprache:"
+        },
+        "messages_topPlugsHelp": {
+          "fr": "Comment ça marche ?",
+          "en": "How does it work?",
+          "it": "Come funziona?",
+          "es": "¿Cómo funciona?",
+          "de": "Wie funktioniert es?"
+        },
+        "messages_selectCountry": {
+          "fr": "Choisissez un pays 🌍",
+          "en": "Choose a country 🌍",
+          "it": "Scegli un paese 🌍",
+          "es": "Elige un país 🌍",
+          "de": "Wählen Sie ein Land 🌍"
+        },
+        "messages_selectService": {
+          "fr": "Sélectionnez un service (Livraison, Meetup, Envoi)",
+          "en": "Select a service (Delivery, Meetup, Shipping)",
+          "it": "Seleziona un servizio (Consegna, Meetup, Spedizione)",
+          "es": "Selecciona un servicio (Entrega, Meetup, Envío)",
+          "de": "Wählen Sie einen Service (Lieferung, Meetup, Versand)"
+        },
+        "messages_selectPostalCode": {
+          "fr": "Cliquez sur \"Département\" pour voir les codes postaux",
+          "en": "Click \"Department\" to see postal codes",
+          "it": "Clicca \"Dipartimento\" per vedere i codici postali",
+          "es": "Haz clic en \"Departamento\" para ver códigos postales",
+          "de": "Klicken Sie \"Abteilung\" für Postleitzahlen"
+        },
+        "messages_findShops": {
+          "fr": "Trouvez les boutiques dans votre zone !",
+          "en": "Find shops in your area!",
+          "it": "Trova negozi nella tua zona!",
+          "es": "¡Encuentra tiendas en tu zona!",
+          "de": "Finden Sie Geschäfte in Ihrer Nähe!"
+        },
+        "messages_noPlugsInPostalCode": {
+          "fr": "Désolé Nous Avons Pas De Plugs 😕",
+          "en": "Sorry We Have No Plugs 😕",
+          "it": "Spiacenti Non Abbiamo Negozi 😕",
+          "es": "Lo Siento No Tenemos Tiendas 😕",
+          "de": "Entschuldigung Keine Shops 😕"
+        },
+        "contact_default_text": {
+          "fr": "Contactez-nous pour plus d'informations.\n@findyourplugsav",
+          "en": "Contact us for more information.\n@findyourplugsav",
+          "it": "Contattaci per maggiori informazioni.\n@findyourplugsav",
+          "es": "Contáctanos para más información.\n@findyourplugsav",
+          "de": "Kontaktieren Sie uns für weitere Informationen.\n@findyourplugsav"
+        },
+        "contact_us_text": {
+          "fr": "Nous contacter",
+          "en": "Contact us",
+          "it": "Contattaci",
+          "es": "Contáctanos",
+          "de": "Kontakt"
+        },
+        "info_default_text": {
+          "fr": "Nous listons les plugs du monde entier par Pays / Ville découvrez notre mini-app 🌍🔌\n\nPour toute demande spécifique contacter nous @findyourplugsav 📲",
+          "en": "We list plugs worldwide by Country / City discover our mini-app 🌍🔌\n\nFor any specific request contact us @findyourplugsav 📲",
+          "it": "Elenchiamo i plug di tutto il mondo per Paese / Città scopri la nostra mini-app 🌍🔌\n\nPer qualsiasi richiesta specifica contattaci @findyourplugsav 📲",
+          "es": "Listamos plugs de todo el mundo por País / Ciudad descubre nuestra mini-app 🌍🔌\n\nPara cualquier solicitud específica contáctanos @findyourplugsav 📲",
+          "de": "Wir listen Plugs weltweit nach Land / Stadt auf, entdecken Sie unsere Mini-App 🌍🔌\n\nFür spezielle Anfragen kontaktieren Sie uns @findyourplugsav 📲"
+        },
+        "menu_becomeDealer": {
+          "fr": "📋 Inscription",
+          "en": "📋 Inscription",
+          "it": "📋 Inscription",
+          "es": "📋 Inscription",
+          "de": "📋 Inscription"
+        },
+        "menu_language": {
+          "fr": "🌍 Langue",
+          "en": "🌍 Language",
+          "it": "🌍 Lingua",
+          "es": "🌍 Idioma",
+          "de": "🌍 Sprache"
+        },
+        "menu_translation": {
+          "fr": "🗣️ Change language",
+          "en": "🗣️ Change language",
+          "it": "🗣️ Change language",
+          "es": "🗣️ Change language",
+          "de": "🗣️ Change language"
+        },
+        "menu_main": {
+          "fr": "🏠 Menu principal",
+          "en": "🏠 Main menu",
+          "it": "🏠 Menu principale",
+          "es": "🏠 Menú principal",
+          "de": "🏠 Hauptmenü"
+        },
+        "menu_delivery": {
+          "fr": "🚚 Livraison",
+          "en": "🚚 Delivery",
+          "it": "🚚 Consegna",
+          "es": "🚚 Entrega",
+          "de": "🚚 Lieferung"
+        },
+        "filters_delivery": {
+          "fr": "📦 Livraison",
+          "en": "📦 Delivery",
+          "it": "📦 Consegna",
+          "es": "📦 Entrega",
+          "de": "📦 Lieferung"
+        },
+        "filters_meetup": {
+          "fr": "🤝 Meetup",
+          "en": "🤝 Meetup",
+          "it": "🤝 Incontro",
+          "es": "🤝 Encuentro",
+          "de": "🤝 Treffen"
+        },
+        "filters_postal": {
+          "fr": "📬 Envoi Postal",
+          "en": "📬 Postal Shipping",
+          "it": "📬 Spedizione Postale",
+          "es": "📬 Envío Postal",
+          "de": "📬 Postversand"
+        },
+        "filters_department": {
+          "fr": "📍 Département 🔁",
+          "en": "📍 State/Region 🔁",
+          "it": "📍 Regione 🔁",
+          "es": "📍 Provincia 🔁",
+          "de": "📍 Bundesland 🔁"
+        },
+        "filters_reset": {
+          "fr": "🔄 Filtres réinitialisés",
+          "en": "🔄 Filters reset",
+          "it": "🔄 Filtri ripristinati",
+          "es": "🔄 Filtros reiniciados",
+          "de": "🔄 Filter zurückgesetzt"
+        },
+        "filters_back": {
+          "fr": "🔙 Retour",
+          "en": "🔙 Back",
+          "it": "🔙 Indietro",
+          "es": "🔙 Volver",
+          "de": "🔙 Zurück"
+        },
+        "messages_welcome": {
+          "fr": "Bienvenue sur FindYourPlug! Explorez nos services.",
+          "en": "Welcome to FindYourPlug! Explore our services.",
+          "it": "Benvenuto su FindYourPlug! Esplora i nostri servizi.",
+          "es": "Bienvenido a FindYourPlug! Explora nuestros servicios.",
+          "de": "Willkommen bei FindYourPlug! Entdecken Sie unsere Services."
+        },
+        "messages_contactUs": {
+          "fr": "Contactez-nous pour plus d'informations.",
+          "en": "Contact us for more information.",
+          "it": "Contattaci per maggiori informazioni.",
+          "es": "Contáctanos para más información.",
+          "de": "Kontaktieren Sie uns für weitere Informationen."
+        },
+        "messages_contactSocial": {
+          "fr": "📱 Nous contacter :",
+          "en": "📱 Contact us:",
+          "it": "📱 Contattaci:",
+          "es": "📱 Contáctanos:",
+          "de": "📱 Kontaktiere uns:"
+        },
+        "messages_noPlugs": {
+          "fr": "❌ Aucun plug disponible pour le moment.",
+          "en": "❌ No plugs available at the moment.",
+          "it": "❌ Nessun negozio disponibile al momento.",
+          "es": "❌ No hay tiendas disponibles en este momento.",
+          "de": "❌ Keine Shops verfügbar im Moment."
+        },
+        "messages_shopsAvailable": {
+          "fr": "boutiques disponibles",
+          "en": "shops available",
+          "it": "negozi disponibili",
+          "es": "tiendas disponibles",
+          "de": "Shops verfügbar"
+        },
+        "messages_activeUsers": {
+          "fr": "utilisateurs actifs",
+          "en": "active users",
+          "it": "utenti attivi",
+          "es": "usuarios activos",
+          "de": "aktive Benutzer"
+        },
+        "messages_availableShops": {
+          "fr": "boutiques disponibles",
+          "en": "available shops",
+          "it": "negozi disponibili",
+          "es": "tiendas disponibles",
+          "de": "verfügbare Shops"
+        },
+        "messages_refreshedAt": {
+          "fr": "Actualisé à",
+          "en": "Updated at",
+          "it": "Aggiornato alle",
+          "es": "Actualizado a las",
+          "de": "Aktualisiert um"
+        },
+        "messages_sortedByVotes": {
+          "fr": "Triés par nombre de votes",
+          "en": "Sorted by number of votes",
+          "it": "Ordinati per numero di voti",
+          "es": "Ordenados por número de votos",
+          "de": "Sortiert nach Anzahl der Stimmen"
+        },
+        "messages_noShops": {
+          "fr": "❌ Aucune boutique disponible pour le moment.",
+          "en": "❌ No shops available at the moment.",
+          "it": "❌ Nessun negozio disponibile al momento.",
+          "es": "❌ No hay tiendas disponibles en este momento.",
+          "de": "❌ Momentan sind keine Shops verfügbar."
+        },
+        "registration_title": {
+          "fr": "🛠️ FORMULAIRE D'INSCRIPTION – FindYourPlug",
+          "en": "🛠️ REGISTRATION FORM – FindYourPlug",
+          "it": "🛠️ MODULO DI REGISTRAZIONE – FindYourPlug",
+          "es": "🛠️ FORMULARIO DE REGISTRO – FindYourPlug",
+          "de": "🛠️ ANMELDEFORMULAR – FindYourPlug"
+        },
+        "registration_step1": {
+          "fr": "🟦 Étape 1 : Nom de Plug",
+          "en": "🟦 Step 1: Plug Name",
+          "it": "🟦 Fase 1: Nome Negozio",
+          "es": "🟦 Paso 1: Nombre de Tienda",
+          "de": "🟦 Schritt 1: Shop-Name"
+        },
+        "registration_letsStart": {
+          "fr": "📝 Commençons ton inscription sur FindYourPlug !",
+          "en": "📝 Let's start your registration on FindYourPlug!",
+          "it": "📝 Iniziamo la tua registrazione su FindYourPlug!",
+          "es": "📝 ¡Comencemos tu registro en FindYourPlug!",
+          "de": "📝 Beginnen wir deine Anmeldung bei FindYourPlug!"
+        },
+        "registration_plugNameQuestion": {
+          "fr": "Quel est ton **nom de Plug** ?",
+          "en": "What is your **Plug name**?",
+          "it": "Qual è il tuo **nome del negozio**?",
+          "es": "¿Cuál es tu **nombre de tienda**?",
+          "de": "Wie lautet dein **Shop-Name**?"
+        },
+        "registration_nameQuestion": {
+          "fr": "Quel est ton nom de Plug ?",
+          "en": "What is your Plug name?",
+          "it": "Qual è il tuo nome del negozio?",
+          "es": "¿Cuál es tu nombre de tienda?",
+          "de": "Wie lautet dein Shop-Name?"
+        },
+        "registration_pendingTitle": {
+          "fr": "📝 **Demande en cours**",
+          "en": "📝 **Application in progress**",
+          "it": "📝 **Richiesta in corso**",
+          "es": "📝 **Solicitud en curso**",
+          "de": "📝 **Antrag in Bearbeitung**"
+        },
+        "registration_pendingMessage": {
+          "fr": "Tu as déjà une demande d'inscription en cours de traitement.",
+          "en": "You already have a registration request being processed.",
+          "it": "Hai già una richiesta di registrazione in elaborazione.",
+          "es": "Ya tienes una solicitud de registro en proceso.",
+          "de": "Du hast bereits eine Registrierungsanfrage in Bearbeitung."
+        },
+        "registration_pendingStatus": {
+          "fr": "Statut: ⏳ En attente",
+          "en": "Status: ⏳ Pending",
+          "it": "Stato: ⏳ In attesa",
+          "es": "Estado: ⏳ Pendiente",
+          "de": "Status: ⏳ Ausstehend"
+        },
+        "registration_pendingWait": {
+          "fr": "Merci de patienter pendant que nos équipes examinent ta demande !",
+          "en": "Please wait while our teams review your request!",
+          "it": "Attendi mentre i nostri team esaminano la tua richiesta!",
+          "es": "¡Por favor espera mientras nuestros equipos revisan tu solicitud!",
+          "de": "Bitte warte, während unsere Teams deine Anfrage prüfen!"
+        },
+        "registration_cancel": {
+          "fr": "❌ Annuler",
+          "en": "❌ Cancel",
+          "it": "❌ Annulla",
+          "es": "❌ Cancelar",
+          "de": "❌ Abbrechen"
+        },
+        "registration_backToMenu": {
+          "fr": "🔙 Retour au menu",
+          "en": "🔙 Back to menu",
+          "it": "🔙 Torna al menu",
+          "es": "🔙 Volver al menú",
+          "de": "🔙 Zurück zum Menü"
+        },
+        "registration_goBack": {
+          "fr": "⬅️ Retour",
+          "en": "⬅️ Go back",
+          "it": "⬅️ Indietro",
+          "es": "⬅️ Volver",
+          "de": "⬅️ Zurück"
+        },
+        "registration_finalSummaryTitle": {
+          "fr": "📋 RÉCAPITULATIF FINAL",
+          "en": "📋 FINAL SUMMARY",
+          "it": "📋 RIEPILOGO FINALE",
+          "es": "📋 RESUMEN FINAL",
+          "de": "📋 ABSCHLUSSZUSAMMENFASSUNG"
+        },
+        "registration_photoReceived": {
+          "fr": "Photo de boutique : ✔️ Reçu",
+          "en": "Shop photo: ✔️ Received",
+          "it": "Foto negozio: ✔️ Ricevuta",
+          "es": "Foto de tienda: ✔️ Recibida",
+          "de": "Shop-Foto: ✔️ Erhalten"
+        },
+        "registration_error_photoProcessing": {
+          "fr": "❌ Erreur lors du traitement de la photo. Réessaie.",
+          "en": "❌ Error processing photo. Try again.",
+          "it": "❌ Errore nell'elaborazione della foto. Riprova.",
+          "es": "❌ Error al procesar la foto. Inténtalo de nuevo.",
+          "de": "❌ Fehler bei der Fotobearbeitung. Versuchen Sie es erneut."
+        },
+        "registration_error_invalidPhoto": {
+          "fr": "❌ Merci d'envoyer une photo valide.",
+          "en": "❌ Please send a valid photo.",
+          "it": "❌ Si prega di inviare una foto valida.",
+          "es": "❌ Por favor envía una foto válida.",
+          "de": "❌ Bitte senden Sie ein gültiges Foto."
+        },
+        "registration_step2": {
+          "fr": "🟦 Étape 2 : CONTACT TELEGRAM",
+          "en": "🟦 Step 2: TELEGRAM CONTACT",
+          "it": "🟦 Fase 2: CONTATTO TELEGRAM",
+          "es": "🟦 Paso 2: CONTACTO TELEGRAM",
+          "de": "🟦 Schritt 2: TELEGRAM KONTAKT"
+        },
+        "registration_step3": {
+          "fr": "🟦 Étape 3 : CONTACT TELEGRAM - Canal",
+          "en": "🟦 Step 3: TELEGRAM CONTACT - Channel",
+          "it": "🟦 Fase 3: CONTATTO TELEGRAM - Canale",
+          "es": "🟦 Paso 3: CONTACTO TELEGRAM - Canal",
+          "de": "🟦 Schritt 3: TELEGRAM KONTAKT - Kanal"
+        },
+        "registration_step4": {
+          "fr": "🟦 Étape 4 : Snapchat",
+          "en": "🟦 Step 4: Snapchat",
+          "it": "🟦 Fase 4: Snapchat",
+          "es": "🟦 Paso 4: Snapchat",
+          "de": "🟦 Schritt 4: Snapchat"
+        },
+        "registration_step5": {
+          "fr": "🟦 Étape 5 : Potato Chat 🏴‍☠️",
+          "en": "🟦 Step 5: Potato Chat 🏴‍☠️",
+          "it": "🟦 Fase 5: Potato Chat 🏴‍☠️",
+          "es": "🟦 Paso 5: Potato Chat 🏴‍☠️",
+          "de": "🟦 Schritt 5: Potato Chat 🏴‍☠️"
+        },
+        "registration_telegramQuestion": {
+          "fr": "🔗 Entrez votre lien Telegram (format : @username ou https://t.me/username)",
+          "en": "🔗 Enter your Telegram link (format: @username or https://t.me/username)",
+          "it": "🔗 Inserisci il tuo link Telegram (formato: @username o https://t.me/username)",
+          "es": "🔗 Introduce tu enlace de Telegram (formato: @username o https://t.me/username)",
+          "de": "🔗 Geben Sie Ihren Telegram-Link ein (Format: @username oder https://t.me/username)"
+        },
+        "registration_telegramChannelQuestion": {
+          "fr": "🔗 Entrez le lien de votre canal Telegram (format : @channel ou https://t.me/channel)",
+          "en": "🔗 Enter your Telegram channel link (format: @channel or https://t.me/channel)",
+          "it": "🔗 Inserisci il link del tuo canale Telegram (formato: @channel o https://t.me/channel)",
+          "es": "🔗 Introduce el enlace de tu canal de Telegram (formato: @channel o https://t.me/channel)",
+          "de": "🔗 Geben Sie den Link zu Ihrem Telegram-Kanal ein (Format: @channel oder https://t.me/channel)"
+        },
+        "channel": {
+          "fr": "Canal",
+          "en": "Channel",
+          "it": "Canale",
+          "es": "Canal",
+          "de": "Kanal"
+        },
+        "registration_instagramQuestion": {
+          "fr": "📸 Entrez votre lien Instagram",
+          "en": "📸 Enter your Instagram link",
+          "it": "📸 Inserisci il tuo link Instagram",
+          "es": "📸 Introduce tu enlace de Instagram",
+          "de": "📸 Geben Sie Ihren Instagram-Link ein"
+        },
+        "registration_skipStep": {
+          "fr": "⏭️ Passer cette étape",
+          "en": "⏭️ Skip this step",
+          "it": "⏭️ Salta questo passaggio",
+          "es": "⏭️ Saltar este paso",
+          "de": "⏭️ Diesen Schritt überspringen"
+        },
+        "registration_canSkip": {
+          "fr": "⚠️ Tu peux aussi passer cette étape.",
+          "en": "⚠️ You can also skip this step.",
+          "it": "⚠️ Puoi anche saltare questo passaggio.",
+          "es": "⚠️ También puedes saltar este paso.",
+          "de": "⚠️ Sie können diesen Schritt auch überspringen."
+        },
+        "registration_additionalNetworks": {
+          "fr": "🟦 Étapes Réseaux supplémentaires :",
+          "en": "🟦 Additional Networks Steps:",
+          "it": "🟦 Passaggi Reti Aggiuntive:",
+          "es": "🟦 Pasos de Redes Adicionales:",
+          "de": "🟦 Zusätzliche Netzwerk-Schritte:"
+        },
+        "registration_platforms": {
+          "fr": "Plateformes :",
+          "en": "Platforms:",
+          "it": "Piattaforme:",
+          "es": "Plataformas:",
+          "de": "Plattformen:"
+        },
+        "registration_error_nameLength": {
+          "fr": "❌ Le nom doit faire au moins 2 caractères. Réessaie :",
+          "en": "❌ Name must be at least 2 characters. Try again:",
+          "it": "❌ Il nome deve essere di almeno 2 caratteri. Riprova:",
+          "es": "❌ El nombre debe tener al menos 2 caracteres. Inténtalo de nuevo:",
+          "de": "❌ Name muss mindestens 2 Zeichen haben. Versuchen Sie es erneut:"
+        },
+        "registration_error_telegramFormat": {
+          "fr": "❌ Merci de fournir un username Telegram (ex: @tonusername) ou un lien Telegram. Réessaie :",
+          "en": "❌ Please provide a Telegram username (ex: @yourusername) or Telegram link. Try again:",
+          "it": "❌ Fornisci un username Telegram (es: @tuousername) o un link Telegram. Riprova:",
+          "es": "❌ Proporciona un nombre de usuario de Telegram (ej: @tuusuario) o un enlace de Telegram. Inténtalo de nuevo:",
+          "de": "❌ Bitte geben Sie einen Telegram-Benutzernamen (z.B.: @ihrname) oder einen Telegram-Link an. Versuchen Sie es erneut:"
+        },
+        "registration_error_telegramChannelFormat": {
+          "fr": "❌ Merci de fournir un lien de canal Telegram valide (ex: https://t.me/username). Réessaie :",
+          "en": "❌ Please provide a valid Telegram channel link (ex: https://t.me/username). Try again:",
+          "it": "❌ Fornisci un link di canale Telegram valido (es: https://t.me/username). Riprova:",
+          "es": "❌ Proporciona un enlace de canal de Telegram válido (ej: https://t.me/username). Inténtalo de nuevo:",
+          "de": "❌ Bitte geben Sie einen gültigen Telegram-Kanal-Link an (z.B.: https://t.me/username). Versuchen Sie es erneut:"
+        },
+        "registration_error_instagramFormat": {
+          "fr": "❌ Merci de fournir un lien Instagram valide (ex: https://www.instagram.com/username ou @username). Réessaie :",
+          "en": "❌ Please provide a valid Instagram link (ex: https://www.instagram.com/username or @username). Try again:",
+          "it": "❌ Fornisci un link Instagram valido (es: https://www.instagram.com/username o @username). Riprova:",
+          "es": "❌ Proporciona un enlace de Instagram válido (ej: https://www.instagram.com/username o @username). Inténtalo de nuevo:",
+          "de": "❌ Bitte geben Sie einen gültigen Instagram-Link an (z.B.: https://www.instagram.com/username oder @username). Versuchen Sie es erneut:"
+        },
+        "registration_error_urlFormat": {
+          "fr": "❌ Merci de fournir un lien valide commençant par https://. Réessaie :",
+          "en": "❌ Please provide a valid link starting with https://. Try again:",
+          "it": "❌ Fornisci un link valido che inizia con https://. Riprova:",
+          "es": "❌ Proporciona un enlace válido que comience con https://. Inténtalo de nuevo:",
+          "de": "❌ Bitte geben Sie einen gültigen Link an, der mit https:// beginnt. Versuchen Sie es erneut:"
+        },
+        "registration_error_telegramBotFormat": {
+          "fr": "❌ Merci de fournir un nom ou lien de bot Telegram valide (ex: @monbot_bot). Réessaie :",
+          "en": "❌ Please provide a valid Telegram bot name or link (ex: @mybot_bot). Try again:",
+          "it": "❌ Fornisci un nome o link bot Telegram valido (es: @miobot_bot). Riprova:",
+          "es": "❌ Proporciona un nombre o enlace de bot Telegram válido (ej: @mibot_bot). Inténtalo de nuevo:",
+          "de": "❌ Bitte geben Sie einen gültigen Telegram-Bot-Namen oder -Link an (z.B.: @meinbot_bot). Versuchen Sie es erneut:"
+        },
+        "registration_error_general": {
+          "fr": "❌ Une erreur est survenue. Réessaie ou tape /start pour recommencer.",
+          "en": "❌ An error occurred. Try again or type /start to restart.",
+          "it": "❌ Si è verificato un errore. Riprova o digita /start per ricominciare.",
+          "es": "❌ Ocurrió un error. Inténtalo de nuevo o escribe /start para reiniciar.",
+          "de": "❌ Ein Fehler ist aufgetreten. Versuchen Sie es erneut oder geben Sie /start ein, um neu zu beginnen."
+        },
+        "registration_cancelTitle": {
+          "fr": "❌ Demande annulée",
+          "en": "❌ Request cancelled",
+          "it": "❌ Richiesta annullata",
+          "es": "❌ Solicitud cancelada",
+          "de": "❌ Anfrage abgebrochen"
+        },
+        "registration_cancelMessage": {
+          "fr": "Ta demande d'inscription a été annulée.",
+          "en": "Your registration request has been cancelled.",
+          "it": "La tua richiesta di registrazione è stata annullata.",
+          "es": "Tu solicitud de registro ha sido cancelada.",
+          "de": "Ihre Registrierungsanfrage wurde abgebrochen."
+        },
+        "registration_canRestart": {
+          "fr": "Tu peux recommencer quand tu veux !",
+          "en": "You can restart whenever you want!",
+          "it": "Puoi ricominciare quando vuoi!",
+          "es": "¡Puedes reiniciar cuando quieras!",
+          "de": "Sie können jederzeit neu beginnen!"
+        },
+        "registration_cancelledShort": {
+          "fr": "Demande annulée",
+          "en": "Request cancelled",
+          "it": "Richiesta annullata",
+          "es": "Solicitud cancelada",
+          "de": "Anfrage abgebrochen"
+        },
+        "registration_step6": {
+          "fr": "🟦 Étape 6 : Signal",
+          "en": "🟦 Step 6: Signal",
+          "it": "🟦 Fase 6: Signal",
+          "es": "🟦 Paso 6: Signal",
+          "de": "🟦 Schritt 6: Signal"
+        },
+        "registration_step7": {
+          "fr": "🟦 Étape 7 : WhatsApp",
+          "en": "🟦 Step 7: WhatsApp",
+          "it": "🟦 Fase 7: WhatsApp",
+          "es": "🟦 Paso 7: WhatsApp",
+          "de": "🟦 Schritt 7: WhatsApp"
+        },
+        "registration_step8": {
+          "fr": "🟦 Étape 8 : Threema",
+          "en": "🟦 Step 8: Threema",
+          "it": "🟦 Fase 8: Threema",
+          "es": "🟦 Paso 8: Threema",
+          "de": "🟦 Schritt 8: Threema"
+        },
+        "registration_step9": {
+          "fr": "🟦 Étape 9 : Session",
+          "en": "🟦 Step 9: Session",
+          "it": "🟦 Fase 9: Session",
+          "es": "🟦 Paso 9: Session",
+          "de": "🟦 Schritt 9: Session"
+        },
+        "registration_step10": {
+          "fr": "🟦 Étape 10 : Instagram",
+          "en": "🟦 Step 10: Instagram",
+          "it": "🟦 Fase 10: Instagram",
+          "es": "🟦 Paso 10: Instagram",
+          "de": "🟦 Schritt 10: Instagram"
+        },
+        "registration_step11": {
+          "fr": "🟦 Étape 11 : Bot Telegram",
+          "en": "🟦 Step 11: Telegram Bot",
+          "it": "🟦 Fase 11: Bot Telegram",
+          "es": "🟦 Paso 11: Bot Telegram",
+          "de": "🟦 Schritt 11: Telegram Bot"
+        },
+        "registration_step12": {
+          "fr": "🟦 Étape 12 : Logo de boutique",
+          "en": "🟦 Step 12: Shop logo",
+          "it": "🟦 Fase 12: Logo del negozio",
+          "es": "🟦 Paso 12: Logo de la tienda",
+          "de": "🟦 Schritt 12: Shop-Logo"
+        },
+        "registration_step13": {
+          "fr": "🟦 Étape 13 : Pays de travail",
+          "en": "🟦 Step 13: Working countries",
+          "it": "🟦 Fase 13: Paesi di lavoro",
+          "es": "🟦 Paso 13: Países de trabajo",
+          "de": "🟦 Schritt 13: Arbeitsländer"
+        },
+        "registration_step14": {
+          "fr": "🟦 Étape 14 : Services",
+          "en": "🟦 Step 14: Services",
+          "it": "🟦 Fase 14: Servizi",
+          "es": "🟦 Paso 14: Servicios",
+          "de": "🟦 Schritt 14: Services"
+        },
+        "registration_step15": {
+          "fr": "🟦 Étape 15 : Départements Livraison",
+          "en": "🟦 Step 15: Delivery Departments",
+          "it": "🟦 Fase 15: Dipartimenti Consegna",
+          "es": "🟦 Paso 15: Departamentos Entrega",
+          "de": "🟦 Schritt 15: Lieferung Departements"
+        },
+        "registration_step16": {
+          "fr": "🟦 Étape 16 : Pays de Livraison",
+          "en": "🟦 Step 16: Delivery Countries",
+          "it": "🟦 Fase 16: Paesi di Consegna",
+          "es": "🟦 Paso 16: Países de Entrega",
+          "de": "🟦 Schritt 16: Lieferländer"
+        },
+        "registration_step17": {
+          "fr": "🟦 Étape 17 : Départements Meetup",
+          "en": "🟦 Step 17: Meetup Departments",
+          "it": "🟦 Fase 17: Dipartimenti Meetup",
+          "es": "🟦 Paso 17: Departamentos Meetup",
+          "de": "🟦 Schritt 17: Meetup Departements"
+        },
+        "registration_step18": {
+          "fr": "🟦 Étape 18 : Pays de Meetup",
+          "en": "🟦 Step 18: Meetup Countries",
+          "it": "🟦 Fase 18: Paesi di Meetup",
+          "es": "🟦 Paso 18: Países de Meetup",
+          "de": "🟦 Schritt 18: Meetup-Länder"
+        },
+        "registration_step19": {
+          "fr": "🟦 Étape 19 : Service Envoi Postal",
+          "en": "🟦 Step 19: Postal Shipping Service",
+          "it": "🟦 Fase 19: Servizio Spedizione Postale",
+          "es": "🟦 Paso 19: Servicio Envío Postal",
+          "de": "🟦 Schritt 19: Postversand-Service"
+        },
+        "registration_step20": {
+          "fr": "🟦 Étape 20 : Départements Envoi",
+          "en": "🟦 Step 20: Shipping Departments",
+          "it": "🟦 Fase 20: Dipartimenti Spedizione",
+          "es": "🟦 Paso 20: Departamentos Envío",
+          "de": "🟦 Schritt 20: Versand Departements"
+        },
+        "registration_step21": {
+          "fr": "🟦 Étape 21 : Confirmation",
+          "en": "🟦 Step 21: Confirmation",
+          "it": "🟦 Fase 21: Conferma",
+          "es": "🟦 Paso 21: Confirmación",
+          "de": "🟦 Schritt 21: Bestätigung"
+        },
+        "registration_countryQuestion": {
+          "fr": "🌍 Dans quel pays exerces-tu principalement ?",
+          "en": "🌍 In which country do you mainly operate?",
+          "it": "🌍 In che paese operi principalmente?",
+          "es": "🌍 ¿En qué país operas principalmente?",
+          "de": "🌍 In welchem Land sind Sie hauptsächlich tätig?"
+        },
+        "registration_countryExamples": {
+          "fr": "💡 Exemples :\n• Si vous êtes en France → Choisissez France\n• Si vous êtes en France et en Espagne → Choisissez France & Espagne",
+          "en": "💡 Examples:\n• If you are in France → Choose France\n• If you are in France and Spain → Choose France & Spain",
+          "it": "💡 Esempi:\n• Se sei in Francia → Scegli Francia\n• Se sei in Francia e Spagna → Scegli Francia & Spagna",
+          "es": "💡 Ejemplos:\n• Si estás en Francia → Elige Francia\n• Si estás en Francia y España → Elige Francia & España",
+          "de": "💡 Beispiele:\n• Wenn Sie in Frankreich sind → Wählen Sie Frankreich\n• Wenn Sie in Frankreich und Spanien sind → Wählen Sie Frankreich & Spanien"
+        },
+        "registration_noCountrySelected": {
+          "fr": "⚪ Aucun pays sélectionné",
+          "en": "⚪ No country selected",
+          "it": "⚪ Nessun paese selezionato",
+          "es": "⚪ Ningún país seleccionado",
+          "de": "⚪ Kein Land ausgewählt"
+        },
+        "registration_selectedCountries": {
+          "fr": "✅ Pays sélectionnés",
+          "en": "✅ Selected countries",
+          "it": "✅ Paesi selezionati",
+          "es": "✅ Países seleccionados",
+          "de": "✅ Ausgewählte Länder"
+        },
+        "registration_selectWorkingCountries": {
+          "fr": "👆 Sélectionnez vos pays de travail :",
+          "en": "👆 Select your working countries:",
+          "it": "👆 Seleziona i tuoi paesi di lavoro:",
+          "es": "👆 Seleccione sus países de trabajo:",
+          "de": "👆 Wählen Sie Ihre Arbeitsländer:"
+        },
+        "registration_meetupPostalTitle": {
+          "fr": "🤝 Service \"Meet Up\" - Codes postaux",
+          "en": "🤝 \"Meet Up\" Service - Postal codes",
+          "it": "🤝 Servizio \"Meet Up\" - Codici postali",
+          "es": "🤝 Servicio \"Meet Up\" - Códigos postales",
+          "de": "🤝 \"Meet Up\" Service - Postleitzahlen"
+        },
+        "registration_currentCountry": {
+          "fr": "📍 Pays actuel",
+          "en": "📍 Current country",
+          "it": "📍 Paese attuale",
+          "es": "📍 País actual",
+          "de": "📍 Aktuelles Land"
+        },
+        "registration_progression": {
+          "fr": "📊 Progression",
+          "en": "📊 Progress",
+          "it": "📊 Progresso",
+          "es": "📊 Progreso",
+          "de": "📊 Fortschritt"
+        },
+        "registration_enterPostalCode": {
+          "fr": "Entrez le code postal pour",
+          "en": "Enter the postal code for",
+          "it": "Inserisci il codice postale per",
+          "es": "Ingrese el código postal para",
+          "de": "Geben Sie die Postleitzahl für ein"
+        },
+        "registration_postalCodeExample": {
+          "fr": "💡 Exemple",
+          "en": "💡 Example",
+          "it": "💡 Esempio",
+          "es": "💡 Ejemplo",
+          "de": "💡 Beispiel"
+        },
+        "registration_deliveryPostalTitle": {
+          "fr": "🚚 Service \"Livraison\" - Codes postaux",
+          "en": "🚚 \"Delivery\" Service - Postal codes",
+          "it": "🚚 Servizio \"Consegna\" - Codici postali",
+          "es": "🚚 Servicio \"Entrega\" - Códigos postales",
+          "de": "🚚 \"Lieferung\" Service - Postleitzahlen"
+        },
+        "registration_backToServices": {
+          "fr": "🔙 Retour aux services",
+          "en": "🔙 Back to services",
+          "it": "🔙 Torna ai servizi",
+          "es": "🔙 Volver a los servicios",
+          "de": "🔙 Zurück zu den Diensten"
+        },
+        "registration_backToPreviousCountry": {
+          "fr": "🔙 Retour au pays précédent",
+          "en": "🔙 Back to previous country",
+          "it": "🔙 Torna al paese precedente",
+          "es": "🔙 Volver al país anterior",
+          "de": "🔙 Zurück zum vorherigen Land"
+        },
+        "registration_potatoQuestion": {
+          "fr": "🥔 Entrez votre lien Potato Chat",
+          "en": "🥔 Enter your Potato Chat link",
+          "it": "🥔 Inserisci il tuo link Potato Chat",
+          "es": "🥔 Introduce tu enlace de Potato Chat",
+          "de": "🥔 Geben Sie Ihren Potato Chat-Link ein"
+        },
+        "registration_snapchatQuestion": {
+          "fr": "👻 Entrez votre lien Snapchat",
+          "en": "👻 Enter your Snapchat link",
+          "it": "👻 Inserisci il tuo link Snapchat",
+          "es": "👻 Introduce tu enlace de Snapchat",
+          "de": "👻 Geben Sie Ihren Snapchat-Link ein"
+        },
+        "registration_whatsappQuestion": {
+          "fr": "💬 Entrez votre lien WhatsApp",
+          "en": "💬 Enter your WhatsApp link",
+          "it": "💬 Inserisci il tuo link WhatsApp",
+          "es": "💬 Introduce tu enlace de WhatsApp",
+          "de": "💬 Geben Sie Ihren WhatsApp-Link ein"
+        },
+        "registration_signalQuestion": {
+          "fr": "🔒 Entrez votre lien Signal ou nom d'utilisateur Signal",
+          "en": "🔒 Enter your Signal link or Signal username",
+          "it": "🔒 Inserisci il tuo link Signal o nome utente Signal",
+          "es": "🔒 Introduce tu enlace de Signal o nombre de usuario de Signal",
+          "de": "🔒 Geben Sie Ihren Signal-Link oder Signal-Benutzernamen ein"
+        },
+        "registration_sessionQuestion": {
+          "fr": "🛡️ Entrez votre identifiant Session",
+          "en": "🛡️ Enter your Session ID",
+          "it": "🛡️ Inserisci il tuo ID Session",
+          "es": "🛡️ Introduce tu ID de Session",
+          "de": "🛡️ Geben Sie Ihre Session-ID ein"
+        },
+        "registration_threemaQuestion": {
+          "fr": "🔐 Entrez votre lien Threema",
+          "en": "🔐 Enter your Threema link",
+          "it": "🔐 Inserisci il tuo link Threema",
+          "es": "🔐 Introduce tu enlace de Threema",
+          "de": "🔐 Geben Sie Ihren Threema-Link ein"
+        },
+        "registration_telegramBotQuestion": {
+          "fr": "🤖 Entrez votre bot Telegram (@username ou t.me/botname)",
+          "en": "🤖 Enter your Telegram bot (@username or t.me/botname)",
+          "it": "🤖 Inserisci il tuo bot Telegram (@username o t.me/botname)",
+          "es": "🤖 Introduce tu bot de Telegram (@username o t.me/botname)",
+          "de": "🤖 Geben Sie Ihren Telegram-Bot ein (@username oder t.me/botname)"
+        },
+        "registration_telegramBotExample": {
+          "fr": "(Ex: @monbotshop_bot ou lien du bot)",
+          "en": "(Ex: @myshopbot_bot or bot link)",
+          "it": "(Es: @mionegoziobot_bot o link del bot)",
+          "es": "(Ej: @mibottienda_bot o enlace del bot)",
+          "de": "(Z.B.: @meinshopbot_bot oder Bot-Link)"
+        },
+        "registration_logoQuestion": {
+          "fr": "🖼️ Envoie ton logo de boutique (obligatoire)",
+          "en": "🖼️ Send your shop logo (required)",
+          "it": "🖼️ Invia il logo del tuo negozio (obbligatorio)",
+          "es": "🖼️ Envía el logo de tu tienda (obligatorio)",
+          "de": "🖼️ Senden Sie Ihr Shop-Logo (erforderlich)"
+        },
+        "registration_logoInstruction": {
+          "fr": "⚠️ Tu peux envoyer une image ici.",
+          "en": "⚠️ You can send an image here.",
+          "it": "⚠️ Puoi inviare un'immagine qui.",
+          "es": "⚠️ Puedes enviar una imagen aquí.",
+          "de": "⚠️ Sie können hier ein Bild senden."
+        },
+        "registration_shopPhotoQuestion": {
+          "fr": "📸 Envoie le logo de ta boutique",
+          "en": "📸 Send your shop logo",
+          "it": "📸 Invia il logo del tuo negozio",
+          "es": "📸 Envía el logo de tu tienda",
+          "de": "📸 Senden Sie Ihr Shop-Logo"
+        },
+        "registration_cityQuestion": {
+          "fr": "🏙️ Dans quelle ville exerces-tu principalement ?",
+          "en": "🏙️ In which city do you mainly operate?",
+          "it": "🏙️ In che città operi principalmente?",
+          "es": "🏙️ ¿En qué ciudad operas principalmente?",
+          "de": "🏙️ In welcher Stadt sind Sie hauptsächlich tätig?"
+        },
+        "registration_servicesQuestion": {
+          "fr": "🚚 Quels services proposes-tu ?",
+          "en": "🚚 What services do you offer?",
+          "it": "🚚 Quali servizi offri?",
+          "es": "🚚 ¿Qué servicios ofreces?",
+          "de": "🚚 Welche Services bieten Sie an?"
+        },
+        "registration_serviceDelivery": {
+          "fr": "🚚 Livraison",
+          "en": "🚚 Delivery",
+          "it": "🚚 Consegna",
+          "es": "🚚 Entrega",
+          "de": "🚚 Lieferung"
+        },
+        "registration_serviceMeetup": {
+          "fr": "🤝 Meetup",
+          "en": "🤝 Meetup",
+          "it": "🤝 Meetup",
+          "es": "🤝 Meetup",
+          "de": "🤝 Meetup"
+        },
+        "registration_serviceShipping": {
+          "fr": "📦 Envoi",
+          "en": "📦 Shipping",
+          "it": "📦 Spedizione",
+          "es": "📦 Envío",
+          "de": "📦 Versand"
+        },
+        "registration_servicesInstruction": {
+          "fr": "Sélectionne tous les services que tu proposes :",
+          "en": "Select all services you offer:",
+          "it": "Seleziona tutti i servizi che offri:",
+          "es": "Selecciona todos los servicios que ofreces:",
+          "de": "Wählen Sie alle Services aus, die Sie anbieten:"
+        },
+        "registration_departmentsDeliveryQuestion": {
+          "fr": "🚚 Indique les départements pour la **Livraison** (ex: 75, 94...) :",
+          "en": "🚚 Indicate the departments for **Delivery** (ex: 75, 94...):",
+          "it": "🚚 Indica i dipartimenti per la **Consegna** (es: 75, 94...):",
+          "es": "🚚 Indica los departamentos para **Entrega** (ej: 75, 94...):",
+          "de": "🚚 Geben Sie die Departements für **Lieferung** an (z.B.: 75, 94...):"
+        },
+        "registration_departmentsMeetupQuestion": {
+          "fr": "📍 Indique les départements pour le **Meetup** (ex: 75, 92, 93) :",
+          "en": "📍 Indicate the departments for **Meetup** (ex: 75, 92, 93):",
+          "it": "📍 Indica i dipartimenti per **Meetup** (es: 75, 92, 93):",
+          "es": "📍 Indica los departamentos para **Meetup** (ej: 75, 92, 93):",
+          "de": "📍 Geben Sie die Departements für **Meetup** an (z.B.: 75, 92, 93):"
+        },
+        "registration_departmentsShippingQuestion": {
+          "fr": "📦 Dans quels NUMÉROS de départements fais-tu de l'ENVOI ?",
+          "en": "📦 In which department NUMBERS do you do SHIPPING?",
+          "it": "📦 In quali NUMERI di dipartimenti fai SPEDIZIONE?",
+          "es": "📦 ¿En qué NÚMEROS de departamentos haces ENVÍO?",
+          "de": "📦 In welchen Departement-NUMMERN machen Sie VERSAND?"
+        },
+        "registration_departmentsInstruction": {
+          "fr": "Écris les NUMÉROS de départements séparés par des virgules (exemple: 75, 92, 93, 94)",
+          "en": "Write the department NUMBERS separated by commas (example: 75, 92, 93, 94)",
+          "it": "Scrivi i NUMERI dei dipartimenti separati da virgole (esempio: 75, 92, 93, 94)",
+          "es": "Escribe los NÚMEROS de departamentos separados por comas (ejemplo: 75, 92, 93, 94)",
+          "de": "Schreiben Sie die Departement-NUMMERN getrennt durch Kommas (Beispiel: 75, 92, 93, 94)"
+        },
+        "registration_shippingCountriesQuestion": {
+          "fr": "📦 Dans quels PAYS fais-tu de l'ENVOI ?",
+          "en": "📦 In which COUNTRIES do you do SHIPPING?",
+          "it": "📦 In quali PAESI fai SPEDIZIONE?",
+          "es": "📦 ¿En qué PAÍSES haces ENVÍO?",
+          "de": "📦 In welchen LÄNDERN machen Sie VERSAND?"
+        },
+        "registration_shippingCountriesInstruction": {
+          "fr": "Écris les noms des pays séparés par des virgules (exemple: France, Espagne, Italie)",
+          "en": "Write the country names separated by commas (example: France, Spain, Italy)",
+          "it": "Scrivi i nomi dei paesi separati da virgole (esempio: Francia, Spagna, Italia)",
+          "es": "Escribe los nombres de los países separados por comas (ejemplo: Francia, España, Italia)",
+          "de": "Schreiben Sie die Ländernamen getrennt durch Kommas (Beispiel: Frankreich, Spanien, Italien)"
+        },
+        "registration_error_departmentsNumbers": {
+          "fr": "❌ Veuillez saisir uniquement des chiffres et des virgules (exemple: 75, 92, 93)",
+          "en": "❌ Please enter only numbers and commas (example: 75, 92, 93)",
+          "it": "❌ Inserisci solo numeri e virgole (esempio: 75, 92, 93)",
+          "es": "❌ Ingresa solo números y comas (ejemplo: 75, 92, 93)",
+          "de": "❌ Bitte geben Sie nur Zahlen und Kommas ein (Beispiel: 75, 92, 93)"
+        },
+        "no_postal_codes_for_country": {
+          "fr": "Aucun code postal trouvé pour",
+          "en": "No postal codes found for",
+          "it": "Nessun codice postale trovato per",
+          "es": "No se encontraron códigos postales para",
+          "de": "Keine Postleitzahlen gefunden für"
+        },
+        "registration_continueToNext": {
+          "fr": "➡️ Continuer",
+          "en": "➡️ Continue",
+          "it": "➡️ Continua",
+          "es": "➡️ Continuar",
+          "de": "➡️ Weiter"
+        },
+        "registration_error_potatoFormat": {
+          "fr": "❌ Merci de fournir un lien Potato Chat 🥔 valide (ex: https://potato.chat/username). Réessaie :",
+          "en": "❌ Please provide a valid Potato Chat 🥔 link (ex: https://potato.chat/username). Try again:",
+          "it": "❌ Fornisci un link Potato Chat 🥔 valido (es: https://potato.chat/username). Riprova:",
+          "es": "❌ Proporciona un enlace de Potato Chat 🥔 válido (ej: https://potato.chat/username). Inténtalo de nuevo:",
+          "de": "❌ Bitte geben Sie einen gültigen Potato Chat 🥔-Link an (z.B.: https://potato.chat/username). Versuchen Sie es erneut:"
+        },
+        "registration_error_snapchatFormat": {
+          "fr": "❌ Merci de fournir un lien Snapchat valide (ex: https://www.snapchat.com/add/username). Réessaie :",
+          "en": "❌ Please provide a valid Snapchat link (ex: https://www.snapchat.com/add/username). Try again:",
+          "it": "❌ Fornisci un link Snapchat valido (es: https://www.snapchat.com/add/username). Riprova:",
+          "es": "❌ Proporciona un enlace de Snapchat válido (ej: https://www.snapchat.com/add/username). Inténtalo de nuevo:",
+          "de": "❌ Bitte geben Sie einen gültigen Snapchat-Link an (z.B.: https://www.snapchat.com/add/username). Versuchen Sie es erneut:"
+        },
+        "registration_error_whatsappFormat": {
+          "fr": "❌ Merci de fournir un lien WhatsApp valide (ex: https://wa.me/33123456789). Réessaie :",
+          "en": "❌ Please provide a valid WhatsApp link (ex: https://wa.me/33123456789). Try again:",
+          "it": "❌ Fornisci un link WhatsApp valido (es: https://wa.me/33123456789). Riprova:",
+          "es": "❌ Proporciona un enlace de WhatsApp válido (ej: https://wa.me/33123456789). Inténtalo de nuevo:",
+          "de": "❌ Bitte geben Sie einen gültigen WhatsApp-Link an (z.B.: https://wa.me/33123456789). Versuchen Sie es erneut:"
+        },
+        "registration_error_signalFormat": {
+          "fr": "❌ Merci de fournir un identifiant Signal valide ou un lien. Réessaie :",
+          "en": "❌ Please provide a valid Signal ID or link. Try again:",
+          "it": "❌ Fornisci un ID Signal valido o un link. Riprova:",
+          "es": "❌ Proporciona un ID de Signal válido o un enlace. Inténtalo de nuevo:",
+          "de": "❌ Bitte geben Sie eine gültige Signal-ID oder einen Link an. Versuchen Sie es erneut:"
+        },
+        "registration_error_sessionFormat": {
+          "fr": "❌ L'identifiant Session doit faire au moins 2 caractères. Réessaie :",
+          "en": "❌ Session ID must be at least 2 characters. Try again:",
+          "it": "❌ L'ID Session deve essere di almeno 2 caratteri. Riprova:",
+          "es": "❌ El ID de Session debe tener al menos 2 caracteres. Inténtalo de nuevo:",
+          "de": "❌ Session-ID muss mindestens 2 Zeichen haben. Versuchen Sie es erneut:"
+        },
+        "registration_error_threemaFormat": {
+          "fr": "❌ Merci de fournir un lien Threema valide (ex: https://threema.id/VOTRID). Réessaie :",
+          "en": "❌ Please provide a valid Threema link (ex: https://threema.id/YOURID). Try again:",
+          "it": "❌ Fornisci un link Threema valido (es: https://threema.id/TUOID). Riprova:",
+          "es": "❌ Proporciona un enlace de Threema válido (ej: https://threema.id/TUID). Inténtalo de nuevo:",
+          "de": "❌ Bitte geben Sie einen gültigen Threema-Link an (z.B.: https://threema.id/IHREID). Versuchen Sie es erneut:"
+        },
+        "registration_error_technical": {
+          "fr": "Erreur technique",
+          "en": "Technical error",
+          "it": "Errore tecnico",
+          "es": "Error técnico",
+          "de": "Technischer Fehler"
+        },
+        "registration_error_submissionFailed": {
+          "fr": "Une erreur s'est produite lors de l'envoi de ta demande.",
+          "en": "An error occurred while sending your request.",
+          "it": "Si è verificato un errore durante l'invio della richiesta.",
+          "es": "Se produjo un error al enviar tu solicitud.",
+          "de": "Beim Senden Ihrer Anfrage ist ein Fehler aufgetreten."
+        },
+        "registration_error_tryAgainLater": {
+          "fr": "Tu peux réessayer dans quelques minutes.",
+          "en": "You can try again in a few minutes.",
+          "it": "Puoi riprovare tra qualche minuto.",
+          "es": "Puedes intentarlo de nuevo en unos minutos.",
+          "de": "Sie können es in ein paar Minuten erneut versuchen."
+        },
+        "registration_error_contactSupport": {
+          "fr": "Si le problème persiste, contacte le support.",
+          "en": "If the problem persists, contact support.",
+          "it": "Se il problema persiste, contatta il supporto.",
+          "es": "Si el problema persiste, contacta al soporte.",
+          "de": "Wenn das Problem weiterhin besteht, wenden Sie sich an den Support."
+        },
+        "registration_error_cityLength": {
+          "fr": "❌ La ville doit faire au moins 2 caractères. Réessaie :",
+          "en": "❌ City must be at least 2 characters. Try again:",
+          "it": "❌ La città deve essere di almeno 2 caratteri. Riprova:",
+          "es": "❌ La ciudad debe tener al menos 2 caracteres. Inténtalo de nuevo:",
+          "de": "❌ Stadt muss mindestens 2 Zeichen haben. Versuchen Sie es erneut:"
+        },
+        "registration_error_departmentsLength": {
+          "fr": "❌ Les départements doivent faire au moins 2 caractères. Réessaie :",
+          "en": "❌ Departments must be at least 2 characters. Try again:",
+          "it": "❌ I dipartimenti devono essere di almeno 2 caratteri. Riprova:",
+          "es": "❌ Los departamentos deben tener al menos 2 caracteres. Inténtalo de nuevo:",
+          "de": "❌ Departements müssen mindestens 2 Zeichen haben. Versuchen Sie es erneut:"
+        },
+        "registration_finishSelection": {
+          "fr": "Terminer la sélection",
+          "en": "Finish selection",
+          "it": "Termina selezione",
+          "es": "Terminar selección",
+          "de": "Auswahl abschließen"
+        },
+        "registration_allCountries": {
+          "fr": "Tous les pays",
+          "en": "All countries",
+          "it": "Tutti i paesi",
+          "es": "Todos los países",
+          "de": "Alle Länder"
+        },
+        "registration_selectServices": {
+          "fr": "(Sélectionne tous ceux qui s'appliquent)",
+          "en": "(Select all that apply)",
+          "it": "(Seleziona tutto ciò che si applica)",
+          "es": "(Selecciona todo lo que corresponda)",
+          "de": "(Wählen Sie alles Zutreffende aus)"
+        },
+        "registration_servicesAvailable": {
+          "fr": "☑️ Services disponibles",
+          "en": "☑️ Available services",
+          "it": "☑️ Servizi disponibili",
+          "es": "☑️ Servicios disponibles",
+          "de": "☑️ Verfügbare Services"
+        },
+        "registration_error_formError": {
+          "fr": "❌ Erreur de formulaire",
+          "en": "❌ Form error",
+          "it": "❌ Errore del modulo",
+          "es": "❌ Error de formulario",
+          "de": "❌ Formular-Fehler"
+        },
+        "registration_error_genericError": {
+          "fr": "❌ Erreur",
+          "en": "❌ Error",
+          "it": "❌ Errore",
+          "es": "❌ Error",
+          "de": "❌ Fehler"
+        },
+        "registration_error_technicalError": {
+          "fr": "❌ Erreur technique",
+          "en": "❌ Technical error",
+          "it": "❌ Errore tecnico",
+          "es": "❌ Error técnico",
+          "de": "❌ Technischer Fehler"
+        },
+        "registration_error_photoError": {
+          "fr": "❌ Erreur lors du traitement de la photo. Réessaie.",
+          "en": "❌ Error processing photo. Try again.",
+          "it": "❌ Errore nell'elaborazione della foto. Riprova.",
+          "es": "❌ Error al procesar la foto. Inténtalo de nuevo.",
+          "de": "❌ Fehler beim Verarbeiten des Fotos. Versuchen Sie es erneut."
+        },
+        "registration_error_startupError": {
+          "fr": "❌ Erreur lors du démarrage",
+          "en": "❌ Startup error",
+          "it": "❌ Errore di avvio",
+          "es": "❌ Error de inicio",
+          "de": "❌ Startfehler"
+        },
+        "registration_countrySelected": {
+          "fr": "Pays sélectionné :",
+          "en": "Country selected:",
+          "it": "Paese selezionato:",
+          "es": "País seleccionado:",
+          "de": "Land ausgewählt:"
+        },
+        "registration_invalidCountry": {
+          "fr": "❌ Pays invalide",
+          "en": "❌ Invalid country",
+          "it": "❌ Paese non valido",
+          "es": "❌ País inválido",
+          "de": "❌ Ungültiges Land"
+        },
+        "registration_finalSummary": {
+          "fr": "✅ Voici le récapitulatif final :",
+          "en": "✅ Here is the final summary:",
+          "it": "✅ Ecco il riepilogo finale:",
+          "es": "✅ Aquí está el resumen final:",
+          "de": "✅ Hier ist die finale Zusammenfassung:"
+        },
+        "registration_plugName": {
+          "fr": "Nom de Plug",
+          "en": "Plug Name",
+          "it": "Nome Negozio",
+          "es": "Nombre de Tienda",
+          "de": "Shop-Name"
+        },
+        "registration_confirmInscription": {
+          "fr": "Confirmer l'inscription ?",
+          "en": "Confirm registration?",
+          "it": "Confermare la registrazione?",
+          "es": "¿Confirmar registro?",
+          "de": "Registrierung bestätigen?"
+        },
+        "registration_confirm": {
+          "fr": "✅ Confirmer",
+          "en": "✅ Confirm",
+          "it": "✅ Conferma",
+          "es": "✅ Confirmar",
+          "de": "✅ Bestätigen"
+        },
+        "registration_finalStep": {
+          "fr": "🟩 ÉTAPE FINALE",
+          "en": "🟩 FINAL STEP",
+          "it": "🟩 FASE FINALE",
+          "es": "🟩 PASO FINAL",
+          "de": "🟩 LETZTER SCHRITT"
+        },
+        "registration_formReceived": {
+          "fr": "🎉 Formulaire reçu !",
+          "en": "🎉 Form received!",
+          "it": "🎉 Modulo ricevuto!",
+          "es": "🎉 ¡Formulario recibido!",
+          "de": "🎉 Formular erhalten!"
+        },
+        "registration_validationInstructions": {
+          "fr": "📌 Pour valider ton inscription :",
+          "en": "📌 To validate your registration:",
+          "it": "📌 Per convalidare la tua registrazione:",
+          "es": "📌 Para validar tu registro:",
+          "de": "📌 Um deine Registrierung zu bestätigen:"
+        },
+        "registration_step1Validation": {
+          "fr": "1️⃣ Poste le logo FindYourPlug sur un de tes réseaux renseignés avec le texte :\n\"Inscription en cours chez FindYourPlug\"\net identifie findyourplug",
+          "en": "1️⃣ Post the FindYourPlug logo on one of your registered networks with the text:\n\"Registration in progress at FindYourPlug\"\nand tag findyourplug",
+          "it": "1️⃣ Pubblica il logo FindYourPlug su uno dei tuoi social registrati con il testo:\n\"Registrazione in corso presso FindYourPlug\"\ne tagga findyourplug",
+          "es": "1️⃣ Publica el logo FindYourPlug en una de tus redes registradas con el texto:\n\"Registro en curso en FindYourPlug\"\ny etiqueta findyourplug",
+          "de": "1️⃣ Poste das FindYourPlug-Logo in einem deiner registrierten Netzwerke mit dem Text:\n\"Registrierung läuft bei FindYourPlug\"\nund tagge findyourplug"
+        },
+        "registration_step2Validation": {
+          "fr": "Envoie une photo de ton stock avec\nFindYourPlug et la date du jour écrits sur papier\nà l'admin : findyourplug_admin",
+          "en": "Send a photo of your stock with\nFindYourPlug and today's date written on paper\nto admin: findyourplug_admin",
+          "it": "Invia una foto del tuo stock con\nFindYourPlug e la data di oggi scritti su carta\nall'admin: findyourplug_admin",
+          "es": "Envía una foto de tu stock con\nFindYourPlug y la fecha de hoy escritos en papel\nal admin: findyourplug_admin",
+          "de": "Sende ein Foto deines Lagers mit\nFindYourPlug und dem heutigen Datum auf Papier geschrieben\nan Admin: findyourplug_admin"
+        },
+        "registration_timeLimit": {
+          "fr": "⏰ Tu as 24h pour faire cette étape.",
+          "en": "⏰ You have 24h to complete this step.",
+          "it": "⏰ Hai 24 ore per completare questo passaggio.",
+          "es": "⏰ Tienes 24h para completar este paso.",
+          "de": "⏰ Du hast 24 Stunden, um diesen Schritt zu erledigen."
+        },
+        "registration_approvalTime": {
+          "fr": "ℹ️ La pré-approbation peut prendre 24 à 72h.\nTu seras notifié automatiquement de la décision.",
+          "en": "ℹ️ Pre-approval may take 24 to 72h.\nYou will be automatically notified of the decision.",
+          "it": "ℹ️ La pre-approvazione può richiedere da 24 a 72 ore.\nSarai notificato automaticamente della decisione.",
+          "es": "ℹ️ La pre-aprobación puede tomar de 24 a 72h.\nSerás notificado automáticamente de la decisión.",
+          "de": "ℹ️ Die Vorabgenehmigung kann 24 bis 72 Stunden dauern.\nDu wirst automatisch über die Entscheidung benachrichtigt."
+        },
+        "service_delivery": {
+          "fr": "Livraison",
+          "en": "Delivery",
+          "it": "Consegna",
+          "es": "Entrega",
+          "de": "Lieferung"
+        },
+        "service_meetup": {
+          "fr": "Meetup",
+          "en": "Meetup",
+          "it": "Incontro",
+          "es": "Encuentro",
+          "de": "Treffen"
+        },
+        "service_postal": {
+          "fr": "Envoi postal",
+          "en": "Postal shipping",
+          "it": "Spedizione postale",
+          "es": "Envío postal",
+          "de": "Postversand"
+        },
+        "services_available": {
+          "fr": "Services disponibles",
+          "en": "Available services",
+          "it": "Servizi disponibili",
+          "es": "Servicios disponibles",
+          "de": "Verfügbare Services"
+        },
+        "service_choose_type": {
+          "fr": "Choisissez le type de service :",
+          "en": "Choose the type of service:",
+          "it": "Scegli il tipo di servizio:",
+          "es": "Elige el tipo de servicio:",
+          "de": "Wählen Sie den Servicetyp:"
+        },
+        "shops_count": {
+          "fr": "boutiques",
+          "en": "shops",
+          "it": "negozi",
+          "es": "tiendas",
+          "de": "Shops"
+        },
+        "countries_served": {
+          "fr": "Pays desservis",
+          "en": "Countries served",
+          "it": "Paesi serviti",
+          "es": "Países servidos",
+          "de": "Bediente Länder"
+        },
+        "shop_details": {
+          "fr": "Détails de la boutique",
+          "en": "Shop details",
+          "it": "Dettagli del negozio",
+          "es": "Detalles de la tienda",
+          "de": "Shop-Details"
+        },
+        "shop_description_label": {
+          "fr": "📝",
+          "en": "📝",
+          "it": "📝",
+          "es": "📝",
+          "de": "📝"
+        },
+        "vote_for_shop": {
+          "fr": "Voter Pour ce Plug",
+          "en": "Vote for this Plug",
+          "it": "Vota per questo negozio",
+          "es": "Votar por esta tienda",
+          "de": "Für diesen Shop stimmen"
+        },
+        "already_voted": {
+          "fr": "Déjà voté",
+          "en": "Already voted",
+          "it": "Già votato",
+          "es": "Ya votado",
+          "de": "Bereits abgestimmt"
+        },
+        "vote_count_singular": {
+          "fr": "vote",
+          "en": "vote",
+          "it": "voto",
+          "es": "voto",
+          "de": "Stimme"
+        },
+        "vote_count_plural": {
+          "fr": "votes",
+          "en": "votes",
+          "it": "voti",
+          "es": "votos",
+          "de": "Stimmen"
+        },
+        "vote_cooldown_message": {
+          "fr": "Déjà voté - 2h restant",
+          "en": "Already voted - 2h remaining",
+          "it": "Già votato - 2h rimanenti",
+          "es": "Ya votado - 2h restantes",
+          "de": "Bereits abgestimmt - 2h verbleibend"
+        },
+        "vote_cooldown_time": {
+          "fr": "Déjà voté ({votes}) - {hours}h{minutes}m",
+          "en": "Already voted ({votes}) - {hours}h{minutes}m",
+          "it": "Già votato ({votes}) - {hours}h{minutes}m",
+          "es": "Ya votado ({votes}) - {hours}h{minutes}m",
+          "de": "Bereits abgestimmt ({votes}) - {hours}h{minutes}m"
+        },
+        "vote_success_message": {
+          "fr": "👍 Vous avez voté pour {plugName} ! ({likes} votes)",
+          "en": "👍 You voted for {plugName}! ({likes} votes)",
+          "it": "👍 Hai votato per {plugName}! ({likes} voti)",
+          "es": "👍 ¡Has votado por {plugName}! ({likes} votos)",
+          "de": "👍 Sie haben für {plugName} gestimmt! ({likes} Stimmen)"
+        },
+        "vote_cooldown_alert": {
+          "fr": "⏰ Vous avez déjà voté pour cette boutique ! Vous pourrez voter à nouveau dans {remainingTime}.",
+          "en": "⏰ You have already voted for this shop! You can vote again in {remainingTime}.",
+          "it": "⏰ Hai già votato per questo negozio! Potrai votare di nuovo tra {remainingTime}.",
+          "es": "⏰ ¡Ya has votado por esta tienda! Podrás votar de nuevo en {remainingTime}.",
+          "de": "⏰ Sie haben bereits für diesen Shop gestimmt! Sie können in {remainingTime} erneut abstimmen."
+        },
+        "back_to_menu": {
+          "fr": "Retour au menu",
+          "en": "Back to menu",
+          "it": "Torna al menu",
+          "es": "Volver al menú",
+          "de": "Zurück zum Menü"
+        },
+        "back_to_departments": {
+          "fr": "Retour aux départements",
+          "en": "Back to departments",
+          "it": "Torna ai dipartimenti",
+          "es": "Volver a departamentos",
+          "de": "Zurück zu den Abteilungen"
+        },
+        "main_menu": {
+          "fr": "Menu principal",
+          "en": "Main menu",
+          "it": "Menu principale",
+          "es": "Menú principal",
+          "de": "Hauptmenü"
+        },
+        "page_info": {
+          "fr": "Page",
+          "en": "Page",
+          "it": "Pagina",
+          "es": "Página",
+          "de": "Seite"
+        },
+        "loading": {
+          "fr": "Chargement...",
+          "en": "Loading...",
+          "it": "Caricamento...",
+          "es": "Cargando...",
+          "de": "Laden..."
+        },
+        "error_loading": {
+          "fr": "Erreur lors du chargement",
+          "en": "Error loading",
+          "it": "Errore durante il caricamento",
+          "es": "Error al cargar",
+          "de": "Fehler beim Laden"
+        },
+        "shop_not_found": {
+          "fr": "Boutique non trouvée ou inactive",
+          "en": "Shop not found or inactive",
+          "it": "Negozio non trovato o inattivo",
+          "es": "Tienda no encontrada o inactiva",
+          "de": "Shop nicht gefunden oder inaktiv"
+        },
+        "filter_by_service": {
+          "fr": "Filtrer par service",
+          "en": "Filter by service",
+          "it": "Filtra per servizio",
+          "es": "Filtrar por servicio",
+          "de": "Nach Service filtern"
+        },
+        "filter_by_country": {
+          "fr": "Filtrer par pays",
+          "en": "Filter by country",
+          "it": "Filtra per paese",
+          "es": "Filtrar por país",
+          "de": "Nach Land filtern"
+        },
+        "all_shops": {
+          "fr": "Toutes les boutiques",
+          "en": "All shops",
+          "it": "Tutti i negozi",
+          "es": "Todas las tiendas",
+          "de": "Alle Shops"
+        },
+        "filter_delivery_message": {
+          "fr": "📦 Afficher les boutiques disponibles pour livraison",
+          "en": "📦 Show shops available for delivery",
+          "it": "📦 Mostra negozi disponibili per consegna",
+          "es": "📦 Mostrar tiendas disponibles para entrega",
+          "de": "📦 Shops für Lieferung anzeigen"
+        },
+        "filter_meetup_message": {
+          "fr": "🤝 Afficher les boutiques disponibles pour meetup",
+          "en": "🤝 Show shops available for meetup",
+          "it": "🤝 Mostra negozi disponibili per incontro",
+          "es": "🤝 Mostrar tiendas disponibles para encuentro",
+          "de": "🤝 Shops für Treffen anzeigen"
+        },
+        "filter_postal_message": {
+          "fr": "📬 Boutiques qui font des envois postaux",
+          "en": "📬 Shops that do postal shipping",
+          "it": "📬 Negozi che fanno spedizioni postali",
+          "es": "📬 Tiendas que hacen envíos postales",
+          "de": "📬 Shops mit Postversand"
+        },
+        "filter_department_available": {
+          "fr": "Départements disponibles pour",
+          "en": "Available departments for",
+          "it": "Dipartimenti disponibili per",
+          "es": "Departamentos disponibles para",
+          "de": "Verfügbare Bundesländer für"
+        },
+        "filter_shops_in_department": {
+          "fr": "Boutiques en",
+          "en": "Shops in",
+          "it": "Negozi in",
+          "es": "Tiendas en",
+          "de": "Shops in"
+        },
+        "error_filtering": {
+          "fr": "❌ Erreur lors du filtrage",
+          "en": "❌ Error filtering",
+          "it": "❌ Errore nel filtraggio",
+          "es": "❌ Error al filtrar",
+          "de": "❌ Fehler beim Filtern"
+        },
+        "error_departments": {
+          "fr": "❌ Erreur lors du chargement des départements",
+          "en": "❌ Error loading departments",
+          "it": "❌ Errore nel caricamento dei dipartimenti",
+          "es": "❌ Error al cargar departamentos",
+          "de": "❌ Fehler beim Laden der Bundesländer"
+        },
+        "error_reset": {
+          "fr": "❌ Erreur lors de la réinitialisation",
+          "en": "❌ Error resetting",
+          "it": "❌ Errore nel reset",
+          "es": "❌ Error al reiniciar",
+          "de": "❌ Fehler beim Zurücksetzen"
+        },
+        "no_departments": {
+          "fr": "❌ Aucun département disponible",
+          "en": "❌ No departments available",
+          "it": "❌ Nessun dipartimento disponibile",
+          "es": "❌ No hay departamentos disponibles",
+          "de": "❌ Keine Bundesländer verfügbar"
+        },
+        "filters_reset_button": {
+          "fr": "🔁 Réinitialiser les filtres",
+          "en": "🔁 Reset filters",
+          "it": "🔁 Ripristina filtri",
+          "es": "🔁 Reiniciar filtros",
+          "de": "🔁 Filter zurücksetzen"
+        },
+        "filter_country_selected": {
+          "fr": "Pays sélectionné",
+          "en": "Selected country",
+          "it": "Paese selezionato",
+          "es": "País seleccionado",
+          "de": "Ausgewähltes Land"
+        },
+        "shops_found_postal": {
+          "fr": "boutiques avec envoi postal",
+          "en": "shops with postal shipping",
+          "it": "negozi con spedizione postale",
+          "es": "tiendas con envío postal",
+          "de": "Shops mit Postversand"
+        },
+        "no_shops_postal": {
+          "fr": "Aucune boutique avec envoi postal.",
+          "en": "No shops with postal shipping.",
+          "it": "Nessun negozio con spedizione postale.",
+          "es": "No hay tiendas con envío postal.",
+          "de": "Keine Shops mit Postversand."
+        },
+        "click_department_instruction": {
+          "fr": "Cliquez sur \"📍 Département 🔁\" pour sélectionner votre zone.",
+          "en": "Click on \"📍 Department 🔁\" to select your area.",
+          "it": "Clicca su \"📍 Regione 🔁\" per selezionare la tua zona.",
+          "es": "Haz clic en \"📍 Provincia 🔁\" para seleccionar tu zona.",
+          "de": "Klicken Sie auf \"📍 Bundesland 🔁\", um Ihr Gebiet auszuwählen."
+        },
+        "shops_found_delivery": {
+          "fr": "boutiques avec livraison",
+          "en": "shops with delivery",
+          "it": "negozi con consegna",
+          "es": "tiendas con entrega",
+          "de": "Shops mit Lieferung"
+        },
+        "shops_found_meetup": {
+          "fr": "boutiques avec meetup",
+          "en": "shops with meetup",
+          "it": "negozi con incontro",
+          "es": "tiendas con encuentro",
+          "de": "Shops mit Treffen"
+        },
+        "no_shops_delivery": {
+          "fr": "Aucune boutique avec livraison.",
+          "en": "No shops with delivery.",
+          "it": "Nessun negozio con consegna.",
+          "es": "No hay tiendas con entrega.",
+          "de": "Keine Shops mit Lieferung."
+        },
+        "no_shops_meetup": {
+          "fr": "Aucune boutique avec meetup.",
+          "en": "No shops with meetup.",
+          "it": "Nessun negozio con incontro.",
+          "es": "No hay tiendas con encuentro.",
+          "de": "Keine Shops mit Treffen."
+        },
+        "department_instruction": {
+          "fr": "Choisissez votre département",
+          "en": "Choose your department",
+          "it": "Scegli la tua regione",
+          "es": "Elige tu provincia",
+          "de": "Wählen Sie Ihr Bundesland"
+        },
+        "select_department": {
+          "fr": "Sélectionnez un département :",
+          "en": "Select a department:",
+          "it": "Seleziona una regione:",
+          "es": "Selecciona una provincia:",
+          "de": "Wählen Sie ein Bundesland:"
+        },
+        "service_label": {
+          "fr": "Service",
+          "en": "Service",
+          "it": "Servizio",
+          "es": "Servicio",
+          "de": "Service"
+        },
+        "country_label": {
+          "fr": "Pays",
+          "en": "Country",
+          "it": "Paese",
+          "es": "País",
+          "de": "Land"
+        },
+        "department_label": {
+          "fr": "Département",
+          "en": "Department",
+          "it": "Regione",
+          "es": "Provincia",
+          "de": "Bundesland"
+        },
+        "shops_in_department": {
+          "fr": "boutiques dans",
+          "en": "shops in",
+          "it": "negozi in",
+          "es": "tiendas en",
+          "de": "Shops in"
+        },
+        "no_shops_in_department": {
+          "fr": "Aucune boutique disponible dans ce département.",
+          "en": "No shops available in this department.",
+          "it": "Nessun negozio disponibile in questa regione.",
+          "es": "No hay tiendas disponibles en esta provincia.",
+          "de": "Keine Shops in diesem Bundesland verfügbar."
+        },
+        "shops_found_country": {
+          "fr": "boutiques trouvées",
+          "en": "shops found",
+          "it": "negozi trovati",
+          "es": "tiendas encontradas",
+          "de": "Shops gefunden"
+        },
+        "no_shops_country": {
+          "fr": "Aucune boutique disponible pour",
+          "en": "No shops available for",
+          "it": "Nessun negozio disponibile per",
+          "es": "No hay tiendas disponibles para",
+          "de": "Keine Shops verfügbar für"
+        },
+        "country_required_title": {
+          "fr": "🚫 Pays requis",
+          "en": "🚫 Country Required",
+          "it": "🚫 Paese Richiesto",
+          "es": "🚫 País Requerido",
+          "de": "🚫 Land Erforderlich"
+        },
+        "country_required_message": {
+          "fr": "Vous devez d'abord sélectionner un pays !",
+          "en": "You must first select a country!",
+          "it": "Devi prima selezionare un paese!",
+          "es": "¡Primero debes seleccionar un país!",
+          "de": "Sie müssen zuerst ein Land auswählen!"
+        },
+        "country_required_instruction": {
+          "fr": "Retournez au menu et choisissez un pays avant de sélectionner",
+          "en": "Go back to the menu and choose a country before selecting",
+          "it": "Torna al menu e scegli un paese prima di selezionare",
+          "es": "Vuelve al menú y elige un país antes de seleccionar",
+          "de": "Gehen Sie zurück zum Menü und wählen Sie ein Land vor der Auswahl"
+        },
+        "departments_available_title": {
+          "fr": "📍 DÉPARTEMENTS DISPONIBLES",
+          "en": "📍 AVAILABLE DEPARTMENTS",
+          "it": "📍 REGIONI DISPONIBILI",
+          "es": "📍 PROVINCIAS DISPONIBLES",
+          "de": "📍 VERFÜGBARE BUNDESLÄNDER"
+        },
+        "departments_click_instruction": {
+          "fr": "Cliquez sur un département:",
+          "en": "Click on a department:",
+          "it": "Clicca su una regione:",
+          "es": "Haz clic en una provincia:",
+          "de": "Klicken Sie auf ein Bundesland:"
+        },
+        "service_delivery_name": {
+          "fr": "Livraison",
+          "en": "Delivery",
+          "it": "Consegna",
+          "es": "Entrega",
+          "de": "Lieferung"
+        },
+        "service_meetup_name": {
+          "fr": "Meetup",
+          "en": "Meetup",
+          "it": "Incontro",
+          "es": "Encuentro",
+          "de": "Treffen"
+        },
+        "list_plugs_title": {
+          "fr": "🔌 Liste des Plugs",
+          "en": "🔌 Plugs List",
+          "it": "🔌 Lista Negozi",
+          "es": "🔌 Lista de Tiendas",
+          "de": "🔌 Shop-Liste"
+        },
+        "sorted_by_votes_subtitle": {
+          "fr": "(Triés par nombre de votes)",
+          "en": "(Sorted by number of votes)",
+          "it": "(Ordinati per numero di voti)",
+          "es": "(Ordenados por número de votos)",
+          "de": "(Sortiert nach Anzahl der Stimmen)"
+        },
+        "shop_title": {
+          "fr": "FINDYOURPLUG",
+          "en": "FINDYOURPLUG",
+          "it": "FINDYOURPLUG",
+          "es": "FINDYOURPLUG",
+          "de": "FINDYOURPLUG"
+        },
+        "shop_loading": {
+          "fr": "Chargement...",
+          "en": "Loading...",
+          "it": "Caricamento...",
+          "es": "Cargando...",
+          "de": "Laden..."
+        },
+        "shop_search": {
+          "fr": "Rechercher",
+          "en": "Search",
+          "it": "Cerca",
+          "es": "Buscar",
+          "de": "Suchen"
+        },
+        "shop_home": {
+          "fr": "Accueil",
+          "en": "Home",
+          "it": "Casa",
+          "es": "Inicio",
+          "de": "Startseite"
+        },
+        "shop_vip": {
+          "fr": "VIP",
+          "en": "VIP",
+          "it": "VIP",
+          "es": "VIP",
+          "de": "VIP"
+        },
+        "shop_likes": {
+          "fr": "votes",
+          "en": "votes",
+          "it": "voti",
+          "es": "votos",
+          "de": "Stimmen"
+        }
+      }
+    },
+    "shopConfig": {
+      "name": "FINDYOURPLUG",
+      "logo": "https://i.imgur.com/D5YB1pj.jpeg",
+      "background": "https://i.imgur.com/D5YB1pj.jpeg"
+    },
+    "socialMedia": [
+      {
+        "name": "Telegram",
+        "emoji": "📱",
+        "url": "https://t.me/+zcP68c4M_3NlM2Y0",
+        "order": 0,
+        "_id": "688dde3fc92de20dd86b5540"
+      },
+      {
+        "name": "Instagram",
+        "emoji": "📸",
+        "url": "https://www.instagram.com/find.yourplug",
+        "order": 0,
+        "_id": "688dde3fc92de20dd86b5541"
+      },
+      {
+        "name": "Luffa",
+        "emoji": "🧽",
+        "url": "https://callup.luffa.im/c/EnvtiTHkbvP",
+        "order": 0,
+        "_id": "688dde3fc92de20dd86b5542"
+      },
+      {
+        "name": "Discord",
+        "emoji": "🎮",
+        "url": "https://discord.gg/g2dACUC3",
+        "order": 0,
+        "_id": "688dde3fc92de20dd86b5543"
+      },
+      {
+        "name": "Contact",
+        "emoji": "📞",
+        "url": "https://t.me/contact",
+        "order": 0,
+        "_id": "688dde3fc92de20dd86b5544"
+      },
+      {
+        "name": "Potato",
+        "emoji": "🥔",
+        "url": "https://dym168.org/findyourplug",
+        "order": 0,
+        "_id": "688dde3fc92de20dd86b5545"
+      }
+    ],
+    "socialMediaList": [
+      {
+        "name": "Telegram",
+        "emoji": "📱",
+        "url": "https://t.me/+zcP68c4M_3NlM2Y0",
+        "enabled": true,
+        "order": 0,
+        "_id": "688dde3fc92de20dd86b5546"
+      },
+      {
+        "name": "Instagram",
+        "emoji": "📸",
+        "url": "https://www.instagram.com/find.yourplug",
+        "enabled": true,
+        "order": 0,
+        "_id": "688dde3fc92de20dd86b5547"
+      },
+      {
+        "name": "Luffa",
+        "emoji": "🛜",
+        "url": "https://callup.luffa.im/c/EnvtiTHkbvP",
+        "enabled": true,
+        "order": 0,
+        "_id": "688dde3fc92de20dd86b5548"
+      },
+      {
+        "name": "Discord",
+        "emoji": "🎮",
+        "url": "https://discord.gg/g2dACUC3",
+        "enabled": true,
+        "order": 0,
+        "_id": "688dde3fc92de20dd86b5549"
+      },
+      {
+        "name": "Potato",
+        "emoji": "🥔",
+        "url": "https://dym168.org/findyourplug",
+        "enabled": true,
+        "order": 0,
+        "_id": "688dde3fc92de20dd86b554b"
+      }
+    ],
+    "contactMessage": {
+      "fr": "📞 **Contactez-nous**\n\nVous avez des questions ? Besoin d'aide ?\n\n📧 Email: support@findyourplug.com\n📱 Telegram: @findyourplug_support\n\n🕐 Nous répondons sous 24h !",
+      "en": "📞 **Contact Us**\n\nHave questions? Need help?\n\n📧 Email: support@findyourplug.com\n📱 Telegram: @findyourplug_support\n\n🕐 We respond within 24 hours!",
+      "es": "📞 **Contáctanos**\n\n¿Tienes preguntas? ¿Necesitas ayuda?\n\n📧 Email: support@findyourplug.com\n📱 Telegram: @findyourplug_support\n\n🕐 ¡Respondemos en 24 horas!",
+      "ar": "📞 **اتصل بنا**\n\nهل لديك أسئلة؟ تحتاج مساعدة؟\n\n📧 البريد: support@findyourplug.com\n📱 تيليجرام: @findyourplug_support\n\n🕐 نرد خلال 24 ساعة!"
+    },
+    "infoMessage": {
+      "fr": "ℹ️ **À propos de FINDYOURPLUG**\n\n🌟 La première plateforme de mise en relation entre clients et professionnels !\n\n✅ Trouvez rapidement ce que vous cherchez\n✅ Votez pour vos services préférés\n✅ Inscription gratuite pour les pros\n\n🚀 Rejoignez notre communauté !",
+      "en": "ℹ️ **About FINDYOURPLUG**\n\n🌟 The first platform connecting customers and professionals!\n\n✅ Quickly find what you're looking for\n✅ Vote for your favorite services\n✅ Free registration for professionals\n\n🚀 Join our community!",
+      "es": "ℹ️ **Acerca de FINDYOURPLUG**\n\n🌟 ¡La primera plataforma que conecta clientes y profesionales!\n\n✅ Encuentra rápidamente lo que buscas\n✅ Vota por tus servicios favoritos\n✅ Registro gratuito para profesionales\n\n🚀 ¡Únete a nuestra comunidad!",
+      "ar": "ℹ️ **حول FINDYOURPLUG**\n\n🌟 أول منصة تربط العملاء بالمحترفين!\n\n✅ اعثر بسرعة على ما تبحث عنه\n✅ صوت لخدماتك المفضلة\n✅ تسجيل مجاني للمحترفين\n\n🚀 انضم إلى مجتمعنا!"
+    },
+    "maintenanceMode": false,
+    "maintenanceMessage": {
+      "fr": "🔧 Maintenance en cours...\n\nNous revenons très bientôt !",
+      "en": "🔧 Maintenance in progress...\n\nWe'll be back soon!",
+      "es": "🔧 Mantenimiento en curso...\n\n¡Volveremos pronto!",
+      "ar": "🔧 صيانة جارية...\n\nسنعود قريباً!"
+    },
+    "adminToken": "ADMIN_TOKEN_F3F3FC574B8A95875449DBD68128C434CE3D7FB3F054567B0D3EAD3D9F1B01B1",
+    "botToken": "8049816368:AAHyroX2rkSFeT3HEMesn_qgqD6nFCYxciY",
+    "webAppUrl": "https://findyourplug-admin.onrender.com/shop",
+    "__v": 3,
+    "boutique": {
+      "backgroundImage": "",
+      "inscriptionTelegramLink": "https://t.me/findyourplugsav",
+      "logo": "",
+      "name": "",
+      "searchSubtitle": "",
+      "searchTitle": "",
+      "servicesTelegramLink": "https://t.me/findyourplugsav",
+      "subtitle": "",
+      "vipSubtitle": "",
+      "vipTitle": ""
+    },
+    "buttons": {
+      "contact": {
+        "text": "📞 Contact",
+        "content": "Contactez-nous pour plus d'informations.\n@findyourplugsav",
+        "enabled": true,
+        "contentTranslations": {}
+      },
+      "info": {
+        "text": "ℹ️ Info",
+        "content": "Nous listons les plugs du monde entier par Pays / Ville découvrez notre mini-app 🌍🔌\n\nPour toute demande spécifique contacter nous @findyourplugsav 📲",
+        "enabled": true,
+        "contentTranslations": {}
+      },
+      "socialMedia": {
+        "content": "Suivez-nous sur nos réseaux sociaux !",
+        "enabled": true,
+        "text": "📱 Réseaux sociaux"
+      },
+      "topPlugs": {
+        "enabled": true,
+        "text": "VOTER POUR VOTRE PLUG 🗳️"
+      }
+    },
+    "filters": {
+      "all": "📋 Tous les plugs",
+      "byCountry": "🌍 Filtrer par pays",
+      "byService": "🔍 Filtrer par service"
+    },
+    "interface": {
+      "backgroundImage": "",
+      "tagline1": "JUSTE UNE",
+      "tagline2": "CHILL",
+      "taglineHighlight": "MINI-APP TELEGRAM",
+      "title": "PLUGS FINDER"
+    },
+    "messages": {
+      "errorOccurred": "❌ Une erreur est survenue, veuillez réessayer.",
+      "noPlugsFound": "😅 Aucun plug trouvé pour ces critères."
+    },
+    "notifications": {
+      "enabled": true,
+      "newShopChatId": ""
+    },
+    "updatedAt": "2025-08-04T15:15:16.238Z",
+    "vip": {
+      "description": "Nos plugs premium sélectionnés pour vous",
+      "enabled": true,
+      "position": "top",
+      "title": "🌟 SECTION VIP"
+    },
+    "welcome": {
+      "text": "Bienvenue sur FindYourPlug! Explorez nos services.\n\nCliquer sur notre MINI-APP 🔌 pour trouver un plug près de chez vous 📍\n",
+      "image": "https://i.imgur.com/yhJq5TN.jpeg",
+      "socialMedia": []
+    }
+  }
+]
