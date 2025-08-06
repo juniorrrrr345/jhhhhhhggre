@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
-import Navbar from '../../components/Navbar'
+import Layout from '../../components/Layout'
 import toast from 'react-hot-toast'
-import simpleApi from '../../lib/simple-api'
+import simpleApi from '../../lib/api-simple'
 
 export default function MaintenancePage() {
   const router = useRouter()
