@@ -69,17 +69,17 @@
       ]
     }
   ],
-  "env": {
-    "NODE_ENV": "production",
-    "BOT_API_URL": "https://jhhhhhhggre.onrender.com",
-    "NEXT_PUBLIC_BOT_URL": "https://jhhhhhhggre.onrender.com",
-    "NEXT_PUBLIC_API_URL": "https://jhhhhhhggre.onrender.com"
-  },
+      "env": {
+      "NODE_ENV": "production",
+      "BOT_API_URL": "https://safepluglink-6hzr.onrender.com",
+      "NEXT_PUBLIC_BOT_URL": "https://safepluglink-6hzr.onrender.com",
+      "NEXT_PUBLIC_API_URL": "https://safepluglink-6hzr.onrender.com"
+    },
   "build": {
     "env": {
-      "BOT_API_URL": "https://jhhhhhhggre.onrender.com",
-      "NEXT_PUBLIC_BOT_URL": "https://jhhhhhhggre.onrender.com",
-      "NEXT_PUBLIC_API_URL": "https://jhhhhhhggre.onrender.com"
+      "BOT_API_URL": "https://safepluglink-6hzr.onrender.com",
+      "NEXT_PUBLIC_BOT_URL": "https://safepluglink-6hzr.onrender.com",
+      "NEXT_PUBLIC_API_URL": "https://safepluglink-6hzr.onrender.com"
     }
   }
 }
