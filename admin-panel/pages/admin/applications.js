@@ -774,7 +774,7 @@ export default function Applications() {
                       <div className="mt-2">
                         <img 
                           src={selectedApp.photo ? 
-                            `${process.env.NEXT_PUBLIC_API_URL || 'https://jhhhhhhggre.onrender.com'}/api/photo/${selectedApp.photo}` : 
+                            `${process.env.NEXT_PUBLIC_API_URL || 'https://safepluglink-6hzr.onrender.com'}/api/photo/${selectedApp.photo}` : 
                             selectedApp.photoUrl
                           } 
                           alt="Photo du plug" 
@@ -801,7 +801,7 @@ export default function Applications() {
                               ID: {selectedApp.photo}
                               <br />
                               <a 
-                                href={`${process.env.NEXT_PUBLIC_API_URL || 'https://jhhhhhhggre.onrender.com'}/api/photo/${selectedApp.photo}`}
+                                href={`${process.env.NEXT_PUBLIC_API_URL || 'https://safepluglink-6hzr.onrender.com'}/api/photo/${selectedApp.photo}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="text-blue-600 hover:text-blue-800"

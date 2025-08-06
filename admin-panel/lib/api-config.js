@@ -1,7 +1,7 @@
 // Configuration centralisée des APIs
 export const API_CONFIG = {
   // URL principale du bot
-  PRIMARY_URL: 'https://jhhhhhhggre.onrender.com',
+  PRIMARY_URL: 'https://safepluglink-6hzr.onrender.com',
   
   // URLs de fallback
   FALLBACK_URLS: [

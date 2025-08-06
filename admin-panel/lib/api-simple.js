@@ -320,7 +320,7 @@ export const simpleApi = {
     }
     
     try {
-      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_BOT_URL || 'https://jhhhhhhggre.onrender.com'
+      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_BOT_URL || 'https://safepluglink-6hzr.onrender.com'
       
       // Essayer direct d'abord
       const controller = new AbortController()
@@ -396,7 +396,7 @@ export const simpleApi = {
   // Fonction pour vider le cache du bot automatiquement
   clearBotCache: async () => {
     try {
-      const BOT_URL = process.env.NEXT_PUBLIC_BOT_URL || 'https://jhhhhhhggre.onrender.com';
+      const BOT_URL = process.env.NEXT_PUBLIC_BOT_URL || 'https://safepluglink-6hzr.onrender.com';
       const response = await fetch(`${BOT_URL}/api/clear-all-caches`, {
         method: 'POST',
         headers: {
