@@ -197,7 +197,7 @@ export default function ShopPlugDetail() {
 
   const fetchConfig = async () => {
     try {
-      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://jhhhhhhggre.onrender.com'
+      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://safepluglink-6hzr.onrender.com'
       const timestamp = new Date().getTime()
       
       let data

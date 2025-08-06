@@ -237,6 +237,6 @@ export default function MaintenancePage() {
           </div>
         )}
       </div>
-    </div>
+    </Layout>
   )
 }

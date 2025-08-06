@@ -4363,7 +4363,7 @@ const start = async () => {
       require('./keep-alive');
       
       // Construire l'URL de webhook avec fallback
-      const baseUrl = process.env.WEBHOOK_URL || process.env.RENDER_URL || 'https://jhhhhhhggre.onrender.com';
+      const baseUrl = process.env.WEBHOOK_URL || process.env.RENDER_URL || 'https://safepluglink-6hzr.onrender.com';
       // Nettoyer l'URL de base en supprimant le slash final s'il existe
       const cleanBaseUrl = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
       const webhookUrl = `${cleanBaseUrl}/webhook/${process.env.TELEGRAM_BOT_TOKEN}`;
