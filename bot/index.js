@@ -4364,10 +4364,23 @@ const start = async () => {
       
       // Construire l'URL de webhook avec fallback
       const baseUrl = process.env.WEBHOOK_URL || process.env.RENDER_URL || 'https://jhhhhhhggre.onrender.com';
-      const webhookUrl = `${baseUrl}/webhook/${process.env.TELEGRAM_BOT_TOKEN}`;
+      // Nettoyer l'URL de base en supprimant le slash final s'il existe
+      const cleanBaseUrl = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
+      const webhookUrl = `${cleanBaseUrl}/webhook/${process.env.TELEGRAM_BOT_TOKEN}`;
       
-      // Route pour le webhook
-      app.use(bot.webhookCallback(`/webhook/${process.env.TELEGRAM_BOT_TOKEN}`));
+      // Route pour le webhook avec logging
+      app.post(`/webhook/${process.env.TELEGRAM_BOT_TOKEN}`, async (req, res, next) => {
+        console.log('🔔 Webhook reçu:', {
+          updateType: req.body.update_id ? 'Update' : 'Unknown',
+          hasMessage: !!req.body.message,
+          hasCallback: !!req.body.callback_query,
+          messageText: req.body.message?.text,
+          callbackData: req.body.callback_query?.data
+        });
+        
+        // Passer au handler du bot
+        return bot.webhookCallback(`/webhook/${process.env.TELEGRAM_BOT_TOKEN}`)(req, res, next);
+      });
       
       // Définir le webhook avec retry et gestion d'erreur
       try {
