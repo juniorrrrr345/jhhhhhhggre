@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Liens Telegram</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .link-group {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+        }
+        .link-group h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        .link-display {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            word-break: break-all;
+        }
+        button {
+            background: #0088cc;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0077bb;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔗 Test des Liens Telegram</h1>
+        
+        <div id="status" class="status info">
+            Chargement des liens actuels...
+        </div>
+        
+        <div class="link-group">
+            <h3>📝 Page d'inscription</h3>
+            <div class="link-display" id="inscription-link">
+                Chargement...
+            </div>
+            <button onclick="testLink('inscription')">Tester le lien</button>
+            <button onclick="updateLink('inscription')">Modifier le lien</button>
+        </div>
+        
+        <div class="link-group">
+            <h3>🛠️ Page de services</h3>
+            <div class="link-display" id="services-link">
+                Chargement...
+            </div>
+            <button onclick="testLink('services')">Tester le lien</button>
+            <button onclick="updateLink('services')">Modifier le lien</button>
+        </div>
+        
+        <div class="link-group">
+            <h3>🔄 Actions</h3>
+            <button onclick="loadLinks()">Recharger les liens</button>
+            <button onclick="clearLinks()">Effacer le cache local</button>
+            <button onclick="testSave()">Test de sauvegarde</button>
+        </div>
+        
+        <div class="link-group">
+            <h3>📊 Informations de débogage</h3>
+            <pre id="debug-info" style="background: #f5f5f5; padding: 10px; border-radius: 5px; overflow-x: auto;">
+            </pre>
+        </div>
+    </div>
+
+    <script>
+        let currentLinks = {
+            inscriptionTelegramLink: '',
+            servicesTelegramLink: ''
+        };
+
+        function updateStatus(message, type = 'info') {
+            const status = document.getElementById('status');
+            status.className = `status ${type}`;
+            status.textContent = message;
+        }
+
+        function loadLinks() {
+            try {
+                // Charger depuis localStorage
+                const savedLinks = localStorage.getItem('telegramLinks');
+                if (savedLinks) {
+                    currentLinks = JSON.parse(savedLinks);
+                    updateStatus('✅ Liens chargés depuis le cache local', 'success');
+                } else {
+                    // Valeurs par défaut
+                    currentLinks = {
+                        inscriptionTelegramLink: 'https://t.me/findyourplugsav',
+                        servicesTelegramLink: 'https://t.me/findyourplugsav'
+                    };
+                    updateStatus('⚠️ Aucun lien sauvegardé, utilisation des valeurs par défaut', 'error');
+                }
+
+                // Afficher les liens
+                document.getElementById('inscription-link').textContent = currentLinks.inscriptionTelegramLink;
+                document.getElementById('services-link').textContent = currentLinks.servicesTelegramLink;
+
+                // Mettre à jour les infos de débogage
+                updateDebugInfo();
+            } catch (error) {
+                updateStatus(`❌ Erreur: ${error.message}`, 'error');
+            }
+        }
+
+        function testLink(type) {
+            const link = type === 'inscription' ? currentLinks.inscriptionTelegramLink : currentLinks.servicesTelegramLink;
+            if (link) {
+                window.open(link, '_blank');
+                updateStatus(`🔗 Ouverture du lien ${type}`, 'success');
+            } else {
+                updateStatus(`❌ Aucun lien défini pour ${type}`, 'error');
+            }
+        }
+
+        function updateLink(type) {
+            const currentLink = type === 'inscription' ? currentLinks.inscriptionTelegramLink : currentLinks.servicesTelegramLink;
+            const newLink = prompt(`Nouveau lien Telegram pour ${type}:`, currentLink);
+            
+            if (newLink && newLink !== currentLink) {
+                if (type === 'inscription') {
+                    currentLinks.inscriptionTelegramLink = newLink;
+                } else {
+                    currentLinks.servicesTelegramLink = newLink;
+                }
+                
+                // Sauvegarder dans localStorage
+                localStorage.setItem('telegramLinks', JSON.stringify(currentLinks));
+                
+                // Recharger l'affichage
+                loadLinks();
+                updateStatus(`✅ Lien ${type} mis à jour avec succès`, 'success');
+            }
+        }
+
+        function clearLinks() {
+            if (confirm('Êtes-vous sûr de vouloir effacer tous les liens sauvegardés ?')) {
+                localStorage.removeItem('telegramLinks');
+                loadLinks();
+                updateStatus('🗑️ Cache local effacé', 'info');
+            }
+        }
+
+        function testSave() {
+            try {
+                // Simuler une sauvegarde
+                const testLinks = {
+                    inscriptionTelegramLink: 'https://t.me/test_inscription_' + Date.now(),
+                    servicesTelegramLink: 'https://t.me/test_services_' + Date.now()
+                };
+                
+                localStorage.setItem('telegramLinks', JSON.stringify(testLinks));
+                updateStatus('✅ Test de sauvegarde réussi', 'success');
+                
+                // Recharger pour voir les changements
+                setTimeout(() => {
+                    loadLinks();
+                }, 1000);
+            } catch (error) {
+                updateStatus(`❌ Erreur lors du test: ${error.message}`, 'error');
+            }
+        }
+
+        function updateDebugInfo() {
+            const debugInfo = {
+                localStorage: {
+                    telegramLinks: localStorage.getItem('telegramLinks'),
+                    adminToken: localStorage.getItem('adminToken') ? '✅ Présent' : '❌ Absent'
+                },
+                currentLinks: currentLinks,
+                timestamp: new Date().toLocaleString('fr-FR')
+            };
+            
+            document.getElementById('debug-info').textContent = JSON.stringify(debugInfo, null, 2);
+        }
+
+        // Charger les liens au démarrage
+        loadLinks();
+
+        // Écouter les changements de localStorage (synchronisation entre onglets)
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'telegramLinks') {
+                console.log('Changement détecté dans localStorage');
+                loadLinks();
+                updateStatus('🔄 Liens mis à jour depuis un autre onglet', 'info');
+            }
+        });
+    </script>
+</body>
+</html>

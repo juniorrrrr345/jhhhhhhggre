@@ -4,6 +4,7 @@ import Layout from '../../components/Layout'
 import { simpleApi } from '../../lib/api-simple'
 import toast from 'react-hot-toast'
 import { useTranslation } from '../../components/LanguageSelector'
+import { telegramLinksSync } from '../../lib/telegram-links-sync'
 
 export default function TelegramLinks() {
   const [loading, setLoading] = useState(true)
@@ -59,50 +60,63 @@ export default function TelegramLinks() {
     }
   }
 
-  const handleSave = async () => {
+  const saveConfig = async () => {
     setSaving(true)
-    
     try {
       console.log('💾 Saving telegram links config...')
       
-      const token = localStorage.getItem('adminToken')
-      
-      // D'abord récupérer la config actuelle
-      const currentConfig = await simpleApi.getConfig(token)
-      
-      // Mettre à jour avec les nouveaux liens Telegram
-      const updatedConfig = {
-        ...currentConfig,
-        boutique: {
-          ...currentConfig.boutique,
-          inscriptionTelegramLink: config.inscriptionTelegramLink,
-          servicesTelegramLink: config.servicesTelegramLink
-        }
-      }
-      
-      // Sauvegarder la configuration complète
-      await simpleApi.updateConfig(token, updatedConfig)
-      
-      // SYNCHRONISATION IMMÉDIATE MINI APP
-              await simpleApi.syncImmediateMiniApp('telegram_links_updated')
-      
-      // Sauvegarder aussi en localStorage pour les pages publiques
+      // D'ABORD sauvegarder en localStorage pour assurer la persistance
       localStorage.setItem('telegramLinks', JSON.stringify({
         inscriptionTelegramLink: config.inscriptionTelegramLink,
         servicesTelegramLink: config.servicesTelegramLink
       }))
       
-      toast.success('Configuration sauvegardée ! 🔄 Mini app synchronisée')
-      console.log('✅ Telegram links config saved')
+      // Forcer la synchronisation avec les pages publiques
+      telegramLinksSync.updateLinks({
+        inscriptionTelegramLink: config.inscriptionTelegramLink,
+        servicesTelegramLink: config.servicesTelegramLink
+      })
+      
+      console.log('✅ Liens sauvegardés localement')
+      
+      // ENSUITE essayer de synchroniser avec le bot (sans bloquer si erreur)
+      try {
+        const token = localStorage.getItem('adminToken')
+        
+        // Récupérer la config actuelle
+        const currentConfig = await simpleApi.getConfig(token)
+        
+        // Mettre à jour avec les nouveaux liens Telegram
+        const updatedConfig = {
+          ...currentConfig,
+          boutique: {
+            ...currentConfig.boutique,
+            inscriptionTelegramLink: config.inscriptionTelegramLink,
+            servicesTelegramLink: config.servicesTelegramLink
+          },
+          telegramLinks: {
+            inscriptionTelegramLink: config.inscriptionTelegramLink,
+            servicesTelegramLink: config.servicesTelegramLink
+          }
+        }
+        
+        // Sauvegarder la configuration sur le bot
+        await simpleApi.updateConfig(token, updatedConfig)
+        
+        // SYNCHRONISATION IMMÉDIATE MINI APP
+        await simpleApi.syncImmediateMiniApp('telegram_links_updated')
+        
+        toast.success('✅ Configuration sauvegardée et synchronisée avec le bot!')
+        console.log('✅ Telegram links synced with bot')
+      } catch (botError) {
+        console.warn('⚠️ Impossible de synchroniser avec le bot:', botError.message)
+        // Mais on continue car la sauvegarde locale a réussi
+        toast.success('✅ Liens sauvegardés localement (synchronisation bot en attente)')
+      }
+      
     } catch (error) {
       console.error('💥 Save error:', error)
-      
-      // Gestion d'erreur plus détaillée
-      if (error.message.includes('500') || error.message.includes('429')) {
-        toast.error('Serveur temporairement indisponible. Réessayez dans quelques instants.')
-      } else {
-        toast.error(`Erreur lors de la sauvegarde: ${error.message}`)
-      }
+      toast.error(`Erreur lors de la sauvegarde: ${error.message}`)
     } finally {
       setSaving(false)
     }
@@ -197,7 +211,7 @@ export default function TelegramLinks() {
             {/* Boutons d'action */}
             <div className="flex gap-4 pt-4">
               <button
-                onClick={handleSave}
+                onClick={saveConfig}
                 disabled={saving}
                 className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed"
               >
