@@ -2495,7 +2495,7 @@ const submitApplication = async (ctx) => {
     
     // Envoyer notification à l'admin (privé)
     const adminIds = [
-      process.env.ADMIN_TELEGRAM_ID || '8243543750', // Admin principal
+      process.env.ADMIN_TELEGRAM_ID || '8211160138', // Admin principal
       // Ajoutez d'autres IDs ici si besoin :
       // '1234567890', // Autre admin
       // '9876543210', // Admin secondaire
