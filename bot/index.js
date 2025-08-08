@@ -2409,12 +2409,12 @@ app.get('/api/config', authenticateAdmin, async (req, res) => {
             topPlugs: { text: 'VOTER POUR VOTRE PLUG 🗳️', enabled: true },
                   contact: { 
         text: '📞 Contact', 
-        content: 'Contactez-nous pour plus d\'informations.\n@findyourplugsav', 
+        content: 'Contactez-nous pour plus d\'informations.\n@Findyourplugadmin', 
         enabled: true 
       },
       info: { 
         text: 'ℹ️ Info', 
-        content: 'Nous listons les plugs du monde entier par Pays / Ville découvrez notre mini-app 🌍🔌\n\nPour toute demande spécifique contacter nous @findyourplugsav 📲', 
+        content: 'Nous listons les plugs du monde entier par Pays / Ville découvrez notre mini-app 🌍🔌\n\nPour toute demande spécifique contacter nous @Findyourplugadmin 📲', 
         enabled: true 
       }
           }
@@ -4428,18 +4428,18 @@ const start = async () => {
           // Définir les traductions par défaut basées sur les messages français
           const defaultTranslations = {
             contact: {
-              fr: "Contactez-nous pour plus d'informations.\n@findyourplugsav",
-              en: "Contact us for more information.\n@findyourplugsav",
-              it: "Contattaci per maggiori informazioni.\n@findyourplugsav",
-              es: "Contáctanos para más información.\n@findyourplugsav",
-              de: "Kontaktieren Sie uns für weitere Informationen.\n@findyourplugsav"
+              fr: "Contactez-nous pour plus d'informations.\n@Findyourplugadmin",
+              en: "Contact us for more information.\n@Findyourplugadmin",
+              it: "Contattaci per maggiori informazioni.\n@Findyourplugadmin",
+              es: "Contáctanos para más información.\n@Findyourplugadmin",
+              de: "Kontaktieren Sie uns für weitere Informationen.\n@Findyourplugadmin"
             },
             info: {
-              fr: "Nous listons les plugs du monde entier par Pays / Ville découvrez notre mini-app 🌍🔌\n\nPour toute demande spécifique contacter nous @findyourplugsav 📲",
-              en: "We list plugs worldwide by Country / City discover our mini-app 🌍🔌\n\nFor any specific request contact us @findyourplugsav 📲",
-              it: "Elenchiamo plug in tutto il mondo per Paese / Città scopri la nostra mini-app 🌍🔌\n\nPer qualsiasi richiesta specifica contattaci @findyourplugsav 📲",
-              es: "Listamos plugs en todo el mundo por País / Ciudad descubre nuestra mini-app 🌍🔌\n\nPara cualquier solicitud específica contáctanos @findyourplugsav 📲",
-              de: "Wir listen Plugs weltweit nach Land / Stadt auf, entdecken Sie unsere Mini-App 🌍🔌\n\nFür spezielle Anfragen kontaktieren Sie uns @findyourplugsav 📲"
+              fr: "Nous listons les plugs du monde entier par Pays / Ville découvrez notre mini-app 🌍🔌\n\nPour toute demande spécifique contacter nous @Findyourplugadmin 📲",
+              en: "We list plugs worldwide by Country / City discover our mini-app 🌍🔌\n\nFor any specific request contact us @Findyourplugadmin 📲",
+              it: "Elenchiamo plug in tutto il mondo per Paese / Città scopri la nostra mini-app 🌍🔌\n\nPer qualsiasi richiesta specifica contattaci @Findyourplugadmin 📲",
+              es: "Listamos plugs en todo el mundo por País / Ciudad descubre nuestra mini-app 🌍🔌\n\nPara cualquier solicitud específica contáctanos @Findyourplugadmin 📲",
+              de: "Wir listen Plugs weltweit nach Land / Stadt auf, entdecken Sie unsere Mini-App 🌍🔌\n\nFür spezielle Anfragen kontaktieren Sie uns @Findyourplugadmin 📲"
             }
           };
           
@@ -5183,7 +5183,7 @@ app.post('/api/force-update-contact-info-translations', async (req, res) => {
       config.buttons.contact = {};
     }
     config.buttons.contact.text = '📞 Contact';
-    config.buttons.contact.content = 'Contactez-nous pour plus d\'informations.\n\n@findyourplugsav';
+    config.buttons.contact.content = 'Contactez-nous pour plus d\'informations.\n\n@Findyourplugadmin';
     config.buttons.contact.enabled = true;
     
     // Info - Texte français mis à jour  
@@ -5191,7 +5191,7 @@ app.post('/api/force-update-contact-info-translations', async (req, res) => {
       config.buttons.info = {};
     }
     config.buttons.info.text = 'ℹ️ Info';
-    config.buttons.info.content = 'Nous listons les plugs du monde entier par Pays / Ville découvrez notre mini-app 🌍🔌\n\nPour toute demande spécifique contacter nous @findyourplugsav 📲';
+    config.buttons.info.content = 'Nous listons les plugs du monde entier par Pays / Ville découvrez notre mini-app 🌍🔌\n\nPour toute demande spécifique contacter nous @Findyourplugadmin 📲';
     config.buttons.info.enabled = true;
     
     await config.save();
@@ -6017,8 +6017,8 @@ app.post('/api/force-contact-info-update', async (req, res) => {
     
     // Messages à forcer
     const MESSAGES = {
-      contact: 'Contactez-nous pour plus d\'informations.\n@findyourplugsav',
-      info: 'Nous listons les plugs du monde entier par Pays / Ville découvrez notre mini-app 🌍🔌\n\nPour toute demande spécifique contacter nous @findyourplugsav 📲'
+      contact: 'Contactez-nous pour plus d\'informations.\n@Findyourplugadmin',
+      info: 'Nous listons les plugs du monde entier par Pays / Ville découvrez notre mini-app 🌍🔌\n\nPour toute demande spécifique contacter nous @Findyourplugadmin 📲'
     };
     
     // Forcer la mise à jour
