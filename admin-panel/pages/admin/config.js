@@ -138,45 +138,52 @@ export default function BotConfiguration() {
       console.log('💾 Sauvegarde configuration bot...')
       console.log('📝 Données à sauvegarder:', { welcome: config.welcome, buttons: config.buttons })
       
-      const token = localStorage.getItem('adminToken') || 'JuniorAdmon123'
-      
-      const configData = {
+      // Sauvegarder d'abord en localStorage pour la persistance
+      const configToSave = {
         welcome: config.welcome,
         buttons: config.buttons,
-        languages: config.languages
+        languages: config.languages,
+        lastUpdate: new Date().toISOString()
       }
       
-      const result = await simpleApi.updateConfig(token, configData)
+      localStorage.setItem('botConfig', JSON.stringify(configToSave))
+      console.log('✅ Configuration sauvegardée localement')
       
-      // SYNCHRONISATION IMMÉDIATE MINI APP
-              await simpleApi.syncImmediateMiniApp('config_updated')
-      
-      // Synchroniser avec le bot
-      const robustSync = getRobustSync()
-      if (robustSync) {
-        robustSync.syncConfigUpdate(configData)
+      // Ensuite essayer de synchroniser avec le bot
+      try {
+        const token = localStorage.getItem('adminToken') || 'JuniorAdmon123'
+        
+        const result = await simpleApi.updateConfig(token, configToSave)
+        
+        if (result.success) {
+          // SYNCHRONISATION IMMÉDIATE MINI APP
+          await simpleApi.syncImmediateMiniApp('config_updated')
+          
+          // Synchroniser avec le bot
+          const robustSync = getRobustSync()
+          await robustSync.syncConfigToBot({
+            config: configToSave,
+            updateType: 'full'
+          })
+          
+          toast.success('✅ Configuration sauvegardée et synchronisée!')
+          console.log('✅ Config synchronisée avec le bot')
+        }
+      } catch (botError) {
+        console.warn('⚠️ Impossible de synchroniser avec le bot:', botError)
+        // Mais on continue car la sauvegarde locale a réussi
+        toast.success('✅ Configuration sauvegardée localement (synchronisation bot en attente)')
       }
       
-      // Configuration sauvegardée et synchronisée
-      toast.success('✅ Configuration sauvegardée ! 🔄 Mini app synchronisée')
-      console.log('✅ Configuration sauvegardée:', result)
+      // Rafraîchir l'affichage
+      setTimeout(() => {
+        loadConfig()
+      }, 500)
       
     } catch (error) {
-      console.error('❌ Erreur sauvegarde:', error)
-      console.error('❌ Stack trace:', error.stack)
-      
-      if (error.message.includes('401')) {
-        toast.error('🔐 Session expirée. Veuillez vous reconnecter.')
-        router.push('/')
-      } else if (error.message.includes('500') || error.message.includes('Internal Server Error')) {
-        toast.error('🚫 Serveur bot temporairement indisponible. Configuration non sauvegardée.')
-      } else if (error.message.includes('Timeout')) {
-        toast.error('⏱️ Timeout: Serveur bot trop lent. Configuration non sauvegardée.')
-      } else {
-        toast.error('❌ Erreur lors de la sauvegarde: ' + error.message)
-      }
+      console.error('💥 Erreur sauvegarde:', error)
+      toast.error(`Erreur: ${error.message}`)
     } finally {
-      console.log('🔄 Fin sauvegarde - setSaving(false)')
       setSaving(false)
     }
   }
