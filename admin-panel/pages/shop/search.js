@@ -310,24 +310,25 @@ export default function ShopSearch() {
   }
 
   const filterPlugs = () => {
-    console.log('🔍 Filtrage avec:', { 
-      search, 
-      countryFilter, 
-      serviceFilter, 
-      departmentFilter, 
-      vipFilter, 
-      totalPlugs: allPlugs.length,
-      currentPage 
-    })
-    
-    let filtered = allPlugs.filter(plug => {
+    try {
+      console.log('🔍 Filtrage avec:', { 
+        search, 
+        countryFilter, 
+        serviceFilter, 
+        departmentFilter, 
+        vipFilter, 
+        totalPlugs: allPlugs.length,
+        currentPage 
+      })
+      
+      let filtered = allPlugs.filter(plug => {
       const matchesSearch = search === '' || 
-        plug.name.toLowerCase().includes(search.toLowerCase()) ||
-        plug.description.toLowerCase().includes(search.toLowerCase())
+        (plug.name && plug.name.toLowerCase().includes(search.toLowerCase())) ||
+        (plug.description && plug.description.toLowerCase().includes(search.toLowerCase()))
       
       const matchesCountry = countryFilter === '' || 
-        (plug.countries && plug.countries.some(country => 
-          country.toLowerCase() === countryFilter.toLowerCase()
+        (plug.countries && Array.isArray(plug.countries) && plug.countries.some(country => 
+          country && typeof country === 'string' && country.toLowerCase() === countryFilter.toLowerCase()
         ))
       
       const matchesService = serviceFilter === '' || 
@@ -406,6 +407,12 @@ export default function ShopSearch() {
     const newTotalPages = Math.ceil(filtered.length / itemsPerPage)
     if (currentPage > newTotalPages) {
       setCurrentPage(1)
+    }
+    } catch (error) {
+      console.error('❌ Erreur lors du filtrage:', error)
+      toast.error('Erreur lors de la recherche')
+      // En cas d'erreur, afficher toutes les boutiques
+      setPlugs(allPlugs)
     }
   }
 
