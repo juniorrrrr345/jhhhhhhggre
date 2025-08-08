@@ -1,7 +1,7 @@
 const axios = require('axios');
 
 // Configuration
-const BOT_URL = process.env.BOT_URL || 'https://jhhhhhhggre.onrender.com';
+const BOT_URL = process.env.BOT_URL || 'https://safepluglink-6hzr.onrender.com';
 
 // Traductions de vos messages personnalisés
 const DEFAULT_CUSTOM_TRANSLATIONS = {

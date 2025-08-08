@@ -6,7 +6,7 @@ async function testParrainageSystem() {
   try {
     // Test 1: Vérifier les boutiques existantes
     console.log('📡 Test 1: Récupération boutiques avec données parrainage...');
-    const boutiqueResponse = await fetch('https://jhhhhhhggre.onrender.com/api/plugs?page=1&limit=5', {
+    const boutiqueResponse = await fetch('https://safepluglink-6hzr.onrender.com/api/plugs?page=1&limit=5', {
       headers: {
         'Authorization': 'Bearer ADMIN_TOKEN_F3F3FC574B8A95875449DBD68128C434CE3D7FB3F054567B0D3EAD3D9F1B01B1'
       }
@@ -28,7 +28,7 @@ async function testParrainageSystem() {
       
       // Test 2: Vérifier les applications approuvées
       console.log('\n📋 Test 2: Vérification applications approuvées...');
-      const appResponse = await fetch('https://jhhhhhhggre.onrender.com/api/applications', {
+      const appResponse = await fetch('https://safepluglink-6hzr.onrender.com/api/applications', {
         headers: {
           'Authorization': 'Bearer ADMIN_TOKEN_F3F3FC574B8A95875449DBD68128C434CE3D7FB3F054567B0D3EAD3D9F1B01B1'
         }

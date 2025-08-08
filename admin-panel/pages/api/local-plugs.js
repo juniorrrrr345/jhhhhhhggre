@@ -2,7 +2,7 @@
 export default async function handler(req, res) {
   try {
     // Utiliser l'URL du bot depuis les variables d'environnement
-    const botUrl = process.env.NEXT_PUBLIC_BOT_URL || 'https://jhhhhhhggre.onrender.com'
+    const botUrl = process.env.NEXT_PUBLIC_BOT_URL || 'https://safepluglink-6hzr.onrender.com'
     const adminToken = 'JuniorAdmon123'
     
     console.log('🔄 Proxy vers le bot:', botUrl)

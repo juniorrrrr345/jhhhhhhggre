@@ -17,12 +17,12 @@
 
 **Variables d'environnement Vercel :**
 ```bash
-NEXT_PUBLIC_API_URL=https://jhhhhhhggre.onrender.com
+NEXT_PUBLIC_API_URL=https://safepluglink-6hzr.onrender.com
 NODE_ENV=production
 ```
 
 ### **2. Le bot Render reste inchangé**
-- ✅ URL: `https://jhhhhhhggre.onrender.com`
+- ✅ URL: `https://safepluglink-6hzr.onrender.com`
 - ✅ Token: `JuniorAdmon123` 
 - ✅ Aucune modification nécessaire
 

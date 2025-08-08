@@ -17,7 +17,7 @@ class PostalCodeServiceVercel {
       this.isLoading = true;
       console.log('🔍 Chargement codes postaux depuis API bot...');
       
-      const response = await fetch('https://jhhhhhhggre.onrender.com/api/public/plugs?limit=50', {
+      const response = await fetch('https://safepluglink-6hzr.onrender.com/api/public/plugs?limit=50', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json'

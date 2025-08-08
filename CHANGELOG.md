@@ -84,7 +84,7 @@ admin-panel/
 ### 🔐 **Authentification**
 
 - **Mot de passe admin** : `JuniorAdmon123` (inchangé)
-- **API URL** : `https://jhhhhhhggre.onrender.com` (inchangé)
+- **API URL** : `https://safepluglink-6hzr.onrender.com` (inchangé)
 
 ---
 

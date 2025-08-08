@@ -4,7 +4,7 @@ async function testAddShop() {
   console.log('🔍 Test d\'ajout de boutique - Débogage complet\n');
   
   const VERCEL_URL = 'https://sfeplugslink.vercel.app';
-  const API_URL = 'https://jhhhhhhggre.onrender.com';
+  const API_URL = 'https://safepluglink-6hzr.onrender.com';
   const TOKEN = 'JuniorAdmon123';
   
   // 1. Tester le CORS proxy

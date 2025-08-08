@@ -26,7 +26,7 @@ vercel --prod
 Configurez ces variables sur Vercel :
 
 ```
-API_BASE_URL=https://jhhhhhhggre.onrender.com
+API_BASE_URL=https://safepluglink-6hzr.onrender.com
 ADMIN_PASSWORD=JuniorAdmon123
 ```
 

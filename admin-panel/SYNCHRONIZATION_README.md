@@ -71,7 +71,7 @@ Pour vérifier la synchronisation :
 curl http://localhost:3020/api/public/plugs
 
 # Render production  
-curl https://jhhhhhhggre.onrender.com/api/public/plugs
+curl https://safepluglink-6hzr.onrender.com/api/public/plugs
 
 # Vercel (après déploiement)
 curl https://[nouvelle-url].vercel.app/api/cors-proxy \

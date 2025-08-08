@@ -41,7 +41,7 @@ export default function Messages() {
 
   const fetchBotUsers = async (token) => {
     try {
-      const response = await fetch('https://jhhhhhhggre.onrender.com/api/users/stats', {
+      const response = await fetch('https://safepluglink-6hzr.onrender.com/api/users/stats', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'

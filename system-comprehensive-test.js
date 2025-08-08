@@ -10,7 +10,7 @@ class SystemTester {
   constructor() {
     this.botUrl = 'http://localhost:3031';
     this.adminUrl = 'http://localhost:3000';
-    this.renderUrl = 'https://jhhhhhhggre.onrender.com';
+    this.renderUrl = 'https://safepluglink-6hzr.onrender.com';
     this.results = {
       bot: {},
       admin: {},

@@ -33,7 +33,7 @@ async function createTestApplication() {
       },
       // Simuler un file_id Telegram réel (format typique)
       photo: 'AgACAgIAAxkBAAIBY2ZxcGVkZXJfdGVzdF9waG90b19pZAACqsMxGwABOvFJAAEwNzQ1Nzk4OTAy',
-      photoUrl: `${process.env.BOT_URL || 'https://jhhhhhhggre.onrender.com'}/api/photo/AgACAgIAAxkBAAIBY2ZxcGVkZXJfdGVzdF9waG90b19pZAACqsMxGwABOvFJAAEwNzQ1Nzk4OTAy`,
+      photoUrl: `${process.env.BOT_URL || 'https://safepluglink-6hzr.onrender.com'}/api/photo/AgACAgIAAxkBAAIBY2ZxcGVkZXJfdGVzdF9waG90b19pZAACqsMxGwABOvFJAAEwNzQ1Nzk4OTAy`,
       status: 'pending'
     });
 

@@ -6,7 +6,7 @@ export default function LanguageSync() {
     // Fonction pour récupérer la langue depuis l'API du bot
     const syncLanguageFromBot = async () => {
       try {
-        const response = await fetch('https://jhhhhhhggre.onrender.com/api/public/config')
+        const response = await fetch('https://safepluglink-6hzr.onrender.com/api/public/config')
         if (response.ok) {
           const data = await response.json()
           const botLanguage = data?.languages?.currentLanguage

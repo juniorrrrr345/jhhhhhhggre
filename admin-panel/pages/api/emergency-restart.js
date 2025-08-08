@@ -21,7 +21,7 @@ export default async function handler(req, res) {
     const possibleUrls = [
           process.env.API_BASE_URL,
     process.env.NEXT_PUBLIC_API_URL,
-      'https://jhhhhhhggre.onrender.com',
+      'https://safepluglink-6hzr.onrender.com',
       'https://bot-telegram-render.onrender.com'
     ].filter(Boolean)
 

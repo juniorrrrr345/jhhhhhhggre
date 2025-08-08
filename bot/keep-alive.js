@@ -1,7 +1,7 @@
 // Script pour maintenir l'API Render éveillée
 const axios = require('axios');
 
-const API_URL = process.env.RENDER_URL || 'https://jhhhhhhggre.onrender.com';
+const API_URL = process.env.RENDER_URL || 'https://safepluglink-6hzr.onrender.com';
 
 async function keepAlive() {
   try {

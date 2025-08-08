@@ -92,7 +92,7 @@
 
 ## 🔐 **AUTHENTIFICATION SIMPLIFIÉE**
 
-- **URL Bot:** `https://jhhhhhhggre.onrender.com`
+- **URL Bot:** `https://safepluglink-6hzr.onrender.com`
 - **Mot de passe:** `JuniorAdmon123`
 - **Token API:** Même mot de passe
 - **Pas de nouvelles variables** nécessaires
@@ -101,7 +101,7 @@
 
 ### **1. Variables d'environnement:**
 ```bash
-NEXT_PUBLIC_API_URL=https://jhhhhhhggre.onrender.com
+NEXT_PUBLIC_API_URL=https://safepluglink-6hzr.onrender.com
 NODE_ENV=production
 ```
 

@@ -26,15 +26,15 @@ export default async function handler(req, res) {
     }
 
     console.log(`📊 Génération stats utilisateurs pour période: ${timeRange}`)
-    console.log(`🔗 URL du bot: ${process.env.NEXT_PUBLIC_BOT_API_URL || 'https://jhhhhhhggre.onrender.com'}`)
+    console.log(`🔗 URL du bot: ${process.env.NEXT_PUBLIC_BOT_API_URL || 'https://safepluglink-6hzr.onrender.com'}`)
 
     // Utiliser le proxy CORS pour récupérer les données depuis le bot
-    const botUrl = `${process.env.NEXT_PUBLIC_BOT_API_URL || 'https://jhhhhhhggre.onrender.com'}/api/admin/user-analytics`
+    const botUrl = `${process.env.NEXT_PUBLIC_BOT_API_URL || 'https://safepluglink-6hzr.onrender.com'}/api/admin/user-analytics`
     console.log(`📡 Appel vers: ${botUrl}`)
     
     // D'abord réveiller le bot avec un ping si nécessaire
     try {
-      const wakeUpUrl = `${process.env.NEXT_PUBLIC_BOT_API_URL || 'https://jhhhhhhggre.onrender.com'}/`
+      const wakeUpUrl = `${process.env.NEXT_PUBLIC_BOT_API_URL || 'https://safepluglink-6hzr.onrender.com'}/`
       console.log(`🔄 Réveil du bot via: ${wakeUpUrl}`)
       await fetch(wakeUpUrl, { method: 'HEAD' })
       console.log(`✅ Bot réveillé`)

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 echo "🚀 Déploiement Vercel avec configuration Render"
-echo "📍 URL: https://jhhhhhhggre.onrender.com"
+echo "📍 URL: https://safepluglink-6hzr.onrender.com"
 
 # Build du projet
 echo "📦 Build du projet..."

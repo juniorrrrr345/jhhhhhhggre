@@ -18,7 +18,7 @@ export default async function handler(req, res) {
     console.log('🔄 Début synchronisation serveur principal -> API locale');
     
     // 1. Récupérer les données du serveur principal
-    const apiUrl = process.env.BOT_API_URL || 'https://jhhhhhhggre.onrender.com';
+    const apiUrl = process.env.BOT_API_URL || 'https://safepluglink-6hzr.onrender.com';
     
     let mainServerData = null;
     try {

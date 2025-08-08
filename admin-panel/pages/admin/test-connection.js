@@ -12,7 +12,7 @@ export default function TestConnection() {
       name: 'Bot Health Check',
       key: 'health',
       action: async () => {
-        const response = await fetch('https://jhhhhhhggre.onrender.com/health')
+        const response = await fetch('https://safepluglink-6hzr.onrender.com/health')
         if (!response.ok) throw new Error(`HTTP ${response.status}`)
         return await response.text()
       }
@@ -21,7 +21,7 @@ export default function TestConnection() {
       name: 'API Config (Direct)',
       key: 'config-direct', 
       action: async () => {
-        const response = await fetch('https://jhhhhhhggre.onrender.com/api/config', {
+        const response = await fetch('https://safepluglink-6hzr.onrender.com/api/config', {
           headers: { 'Authorization': 'Bearer JuniorAdmon123' }
         })
         if (!response.ok) throw new Error(`HTTP ${response.status}`)
@@ -41,7 +41,7 @@ export default function TestConnection() {
       name: 'Public Plugs (Direct)',
       key: 'plugs-direct',
       action: async () => {
-        const response = await fetch('https://jhhhhhhggre.onrender.com/api/public/plugs?limit=2')
+        const response = await fetch('https://safepluglink-6hzr.onrender.com/api/public/plugs?limit=2')
         if (!response.ok) throw new Error(`HTTP ${response.status}`)
         const data = await response.json()
         return `✅ ${data.plugs?.length || 0} boutiques trouvées`

@@ -34,7 +34,7 @@ mongodb+srv://teste:Junior@junior.jiy8uam.mongodb.net/?retryWrites=true&w=majori
 
 Après le redémarrage :
 1. Testez le bot sur Telegram avec `/start`
-2. Vérifiez que le panel admin fonctionne : https://jhhhhhhggre.onrender.com/admin
+2. Vérifiez que le panel admin fonctionne : https://safepluglink-6hzr.onrender.com/admin
 3. Connectez-vous avec le mot de passe : `ADMIN_TOKEN_F3F3FC574B8A95875449DBD68128C434CE3D7FB3F054567B0D3EAD3D9F1B01B1`
 
 ### 3. Recréer vos boutiques

@@ -240,7 +240,7 @@ useEffect(() => {
       console.log('🔄 Récupération config ACTUELLE pour mini-app...')
       
       // Utiliser l'API publique avec cache-busting agressif
-      const response = await fetch(`https://jhhhhhhggre.onrender.com/api/public/config?t=${timestamp}&cb=${Math.random()}`, {
+      const response = await fetch(`https://safepluglink-6hzr.onrender.com/api/public/config?t=${timestamp}&cb=${Math.random()}`, {
         method: 'GET',
         headers: {
           'Cache-Control': 'no-cache, no-store, must-revalidate',
@@ -260,7 +260,7 @@ useEffect(() => {
       // Fallback vers l'API avec token si nécessaire
       console.log('⚠️ Fallback vers API avec token...')
       const token = 'JuniorAdmon123'
-      const directResponse = await fetch(`https://jhhhhhhggre.onrender.com/api/config?t=${timestamp}`, {
+      const directResponse = await fetch(`https://safepluglink-6hzr.onrender.com/api/config?t=${timestamp}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Cache-Control': 'no-cache'

@@ -33,7 +33,7 @@ Généré par: Claude 3 Opus
 
 ### 3. MINI APP / BOUTIQUE
 - **URLs Vercel configurées**:
-  - API_URL: https://jhhhhhhggre.onrender.com
+  - API_URL: https://safepluglink-6hzr.onrender.com
   - Toutes les variables d'environnement sont définies
 
 ### 4. BASE DE DONNÉES

@@ -27,9 +27,9 @@
 4. **Variables d'environnement**
    Les variables sont déjà configurées dans `vercel.json`, mais vérifiez qu'elles sont bien présentes :
    ```
-   NEXT_PUBLIC_API_URL = https://jhhhhhhggre.onrender.com
-   NEXT_PUBLIC_BOT_URL = https://jhhhhhhggre.onrender.com
-   API_BASE_URL = https://jhhhhhhggre.onrender.com
+   NEXT_PUBLIC_API_URL = https://safepluglink-6hzr.onrender.com
+   NEXT_PUBLIC_BOT_URL = https://safepluglink-6hzr.onrender.com
+   API_BASE_URL = https://safepluglink-6hzr.onrender.com
    ```
 
 5. **Déployez**
@@ -64,7 +64,7 @@ Votre projet est déjà configuré avec :
 
 - **Panel Admin**: `https://[votre-projet].vercel.app/admin`
 - **Shop Public**: `https://[votre-projet].vercel.app/shop`
-- **API Bot**: `https://jhhhhhhggre.onrender.com`
+- **API Bot**: `https://safepluglink-6hzr.onrender.com`
 
 ### 🎯 Ce qui a été corrigé
 
@@ -91,7 +91,7 @@ Votre projet est déjà configuré avec :
 
 2. **Testez l'API directement**
    ```bash
-   curl https://jhhhhhhggre.onrender.com/health
+   curl https://safepluglink-6hzr.onrender.com/health
    ```
 
 3. **Videz le cache du navigateur**

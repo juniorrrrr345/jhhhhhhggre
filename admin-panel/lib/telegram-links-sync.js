@@ -32,7 +32,7 @@ class TelegramLinksSync {
   // Synchroniser les liens depuis l'API publique
   async syncLinks() {
     try {
-      const response = await fetch('https://jhhhhhhggre.onrender.com/api/public/config', {
+      const response = await fetch('https://safepluglink-6hzr.onrender.com/api/public/config', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json'

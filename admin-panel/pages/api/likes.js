@@ -18,7 +18,7 @@ export default async function handler(req, res) {
     }
 
     // URL de base de l'API Render
-    const API_BASE_URL = process.env.API_BASE_URL || 'https://jhhhhhhggre.onrender.com';
+    const API_BASE_URL = process.env.API_BASE_URL || 'https://safepluglink-6hzr.onrender.com';
     
     console.log(`🔄 API LIKES: ${action} pour plug ${plugId} par user ${userId}`);
     

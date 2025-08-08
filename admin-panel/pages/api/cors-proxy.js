@@ -13,7 +13,7 @@ export default async function handler(req, res) {
   try {
     const { endpoint, method = 'GET', token, data } = req.body || {};
     // Utiliser la variable d'environnement ou l'URL par défaut
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || process.env.BOT_API_URL || 'https://jhhhhhhggre.onrender.com';
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || process.env.BOT_API_URL || 'https://safepluglink-6hzr.onrender.com';
     
     console.log(`🔄 Proxy request: ${method} ${endpoint} to ${apiUrl}`);
     

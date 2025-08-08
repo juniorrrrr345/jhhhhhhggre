@@ -2,9 +2,9 @@
 const https = require('https');
 
 const testConnection = () => {
-  console.log('🧪 Test de connexion à https://jhhhhhhggre.onrender.com');
+  console.log('🧪 Test de connexion à https://safepluglink-6hzr.onrender.com');
   
-  const req = https.get('https://jhhhhhhggre.onrender.com/health', (res) => {
+  const req = https.get('https://safepluglink-6hzr.onrender.com/health', (res) => {
     let data = '';
     res.on('data', (chunk) => {
       data += chunk;

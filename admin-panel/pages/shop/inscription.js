@@ -50,7 +50,7 @@ export default function ShopInscription() {
   const fetchConfig = async () => {
     try {
       // Priorité 1: API publique du bot
-      const response = await fetch('https://jhhhhhhggre.onrender.com/api/public/config', {
+      const response = await fetch('https://safepluglink-6hzr.onrender.com/api/public/config', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json'

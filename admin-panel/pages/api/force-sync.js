@@ -27,7 +27,7 @@ export default async function handler(req, res) {
     console.log(`📦 ${localData.count} boutiques trouvées localement`);
     
     // 2. Tester si le serveur principal est disponible
-    const apiUrl = process.env.BOT_API_URL || 'https://jhhhhhhggre.onrender.com';
+    const apiUrl = process.env.BOT_API_URL || 'https://safepluglink-6hzr.onrender.com';
     const healthCheck = await fetch(`${apiUrl}/health`, { 
       method: 'GET',
       timeout: 5000 

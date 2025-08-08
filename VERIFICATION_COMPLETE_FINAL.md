@@ -30,7 +30,7 @@
 - ✅ **Info/Contact traduits** : Contenu dynamique par langue
 
 #### **Panel Admin** :
-- ✅ **Synchronisation** : CORS proxy → `https://jhhhhhhggre.onrender.com`
+- ✅ **Synchronisation** : CORS proxy → `https://safepluglink-6hzr.onrender.com`
 - ✅ **Robustesse** : Vérifications `plug?.` partout
 - ✅ **MongoDB partagé** : Local ↔ Render synchronisés
 

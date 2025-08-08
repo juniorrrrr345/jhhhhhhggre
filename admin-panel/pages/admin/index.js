@@ -32,7 +32,7 @@ export default function Dashboard() {
       console.log('🔍 Fetching dashboard data directly from bot API...')
       
       // SOLUTION: Fetch direct depuis le bot - BYPASS proxy CORS complètement
-      const botApiUrl = 'https://jhhhhhhggre.onrender.com'
+      const botApiUrl = 'https://safepluglink-6hzr.onrender.com'
       
       try {
         // Timeout de 10 secondes pour le dashboard

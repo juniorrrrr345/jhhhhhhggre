@@ -41,12 +41,12 @@ Une fois déployé, testez :
 
 1. **API Health Check** :
    ```bash
-   curl https://jhhhhhhggre.onrender.com/health
+   curl https://safepluglink-6hzr.onrender.com/health
    ```
 
 2. **Test d'authentification admin** :
    ```bash
-   curl https://jhhhhhhggre.onrender.com/api/plugs \
+   curl https://safepluglink-6hzr.onrender.com/api/plugs \
      -H "Authorization: Bearer JuniorAdmon123"
    ```
 

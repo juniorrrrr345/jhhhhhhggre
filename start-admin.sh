@@ -15,8 +15,8 @@ fi
 
 # Démarrer le panel admin
 echo "✨ Lancement du Panel Admin sur http://localhost:3001"
-echo "🔗 Serveur API: https://jhhhhhhggre.onrender.com"
+echo "🔗 Serveur API: https://safepluglink-6hzr.onrender.com"
 echo "🔑 Mot de passe: JuniorAdmon123"
 echo ""
 
-NEXT_PUBLIC_API_URL=https://jhhhhhhggre.onrender.com npx next dev --port 3001 --hostname 0.0.0.0
+NEXT_PUBLIC_API_URL=https://safepluglink-6hzr.onrender.com npx next dev --port 3001 --hostname 0.0.0.0

@@ -197,7 +197,7 @@ export default function ShopPlugDetail() {
 
   const fetchConfig = async () => {
     try {
-      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://jhhhhhhggre.onrender.com'
+      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://safepluglink-6hzr.onrender.com'
       const timestamp = new Date().getTime()
       
       let data
@@ -258,7 +258,7 @@ export default function ShopPlugDetail() {
       // APPEL DIRECT au bot d'abord (même logique que la page principale)
       try {
         console.log('📡 Tentative connexion DIRECTE pour détail boutique...')
-        const directResponse = await fetch('https://jhhhhhhggre.onrender.com/api/public/plugs?limit=100', {
+        const directResponse = await fetch('https://safepluglink-6hzr.onrender.com/api/public/plugs?limit=100', {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json'

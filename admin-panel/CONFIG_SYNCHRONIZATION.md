@@ -1,7 +1,7 @@
 # ✅ Configuration Synchronisée avec Render
 
 ## 🎯 **Source de données :**
-**URL :** `https://jhhhhhhggre.onrender.com`
+**URL :** `https://safepluglink-6hzr.onrender.com`
 
 ## 📊 **Boutique synchronisée :**
 - **Nom :** "teste"
@@ -15,16 +15,16 @@
 ```json
 {
   "env": {
-    "BOT_API_URL": "https://jhhhhhhggre.onrender.com",
-    "NEXT_PUBLIC_BOT_URL": "https://jhhhhhhggre.onrender.com", 
-    "NEXT_PUBLIC_API_URL": "https://jhhhhhhggre.onrender.com"
+    "BOT_API_URL": "https://safepluglink-6hzr.onrender.com",
+    "NEXT_PUBLIC_BOT_URL": "https://safepluglink-6hzr.onrender.com", 
+    "NEXT_PUBLIC_API_URL": "https://safepluglink-6hzr.onrender.com"
   }
 }
 ```
 
 ### 2. `pages/api/cors-proxy.js`
 ```javascript
-const apiUrl = process.env.BOT_API_URL || 'https://jhhhhhhggre.onrender.com'
+const apiUrl = process.env.BOT_API_URL || 'https://safepluglink-6hzr.onrender.com'
 ```
 
 ## 🚀 **Déploiement :**
@@ -46,7 +46,7 @@ Après déploiement, la boutique Vercel affichera uniquement la boutique "teste"
 ## 🔍 **Vérification :**
 ```bash
 # Test URL Render
-curl https://jhhhhhhggre.onrender.com/api/public/plugs
+curl https://safepluglink-6hzr.onrender.com/api/public/plugs
 
 # Test après déploiement Vercel
 curl https://[votre-url].vercel.app/api/cors-proxy \

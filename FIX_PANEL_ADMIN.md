@@ -2,7 +2,7 @@
 
 ## ✅ Statut actuel
 
-- **API Bot** : ✅ Fonctionne parfaitement sur https://jhhhhhhggre.onrender.com
+- **API Bot** : ✅ Fonctionne parfaitement sur https://safepluglink-6hzr.onrender.com
 - **Panel Admin** : ⚠️ Corrigé - En attente de déploiement sur Vercel
 
 ## 📝 Changements effectués
@@ -13,7 +13,7 @@
    - Ajout du champ `contact.telegram` obligatoire
    - Appel direct via `/api/cors-proxy`
 
-2. **URL API confirmée** : `https://jhhhhhhggre.onrender.com`
+2. **URL API confirmée** : `https://safepluglink-6hzr.onrender.com`
 
 ## 🚀 Pour déployer les corrections
 
@@ -44,7 +44,7 @@ vercel --prod
 Pour vérifier que la boutique est bien créée :
 - **Sur le bot Telegram** : Aller dans "Toutes les boutiques"
 - **Sur le site** : https://sfeplugslink.vercel.app/shop
-- **Via l'API** : `curl https://jhhhhhhggre.onrender.com/api/public/plugs`
+- **Via l'API** : `curl https://safepluglink-6hzr.onrender.com/api/public/plugs`
 
 ## ⚠️ Points importants
 

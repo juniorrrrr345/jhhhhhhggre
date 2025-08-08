@@ -13,7 +13,7 @@
 ### 🔧 **Panel Admin Vercel**
 - [x] **Centrage des textes** : Services (Livraison, Meetup, Envoi) centrés
 - [x] **Suppression du vote** : Affichage seulement (👍 + nombre)
-- [x] **Synchronisation** : CORS proxy pointe vers https://jhhhhhhggre.onrender.com
+- [x] **Synchronisation** : CORS proxy pointe vers https://safepluglink-6hzr.onrender.com
 - [x] **Robustesse** : Gestion des erreurs, vérifications plug?.
 
 ---

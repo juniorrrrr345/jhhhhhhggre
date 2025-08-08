@@ -22,13 +22,13 @@
 
 ### 1. `/api/force-update-all-translations`
 ```bash
-curl -X POST https://jhhhhhhggre.onrender.com/api/force-update-all-translations
+curl -X POST https://safepluglink-6hzr.onrender.com/api/force-update-all-translations
 ```
 **Fonction** : Met à jour TOUTES les traductions dans la base de données
 
 ### 2. `/api/admin/user-analytics`
 ```bash
-curl "https://jhhhhhhggre.onrender.com/api/admin/user-analytics?timeRange=all"
+curl "https://safepluglink-6hzr.onrender.com/api/admin/user-analytics?timeRange=all"
 ```
 **Fonction** : Analyse géographique des utilisateurs (corrige l'erreur 500)
 
@@ -63,10 +63,10 @@ git push origin main
 ### 3. Appel APIs après redéploiement
 ```bash
 # 1. Mettre à jour toutes les traductions
-curl -X POST https://jhhhhhhggre.onrender.com/api/force-update-all-translations
+curl -X POST https://safepluglink-6hzr.onrender.com/api/force-update-all-translations
 
 # 2. Vérifier les analytics
-curl "https://jhhhhhhggre.onrender.com/api/admin/user-analytics?timeRange=all"
+curl "https://safepluglink-6hzr.onrender.com/api/admin/user-analytics?timeRange=all"
 ```
 
 ### 4. Redéploiement Vercel (Panel Admin)
