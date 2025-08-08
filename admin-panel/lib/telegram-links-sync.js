@@ -83,6 +83,17 @@ class TelegramLinksSync {
       callback(event.detail)
     })
   }
+
+  // Mettre à jour les liens manuellement
+  updateLinks(links) {
+    // Sauvegarder dans localStorage
+    localStorage.setItem('telegramLinks', JSON.stringify(links))
+    
+    // Émettre un événement pour notifier les pages
+    window.dispatchEvent(new CustomEvent('telegramLinksUpdated', { detail: links }))
+    
+    console.log('✅ Liens Telegram mis à jour manuellement:', links)
+  }
 }
 
 // Instance globale
@@ -93,4 +104,6 @@ if (typeof window !== 'undefined' && window.location.pathname.includes('/shop/')
   telegramLinksSync.startAutoSync()
 }
 
+// Exporter l'instance et la classe
+export { telegramLinksSync, TelegramLinksSync }
 export default telegramLinksSync
