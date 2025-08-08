@@ -2,15 +2,14 @@
   "buttons": {
     "contact": {
       "text": "📞 Contact",
-      "content": "Contactez-nous pour plus d'informations.\n@Findyourplugadmin",
+      "content": "Contactez-nous pour plus d'informations.\nfindyourplugadmin",
       "enabled": true
     },
     "info": {
       "text": "ℹ️ Info",
-      "content": "Nous listons les plugs du monde entier par Pays / Ville découvrez notre mini-app 🌍🔌\n\nPour toute demande spécifique contacter nous @Findyourplugadmin 📲",
+      "content": "Nous listons les plugs du monde entier par Pays / Ville découvrez notre mini-app 🌍🔌\n\nPour toute demande spécifique contacter nous findyourplugadmin 📲",
       "enabled": true
     }
   },
-  "lastUpdate": "2025-08-08T10:06:11.512Z",
-  "updatedBy": "manual-script"
+  "lastUpdate": "2025-08-08T10:18:28.736Z"
 }
