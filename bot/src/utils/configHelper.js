@@ -80,6 +80,7 @@ const getCurrentTranslations = async () => {
 module.exports = {
   getFreshConfig,
   clearConfigCache,
+  invalidateConfigCache: clearConfigCache, // Alias pour compatibilité
   getCurrentLanguage,
   getCurrentTranslations
 };
