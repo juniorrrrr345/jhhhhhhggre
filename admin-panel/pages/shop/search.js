@@ -495,6 +495,20 @@ export default function ShopSearch() {
           <title>{t('search')} - FindYourPlug</title>
           <meta name="description" content={t('search_desc') || 'Recherchez vos boutiques préférées par nom, pays ou service.'} />
           <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+          <style jsx global>{`
+            .search-input,
+            .search-input:focus,
+            .search-input:active {
+              color: #ffffff !important;
+              -webkit-text-fill-color: #ffffff !important;
+              background-color: #2a2a2a !important;
+              caret-color: #ffffff !important;
+            }
+            .search-input::placeholder {
+              color: #999999 !important;
+              -webkit-text-fill-color: #999999 !important;
+            }
+          `}</style>
         </Head>
 
       <div style={{ 
@@ -573,6 +587,7 @@ export default function ShopSearch() {
           <div style={{ marginBottom: '16px' }}>
             <input
               type="text"
+              className="search-input"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
                               placeholder={`🔍 ${t('search_placeholder') || 'Rechercher une boutique'}...`}
@@ -582,10 +597,16 @@ export default function ShopSearch() {
                 backgroundColor: '#2a2a2a',
                 border: '1px solid #3a3a3a',
                 borderRadius: '8px',
-                color: '#ffffff',
+                color: '#ffffff !important',
                 fontSize: '16px',
                 outline: 'none',
-                boxSizing: 'border-box'
+                boxSizing: 'border-box',
+                WebkitTextFillColor: '#ffffff',
+                caretColor: '#ffffff'
+              }}
+              onFocus={(e) => {
+                e.target.style.color = '#ffffff';
+                e.target.style.backgroundColor = '#2a2a2a';
               }}
             />
           </div>
