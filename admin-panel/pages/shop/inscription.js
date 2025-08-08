@@ -212,7 +212,7 @@ export default function ShopInscription() {
 
           {/* Bouton d'inscription */}
           <a
-            href="https://t.me/findyourplugsav"
+            href={config.inscriptionTelegramLink}
             target="_blank"
             rel="noopener noreferrer"
             style={{
