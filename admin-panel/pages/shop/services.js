@@ -9,7 +9,7 @@ export default function ShopServices() {
   const currentLanguage = useLanguage()
   const [, setCurrentLanguage] = useState('fr') // Gardé pour la compatibilité
   const [config, setConfig] = useState({
-    servicesTelegramLink: 'https://t.me/findyourplugsav'
+    servicesTelegramLink: 'https://t.me/Findyourplugadmin'
   })
   const [shopSocialMedias, setShopSocialMedias] = useState([])
   const { t } = useTranslation(currentLanguage)
@@ -25,7 +25,7 @@ export default function ShopServices() {
     // Écouter les mises à jour des liens
     telegramLinksSync.onLinksUpdate((links) => {
       setConfig({
-        servicesTelegramLink: links.servicesTelegramLink || 'https://t.me/findyourplugsav'
+        servicesTelegramLink: links.servicesTelegramLink || 'https://t.me/Findyourplugadmin'
       })
     })
 
@@ -60,7 +60,7 @@ export default function ShopServices() {
         const data = await response.json()
         console.log('🔗 Config reçue de l\'API bot pour services:', data.telegramLinks)
         setConfig({
-          servicesTelegramLink: data.telegramLinks?.servicesTelegramLink || 'https://t.me/findyourplugsav'
+          servicesTelegramLink: data.telegramLinks?.servicesTelegramLink || 'https://t.me/Findyourplugadmin'
         })
         
         // Charger les réseaux sociaux du shop
@@ -76,14 +76,14 @@ export default function ShopServices() {
       if (savedLinks) {
         const links = JSON.parse(savedLinks)
         setConfig({
-          servicesTelegramLink: links.servicesTelegramLink || 'https://t.me/findyourplugsav'
+          servicesTelegramLink: links.servicesTelegramLink || 'https://t.me/Findyourplugadmin'
         })
         return
       }
       
       // Priorité 3: Lien par défaut
       setConfig({
-        servicesTelegramLink: 'https://t.me/findyourplugsav'
+        servicesTelegramLink: 'https://t.me/Findyourplugadmin'
       })
     } catch (error) {
       console.error('Erreur lors du chargement de la config:', error)
@@ -93,11 +93,11 @@ export default function ShopServices() {
       if (savedLinks) {
         const links = JSON.parse(savedLinks)
         setConfig({
-          servicesTelegramLink: links.servicesTelegramLink || 'https://t.me/findyourplugsav'
+          servicesTelegramLink: links.servicesTelegramLink || 'https://t.me/Findyourplugadmin'
         })
       } else {
         setConfig({
-          servicesTelegramLink: 'https://t.me/findyourplugsav'
+          servicesTelegramLink: 'https://t.me/Findyourplugadmin'
         })
       }
     }

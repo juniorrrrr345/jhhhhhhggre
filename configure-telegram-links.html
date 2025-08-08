@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Configuration Liens Telegram</title>
+    <meta charset="utf-8">
+</head>
+<body>
+    <h1>Configuration des liens Telegram</h1>
+    <p>Ouvrez cette page dans votre navigateur pour configurer les liens.</p>
+    <button onclick="setLinks()">Configurer les liens</button>
+    <div id="status"></div>
+    
+    <script>
+    function setLinks() {
+        const links = {"inscriptionTelegramLink":"https://t.me/Findyourplugadmin","servicesTelegramLink":"https://t.me/Findyourplugadmin"};
+        localStorage.setItem('telegramLinks', JSON.stringify(links));
+        document.getElementById('status').innerHTML = '<p style="color: green;">✅ Liens configurés avec succès!</p>';
+        console.log('Liens sauvegardés:', links);
+        
+        // Déclencher un événement pour notifier les autres onglets
+        window.dispatchEvent(new Event('storage'));
+        
+        setTimeout(() => {
+            alert('Les liens ont été configurés! Les pages inscription et services utiliseront maintenant: https://t.me/Findyourplugadmin');
+        }, 500);
+    }
+    
+    // Auto-configurer au chargement
+    window.onload = function() {
+        setLinks();
+    };
+    </script>
+</body>
+</html>

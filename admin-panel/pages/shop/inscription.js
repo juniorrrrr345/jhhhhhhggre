@@ -10,7 +10,7 @@ export default function ShopInscription() {
   const currentLanguage = useLanguage()
   const [, setCurrentLanguage] = useState('fr') // Gardé pour la compatibilité
   const [config, setConfig] = useState({
-    inscriptionTelegramLink: 'https://t.me/findyourplugsav'
+    inscriptionTelegramLink: 'https://t.me/Findyourplugadmin'
   })
 
   const { t } = useTranslation(currentLanguage)
@@ -61,7 +61,7 @@ export default function ShopInscription() {
         const data = await response.json()
         console.log('🔗 Config reçue de l\'API bot:', data.telegramLinks)
         setConfig({
-          inscriptionTelegramLink: data.telegramLinks?.inscriptionTelegramLink || 'https://t.me/findyourplugsav'
+          inscriptionTelegramLink: data.telegramLinks?.inscriptionTelegramLink || 'https://t.me/Findyourplugadmin'
         })
         return
       }
@@ -71,14 +71,14 @@ export default function ShopInscription() {
       if (savedLinks) {
         const links = JSON.parse(savedLinks)
         setConfig({
-          inscriptionTelegramLink: links.inscriptionTelegramLink || 'https://t.me/findyourplugsav'
+          inscriptionTelegramLink: links.inscriptionTelegramLink || 'https://t.me/Findyourplugadmin'
         })
         return
       }
       
       // Priorité 3: Lien par défaut
       setConfig({
-        inscriptionTelegramLink: 'https://t.me/findyourplugsav'
+        inscriptionTelegramLink: 'https://t.me/Findyourplugadmin'
       })
     } catch (error) {
       console.error('Erreur lors du chargement de la config:', error)
@@ -88,11 +88,11 @@ export default function ShopInscription() {
       if (savedLinks) {
         const links = JSON.parse(savedLinks)
         setConfig({
-          inscriptionTelegramLink: links.inscriptionTelegramLink || 'https://t.me/FindYourPlugBot'
+          inscriptionTelegramLink: links.inscriptionTelegramLink || 'https://t.me/Findyourplugadmin'
         })
       } else {
         setConfig({
-          inscriptionTelegramLink: 'https://t.me/FindYourPlugBot'
+          inscriptionTelegramLink: 'https://t.me/Findyourplugadmin'
         })
       }
     }
